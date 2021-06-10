@@ -38,14 +38,10 @@ def _check_resources(resources):
     Args:
         resources(dict): resource names as keys and resource file lines as values
     """
-
     for resname, lines in resources.items():
-        if not lines:
-            continue
-        if resources[resname][0].startswith("#"):
-            continue
-        LOG.error(f"Resource file '{resname}' doesn't contain valid data.")
-        raise click.Abort()
+        if not lines or lines[0].startswith("#") is False:
+            LOG.error(f"Resource file '{resname}' doesn't contain valid data.")
+            raise click.Abort()
 
 
 def _fetch_downloaded_resources(resources, downloads_folder):
@@ -62,6 +58,9 @@ def _fetch_downloaded_resources(resources, downloads_folder):
             resource_exists = os.path.isfile(resource_path)
             if resource_exists:
                 resources[resname] = get_file_handle(resource_path).readlines()
+        if resname not in resources:
+            LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
+            raise click.Abort()
 
 
 @click.command("diseases", short_help="Update disease terms")
@@ -109,6 +108,7 @@ def diseases(downloads_folder, api_key):
     LOG.info("Dropping DiseaseTerms")
     adapter.disease_term_collection.drop()
     LOG.debug("DiseaseTerms dropped")
+
     load_disease_terms(
         adapter=adapter,
         genemap_lines=resources["genemap_lines"],
