@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
 - Managed variants filtering defaults to all variant categories
+- Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 
 
 ## [4.36]

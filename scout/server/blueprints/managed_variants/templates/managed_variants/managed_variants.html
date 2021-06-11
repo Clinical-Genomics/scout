@@ -276,6 +276,29 @@
     $('select[multiple]').multiselect({
       buttonWidth: '100%'
     });
+
+    /* Changing the Kind drop-down according to Category drop-down */
+    $('select#category').change(function(){
+      if (this.value === 'sv' || this.value === 'cancer_sv'){
+        let sub_category = ["ins", "del", "dup", "cnv", "inv", "bnd"]
+        $('select#sub_category').children().remove()
+        $.each(sub_category, function(){
+          var value = this
+          var sub_category = value.toUpperCase();
+          $('select#sub_category').append("<option value=' " + value + "' >" + sub_category + "</option>" )
+        })
+      } else {
+        let sub_category = ["snv", "indel"]
+        $('select#sub_category').children().remove()
+        $.each(sub_category, function(){
+          var value = this
+          var sub_category = value.toUpperCase();
+          $('select#sub_category').append("<option value=' " + value + "' >" + sub_category + "</option>" )
+        })
+      }
+    })
+    
+    
   })
 
 </script>
