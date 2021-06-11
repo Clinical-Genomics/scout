@@ -22,6 +22,8 @@ class ChromographImages(BaseModel):
     upd_sites: Optional[str] = None
 
 
+
+
 # TODO: handle bam_path_options
 class ScoutIndividual(BaseModel):
     alignment_path: Optional[str] = None
@@ -121,6 +123,7 @@ class VcfFiles(BaseModel):
     vcf_sv_research: Optional[str] = None
 
 
+
 class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
     assignee: str = None  ## ??
@@ -157,6 +160,20 @@ class ScoutLoadConfig(BaseModel):
     synopsis: Union[List[str], str] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles] = None
+
+
+
+    # override init() for handling nested vcf_files dicts
+    # use try/except to handle TypeError if `vcf_files`is already set in
+    # previous call
+    def __init__(self, **data):
+        vcfs = VcfFiles(**data)
+        try:
+            super().__init__(vcf_files=vcfs, **data)
+        except TypeError as err:
+            super().__init__(**data)
+
+
 
     @validator("analysis_date")
     def check_analysis_date(cls, dt):
@@ -223,6 +240,10 @@ class ScoutLoadConfig(BaseModel):
 
     @root_validator
     def update_track(cls, values):
+        """Performt hooks to config:
+        * Set track to 'cancer' if certain vcf-files are set.
+        * Make sure `collaborators` is set."""
+
         # Handle special circumstances
         vcfs = values.get("vcf_files")
         LOG.debug("VCFS: {}".format(vcfs))
