@@ -167,6 +167,15 @@
     <ul class="list-group">
       {{ mappability_list(variant) }}
     </ul>
+    <!-- Variant callers -->
+    {% if variant.callers %}
+      <h6 class="card-header">Variant callers</h6>
+      <ul class="list-group">
+          {% for caller, call in variant.callers|sort %}
+            <li class="list-group-item">{{ caller }} - {{ call }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
   </div>
 {% endmacro %}
 
