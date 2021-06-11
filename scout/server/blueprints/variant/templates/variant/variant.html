@@ -94,7 +94,9 @@
       {% if config['LOQUSDB_SETTINGS'] %}
         {{ observations_panel(variant, observations, case) }}
       {% endif %}
-      {{ old_observations(variant) }}
+      {% if config['SHOW_OBERVED_VARIANT_ARCHIVE'] %}
+        {{  old_observations(variant) }}
+      {% endif %}
       {{ severity_list(variant) }}
       {{ conservations(variant) }}
       {{ mappability(variant) }}

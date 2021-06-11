@@ -80,6 +80,10 @@
         {{ observations_panel(variant, observations, case) }}
       {% endif %}
 
+      {% if config['SHOW_OBERVED_VARIANT_ARCHIVE'] %}
+        {{  old_observations(variant) }}
+      {% endif %}
+
       {{ panel_quality() }}
       {{ severity_list(variant) }}
       {{ panel_comment() }}
