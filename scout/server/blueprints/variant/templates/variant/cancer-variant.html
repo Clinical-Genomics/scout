@@ -218,6 +218,7 @@
         {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }}
       </h5></a>
       <ul class="list-group list-group-flush">
+        <li class="list-group-item">exon: {{ primary_gene.exon }}</li>
         <li class="list-group-item">
           <span>Change: </span>
           {%- if variant.reference|length > 8 -%}
