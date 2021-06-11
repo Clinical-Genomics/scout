@@ -59,6 +59,7 @@ def test_parse_case_date(scout_config):
                                         "owner",
                                         "rank_model_version",
                                         "rank_score_threshold",
+                                        "synopsis",
                                         "gene_panels"])
 def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
