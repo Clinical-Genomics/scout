@@ -107,7 +107,9 @@ def parse_case_data(**kwargs):
     # handle whitespace in gene panel names
     try:
         config_data["gene_panels"] = [panel.strip() for panel in config_data["gene_panels"]]
-        config_data["default_gene_panels"] = [panel.strip() for panel in config_data["default_gene_panels"]]
+        config_data["default_gene_panels"] = [
+            panel.strip() for panel in config_data["default_gene_panels"]
+        ]
     except KeyError:
         pass
 
@@ -460,8 +462,6 @@ def parse_case(config):
     return removeNoneRecursive(case_data)
 
 
-
-
 def parse_ped(ped_stream, family_type="ped"):
     """Parse out minimal family information from a PED file.
 
@@ -532,7 +532,7 @@ def removeNoneRecursive_aux(dictionary, new_dict):
                 "gene_panels",
                 "synopsis",
                 "phenotype_terms",
-                "panel"
+                "panel",
             ]
         ):
             new_list = [removeNoneRecursive_aux(item, {}) for item in value]

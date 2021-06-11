@@ -121,7 +121,6 @@ class VcfFiles(BaseModel):
     vcf_sv_research: Optional[str] = None
 
 
-
 class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
     assignee: str = None  ## ??
@@ -159,8 +158,6 @@ class ScoutLoadConfig(BaseModel):
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles] = None
 
-
-
     # override init() for handling nested vcf_files dicts
     # use try/except to handle TypeError if `vcf_files`is already set in
     # previous call `parse_case_data()`, `parse_case()`.
@@ -170,8 +167,6 @@ class ScoutLoadConfig(BaseModel):
             super().__init__(vcf_files=vcfs, **data)
         except TypeError as err:
             super().__init__(**data)
-
-
 
     @validator("analysis_date")
     def check_analysis_date(cls, dt):

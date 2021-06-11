@@ -54,12 +54,17 @@ def test_parse_case_date(scout_config):
     assert isinstance(case_data["analysis_date"], datetime)
 
 
-@pytest.mark.parametrize("param_name", ["lims_id",
-                                        "delivery_report",
-                                        "owner",
-                                        "rank_model_version",
-                                        "rank_score_threshold",
-                                        "gene_panels"])
+@pytest.mark.parametrize(
+    "param_name",
+    [
+        "lims_id",
+        "delivery_report",
+        "owner",
+        "rank_model_version",
+        "rank_score_threshold",
+        "gene_panels",
+    ],
+)
 def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
@@ -68,8 +73,10 @@ def test_parse_case_parsing(scout_config, param_name):
     assert case_data[param_name] == scout_config[param_name]
 
 
-@pytest.mark.parametrize(("param_name", "alias_name"), ([("case_id", "family"),
-                                                      ("default_panels", "default_gene_panels") ]))
+@pytest.mark.parametrize(
+    ("param_name", "alias_name"),
+    ([("case_id", "family"), ("default_panels", "default_gene_panels")]),
+)
 def test_parse_case_aliases(scout_config, param_name, alias_name):
     """Certain configuration parameters have an alias externally"""
     # GIVEN you load sample information from a scout config
@@ -78,12 +85,14 @@ def test_parse_case_aliases(scout_config, param_name, alias_name):
     # THEN the case a correct case id
     assert case_data[param_name] == scout_config[alias_name]
 
+
 def test_parse_case_collaborators(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should have a list with collaborators
     assert case_data["collaborators"] == [scout_config["owner"]]
+
 
 def test_parse_case_madeline(scout_config):
     # GIVEN you load sample information from a scout config
@@ -93,10 +102,7 @@ def test_parse_case_madeline(scout_config):
     assert case_data["madeline_info"]
 
 
-@pytest.mark.parametrize("param_name", ["vcf_snv",
-                                        "vcf_snv_research",
-                                        "vcf_sv",
-                                        "vcf_sv_research"])
+@pytest.mark.parametrize("param_name", ["vcf_snv", "vcf_snv_research", "vcf_sv", "vcf_sv_research"])
 def test_parse_case_vcf_files(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
@@ -105,9 +111,7 @@ def test_parse_case_vcf_files(scout_config, param_name):
     assert case_data["vcf_files"][param_name] == scout_config[param_name]
 
 
-@pytest.mark.parametrize("bam_name", ["alignment_path",
-                                      "bam_file",
-                                      "bam_path"])
+@pytest.mark.parametrize("bam_name", ["alignment_path", "bam_file", "bam_path"])
 def test_parse_case_bams(scout_config, bam_name):
     # GIVEN a load config with bam_path as key to bam/cram files
     bam_path = "a bam"
