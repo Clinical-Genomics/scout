@@ -238,6 +238,12 @@
     </div>
     <!--LINK out resources-->
     <div class="card-body">
+      <div class="h6">Databases</div>
+      <a class="btn btn-sm btn-info" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+      <a class="btn btn-sm btn-info" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
+      {% if variant.cosmic_link %}
+          <a class="btn btn-sm btn-info" role="button" href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
+      {% endif %}
       {% if variant.dbsnp_id %}
         {% for snp in variant.dbsnp_id.split(';') %}
           <a class="btn btn-sm btn-info" role="button" target="_blank" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
@@ -252,6 +258,7 @@
       {% endif %}
     </div>
     <!--IGV URLS-->
+    <div class="h6 ml-4">IGV</div>
     <table class="table table-sm ml-3">
       <tr>
         <td style="width:15%;">
