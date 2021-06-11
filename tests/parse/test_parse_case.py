@@ -60,7 +60,7 @@ def test_parse_case_date(scout_config):
                                         "rank_model_version",
                                         "rank_score_threshold",
                                         "gene_panels"])
-def test_parse_case__(scout_config, param_name):
+def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
@@ -93,51 +93,26 @@ def test_parse_case_madeline(scout_config):
     assert case_data["madeline_info"]
 
 
-
-def test_parse_case_vcf_files(scout_config):
+@pytest.mark.parametrize("param_name", ["vcf_snv",
+                                        "vcf_snv_research",
+                                        "vcf_sv",
+                                        "vcf_sv_research"])
+def test_parse_case_vcf_files(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should the same vcf files as specified in the
-    assert case_data["vcf_files"]["vcf_snv"] == scout_config["vcf_snv"]
-    assert case_data["vcf_files"]["vcf_sv"] == scout_config["vcf_sv"]
-    assert case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
-    assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
+    assert case_data["vcf_files"][param_name] == scout_config[param_name]
 
 
-
-
-def test_parse_case_bam_path(scout_config):
+@pytest.mark.parametrize("bam_name", ["alignment_path",
+                                      "bam_file",
+                                      "bam_path"])
+def test_parse_case_bams(scout_config, bam_name):
     # GIVEN a load config with bam_path as key to bam/cram files
     bam_path = "a bam"
     for sample in scout_config["samples"]:
-        sample["bam_path"] = bam_path
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-
-    # THEN assert that bam files are added correct
-    for ind in case_data["individuals"]:
-        assert ind["bam_file"] == bam_path
-
-
-def test_parse_case_bam_file(scout_config):
-    # GIVEN a load config with bam_file as key to bam/cram files
-    bam_path = "a bam"
-    for sample in scout_config["samples"]:
-        sample["bam_file"] = bam_path
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-
-    # THEN assert that bam files are added correct
-    for ind in case_data["individuals"]:
-        assert ind["bam_file"] == bam_path
-
-
-def test_parse_case_alignment_path(scout_config):
-    # GIVEN a load config with bam_file as key to bam/cram files
-    bam_path = "a bam"
-    for sample in scout_config["samples"]:
-        sample["alignment_path"] = bam_path
+        sample[bam_name] = bam_path
     # WHEN case is parsed
     case_data = parse_case(scout_config)
 
