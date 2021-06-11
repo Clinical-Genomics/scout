@@ -94,7 +94,7 @@ class ManagedVariantHandler(object):
 
         Arguments:
             display_id(str): chrom_pos_ref_alt_category_build
-                category: "snv", "cancer" - "sv", "cancer_sv" possible but not expected
+                category: "snv", "cancer_snv" - "sv", "cancer_sv" possible but not expected
                 build: "37" or "38"
 
         Returns:
@@ -111,7 +111,7 @@ class ManagedVariantHandler(object):
 
         Arguments:
             display_id(str): chrom_pos_ref_alt_category_build
-                category: "snv", "cancer" - "sv", "cancer_sv" possible but not expected
+                category: "snv", "cancer_snv" - "sv", "cancer_sv" possible but not expected
                 build: "37" or "38"
 
         Returns:
@@ -122,7 +122,7 @@ class ManagedVariantHandler(object):
         return managed_variant
 
     def managed_variants(
-        self, category=["snv", "sv", "cancer", "cancer_sv"], build="37", query_options=None
+        self, category=["snv", "sv", "cancer_snv", "cancer_sv"], build="37", query_options=None
     ):
         """Return a cursor to all managed variants of a particular category and build.
 
@@ -142,7 +142,7 @@ class ManagedVariantHandler(object):
         return self.managed_variant_collection.find(query_with_options)
 
     def count_managed_variants(
-        self, category=["snv", "sv", "cancer", "cancer_sv"], build="37", query_options=None
+        self, category=["snv", "sv", "cancer_snv", "cancer_sv"], build="37", query_options=None
     ):
         """Return count of documents to all managed variants of a particular category and build.
 
