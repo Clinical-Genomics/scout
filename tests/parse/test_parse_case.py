@@ -54,39 +54,29 @@ def test_parse_case_date(scout_config):
     assert isinstance(case_data["analysis_date"], datetime)
 
 
-def test_parse_case_owner(scout_config):
+@pytest.mark.parametrize("param_name", ["lims_id",
+                                        "delivery_report",
+                                        "owner",
+                                        "rank_model_version",
+                                        "rank_score_threshold",
+                                        "gene_panels"])
+def test_parse_case__(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
-    # THEN the case should have a owner
-    assert case_data["owner"] == scout_config["owner"]
+    # THEN the case should have a the parameter
+    assert case_data[param_name] == scout_config[param_name]
 
 
-def test_parse_case_limsid(scout_config):
-    """Test parsing a case with lims_id"""
-
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the lims ID should be the same as in config
-    assert case_data["lims_id"] == scout_config["lims_id"]
-
-
-def test_parse_case(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case a correct case id
-    assert case_data["case_id"] == scout_config["family"]
-
-
-def test_parse_case_madeline(scout_config):
+@pytest.mark.parametrize(("param_name", "alias_name"), ([("case_id", "family"),
+                                                      ("default_panels", "default_gene_panels") ]))
+def test_parse_case_aliases(scout_config, param_name, alias_name):
+    """Certain configuration parameters have an alias externally"""
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct case id
-    assert case_data["madeline_info"]
-
+    assert case_data[param_name] == scout_config[alias_name]
 
 def test_parse_case_collaborators(scout_config):
     # GIVEN you load sample information from a scout config
@@ -95,37 +85,13 @@ def test_parse_case_collaborators(scout_config):
     # THEN the case should have a list with collaborators
     assert case_data["collaborators"] == [scout_config["owner"]]
 
-
-def test_parse_case_gene_panels(scout_config):
+def test_parse_case_madeline(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["gene_panels"] == scout_config["gene_panels"]
+    # THEN the case a correct case id
+    assert case_data["madeline_info"]
 
-
-def test_parse_case_default_panels(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["default_panels"] == scout_config["default_gene_panels"]
-
-
-def test_parse_case_rank_threshold(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["rank_score_threshold"] == scout_config["rank_score_threshold"]
-
-
-def test_parse_case_rank_model_version(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same rank model version like the config
-    assert case_data["rank_model_version"] == scout_config["rank_model_version"]
 
 
 def test_parse_case_vcf_files(scout_config):
@@ -139,14 +105,6 @@ def test_parse_case_vcf_files(scout_config):
     assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
 
 
-def test_parse_case_delivery_report(scout_config):
-    # GIVEN you load sample information from a scout config
-
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-
-    # then we should find the delivery report in the parsed data
-    assert case_data["delivery_report"] == scout_config["delivery_report"]
 
 
 def test_parse_case_bam_path(scout_config):
