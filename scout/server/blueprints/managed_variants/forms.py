@@ -16,7 +16,9 @@ from scout.constants import CHROMOSOMES, SV_TYPES
 LOG = logging.getLogger(__name__)
 CHROMOSOME_FILTER_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
 CHROMOSOME_EDIT_OPTIONS = [(chrom, chrom) for chrom in CHROMOSOMES]
-SUBCATEGORY_CHOICES = [("snv", "SNV"), ("indel", "INDEL")]
+SUBCATEGORY_CHOICES = [("snv", "SNV"), ("indel", "INDEL")] + [
+    (term, term.replace("_", " ").upper()) for term in SV_TYPES
+]
 CATEGORY_CHOICES = [
     (term, term.replace("_", " ").upper()) for term in ["snv", "sv", "cancer_snv", "cancer_sv"]
 ]

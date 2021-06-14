@@ -32,7 +32,7 @@
           </h5>
         </div>
         <div id="collapseAdd" class="panel-collapse collapse">
-          <div class="card-body">{{ add_variant_form() }}</div>
+          <div class="card-body" id="add_variant_catogory">{{ add_variant_form() }}</div>
         </div>
        </div>
     </div>
@@ -277,8 +277,17 @@
       buttonWidth: '100%'
     });
 
+    /* Set the Kind drop-down to ["snv", "indel"] */
+    $('#add_variant_catogory #sub_category').children().remove()
+      let sub_category = ["snv", "indel"]
+        $.each(sub_category, function(){
+          var value = this
+          var sub_category = value.toUpperCase();
+          $('select#sub_category').append("<option value=' " + value + "' >" + sub_category + "</option>" )
+        })
+
     /* Changing the Kind drop-down according to Category drop-down */
-    $('select#category').change(function(){
+    $('#add_variant_catogory #category').change(function(){
       if (this.value === 'sv' || this.value === 'cancer_sv'){
         let sub_category = ["ins", "del", "dup", "cnv", "inv", "bnd"]
         $('select#sub_category').children().remove()
@@ -289,7 +298,7 @@
         })
       } else {
         let sub_category = ["snv", "indel"]
-        $('select#sub_category').children().remove()
+        $('#add_variant_catogory #sub_category').children().remove()
         $.each(sub_category, function(){
           var value = this
           var sub_category = value.toUpperCase();
