@@ -3,6 +3,7 @@ import logging
 
 from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import current_user
+from forms import ManagedVariantModifyForm
 
 from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
