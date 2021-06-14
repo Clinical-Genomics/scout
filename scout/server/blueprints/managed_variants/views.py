@@ -8,7 +8,6 @@ from scout.server.extensions import store
 from scout.server.utils import templated, user_institutes
 
 from . import controllers
-from .forms import ManagedVariantAddForm, ManagedVariantModifyForm, ManagedVariantsFilterForm
 
 LOG = logging.getLogger(__name__)
 
@@ -18,35 +17,9 @@ managed_variants_bp = Blueprint("managed_variants", __name__, template_folder="t
 @managed_variants_bp.route("/managed_variant", methods=["GET", "POST"])
 @templated("managed_variants/managed_variants.html")
 def managed_variants():
-    page = int(request.form.get("page", 1))
-
-    institutes = list(user_institutes(store, current_user))
-
-    filters_form = ManagedVariantsFilterForm(request.form)
-    add_form = ManagedVariantAddForm()
-    modify_form = ManagedVariantModifyForm()
-
-    category = request.form.getlist("category") or ["snv", "sv", "cancer_snv", "cancer_sv"]
-
-    query_options = {}
-    for option in ["chromosome", "position", "end", "description"]:
-        if request.form.get(option, None):
-            query_options[option] = request.form.get(option)
-
-    if request.form.get("sub_category", None):
-        query_options["sub_category"] = request.form.getlist("sub_category")
-
-    managed_variants_query = store.managed_variants(category=category, query_options=query_options)
-    variant_count = store.count_managed_variants(category=category, query_options=query_options)
-    data = controllers.managed_variants(store, managed_variants_query, variant_count, page)
-
-    return dict(
-        filters_form=filters_form,
-        add_form=add_form,
-        modify_form=modify_form,
-        page=page,
-        **data,
-    )
+    """Create and return content for the managed variants page"""
+    data = controllers.managed_variants(request)
+    return data
 
 
 @managed_variants_bp.route("/upload_csv", methods=["POST"])

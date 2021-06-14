@@ -3,19 +3,61 @@ import os.path
 
 from scout.build import build_managed_variant
 from scout.parse.variant.managed_variant import parse_managed_variant_lines
+from scout.server.extensions import store
+from scout.server.utils import user_institutes
+
+from .forms import (
+    CATEGORY_CHOICES,
+    SUBCATEGORY_CHOICES,
+    ManagedVariantAddForm,
+    ManagedVariantModifyForm,
+    ManagedVariantsFilterForm,
+)
 
 LOG = logging.getLogger(__name__)
 
+VARS_PER_PAGE = 50
 
-def managed_variants(store, managed_variants_query, variant_count, page=1, per_page=50):
-    """Pre-process list of variants."""
-    skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
-    managed_variants_res = managed_variants_query.skip(skip_count).limit(per_page)
+
+def managed_variants(request):
+    """Create and return managed variants' data"""
+
+    page = int(request.form.get("page", 1))
+    skip_count = VARS_PER_PAGE * max(page - 1, 0)
+
+    # Retrieve form data for the 3 types of form present on the managed variants page
+    filters_form = ManagedVariantsFilterForm(request.form)
+    add_form = ManagedVariantAddForm()
+    modify_form = ManagedVariantModifyForm()
+
+    # Retrieve form data to compose variants query
+    categories = request.form.getlist("category") or [cat[0] for cat in CATEGORY_CHOICES]
+
+    query_options = {"sub_category": []}
+    for sub_cat in request.form.getlist("sub_category") or [
+        subcat[0] for subcat in SUBCATEGORY_CHOICES
+    ]:
+        query_options["sub_category"].append(sub_cat)
+
+    # Get all variants according to the selected fields in filter form
+    managed_variants_query = store.managed_variants(
+        category=categories, query_options=query_options
+    )
+
+    variant_count = store.count_managed_variants(category=categories, query_options=query_options)
+    more_variants = True if variant_count > (skip_count + VARS_PER_PAGE) else False
+    managed_variants_res = managed_variants_query.skip(skip_count).limit(VARS_PER_PAGE)
 
     managed_variants = [managed_variant for managed_variant in managed_variants_res]
 
-    return {"managed_variants": managed_variants, "more_variants": more_variants}
+    return {
+        "page": page,
+        "filters_form": filters_form,
+        "add_form": add_form,
+        "modify_form": modify_form,
+        "managed_variants": managed_variants,
+        "more_variants": more_variants,
+    }
 
 
 def add_managed_variant(store, add_form, institutes, current_user_id):
