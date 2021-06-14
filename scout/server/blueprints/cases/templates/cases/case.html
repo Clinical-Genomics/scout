@@ -43,17 +43,20 @@
 
 {% macro case_page() %}
 <div class="col {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}"> <!-- This is the main container -->
-<div class="container_spaced">
-  <div class="card">
-    <h4 class="card-header">Case: {{case.display_name}}</h4>
-    <p class="card-title {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">Status: <strong>{{case.status}}</strong>
-      <br>
-      Internal ID: <strong>{{case._id}}</strong></p>
-    <div class="card-body">
-
-      <div class="row text-center"> <!-- variants buttons -->
-        <div class="col-sm-12">{{ variants_buttons() }}</div>
-      </div>
+  <div class="container_spaced">
+    <div class="card">
+      <div class="row">
+        <div class="col-sm-4">
+          <h4 class="card-title">
+              Case: {{case.display_name}}<br>
+              Status: {{case.status}}<br>
+              Internal ID: {{case._id}}
+          </h4>
+        </div>
+        <div class="col d-flex align-items-center justify-content-center">
+          {{ variants_buttons() }}
+        </div>
+      </div> <!--end of div class="row" -->
 
       {% if other_causatives|length > 0%}
         <div class="row">
@@ -63,42 +66,45 @@
 
       {% if managed_variants|length > 0%}
         <div class="row">
-          <div class="col-xs-12 col-md-12">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
+          <div class="col-sm-12 col-md-12">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
         </div>
       {% endif %}
 
       <div class="row ">
-        <div class="col-xs-12 col-md-6">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
-        <div class="col-xs-12 col-md-6">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+        <div class="col-sm-12 col-md-6">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+        <div class="col-sm-12 col-md-6">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
       </div>
 
       <div class="row">
         {% if case.track == 'cancer' %}
-          <div class="col-xs-12 col-md-12">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
+          <div class="col-sm-12 col-md-12">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
         {% else %}
-          <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
-        {% endif %}
-      </div>
-
-      {{ insert_multi_image_panel() }}
-
-      <div class="row">
-        <div class="col-md-4">
-        {% if case.track != 'cancer' %}
+          <div class="col-sm-8 col-md-{{"8" if case.madeline_info and case.individuals|length > 1 else "12"}}">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
           {% if case.madeline_info and case.individuals|length > 1 %}
-            {{ pedigree_panel(case) }}
-          {% else %}
-            <p>No pedigree picture available.</p>
+            <div class="col-sm-4">
+              {{ pedigree_panel(case) }}
+            </div>
           {% endif %}
         {% endif %}
-          {{ group_panel() }}
-        </div>
+      </div>
 
-        <div class="col-8">
-          {{ synopsis_panel() }}
-          {{ comments_panel(institute, case, current_user, comments) }}
+      <div class="row">
+        <div class="col-6">{{ synopsis_panel() }}</div>
+        <div class="col-6">{{ comments_panel(institute, case, current_user, comments) }}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          {{ insert_multi_image_panel() }}
         </div>
       </div>
+
+      <div class="row">
+        <div class="col-sm-4">{{ group_panel() }}</div>
+        <div class="col-sm-4">{{ cohort_panel(case, institute, cohort_tags) }}</div>
+        <div class="col-sm-4">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
+      </div>
+
 
         <!-- OMIM diagnoses-related code-->
         {% if not case.track == 'cancer' %}
@@ -119,10 +125,7 @@
           </div>
         {% endif %}
         <!-- end of OMIM diagnoses-related code-->
-        <div class="row">
-          <div class="col-md-6">{{ cohort_panel(case, institute, cohort_tags) }}</div>
-          <div class="col-md-6">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
-        </div>
+
         <div class="row">
           <div class="col-md-6">{{ phenotype_terms_panel(case, institute) }}</div>
           <div class="col-md-6">{{ phenotypes_panel(case, institute, config) }}</div>
@@ -141,7 +144,6 @@
         </div>
         <!-- end of data sharing panels -->
         <div class="row">
-
           <div class="col-sm-12">{{activity_panel(events)}}</div>
         </div>
 
@@ -318,9 +320,9 @@
   <div class="row">
     <div class="col-12">
       <div id={{"collapse_" + id_tag}}>
-	<div class="card panel-default">
+	<div class="ml-3 panel-light">
 	  <div class="panel-heading" >
-      <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}>Images {{display_name}} &gt	<span class="pull-right clickable"><span class="glyphicon glyphicon-chevron-up"></span></span></div>
+      <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}><a href="#"><strong>Images {{display_name}} &gt	</strong><span class="glyphicon glyphicon-chevron-up"></span></a></div>
           </div>
           <div id={{"collapsing_" + id_tag}} style="width:100%" class="collapse" data-parent={{"#collapse_" + id_tag}}>
             <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
@@ -332,8 +334,6 @@
     </div>
   </div>
 {% endmacro %}
-
-
 
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
