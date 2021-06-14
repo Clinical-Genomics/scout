@@ -16,9 +16,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
+- Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
+- Print stacktrace if load command fails
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
-
 
 ## [4.36]
 ### Added
