@@ -216,6 +216,9 @@ def predictions(genes):
         "polyphen_predictions": [],
         "region_annotations": [],
         "functional_annotations": [],
+        "spliceai_scores": [],
+        "spliceai_positions": [],
+        "spliceai_predictions": [],
     }
     for gene_obj in genes:
         for pred_key in data:
@@ -224,7 +227,7 @@ def predictions(genes):
                 value = gene_obj.get(gene_key, "-")
             else:
                 gene_id = gene_obj.get("hgnc_symbol") or str(gene_obj.get("hgnc_id", 0))
-                value = ":".join([gene_id, gene_obj.get(gene_key, "-")])
+                value = ":".join([gene_id, str(gene_obj.get(gene_key, "-"))])
             data[pred_key].append(value)
 
     return data
