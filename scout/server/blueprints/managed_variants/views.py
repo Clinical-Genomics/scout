@@ -70,13 +70,6 @@ def remove_managed_variant(variant_id):
 
 @managed_variants_bp.route("/managed_variant/add", methods=["POST"])
 def add_managed_variant():
-
-    add_form = ManagedVariantAddForm(request.form)
-    LOG.debug("Adding managed variant with form %s", add_form)
-
-    institutes = list(user_institutes(store, current_user))
-    current_user_id = current_user._id
-
-    controllers.add_managed_variant(store, add_form, institutes, current_user_id)
-
+    """Add a managed variant using form data filled in by user"""
+    controllers.add_managed_variant(request)
     return redirect(request.referrer)

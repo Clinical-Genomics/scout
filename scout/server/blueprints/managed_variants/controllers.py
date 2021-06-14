@@ -1,6 +1,8 @@
 import logging
 import os.path
 
+from flask_login import current_user
+
 from scout.build import build_managed_variant
 from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
@@ -20,7 +22,14 @@ VARS_PER_PAGE = 50
 
 
 def managed_variants(request):
-    """Create and return managed variants' data"""
+    """Create and return managed variants' data
+
+    Args:
+        request(werkzeug.local.LocalProxy): request containing form data
+
+    Returns
+        data(dict): data to be displayed in template page
+    """
 
     page = int(request.form.get("page", 1))
     skip_count = VARS_PER_PAGE * max(page - 1, 0)
@@ -60,8 +69,16 @@ def managed_variants(request):
     }
 
 
-def add_managed_variant(store, add_form, institutes, current_user_id):
-    """Add a managed variant."""
+def add_managed_variant(request):
+    """Add a managed variant.
+
+    Args:
+        request(werkzeug.local.LocalProxy): request containing form data
+    """
+
+    add_form = ManagedVariantAddForm(request.form)
+    institutes = list(user_institutes(store, current_user))
+    current_user_id = current_user._id
 
     managed_variant_obj = build_managed_variant(
         dict(
@@ -140,5 +157,4 @@ def remove_managed_variant(store, managed_variant_id):
     """Remove a managed variant."""
 
     removed_variant = store.delete_managed_variant(managed_variant_id)
-
     return removed_variant

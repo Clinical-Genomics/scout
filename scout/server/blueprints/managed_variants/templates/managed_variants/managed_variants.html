@@ -283,7 +283,7 @@
         $.each(sub_category, function(){
           var value = this
           var sub_category = value.toUpperCase();
-          $('select#sub_category').append("<option value=' " + value + "' >" + sub_category + "</option>" )
+          $('select#sub_category').append("<option value='" + value + "' >" + sub_category + "</option>" )
         })
 
     /* Changing the Kind drop-down according to Category drop-down */
@@ -294,7 +294,7 @@
         $.each(sub_category, function(){
           var value = this
           var sub_category = value.toUpperCase();
-          $('select#sub_category').append("<option value=' " + value + "' >" + sub_category + "</option>" )
+          $('select#sub_category').append("<option value='" + value + "' >" + sub_category + "</option>" )
         })
       } else {
         let sub_category = ["snv", "indel"]
@@ -302,7 +302,7 @@
         $.each(sub_category, function(){
           var value = this
           var sub_category = value.toUpperCase();
-          $('select#sub_category').append("<option value=' " + value + "' >" + sub_category + "</option>" )
+          $('select#sub_category').append("<option value='" + value + "' >" + sub_category + "</option>" )
         })
       }
     })
