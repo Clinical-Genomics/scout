@@ -70,9 +70,13 @@
         </div>
       {% endif %}
 
-      <div class="row ">
-        <div class="col-sm-12 col-md-6">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
-        <div class="col-sm-12 col-md-6">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+      <div class="row">
+        <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+        <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+        {% if case.clinvar_variants %}
+          <div class="col">{{ clinvar_panel() }}</div>
+        {% endif %}
+        <!-- end of data sharing panels -->
       </div>
 
       <div class="row">
@@ -106,53 +110,22 @@
       </div>
 
 
-        <!-- OMIM diagnoses-related code-->
-        {% if not case.track == 'cancer' %}
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="card panel-default ">
-                  <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
-                  <div class="card-body d-flex flex-row">
-                    <div class="col-sm-6">
-                      {{ diagnosis_phenotypes(case, institute, omim_terms) }}
-                    </div>
-                    <div class="col-sm-6">
-                      {{ diagnosis_genes(case, institute) }}
-                    </div>
-                  </div><!--end of card body-->
-              </div><!--end of card-->
-            </div>
-          </div>
-        {% endif %}
-        <!-- end of OMIM diagnoses-related code-->
+      <!-- CASE DIAGNOSES AND PHENOTYPES -->
 
-        <div class="row">
-          <div class="col-md-6">{{ phenotype_terms_panel(case, institute) }}</div>
-          <div class="col-md-6">{{ phenotypes_panel(case, institute, config) }}</div>
-        </div>
 
-        <div class="row">
-          <div class="col-md-6">{{ genepanels_table(case, institute) }}</div>
-          <div class="col-md-6">{{ hpo_genelist_panel(case, institute, config) }}</div>
-        </div>
 
-        <!-- data sharing panels -->
-        <div class="row">
-          {% if case.clinvar_variants %}
-            <div class="col-md-6">{{ clinvar_panel() }}</div>
-          {% endif %}
-        </div>
-        <!-- end of data sharing panels -->
-        <div class="row">
-          <div class="col-sm-12">{{activity_panel(events)}}</div>
-        </div>
+      <!-- END OF CASE DIAGNOSES AND PHENOTYPES -->
 
-        {{ modal_synopsis() }}
-        {{ rerun_modal(institute, case) }}
-        {{ research_modal(institute, case) }}
-        {{ reanalysis_modal(institute, case) }}
-        {{ beacon_modal(case) }}
-        {{ matchmaker_modal(institute, case, mme_nodes) }}
+      <div class="row">
+        <div class="col-sm-12">{{activity_panel(events)}}</div>
+      </div>
+
+      {{ modal_synopsis() }}
+      {{ rerun_modal(institute, case) }}
+      {{ research_modal(institute, case) }}
+      {{ reanalysis_modal(institute, case) }}
+      {{ beacon_modal(case) }}
+      {{ matchmaker_modal(institute, case, mme_nodes) }}
     </div> <!-- end of card body -->
   </div> <!-- end of card div-->
 </div>
@@ -359,16 +332,17 @@
 
 {% macro clinvar_panel() %}
   <div class="card panel-default">
-    <div class="panel-heading">Variants in ClinVar submissions</div>
+    <div class="panel-heading">Variants submitted to ClinVar</div>
     <div class="card-body">
-      <ul>
+      <ul class="list-group">
         {% for var_id, submission_data in case.clinvar_variants.items() %}
-          <li>
+          <li class="list-group-item">
             {% if submission_data.category == 'snv' %}
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
+              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a>
             {% else %}
-              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
+              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a>
             {% endif %}
+              <span class="badge badge-dark">{{submission_data.clinsig}}</span>
           </li>
         {% endfor %}
       </ul>
