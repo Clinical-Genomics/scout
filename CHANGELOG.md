@@ -18,6 +18,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load case with missing panels in config files, but show warning.
 - Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
 - Print stacktrace if load command fails
+- A more compact case page
+- Removed OMIM genes panel
 
 ## [4.36]
 ### Added

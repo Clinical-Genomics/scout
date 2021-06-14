@@ -320,15 +320,13 @@
   <div class="row">
     <div class="col-12">
       <div id={{"collapse_" + id_tag}}>
-	<div class="ml-3 panel-light">
-	  <div class="panel-heading" >
-      <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}><a href="#"><strong>Images {{display_name}} &gt	</strong><span class="glyphicon glyphicon-chevron-up"></span></a></div>
-          </div>
-          <div id={{"collapsing_" + id_tag}} style="width:100%" class="collapse" data-parent={{"#collapse_" + id_tag}}>
-            <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
-              <svg id={{"svg_"+id_tag}} class="img-fluid" width="1200" height="1700"></svg>
-	          </div>
-          </div>
+        <span class="badge badge-primary badge-pill">
+          <h6><a class="text-white" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls="{{"collapsing_" + id_tag}}" data-parent="{{"#collapse_" + id_tag}}"><strong>Images {{display_name}} &nbsp;</strong></a></h6>
+        </span>
+        <div id={{"collapsing_" + id_tag}} style="width:100%" class="collapse" data-parent={{"#collapse_" + id_tag}}>
+          <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
+            <svg id={{"svg_"+id_tag}} class="img-fluid" width="1200" height="1700"></svg>
+  	      </div>
         </div>
       </div>
     </div>
