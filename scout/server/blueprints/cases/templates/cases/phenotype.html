@@ -155,15 +155,17 @@
 
 {% macro phenotype_terms_panel(case, institute) %}
   {% set url = 'http://hpo.jax.org/app/browse/term/HP:0000018' %}
-  <div class="card panel-default">
-    <div class="panel-heading"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}" class="text-white">HPO web</a>)</div>
-    <div class="card-body">
+  <div>
+    <div class="panel-heading">
+      <h5 class="ml-3 mt-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}">HPO web</a>)</h5>
+    </div>
+    <div>
       <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
-        <div class="row form-inline">
-          <div class="col-sm-9">
+        <div class="ml-3 row form-inline">
+          <div class="col">
             <input name="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
           </div>
-          <div class="col-sm-3">
+          <div class="col">
             <button class="btn btn-outline-secondary form-control">Add</button>
           </div>
         </div>
@@ -191,21 +193,18 @@
 
 {% macro phenotypes_panel(case, institute, config) %}
   <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name)+'#phenotypes_panel' }}" method="POST">
-    <div id="phenotypes_panel" class="card panel-default">
-      <div class="panel-heading"><span class="fa fa-stethoscope"></span>&nbsp;Added phenotypes</div>
-      <div class="card-body">
-        <ul class="list-group">
-          {% for hpo_term in case.phenotype_terms %}
-            {{ hpo_item(hpo_term) }}
-          {% else %}
-            <li class="list-group-item">No phenotypes added yet</li>
-          {% endfor %}
-        </ul>
-      </div>
+    <div id="phenotypes_panel" class="mt-3">
+      Case phenotypes:<br>
+        {% for hpo_term in case.phenotype_terms %}
+          {{ hpo_item(hpo_term) }}&nbsp;&nbsp;
+        {% else %}
+          <soan class="text-muted">No phenotypes added yet</span>
+        {% endfor %}
+
       <div class="card-footer">
         <div class="form-inline">
           <div class="form-group mb-2 col-3">
-            <button class="btn btn-sm btn-secondary" type="submit" name="action" value="GENERATE">HPO panel</button>
+            <button class="btn btn-sm btn-secondary" type="submit" name="action" value="GENERATE">Generate HPO panel</button>
           </div>
           <div class="form-group mb-2 mx-sm-3 col-4">
             <input name="min_match" type="number" min="0" step="1" class="form-control" placeholder="Min matches">
@@ -240,7 +239,6 @@
 {% endmacro %}
 
 {% macro hpo_item(hpo_term) %}
-  <li class="list-group-item">
     <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
            {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
     {{ hpo_term.feature }}
@@ -249,5 +247,5 @@
         {{ hpo_term.phenotype_id }}
       </a>
     </span>
-  </li>
+    &nbsp;&nbsp;
 {% endmacro %}
