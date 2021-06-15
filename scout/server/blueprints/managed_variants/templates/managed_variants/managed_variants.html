@@ -25,7 +25,7 @@
 {% block content_main %}
 
 
-<form method="POST" id="add_form" action="{{url_for('managed_variants.add_managed_variant')}}" enctype="multipart/form-data">
+<form method="POST" id="add_form" name="add_variant" action="{{url_for('managed_variants.add_managed_variant')}}" enctype="multipart/form-data">
   <div class="container-float">
     <div id="accordion_add" >
        <div class="card mt-3">
@@ -143,7 +143,7 @@
 {% endmacro %}
 
 {% macro modify_variant_form(variant) %}
-  <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
+  <form name="modify_variant" method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
       <td>{{ modify_form.chromosome(class_="form-control") }}</td>
@@ -151,8 +151,8 @@
       <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
       <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}"></td>
       <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}"></td>
+      <td>{{ modify_form.category(class_="form-control", onchange="populateSubTypeSelect('modify_variant')") }}</td>
       <td>{{ modify_form.sub_category(class_="form-control") }}</td>
-      <td>{{ modify_form.category(class_="form-control") }}</td>
       <td>
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
@@ -204,7 +204,7 @@
       <td><input type="number" name="end" id="end" class="form-control"></td>
       <td><input type="text" name="reference" id="reference" class="form-control"></td>
       <td><input type="text" name="alternative" id="alternative" class="form-control"></td>
-      <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect()") }}</td>
+      <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
       <td>{{ add_form.sub_category(class_="form-control") }}</td>
       <td>
         <input type="text" name="description" id="description" class="form-control">
@@ -274,7 +274,8 @@
 
   $(document).ready(function(){
     setChromosomes();
-    populateSubTypeSelect();
+    populateSubTypeSelect('add_variant');
+    populateSubTypeSelect('modify_variant')
   })
 
   $(function () {
@@ -289,8 +290,6 @@
   })
 
   var subcategoryOptions = {{ subcategory_choices|safe }}; // add form
-  var categorySelect = document.forms["add_form"].elements["category"];
-  var subCategorySelect = document.forms["add_form"].elements["sub_category"]; // add form
 
   var cytoStart = document.forms["filters_form"].elements["cytoband_start"]; // filter form
   var cytoEnd = document.forms["filters_form"].elements["cytoband_end"]; // filter form
@@ -311,10 +310,11 @@
   }
 
   // populate variant subtype select in add_variant form according to pre-selected variant category
-  function populateSubTypeSelect(){
+  function populateSubTypeSelect(formId){
+    selectedCategory = document.forms[formId].elements["category"].value; // can be add_variant or modify_variant
+    subCategorySelect = document.forms[formId].elements["sub_category"];
+
     clearSelect(subCategorySelect) // Reset subcategory select options
-    console.log(subcategoryOptions)
-    selectedCategory = categorySelect.value
 
     if (selectedCategory.includes("snv")){
       populateSelect(subCategorySelect, subcategoryOptions.slice(0,2))
