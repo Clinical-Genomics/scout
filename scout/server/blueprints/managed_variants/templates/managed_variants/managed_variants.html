@@ -85,7 +85,6 @@
 </form>
 
 
-
 <div class="table-responsive" style="padding-top: 25px;">
   <table class="table table-bordered table-hover">
     <thead>
@@ -143,7 +142,7 @@
 {% endmacro %}
 
 {% macro modify_variant_form(variant) %}
-  <form name="modify_variant" method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
+  <form id="modify_variant" method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
       <td>{{ modify_form.chromosome(class_="form-control") }}</td>
