@@ -14,7 +14,6 @@ from wtforms import (
 from scout.constants import CHROMOSOMES, SV_TYPES
 
 LOG = logging.getLogger(__name__)
-CHROMOSOME_FILTER_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
 CHROMOSOME_EDIT_OPTIONS = [(chrom, chrom) for chrom in CHROMOSOMES]
 SUBCATEGORY_CHOICES = [("snv", "SNV"), ("indel", "INDEL")] + [
     (term, term.replace("_", " ").upper()) for term in SV_TYPES
@@ -29,14 +28,12 @@ class ManagedVariantForm(FlaskForm):
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
-
     description = TextField(label="Description")
+    build = SelectField("Genome build", [validators.Optional()], choices=["37", "38"])
 
 
 class ManagedVariantsFilterForm(ManagedVariantForm):
-    chromosome = SelectField(
-        "Chromosome", [validators.Optional()], choices=CHROMOSOME_FILTER_OPTIONS
-    )
+    chromosome = SelectField("Chromosome", [validators.Optional()], choices=[])
 
     category = SelectMultipleField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectMultipleField("Kind", choices=SUBCATEGORY_CHOICES)

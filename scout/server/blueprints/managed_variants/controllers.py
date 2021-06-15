@@ -4,6 +4,7 @@ import os.path
 from flask_login import current_user
 
 from scout.build import build_managed_variant
+from scout.constants import CHROMOSOMES, CHROMOSOMES_38
 from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
@@ -56,7 +57,6 @@ def managed_variants(request):
     variant_count = store.count_managed_variants(category=categories, query_options=query_options)
     more_variants = True if variant_count > (skip_count + VARS_PER_PAGE) else False
     managed_variants_res = managed_variants_query.skip(skip_count).limit(VARS_PER_PAGE)
-
     managed_variants = [managed_variant for managed_variant in managed_variants_res]
 
     return {
@@ -66,6 +66,11 @@ def managed_variants(request):
         "modify_form": modify_form,
         "managed_variants": managed_variants,
         "more_variants": more_variants,
+        "cytobands_37": store.cytoband_by_chrom("37"),
+        "cytobands_38": store.cytoband_by_chrom("38"),
+        "chromosomes_37": CHROMOSOMES,
+        "chromosomes_38": CHROMOSOMES_38,
+        "subcategory_choices": [[choice[1], choice[0]] for choice in SUBCATEGORY_CHOICES],
     }
 
 
