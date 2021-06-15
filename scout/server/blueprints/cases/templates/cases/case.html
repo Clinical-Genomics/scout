@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal, reanalysis_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
+{% from "cases/utils.html" import clinvar_panel, causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import cohort_panel, diagnosis_phenotypes, diagnosis_genes, phenotype_groups_panel, phenotype_terms_panel, phenotypes_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
@@ -47,10 +47,10 @@
     <div class="card">
       <div class="row">
         <div class="col-sm-4">
-          <h4 class="card-title">
+          <h4 class="card-body">
               Case: {{case.display_name}}<br>
               Status: {{case.status}}<br>
-              Internal ID: {{case._id}}
+              <p class="text-muted">Internal ID: {{case._id}}</p>
           </h4>
         </div>
         <div class="col d-flex align-items-center justify-content-center">
@@ -59,7 +59,7 @@
       </div> <!--end of div class="row" -->
 
       {% if other_causatives|length > 0%}
-        <div class="row">
+        <div class="row mt-0">
           <div class="col-xs-12 col-md-12">{{ matching_causatives(other_causatives, institute, case) }}</div>
         </div>
       {% endif %}
@@ -74,7 +74,7 @@
         <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
         <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
         {% if case.clinvar_variants %}
-          <div class="col">{{ clinvar_panel() }}</div>
+          <div class="col">{{ clinvar_panel(institute, case) }}</div>
         {% endif %}
         <!-- end of data sharing panels -->
       </div>
@@ -330,25 +330,6 @@
   </form>
 {% endmacro %}
 
-{% macro clinvar_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Variants submitted to ClinVar</div>
-    <div class="card-body">
-      <ul class="list-group">
-        {% for var_id, submission_data in case.clinvar_variants.items() %}
-          <li class="list-group-item">
-            {% if submission_data.category == 'snv' %}
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a>
-            {% else %}
-              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a>
-            {% endif %}
-              <span class="badge badge-dark">{{submission_data.clinsig}}</span>
-          </li>
-        {% endfor %}
-      </ul>
-    </div> <!--end of <div class="panel-body">-->
-  </div>
-{% endmacro %}
 {% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
   <form action="{{ url }}" method="POST">
     {% if hidden_input %}
