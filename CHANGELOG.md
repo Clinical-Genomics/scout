@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added dedicated variant quality pane and removed relevant panes (mappability)
 - Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
 - Print stacktrace if load command fails
+- Added sort icon and a pointer to the cursor to all tables with sortable fields
 
 
 ## [4.36]
