@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load case with missing panels in config files, but show warning.
 - Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
 - Print stacktrace if load command fails
+- Added sort icon and a pointer to the cursor to all tables with sortable fields
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 
