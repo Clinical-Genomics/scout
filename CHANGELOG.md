@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
+- Expand list of refseq trancripts in ClinVar submission form
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
