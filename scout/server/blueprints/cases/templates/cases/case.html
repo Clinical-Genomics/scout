@@ -3,7 +3,7 @@
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "cases/utils.html" import clinvar_panel, causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
-{% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, diagnosis_genes, phenotype_groups_panel, phenotype_terms_panel, phenotypes_panel %}
+{% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, diagnosis_genes, phenotype_groups_panel, add_phenotype_terms_panel, phenotypes_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
 
 
@@ -81,9 +81,9 @@
 
       <div class="row">
         {% if case.track == 'cancer' %}
-          <div class="col-sm-12 col-md-12">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
+          <div class="col-sm-12 col-md-12 mt-3">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
         {% else %}
-          <div class="col-sm-8 col-md-{{"8" if case.madeline_info and case.individuals|length > 1 else "12"}}">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
+          <div class="mt-3 col-sm-8 col-md-{{"8" if case.madeline_info and case.individuals|length > 1 else "12"}}">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
           {% if case.madeline_info and case.individuals|length > 1 %}
             <div class="col-sm-4">
               {{ pedigree_panel(case) }}
@@ -111,20 +111,27 @@
 
 
       <!-- CASE DIAGNOSES AND PHENOTYPES -->
-      <div class="row">
-        <div class="col-sm-12">
-          <div class="card panel-default">
+      <div class="card panel-default bg-dark">
             <!-- HPO terms panel -->
             <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Phenotypes & diagnoses</div>
             <div class="row">
-              <div class="col-6">
-                {{ phenotype_terms_panel(case, institute) }}
-                {{ phenotypes_panel(case, institute, config) }}
+              <div class="col-5 ml-3">
+                <div class="row">
+                  {{ add_phenotype_terms_panel(case, institute) }}
+                </div>
+                <div class="row">
+                  {{ phenotypes_panel(case, institute, config) }}
+                </div>
               </div>
-
+              <div class="col-6">
+                {{ hpo_genelist_panel(case, institute, config) }}
+              </div>
             </div>
             <!--end of HPO terms panel -->
-          </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+
         </div>
       </div>
 

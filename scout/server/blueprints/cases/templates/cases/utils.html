@@ -336,7 +336,7 @@
   <div class="card mt-3">
     <div data-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
       <div class="d-flex justify-content-between">
-        <h5><span class="fa fa-medkit ml-3"></span>&nbsp;
+        <h5><span class="fa fa-medkit ml-3"></span>
         {% if case.track == 'cancer' %}
           Clinically significant
         {% else %}
@@ -356,7 +356,6 @@
               {% do already_displayed_variant_ids.append( variant._id ) %}
               <div class="row align-items-between align-items-center">
                 <div class="col">
-                  <i class="fa fa-check-circle-o"></i>
                   {{ pretty_link_variant(variant, case) }}
                   {{ variant_validation_badge(variant) }}
                 </div>
@@ -520,8 +519,7 @@
               <div class="col">
                 <div class="form-group row align-items-center">
                   <div class="ml-3">
-                    <i class="fa fa-bookmark"></i>
-                      {{ pretty_link_variant(variant, case) }}
+                    {{ pretty_link_variant(variant, case) }}
                   </div>
                   <div style="padding: 0 10px 3px">
                     {% if case.track == 'cancer' %}
@@ -537,7 +535,7 @@
                 </div>
               </div>
               {{ tumor_allele_freq(variant) }}
-              <div class="col-3.5">
+              <div class="col-4">
               <form action="{{ url_for('cases.mark_validation',
                                          institute_id=variant.institute,
                                          case_name=case.display_name,
@@ -550,7 +548,7 @@
                   </select>
                 </form>
               </div>
-            <div class="col-1">
+            <div class="col-2">
               {{ remove_form(url_for('cases.pin_variant',
                                      institute_id=institute._id,
                                      case_name=case.display_name,

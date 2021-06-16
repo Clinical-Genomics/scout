@@ -322,7 +322,7 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
                 )
         except ValueError:
             return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
-    return redirect(case_url)
+    return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
 def parse_raw_gene_ids(raw_symbols):
