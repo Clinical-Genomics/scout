@@ -159,8 +159,10 @@
                           {% for gene in pinned.genes %}
                             {% for transcript in gene.transcripts %}
                               {% if transcript.refseq_id and transcript.coding_sequence_name %}
-                                <input type="radio" id="{{pinned._id+"_"+transcript.refseq_id}}" name="ref_seq@{{pinned._id}}" value="{{transcript.refseq_id+"|"+transcript.coding_sequence_name}}" {% if transcript.is_primary == True %} checked {% endif %}>
-                                <label for="{{pinned._id+"_"+transcript.refseq_id}}">{{transcript.refseq_id}} | {{transcript.coding_sequence_name}}</label><br>
+                                {% for refseq in transcript.refseq_identifiers %}
+                                <input type="radio" id="{{pinned._id+"_"+refseq}}" name="ref_seq@{{pinned._id}}" value="{{refseq+"|"+transcript.coding_sequence_name}}" {% if transcript.is_primary == True %} checked {% endif %}>
+                                <label for="{{pinned._id+"_"+refseq}}">{{refseq}} | {{transcript.coding_sequence_name}}</label><br>
+                                {% endfor %}
                               {% endif %}
                             {% endfor %}
                           {% endfor %} <!--end of gene-->
