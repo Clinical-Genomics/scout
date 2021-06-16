@@ -115,7 +115,18 @@ def case(
 
     try:
         adapter.load_case(config_data, update, keep_actions)
+    except SyntaxError as err:
+        LOG.error(
+            "SyntaxError {} missing when loading '{}' {}".format(
+                err, config.name, traceback.format_exc()
+            )
+        )
+        raise click.Abort()
+    except KeyError as err:
+        LOG.error(
+            "KeyError {} when loading '{}' {}".format(err, config.name, traceback.format_exc())
+        )
+        raise click.Abort()
     except Exception as err:
-        LOG.error("Something went wrong during loading")
-        LOG.warning(err)
+        LOG.error("Unhandled Exception: {}".format(traceback.format_exc()))
         raise click.Abort()
