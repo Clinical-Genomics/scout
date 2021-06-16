@@ -79,7 +79,7 @@
 {% macro hpo_genelist_panel(case, institute, config) %}
   <div id="hpo_genelist_panel">
     <div>
-      <h5 class="ml-3 mt-3"><span class="fas fa-clipboard-list"></span>&nbsp;HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
+      <h6 class="ml-3 mt-3"><span class="fas fa-clipboard-list"></span>&nbsp;HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
         {%- if case.dynamic_panel_phenotypes %},
         <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
             {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>
@@ -90,7 +90,7 @@
             <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
           </form>
         {% endif %}
-      </h5>
+      </h6>
     </div>
 
     <!-- scrollable div containing dynamic gene list -->

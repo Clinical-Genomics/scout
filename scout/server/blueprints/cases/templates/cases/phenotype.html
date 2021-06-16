@@ -1,23 +1,28 @@
 {% from "cases/utils.html" import remove_form %}
 
 {% macro cohort_panel(case, institute, cohort_tags) %}
-  <div class="card panel-default">
-    <div class="panel-heading"><span class="fa fa-tag"></span>&nbsp;Cohort tag</div>
+  <div class="card">
+    <div class="panel-heading">
+      <h6 class="mt-3 ml-3"><span class="fa fa-tag"></span>&nbsp;Cohort tag
+    </div>
     <div class="card-body">
-      <ul class="list-group">
-      {% for cohort_tag in case.cohorts %}
-        <li class="list-group-item">
-          {{ cohort_tag }}
-          <span class="pull-right">
-            {{ remove_form(url_for('cases.cohorts', institute_id=institute._id,
-                                   case_name=case.display_name, remove='yes'),
-                           hidden_input=('cohort_tag', cohort_tag)) }}
-          </span>
-        </li>
+      {% for cohort_batch in case.cohorts|batch(5, '') -%}
+        <div class="row">
+          {% for cohort in cohort_batch %}
+            {% if cohort %}
+            {{cohort}}
+            <span class="pull-right">
+              {{ remove_form(url_for('cases.cohorts', institute_id=institute._id,
+                                     case_name=case.display_name, remove='yes'),
+                             hidden_input=('cohort_tag', cohort_tag)) }}
+            </span>
+            {% endif %}
+          {% endfor %}
+        </div>
       {% else %}
-        <li class="list-group-item">No cohort tags added yet.</li>
+        <span class="text-muted">No cohort tags added yet.</span>
       {% endfor %}
-      </ul>
+
     </div>
     <div class="card-footer">
       <form method="POST"
@@ -40,9 +45,10 @@
 {% endmacro %}
 
 {% macro diagnosis_phenotypes(case, institute, omim_terms) %}
-  <div>OMIM Phenotypes</div>
+  <div class="col-6">OMIM Phenotypes</div>
     {{ diagnosis_form('phenotype', case, institute) }}
-  <div>
+  </div>
+  <div class="col-6">
     <ul class="list-group">
       {% for omim_id in case.diagnosis_phenotypes %}
         <li class="list-group-item d-flex">
@@ -99,7 +105,7 @@
 
 {% macro diagnosis_form(type, case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row data-width="100%">
+    <div class="row ml-3 aata-width="80%">
       <div class="col-md-10">
         {% if type == "phenotype"%}
           <input name="omim_term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
@@ -119,8 +125,11 @@
 {% endmacro %}
 
 {% macro phenotype_groups_panel(case, institute, hpo_groups) %}
-  <div class="card panel-default">
-    <div class="panel-heading"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype groups</div>
+  <div class="card">
+    <div class="panel-heading">
+      <div class="panel-heading">
+        <h6 class="mt-3 ml-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype groups
+      </div>
     <div class="card-body">
       <ul class="list-group">
         {% for hpo_term in case.phenotype_groups %}
@@ -156,7 +165,7 @@
 {% macro add_phenotype_terms_panel(case, institute) %}
   {% set url = 'http://hpo.jax.org/app/browse/term/HP:0000018' %}
     <div id="phenotypes_panel" class="panel-heading">
-      <h5 class="ml-3 mt-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}">HPO web</a>)</h5>
+      <h6 class="ml-3 mt-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}">HPO web</a>)</h6>
     </div>
     <div>
       <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">

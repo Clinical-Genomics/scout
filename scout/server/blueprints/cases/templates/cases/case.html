@@ -103,43 +103,53 @@
         </div>
       </div>
 
-      <div class="row">
+      <!-- CASE DIAGNOSES AND PHENOTYPES -->
+      <div class="panel-default">
+        <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Phenotypes & diagnoses</div>
+        <div class="row">
+          <div class="col-5 ml-3">
+            <div class="row">
+              {{ add_phenotype_terms_panel(case, institute) }}
+            </div>
+            <div class="row">
+              {{ phenotypes_panel(case, institute, config) }}
+            </div>
+          </div>
+          <div class="col-6">
+            {{ hpo_genelist_panel(case, institute, config) }}
+          </div>
+        </div>
+        <!-- OMIM diagnoses-related code-->
+        {% if not case.track == 'cancer' %}
+          <div class="row mt-3">
+            <div class="col-sm-12 ml-3 mt-3">
+               <div class="panel-heading">
+                 <h6><i class="fa fa-user-md "></i>&nbsp;Diagnoses (OMIM)</h6>
+                </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-sm-6">
+              {{ diagnosis_phenotypes(case, institute, omim_terms) }}
+            </div>
+          </div>
+        {% endif %}
+        <!-- of of OMIM diagnoses -->
+      </div>
+      <!-- END OF CASE DIAGNOSES AND PHENOTYPES -->
+
+      <div class="panel-default">
+        <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Groups & cohorts</div>
+        <div class="row">
           <div class="col-sm-4">{{ group_panel() }}</div>
           <div class="col-sm-4">{{ cohort_panel(case, institute, cohort_tags) }}</div>
           <div class="col-sm-4">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
-      </div>
-
-
-      <!-- CASE DIAGNOSES AND PHENOTYPES -->
-      <div class="card panel-default bg-dark">
-            <!-- HPO terms panel -->
-            <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Phenotypes & diagnoses</div>
-            <div class="row">
-              <div class="col-5 ml-3">
-                <div class="row">
-                  {{ add_phenotype_terms_panel(case, institute) }}
-                </div>
-                <div class="row">
-                  {{ phenotypes_panel(case, institute, config) }}
-                </div>
-              </div>
-              <div class="col-6">
-                {{ hpo_genelist_panel(case, institute, config) }}
-              </div>
-            </div>
-            <!--end of HPO terms panel -->
-      </div>
-      <div class="row">
-        <div class="col-sm-12">
-
         </div>
       </div>
 
-
-      <!-- END OF CASE DIAGNOSES AND PHENOTYPES -->
-
       <div class="row">
-        <div class="col-sm-12">{{activity_panel(events)}}</div>
+        <div class="col-md-6">{{ genepanels_table(case, institute) }}</div>
+        <div class="col-sm-6">{{activity_panel(events)}}</div>
       </div>
 
       {{ modal_synopsis() }}
@@ -153,7 +163,6 @@
 </div>
 </div> <!-- end of <div class="col"> -->
 {% endmacro %}
-
 
 {% macro variants_buttons() %}
   <div class="form-group">
@@ -218,12 +227,14 @@
 {% endmacro %}
 
 {% macro group_panel() %}
-  <div class="card panel-default" id="case_groups">
+  <div class="card" id="case_groups">
     <div class="panel-heading" data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups.">
-      <span>
-        <i class="fa fa-users mr-1"></i>Group connected cases ({{case_groups|length}} groups)
-      </span>
-      <span class="float-sm-right" data-toggle='tooltip' data-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="text-white"><span class="fas fa-plus text-white mr-1"></span>New group</a></span>
+      <h6 class="mt-3 ml-3">
+        <span>
+          <i class="fa fa-users mr-1"></i>Connected cases ({{case_groups|length}} groups)
+        </span>
+        <span class="float-sm-right mr-3" data-toggle='tooltip' data-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}"><span class="fas fa-plus mr-1"></span>New group</a></span>
+      </h6>
     </div>
     <div class="card-body">
       <div class="list-group" style="max-height:200px; overflow-y: scroll;">
