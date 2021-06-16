@@ -310,14 +310,16 @@
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
-  {% for i in case.individuals %}
-    {% if i.chromograph_images %}
-      {% if i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites %}
-        <h5><a class="badge badge-dark ml-3" href="#modal_{{i.individual_id}}" data-toggle="modal" aria-controls="#modal_{{i.individual_id}}">Images {{i.display_name}} &nbsp;</a></h5>
-        {{ add_modal_panel(i.individual_id, i.display_name) }}
-      {% endif  %}
-    {% endif %}
-  {% endfor %}
+  <div class="row">
+    {% for i in case.individuals %}
+      {% if i.chromograph_images %}
+        {% if i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites %}
+          <h5><a class="badge badge-dark ml-3" href="#modal_{{i.individual_id}}" data-toggle="modal" aria-controls="#modal_{{i.individual_id}}">Images {{i.display_name}}</a></h5>&nbsp;
+          {{ add_modal_panel(i.individual_id, i.display_name) }}
+        {% endif  %}
+      {% endif %}
+    {% endfor %}
+  </div>
 {% endmacro %}
 
 <!-- Create a collapsing panel. Used for -->
