@@ -60,7 +60,7 @@
 {% endmacro %}
 
 
-{% macro modal_sanger(case, variant, current_user) %}
+{% macro modal_sanger(institute, case, variant, current_user) %}
   <form action="{{ url_for('variant.verify', institute_id=institute._id,
                            case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
         method="POST">
