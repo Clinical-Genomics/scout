@@ -789,7 +789,7 @@ def cohorts(institute_id, case_name):
         store.remove_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
     else:
         store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
-    return redirect(request.referrer)
+    return redirect("#".join([request.referrer, "cohorts"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/default-panels", methods=["POST"])

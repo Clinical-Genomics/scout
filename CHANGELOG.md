@@ -22,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added sort icon and a pointer to the cursor to all tables with sortable fields
 - A more compact case page
 - Removed OMIM genes panel
-- Make gene panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
+- Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
 
 ## [4.36]
 ### Added
