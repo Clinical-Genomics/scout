@@ -597,7 +597,7 @@
       {% endif %}
     </div>
     <div class="card">
-      <ul class="list-group">
+      <ul class="list-group" style="max-height:300px; overflow-y: scroll;">
         {% for var_id, submission_data in case.clinvar_variants.items() %}
           <li class="list-group-item">
             {% if submission_data.category == 'snv' %}
