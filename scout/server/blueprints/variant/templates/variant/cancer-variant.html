@@ -227,12 +227,25 @@
           {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }}
         </h5></a>
       {% endif %}
-      <ul class="list-group list-group-flush">
-        {% if primary_gene and primary_gene.exon %}
-          <li class="list-group-item">exon: {{ primary_gene.exon }}</li>
+      <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
+        {% if primary_transcript %}
+          <li class="list-group-item">{{ primary_transcript.refseq_id }}
         {% endif %}
-        <li class="list-group-item">
-          <span>Change: </span>
+        {% if primary_gene and primary_gene.exon %}
+          <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.coding_sequence_name %}
+              {{ primary_transcript.coding_sequence_name | url_decode }}
+        {% endif %}
+        {% if primary_transcript and primary_transcript.protein_sequence_name %}
+          <strong>{{ primary_transcript.protein_sequence_name | url_decode }}</strong>
+        {% endif %}
+        {% if primary_gene and primary_gene.region_annotation %}
+          <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
+        {% endif %}
+        </li>
+       <li class="list-group-item">
+          <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
           {%- if variant.reference|length > 8 -%}
              <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
               style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
@@ -248,45 +261,52 @@
           {%- else -%}
             <strong>{{ variant.alternative }}</strong>
           {%- endif -%}
-          ;
-          <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
         </li>
-        {% if primary_transcript and primary_transcript.protein_sequence_name %}
-          <li class="list-group-item">HGVSp:
-              {{ primary_transcript.protein_sequence_name | url_decode }}
-          </li>
-        {% endif %}
-        {% if primary_gene and primary_gene.region_annotation %}
-          <li class="list-group-item">
-            <span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>
-        {% endif %}
-          <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
+        <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
         </li>
       </ul>
-    </div>
     <!--LINK out resources-->
-    <div class="card-body">
       <div class="h6">Databases</div>
-      <a class="btn btn-sm btn-info" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+      <div class="btn-group"><a class="btn btn-sm btn-info" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
       <a class="btn btn-sm btn-info" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
       {% if variant.cosmic_link %}
-          <a class="btn btn-sm btn-info" role="button" href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
+          <a class="btn btn-sm btn-info text-white" role="button" href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
       {% endif %}
       {% if variant.dbsnp_id %}
         {% for snp in variant.dbsnp_id.split(';') %}
           <a class="btn btn-sm btn-info text-white" role="button" target="_blank" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
         {% endfor %}
       {% endif %}
+      </div>
+     <div class="btn-group">
+      {% if primary_transcript.varsome_link %}
+      <a href="{{ primary_transcript.varsome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+        data-toggle="tooltip" title="Varsome">V</a>
+    {% endif %}
+    {% if primary_transcript.tp53_link %}
+      <a href="{{ primary_transcript.tp53_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+        data-toggle="tooltip" title="MutanTP53">TP53</a>
+    {% endif %}
+    {% if primary_transcript.cbioportal_link %}
+      <a href="{{ primary_transcript.cbioportal_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+        data-toggle="tooltip" title="cBioPortal">CBP</a>
+    {% endif %}
+    {% if primary_transcript.mycancergenome_link %}
+      <a href="{{ primary_transcript.mycancergenome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+        data-toggle="tooltip" title="MyCancerGenome">MCG</a>
+    {% endif %}
+     </div>
       {% if variant.clinsig_human %}
         {% for clinsig in variant.clinsig_human %}
           {% if clinsig.accession %}
-            <a class="btn btn-sm btn-info"  role="button" href="{{ clinsig.link }}" target="_blank">Clinvar {{ clinsig.accession }}</a>
+            <a class="btn btn-sm btn-info text-white"  role="button" href="{{ clinsig.link }}" role="button" target="_blank">Clinvar {{ clinsig.accession }}</a>
           {% endif %}
         {% endfor %}
       {% endif %}
+
     </div>
     <!--IGV URLS-->
-    <div class="h6 ml-4">IGV</div>
+    <div class="h6 ml-4">Alignment</div>
     <table class="table table-sm ml-3">
       <tr>
         <td style="width:15%;">
