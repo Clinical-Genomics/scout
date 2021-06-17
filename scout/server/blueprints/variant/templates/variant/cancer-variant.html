@@ -251,7 +251,7 @@
           ;
           <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
         </li>
-        {% if primary_transcript %}
+        {% if primary_transcript and primary_transcript.protein_sequence_name %}
           <li class="list-group-item">HGVSp:
               {{ primary_transcript.protein_sequence_name | url_decode }}
           </li>
