@@ -175,7 +175,7 @@
       {{ mappability_list(variant) }}
     </ul>
     <!-- Variant callers -->
-    {% if variant.callers %}
+    {% if variant.callers and variant.callers|length > 0%}
       <h6 class="card-header">Variant callers</h6>
       <ul class="list-group">
           {% for caller, call in variant.callers|sort %}
@@ -275,24 +275,24 @@
         {% endfor %}
       {% endif %}
       </div>
-     <div class="btn-group">
-      {% if primary_transcript and primary_transcript.varsome_link %}
-      <a href="{{ primary_transcript.varsome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
-        data-toggle="tooltip" title="Varsome">V</a>
-    {% endif %}
-    {% if primary_transcript and primary_transcript.tp53_link %}
-      <a href="{{ primary_transcript.tp53_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
-        data-toggle="tooltip" title="MutanTP53">TP53</a>
-    {% endif %}
-    {% if primary_transcript and primary_transcript.cbioportal_link %}
-      <a href="{{ primary_transcript.cbioportal_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
-        data-toggle="tooltip" title="cBioPortal">CBP</a>
-    {% endif %}
-    {% if primary_transcript and primary_transcript.mycancergenome_link %}
-      <a href="{{ primary_transcript.mycancergenome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
-        data-toggle="tooltip" title="MyCancerGenome">MCG</a>
-    {% endif %}
-     </div>
+      <div class="btn-group">
+        {% if primary_transcript and primary_transcript.varsome_link %}
+        <a href="{{ primary_transcript.varsome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+          data-toggle="tooltip" title="Varsome">V</a>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.tp53_link %}
+          <a href="{{ primary_transcript.tp53_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+            data-toggle="tooltip" title="MutanTP53">TP53</a>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.cbioportal_link %}
+          <a href="{{ primary_transcript.cbioportal_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+            data-toggle="tooltip" title="cBioPortal">CBP</a>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.mycancergenome_link %}
+          <a href="{{ primary_transcript.mycancergenome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+            data-toggle="tooltip" title="MyCancerGenome">MCG</a>
+        {% endif %}
+      </div>
       {% if variant.clinsig_human %}
         {% for clinsig in variant.clinsig_human %}
           {% if clinsig.accession %}
@@ -300,17 +300,14 @@
           {% endif %}
         {% endfor %}
       {% endif %}
-
     </div>
     <!--IGV URLS-->
     <div class="h6 ml-4">Alignment</div>
     <table class="table table-sm ml-3">
       <tr>
-        <td style="width:15%;">
+        <td style="width:20%;">
           {{ igv_button(case, variant, case_groups) }}
         </td>
-        {% if case.mt_bams or case.bam_files %}
-        {% endif %}
         {% if config.SQLALCHEMY_DATABASE_URI %}
           {% for gene in variant.genes %}
             <td>
@@ -329,7 +326,7 @@
       {% if splice_junctions_tracks %}
         <tr>
           <td>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</td>
-        <tr>
+        </tr>
       {% endif %}
     </table>
   </div>
