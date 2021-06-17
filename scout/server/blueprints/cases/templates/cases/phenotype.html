@@ -81,7 +81,7 @@
 
 {% macro diagnosis_form(type, case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row ml-3 aata-width="80%">
+    <div class="row ml-3 data-width="80%">
       <div class="col-md-10">
         {% if type == "phenotype"%}
           <input name="omim_term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
