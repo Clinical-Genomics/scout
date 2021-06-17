@@ -74,8 +74,15 @@
       </div>
       <div class="col-sm-4">{{ panel_summary() }}</div>
       <div class="col-sm-3">
-        {{ panel_quality() }}
+
         {{ frequencies(variant) }}
+        {% if config['LOQUSDB_SETTINGS'] %}
+          {{ observations_panel(variant, observations, case) }}
+        {% endif %}
+        {% if config['SHOW_OBERVED_VARIANT_ARCHIVE'] %}
+          {{  old_observations(variant) }}
+        {% endif %}
+
       </div>
       <div class="col-sm-2">
         {{ severity_list(variant) }}
@@ -85,19 +92,12 @@
       <div class="col-4">
         {{ panel_comment() }}
       </div>
-      <div class="col-3">{{ omim_phenotypes(variant) }}</div>
+      <div class="col-3">{{ panel_quality() }}</div>
       <div class="col-5">{{ gtcall_panel(variant) }}</div>
     </div>
 
     <div class="row">
-      <div class="col-3">
-        {% if config['LOQUSDB_SETTINGS'] %}
-          {{ observations_panel(variant, observations, case) }}
-        {% endif %}
-        {% if config['SHOW_OBERVED_VARIANT_ARCHIVE'] %}
-          {{  old_observations(variant) }}
-        {% endif %}
-      </div>
+      <div class="col-3">{{ omim_phenotypes(variant) }}</div>
       <div class="col-9">{{ transcripts_overview(variant) }}</div>
     </div>
 
