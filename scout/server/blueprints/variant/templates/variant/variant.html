@@ -147,7 +147,7 @@
     </div>
     {% if config['MAIL_USERNAME'] %}
       {# Email setting must be setup #}
-      {{ modal_sanger(case, variant, current_user) }}
+      {{ modal_sanger(institute, case, variant, current_user) }}
     {% endif %}
 
     {% if config['MAIL_USERNAME'] %}
