@@ -150,7 +150,7 @@
 
     {% if config['MAIL_USERNAME'] %}
       {# Email setting must be setup #}
-      {{ modal_cancel_sanger(case, variant, current_user) }}
+      {{ modal_cancel_sanger(institute, case, variant, current_user) }}
     {% endif %}
 </div>
 {{ modal_causative(case, institute, variant) }}

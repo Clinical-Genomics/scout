@@ -15,7 +15,7 @@
 {% endmacro %}
 
 
-{% macro sanger_form(case, variant, current_user) %}
+{% macro sanger_form(institute, case, variant, current_user) %}
   <ul class="list-group">
     <div class="list-group-item">
       <strong>Case {{ case.display_name }}</strong><br>
@@ -74,7 +74,7 @@
             </button>
           </div>
           <div class="modal-body">
-            {{ sanger_form(case, variant, current_user) }}
+            {{ sanger_form(institute, case, variant, current_user) }}
           </div>
           <div class="modal-footer">
             <button class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -87,7 +87,7 @@
 {% endmacro %}
 
 
-{% macro modal_cancel_sanger(case, variant, current_user) %}
+{% macro modal_cancel_sanger(institute, case, variant, current_user) %}
   <form action="{{ url_for('variant.verify', institute_id=institute._id,
                            case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
         method="POST">
@@ -99,7 +99,7 @@
             <h4 class="modal-title">Cancel Sanger sequencing</h4>
           </div>
           <div class="modal-body">
-            {{ sanger_form(case, variant, current_user) }}
+            {{ sanger_form(institute, case, variant, current_user) }}
           </div>
           <div class="modal-footer">
             <button class="btn btn-default" data-dismiss="modal">Close</button>
