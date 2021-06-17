@@ -49,11 +49,11 @@
     <div class="panel-heading">Classify</div>
     <div class="card-body">
       {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
-      {% if cancer %}
+      {% if case.track == "cancer" %}
        {{ variant_tier_button(variant, institute, case, cancer_tier_options) }}
       {% endif %}
         {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
-      {% if not cancer %}
+      {% if case.track != "cancer" %}
         {{ mosaic_variant_button(variant, institute, case, mosaic_variant_options) }}
       {% endif %}
       {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
