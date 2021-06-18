@@ -278,10 +278,17 @@
 
 
   {% if variant.category in ("str", "snv", "cancer") %}
+    {% if variant.category == "cancer" %}
+    <a href="{{ url_for('variant.cancer_variant',
+                   institute_id=variant.institute,
+                   case_name=case.display_name,
+                   variant_id=variant._id) }}">
+    {% else %}
     <a href="{{ url_for('variant.variant',
                    institute_id=variant.institute,
                    case_name=case.display_name,
                    variant_id=variant._id) }}">
+    {% endif %}
     {% if variant.category in "str" %}
           {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
     {% elif variant.category in ("snv", "cancer") %}
