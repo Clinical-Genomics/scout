@@ -42,10 +42,10 @@
 {% endblock %}
 
 {% macro case_page() %}
-<div class="col"> <!-- This is the main container -->
+<div class="col ml-3"> <!-- This is the main container -->
   <div class="container_spaced">
-    <div class="card {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">
-      <div class="row">
+    <div class="card">
+      <div class="row {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">
         <div class="col-sm-4">
           <h4 class="card-body">
               Case: {{case.display_name}}<br>
