@@ -417,6 +417,8 @@ def cancer_case_obj(request, cancer_parsed_case):
     case["individuals"][0]["sex"] = "1"
     case["individuals"][1]["sex"] = "1"
 
+    case["phenotype_terms"] = []  # do not assign any phenotype
+
     return case
 
 
