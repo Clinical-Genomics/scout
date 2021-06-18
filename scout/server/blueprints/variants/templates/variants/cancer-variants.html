@@ -81,7 +81,7 @@
             </td>
             <td>{{ gene_cell(variant) }}</td>
             <td>
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+              <a target="_blank" href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
                 {% if variant.first_rep_gene.hgvs_identifier %}
                   <div>{{ variant.first_rep_gene.hgvs_identifier }}</div>

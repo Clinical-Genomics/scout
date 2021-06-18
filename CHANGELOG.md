@@ -18,8 +18,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
 - Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
-- Print stacktrace if load command fails
+- Print stacktrace if case load command fails
 - Added sort icon and a pointer to the cursor to all tables with sortable fields
+- Moved variant, gene and panel info from the basic pane to summary panel for all variants.
+- Renamed `Basics` panel to `Classify` on variant page.
+- Revamped `Basics` panel to a panel dedicated to classify variants
+- Revamped the summary panel to be more compact.
+- Added dedicated template for cancer variants
+- Removed Gene models, Gene annotations and Conservation panels for cancer variants
+- Reorganized the orders of panels for variant and cancer variant views
+- Added dedicated variant quality panel and removed relevant panes (mappability)
 - A more compact case page
 - Removed OMIM genes panel
 - Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
