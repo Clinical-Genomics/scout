@@ -106,7 +106,7 @@
     {% if case.dynamic_gene_list %}
       <div>
         <div class="mt-3 d-flex justify-content-center">
-          <div class="col-7">
+          <div class="col">
             <div class="row">
               <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
                 <input type="checkbox" class="ios8-switch" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
@@ -133,12 +133,10 @@
                {% endif %}
             </div>
           </div>
-          <div class="col-5">
+          <div class="col">
             <div class="row">
-              Download HPO gene panel &nbsp;&nbsp; <a href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}" class="btn btn-primary btn-xs var_btn"><span class="fa fa-download text-white" aria-hidden="true"></span></a>
-            </div>
-            <div class="row">
-              research HPO panel &nbsp;&nbsp; <a href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}" class="btn btn-primary btn-xs var_btn"><span class="fa fa-download text-white" aria-hidden="true"></span></a>
+              <a class="btn btn-sm btn-primary mt-1" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}"><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Clinical HPO gene panel</a>&nbsp;&nbsp;
+              <a class="btn btn-sm btn-primary mt-1" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}"><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Research HPO panel &nbsp;&nbsp</a>
             </div>
           </div>
 
