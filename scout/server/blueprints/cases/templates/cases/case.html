@@ -42,9 +42,9 @@
 {% endblock %}
 
 {% macro case_page() %}
-<div class="col {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}"> <!-- This is the main container -->
+<div class="col"> <!-- This is the main container -->
   <div class="container_spaced">
-    <div class="card">
+    <div class="card {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">
       <div class="row">
         <div class="col-sm-4">
           <h4 class="card-body">
@@ -160,8 +160,8 @@
       {{ matchmaker_modal(institute, case, mme_nodes) }}
     </div> <!-- end of card body -->
   </div> <!-- end of card div-->
+</div><!-- end of <div class="col"> -->
 </div>
-</div> <!-- end of <div class="col"> -->
 {% endmacro %}
 
 {% macro variants_buttons() %}
