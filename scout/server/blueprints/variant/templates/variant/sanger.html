@@ -1,0 +1,112 @@
+{% macro sanger_button(variant) %}
+  {% if variant.sanger_ordered %}
+    {% if variant.validation in ['True positive', 'False positive']%}
+      <p class="navbar-text">Sanger: {{ variant.validation }}</p>
+    {% else %}
+      <button class="btn btn-light" data-toggle="modal" data-target="#cancelSangerModal">
+        Sanger pending...
+      </button>
+    {% endif %}
+  {% else %}
+    <button class="btn btn-light" data-toggle="modal" data-target="#sangerModal">
+      Sanger
+    </button>
+  {% endif %}
+{% endmacro %}
+
+
+{% macro sanger_form(institute, case, variant, current_user) %}
+  <ul class="list-group">
+    <div class="list-group-item">
+      <strong>Case {{ case.display_name }}</strong><br>
+      <a href="{{ url_for('variant.variant', institute_id=institute._id,
+                          case_name=case.display_name, variant_id=variant._id) }}">
+        {{ variant.display_name }}
+      </a>
+    </div>
+    <div class="list-group-item">
+      <strong>HGNC symbols</strong>:
+      {{ variant.hgnc_symbols|join(', ') }}
+    </div>
+    <div class="list-group-item">
+      <strong>Gene panels</strong>:
+      {{ variant.panels|join(', ') }}
+    </div>
+    <div class="list-group-item disabled"><strong>Amino acid changes</strong></div>
+    {% for gene in variant.genes %}
+        {% for transcript in gene.transcripts %}
+          {% if "refseq_identifiers" in transcript or transcript.is_canonical %}
+              {% if transcript.protein_sequence_name%}
+                <div class="list-group-item">
+                  [{{ transcript.refseq_identifiers|join(", ") }}]<span class="text-muted"> ({{ transcript.transcript_id }})</span>:
+                  {{ (transcript.protein_sequence_name or '')|url_decode }}
+                </div>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+    {% endfor %}
+    <div class="list-group-item disabled"><strong>GT call</strong></div>
+    {% for individual in variant.samples %}
+      <div class="list-group-item">
+        {{ individual.display_name }}: {{ individual.genotype_call }}
+      </div>
+    {% endfor %}
+    <div class="list-group-item">
+      <strong>Ordered by</strong>:
+      {{ current_user.name }}
+    </div>
+    <div class="list-group-item">Comment: <input type="text" size=45 name="verification_comment"></div>
+  </ul>
+{% endmacro %}
+
+
+{% macro modal_sanger(institute, case, variant, current_user) %}
+  <form action="{{ url_for('variant.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
+        method="POST">
+    <div class="modal fade" id="sangerModal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Order Sanger sequencing</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {{ sanger_form(institute, case, variant, current_user) }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-danger" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send sanger order request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+
+{% macro modal_cancel_sanger(institute, case, variant, current_user) %}
+  <form action="{{ url_for('variant.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
+        method="POST">
+    <div class="modal fade" id="cancelSangerModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Cancel Sanger sequencing</h4>
+          </div>
+          <div class="modal-body">
+            {{ sanger_form(institute, case, variant, current_user) }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send sanger cancellation request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
