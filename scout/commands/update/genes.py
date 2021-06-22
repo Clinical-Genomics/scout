@@ -23,27 +23,12 @@ import click
 from flask.cli import current_app, with_appcontext
 
 from scout.commands.download.omim import omim
+from scout.constants import UPDATE_GENES_RESOURCES
 from scout.load import load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 
 LOG = logging.getLogger(__name__)
-
-# Values can be the real resource or the Scout demo one
-DOWNLOADED_RESOURCES = {
-    "mim2genes": ["mim2genes.txt", "mim2gene_reduced.txt"],
-    "genemap2": ["genemap2.txt", "genemap2_reduced.txt"],
-    "hpo_genes": ["genes_to_phenotype.txt", "genes_to_phenotype_reduced.txt"],
-    "hgnc_lines": ["hgnc.txt", "hgnc_reduced_set.txt"],
-    "exac_lines": [
-        "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt",
-        "forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt",
-    ],
-    "ensembl_genes_37": ["ensembl_genes_37.txt", "ensembl_genes_37_reduced.txt"],
-    "ensembl_genes_38": ["ensembl_genes_38.txt", "ensembl_genes_38_reduced.txt"],
-    "ensembl_transcripts_37": ["ensembl_transcripts_37.txt", "ensembl_transcripts_37_reduced.txt"],
-    "ensembl_transcripts_38": ["ensembl_transcripts_38.txt", "ensembl_transcripts_38_reduced.txt"],
-}
 
 
 def fetch_downloaded_resources(resources, downloads_folder, builds):
