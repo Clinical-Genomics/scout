@@ -1,5 +1,14 @@
 # Scout react https://scout-stage.web.app/
-## Standards 
+
+## About
+
+This app is built with [Create React App](https://create-react-app.dev/)
+
+Before running the app you need to install:
+- [Node](https://nodejs.org/) 
+- [Yarn](https://yarnpkg.com/)
+
+## Standards to be used for commit messages
 Type can be:
 - `feature`: (new feature for the user, not a new feature for build script)
 - `fix`: (bug fix for the user, not a fix to a build script)
@@ -9,7 +18,7 @@ Type can be:
 - `test`: (adding missing tests, refactoring tests; no production code change)
 - `chore`: (updating grunt tasks etc; no production code change)
 
-### Commit message stanadard
+### Message example
 The message will have form:
 [type] (main component): [description] (#[issue number])
 
@@ -25,7 +34,3 @@ Examples:
 - `fix/4`
 
 
-### Bump the version on master (by code-owner):
-- Cloning the master branch locally or pull master into local existing clone
-- Run: `bump2version patch|minor|major` if applicable
-- Push version bump: `git push && git push --tags` if applicable
