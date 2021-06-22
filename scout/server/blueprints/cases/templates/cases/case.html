@@ -123,7 +123,7 @@
             <div class="row">
                  <div class="col-sm-12 ml-3 mt-3">
                     <div class="panel-heading">
-                      <h6><i class="fa fa-user-md "></i>&nbsp;Diagnoses (OMIM)</h6>
+                      <h6><i class="fa fa-user-md "></i>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank">OMIM</a>)</h6>
                      </div>
                  </div>
             </div>
@@ -245,6 +245,7 @@
           {% endif %}
 
           {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
+          
           <form class="form-inline" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
             <div class="input-group mb-2 mr-sm-2">
               <div class="input-group-prepend">

@@ -86,7 +86,7 @@
             {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>
         {% endif %})
         {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
-          <a class="pull-right text-white" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage</a>
+          <a class="pull-right" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage</a>
           <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
             <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
           </form>
@@ -105,7 +105,7 @@
 
     {% if case.dynamic_gene_list %}
       <div>
-        <div class="mt-3 d-flex justify-content-center">
+        <div class="mt-3 d-flex justify-content-center mb-3">
           <div class="col">
             <div class="row">
               <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">

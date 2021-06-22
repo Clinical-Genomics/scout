@@ -107,13 +107,21 @@
         <h6 class="mt-3 ml-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype groups
       </div>
     <div class="card-body">
-      <ul class="list-group">
         {% for hpo_term in case.phenotype_groups %}
-          {{ hpo_group_item(hpo_term, case, institute) }}
+        <span class="d-flex align-items-center">
+          {{ hpo_term.feature }}&nbsp;
+          <span class="badge badge-sm badge-info">
+            <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
+              {{ hpo_term.phenotype_id }}
+            </a>
+          </span>
+          {{ remove_form(url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name, phenotype_id=hpo_term.phenotype_id, is_group='yes')) }}
+          &nbsp;&nbsp;
+        </span>
+
         {% else %}
-          <li class="list-group-item">No HPO groups added yet.</li>
+          <span class="text-muted">No HPO groups added yet.</span>
         {% endfor %}
-      </ul>
     </div>
     <div class="card-footer">
       <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name, is_group='yes') }}">
@@ -156,9 +164,9 @@
 {% endmacro %}
 
 {% macro hpo_panel(case, institute, config) %}
-  {% set url = 'http://hpo.jax.org/app/browse/term/HP:0000018' %}
+  {% set url = 'https://hpo.jax.org/app/' %}
     <div id="phenotypes_panel" class="panel-heading">
-      <h6 class="ml-3 mt-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}">HPO web</a>)</h6>
+      <h6 class="ml-3 mt-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}">HPO</a>)</h6>
     </div>
     <div class="row">
       <div class="col-4">
@@ -174,7 +182,7 @@
       <div class="col-7">
           <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name)+'#phenotypes_panel' }}" method="POST">
             {% for hpo_term in case.phenotype_terms %}
-              {{ hpo_item(hpo_term) }}&nbsp;&nbsp;&nbsp;
+              {{ hpo_item(hpo_term) }}<br>
             {% else %}
             <span class="text-mute">No phenotypes added yet</span>
             {% endfor %}
