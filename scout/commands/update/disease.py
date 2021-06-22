@@ -15,6 +15,7 @@ import os
 import click
 from flask.cli import current_app, with_appcontext
 
+from scout.constants import UPDATE_DISEASES_RESOURCES
 from scout.load.hpo import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
@@ -25,12 +26,6 @@ from scout.utils.scout_requests import (
 )
 
 LOG = logging.getLogger(__name__)
-
-# Downloaded resources can be real downloaded files or demo files (located in scout/scout/demo/resources)
-DOWNLOADED_RESOURCES = {
-    "genemap_lines": ["genemap2.txt", "genemap2_reduced.txt"],
-    "hpo_gene_lines": ["phenotype_to_genes.txt", "phenotype_to_genes_reduced.txt"],
-}
 
 
 def _check_resources(resources):
@@ -53,7 +48,7 @@ def _fetch_downloaded_resources(resources, downloads_folder):
         downloads_folder(str): path to downloaded files or demo version of these files
 
     """
-    for resname, filenames in DOWNLOADED_RESOURCES.items():
+    for resname, filenames in UPDATE_DISEASES_RESOURCES.items():
         for filename in filenames:
             resource_path = os.path.join(downloads_folder, filename)
             resource_exists = os.path.isfile(resource_path)
