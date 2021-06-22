@@ -26,7 +26,7 @@ interface Props {
   header?: Header
   navItems: Array<NavItem>
   darkMode: boolean
-  toggleDarkMode: ()=>void
+  toggleDarkMode: () => void
 }
 
 const { REACT_APP_GOOGLE_OAUTH_CLIENT_ID } = process.env
