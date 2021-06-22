@@ -45,34 +45,27 @@ def download_resources(tempdir, api_key, builds):
         builds(list): a list containing both genome builds or one genome build ['37', '38']
     """
     ctx = click.get_current_context()
-    try:
-        if not api_key:
-            LOG.warning(
-                "No omim api key provided, Please not that some information will be missing"
-            )
-        else:
-            # Download OMIM files
-            ctx.invoke(omim_cmd, out_dir=tempdir, api_key=api_key)
+    if not api_key:
+        LOG.warning("No omim api key provided, Please not that some information will be missing")
+    else:
+        # Download OMIM files
+        ctx.invoke(omim_cmd, out_dir=tempdir, api_key=api_key)
 
-        # Download HPO definitions
-        ctx.invoke(hpo_cmd, out_dir=tempdir)
-        # Download Exac genes
-        ctx.invoke(exac_cmd, out_dir=tempdir)
-        # Download HGNC genes
-        ctx.invoke(hgnc_cmd, out_dir=tempdir)
-        # Download Ensembl genes
-        for build in builds:
-            ctx.invoke(
-                ensembl_cmd,
-                out_dir=tempdir,
-                skip_tx=False,
-                exons=False,
-                build=build,
-            )
-
-    except Exception as ex:
-        LOG.error(ex)
-        raise click.Abort()
+    # Download HPO definitions
+    ctx.invoke(hpo_cmd, out_dir=tempdir)
+    # Download Exac genes
+    ctx.invoke(exac_cmd, out_dir=tempdir)
+    # Download HGNC genes
+    ctx.invoke(hgnc_cmd, out_dir=tempdir)
+    # Download Ensembl genes
+    for build in builds:
+        ctx.invoke(
+            ensembl_cmd,
+            out_dir=tempdir,
+            skip_tx=False,
+            exons=False,
+            build=build,
+        )
 
 
 def fetch_downloaded_resources(resources, downloads_folder, builds):
@@ -139,8 +132,11 @@ def genes(build, downloads_folder, api_key):
     # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
     if downloads_folder is None:
         with tempfile.TemporaryDirectory() as tempdir:
-            download_resources(tempdir, api_key, builds)
-            fetch_downloaded_resources(resources, downloads_folder, builds)
+            try:
+                download_resources(tempdir, api_key, builds)
+            except Exception as ex:
+                LOG.error(ex)
+        fetch_downloaded_resources(resources, downloads_folder, builds)
     else:
         fetch_downloaded_resources(resources, downloads_folder, builds)
 
