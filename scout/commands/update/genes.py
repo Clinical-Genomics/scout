@@ -52,7 +52,7 @@ def download_resources(tempdir, api_key, builds):
             )
         else:
             # Download OMIM files
-            ctx.invoke(omim, out_dir=tempdir, api_key=api_key)
+            ctx.invoke(omim_cmd, out_dir=tempdir, api_key=api_key)
 
         # Download HPO definitions
         ctx.invoke(hpo_cmd, out_dir=tempdir)
