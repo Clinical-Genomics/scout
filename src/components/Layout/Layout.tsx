@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import Nav, { NavItem } from 'components/Nav/Nav'
 import logo_scout from 'assets/logo_scout.png'
 import Footer from 'components/Footer/Footer'
 import { Paper } from '@material-ui/core'
+import { connect } from 'react-redux';
+import { RootState } from '../../domain/rootReducer';
 import styles from './Layout.module.scss'
+import { setDarkMode as setSettingsAction } from '../../domain/settings/slice';
+
+const mapDispatch = { setDarkMode: setSettingsAction } as const;
+const mapState = ({ settings }: RootState) => ({ settings } as const);
 
 const headerScout = {
   icon: logo_scout,
@@ -35,8 +41,7 @@ const scoutNavItems: Array<NavItem> = [
   },
 ]
 
-const Layout: React.FC = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false)
+function LayoutComponent({ children, settings, setDarkMode }: any) {
 
   useEffect(() => {
     /** Check local storage */
@@ -51,28 +56,28 @@ const Layout: React.FC = ({ children }) => {
       // Dark
       setDarkMode(true)
     }
-  }, [])
+  }, [setDarkMode])
 
   // TODO: Check if there is a better way to solve the asynchronous problem
   const toggleDarkMode = () => {
-    const newMode = !darkMode
+    const newMode = !settings.darkMode
     setDarkMode(newMode)
     localStorage.setItem('darkMode', newMode.toString())
   }
   const theme = createMuiTheme({
     palette: {
-      type: darkMode ? 'dark' : 'light',
+      type: settings.darkMode ? 'dark' : 'light',
     },
   })
   return (
     <ThemeProvider theme={theme}>
       <Paper>
-        <div className={`${styles.Layout} ${darkMode ? 'dark_mode' : ''}`}>
+        <div className={`${styles.Layout} ${settings.darkMode ? 'dark_mode' : ''}`}>
           <header>
             <Nav
               header={headerScout}
               navItems={scoutNavItems}
-              darkMode={darkMode}
+              darkMode={settings.darkMode}
               toggleDarkMode={toggleDarkMode}
             />
           </header>
@@ -84,4 +89,4 @@ const Layout: React.FC = ({ children }) => {
   )
 }
 
-export default Layout
+export const Layout = connect(mapState, mapDispatch)(LayoutComponent);

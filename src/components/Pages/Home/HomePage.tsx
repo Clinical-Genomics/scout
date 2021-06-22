@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 import Card from '@material-ui/core/Card'
@@ -10,7 +10,16 @@ import ScilifelabLogoDark from 'assets/SciLifeLab_Logotype_NEG.png'
 import KarolinskaLogoDark from 'assets/ki_logo_neg.png'
 import KarolinskaLogo from 'assets/ki_logo_pos.png'
 import SwedacLogo from 'assets/swedac.png'
+import { connect } from 'react-redux';
+import { RootState } from '../../../domain/rootReducer';
+import packageJson from '../../../../package.json'
 import styles from './HomePage.module.scss'
+import { setDarkMode as setSettingsAction } from '../../../domain/settings/slice';
+
+
+const mapDispatch = { setDarkMode: setSettingsAction } as const;
+const mapState = ({ settings }: RootState) => ({ settings } as const);
+type Props = ReturnType<typeof mapState> & typeof mapDispatch;
 
 const useStyles = makeStyles({
   root: {
@@ -39,20 +48,23 @@ const useStyles = makeStyles({
     fontWeight: 400,
   },
 })
-const HomePage: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false)
+
+function HomePage({ settings, setDarkMode }: Props) {
+  const scoutVersion = packageJson.version
   // eslint-disable-next-line
   useEffect(() => {
     /** Check local storage */
     const darkModeStorage = localStorage.getItem('darkMode')
-    if (darkModeStorage !== undefined) {
-      setDarkMode(darkModeStorage === 'true')
+    if (darkModeStorage !== undefined && darkModeStorage ==='true') {
+      setDarkMode(true)
+    } else if (darkModeStorage !== undefined && darkModeStorage ==='false') {
+      setDarkMode(false)
     }
   })
   const classes = useStyles()
   return (
     <div className={styles.container}>
-      <Grid container justify="center" xs={12} className={styles.container}>
+      <Grid container justify="center" className={styles.container}>
         <Grid item>
           <Card className={classes.root} variant="outlined">
             <CardContent>
@@ -68,7 +80,7 @@ const HomePage: React.FC = () => {
                 cases as a team.
               </Typography>
               <Typography className={classes.version} variant="body2" component="p">
-                Version: x.xx
+                Version: {scoutVersion}
               </Typography>
             </CardContent>
           </Card>
@@ -79,7 +91,7 @@ const HomePage: React.FC = () => {
           <Grid item>
             <img
               className={styles.karolinskaLogo}
-              src={`${darkMode ? KarolinskaLogoDark : KarolinskaLogo}`}
+              src={`${settings.darkMode ? KarolinskaLogoDark : KarolinskaLogo}`}
               alt="Karolinska Logo"
             />
           </Grid>
@@ -89,7 +101,7 @@ const HomePage: React.FC = () => {
           <Grid item>
             <img
               className={styles.sciLifeLabLogo}
-              src={`${darkMode ? ScilifelabLogoDark : ScilifelabLogo}`}
+              src={`${settings.darkMode ? ScilifelabLogoDark : ScilifelabLogo}`}
               alt="Scilifelab Logo"
             />
           </Grid>
@@ -98,4 +110,5 @@ const HomePage: React.FC = () => {
     </div>
   )
 }
-export default HomePage
+
+export const Home = connect(mapState, mapDispatch)(HomePage);
