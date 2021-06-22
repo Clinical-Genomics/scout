@@ -44,19 +44,20 @@
 {% macro case_page() %}
 <div class="col ml-3"> <!-- This is the main container -->
   <div class="container_spaced">
-    <div class="card">
-      <div class="row {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">
-        <div class="col-sm-4">
-          <h4 class="card-body">
-              Case: {{case.display_name}}<br>
-              Status: {{case.status}}<br>
-              <p class="text-muted">Internal ID: {{case._id}}</p>
-          </h4>
+      <div class="card-body {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">
+        <div class="row">
+            <div class="col-sm-4">
+              <h4 class="">
+                  Case: {{case.display_name}}<br>
+                  Status: {{case.status}}<br>
+                  <p class="text-muted">Internal ID: {{case._id}}</p>
+              </h4>
+            </div>
+            <div class="col">
+              {{ variants_buttons() }}
+            </div>
         </div>
-        <div class="col">
-          {{ variants_buttons() }}
-        </div>
-      </div> <!--end of div class="row" -->
+    </div> <!--end of div class="row" -->
 
       {% if other_causatives|length > 0%}
         <div class="row mt-0">
