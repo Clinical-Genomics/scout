@@ -3,7 +3,7 @@
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "cases/utils.html" import clinvar_panel, causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
-{% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, phenotypes_panel %}
+{% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
 
 
@@ -107,37 +107,36 @@
       <!-- CASE DIAGNOSES AND PHENOTYPES -->
       <div class="panel-default">
         <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Phenotypes & diagnoses</div>
-        <div class="row">
-          <div class="col-5 ml-3">
-            <div class="row">
-              {{ add_phenotype_terms_panel(case, institute) }}
+        <div class="ml-3 mr-3">
+          <div class="row">
+            <div class="col-sm-6 card">
+            {{ hpo_panel(case, institute, config) }}
             </div>
-            <div class="row">
-              {{ phenotypes_panel(case, institute, config) }}
+            <div class="col-sm-6 card">
+              {{ hpo_genelist_panel(case, institute, config) }}
             </div>
           </div>
-          <div class="col-6">
-            {{ hpo_genelist_panel(case, institute, config) }}
-          </div>
-        </div>
+        </div> <!--end of <div class="row">-->
         <!-- OMIM diagnoses-related code-->
         {% if not case.track == 'cancer' %}
-          <div class="row mt-3">
-            <div class="col-sm-12 ml-3 mt-3">
-               <div class="panel-heading">
-                 <h6><i class="fa fa-user-md "></i>&nbsp;Diagnoses (OMIM)</h6>
-                </div>
+          <div class="card">
+            <div class="row">
+                 <div class="col-sm-12 ml-3 mt-3">
+                    <div class="panel-heading">
+                      <h6><i class="fa fa-user-md "></i>&nbsp;Diagnoses (OMIM)</h6>
+                     </div>
+                 </div>
             </div>
-          </div>
-          <div class="row mt-3">
-            <div class="col-sm-6">
-              {{ diagnosis_phenotypes(case, institute, omim_terms) }}
+            <div class="row mt-3">
+              <div class="col-sm-6">
+                {{ diagnosis_phenotypes(case, institute, omim_terms) }}
+               </div>
             </div>
           </div>
         {% endif %}
-        <!-- of of OMIM diagnoses -->
+        <!-- end of OMIM diagnoses-related code-->
       </div>
-      <!-- END OF CASE DIAGNOSES AND PHENOTYPES -->
+
 
       <div class="panel-default">
         <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Groups & cohorts</div>
