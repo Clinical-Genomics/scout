@@ -138,8 +138,8 @@ def genes(build, downloads_folder, api_key):
 
     # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
     if downloads_folder is None:
-        with tempfile.TemporaryDirectory() as downloads_folder:
-            download_resources(downloads_folder, api_key, builds)
+        with tempfile.TemporaryDirectory() as tempdir:
+            download_resources(tempdir, api_key, builds)
             fetch_downloaded_resources(resources, downloads_folder, builds)
     else:
         fetch_downloaded_resources(resources, downloads_folder, builds)
