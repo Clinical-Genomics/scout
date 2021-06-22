@@ -129,7 +129,7 @@ def genes(build, downloads_folder, api_key):
     api_key = api_key or current_app.config.get("OMIM_API_KEY")
     resources = {}
 
-    # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
+    # If required resources are missing, download them to a temporary file
     if downloads_folder is None:
         with tempfile.TemporaryDirectory() as tempdir:
             try:
@@ -137,7 +137,7 @@ def genes(build, downloads_folder, api_key):
             except Exception as ex:
                 LOG.error(ex)
         fetch_downloaded_resources(resources, downloads_folder, builds)
-    else:
+    else:  # If resources have been previosly downloaded, read those file and return their lines
         fetch_downloaded_resources(resources, downloads_folder, builds)
 
     LOG.warning("Dropping all gene information")
