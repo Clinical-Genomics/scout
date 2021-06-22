@@ -15,6 +15,15 @@
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="{{ url_for('cases.static', filename='case_styles.css') }}"></link>
+<style>
+  [data-toggle="collapse"] .fa:before {
+    content: "\f139";
+  }
+
+  [data-toggle="collapse"].collapsed .fa:before {
+    content: "\f13a";
+  }
+</style>
 {% endblock %}
 
 {% block top_nav %}
@@ -245,7 +254,7 @@
           {% endif %}
 
           {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
-          
+
           <form class="form-inline" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
             <div class="input-group mb-2 mr-sm-2">
               <div class="input-group-prepend">
@@ -311,16 +320,27 @@
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
-  <div class="row">
-    {% for i in case.individuals %}
-      {% if i.chromograph_images %}
-        {% if i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites %}
-          <h5><a class="badge badge-dark ml-3" href="#modal_{{i.individual_id}}" data-toggle="modal" aria-controls="#modal_{{i.individual_id}}">Images {{i.display_name}}</a></h5>&nbsp;
-          {{ add_modal_panel(i.individual_id, i.display_name) }}
-        {% endif  %}
-      {% endif %}
-    {% endfor %}
-  </div>
+<div class="panel-group" id="accordion">
+  {% for i in case.individuals %}
+    {% if i.chromograph_images and i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites %}
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
+            <i class="fa"></i>
+            Images {{i.display_name}}
+          </a>
+        </h5>
+      </div>
+      <div id="collapse_{{i.individual_id}}" style="width:100%" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
+            <svg id={{"svg_"+i.individual_id}} class="img-fluid" width="1200" height="1700"></svg>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
 {% endmacro %}
 
 <!-- Create a collapsing panel. Used for -->
@@ -501,6 +521,12 @@ function SidebarCollapse () {
 
 // Hide submenus
 $('#body-row .collapse').collapse('hide');
+
+$('.collapse').on('shown.bs.collapse', function(){
+  $(this).parent().find(".fa fa-plus").removeClass("fa fa-plus").addClass("fa fa-minus");
+  }).on('hidden.bs.collapse', function(){
+  $(this).parent().find(".fa fa-minus").removeClass("fa fa-minus").addClass("fa fa-plus");
+});
 
 // Collapse/Expand icon
 $('#collapse-icon').addClass('fa-angle-double-left');
