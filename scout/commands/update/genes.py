@@ -18,11 +18,16 @@ Copyright (c) 2015 __MoonsoInc__. All rights reserved.
 """
 import logging
 import os
+import tempfile
 
 import click
 from flask.cli import current_app, with_appcontext
 
-from scout.commands.download.omim import omim
+from scout.commands.download.ensembl import ensembl as ensembl_cmd
+from scout.commands.download.exac import exac as exac_cmd
+from scout.commands.download.hgnc import hgnc as hgnc_cmd
+from scout.commands.download.hpo import hpo as hpo_cmd
+from scout.commands.download.omim import omim as omim_cmd
 from scout.constants import UPDATE_GENES_RESOURCES
 from scout.load import load_hgnc_genes, load_transcripts
 from scout.server.extensions import store
@@ -31,17 +36,55 @@ from scout.utils.handle import get_file_handle
 LOG = logging.getLogger(__name__)
 
 
+def download_resources(tempdir, api_key, builds):
+    """Download necessary files to update gene definitions in a temporary directory
+
+    Args:
+        tempdir(str): path to downloaded resources. Provided by user in the cli command
+        api_key(str): API key for downloading OMIM resources
+        builds(list): a list containing both genome builds or one genome build ['37', '38']
+    """
+    ctx = click.get_current_context()
+    try:
+        if not api_key:
+            LOG.warning(
+                "No omim api key provided, Please not that some information will be missing"
+            )
+        else:
+            # Download OMIM files
+            ctx.invoke(omim, out_dir=tempdir, api_key=api_key)
+
+        # Download HPO definitions
+        ctx.invoke(hpo_cmd, out_dir=tempdir)
+        # Download Exac genes
+        ctx.invoke(exac_cmd, out_dir=tempdir)
+        # Download HGNC genes
+        ctx.invoke(hgnc_cmd, out_dir=tempdir)
+        # Download Ensembl genes
+        for build in builds:
+            ctx.invoke(
+                ensembl_cmd,
+                out_dir=tempdir,
+                skip_tx=False,
+                exons=False,
+                build=build,
+            )
+
+    except Exception as ex:
+        LOG.error(ex)
+        raise click.Abort()
+
+
 def fetch_downloaded_resources(resources, downloads_folder, builds):
     """Checks that a resource file exists on disk and has valid data. Return its content as a list of lines
     Args:
+        resources(dict): Dictionary containing resource files' lines
         downloads_folder(str): Path to downloaded resources. Provided by user in the cli command
-        resource_filename(str): Resource file name
+        builds(list): a list containing both genome builds or one genome build ['37', '38']
 
-    Returns:
-        resource_lines(list) or None: list of lines contained in the resource file
     """
 
-    for resname, filenames in DOWNLOADED_RESOURCES.items():
+    for resname, filenames in UPDATE_GENES_RESOURCES.items():
         for filename in filenames:
             resource_path = os.path.join(downloads_folder, filename)
             resource_exists = os.path.isfile(resource_path)
@@ -94,8 +137,11 @@ def genes(build, downloads_folder, api_key):
     resources = {}
 
     # If resources have been previosly doenloaded, read those file and return their linesFetch resources from folder containing previously-downloaded resource files
-    if downloads_folder:
-        api_key = None
+    if downloads_folder is None:
+        with tempfile.TemporaryDirectory() as downloads_folder:
+            download_resources(downloads_folder, api_key, builds)
+            fetch_downloaded_resources(resources, downloads_folder, builds)
+    else:
         fetch_downloaded_resources(resources, downloads_folder, builds)
 
     LOG.warning("Dropping all gene information")
@@ -121,7 +167,6 @@ def genes(build, downloads_folder, api_key):
             genemap_lines=resources.get("genemap2"),
             hpo_lines=resources.get("hpo_genes"),
             build=genome_build,
-            omim_api_key=api_key,
         )
 
         ensembl_genes_dict = {}

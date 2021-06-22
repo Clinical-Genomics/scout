@@ -20,61 +20,6 @@ from scout.utils.scout_requests import (
 LOG = logging.getLogger(__name__)
 
 
-def load_hgnc(
-    adapter,
-    genes=None,
-    ensembl_lines=None,
-    hgnc_lines=None,
-    exac_lines=None,
-    mim2gene_lines=None,
-    genemap_lines=None,
-    hpo_lines=None,
-    transcripts_lines=None,
-    build="37",
-    omim_api_key="",
-):
-    """Load Genes and transcripts into the database
-
-    If no resources are provided the correct ones will be fetched.
-
-    Args:
-        adapter(scout.adapter.MongoAdapter)
-        genes(dict): If genes are already parsed
-        ensembl_lines(iterable(str)): Lines formated with ensembl gene information
-        hgnc_lines(iterable(str)): Lines with gene information from genenames.org
-        exac_lines(iterable(str)): Lines with information pLi-scores from ExAC
-        mim2gene(iterable(str)): Lines with map from omim id to gene symbol
-        genemap_lines(iterable(str)): Lines with information of omim entries
-        hpo_lines(iterable(str)): Lines information about map from hpo terms to genes
-        transcripts_lines(iterable): iterable with ensembl transcript lines
-        build(str): What build to use. Defaults to '37'
-
-    """
-    gene_objs = load_hgnc_genes(
-        adapter=adapter,
-        genes=genes,
-        ensembl_lines=ensembl_lines,
-        hgnc_lines=hgnc_lines,
-        exac_lines=exac_lines,
-        mim2gene_lines=mim2gene_lines,
-        genemap_lines=genemap_lines,
-        hpo_lines=hpo_lines,
-        build=build,
-        omim_api_key=omim_api_key,
-    )
-
-    ensembl_genes = {}
-    for gene_obj in gene_objs:
-        ensembl_genes[gene_obj["ensembl_id"]] = gene_obj
-
-    transcript_objs = load_transcripts(
-        adapter=adapter,
-        transcripts_lines=transcripts_lines,
-        build=build,
-        ensembl_genes=ensembl_genes,
-    )
-
-
 def load_hgnc_genes(
     adapter,
     genes=None,
