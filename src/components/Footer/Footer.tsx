@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
   const capitalText = lowercaseText.replace(/\w\S*/g, (w) =>
     w.replace(/^\w/, (c) => c.toUpperCase())
   )
-  const currentYear: Number = new Date().getFullYear()
+  const currentYear: number = new Date().getFullYear()
 
   return <footer className={styles.footer}>{`${capitalText} © ${currentYear}`}</footer>
 }
