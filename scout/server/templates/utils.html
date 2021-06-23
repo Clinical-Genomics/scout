@@ -34,9 +34,9 @@
 {% endmacro %}
 
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
-<div class="mt-3">
+<div class="card">
   {% set comments = comments|list %}
-  <h6 class="comments-title"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
+  <h6 class="comments-title ml-3 mt-2"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
   <div class="list-group" style="max-height:200px; overflow-y: scroll;">
     <style>.even { background-color: #f6f6f6 }</style>
     <style>.odd { background-color: #d5e8f0 }</style>
@@ -156,8 +156,7 @@
 
 {% macro pedigree_panel(case) %}
   <div class="card panel-default">
-    <div class="panel-heading"><span class="fa fa-sitemap">&nbsp;Pedigree</div>
-    <div class="card-body">
+    <div>
       <div class="table-responsive">
       {% if case.individuals|length == 1 %}
         <p>Single sample case: {{ case.individuals.0.display_name }}</p>
