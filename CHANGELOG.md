@@ -28,10 +28,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Revamped `Basics` panel to a panel dedicated to classify variants
 - Revamped the summary panel to be more compact.
 - Added dedicated template for cancer variants
-- Removed Severity, Gene models, Gene annotations and Conservation panels for cancer variants
+- Removed Gene models, Gene annotations and Conservation panels for cancer variants
 - Reorganized the orders of panels for variant and cancer variant views
 - Added dedicated variant quality panel and removed relevant panes (mappability)
-
+- A more compact case page
+- Removed OMIM genes panel
+- Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
 
 ## [4.36]
 ### Added
