@@ -55,9 +55,9 @@ function HomePage({ settings, setDarkMode }: Props) {
   useEffect(() => {
     /** Check local storage */
     const darkModeStorage = localStorage.getItem('darkMode')
-    if (darkModeStorage !== undefined && darkModeStorage ==='true') {
+    if (darkModeStorage ==='true') {
       setDarkMode(true)
-    } else if (darkModeStorage !== undefined && darkModeStorage ==='false') {
+    } else if (darkModeStorage ==='false') {
       setDarkMode(false)
     }
   })
