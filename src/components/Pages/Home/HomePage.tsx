@@ -10,16 +10,15 @@ import ScilifelabLogoDark from 'assets/SciLifeLab_Logotype_NEG.png'
 import KarolinskaLogoDark from 'assets/ki_logo_neg.png'
 import KarolinskaLogo from 'assets/ki_logo_pos.png'
 import SwedacLogo from 'assets/swedac.png'
-import { connect } from 'react-redux';
-import { RootState } from '../../../domain/rootReducer';
+import { connect } from 'react-redux'
+import { RootState } from '../../../domain/rootReducer'
 import packageJson from '../../../../package.json'
 import styles from './HomePage.module.scss'
-import { setDarkMode as setSettingsAction } from '../../../domain/settings/slice';
+import { setDarkMode as setSettingsAction } from '../../../domain/settings/slice'
 
-
-const mapDispatch = { setDarkMode: setSettingsAction } as const;
-const mapState = ({ settings }: RootState) => ({ settings } as const);
-type Props = ReturnType<typeof mapState> & typeof mapDispatch;
+const mapDispatch = { setDarkMode: setSettingsAction } as const
+const mapState = ({ settings }: RootState) => ({ settings } as const)
+type Props = ReturnType<typeof mapState> & typeof mapDispatch
 
 const useStyles = makeStyles({
   root: {
@@ -55,9 +54,9 @@ function HomePage({ settings, setDarkMode }: Props) {
   useEffect(() => {
     /** Check local storage */
     const darkModeStorage = localStorage.getItem('darkMode')
-    if (darkModeStorage ==='true') {
+    if (darkModeStorage === 'true') {
       setDarkMode(true)
-    } else if (darkModeStorage ==='false') {
+    } else if (darkModeStorage === 'false') {
       setDarkMode(false)
     }
   })
@@ -111,4 +110,4 @@ function HomePage({ settings, setDarkMode }: Props) {
   )
 }
 
-export const Home = connect(mapState, mapDispatch)(HomePage);
+export const Home = connect(mapState, mapDispatch)(HomePage)

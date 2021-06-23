@@ -1,22 +1,21 @@
 /* eslint-disable no-param-reassign */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppState } from './types';
-
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { AppState } from './types'
 
 export const initialAppState = {
   darkMode: false,
-} as AppState;
+} as AppState
 
 const settingsSlice = createSlice({
   name: 'settings',
   initialState: initialAppState,
   reducers: {
     setDarkMode(state, action: PayloadAction<any>) {
-      state.darkMode = action.payload;
+      state.darkMode = action.payload
     },
   },
-});
+})
 
-export const { setDarkMode } = settingsSlice.actions;
+export const { setDarkMode } = settingsSlice.actions
 
-export default settingsSlice.reducer;
+export default settingsSlice.reducer

@@ -5,9 +5,7 @@ import { Home } from './components/Pages/Home/HomePage'
 
 import './App.scss'
 
-
 function App() {
-
   return (
     <Router>
       <Layout>

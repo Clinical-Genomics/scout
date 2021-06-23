@@ -5,13 +5,13 @@ import Nav, { NavItem } from 'components/Nav/Nav'
 import logo_scout from 'assets/logo_scout.png'
 import Footer from 'components/Footer/Footer'
 import { Paper } from '@material-ui/core'
-import { connect } from 'react-redux';
-import { RootState } from '../../domain/rootReducer';
+import { connect } from 'react-redux'
+import { RootState } from '../../domain/rootReducer'
 import styles from './Layout.module.scss'
-import { setDarkMode as setSettingsAction } from '../../domain/settings/slice';
+import { setDarkMode as setSettingsAction } from '../../domain/settings/slice'
 
-const mapDispatch = { setDarkMode: setSettingsAction } as const;
-const mapState = ({ settings }: RootState) => ({ settings } as const);
+const mapDispatch = { setDarkMode: setSettingsAction } as const
+const mapState = ({ settings }: RootState) => ({ settings } as const)
 
 const headerScout = {
   icon: logo_scout,
@@ -42,7 +42,6 @@ const scoutNavItems: Array<NavItem> = [
 ]
 
 function LayoutComponent({ children, settings, setDarkMode }: any) {
-
   useEffect(() => {
     /** Check local storage */
     const darkModeStorage = localStorage.getItem('darkMode')
@@ -89,4 +88,4 @@ function LayoutComponent({ children, settings, setDarkMode }: any) {
   )
 }
 
-export const Layout = connect(mapState, mapDispatch)(LayoutComponent);
+export const Layout = connect(mapState, mapDispatch)(LayoutComponent)

@@ -1,4 +1,3 @@
 export type AppState = {
-  darkMode: boolean;
-};
-
+  darkMode: boolean
+}
