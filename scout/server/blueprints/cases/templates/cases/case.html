@@ -62,7 +62,7 @@
                   <p class="text-muted">Internal ID: {{case._id}}</p>
               </h4>
             </div>
-            <div class="col">
+            <div class="col-sm-8">
               {{ variants_buttons() }}
             </div>
         </div>
@@ -174,47 +174,57 @@
 {% endmacro %}
 
 {% macro variants_buttons() %}
-<div class="d-flex justify-content-center mt-3"
-  <div class="row d-flex align-items-center">
-      {% if case.vcf_files.vcf_snv %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
-      {% endif %}
-      {% if case.vcf_files.vcf_sv %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
-      {% endif %}
-      {% if case.vcf_files.vcf_str %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
-      {% endif %}
-      {% if case.smn_tsv %}
-        <a class="btn btn-dark text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
-      {% endif %}
-      {% if case.vcf_files.vcf_cancer %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}SNV and INDELs</a>
-      {% endif %}
-      {% if case.vcf_files.vcf_cancer_sv %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}structural variants</a>
-      {% endif %}
-      {% if gens_info.display %}
-        <a class="btn btn-dark text-white" target="_blank" href="http://{{gens_info.host}}/{{case.display_name}}?&hg_type={{case.genome_build}}">View CN profile</a>
-      {% endif %}
+<div>
+  <!-- Clinical variants buttons -->
+  <div class="row">
+    <div class="col-12 d-flex justify-content-center">
+      <div class="btn-group" role="group">
+        {% if case.vcf_files.vcf_snv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_sv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_str %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
+        {% endif %}
+        {% if case.smn_tsv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer %}
+          <a class="btn btn-dark btn-smtext-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer_sv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}structural variants</a>
+        {% endif %}
+        {% if gens_info.display %}
+          <a class="btn btn-dark btn-sm text-white" target="_blank" href="http://{{gens_info.host}}/{{case.display_name}}?&hg_type={{case.genome_build}}">View CN profile</a>
+        {% endif %}
+      </div>
+    </div>
   </div>
-  {% if case.is_research%}
-    <div class="row d-flex align-items-center justify-content-center mt-3">
-      {% if case.vcf_files.vcf_snv_research %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
-      {% endif %}
-      {% if case.vcf_files.vcf_sv_research %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
-      {% endif %}
-      {% if case.vcf_files.vcf_cancer_research %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic SNV and INDELs</a>
-      {% endif %}
-      {% if case.vcf_files.vcf_cancer_sv_research %}
-        <a class="btn btn-dark text-white" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic structural variants</a>
-      {% endif %}
+  <!-- Research variants buttons -->
+  {% if case.is_research %}
+  <div class="row mt-3">
+    <div class="col-12 d-flex justify-content-center">
+      <div class="btn-group" role="group">
+        {% if case.vcf_files.vcf_snv_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_sv_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer_sv_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic structural variants</a>
+        {% endif %}
+      </div>
     </div>
   </div>
   {% endif %}
+</div>
 {% endmacro %}
 
 {% macro synopsis_panel() %}
