@@ -556,37 +556,32 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
-    def check_existing_data(self, case_obj, institute_obj, update, keep_actions):
+    def check_existing_data(self, case_obj, existing_case, institute_obj, update, keep_actions):
         """Make sure data from case to be loaded/reuploaded conforms to case data already saved in database.
            Return eventual evaluated variants to be propagated to the updated case if keep_actions is True
 
         Args:
             case_obj(dict): case dictionary to be loaded/reuploaded
+            existing_case(dict): a case with same _id or same display_name and institute_id as case_obj
             institute_obj(dict): institute dictionary
             update(bool): If existing case should be updated
+            keep_actions(bool): If old evaluated variants should be kept when case is updated
 
         returns:
             previous_evaluated_variants(list): list of variants evaluated in previous case
         """
 
-        # Check if case exists in database (same _id)
-        existing_case = self.case(case_id=case_obj["_id"])
-        # Check if another case exists in database with same display name for the same customer (different _id)
-        duplicated_case_name = self.case(
-            institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
-        )
+        if existing_case is None:
+            return
+
         # Avoid saving a new case in database with a display_name that already exists for another case from the same customer
-        if duplicated_case_name and existing_case is None:
+        if existing_case["_id"] != case_obj["_id"]:
             raise IntegrityError(
                 "A case with display name %s already exists in database for this customer"
                 % case_obj["display_name"]
             )
 
-        if existing_case is None:
-            return
-
-        # existing case
-        if not update:
+        if existing_case and not update:
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
         # Enforce same display name for updated case as existing case
@@ -653,9 +648,11 @@ class CaseHandler(object):
             self.update_caseid(old_case, case_obj["_id"])
             update = True
 
-        # Retrieve variant info to be propagated to eventual updated case (acmg, manual rank, cancer tier, dismissed, mosaic, commented)
+        # Retrieve info to be propagated to eventual updated case
+        # previously evaluated variants (acmg, manual rank, cancer tier, dismissed, mosaic, commented)
+        existing_case = self.case(case_id=case_obj["_id"])
         old_evaluated_variants = self.check_existing_data(
-            case_obj, institute_obj, update, keep_actions
+            case_obj, existing_case, institute_obj, update, keep_actions
         )
 
         files = [
