@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
   const classes = useStyles()
   return (
     <div className={styles.container}>
-      <Grid container justify="center" xs={12} className={styles.container}>
+      <Grid container justify="center" className={styles.container}>
         <Grid item>
           <Card className={classes.root} variant="outlined">
             <CardContent>

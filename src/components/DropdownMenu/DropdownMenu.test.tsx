@@ -1,15 +1,9 @@
 import React from 'react'
-import { shallow } from 'enzyme'
-import DropdownMenu from './DropdownMenu'
+import { render } from '@testing-library/react'
+import Dropdown from './DropdownMenu'
 
-describe('<DropdownMenu />', () => {
-  let component
-
-  beforeEach(() => {
-    component = shallow(<DropdownMenu />)
-  })
-
-  test('It should mount', () => {
-    expect(component.length).toBe(1)
-  })
+test('Dropdown render correctly', () => {
+  const { getByTestId } = render(<Dropdown />)
+  const DropdownMenu = getByTestId('DropdownMenu')
+  expect(DropdownMenu).toBeInTheDocument()
 })
