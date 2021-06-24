@@ -650,7 +650,9 @@ class CaseHandler(object):
 
         # Retrieve info to be propagated to eventual updated case
         # previously evaluated variants (acmg, manual rank, cancer tier, dismissed, mosaic, commented)
-        existing_case = self.case(case_id=case_obj["_id"])
+        existing_case = self.case(case_id=case_obj["_id"]) or self.case(
+            institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
+        )
         old_evaluated_variants = self.check_existing_data(
             case_obj, existing_case, institute_obj, update, keep_actions
         )
