@@ -595,17 +595,12 @@ class CaseHandler(object):
             self.update_caseid(old_case, case_obj["_id"])
             update = True
 
-        # Check if case exists in database
+        # Check if case exists in database (same _id)
         existing_case = self.case(case_id=case_obj["_id"])
-        # Check if another case exists in database with same display name for the same customer
+        # Check if another case exists in database with same display name for the same customer (different _id)
         duplicated_case_name = self.case(
             institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
         )
-        if existing_case is None and duplicated_case_name:
-            raise IntegrityError(
-                "A case with display name %s already exists in database for this customer"
-                % case_obj["display_name"]
-            )
 
         if existing_case:
             if not update:
@@ -617,12 +612,16 @@ class CaseHandler(object):
 
             # Check that individuals from new case match individuals from old case in ID, name and phenotype
             old_case_inds = set(
-                [(ind["individual_id"], ind["display_name"], ind["phenotype"])]
-                for ind in existing_case.get("individuals")
+                [
+                    (ind["individual_id"], ind["display_name"], ind["phenotype"])
+                    for ind in existing_case.get("individuals")
+                ]
             )
             case_inds = set(
-                [(ind["individual_id"], ind["display_name"], ind["phenotype"])]
-                for ind in case_obj.get("individuals")
+                [
+                    (ind["individual_id"], ind["display_name"], ind["phenotype"])
+                    for ind in case_obj.get("individuals")
+                ]
             )
             if existing_case != case_inds:
                 raise IntegrityError(
@@ -632,6 +631,13 @@ class CaseHandler(object):
             if keep_actions:
                 # collect all variants with user actions for this case
                 old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
+
+        elif duplicated_case_name:
+            # Check if another case exists in database with same display name for the same customer
+            raise IntegrityError(
+                "A case with display name %s already exists in database for this customer"
+                % case_obj["display_name"]
+            )
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
