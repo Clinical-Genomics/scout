@@ -633,7 +633,7 @@ class CaseHandler(object):
                 old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
 
         elif duplicated_case_name:
-            # Check if another case exists in database with same display name for the same customer
+            # Avoid saving a new case in database with a display_name that already exists for another case from the same customer
             raise IntegrityError(
                 "A case with display name %s already exists in database for this customer"
                 % case_obj["display_name"]
