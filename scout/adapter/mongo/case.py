@@ -577,8 +577,11 @@ class CaseHandler(object):
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
-        # This is to keep sanger order and validation status
+        old_evaluated_variants = (
+            None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
+        )
 
+        # This is to keep sanger order and validation status
         old_sanger_variants = self.case_sanger_variants(case_obj["_id"])
 
         genome_build = str(parsed_case.get("genome_build", 37))
@@ -593,16 +596,36 @@ class CaseHandler(object):
             update = True
 
         # Check if case exists in database
-        existing_case = self.case(case_obj["_id"])
-        if existing_case and not update:
-            raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
-
-        old_evaluated_variants = (
-            None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
+        existing_case = self.case(case_id=case_obj["_id"])
+        # Check if another case exists in database with same display name for the same customer
+        duplicated_case_name = self.case(
+            institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
         )
-        if existing_case and keep_actions:
-            # collect all variants with user actions for this case
-            old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
+        if existing_case is None and duplicated_case_name:
+            raise IntegrityError(
+                "A case with display name %s already exists in database for this customer"
+                % case_obj["display_name"]
+            )
+
+        if existing_case:
+            if not update:
+                raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
+            # Check that individuals from new case match individuals from old case in ID, name and phenotype
+            old_case_inds = set(
+                [(ind["individual_id"], ind["display_name"], ind["phenotype"])]
+                for ind in existing_case.get("individuals")
+            )
+            case_inds = set(
+                [(ind["individual_id"], ind["display_name"], ind["phenotype"])]
+                for ind in case_obj.get("individuals")
+            )
+            if existing_case != case_inds:
+                raise IntegrityError(
+                    "Updated case individuals don't match individuals from existing case. Please either delete old case or modify updated case individuals."
+                )
+            if keep_actions:
+                # collect all variants with user actions for this case
+                old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
