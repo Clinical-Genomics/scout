@@ -556,12 +556,13 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
-    def check_existing_data(self, case_obj, update, keep_actions):
+    def check_existing_data(self, case_obj, institute_obj, update, keep_actions):
         """Make sure data from case to be loaded/reuploaded conforms to case data already saved in database.
            Return eventual evaluated variants to be propagated to the updated case if keep_actions is True
 
         Args:
             case_obj(dict): case dictionary to be loaded/reuploaded
+            institute_obj(dict): institute dictionary
             update(bool): If existing case should be updated
 
         returns:
@@ -653,7 +654,9 @@ class CaseHandler(object):
             update = True
 
         # Retrieve variant info to be propagated to eventual updated case (acmg, manual rank, cancer tier, dismissed, mosaic, commented)
-        old_evaluated_variants = self.check_existing_data(case_obj, update, keep_actions)
+        old_evaluated_variants = self.check_existing_data(
+            case_obj, institute_obj, update, keep_actions
+        )
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
