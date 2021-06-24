@@ -606,11 +606,11 @@ class CaseHandler(object):
             if not update:
                 raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
-            # Check if updated case has same display_name as existing case
+            # Enforce same display name for updated case as existing case
             if case_obj["display_name"] != existing_case["display_name"]:
                 raise IntegrityError("Updated case name doesn't match existing case name.")
 
-            # Check that individuals from new case match individuals from old case in ID, name and phenotype
+            # Check that individuals from updated case match individuals from existing case in ID, name and phenotype
             old_case_inds = set(
                 [
                     (ind["individual_id"], ind["display_name"], ind["phenotype"])
