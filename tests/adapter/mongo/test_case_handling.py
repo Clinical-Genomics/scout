@@ -63,7 +63,7 @@ def test_load_case_existing_display_name(adapter, institute_obj, case_obj, scout
     config2 = copy.deepcopy(scout_config)
     config2["family"] = "internal_id2"
 
-    # GIVEN an attempt to load the same case using the load_case function
+    # GIVEN an attempt to load the other using the load_case function
     ## THEN it should raise integrity error
     with pytest.raises(IntegrityError):
         adapter.load_case(config_data=config2)
@@ -81,13 +81,13 @@ def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj
     config2 = copy.deepcopy(scout_config)
     config2["display_name"] = "case2"
 
-    # GIVEN an attempt to load the same case using the load_case function
+    # GIVEN an attempt to update the case using the load_case function
     ## THEN it should raise integrity error
     with pytest.raises(IntegrityError):
         adapter.load_case(config_data=config2, update=True)
 
 
-def test_load_case_existing_case_diffeerent_individuals(
+def test_load_case_existing_case_different_individuals(
     adapter, institute_obj, case_obj, scout_config
 ):
     """testing updating a case when the new config file contains different individuals information"""
@@ -101,7 +101,7 @@ def test_load_case_existing_case_diffeerent_individuals(
     config2 = copy.deepcopy(scout_config)
     config2["samples"][0]["sample_id"] = "changed_sample_id"
 
-    # GIVEN an attempt to load the same case using the load_case function
+    # GIVEN an attempt to update the case using the load_case function
     ## THEN it should raise integrity error
     with pytest.raises(IntegrityError):
         adapter.load_case(config_data=config2, update=True)
