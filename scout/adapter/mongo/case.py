@@ -610,6 +610,11 @@ class CaseHandler(object):
         if existing_case:
             if not update:
                 raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
+
+            # Check if updated case has same display_name as existing case
+            if case_obj["display_name"] != existing_case["display_name"]:
+                raise IntegrityError("Updated case name doesn't match existing case name.")
+
             # Check that individuals from new case match individuals from old case in ID, name and phenotype
             old_case_inds = set(
                 [(ind["individual_id"], ind["display_name"], ind["phenotype"])]
@@ -623,6 +628,7 @@ class CaseHandler(object):
                 raise IntegrityError(
                     "Updated case individuals don't match individuals from existing case. Please either delete old case or modify updated case individuals."
                 )
+
             if keep_actions:
                 # collect all variants with user actions for this case
                 old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
