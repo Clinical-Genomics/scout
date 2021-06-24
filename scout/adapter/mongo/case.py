@@ -610,8 +610,8 @@ class CaseHandler(object):
             if case_obj["display_name"] != existing_case["display_name"]:
                 raise IntegrityError("Updated case name doesn't match existing case name.")
 
-            # Check that individuals from updated case match individuals from existing case in ID, name and phenotype
-            old_case_inds = set(
+            # Check that individuals from updated case match individuals from existing case in ID, name and affected status
+            existing_case_inds = set(
                 [
                     (ind["individual_id"], ind["display_name"], ind["phenotype"])
                     for ind in existing_case.get("individuals")
@@ -623,7 +623,7 @@ class CaseHandler(object):
                     for ind in case_obj.get("individuals")
                 ]
             )
-            if existing_case != case_inds:
+            if existing_case_inds != case_inds:
                 raise IntegrityError(
                     "Updated case individuals don't match individuals from existing case. Please either delete old case or modify updated case individuals."
                 )
