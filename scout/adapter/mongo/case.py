@@ -556,6 +556,64 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
+    def check_existing_data(self, case_obj, update, keep_actions):
+        """Make sure data from case to be loaded/reuploaded conforms to case data already saved in database.
+           Return eventual evaluated variants to be propagated to the updated case if keep_actions is True
+
+        Args:
+            case_obj(dict): case dictionary to be loaded/reuploaded
+            update(bool): If existing case should be updated
+
+        returns:
+            previous_evaluated_variants(list): list of variants evaluated in previous case
+        """
+
+        # Check if case exists in database (same _id)
+        existing_case = self.case(case_id=case_obj["_id"])
+        # Check if another case exists in database with same display name for the same customer (different _id)
+        duplicated_case_name = self.case(
+            institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
+        )
+        # Avoid saving a new case in database with a display_name that already exists for another case from the same customer
+        if duplicated_case_name and existing_case is None:
+            raise IntegrityError(
+                "A case with display name %s already exists in database for this customer"
+                % case_obj["display_name"]
+            )
+
+        if existing_case is None:
+            return
+
+        # existing case
+        if not update:
+            raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
+
+        # Enforce same display name for updated case as existing case
+        if case_obj["display_name"] != existing_case["display_name"]:
+            raise IntegrityError("Updated case name doesn't match existing case name.")
+
+        # Check that individuals from updated case match individuals from existing case in ID, name and affected status
+        existing_case_inds = set(
+            [
+                (ind["individual_id"], ind["display_name"], ind["phenotype"])
+                for ind in existing_case.get("individuals")
+            ]
+        )
+        case_inds = set(
+            [
+                (ind["individual_id"], ind["display_name"], ind["phenotype"])
+                for ind in case_obj.get("individuals")
+            ]
+        )
+        if existing_case_inds != case_inds:
+            raise IntegrityError(
+                "Updated case individuals don't match individuals from existing case. Please either delete old case or modify updated case individuals."
+            )
+
+        if keep_actions:
+            # collect all variants with user actions for this case
+            return list(self.evaluated_variants(case_obj["_id"]))
+
     def load_case(self, config_data, update=False, keep_actions=True):
         """Load a case into the database
 
@@ -579,9 +637,6 @@ class CaseHandler(object):
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
-        old_evaluated_variants = (
-            None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
-        )
 
         # This is to keep sanger order and validation status
         old_sanger_variants = self.case_sanger_variants(case_obj["_id"])
@@ -597,49 +652,8 @@ class CaseHandler(object):
             self.update_caseid(old_case, case_obj["_id"])
             update = True
 
-        # Check if case exists in database (same _id)
-        existing_case = self.case(case_id=case_obj["_id"])
-        # Check if another case exists in database with same display name for the same customer (different _id)
-        duplicated_case_name = self.case(
-            institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
-        )
-
-        if existing_case:
-            if not update:
-                raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
-
-            # Enforce same display name for updated case as existing case
-            if case_obj["display_name"] != existing_case["display_name"]:
-                raise IntegrityError("Updated case name doesn't match existing case name.")
-
-            # Check that individuals from updated case match individuals from existing case in ID, name and affected status
-            existing_case_inds = set(
-                [
-                    (ind["individual_id"], ind["display_name"], ind["phenotype"])
-                    for ind in existing_case.get("individuals")
-                ]
-            )
-            case_inds = set(
-                [
-                    (ind["individual_id"], ind["display_name"], ind["phenotype"])
-                    for ind in case_obj.get("individuals")
-                ]
-            )
-            if existing_case_inds != case_inds:
-                raise IntegrityError(
-                    "Updated case individuals don't match individuals from existing case. Please either delete old case or modify updated case individuals."
-                )
-
-            if keep_actions:
-                # collect all variants with user actions for this case
-                old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
-
-        elif duplicated_case_name:
-            # Avoid saving a new case in database with a display_name that already exists for another case from the same customer
-            raise IntegrityError(
-                "A case with display name %s already exists in database for this customer"
-                % case_obj["display_name"]
-            )
+        # Retrieve variant info to be propagated to eventual updated case (acmg, manual rank, cancer tier, dismissed, mosaic, commented)
+        old_evaluated_variants = self.check_existing_data(case_obj, update, keep_actions)
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
