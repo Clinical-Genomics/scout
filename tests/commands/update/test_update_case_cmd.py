@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pytest
 
 from scout.commands import cli
 from scout.server.extensions import store
@@ -14,7 +15,7 @@ def test_update_case_no_args(mock_app):
     result = runner.invoke(cli, ["update", "case"])
 
     ## THEN it should return an error message
-    assert "Please specify which case to update" in result.output
+    assert "Please provide either case ID or both institute_id and display_name" in str(result)
 
 
 def test_update_case_wrong_collaborator(mock_app, case_obj):
