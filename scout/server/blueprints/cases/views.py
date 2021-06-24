@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import logging
 import os.path
 import re
 import shutil
 from operator import itemgetter
 
+import requests
 from flask import (
     Blueprint,
     Response,
@@ -22,10 +24,11 @@ from flask import (
 )
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
+from requests.exceptions import ReadTimeout
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, matchmaker, store
+from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
 
 from . import controllers
@@ -70,6 +73,7 @@ def case(institute_id, case_name):
         mme_nodes=matchmaker.connected_nodes,
         tissue_types=SAMPLE_SOURCE,
         gens_info=gens.connection_settings(case_obj.get("genome_build")),
+        display_rerunner=rerunner.connection_settings.get("display", False),
         **data,
     )
 
@@ -318,7 +322,7 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
                 )
         except ValueError:
             return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
-    return redirect(case_url)
+    return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
 def parse_raw_gene_ids(raw_symbols):
@@ -748,6 +752,22 @@ def rerun(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/reanalysis", methods=["POST"])
+def reanalysis(institute_id, case_name):
+    """Toggle a rerun by making a call to RERUNNER service."""
+
+    edited_metadata = json.loads(request.form.get("sample_metadata"))
+    try:
+        controllers.call_rerunner(store, institute_id, case_name, edited_metadata)
+
+    except Exception as err:
+        msg = f"Error processing request: {err.__class__.__name__} - {str(err)}"
+        LOG.error(msg)
+        flash(msg, "danger")
+
+    return redirect(request.referrer)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/research", methods=["POST"])
 def research(institute_id, case_name):
     """Open the research list for a case."""
@@ -769,7 +789,7 @@ def cohorts(institute_id, case_name):
         store.remove_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
     else:
         store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
-    return redirect(request.referrer)
+    return redirect("#".join([request.referrer, "cohorts"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/default-panels", methods=["POST"])
