@@ -234,7 +234,7 @@ def tx_choices(hgnc_id, panel_obj):
         if gene_obj:
             for transcript in gene_obj.get("disease_associated_transcripts", []):
                 if (transcript, transcript) not in transcript_choices:
-                    transcript_choices.append((transcript, transcript))
+                    transcript_choices.append((transcript, f"{transcript} (previous choice)"))
     return transcript_choices
 
 
