@@ -135,7 +135,9 @@ def panel(panel_id):
             flash("Provided HGNC is not valid : '{}'".format(raw_hgnc_id), "danger")
             return redirect(request.referrer)
         action = request.form["action"]
-        gene_obj = store.hgnc_gene(hgnc_id)
+        gene_obj = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
+            hgnc_identifier=hgnc_id, build="38"
+        )
         if gene_obj is None:
             flash("HGNC id not found: {}".format(hgnc_id), "warning")
             return redirect(request.referrer)
@@ -208,7 +210,9 @@ def gene_edit(panel_id, hgnc_id):
     """Edit additional information about a panel gene."""
 
     panel_obj = store.panel(panel_id)
-    hgnc_gene = store.hgnc_gene(hgnc_id)
+    hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
+        hgnc_identifier=hgnc_id, build="38"
+    )
     panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
 
     form = PanelGeneForm()
