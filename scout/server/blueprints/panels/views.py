@@ -216,13 +216,16 @@ def tx_choices(hgnc_id, panel_obj):
     """
 
     transcript_choices = []
+    hgnc_gene = None
 
     for build in ["37", "38"]:
-        hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build=build)
-        if hgnc_gene is None:
+        build_specific_hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build=build)
+        if build_specific_hgnc_gene is None:
             continue
 
-        for transcript in hgnc_gene["transcripts"]:
+        hgnc_gene = build_specific_hgnc_gene
+
+        for transcript in build_specific_hgnc_gene["transcripts"]:
             if transcript.get("refseq_id"):
                 refseq_id = transcript.get("refseq_id")
                 transcript_choices.append((refseq_id, f"{refseq_id} (build {build})"))
