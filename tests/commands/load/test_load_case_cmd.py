@@ -138,3 +138,36 @@ def test_load_case_NoConf(mock_app, institute_obj, case_obj):
 
     # THEN error in exit status
     assert result.exit_code != 0
+
+
+def test_load_case_BadPath(mock_app, institute_obj, case_obj):
+    # GIVEN a config setup with an incorrect path configured
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # remove case from real populated database using adapter
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+    res = store.institute_collection.find({"_id": "cust000"})
+    assert sum(1 for i in res) == 1
+
+    # Make sure the scout config file is available
+    assert os.path.exists(load_path)
+    temp_conf = os.path.join(tempfile.gettempdir(), "temp.conf")
+
+    content = []
+    with open(load_path) as f:
+        content = f.readlines()
+
+    # Remove a mandatory key value from config value content
+    content.remove("vcf_snv: scout/demo/643594.clinical.vcf.gz\n")
+    content.append("vcf_snv: scout/demo/incorrect_path/643594.clinical.vcf.gz\n")
+
+    with open(temp_conf, mode="wt") as f:
+        f.write("".join(content))
+
+    # WHEN: config is loaded
+    result = runner.invoke(cli, ["load", "case", temp_conf])
+    # THEN KeyError is caught and exit value is non-zero
+    assert result.exit_code == 1
+    assert "Exception: bad path" in result.output

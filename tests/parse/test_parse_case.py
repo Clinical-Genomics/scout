@@ -8,11 +8,63 @@ from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.case import (
     parse_case,
     parse_case_data,
-    parse_individual,
-    parse_individuals,
     parse_ped,
     removeNoneValues,
 )
+
+
+@pytest.mark.parametrize("name, type", [("analysis_date", str), ("analysis_date", datetime), ()])
+def typecheck_mandatory_data(name, type):
+    # GIVEN a load config with date string
+    # WHEN case is parsed
+
+    # THEN the case should have an analysis_date
+    assert isinstance(scout_config["analysis_date"], type)
+
+    # ("collaborators", "owner"),
+    # ("madeline_info", "madeline"),
+
+
+@pytest.mark.parametrize(
+    "case_name, config_name",
+    [
+        ("analysis_date", "analysis_date"),
+        ("case_id", "family"),
+        ("default_panels", "default_gene_panels"),
+        ("delivery_report", "delivery_report"),
+        ("gene_panels", "gene_panels"),
+        ("lims_id", "lims_id"),
+        ("owner", "owner"),
+        ("smn_tsv", "smn_tsv"),
+        ("peddy_ped", "peddy_ped"),
+        ("rank_model_version", "rank_model_version"),
+        ("rank_score_threshold", "rank_score_threshold"),
+    ],
+)
+def test_mandatory_params_are_set(case_name, config_name, scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should have a owner
+    assert case_data[case_name] == scout_config[config_name]
+
+
+# @pytest.mark.parametrize("vcf_file", ["vcf_snv", "vcf_sv", "vcf_snv_research", "vcf_snv_research"])
+# def test_parse_case_vcf_files(scout_config, vcf_file):
+#     # GIVEN you load sample information from a scout config
+#     # WHEN case is parsed
+#     case_data = parse_case(scout_config)
+#     # THEN the case should the same vcf files as specified in the
+#     assert case_data["vcf_files"][vcf_file] == scout_config[vcf_file]
+def test_parse_case_vcf_files(scout_config):
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case(scout_config)
+    # THEN the case should the same vcf files as specified in the
+    assert case_data["vcf_files"]["vcf_snv"] == scout_config["vcf_snv"]
+    assert case_data["vcf_files"]["vcf_sv"] == scout_config["vcf_sv"]
+    assert case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
+    assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
 
 
 def test_parse_case_no_date(scout_config):
@@ -45,33 +97,6 @@ def test_parse_case_date_string(scout_config):
     assert isinstance(case_data["analysis_date"], datetime)
 
 
-def test_parse_case_date(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have an analysis_date
-    assert isinstance(scout_config["analysis_date"], datetime)
-    assert isinstance(case_data["analysis_date"], datetime)
-
-
-def test_parse_case_owner(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have a owner
-    assert case_data["owner"] == scout_config["owner"]
-
-
-def test_parse_case_limsid(scout_config):
-    """Test parsing a case with lims_id"""
-
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the lims ID should be the same as in config
-    assert case_data["lims_id"] == scout_config["lims_id"]
-
-
 def test_parse_case(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
@@ -86,67 +111,6 @@ def test_parse_case_madeline(scout_config):
     case_data = parse_case(scout_config)
     # THEN the case a correct case id
     assert case_data["madeline_info"]
-
-
-def test_parse_case_collaborators(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have a list with collaborators
-    assert case_data["collaborators"] == [scout_config["owner"]]
-
-
-def test_parse_case_gene_panels(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["gene_panels"] == scout_config["gene_panels"]
-
-
-def test_parse_case_default_panels(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["default_panels"] == scout_config["default_gene_panels"]
-
-
-def test_parse_case_rank_threshold(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["rank_score_threshold"] == scout_config["rank_score_threshold"]
-
-
-def test_parse_case_rank_model_version(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same rank model version like the config
-    assert case_data["rank_model_version"] == scout_config["rank_model_version"]
-
-
-def test_parse_case_vcf_files(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should the same vcf files as specified in the
-    assert case_data["vcf_files"]["vcf_snv"] == scout_config["vcf_snv"]
-    assert case_data["vcf_files"]["vcf_sv"] == scout_config["vcf_sv"]
-    assert case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
-    assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
-
-
-def test_parse_case_delivery_report(scout_config):
-    # GIVEN you load sample information from a scout config
-
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-
-    # then we should find the delivery report in the parsed data
-    assert case_data["delivery_report"] == scout_config["delivery_report"]
 
 
 def test_parse_case_bam_path(scout_config):
@@ -272,60 +236,6 @@ def test_parse_case_two_cases_ped():
     with pytest.raises(PedigreeError):
         # THEN it should raise since there are multiple families
         parse_ped(case_lines)
-
-
-def test_no_individuals():
-    # GIVEN a list with no indioviduals
-    samples = []
-    # WHEN parsing the individuals
-    with pytest.raises(PedigreeError):
-        # THEN error should be raised since a family has to have individuals
-        parse_individuals(samples)
-
-
-def test_parse_missing_id():
-    # GIVEN a individual without sample_id
-    sample_info = {"sex": "male", "phenotype": "affected"}
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
-
-
-def test_parse_missing_sex():
-    # GIVEN a individual without sex
-    sample_info = {"sample_id": "1", "phenotype": "affected"}
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
-
-
-def test_parse_missing_phenotype():
-    # GIVEN a individual without phenotype
-    sample_info = {"sample_id": "1", "sex": "male"}
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
-
-
-def test_parse_wrong_phenotype():
-    # GIVEN a individual with wrong phenotype format
-    sample_info = {"sample_id": "1", "sex": "male", "phenotype": "not-affected"}
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
-
-
-def test_parse_wrong_sex():
-    # GIVEN a individual with wrong sex format
-    sample_info = {"sample_id": "1", "sex": "flale", "phenotype": "affected"}
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
 
 
 def test_wrong_relations():
