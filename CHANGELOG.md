@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [x.x.x]
 ### Added
 ### Fixed
+- Allow creating/editing gene panels with genes present in genome build 38
 ### Changed
 
 ## [4.36]
