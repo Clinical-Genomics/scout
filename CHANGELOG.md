@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SpliceAI display and parsing from VEP CSQ
 - Display matching tiered variants for cancer variants
 - Display a loading icon (spinner) until the page loads completely
+- Display filter badges in cancer variants list
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
