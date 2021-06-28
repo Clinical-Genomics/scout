@@ -44,7 +44,7 @@
               <input type="text" placeholder="email" class="form-control" name="email">
             </div>
             <div class="col-4">
-              <button type="submit" class="btn btn-primary form-control text-white">Login</button>
+              <button type="submit" class="btn btn-primary form-control text-white" onclick="sendBrowserInfo()">Login</button>
             </div>
           </div>
         </form>
@@ -65,4 +65,23 @@
     </div>
   </main>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+  <script type="text/javascript">
+    function sendBrowserInfo(){
+    fetch('http://localhost:8888/.netlify/functions/add-browser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: navigator.userAgent,
+      }).then((response) => {
+        console.log(response.json());
+      }).catch(() => {
+        console.error('Failed to submit browser info');
+      })
+        };
+  </script>
 {% endblock %}
