@@ -431,10 +431,10 @@ def parse_variant(
         variant_obj["first_rep_gene"] = None
 
     # annotate filters
-    variant_obj['filters'] = [
-            VARIANT_FILTERS[f]
-            for f in map(lambda x: x.lower(), variant_obj['filters'])
-            if f in VARIANT_FILTERS
+    variant_obj["filters"] = [
+        VARIANT_FILTERS[f]
+        for f in map(lambda x: x.lower(), variant_obj["filters"])
+        if f in VARIANT_FILTERS
     ]
 
     return variant_obj
