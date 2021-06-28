@@ -85,8 +85,8 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
                 resources[resname] = get_file_handle(resource_path).readlines()
 
         # If the resource is manadatory make sure it exists and contains data (OMIM data is NOT mandatory)
-        if resname in ["hpo_genes", "hgnc_lines", "exac_lines"] and not resources[resname]:
-            LOG.error(f"Missing resource {resname} in provided path.")
+        if resname in ["hpo_genes", "hgnc_lines", "exac_lines"] and not resources.get(resname):
+            LOG.error(f"Missing resource {resname} in downloads path.")
             raise click.Abort()
 
         # Check that the available genes and transcripts file correspond to the required genome build
@@ -136,7 +136,7 @@ def genes(build, downloads_folder, api_key):
                 download_resources(tempdir, api_key, builds)
             except Exception as ex:
                 LOG.error(ex)
-        fetch_downloaded_resources(resources, downloads_folder, builds)
+        fetch_downloaded_resources(resources, tempdir, builds)
     else:  # If resources have been previosly downloaded, read those file and return their lines
         fetch_downloaded_resources(resources, downloads_folder, builds)
 
