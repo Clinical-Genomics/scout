@@ -49,6 +49,32 @@ GENETIC_MODELS = (
 
 VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")
 
+
+# Formatting for different filters in the vcf file
+VARIANT_FILTERS = {
+    "pass": {"label": "PASS", "description": "Passed filtering", "label_class": "success"},
+    "germline": {"label": "GERM", "description": "Germline variant", "label_class": "warning"},
+    "germline_risk": {"label": "GERM", "description": "Germline risk", "label_class": "warning"},
+    "fail_nvaf": {"label": "N", "description": "Too high VAF in normal sample", "label_class": "danger"},
+    "fail_pvalue": {"label": "P", "description": "Too low P-value", "label_class": "danger"},
+    "fail_homopolymer_indel": {"label": "HP", "Variant in homopolymer region": "Passed filtering", "label_class": "danger"},
+    "fail_longdel": {"label": "LD", "description": "Long DEL from vardict", "label_class": "danger"},
+    "fail_no_tvar": {"label": "NO", "description": "No tumor variant", "label_class": "danger"},
+    "fail_pon_freebayes": {"label": "PON", "description": "Variant in panel of normals", "label_class": "danger"},
+    "fail_pon_tnscope": {"label": "PON", "description": "Variant in panel of normals", "label_class": "danger"},
+    "fail_pon_vardict": {"label": "PON", "description": "Variant in panel of normals", "label_class": "danger"},
+    "fail_strandbias": {"label": "SB", "description": "Strand bias", "label_class": "danger"},
+    "warn_homopolymer_indel": {"label": "HP", "Variant in homopolymer region": "Passed filtering", "label_class": "warning"},
+    "warn_low_tcov": {"label": "COV", "description": "Low tumor coverage", "label_class": "warning"},
+    "warn_novar": {"label": "NO", "description": "No tumor variant", "label_class": "warning"},
+    "warn_pon_freebayes": {"label": "PON", "description": "Passed filtering", "label_class": "warning"},
+    "warn_pon_tnscope": {"label": "PON", "description": "Passed filtering", "label_class": "warning"},
+    "warn_pon_vardict": {"label": "PON", "description": "Passed filtering", "label_class": "warning"},
+    "warn_strandbias": {"label": "SB", "description": "Strand bias", "label_class": "warning"},
+    "warn_low_tvaf": {"label": "LO", "description": "Low tumor VAF", "label_class": "warning"},
+    "warn_verylow_tvaf": {"label": "XLO", "description": "Very low tumor WAF", "label_class": "warning"},
+}
+
 # Describe conversion between numerical SPIDEX values and human readable.
 # Abs is not tractable in mongo query.
 SPIDEX_HUMAN = {
