@@ -204,6 +204,43 @@ def panel_export(panel_id):
     )
 
 
+def tx_choices(hgnc_id, panel_obj):
+    """Collect transcripts from a gene both in build 37 and 38
+
+    Args:
+        hgnc_id(int): a gene HGNC ID
+        panel_obj(dict): a gene panel dictionary representation
+
+    Returns:
+        transcript_choices(list) a list with the options for a form select field
+    """
+
+    transcript_choices = []
+
+    for build in ["37", "38"]:
+        hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build=build)
+        if hgnc_gene is None:
+            continue
+
+        for transcript in hgnc_gene["transcripts"]:
+            if transcript.get("refseq_id"):
+                refseq_id = transcript.get("refseq_id")
+                transcript_choices.append((refseq_id, f"{refseq_id} (build {build})"))
+
+        # collect even refseq version provided by user for this transcript (might have a version)
+        if panel_obj.get("genes"):
+            genes_dict = {gene_obj["symbol"]: gene_obj for gene_obj in panel_obj["genes"]}
+            gene_obj = genes_dict.get(hgnc_gene["hgnc_symbol"])
+            if gene_obj:
+                for transcript in gene_obj.get("disease_associated_transcripts", []):
+                    if (transcript, transcript) not in transcript_choices:
+                        transcript_choices.append((transcript, transcript))
+
+    LOG.error(transcript_choices)
+
+    return transcript_choices
+
+
 @panels_bp.route("/panels/<panel_id>/update/<int:hgnc_id>", methods=["GET", "POST"])
 @templated("panels/gene-edit.html")
 def gene_edit(panel_id, hgnc_id):
@@ -216,23 +253,8 @@ def gene_edit(panel_id, hgnc_id):
     panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
 
     form = PanelGeneForm()
-    transcript_choices = []
 
-    for transcript in hgnc_gene["transcripts"]:
-        if transcript.get("refseq_id"):
-            refseq_id = transcript.get("refseq_id")
-            transcript_choices.append((refseq_id, refseq_id))
-
-    # collect even refseq version provided by user for this transcript (might have a version)
-    if panel_obj.get("genes"):
-        genes_dict = {gene_obj["symbol"]: gene_obj for gene_obj in panel_obj["genes"]}
-        gene_obj = genes_dict.get(hgnc_gene["hgnc_symbol"])
-        if gene_obj:
-            for transcript in gene_obj.get("disease_associated_transcripts", []):
-                if (transcript, transcript) not in transcript_choices:
-                    transcript_choices.append((transcript, transcript))
-
-    form.disease_associated_transcripts.choices = transcript_choices
+    form.disease_associated_transcripts.choices = tx_choices(hgnc_id, panel_obj)
     if form.validate_on_submit():
         action = "edit" if panel_gene else "add"
         info_data = form.data.copy()
