@@ -98,7 +98,9 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
                 raise click.Abort()
 
         # Check that resource lines contain actual data
-        if resources.get(resname) and "<!DOCTYPE html>" in resources[resname][0]:
+        if resname not in resources:
+            continue
+        if "<!DOCTYPE html>" in resources[resname][0] or "<!DOCTYPE html>" in resources[resname][1]:
             LOG.error(f"Resource file '{resname}' doesn't contain valid data.")
             raise click.Abort()
 
