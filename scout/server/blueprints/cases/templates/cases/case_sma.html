@@ -113,12 +113,16 @@
                   class="bg-warning"
                 {% endif %}>
               <td>{{ ind.display_name }}</td>
-              <td>
+              <td style="font-weight: bold;">
                 {% if ind.sex_human in ['female','male'] %}
-                  <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
-                {% else %}
-                  {{ind.sex_human}}
-                {% endif %}
+                    {% if ind.sex_human == 'female' %}
+                      F
+                    {% elif ind.sex_human == 'male' %}
+                      M
+                    {% else %}
+                      {{ind.sex_human}}
+                    {% endif %}
+                  {% endif %}
                 {% if ind.confirmed_sex %}
                   <i class="fa fa-check"></i>
                 {% endif %}

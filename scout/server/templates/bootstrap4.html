@@ -14,9 +14,46 @@
   {% endblock %}
 	<!-- Adding support for Font Awesome icons version 6 -->
 	<script src="https://kit.fontawesome.com/bff7dad824.js" crossorigin="anonymous"></script>
+
+	<style>
+
+		.spinner {
+			height: 100vh;
+			width: 100vw;
+			overflow: hidden;
+			position: absolute;
+		}
+
+		.spinner>div {
+			height: 90px;
+			width: 90px;
+			border: 5px solid #1182b22c;
+			border-top-color: #1181B2;
+			position: absolute;
+			margin: auto;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			border-radius: 50%;
+			animation: spin 0.5s infinite linear;
+			z-index: 100;
+		}
+
+		@keyframes spin {
+			100%{
+				transform: rotate(360deg);
+			}
+		}
+
+	</style>
 </head>
 
 <body>
+	<!-- Loading spinner -->
+	<div class="spinner">
+		<div></div>
+	</div>
 	{% block body %}
   {% block navbar%}
   {% endblock navbar%}
@@ -35,3 +72,13 @@
 
 </body>
 </html>
+
+<script>
+$(window).on('beforeunload', function(){
+	$('.spinner').show();
+});
+
+$(document).ready (function() {
+	  $('.spinner').hide();
+})
+</script>

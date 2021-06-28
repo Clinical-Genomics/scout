@@ -158,32 +158,35 @@ class ScoutLoadConfig(BaseModel):
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles] = None
 
+    # override init() for handling nested vcf_files dicts
+    # use try/except to handle TypeError if `vcf_files`is already set in
+    # previous call `parse_case_data()`, `parse_case()`.
+    def __init__(self, **data):
+        vcfs = VcfFiles(**data)
+        try:
+            super().__init__(vcf_files=vcfs, **data)
+        except TypeError as err:
+            super().__init__(**data)
+
     @validator("analysis_date")
     def check_analysis_date(cls, dt):
-        LOG.debug("GOT DATE: {}".format(dt))
         if isinstance(dt, datetime.datetime):
-            LOG.debug("dt OK")
             # return datetime.datetime.strptime(dt, "%Y-%M-%d %H:%M%S")
             return dt
         correct_date = datetime.datetime.now()
-        LOG.debug("returning {}".format(correct_date))
         return correct_date
 
     # Each case has to have a owner. If not provided in config file it needs to be given as a
     # argument
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
-        LOG.debug("OWNER: {}".format(value))
         if value is None:
-            LOG.debug(" CHECK owner ConfigError owner")
             raise ConfigError("A case has to have a owner")
         return value
 
     @validator("family", pre=True, always=True)
     def mandatory_check_family(cls, value):
-        LOG.debug("FAMILY(mandatory_check_family): {}".format(value))
         if value is None:
-            LOG.debug("RAISE ConfigError family")
             raise ConfigError("A case has to have a 'family'")
         return value
 
@@ -198,12 +201,10 @@ class ScoutLoadConfig(BaseModel):
 
     @validator("family")
     def print_f(cls, v):
-        LOG.debug("Family: ".format(v))
         return v
 
     @validator("display_name")
     def print_f2(cls, v):
-        LOG.debug("display_name: ".format(v))
         return v
 
     @validator("track")
@@ -215,17 +216,18 @@ class ScoutLoadConfig(BaseModel):
     # TODO: give better variable names in all controll funs
     @validator("synopsis")
     def synopsis_pre(cls, my_synopsis):
-        LOG.debug("SYNOPSIS: {}".format(my_synopsis))
         if isinstance(my_synopsis, list):
-            LOG.debug("SYNOPSIS is a list, join")
             return ". ".join(my_synopsis)
         return my_synopsis
 
     @root_validator
     def update_track(cls, values):
+        """Performt hooks to config:
+        * Set track to 'cancer' if certain vcf-files are set.
+        * Make sure `collaborators` is set."""
+
         # Handle special circumstances
         vcfs = values.get("vcf_files")
-        LOG.debug("VCFS: {}".format(vcfs))
         try:
             vcf_dict = vcfs.dict()
             if (
@@ -236,27 +238,20 @@ class ScoutLoadConfig(BaseModel):
             ):
                 values.update({"track": "cancer"})
         except Exception as error:
-            LOG.debug("exception in vcf_s?! {}".format(error))
+            LOG.error("exception in vcf_s! Not set? {}".format(error))
 
-        LOG.debug("OK")
         # Update collaborators to [owner] if not set
         if values.get("collaborators") is None:
-            LOG.debug("UPDATE COLLAB")
             owner = values.get("owner")
             values.update({"collaborators": [owner]})
-        LOG.debug("RETURN")
         return values
 
     @root_validator
     def set_display_name(cls, values):
         # set toplevel 'display_name' to 1. family_name  2. family
         if values.get("family_name"):
-            LOG.debug("DISPLAYNAME1: {}".format(values.get("family_name")))
             values.update({"display_name": values.get("family_name")})
         else:
-            LOG.debug(
-                "DISPLAYNAME2: {}/{}".format(values.get("display_name"), values.get("family"))
-            )
             values.update({"display_name": values.get("family")})
         return values
 

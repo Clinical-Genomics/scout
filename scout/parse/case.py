@@ -46,6 +46,7 @@ def get_correct_date(date_info):
     return datetime.datetime.now()
 
 
+# TODO: rename this function
 def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
 
@@ -72,7 +73,11 @@ def parse_case_data(**kwargs):
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
+    LOG.debug("KWARGS: {}".format(kwargs))
     config = kwargs.pop("config", {})
+
+    # Default the analysis date to now if not specified in load config
+    config["analysis_date"] = get_correct_date(config.get("analysis_date"))
 
     # If ped file  provided we need to parse that first
     if "ped" in kwargs and kwargs["ped"] is not None:
@@ -82,9 +87,7 @@ def parse_case_data(**kwargs):
 
     # Give passed keyword arguments precedence over file configuration
     # Except for 'owner', prededence config file over arguments
-    LOG.debug("KWARGS: {}".format(kwargs))
     if "owner" in config:
-        print(kwargs)
         kwargs.pop("owner", None)  # dont crash if 'owner' is missing
     for key in kwargs:
         if kwargs[key] is not None:
@@ -96,37 +99,31 @@ def parse_case_data(**kwargs):
                 config[key] = None
 
     # populate configuration according to Pydantic defined classes
-    LOG.debug("1st SCOUTLOADCONFIG")
-    config = ScoutLoadConfig(**config)
-
+    LOG.debug("1st SCOUTLOADCONFIG: {}".format(config))
+    config_data = ScoutLoadConfig(**config)
     # convert to dict
-    config = config.dict()
+    config_data = config_data.dict()
 
-    synopsis = (
-        ". ".join(config["synopsis"])
-        if isinstance(config["synopsis"], list)
-        else config["synopsis"]
-    )
-
-    # Default the analysis date to now if not specified in load config
-    config["analysis_date"] = get_correct_date(config.get("analysis_date"))
     # handle whitespace in gene panel names
     try:
-        config["gene_panels"] = [panel.strip() for panel in config["gene_panels"]]
-        config["default_gene_panels"] = [panel.strip() for panel in config["default_gene_panels"]]
+        config_data["gene_panels"] = [panel.strip() for panel in config_data["gene_panels"]]
+        config_data["default_gene_panels"] = [
+            panel.strip() for panel in config_data["default_gene_panels"]
+        ]
     except KeyError:
         pass
 
     # This will add information from peddy to the individuals
-    add_peddy_information(config)
+    add_peddy_information(config_data)
 
     ##################### Add multiqc information #####################
     LOG.debug("Checking for SMN TSV..")
-    if config["smn_tsv"]:
-        LOG.info("Adding SMN info from {}.".format(config["smn_tsv"]))
-        add_smn_info(config)
+    if config_data["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
+        add_smn_info(config_data)
 
-    return removeNoneRecursive(config)
+    LOG.debug("parse_case_data/return: {}".format(removeNoneRecursive(config_data)))
+    return removeNoneRecursive(config_data)
 
 
 def add_smn_info(config_data):
@@ -446,9 +443,14 @@ def parse_case(config):
         dict: parsed case data
     """
     # create a config object based on pydantic rules
+    LOG.debug("parse_case/CONFIG: {}".format(config))
+    synopsis = None
+    synopsis = (
+        ". ".join(config["synopsis"])
+        if isinstance(config["synopsis"], list)
+        else config["synopsis"]
+    )
     configObj = ScoutLoadConfig(**config)
-    vcf_files = VcfFiles(**config)  # vcf_files parsed separetly
-    configObj.vcf_files = vcf_files
     case_data = configObj.dict()  # translate object to dict
 
     # add SMN info
@@ -456,8 +458,8 @@ def parse_case(config):
     if case_data["smn_tsv"]:
         LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
         add_smn_info_case(case_data)
-
-    return removeNoneRecursive(configObj.dict())
+    LOG.debug("parse_case/return: {}".format(removeNoneRecursive(case_data)))
+    return removeNoneRecursive(case_data)
 
 
 def parse_ped(ped_stream, family_type="ped"):
@@ -513,7 +515,7 @@ def removeNoneRecursive(dictionary):
 
 
 def removeNoneRecursive_aux(dictionary, new_dict):
-    LOG.debug("diction: {}".format(dictionary))
+    # LOG.debug("diction: {}".format(dictionary))
     for key, value in dictionary.items():
         if value is not None:
             new_dict.update({key: value})
@@ -522,12 +524,15 @@ def removeNoneRecursive_aux(dictionary, new_dict):
             and len(value) > 0
             and key
             not in [
+                "capture_kits",
                 "collaborators",
                 "cohorts",
                 "default_panels",
+                "default_gene_panels",
                 "gene_panels",
-                "capture_kits",
+                "synopsis",
                 "phenotype_terms",
+                "panel",
             ]
         ):
             new_list = [removeNoneRecursive_aux(item, {}) for item in value]
