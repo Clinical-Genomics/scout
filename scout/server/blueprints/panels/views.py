@@ -227,14 +227,14 @@ def tx_choices(hgnc_id, panel_obj):
                 refseq_id = transcript.get("refseq_id")
                 transcript_choices.append((refseq_id, f"{refseq_id} (build {build})"))
 
-        # collect even refseq version provided by user for this transcript (might have a version)
-        if panel_obj.get("genes"):
-            genes_dict = {gene_obj["symbol"]: gene_obj for gene_obj in panel_obj["genes"]}
-            gene_obj = genes_dict.get(hgnc_gene["hgnc_symbol"])
-            if gene_obj:
-                for transcript in gene_obj.get("disease_associated_transcripts", []):
-                    if (transcript, transcript) not in transcript_choices:
-                        transcript_choices.append((transcript, transcript))
+    # collect even refseq version provided by user for this transcript (might have a version)
+    if panel_obj.get("genes"):
+        genes_dict = {gene_obj["symbol"]: gene_obj for gene_obj in panel_obj["genes"]}
+        gene_obj = genes_dict.get(hgnc_gene["hgnc_symbol"])
+        if gene_obj:
+            for transcript in gene_obj.get("disease_associated_transcripts", []):
+                if (transcript, transcript) not in transcript_choices:
+                    transcript_choices.append((transcript, transcript))
     return transcript_choices
 
 
