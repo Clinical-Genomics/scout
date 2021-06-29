@@ -71,7 +71,7 @@
 {{ super() }}
   <script type="text/javascript">
     const sendBrowserInfo = () => {
-      if (window.location.hostname.contains('scilifelab.se')) {
+      if (window.location.hostname.includes('scilifelab.se')) {
           fetch('https://user-stats.netlify.app/.netlify/functions/add-browser', {
               method: 'POST',
               headers: {
