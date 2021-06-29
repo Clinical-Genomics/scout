@@ -172,12 +172,20 @@
     <!-- Add new HPO terms to case/individuals -->
     <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
       <div class="row">
-        <div class="col-6">
+        <div class="col-4">
           <input name="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
         </div>
-        <div class="col-6 btn-group">
-          <button class="btn btn-outline-secondary btn-xs form-control">Add to case</button>
-          <button class="btn btn-outline-secondary btn-xs form-control">Add to individual</button>
+        <div class="col-4">
+          <select name="disease_associated_transcripts" multiple class="selectpicker">
+            {% for ind in case.individuals %}
+              <option name="{{ind.individual_id}}" {{"selected" if ind.phenotype==2 }}>
+                {{ind.display_name}}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-3">
+          <button class="btn btn-outline-secondary btn-sm form-control">Assign phenotype</button>
         </div>
       </div>
     </form>
