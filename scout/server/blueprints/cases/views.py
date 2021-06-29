@@ -325,9 +325,10 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
                 is_group=is_group,
                 phenotype_inds=phenotype_inds,
             )
-
         except ValueError:
-            return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
+            flash(f"Unable to add phenotype for the given terms:{phenotype_term}", "warning")
+            return redirect(case_url)
+
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
