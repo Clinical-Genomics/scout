@@ -305,6 +305,8 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
         try:
             # add a new phenotype item/group to the case
             phenotype_term = request.form["hpo_term"]
+            phenotyoe_inds = request.form.getlist("phenotype_inds") or []
+
             if phenotype_term.startswith("HP:") or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(" | ", 1)[0]
                 store.add_phenotype(
@@ -314,6 +316,7 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
                     case_url,
                     hpo_term=hpo_term,
                     is_group=is_group,
+                    individuals=phenotyoe_inds,
                 )
             else:
                 # assume omim id

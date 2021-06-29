@@ -169,14 +169,21 @@
       <h6 class="mt-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" href="{{ url }}">HPO</a>)</h6>
     </div>
 
-    <!-- Add new HPO terms to case/individuals -->
     <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
+    <!-- Add phenotype groups to case -->
+      <div class="row">
+        
+      </div>
+    <!-- End of add phenotype groups to case -->
+
+
+    <!-- Add new HPO terms to case/individuals -->
       <div class="row">
         <div class="col-4">
           <input name="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search...">
         </div>
         <div class="col-4">
-          <select name="disease_associated_transcripts" multiple class="selectpicker">
+          <select name="phenotype_inds" multiple class="selectpicker">
             {% for ind in case.individuals %}
               <option name="{{ind.individual_id}}" {{"selected" if ind.phenotype==2 }}>
                 {{ind.display_name}}
@@ -188,6 +195,7 @@
           <button class="btn btn-outline-secondary btn-sm form-control">Assign phenotype</button>
         </div>
       </div>
+    <!-- End of add new HPO terms to case/individuals -->
     </form>
 
 

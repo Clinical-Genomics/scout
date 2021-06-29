@@ -181,7 +181,15 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return self.event_collection.find(query)
 
     def add_phenotype(
-        self, institute, case, user, link, hpo_term=None, omim_term=None, is_group=False
+        self,
+        institute,
+        case,
+        user,
+        link,
+        hpo_term=None,
+        omim_term=None,
+        is_group=False,
+        individuals=[],
     ):
         """Add a new phenotype term to a case
 
@@ -195,6 +203,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             hpo_term (str): A hpo id
             omim_term (str): A omim id
             is_group (bool): is phenotype term a group?
+            individuals(list): list of case individuals showing a phenotype
 
         """
         hpo_results = []
