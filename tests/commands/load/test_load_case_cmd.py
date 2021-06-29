@@ -87,7 +87,7 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
 
     # THEN it should trigger KeyError
     assert result.exit_code == 1
-    assert "KEYERROR" in result.output
+    assert "KeyError" in result.output
 
 
 def test_load_case_KeyError2(mock_app, institute_obj, case_obj, monkeypatch):
