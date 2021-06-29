@@ -445,11 +445,12 @@ def parse_case(config):
     # create a config object based on pydantic rules
     LOG.debug("parse_case/CONFIG: {}".format(config))
     synopsis = None
-    synopsis = (
-        ". ".join(config["synopsis"])
-        if isinstance(config["synopsis"], list)
-        else config["synopsis"]
-    )
+    if config.get("synopsis"):
+        synopsis = (
+            ". ".join(config["synopsis"])
+            if isinstance(config["synopsis"], list)
+            else config["synopsis"]
+        )
     configObj = ScoutLoadConfig(**config)
     case_data = configObj.dict()  # translate object to dict
 
