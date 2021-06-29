@@ -210,7 +210,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         if hpo_term:  # User specified an HPO term
             hpo_results = [hpo_term]
-        elif omim_term:  # User specified an OMIM diagnoses, collect associated HPO terms
+        elif omim_term:  # User specified an OMIM diagnosys, collect its associated HPO terms
             disease_obj = self.disease_term(omim_term)
             if disease_obj:
                 for term in disease_obj.get("hpo_terms", []):
