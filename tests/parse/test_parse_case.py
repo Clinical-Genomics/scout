@@ -8,6 +8,7 @@ from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.case import (
     parse_case,
     parse_case_data,
+    parse_individuals,
     parse_ped,
     removeNoneValues,
 )
