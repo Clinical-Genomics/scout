@@ -49,7 +49,6 @@ GENETIC_MODELS = (
 
 VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")
 
-
 # Formatting for different filters in the vcf file
 VARIANT_FILTERS = {
     "pass": {"label": "PASS", "description": "Passed filtering", "label_class": "success"},
