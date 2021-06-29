@@ -98,7 +98,7 @@ def case(
         )
     except SyntaxError as err:
         LOG.error(
-            "SyntaxError {} missing when loading '{}' {}".format(
+            "SyntaxError {}: missing when loading '{}' {}".format(
                 err, config.name, traceback.format_exc()
             )
         )
