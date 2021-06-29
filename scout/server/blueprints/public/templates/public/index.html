@@ -21,7 +21,7 @@
       </p>
     {% else %}
       {% if config.GOOGLE %}
-        <a class="btn btn-primary" href="{{ url_for('login.login') }}" role="button">
+        <a class="btn btn-primary" href="{{ url_for('login.login') }}" role="button" onclick="sendBrowserInfo()">
           Login with Google
         </a>
       {% elif config.LDAP_HOST %}
@@ -33,7 +33,7 @@
             <label>Password{{ form.password(class="form-control") }}</label>
           </div>
           <div class="col-4">
-            <button type="submit" class="btn btn-primary form-control text-white">Login</button>
+            <button type="submit" class="btn btn-primary form-control text-white" onclick="sendBrowserInfo()">Login</button>
           </div>
           {{ form.hidden_tag() }}
         </form>
@@ -70,18 +70,26 @@
 {% block scripts %}
 {{ super() }}
   <script type="text/javascript">
-    function sendBrowserInfo(){
-    fetch('http://localhost:8888/.netlify/functions/add-browser', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: navigator.userAgent,
-      }).then((response) => {
-        console.log(response.json());
-      }).catch(() => {
-        console.error('Failed to submit browser info');
-      })
+    const sendBrowserInfo = () => {
+      if (window.location.hostname.contains('scilifelab.se')) {
+          fetch('https://user-stats.netlify.app/.netlify/functions/add-browser', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  agent: navigator.userAgent,
+                  screenWidth: window.screen.width,
+                  screenHeight: window.screen.height,
+                  env: window.location.hostname,
+                  date: new Date(),
+              }),
+          }).then((response) => {
+              console.log(response.json());
+          }).catch(() => {
+              console.error('Failed to submit browser info');
+          })
+      }
         };
   </script>
 {% endblock %}
