@@ -90,7 +90,6 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
     assert "KEYERROR" in result.output
 
 
-
 def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
     """Test loading a case with a config file that will trigger KeyError"""
     runner = mock_app.test_cli_runner()
@@ -98,6 +97,7 @@ def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
     # GIVEN a patched `parse_case` function that will raise KeyError
     def mock_parse_case(*args):
         raise SyntaxError
+
     monkeypatch.setattr(case, "add_smn_info", mock_parse_case)
 
     # GIVEN a database with no cases
