@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A more compact case page
 - Removed OMIM genes panel
 - Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
+- Update to Scilifelab's 2020 logo
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 
