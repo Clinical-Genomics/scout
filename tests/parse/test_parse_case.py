@@ -58,14 +58,20 @@ def test_parse_case_date(scout_config):
     "param_name",
     [
         "analysis_date",
+        "cohorts",
         "delivery_report",
         "gene_panels",
+        "gene_fusion_report",
         "lims_id",
         "owner",
+        "peddy_check",
         "peddy_ped",
+        "peddy_sex",
+        "phenotype_terms",
         "rank_model_version",
         "rank_score_threshold",
         "smn_tsv",
+        "sv_rank_model_version"
     ],
 )
 def test_parse_case_parsing(scout_config, param_name):
