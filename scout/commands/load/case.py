@@ -97,11 +97,16 @@ def case(
             peddy_check=peddy_check,
         )
     except SyntaxError as err:
-        LOG.warning(err)
+        LOG.error(
+            "SyntaxError {}: missing when loading '{}' {}".format(
+                err, config.name, traceback.format_exc()
+            )
+        )
         raise click.Abort()
     except KeyError as err:
-        LOG.error("KEYERROR {} missing when loading '{}'".format(err, config.name))
-        LOG.debug("Stack trace: {}".format(traceback.format_exc()))
+        LOG.error(
+            "KeyError {} when loading '{}' {}".format(err, config.name, traceback.format_exc())
+        )
         raise click.Abort()
 
     if config_data.get("human_genome_build") not in [37, 38, "37", "38"]:
