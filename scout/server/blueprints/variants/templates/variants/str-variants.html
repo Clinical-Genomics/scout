@@ -2,7 +2,7 @@
 {% from "utils.html" import comments_table, pedigree_panel %}
 {% from "variants/components.html" import gene_cell, frequency_cell_general %}
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
-{% from "variant/buttons.html" import igv_button %}
+{% from "variant/buttons.html" import igv_button, reviewer_button%}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -104,8 +104,9 @@
             <td>{{ variant.chromosome }}</td>
             <td>
               {{ variant.position }}
+              {{ reviewer_button(case,variant,case_groups,institute._id) }}
               {{ igv_button(case,variant,case_groups) }}
-              </td>
+            </td>
         </tr>
         {% else %}
           <tr>

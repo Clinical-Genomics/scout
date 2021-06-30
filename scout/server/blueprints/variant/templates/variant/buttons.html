@@ -85,6 +85,14 @@
   </form>
 {% endmacro %}
 
+{% macro reviewer_button(case, variant, case_groups, institute_id) %}
+  <a
+    href="{{url_for('variants.test', institute_id=institute_id, case_name=case.display_name, str_repid=variant.str_repid)}}"
+    class="link text-black"
+    title="{{variant.str_repid}}"
+    >Inspect alignments</a>
+{% endmacro %}
+
 {% macro igv_button(case, variant, case_groups) %}
   <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
     <!-- general hidden fields required to submit POST request to IGV viewer -->

@@ -23,7 +23,8 @@ from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
-
+print('__name__')
+print(__name__)
 variants_bp = Blueprint(
     "variants",
     __name__,
@@ -142,13 +143,60 @@ def variants(institute_id, case_name):
         **data,
     )
 
+@variants_bp.route("/test/<institute_id>/<case_name>/str/variants/<str_repid>", methods=["GET", "POST"])
+@templated("variants/str-variants-reviewer.html")
+def test(institute_id, case_name, str_repid):
+    """Display STR variant alignment using the REViewer service."""
+    print("terst112")
+    variant_type = request.args.get("variant_type", "clinical")
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    # return f'{institute_id} – {case_name} - {locus}'
+    data = controllers.str_variants_reviewer(store, institute_obj, case_obj)
+    return dict(
+      institute=institute_obj,
+      case=case_obj,
+      variant_type=variant_type,
+      format="html",
+      str_repid=str_repid,
+      **data,
+    )
+
+    # institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    # # data = controllers.str_variants(
+    # #     store, institute_obj, case_obj,
+    # # )
+
+    # return dict(
+    #     institute=institute_obj,
+    #     case=case_obj,
+    #     locus=locus,
+    #     # dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+    #     # variant_type=variant_type,
+    #     # manual_rank_options=MANUAL_RANK_OPTIONS,
+    #     # cytobands=cytobands,
+    #     # form=form,
+    #     # page=page,
+    #     # filters=available_filters,
+    #     # expand_search=str(request.method == "POST"),
+    #     # result_size=result_size,
+    #     # total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+    #     # **data,
+    # )
 
 @variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
+    print("str_variants")
+
     page = int(request.form.get("page", 1))
     variant_type = request.args.get("variant_type", "clinical")
+
+    print('variant page')
+    print('args', request.args.get("variant_type", "clinical"))
+
     category = "str"
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -203,6 +251,9 @@ def str_variants(institute_id, case_name):
     data = controllers.str_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
+
+    print('form type data', form.variant_type.data)
+
     return dict(
         institute=institute_obj,
         case=case_obj,

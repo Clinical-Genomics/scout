@@ -170,6 +170,41 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     return {"variants": variants, "more_variants": more_variants}
 
 
+def str_variants_reviewer(
+    store, institute_obj, case_obj,
+    # variants_query, variant_count, page=1, per_page=50
+):
+    """Pre-process list of STR variants."""
+
+    return_view_data = {}
+
+    # # case bam_files for quick access to alignment view.
+    # case_append_alignments(case_obj)
+
+    # # Fetch ids for grouped cases and prepare alignment display
+    # case_groups = {}
+    # if case_obj.get("group"):
+    #     for group in case_obj.get("group"):
+    #         case_groups[group] = list(store.cases(group=group))
+    #         for grouped_case in case_groups[group]:
+    #             case_append_alignments(grouped_case)
+    #     return_view_data["case_groups"] = case_groups
+
+    # return_view_data.update(
+    #     variants(
+    #         store,
+    #         institute_obj,
+    #         case_obj,
+    #         variants_query,
+    #         variant_count,
+    #         page=page,
+    #         per_page=per_page,
+    #     )
+    # )
+
+    return return_view_data
+
+
 def str_variants(
     store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
 ):
