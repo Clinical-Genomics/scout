@@ -65,7 +65,7 @@ def test_parse_case_date(scout_config):
         "peddy_ped",
         "rank_model_version",
         "rank_score_threshold",
-        "smn_tsv"
+        "smn_tsv",
     ],
 )
 def test_parse_case_parsing(scout_config, param_name):
@@ -88,7 +88,7 @@ def test_parse_case_aliases(scout_config, param_name, alias_name):
     # THEN the case a correct case id
     assert case_data[param_name] == scout_config[alias_name]
 
-    
+
 def test_parse_case_madeline(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
@@ -112,7 +112,7 @@ def test_parse_case_vcf_files(scout_config, vcf_file):
     case_data = parse_case(scout_config)
     # THEN the case should the same vcf files as specified in the
     assert case_data["vcf_files"][vcf_file] == scout_config[vcf_file]
-    
+
 
 @pytest.mark.parametrize("bam_name", ["alignment_path", "bam_file", "bam_path"])
 def test_parse_case_bams(scout_config, bam_name):
@@ -277,13 +277,13 @@ def test_wrong_relations(scout_config):
     samples_list = scout_config["samples"]
     erronous_config = []
     for sample in samples_list:
-        if sample["sample_id"] == 'ADM1059A2':
-            sample['mother'] = "ID_miss"
+        if sample["sample_id"] == "ADM1059A2":
+            sample["mother"] = "ID_miss"
             erronous_config.append(sample)
         else:
             erronous_config.append(sample)
     scout_config["samples"] = erronous_config
-            
+
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
         parse_case(scout_config)
