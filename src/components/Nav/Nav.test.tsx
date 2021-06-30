@@ -7,14 +7,14 @@ const darkMode = false
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const toggleDarkMode = () => {}
 
-const scoutNavItems: Array<NavItem> = [{ linkTitle: 'Home', public: false, link: '/home' }]
+const scoutNavItemsTest: Array<NavItem> = [{ linkTitle: 'Test', public: false, link: '/test' }]
 
 test('Nav render correctly', () => {
   const { getByTestId } = render(
     <Router>
-      <Nav navItems={scoutNavItems} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <Nav navItems={scoutNavItemsTest} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
     </Router>
   )
   const container = getByTestId('NavMenu')
-  expect(container).toBeInTheDocument()
+  expect(container.firstChild.textContent).toBe('Test')
 })

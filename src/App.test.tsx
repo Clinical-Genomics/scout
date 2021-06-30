@@ -1,10 +1,8 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import { store } from './domain/store'
-import { render, fireEvent, cleanup, screen } from '@testing-library/react'
+import { render, fireEvent, screen } from '@testing-library/react'
 import App from './App'
-
-afterEach(cleanup)
 
 test('render with redux', () => {
   const { getByText } = render(
