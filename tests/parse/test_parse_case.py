@@ -71,7 +71,7 @@ def test_parse_case_date(scout_config):
         "rank_model_version",
         "rank_score_threshold",
         "smn_tsv",
-        "sv_rank_model_version"
+        "sv_rank_model_version",
     ],
 )
 def test_parse_case_parsing(scout_config, param_name):
@@ -111,7 +111,9 @@ def test_parse_case_collaborators(scout_config):
     assert case_data["collaborators"] == [scout_config["owner"]]
 
 
-@pytest.mark.parametrize("vcf_file", ["vcf_snv", "vcf_sv", "vcf_str", "vcf_snv_research", "vcf_sv_research"])
+@pytest.mark.parametrize(
+    "vcf_file", ["vcf_snv", "vcf_sv", "vcf_str", "vcf_snv_research", "vcf_sv_research"]
+)
 def test_parse_case_vcf_files(scout_config, vcf_file):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
