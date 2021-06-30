@@ -111,7 +111,7 @@ def test_parse_case_collaborators(scout_config):
     assert case_data["collaborators"] == [scout_config["owner"]]
 
 
-@pytest.mark.parametrize("vcf_file", ["vcf_snv", "vcf_sv", "vcf_snv_research", "vcf_sv_research"])
+@pytest.mark.parametrize("vcf_file", ["vcf_snv", "vcf_sv", "vcf_str", "vcf_snv_research", "vcf_sv_research"])
 def test_parse_case_vcf_files(scout_config, vcf_file):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
