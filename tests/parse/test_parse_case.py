@@ -276,7 +276,7 @@ def test_parse_wrong_sex():
 
 def test_wrong_relations(scout_config):
     # GIVEN a individual with correct family info
-    # Nothong should happend here
+    # Nothing should happend here
     assert parse_case(scout_config)
 
     # WHEN changing mother id in proband to non-existing id
