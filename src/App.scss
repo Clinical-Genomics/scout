@@ -84,3 +84,30 @@ li {
 .flex {
   display: flex;
 }
+
+/** Login button */
+.login_button {
+  background-color: $scout-color;
+  margin: 8px;
+  color: #fff;
+}
+
+/** Nav item container */
+li.nav_item {
+  list-style-type: none;
+  position: relative;
+  margin: 0px 8px;
+}
+
+.dropdown_item_space {
+  height: 100%;
+  width: 2px;
+  cursor: pointer;
+}
+
+
+.test{
+  position: absolute;
+  top: 0px;
+  right: 100px;
+}
