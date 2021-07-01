@@ -1,7 +1,6 @@
 /* eslint-disable react/button-has-type */
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { GoogleLogin, GoogleLogout } from 'react-google-login'
 import DropdownMenu from 'components/DropdownMenu/DropdownMenu'
 import { FaAngleDown } from 'react-icons/fa'
 import Tooltip from '@material-ui/core/Tooltip'

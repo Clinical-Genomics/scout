@@ -61,30 +61,33 @@ export const AppComponent = ({
         </Switch>
         {/* Greeting */}
         <ul className="test">
-          {isLoaded && (
+          {settings.googleToken && (
             <li key="logout" className="nav_item">
               <span>{`Hi ${settings?.user?.givenName}!`}</span>
               <div className="dropdown_item_space" />
-              <li>
-                <GoogleLogout
-                  render={(renderProps) => (
-                    <button
-                      className="no_button_style"
-                      onClick={renderProps.onClick}
-                      disabled={renderProps.disabled}
-                    >
-                      Sign out
-                    </button>
-                  )}
-                  clientId={clientId}
-                  buttonText="Sign out"
-                  onLogoutSuccess={onLogoutSuccess}
-                />
-              </li>
+              <FaAngleDown className="collapse_arrow" />
+              <DropdownMenu>
+                <li>
+                  <GoogleLogout
+                    render={(renderProps) => (
+                      <button
+                        className="no_button_style"
+                        onClick={renderProps.onClick}
+                        disabled={renderProps.disabled}
+                      >
+                        Sign out
+                      </button>
+                    )}
+                    clientId={clientId}
+                    buttonText="Sign out"
+                    onLogoutSuccess={onLogoutSuccess}
+                  />
+                </li>
+              </DropdownMenu>
             </li>
           )}
           {/* Login button */}
-          {!isLoaded && (
+          {!settings?.googleToken && (
             <li>
               <GoogleLogin
                 render={(renderProps) => (

@@ -108,6 +108,42 @@ li.nav_item {
 
 .test{
   position: absolute;
-  top: 0px;
+  top: -10px;
   right: 100px;
+}
+
+  /** Nav item container */
+  li.nav_item {
+    list-style-type: none;
+    position: relative;
+    margin: 0px 8px;
+  }
+
+  .dropdown_item_space {
+    height: 100%;
+    width: 2px;
+    cursor: pointer;
+  }
+
+  /** Collapse arrow animation */
+  .collapse_arrow {
+    cursor: pointer;
+    transition: transform 0.5s;
+  }
+  li:hover > .collapse_arrow {
+    transform: rotate(180deg);
+  }
+  .dropdown_item_space {
+    height: 100%;
+    width: 2px;
+    cursor: pointer;
+  }
+  li.nav_item {
+  /** Dropdown menu */
+  & > ul {
+    display: none;
+  }
+  &:hover > ul {
+    display: flex;
+  }
 }
