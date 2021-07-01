@@ -16,6 +16,12 @@ from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
+# TODO: Remove parse_individuals(samples) and fix the tests that break
+def parse_individuals(samples):
+    """ Dummy function kept for pytests"""
+    return None
+
+
 
 def get_correct_date(date_info):
     """Convert dateinfo to correct date
@@ -102,28 +108,27 @@ def parse_case_data(**kwargs):
     LOG.debug("1st SCOUTLOADCONFIG: {}".format(config))
     config_data = ScoutLoadConfig(**config)
     # convert to dict
-    config_data = config_data.dict()
+    config_dict = config_data.dict()
 
     # handle whitespace in gene panel names
     try:
-        config_data["gene_panels"] = [panel.strip() for panel in config_data["gene_panels"]]
-        config_data["default_gene_panels"] = [
-            panel.strip() for panel in config_data["default_gene_panels"]
+        config_dict["gene_panels"] = [panel.strip() for panel in config_dict["gene_panels"]]
+        config_dict["default_gene_panels"] = [
+            panel.strip() for panel in config_dict["default_gene_panels"]
         ]
     except KeyError:
         pass
 
     # This will add information from peddy to the individuals
-    add_peddy_information(config_data)
+    add_peddy_information(config_dict)
 
     ##################### Add multiqc information #####################
     LOG.debug("Checking for SMN TSV..")
-    if config_data["smn_tsv"]:
-        LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
-        add_smn_info(config_data)
+    if config_dict["smn_tsv"]:
+        add_smn_info(config_dict)
 
-    LOG.debug("parse_case_data/return: {}".format(removeNoneRecursive(config_data)))
-    return removeNoneRecursive(config_data)
+    LOG.debug("parse_case_data/return: {}".format(removeNoneRecursive(config_dict)))
+    return removeNoneRecursive(config_dict)
 
 
 def add_smn_info(config_data):
@@ -132,7 +137,7 @@ def add_smn_info(config_data):
     Args:
         config_data(dict)
     """
-
+    LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
     if not config_data.get("smn_tsv"):
         LOG.warning("No smn_tsv though add_smn_info called. This is odd.")
         return
@@ -254,183 +259,6 @@ def add_peddy_information(config_data):
                     # Set confirmatio to True
                     analysis_inds[ind[parent]]["confirmed_parent"] = True
 
-
-def parse_individual(sample):
-    """Parse individual information
-
-    Args:
-        sample (dict)
-
-    Returns:
-        {
-            'individual_id': str,
-            'father': str,
-            'mother': str,
-            'display_name': str,
-            'sex': str,
-            'phenotype': str,
-            'bam_file': str,
-            'mt_bam': str,
-            'analysis_type': str,
-            'vcf2cytosure': str,
-            'capture_kits': list(str),
-            'upd_sites_bed': str,
-            'upd_regions_bed': str,
-            'rhocall_bed': str,
-            'rhocall_wig': str,
-            'tiddit_coverage_wig': str,
-            'predicted_ancestry' = str,
-            'is_sma': boolean,
-            'is_sma_carrier': boolean,
-            'smn1_cn' = int,
-            'smn2_cn' = int,
-            'smn2delta78_cn' = int,
-            'smn_27134_cn' = int,
-            'tumor_type': str,
-            'tmb': str,
-            'msi': str,
-            'tumor_purity': float,
-            'tissue_type': str,
-            'chromograph_images': str
-            'vcf2cytosure': str
-            'rna_coverage_bigwig': str
-            'splice_junctions_bed': str
-        }
-
-    """
-    ind_info = {}
-    if "sample_id" not in sample:
-        raise PedigreeError("One sample is missing 'sample_id'")
-    sample_id = sample["sample_id"]
-    # Check the sex
-    if "sex" not in sample:
-        raise PedigreeError("Sample %s is missing 'sex'" % sample_id)
-    sex = sample["sex"]
-    if sex not in REV_SEX_MAP:
-        LOG.warning(
-            "'sex' is only allowed to have values from {}".format(
-                ", ".join(list(REV_SEX_MAP.keys()))
-            )
-        )
-        raise PedigreeError("Individual %s has wrong formated sex" % sample_id)
-
-    # Check the phenotype
-    if "phenotype" not in sample:
-        raise PedigreeError("Sample %s is missing 'phenotype'" % sample_id)
-    phenotype = sample["phenotype"]
-    if phenotype not in REV_PHENOTYPE_MAP:
-        LOG.warning(
-            "'phenotype' is only allowed to have values from {}".format(
-                ", ".join(list(REV_PHENOTYPE_MAP.keys()))
-            )
-        )
-        raise PedigreeError("Individual %s has wrong formated phenotype" % sample_id)
-
-    ind_info["individual_id"] = sample_id
-    ind_info["display_name"] = sample.get("sample_name", sample["sample_id"])
-
-    ind_info["sex"] = sex
-    ind_info["phenotype"] = phenotype
-
-    ind_info["father"] = sample.get("father")
-    ind_info["mother"] = sample.get("mother")
-
-    ind_info["confirmed_parent"] = sample.get("confirmed_parent")
-    ind_info["confirmed_sex"] = sample.get("confirmed_sex")
-    ind_info["predicted_ancestry"] = sample.get("predicted_ancestry")
-
-    # IGV files these can be bam or cram format
-    bam_path_options = ["alignment_path", "bam_path", "bam_file"]
-    for option in bam_path_options:
-        if sample.get(option) and not sample.get(option).strip() == "":
-            if "bam_file" in ind_info:
-                LOG.warning(
-                    "Multiple alignment paths given for individual %s in load config. Using %s",
-                    ind_info["individual_id"],
-                    ind_info["bam_file"],
-                )
-            else:
-                ind_info["bam_file"] = sample[option]
-
-    ind_info["rhocall_bed"] = sample.get("rhocall_bed", sample.get("rhocall_bed"))
-    ind_info["rhocall_wig"] = sample.get("rhocall_wig", sample.get("rhocall_wig"))
-    ind_info["tiddit_coverage_wig"] = sample.get(
-        "tiddit_coverage_wig", sample.get("tiddit_coverage_wig")
-    )
-    ind_info["upd_regions_bed"] = sample.get("upd_regions_bed", sample.get("upd_regions_bed"))
-    ind_info["upd_sites_bed"] = sample.get("upd_sites_bed", sample.get("upd_sites_bed"))
-    ind_info["mt_bam"] = sample.get("mt_bam")
-    ind_info["analysis_type"] = sample.get("analysis_type")
-
-    # Path to downloadable vcf2cytosure file
-    ind_info["vcf2cytosure"] = sample.get("vcf2cytosure")
-
-    # Path to splice junctions data
-    ind_info["rna_coverage_bigwig"] = sample.get("rna_coverage_bigwig")
-    ind_info["splice_junctions_bed"] = sample.get("splice_junctions_bed")
-
-    # load sma file if it is not done at this point!
-    ind_info["is_sma"] = sample.get("is_sma", None)
-    ind_info["is_sma_carrier"] = sample.get("is_sma_carrier", None)
-    ind_info["smn1_cn"] = sample.get("smn1_cn", None)
-    ind_info["smn2_cn"] = sample.get("smn2_cn", None)
-    ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn", None)
-    ind_info["smn_27134_cn"] = sample.get("smn_27134_cn", None)
-
-    ind_info["capture_kits"] = [sample.get("capture_kit")] if "capture_kit" in sample else []
-
-    # Cancer specific values
-    ind_info["tumor_type"] = sample.get("tumor_type")
-    # tumor_mutational_burden
-    ind_info["tmb"] = sample.get("tmb")
-    ind_info["msi"] = sample.get("msi")
-
-    ind_info["tumor_purity"] = sample.get("tumor_purity")
-    # might be a string-formatted fraction, example: 30/90
-    if isinstance(ind_info["tumor_purity"], str):
-        ind_info["tumor_purity"] = float(Fraction(ind_info["tumor_purity"]))
-
-    ind_info["tissue_type"] = sample.get("tissue_type")
-
-    ind_info["chromograph_images"] = sample.get("chromograph_images")
-
-    # Remove key-value pairs from ind_info where key==None and return
-    return removeNoneRecursive(ind_info)
-
-
-def parse_individuals(samples):
-    """Parse the individual information
-
-    Reformat sample information to proper individuals
-
-    Args:
-        samples(list(dict))
-
-    Returns:
-        individuals(list(dict))
-    """
-    individuals = []
-    if len(samples) == 0:
-        raise PedigreeError("No samples could be found")
-
-    ind_ids = set()
-    for sample_info in samples:
-        parsed_ind = parse_individual(sample_info)
-        individuals.append(parsed_ind)
-        ind_ids.add(parsed_ind["individual_id"])
-
-    # Check if relations are correct
-    for parsed_ind in individuals:
-        father = parsed_ind.get("father")
-        if father and father != "0":
-            if father not in ind_ids:
-                raise PedigreeError("father %s does not exist in family" % father)
-        mother = parsed_ind.get("mother")
-        if mother and mother != "0":
-            if mother not in ind_ids:
-                raise PedigreeError("mother %s does not exist in family" % mother)
-
-    return individuals
 
 
 def parse_case(config):
