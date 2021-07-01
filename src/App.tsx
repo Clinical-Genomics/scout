@@ -75,7 +75,7 @@ export const AppComponent = ({
                         onClick={renderProps.onClick}
                         disabled={renderProps.disabled}
                       >
-                        Sign out
+                        Sign out test
                       </button>
                     )}
                     clientId={clientId}
