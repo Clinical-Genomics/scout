@@ -1,15 +1,16 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { render } from '@testing-library/react'
 import DropdownMenu from './DropdownMenu'
 
-describe('<DropdownMenu />', () => {
-  let component
+const scoutNavItemsTest = [{ linkTitle: 'Test', public: false, link: '/test' }]
 
-  beforeEach(() => {
-    component = shallow(<DropdownMenu />)
-  })
-
-  test('It should mount', () => {
-    expect(component.length).toBe(1)
-  })
+test('Dropdown render correctly', () => {
+  const { getByTestId } = render(
+    <DropdownMenu>
+      <li>Test</li>
+      <li>Test 2</li>
+    </DropdownMenu>
+  )
+  const container = getByTestId('DropdownMenu')
+  expect(container.firstChild?.textContent).toBe('Test')
 })

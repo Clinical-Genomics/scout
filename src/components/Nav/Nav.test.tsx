@@ -1,34 +1,20 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { render } from '@testing-library/react'
 import Nav, { NavItem } from './Nav'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
-describe('<Nav />', () => {
-  let component
-  const cgNavItems: Array<NavItem> = [
-    { linkTitle: 'Beställninger', public: true, link: '/orders' },
-    { linkTitle: 'Provkrav', public: true, link: '/requirements' },
-    { linkTitle: 'Applikationer', public: true, link: '/applications' },
-    { linkTitle: 'Dataleverans', public: true, link: '/delivery' },
-    {
-      linkTitle: 'Support',
-      public: true,
-      dropdownList: [
-        { linkTitle: 'FAQ', public: true, link: '/faq' },
-        { linkTitle: 'Kontakt', public: true, link: '/contact' },
-        { linkTitle: 'Feedback', public: false, link: '/feedback' },
-        { linkTitle: 'Help', public: false, link: '/help' },
-      ],
-    },
-    { linkTitle: 'New order', public: false, link: '/new-order' },
-    { linkTitle: 'Status', public: false, link: '/status' },
-    { linkTitle: 'Items', public: false, link: '/items' },
-  ]
+const darkMode = false
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const toggleDarkMode = () => {}
 
-  beforeEach(() => {
-    component = shallow(<Nav navItems={cgNavItems} />)
-  })
+const scoutNavItemsTest: Array<NavItem> = [{ linkTitle: 'Test', public: false, link: '/test' }]
 
-  test('It should mount', () => {
-    expect(component.length).toBe(1)
-  })
+test('Nav render correctly', () => {
+  const { getByTestId } = render(
+    <Router>
+      <Nav navItems={scoutNavItemsTest} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+    </Router>
+  )
+  const container = getByTestId('NavMenu')
+  expect(container.firstChild.textContent).toBe('Test')
 })

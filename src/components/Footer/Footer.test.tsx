@@ -1,15 +1,10 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { render } from '@testing-library/react'
 import Footer from './Footer'
 
-describe('<Footer />', () => {
-  let component
-
-  beforeEach(() => {
-    component = shallow(<Footer />)
-  })
-
-  test('It should mount', () => {
-    expect(component.length).toBe(1)
-  })
+test('Footer text render correctly', () => {
+  const { getByTestId } = render(<Footer />)
+  const footer = getByTestId('footer')
+  const currentYear: number = new Date().getFullYear()
+  expect(footer.textContent).toBe(`Scout © ${currentYear}`)
 })
