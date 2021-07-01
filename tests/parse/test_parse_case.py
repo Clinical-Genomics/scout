@@ -298,7 +298,7 @@ def test_wrong_relations(scout_config):
 
 
 def test_removeNoneValues():
-    # WHEN a dict *not* containing a value which is None
+    # WHEN a dict *not* containing a None value
     d = {"a": "1", "b": 2, "c": 3}
 
     # THEN calling removeNoneValues(dict) will not change dict
