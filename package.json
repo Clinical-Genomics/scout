@@ -13,9 +13,6 @@
     "@types/node": "^12.0.0",
     "@types/react-dom": "^17.0.0",
     "dns-packet": "^5.2.4",
-    "enzyme": "^3.11.0",
-    "firebase": "^8.6.8",
-    "firebase-tools": "^9.14.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-google-login": "^5.2.2",
@@ -55,7 +52,6 @@
     ]
   },
   "devDependencies": {
-    "@types/enzyme": "^3.10.8",
     "@types/material-ui": "^0.21.8",
     "@types/react": "^17.0.3",
     "@types/react-router-dom": "^5.1.7",
@@ -69,6 +65,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "prettier": "^2.3.1"
+    "prettier": "^2.3.1",
+    "react-test-renderer": "^17.0.2"
   }
 }

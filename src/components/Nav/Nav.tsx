@@ -34,7 +34,7 @@ const clientId = REACT_APP_GOOGLE_OAUTH_CLIENT_ID || 'no-id'
 
 const Nav: React.FC<Props> = ({ header, navItems, darkMode, toggleDarkMode }) => {
   return (
-    <nav className={styles.Nav}>
+    <nav className={styles.Nav} data-testid="NavMenu">
       <ul>
         {/* Header */}
         {header?.icon && header?.title && (
@@ -83,14 +83,18 @@ const Nav: React.FC<Props> = ({ header, navItems, darkMode, toggleDarkMode }) =>
       </ul>
       <ul className={styles.nav_settings}>
         <li className={styles.nav_item}>
-          <button className="no_button_style flex" onClick={() => toggleDarkMode()}>
+          <button
+            data-testid="darkMode"
+            className="no_button_style flex"
+            onClick={() => toggleDarkMode()}
+          >
             {darkMode && (
-              <Tooltip title="Toggle light/dark theme">
+              <Tooltip title="Toggle light theme">
                 <Brightness5OutlinedIcon />
               </Tooltip>
             )}
             {!darkMode && (
-              <Tooltip title="Toggle light/dark theme">
+              <Tooltip title="Toggle dark theme">
                 <Brightness4OutlinedIcon />
               </Tooltip>
             )}

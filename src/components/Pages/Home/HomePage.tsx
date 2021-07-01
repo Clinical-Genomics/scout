@@ -78,7 +78,12 @@ function HomePage({ settings, setDarkMode }: Props) {
                 Scout allows you to browse VCFs in a web browser, identify compound pairs, and solve
                 cases as a team.
               </Typography>
-              <Typography className={classes.version} variant="body2" component="p">
+              <Typography
+                className={classes.version}
+                variant="body2"
+                component="p"
+                data-testid="version"
+              >
                 Version: {scoutVersion}
               </Typography>
             </CardContent>
