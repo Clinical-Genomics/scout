@@ -1,5 +1,6 @@
 """Class to hold information about scout load config"""
 
+import copy
 import datetime
 import logging
 from fractions import Fraction
@@ -140,7 +141,7 @@ class ScoutLoadConfig(BaseModel):
     gene_fusion_report_research: Optional[str] = None
     genome_build: int = Field([], alias="human_genome_build")
     human_genome_build: str = None
-    individuals: List[ScoutIndividual] = Field([], alias="samples")  ## we also have samples ??
+    individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
     madeline_info: Optional[str] = Field("", alias="madeline")
     multiqc: Optional[str] = None
@@ -199,13 +200,23 @@ class ScoutLoadConfig(BaseModel):
         with mad_path.open("r") as in_handle:
             return in_handle.read()
 
-    @validator("family")
-    def print_f(cls, v):
-        return v
-
-    @validator("display_name")
-    def print_f2(cls, v):
-        return v
+    @validator("individuals")
+    def family_relations_consistent(cls, individuals):
+        individual_dicts = [i.dict() for i in individuals]
+        if len(individual_dicts) == 0:
+            raise PedigreeError("No samples could be found")
+        all_ids = [i["individual_id"] for i in individual_dicts]
+        # Check if relations are correct
+        for parsed_ind in individual_dicts:
+            father = parsed_ind.get("father")
+            if father and father != "0":
+                if father not in all_ids:
+                    raise PedigreeError("father %s does not exist in family" % father)
+            mother = parsed_ind.get("mother")
+            if mother and mother != "0":
+                if mother not in all_ids:
+                    raise PedigreeError("mother %s does not exist in family" % mother)
+        return individuals
 
     @validator("track")
     def field_not_none(cls, v):
