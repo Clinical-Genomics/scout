@@ -34,6 +34,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed OMIM genes panel
 - Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
 - Update to Scilifelab's 2020 logo
+- Update Gens URL to support Gens v2.0 format
+- Refactor tests for parsing case configurations
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
 
