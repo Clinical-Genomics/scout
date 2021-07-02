@@ -14,6 +14,7 @@ from scout.parse.case import (
 )
 from pydantic import ValidationError
 
+
 def test_parse_case_no_date(scout_config):
     # GIVEN a load config without a date
     scout_config.pop("analysis_date")
@@ -230,22 +231,17 @@ def test_no_individuals(scout_config):
         parse_case(scout_config)
 
 
-@pytest.mark.parametrize(
-    "param", ["sample_id", "sex", "phenotype"]
-)
+@pytest.mark.parametrize("param", ["sample_id", "sex", "phenotype"])
 def test_mandatory_param_missing(scout_config, param):
     individual = {"sample_id": "1", "sex": "male", "phenotype": "affected"}
     # GIVEN a individual with missing mandatory param
     del individual[param]
-    scout_config["samples"] =[individual]
-    # print(parse_case(scout_config))
+    scout_config["samples"] = [individual]
     # WHEN a individual is parsed
     with pytest.raises(ValidationError):
         # THEN a ValidationError should be raised
         parse_case(scout_config)
 
-
-    
 
 def test_parse_wrong_phenotype(scout_config):
     # GIVEN a individual with wrong phenotype format
@@ -263,8 +259,6 @@ def test_parse_wrong_sex(scout_config):
     with pytest.raises(ValidationError):
         # THEN a PedigreeError should be raised
         parse_case(scout_config)
-
-
 
 
 def test_wrong_relations(scout_config):

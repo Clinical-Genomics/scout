@@ -14,9 +14,8 @@ LOG = logging.getLogger(__name__)
 
 # TODO: Remove parse_individuals(samples) and fix the tests that break
 def parse_individuals(samples):
-    """ Dummy function kept for pytests"""
+    """Dummy function kept for pytests"""
     return None
-
 
 
 def get_correct_date(date_info):
@@ -247,7 +246,6 @@ def add_peddy_information(config_data):
                 if "confirmed_parent" not in analysis_inds[ind[parent]]:
                     # Set confirmatio to True
                     analysis_inds[ind[parent]]["confirmed_parent"] = True
-
 
 
 def parse_case(config):
