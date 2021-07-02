@@ -624,7 +624,9 @@ class VariantEventHandler(object):
                 cancer_tier = int(cancer_tier)
 
             if cancer_tier not in cancer_tier_options:
-                LOG.error("Cancer tier not found in cancer tier options")
+                LOG.error(
+                    f"Cancer tier {cancer_tier} not found in cancer tier options:{cancer_tier_options.keys()}"
+                )
                 return
             LOG.info(
                 "Setting cancer tier to {0} for variant {1}".format(
@@ -687,7 +689,9 @@ class VariantEventHandler(object):
                 manual_rank = int(manual_rank)
 
             if manual_rank not in manual_rank_options:
-                LOG.error("Manual rank not found in manual rank options")
+                LOG.error(
+                    f"Manual rank {manual_rank} not found in manual rank options:{manual_rank_options.keys()}"
+                )
                 return
 
             LOG.info(
@@ -750,12 +754,18 @@ class VariantEventHandler(object):
 
         if dismiss_variant:
             dismiss_variant_options = self.dismiss_variant_options(["rare", "cancer"])
-            if dismiss_variant.isnumeric() and dismiss_variant not in dismiss_variant_options:
-                dismiss_variant = int(dismiss_variant)
+            for dismiss_option in dismiss_variant:
+                if dismiss_option in dismiss_variant_options:
+                    continue
 
-            if dismiss_variant not in dismiss_variant_options:
-                LOG.error("Dismiss variant option not found in dismiss variant options")
-                return
+                if dismiss_option.isnumeric() and not dismiss_option in dismiss_variant_options:
+                    dismiss_option = int(dismiss_option)
+
+                    if dismiss_option not in dismiss_variant_options:
+                        LOG.error(
+                            f"Dismiss variant option {dismiss_option} not found in dismiss variant options:{dismiss_variant_options.keys()}"
+                        )
+                        return
 
             LOG.info(
                 "Setting dismiss variant to {0} for variant {1}".format(
@@ -814,12 +824,18 @@ class VariantEventHandler(object):
 
         if mosaic_tags:
             mosaic_tags_options = self.mosaicism_options()
-            if mosaic_tags.isnumeric() and mosaic_tags not in mosaic_tags_options:
-                mosaic_tags = int(mosaic_tags)
+            for m_tag in mosaic_tags:
+                if m_tag in mosaic_tags:
+                    continue
 
-            if mosaic_tags not in mosaic_tags_options:
-                LOG.error("Mosaic tag not found in mosaic tags options")
-                return
+                if m_tag.isnumeric() and m_tag not in mosaic_tags_options:
+                    m_tag = int(m_tag)
+
+                    if m_tag not in mosaic_tags_options:
+                        LOG.error(
+                            f"Mosaic tag {m_tag} not found in mosaic tags options:{mosaic_tags_options.keys()}"
+                        )
+                        return
 
             LOG.info(
                 "Setting mosaic tags to {0} for variant {1}".format(
