@@ -243,16 +243,14 @@ def test_variants_research_no_shadow_clinical_assessments(app, mocker, institute
     # called.
     number_variants = len(list(variants_query_res.clone()))
 
-    with app.app_context():
-        res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
-        res_variants = res["variants"]
+    res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+    res_variants = res["variants"]
 
-        LOG.debug("Variants: {}".format(res_variants))
-        # THEN it is returned
-        assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
+    # THEN it is returned
+    assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
 
-        # THEN no previous annotations are reported back for the reseach case..
-        assert not any([variant.get("clinical_assessments") for variant in res_variants])
+    # THEN no previous annotations are reported back for the reseach case..
+    assert all([variant.get("clinical_assessments") == [] for variant in res_variants])
 
 
 def test_variants_research_shadow_clinical_assessments(app, mocker, institute_obj, case_obj):
@@ -344,6 +342,7 @@ def test_sv_variants_research_shadow_clinical_assessments(app, mocker, institute
                 "manual_rank": 2,
                 "mosaic_tags": ["1"],
                 "dismiss_variant": ["2", "3"],
+                "acmg_classification": 0,
             }
         },
     )
@@ -359,8 +358,6 @@ def test_sv_variants_research_shadow_clinical_assessments(app, mocker, institute
     with app.app_context():
         res = sv_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
         res_variants = res["variants"]
-
-        LOG.debug("Variants: {}".format(res_variants))
 
         # THEN it is returned
         assert any([variant["_id"] == variant_research["_id"] for variant in res_variants])
