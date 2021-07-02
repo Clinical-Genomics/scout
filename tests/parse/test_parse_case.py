@@ -236,12 +236,14 @@ def test_no_individuals(scout_config):
 def test_mandatory_param_missing(scout_config, param):
     individual = {"sample_id": "1", "sex": "male", "phenotype": "affected"}
     # GIVEN a individual with missing mandatory param
-    individual.pop(param)
+    del individual[param]
     scout_config["samples"] =[individual]
+    # print(parse_case(scout_config))
     # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
+    with pytest.raises(ValidationError):
         # THEN a ValidationError should be raised
         parse_case(scout_config)
+
 
     
 
