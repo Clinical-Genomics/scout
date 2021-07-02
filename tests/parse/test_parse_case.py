@@ -234,43 +234,16 @@ def test_no_individuals(scout_config):
     "param", ["sample_id", "sex", "phenotype"]
 )
 def test_mandatory_param_missing(scout_config, param):
-    # GIVEN a individual with missing mandatory param
     individual = {"sample_id": "1", "sex": "male", "phenotype": "affected"}
-    individual_missing_param = individual.pop(param)
-    scout_config["samples"] =[individual_missing_param]
+    # GIVEN a individual with missing mandatory param
+    individual.pop(param)
+    scout_config["samples"] =[individual]
     # WHEN a individual is parsed
-    with pytest.raises(ValidationError):
+    with pytest.raises(PedigreeError):
         # THEN a ValidationError should be raised
         parse_case(scout_config)
 
     
-def test_parse_missing_id(scout_config):
-    # GIVEN a individual without sample_id
-    scout_config["samples"] = [{"sex": "male", "phenotype": "affected"}]
-    # sample_info = {"sex": "male", "phenotype": "affected"}
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_case(scout_config)
-
-
-def test_parse_missing_sex(scout_config):
-    # GIVEN a individual without sex
-    scout_config["samples"] = [{"sample_id": "1", "phenotype": "affected"}]
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_case(scout_config)
-
-
-def test_parse_missing_phenotype(scout_config):
-    # GIVEN a individual without phenotype
-    scout_config["samples"] = [{"sample_id": "1", "sex": "male"}]
-    # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
-        # THEN a PedigreeError should be raised
-        parse_case(scout_config)
-
 
 def test_parse_wrong_phenotype(scout_config):
     # GIVEN a individual with wrong phenotype format
