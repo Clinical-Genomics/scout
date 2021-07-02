@@ -46,7 +46,7 @@ def download_resources(tempdir, api_key, builds):
     """
     ctx = click.get_current_context()
     if not api_key:
-        LOG.warning("No omim api key provided, Please not that some information will be missing")
+        LOG.warning("No OMIM API key provided. Please note that some information will be missing.")
     else:
         # Download OMIM files
         ctx.invoke(omim_cmd, out_dir=tempdir, api_key=api_key)
