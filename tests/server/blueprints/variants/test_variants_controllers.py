@@ -10,6 +10,7 @@ from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
     compounds_need_updating,
     gene_panel_choices,
+    get_manual_assessments,
     match_gene_txs_variant_txs,
     populate_chrom_choices,
     sv_variants,
@@ -21,6 +22,62 @@ from scout.server.blueprints.variants.controllers import (
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
+
+
+def test_get_manual_assessments_acmg(adapter, variant_obj):
+    """Test extracting acmg assessment from a variant object"""
+    # GIVEN an acmg-assessed variant
+    acmg_assessed_variant = copy.deepcopy(variant_obj)
+    acmg_assessed_variant["acmg_classification"] = 4
+    assessments = get_manual_assessments(adapter, acmg_assessed_variant)
+    # Manual assessments should be returned correcly
+    assert assessments
+
+
+def test_get_manual_assessments_missing_evaluation(app, adapter, variant_obj):
+    """Test extracting variant evaluations whenever the evaluation key is missing in the database"""
+
+    # GIVEN a manual-ranked variant with manual rank
+    manual_ranked_variant = copy.deepcopy(variant_obj)
+    manual_ranked_variant["manual_rank"] = 666
+
+    # GIVEN that manual rank options in database different than the variant one:
+    adapter.evaluation_terms_collection.insert_one(
+        {
+            "key": 999,
+            "category": "manual_rank",
+            "tracks": ["rare", "cancer"],
+            "label": "some label",
+            "description": "some description",
+            "label_class": "Some class",
+        }
+    )
+
+    # Manual assessments should NOT return assessments
+    assessments = get_manual_assessments(adapter, manual_ranked_variant)
+    assert assessments == []
+
+
+def test_get_manual_assessments(app, adapter, variant_obj):
+    """Test extracting variant evaluations when variant has evaluation tags"""
+
+    # GIVEN a manual-ranked variant with manual rank
+    manual_ranked_variant = copy.deepcopy(variant_obj)
+    manual_ranked_variant["manual_rank"] = 666
+
+    # GIVEN that manual rank option present in database
+    adapter.evaluation_terms_collection.insert_one(
+        {
+            "key": 666,
+            "category": "manual_rank",
+            "tracks": ["rare", "cancer"],
+            "label": "some label",
+            "description": "some description",
+            "label_class": "Some class",
+        }
+    )
+    assessments = get_manual_assessments(adapter, manual_ranked_variant)
+    assert assessments
 
 
 def test_compounds_need_updating():

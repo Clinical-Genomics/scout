@@ -244,7 +244,7 @@ def _populate_assessment_type(assessment_obj, variant_obj, assessment_type, asse
         )
         return
 
-    if assessment_type == "manual_rank":
+    elif assessment_type == "manual_rank":
         assessment_obj["title"] = "Manual rank: {}".format(
             assessment_terms[variant_assessment]["description"]
         )
@@ -323,7 +323,6 @@ def get_manual_assessments(store, variant_obj):
     for assessment_type in assessment_keywords:
         assessment = {}
         if variant_obj.get(assessment_type) is not None:
-
             manual_rank_options = store.manual_rank_options(["rare", "cancer"])
             if assessment_type == "manual_rank" and manual_rank_options:
                 _populate_assessment_type(
@@ -351,7 +350,8 @@ def get_manual_assessments(store, variant_obj):
                     assessment, variant_obj, assessment_type, mosaicism_options
                 )
 
-            assessments.append(assessment)
+            if assessment:
+                assessments.append(assessment)
 
     return assessments
 
