@@ -299,6 +299,18 @@ def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj
 
     dismiss_reason = [3, 5, 7]
 
+    # GIVEN that dismiss variant options are present in database:
+    for key in dismiss_reason:
+        adapter.evaluation_terms_collection.insert_one(
+            {
+                "key": key,
+                "tracks": ["rare", "cancer"],
+                "category": "dismissal_term",
+                "label": "some label",
+                "description": "some description",
+            }
+        )
+
     updated_variant = adapter.update_dismiss_variant(
         institute=institute_obj,
         case=case_obj,
@@ -336,6 +348,17 @@ def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_
 
     cancer_tier = "1A"
 
+    ## GIVEN a database with cancer tier options
+    adapter.evaluation_terms_collection.insert_one(
+        {
+            "key": cancer_tier,
+            "category": "cancer_tier",
+            "tracks": ["cancer"],
+            "label": "some label",
+            "description": "some description",
+        }
+    )
+
     updated_variant = adapter.update_cancer_tier(
         institute=institute_obj,
         case=case_obj,
@@ -372,6 +395,17 @@ def test_update_manual_rank(adapter, institute_obj, case_obj, user_obj, variant_
     link = "testUpdateManualRank"
 
     manual_rank = "1"
+
+    ## GIVEN that the manual rank option is present in the database
+    adapter.evaluation_terms_collection.insert_one(
+        {
+            "key": manual_rank,
+            "category": "manual_rank",
+            "tracks": ["rare", "cancer"],
+            "label": "some label",
+            "description": "some description",
+        }
+    )
 
     updated_variant = adapter.update_manual_rank(
         institute=institute_obj,

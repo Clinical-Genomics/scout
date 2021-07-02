@@ -653,6 +653,17 @@ def test_keep_manual_rank_tag_after_reupload(
     ## GIVEN a database with a user
     adapter.user_collection.insert_one(user_obj)
 
+    ## WITH previos manual rank options
+    adapter.evaluation_terms_collection.insert_one(
+        {
+            "key": 8,
+            "category": "manual_rank",
+            "tracks": ["rare", "cancer"],
+            "label": "some label",
+            "description": "some description",
+        }
+    )
+
     ## AND a case
     adapter.case_collection.insert_one(case_obj)
 
@@ -699,6 +710,18 @@ def test_keep_dismiss_variant_tag_after_reupload(
     ## GIVEN a database with a user
     adapter.user_collection.insert_one(user_obj)
 
+    # GIVEN that dismiss variant options are present in database:
+    for key in [2, 11]:
+        adapter.evaluation_terms_collection.insert_one(
+            {
+                "key": key,
+                "tracks": ["rare", "cancer"],
+                "category": "dismissal_term",
+                "label": "some label",
+                "description": "some description",
+            }
+        )
+
     ## AND a case
     adapter.case_collection.insert_one(case_obj)
 
@@ -743,6 +766,18 @@ def test_keep_mosaic_tags_after_reupload(adapter, case_obj, variant_obj, user_ob
     ## GIVEN a database with a user
     adapter.user_collection.insert_one(user_obj)
 
+    # GIVEN that mosaic tags options are present in database:
+    for key in [1, 3]:
+        adapter.evaluation_terms_collection.insert_one(
+            {
+                "key": key,
+                "tracks": ["rare"],
+                "category": "mosaicism_option",
+                "label": "some label",
+                "description": "some description",
+            }
+        )
+
     ## AND a case
     adapter.case_collection.insert_one(case_obj)
 
@@ -786,6 +821,17 @@ def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_ob
 
     ## GIVEN a database with a user
     adapter.user_collection.insert_one(user_obj)
+
+    ## WITH cancer tier options
+    adapter.evaluation_terms_collection.insert_one(
+        {
+            "key": "2C",
+            "category": "cancer_tier",
+            "tracks": ["cancer"],
+            "label": "some label",
+            "description": "some description",
+        }
+    )
 
     ## AND a case
     adapter.case_collection.insert_one(case_obj)

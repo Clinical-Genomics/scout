@@ -584,6 +584,30 @@ class VariantEventHandler(object):
 
         return updated_case
 
+    def _match_keys(self, term_key, options_keys):
+        """Trying to match an evaluation tem key with a list of option keys
+
+        Args:
+            term_key(str or int): examples: "1",1,"1a"
+            options_keys(list) a list of evalution options keys, can be a list of ints, a list of strings or a mixed loist of strs and ints
+
+        Return:
+            term_key(int or str): A string or an Int if term is matched against the option keys, None if it's not matched
+        """
+        matched_term = None
+
+        if term_key in options_keys:
+            return term_key
+
+        if isinstance(term_key, int):
+            term_key = str(term_key)
+
+        if isinstance(term_key, str) and term_key.isnumeric():
+            term_key = int(term_key)
+
+        if term_key in options_keys:
+            return term_key
+
     def update_cancer_tier(self, institute, case, user, link, variant, cancer_tier):
         """Create an event for updating the manual rank of a variant
 
@@ -620,19 +644,14 @@ class VariantEventHandler(object):
 
         if cancer_tier:
             cancer_tier_options = self.cancer_tier_terms()
-            if cancer_tier.isnumeric() and cancer_tier not in cancer_tier_options:
-                cancer_tier = int(cancer_tier)
-
-            if cancer_tier not in cancer_tier_options:
-                LOG.error(
-                    f"Cancer tier {cancer_tier} not found in cancer tier options:{cancer_tier_options.keys()}"
+            cancer_tier = self._match_keys(cancer_tier, cancer_tier_options)
+            if cancer_tier is None:
+                LOG.info(
+                    "Setting cancer tier to {0} for variant {1}".format(
+                        cancer_tier, variant["display_name"]
+                    )
                 )
                 return
-            LOG.info(
-                "Setting cancer tier to {0} for variant {1}".format(
-                    cancer_tier, variant["display_name"]
-                )
-            )
             action = "$set"
         else:
             LOG.info(
@@ -685,10 +704,8 @@ class VariantEventHandler(object):
         )
         if manual_rank:
             manual_rank_options = self.manual_rank_options(["rare", "cancer"])
-            if manual_rank.isnumeric() and manual_rank not in manual_rank_options:
-                manual_rank = int(manual_rank)
-
-            if manual_rank not in manual_rank_options:
+            manual_rank = self._match_keys(manual_rank, manual_rank_options)
+            if manual_rank is None:
                 LOG.error(
                     f"Manual rank {manual_rank} not found in manual rank options:{manual_rank_options.keys()}"
                 )
@@ -755,18 +772,12 @@ class VariantEventHandler(object):
         if dismiss_variant:
             dismiss_variant_options = self.dismiss_variant_options(["rare", "cancer"])
             for dismiss_option in dismiss_variant:
-                if dismiss_option in dismiss_variant_options:
-                    continue
-
-                if dismiss_option.isnumeric() and not dismiss_option in dismiss_variant_options:
-                    dismiss_option = int(dismiss_option)
-
-                    if dismiss_option not in dismiss_variant_options:
-                        LOG.error(
-                            f"Dismiss variant option {dismiss_option} not found in dismiss variant options:{dismiss_variant_options.keys()}"
-                        )
-                        return
-
+                dismiss_option = self._match_keys(dismiss_option, dismiss_variant_options)
+                if dismiss_option is None:
+                    LOG.error(
+                        f"Dismiss variant option {dismiss_option} not found in dismiss variant options:{dismiss_variant_options.keys()}"
+                    )
+                    return
             LOG.info(
                 "Setting dismiss variant to {0} for variant {1}".format(
                     dismiss_variant, variant["display_name"]
@@ -825,17 +836,12 @@ class VariantEventHandler(object):
         if mosaic_tags:
             mosaic_tags_options = self.mosaicism_options()
             for m_tag in mosaic_tags:
-                if m_tag in mosaic_tags:
-                    continue
-
-                if m_tag.isnumeric() and m_tag not in mosaic_tags_options:
-                    m_tag = int(m_tag)
-
-                    if m_tag not in mosaic_tags_options:
-                        LOG.error(
-                            f"Mosaic tag {m_tag} not found in mosaic tags options:{mosaic_tags_options.keys()}"
-                        )
-                        return
+                m_tag = self._match_keys(m_tag, mosaic_tags_options)
+                if m_tag is None:
+                    LOG.error(
+                        f"Mosaic tag {m_tag} not found in mosaic tags options:{mosaic_tags_options.keys()}"
+                    )
+                    return
 
             LOG.info(
                 "Setting mosaic tags to {0} for variant {1}".format(

@@ -6,6 +6,18 @@ def test_case_dismissed_variants(adapter, institute_obj, case_obj, user_obj, var
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
+    # GIVEN that dismiss variant options are present in database:
+    for key in [3, 5, 7]:
+        adapter.evaluation_terms_collection.insert_one(
+            {
+                "key": key,
+                "tracks": ["rare", "cancer"],
+                "category": "dismissal_term",
+                "label": "some label",
+                "description": "some description",
+            }
+        )
+
     # WHEN dismissing a variant
     link = "/".join([institute_obj["_id"], case_obj["_id"], variant_obj["_id"]])
     dismiss_reason = [3, 5, 7]
