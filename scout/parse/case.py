@@ -1,15 +1,11 @@
-import copy
 import datetime
 import logging
-from fractions import Fraction
-from pathlib import Path
-from pprint import pprint as pp
 
 from ped_parser import FamilyParser
 
-from scout.constants import PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
-from scout.exceptions import ConfigError, PedigreeError
-from scout.parse.config_base import ScoutIndividual, ScoutLoadConfig, VcfFiles
+from scout.constants import PHENOTYPE_MAP, SEX_MAP
+from scout.exceptions import PedigreeError
+from scout.parse.config_base import ScoutLoadConfig
 from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
@@ -32,27 +28,21 @@ def get_correct_date(date_info):
     Returns:
         correct_date(datetime.datetime)
     """
-    LOG.debug(date_info)
-    if isinstance(date_info, str):
-        LOG.debug("STRINIGNIGGNIGNDIREKT")
     if isinstance(date_info, datetime.datetime):
-        LOG.debug("CORRECT DIREKT")
         return date_info
 
     if isinstance(date_info, str):
         try:
             correct_date = get_date(date_info)
         except ValueError as err:
-            LOG.warning("Analysis date is on wrong format")
+            LOG.warning("Analysis date is on wrong format: {}".format(err))
             LOG.info("Setting analysis date to todays date")
             correct_date = datetime.datetime.now()
         return correct_date
-
     LOG.info("Setting analysis date to todays date")
     return datetime.datetime.now()
 
 
-# TODO: rename this function
 def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
 
@@ -127,8 +117,8 @@ def parse_case_data(**kwargs):
     if config_dict["smn_tsv"]:
         add_smn_info(config_dict)
 
-    LOG.debug("parse_case_data/return: {}".format(removeNoneRecursive(config_dict)))
-    return removeNoneRecursive(config_dict)
+    LOG.debug("parse_case_data/return: {}".format(remove_none_recursive(config_dict)))
+    return remove_none_recursive(config_dict)
 
 
 def add_smn_info(config_data):
@@ -159,8 +149,8 @@ def add_smn_info(config_data):
                 "smn_27134_cn",
             ]:
                 ind[key] = smn_info[ind_id][key]
-        except KeyError as e:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
+        except KeyError as err:
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, err))
 
 
 def add_smn_info_case(case_data):
@@ -191,8 +181,8 @@ def add_smn_info_case(case_data):
                 "smn_27134_cn",
             ]:
                 ind[key] = smn_info[ind_id][key]
-        except KeyError as e:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
+        except KeyError as err:
+            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, err))
 
 
 def add_peddy_information(config_data):
@@ -204,22 +194,21 @@ def add_peddy_information(config_data):
     ped_info = {}
     ped_check = {}
     sex_check = {}
-    relations = []
 
     if config_data.get("peddy_ped"):
-        file_handle = open(config_data["peddy_ped"], "r")
-        for ind_info in parse_peddy_ped(file_handle):
-            ped_info[ind_info["sample_id"]] = ind_info
+        with open(config_data["peddy_ped"], "r") as file_handle:
+            for ind_info in parse_peddy_ped(file_handle):
+                ped_info[ind_info["sample_id"]] = ind_info
 
     if config_data.get("peddy_ped_check"):
-        file_handle = open(config_data["peddy_ped_check"], "r")
-        for pair_info in parse_peddy_ped_check(file_handle):
-            ped_check[(pair_info["sample_a"], pair_info["sample_b"])] = pair_info
+        with open(config_data["peddy_ped_check"], "r") as file_handle:
+            for pair_info in parse_peddy_ped_check(file_handle):
+                ped_check[(pair_info["sample_a"], pair_info["sample_b"])] = pair_info
 
     if config_data.get("peddy_sex_check"):
-        file_handle = open(config_data["peddy_sex_check"], "r")
-        for ind_info in parse_peddy_sex_check(file_handle):
-            sex_check[ind_info["sample_id"]] = ind_info
+        with open(config_data["peddy_sex_check"], "r") as file_handle:
+            for ind_info in parse_peddy_sex_check(file_handle):
+                sex_check[ind_info["sample_id"]] = ind_info
 
     if not ped_info:
         return
@@ -272,23 +261,22 @@ def parse_case(config):
     """
     # create a config object based on pydantic rules
     LOG.debug("parse_case/CONFIG: {}".format(config))
-    synopsis = None
     if config.get("synopsis"):
         synopsis = (
             ". ".join(config["synopsis"])
             if isinstance(config["synopsis"], list)
             else config["synopsis"]
         )
-    configObj = ScoutLoadConfig(**config)
-    case_data = configObj.dict()  # translate object to dict
+    scout_load_config = ScoutLoadConfig(**config)
+    case_data = scout_load_config.dict()  # translate object to dict
 
     # add SMN info
     LOG.debug("Checking for SMN TSV..")
     if case_data["smn_tsv"]:
         LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
         add_smn_info_case(case_data)
-    LOG.debug("parse_case/return: {}".format(removeNoneRecursive(case_data)))
-    return removeNoneRecursive(case_data)
+    LOG.debug("parse_case/return: {}".format(remove_none_recursive(case_data)))
+    return remove_none_recursive(case_data)
 
 
 def parse_ped(ped_stream, family_type="ped"):
@@ -325,7 +313,7 @@ def parse_ped(ped_stream, family_type="ped"):
     return family_id, samples
 
 
-def removeNoneValues(dictionary):
+def remove_none_values(dictionary):
     """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
@@ -338,13 +326,13 @@ def removeNoneValues(dictionary):
     return {k: v for k, v in dictionary.items() if v is not None}
 
 
-def removeNoneRecursive(dictionary):
+def remove_none_recursive(dictionary):
     """Recusivly remove None from dictionary"""
-    return removeNoneRecursive_aux(dictionary, {})
+    return remove_none_recursive_aux(dictionary, {})
 
 
-def removeNoneRecursive_aux(dictionary, new_dict):
-    # LOG.debug("diction: {}".format(dictionary))
+def remove_none_recursive_aux(dictionary, new_dict):
+    """Auxilary Function to remove_None_recursive"""
     for key, value in dictionary.items():
         if value is not None:
             new_dict.update({key: value})
@@ -364,7 +352,7 @@ def removeNoneRecursive_aux(dictionary, new_dict):
                 "panel",
             ]
         ):
-            new_list = [removeNoneRecursive_aux(item, {}) for item in value]
+            new_list = [remove_none_recursive_aux(item, {}) for item in value]
             new_dict.update({key: new_list})
 
     return new_dict
