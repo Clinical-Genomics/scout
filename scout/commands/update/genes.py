@@ -36,11 +36,11 @@ from scout.utils.handle import get_file_handle
 LOG = logging.getLogger(__name__)
 
 
-def download_resources(tempdir, api_key, builds):
+def download_resources(download_dir, api_key, builds):
     """Download necessary files to update gene definitions in a temporary directory
 
     Args:
-        tempdir(str): path to downloaded resources. Provided by user in the cli command
+        download_dir(str): path to downloaded resources. Provided by user in the cli command
         api_key(str): API key for downloading OMIM resources
         builds(list): a list containing both genome builds or one genome build ['37', '38']
     """
@@ -49,19 +49,19 @@ def download_resources(tempdir, api_key, builds):
         LOG.warning("No OMIM API key provided. Please note that some information will be missing.")
     else:
         # Download OMIM files
-        ctx.invoke(omim_cmd, out_dir=tempdir, api_key=api_key)
+        ctx.invoke(omim_cmd, out_dir=download_dir, api_key=api_key)
 
     # Download HPO definitions
-    ctx.invoke(hpo_cmd, out_dir=tempdir)
+    ctx.invoke(hpo_cmd, out_dir=download_dir)
     # Download Exac genes
-    ctx.invoke(exac_cmd, out_dir=tempdir)
+    ctx.invoke(exac_cmd, out_dir=download_dir)
     # Download HGNC genes
-    ctx.invoke(hgnc_cmd, out_dir=tempdir)
+    ctx.invoke(hgnc_cmd, out_dir=download_dir)
     # Download Ensembl genes
     for build in builds:
         ctx.invoke(
             ensembl_cmd,
-            out_dir=tempdir,
+            out_dir=download_dir,
             skip_tx=False,
             exons=False,
             build=build,

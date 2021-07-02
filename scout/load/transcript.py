@@ -52,7 +52,7 @@ def load_transcripts(adapter, transcripts_lines=None, build="37", ensembl_genes=
         # Primary transcript information is collected from HGNC
         parsed_tx["primary_transcripts"] = set(gene_obj.get("primary_transcripts", []))
 
-    LOG.debug(f"{missing_in_build} genes not existing in build {build}")
+    LOG.warning(f"{missing_in_build} genes not existing in build {build}")
 
     ref_seq_transcripts = 0
     nr_primary_transcripts = 0
