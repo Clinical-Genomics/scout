@@ -11,6 +11,7 @@ import {
 } from './domain/settings/slice'
 import DropdownMenu from 'components/DropdownMenu/DropdownMenu'
 import { FaAngleDown } from 'react-icons/fa'
+import Button from '@material-ui/core/Button'
 import { Layout } from './components/Layout/Layout'
 import { Home } from './components/Pages/Home/HomePage'
 import './App.scss'
@@ -35,18 +36,15 @@ export const AppComponent = ({
 }: Props) => {
   const { REACT_APP_GOOGLE_OAUTH_CLIENT_ID } = process.env
   const clientId = REACT_APP_GOOGLE_OAUTH_CLIENT_ID || 'no-id'
-  const [isLoaded, setIsLoaded] = useState(false)
 
   const onLoginSuccess = (response: any) => {
     setUserInfo(response.profileObj)
     setGoogleToken(response.tokenId)
-    setIsLoaded(true)
   }
 
   const onLogoutSuccess = () => {
     resetUserInfo()
     resetGoogleToken()
-    setIsLoaded(false)
   }
 
   return (
@@ -60,10 +58,10 @@ export const AppComponent = ({
           </Route>
         </Switch>
         {/* Greeting */}
-        <ul className="test">
+        <ul className="login">
           {settings.googleToken && (
             <li key="logout" className="nav_item">
-              <span>{`Hi ${settings?.user?.givenName}!`}</span>
+              <span className="login-dropdown-header">{`Hi ${settings?.user?.givenName}!`}</span>
               <div className="dropdown_item_space" />
               <FaAngleDown className="collapse_arrow" />
               <DropdownMenu>
@@ -75,7 +73,7 @@ export const AppComponent = ({
                         onClick={renderProps.onClick}
                         disabled={renderProps.disabled}
                       >
-                        Sign out
+                        Logout
                       </button>
                     )}
                     clientId={clientId}
@@ -88,23 +86,32 @@ export const AppComponent = ({
           )}
           {/* Login button */}
           {!settings?.googleToken && (
-            <li>
-              <GoogleLogin
-                render={(renderProps) => (
-                  <button
-                    className="login_button btn_style"
-                    onClick={renderProps.onClick}
-                    disabled={renderProps.disabled}
-                  >
-                    Login with Google
-                  </button>
-                )}
-                clientId={clientId}
-                buttonText="Login"
-                onSuccess={onLoginSuccess}
-                isSignedIn={true}
-                cookiePolicy="single_host_origin"
-              />
+            <li key="logout" className="nav_item">
+              <span className="login-dropdown-header">Login</span>
+              <div className="dropdown_item_space" />
+              <FaAngleDown className="collapse_arrow" />
+              <DropdownMenu>
+                <li>
+                  <GoogleLogin
+                    render={(renderProps) => (
+                      <button
+                        className="google-login_button btn_style"
+                        onClick={renderProps.onClick}
+                        disabled={renderProps.disabled}
+                      >
+                        Login with Google
+                      </button>
+                    )}
+                    clientId={clientId}
+                    onSuccess={onLoginSuccess}
+                    isSignedIn={true}
+                    cookiePolicy="single_host_origin"
+                  />
+                </li>
+                <li>
+                  <Button color="primary">Login with email</Button>
+                </li>
+              </DropdownMenu>
             </li>
           )}
         </ul>

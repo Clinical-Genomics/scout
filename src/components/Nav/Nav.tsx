@@ -28,9 +28,6 @@ interface Props {
   toggleDarkMode: () => void
 }
 
-const { REACT_APP_GOOGLE_OAUTH_CLIENT_ID } = process.env
-const clientId = REACT_APP_GOOGLE_OAUTH_CLIENT_ID || 'no-id'
-
 const Nav: React.FC<Props> = ({ header, navItems, darkMode, toggleDarkMode }) => {
   return (
     <nav className={styles.Nav} data-testid="NavMenu">
@@ -88,12 +85,12 @@ const Nav: React.FC<Props> = ({ header, navItems, darkMode, toggleDarkMode }) =>
             onClick={() => toggleDarkMode()}
           >
             {darkMode && (
-              <Tooltip title="Toggle light theme">
+              <Tooltip title="Toggle light theme" placement="bottom">
                 <Brightness5OutlinedIcon />
               </Tooltip>
             )}
             {!darkMode && (
-              <Tooltip title="Toggle dark theme">
+              <Tooltip title="Toggle dark theme" placement="bottom">
                 <Brightness4OutlinedIcon />
               </Tooltip>
             )}

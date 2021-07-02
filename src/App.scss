@@ -85,44 +85,48 @@ li {
   display: flex;
 }
 
+.login {
+  position: absolute;
+  top: 3px;
+  right: 50px;
+}
+
 /** Login button */
-.login_button {
+.google-login_button {
   background-color: $scout-color;
-  margin: 8px;
   color: #fff;
 }
 
-/** Nav item container */
-li.nav_item {
-  list-style-type: none;
-  position: relative;
-  margin: 0px 8px;
+.login-dropdown-header{
+  font-weight: 500;
 }
+
 
 .dropdown_item_space {
   height: 100%;
-  width: 2px;
+  width: 5px;
   cursor: pointer;
 }
 
 
-.test{
-  position: absolute;
-  top: -10px;
-  right: 100px;
-}
+ul {
+  margin: 0px;
+  padding: 0px;
+
+  > li {
+    display: flex;
+    align-items: center;
+  }
 
   /** Nav item container */
   li.nav_item {
-    list-style-type: none;
-    position: relative;
-    margin: 0px 8px;
-  }
-
-  .dropdown_item_space {
-    height: 100%;
-    width: 2px;
-    cursor: pointer;
+    /** Dropdown menu */
+    & > ul {
+      display: none;
+    }
+    &:hover > ul {
+      display: flex;
+    }
   }
 
   /** Collapse arrow animation */
@@ -137,13 +141,6 @@ li.nav_item {
     height: 100%;
     width: 2px;
     cursor: pointer;
-  }
-  li.nav_item {
-  /** Dropdown menu */
-  & > ul {
-    display: none;
-  }
-  &:hover > ul {
-    display: flex;
+    margin-bottom: 50px;
   }
 }
