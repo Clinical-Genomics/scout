@@ -234,6 +234,16 @@ def _populate_assessment_type(assessment_obj, variant_obj, assessment_type, asse
 
     variant_assessment = variant_obj[assessment_type]
 
+    if (
+        assessment_type in ["manual_rank", "dismiss_variant", "mosaic_tags", "cancer_tier"]
+        and not variant_assessment in assessment_terms
+    ):
+        flash(
+            f"Variant assessment term '{variant_assessment}' not coresponsing to any assessment present in database with category '{assessment_type}'",
+            "danger",
+        )
+        return
+
     if assessment_type == "manual_rank":
         assessment_obj["title"] = "Manual rank: {}".format(
             assessment_terms[variant_assessment]["description"]
