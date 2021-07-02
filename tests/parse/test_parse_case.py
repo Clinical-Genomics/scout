@@ -15,7 +15,6 @@ from scout.parse.case import (
 )
 
 
-
 def test_parse_case_no_date(scout_config):
     # GIVEN a load config without a date
     scout_config.pop("analysis_date")
