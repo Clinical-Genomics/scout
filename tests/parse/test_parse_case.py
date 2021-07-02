@@ -2,6 +2,7 @@ from datetime import datetime
 from pprint import pprint as pp
 
 import pytest
+from pydantic import ValidationError
 
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
@@ -12,7 +13,7 @@ from scout.parse.case import (
     parse_ped,
     remove_none_values,
 )
-from pydantic import ValidationError
+
 
 
 def test_parse_case_no_date(scout_config):
