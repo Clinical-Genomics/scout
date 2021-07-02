@@ -215,7 +215,7 @@ def variant_update(institute_id, case_name, variant_id):
     mosaic_tags = request.form.getlist("mosaic_tags")
     if mosaic_tags:
         store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags)
-        flash("Added mosaic tags1", "info")
+        flash("Added mosaic tags", "info")
 
     variant_mosaic = variant_obj.get("mosaic_tags")
     if variant_mosaic and not mosaic_tags:
