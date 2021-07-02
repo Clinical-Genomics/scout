@@ -244,7 +244,7 @@ def _populate_assessment_type(assessment_obj, variant_obj, assessment_type, asse
         )
         return
 
-    elif assessment_type == "manual_rank":
+    if assessment_type == "manual_rank":
         assessment_obj["title"] = "Manual rank: {}".format(
             assessment_terms[variant_assessment]["description"]
         )
