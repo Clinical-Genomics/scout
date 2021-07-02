@@ -8,12 +8,11 @@ from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.case import (
     parse_case,
     parse_case_data,
-    parse_individual,
     parse_individuals,
     parse_ped,
-    removeNoneValues,
+    remove_none_values,
 )
-
+from pydantic import ValidationError
 
 def test_parse_case_no_date(scout_config):
     # GIVEN a load config without a date
@@ -222,58 +221,75 @@ def test_parse_case_two_cases_ped():
         parse_ped(case_lines)
 
 
-def test_no_individuals():
+def test_no_individuals(scout_config):
     # GIVEN a list with no indioviduals
-    samples = []
+    scout_config["samples"] = []
     # WHEN parsing the individuals
     with pytest.raises(PedigreeError):
         # THEN error should be raised since a family has to have individuals
-        parse_individuals(samples)
+        parse_case(scout_config)
 
 
-def test_parse_missing_id():
+@pytest.mark.parametrize(
+    "param", ["sample_id", "sex", "phenotype"]
+)
+def test_mandatory_param_missing(scout_config, param):
+    # GIVEN a individual with missing mandatory param
+    individual = {"sample_id": "1", "sex": "male", "phenotype": "affected"}
+    individual_missing_param = individual.pop(param)
+    scout_config["samples"] =[individual_missing_param]
+    # WHEN a individual is parsed
+    with pytest.raises(ValidationError):
+        # THEN a ValidationError should be raised
+        parse_case(scout_config)
+
+    
+def test_parse_missing_id(scout_config):
     # GIVEN a individual without sample_id
-    sample_info = {"sex": "male", "phenotype": "affected"}
+    scout_config["samples"] = [{"sex": "male", "phenotype": "affected"}]
+    # sample_info = {"sex": "male", "phenotype": "affected"}
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
+        parse_case(scout_config)
 
 
-def test_parse_missing_sex():
+def test_parse_missing_sex(scout_config):
     # GIVEN a individual without sex
-    sample_info = {"sample_id": "1", "phenotype": "affected"}
+    scout_config["samples"] = [{"sample_id": "1", "phenotype": "affected"}]
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
+        parse_case(scout_config)
 
 
-def test_parse_missing_phenotype():
+def test_parse_missing_phenotype(scout_config):
     # GIVEN a individual without phenotype
-    sample_info = {"sample_id": "1", "sex": "male"}
+    scout_config["samples"] = [{"sample_id": "1", "sex": "male"}]
     # WHEN a individual is parsed
     with pytest.raises(PedigreeError):
         # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
+        parse_case(scout_config)
 
 
-def test_parse_wrong_phenotype():
+def test_parse_wrong_phenotype(scout_config):
     # GIVEN a individual with wrong phenotype format
-    sample_info = {"sample_id": "1", "sex": "male", "phenotype": "not-affected"}
+    scout_config["samples"] = [{"sample_id": "1", "sex": "male", "phenotype": "not-affected"}]
     # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
+    with pytest.raises(ValidationError):
         # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
+        parse_case(scout_config)
 
 
-def test_parse_wrong_sex():
+def test_parse_wrong_sex(scout_config):
     # GIVEN a individual with wrong sex format
-    sample_info = {"sample_id": "1", "sex": "flale", "phenotype": "affected"}
+    scout_config["samples"] = [{"sample_id": "1", "sex": "flale", "phenotype": "affected"}]
     # WHEN a individual is parsed
-    with pytest.raises(PedigreeError):
+    with pytest.raises(ValidationError):
         # THEN a PedigreeError should be raised
-        parse_individual(sample_info)
+        parse_case(scout_config)
+
+
 
 
 def test_wrong_relations(scout_config):
@@ -297,21 +313,21 @@ def test_wrong_relations(scout_config):
         parse_case(scout_config)
 
 
-def test_removeNoneValues():
+def test_remove_none_values():
     # WHEN a dict *not* containing a None value
     d = {"a": "1", "b": 2, "c": 3}
 
     # THEN calling removeNoneValues(dict) will not change dict
-    assert d == removeNoneValues(d)
+    assert d == remove_none_values(d)
 
 
-def test_removeNoneValues():
+def test_remove_none_values():
     # WHEN a dict containing a value which is None
     d = {"a": "1", "b": 2, "c": None}
 
     # THEN calling removeNoneValues(dict) will remove key-value pair
     # where value=None
-    assert {"a": "1", "b": 2} == removeNoneValues(d)
+    assert {"a": "1", "b": 2} == remove_none_values(d)
 
 
 def test_parse_optional_igv_param(scout_config):
@@ -326,7 +342,6 @@ def test_parse_optional_igv_param(scout_config):
         sample["upd_regions_bed"] = "path/to/up"
         sample["upd_sites_bed"] = "path/to/us"
         sample["tiddit_coverage_wig"] = "path/to/tc"
-        sample["chromograph_images"] = "path/to/ci"
     scout_config["samples"] = samples
 
     # THEN parsing the config will add those to case data
@@ -341,7 +356,6 @@ def test_parse_optional_igv_param(scout_config):
                 individual["upd_regions_bed"],
                 individual["upd_sites_bed"],
                 individual["tiddit_coverage_wig"],
-                individual["chromograph_images"],
             )
         )
 
@@ -353,7 +367,6 @@ def test_parse_optional_igv_param(scout_config):
                 sample["upd_regions_bed"],
                 sample["upd_sites_bed"],
                 sample["tiddit_coverage_wig"],
-                sample["chromograph_images"],
             )
         )
 
