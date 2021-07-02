@@ -41,13 +41,13 @@ class ScoutIndividual(BaseModel):
     mother: Optional[str] = None
     msi: Optional[str] = None
     mt_bam: Optional[str] = None
-    phenotype: Literal["affected", "unaffected", "unknown"] = None
+    phenotype: Literal["affected", "unaffected", "unknown"]
     predicted_ancestry: str = None  ## ??
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
-    sample_id: str = None
+    sample_id: str
     sample_name: Optional[str] = None
-    sex: Literal["male", "female", "unknown"] = None
+    sex: Literal["unknown", "female", "male"]
     smn1_cn: int = None
     smn2_cn: int = None
     smn2delta78_cn: int = None
@@ -60,12 +60,6 @@ class ScoutIndividual(BaseModel):
     upd_regions_bed: Optional[str] = None
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
-
-    @validator("sample_id", "sex", "phenotype")
-    def mandatory_sample_id(cls, value):
-        if value is None:
-            raise PedigreeError("Sample, config error: '{}'".format(value))
-        return value
 
     @validator("tumor_purity")
     def cast_to_float(cls, value):
