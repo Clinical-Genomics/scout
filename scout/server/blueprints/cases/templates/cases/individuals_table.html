@@ -66,7 +66,7 @@
 </form>
 {% endmacro %}
 
-{% macro individuals_table(case, institute, tissues, display_rerunner) %}
+{% macro individuals_table(case, institute, tissues, display_rerunner, gens_info) %}
 <form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card">
 
@@ -109,7 +109,10 @@
                     {{ ind.display_name }}
                   </div>
                 </label>
-              </td>
+                {% if gens_info.display %}
+                  <a style="font-size: .8rem;" class="btn btn-outline-dark btn-sm" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}">CN profile</a>
+                {% endif %}
+                </td>
               <td>
                 <select class="sex-selector form-control-sm" name="sex-selector" hidden>
                   <option {% if ind.sex_human == "male" %} selected {% endif %} value="male">Male</option>
