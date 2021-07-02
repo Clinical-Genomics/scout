@@ -619,6 +619,13 @@ class VariantEventHandler(object):
         )
 
         if cancer_tier:
+            cancer_tier_options = self.cancer_tier_terms()
+            if cancer_tier.isnumeric() and cancer_tier not in cancer_tier_options:
+                cancer_tier = int(cancer_tier)
+
+            if cancer_tier not in cancer_tier_options:
+                LOG.error("Cancer tier not found in cancer tier options")
+                return
             LOG.info(
                 "Setting cancer tier to {0} for variant {1}".format(
                     cancer_tier, variant["display_name"]
@@ -674,8 +681,15 @@ class VariantEventHandler(object):
             variant=variant,
             subject=variant["display_name"],
         )
-
         if manual_rank:
+            manual_rank_options = self.manual_rank_options(["rare", "cancer"])
+            if manual_rank.isnumeric() and manual_rank not in manual_rank_options:
+                manual_rank = int(manual_rank)
+
+            if manual_rank not in manual_rank_options:
+                LOG.error("Manual rank not found in manual rank options")
+                return
+
             LOG.info(
                 "Setting manual rank to {0} for variant {1}".format(
                     manual_rank, variant["display_name"]
@@ -735,6 +749,14 @@ class VariantEventHandler(object):
         )
 
         if dismiss_variant:
+            dismiss_variant_options = self.dismiss_variant_options(["rare", "cancer"])
+            if dismiss_variant.isnumeric() and dismiss_variant not in dismiss_variant_options:
+                dismiss_variant = int(dismiss_variant)
+
+            if dismiss_variant not in dismiss_variant_options:
+                LOG.error("Dismiss variant option not found in dismiss variant options")
+                return
+
             LOG.info(
                 "Setting dismiss variant to {0} for variant {1}".format(
                     dismiss_variant, variant["display_name"]
@@ -791,6 +813,14 @@ class VariantEventHandler(object):
         )
 
         if mosaic_tags:
+            mosaic_tags_options = self.mosaicism_options()
+            if mosaic_tags.isnumeric() and mosaic_tags not in mosaic_tags_options:
+                mosaic_tags = int(mosaic_tags)
+
+            if mosaic_tags not in mosaic_tags_options:
+                LOG.error("Mosaic tag not found in mosaic tags options")
+                return
+
             LOG.info(
                 "Setting mosaic tags to {0} for variant {1}".format(
                     mosaic_tags, variant["display_name"]
