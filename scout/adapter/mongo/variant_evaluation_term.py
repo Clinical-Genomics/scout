@@ -31,6 +31,7 @@ class EvaluationTerm(object):
 
     def _validate_self(self):
         """Make sure the term category is among the categories listed in EVALUATION_TERM_CATEGORIES (scout.contants.variant_tags)
+           and that is valid in general.
         Args:
             category(str):
         """
@@ -63,10 +64,13 @@ class VariantEvaluationHandler(object):
     """Interact with variant evaluation information."""
 
     def load_evaluation_term(self, category, tracks, term_key, term_value):
-        """Load a default evaluation term into the database
+        """Load an evaluation term into the database
 
         Args:
-            category(str):
+            category(str): any string in EVALUATION_TERM_CATEGORIES
+            tracks(str): ["rare", "cancer"]
+            term_key(str): a key for the term
+            term_value(dict): a dictionary containing term's key/values
 
         """
         term_dict = {
@@ -130,7 +134,7 @@ class VariantEvaluationHandler(object):
         """Return evaluation terms for the given category and tracks.
 
         Args:
-            category(str): "manual_rank" or "dismissal_term"
+            category(str): any string in EVALUATION_TERM_CATEGORIES
             tracks(list): ["rare", "cancer"]
 
         Returns:
@@ -163,7 +167,7 @@ class VariantEvaluationHandler(object):
         """Delete from database variant evaluation terms from one or more categories
 
         Args:
-            category(list): Any term specified in EVALUATION_TERM_CATEGORIES
+            category(list): a list with any term specified in EVALUATION_TERM_CATEGORIES
 
         Returns:
             deleted_total(int): Total number of deleted terms

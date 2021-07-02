@@ -157,41 +157,24 @@ def variant_update(institute_id, case_name, variant_id):
     manual_rank = request.form.get("manual_rank")
     cancer_tier = request.form.get("cancer_tier")
     if manual_rank:
-        try:
-            new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
-        except ValueError:
-            LOG.warning("Attempt to update manual rank with invalid value {}".format(manual_rank))
-            manual_rank = "-1"
-            new_manual_rank = -1
-
-        store.update_manual_rank(
-            institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
-        )
+        new_manual_rank = manual_rank if manual_rank != "-1" else None
         if new_manual_rank:
-            flash("updated variant tag: {}".format(new_manual_rank), "info")
-        else:
-            flash(
-                "reset variant tag: {}".format(variant_obj.get("manual_rank", "NA")),
-                "info",
+            store.update_manual_rank(
+                institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
             )
+            flash("Variant tag updated!", "info")
+        else:
+            flash("Reset variant tag", "info")
     elif cancer_tier:
-        try:
-            new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
-        except ValueError:
-            LOG.warning("Attempt to update cancer tier with invalid value {}".format(cancer_tier))
-            cancer_tier = "-1"
-            new_cancer_tier = "-1"
-
-        store.update_cancer_tier(
-            institute_obj, case_obj, user_obj, link, variant_obj, new_cancer_tier
-        )
+        new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
         if new_cancer_tier:
-            flash("updated variant tag: {}".format(new_cancer_tier), "info")
-        else:
-            flash(
-                "reset variant tag: {}".format(variant_obj.get("cancer_tier", "NA")),
-                "info",
+            store.update_cancer_tier(
+                institute_obj, case_obj, user_obj, link, variant_obj, new_cancer_tier
             )
+            flash("Cancer tier updated!", "info")
+        else:
+            flash("Reset cancer tier", "info")
+
     elif request.form.get("acmg_classification"):
         new_acmg = request.form["acmg_classification"]
         acmg_classification = variant_obj.get("acmg_classification")
@@ -208,14 +191,14 @@ def variant_update(institute_id, case_name, variant_id):
             link=link,
             classification=new_acmg,
         )
-        flash("updated ACMG classification: {}".format(new_acmg), "info")
+        flash("updated ACMG classification", "info")
 
     new_dismiss = request.form.getlist("dismiss_variant")
     if new_dismiss:
         store.update_dismiss_variant(
             institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
         )
-        flash("Dismissed variant: {}".format(new_dismiss), "info")
+        flash("Dismissed variant", "info")
 
     variant_dismiss = variant_obj.get("dismiss_variant")
     if variant_dismiss and not new_dismiss:
@@ -223,10 +206,7 @@ def variant_update(institute_id, case_name, variant_id):
             store.update_dismiss_variant(
                 institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
             )
-            flash(
-                "Reset variant dismissal: {}".format(variant_obj.get("dismiss_variant")),
-                "info",
-            )
+            flash("Reset dismissed variant", "info")
         else:
             LOG.debug(
                 "DO NOT reset variant dismissal: {}".format(",".join(variant_dismiss), "info")
@@ -235,7 +215,7 @@ def variant_update(institute_id, case_name, variant_id):
     mosaic_tags = request.form.getlist("mosaic_tags")
     if mosaic_tags:
         store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags)
-        flash("Added mosaic tags: {}".format(mosaic_tags), "info")
+        flash("Added mosaic tags1", "info")
 
     variant_mosaic = variant_obj.get("mosaic_tags")
     if variant_mosaic and not mosaic_tags:
@@ -243,7 +223,7 @@ def variant_update(institute_id, case_name, variant_id):
             store.update_mosaic_tags(
                 institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags
             )
-            flash("Reset mosaic tags: {}".format(",".join(variant_mosaic), "info"))
+            flash("Reset mosaic tags", "info")
 
     return redirect(request.referrer)
 
