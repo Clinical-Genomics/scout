@@ -39,7 +39,7 @@ class EvaluationTerm(object):
         if self.label is None:
             raise ValueError(f"Variant evaluation terms label can't be null")
         if self.description is None:
-            raise ValueError(f"Variant evaluation terms description can't be null")
+            raise ValueError(f"Variant evaluation terms description must be defined")
         if self.category not in EVALUATION_TERM_CATEGORIES:
             raise ValueError(
                 f"Variant evaluation term category 'category' is not valid. Valid categories: {EVALUATION_TERM_CATEGORIES}"
