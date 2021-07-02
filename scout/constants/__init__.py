@@ -53,6 +53,7 @@ from .variant_tags import (
     SPIDEX_LEVELS,
     SV_TYPES,
     VARIANT_CALL,
+    VARIANT_FILTERS,
 )
 from .variants_export import (
     EXPORT_HEADER,

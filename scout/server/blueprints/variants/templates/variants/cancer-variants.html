@@ -56,7 +56,7 @@
               <th title="Gene">Gene</th>
               <th title="Variant" style="width:12%">HGVS[c/p]</th>
               <th title="Assessments including variant tier">Assessment</th>
-              <th title="Rank score">Score</th>
+              <th title="Rank score and quality markers">Quality</th>
               <th title="Genomic coordinate" style="width:10%">Chr pos</th>
               <th title="Population frequency">Pop Freq</th>
               <th title="Observed" style="width:7%">Observed</th>
@@ -159,7 +159,10 @@
       {% set label_class = 'danger' %}
     {% endif %}
   {% endif %}
-  <div class="badge badge-{{ label_class }}">{{ variant.rank_score }} </div>
+  <div class="badge badge-{{ label_class }}">{{ variant.rank_score }}</div>
+  {% for filter in variant.filters %}
+    <div data-toggle="tooltip" data-placement="top" title="{{ filter.description }}" class="badge badge-{{ filter.label_class }}">{{ filter.label }}</div>
+  {% endfor %}
 {% endmacro %}
 
 
