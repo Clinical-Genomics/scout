@@ -158,19 +158,19 @@ def variant_update(institute_id, case_name, variant_id):
     cancer_tier = request.form.get("cancer_tier")
     if manual_rank:
         new_manual_rank = manual_rank if manual_rank != "-1" else None
+        store.update_manual_rank(
+            institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
+        )
         if new_manual_rank:
-            store.update_manual_rank(
-                institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
-            )
             flash("Variant tag updated!", "info")
         else:
             flash("Reset variant tag", "info")
     elif cancer_tier:
         new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
+        store.update_cancer_tier(
+            institute_obj, case_obj, user_obj, link, variant_obj, new_cancer_tier
+        )
         if new_cancer_tier:
-            store.update_cancer_tier(
-                institute_obj, case_obj, user_obj, link, variant_obj, new_cancer_tier
-            )
             flash("Cancer tier updated!", "info")
         else:
             flash("Reset cancer tier", "info")
