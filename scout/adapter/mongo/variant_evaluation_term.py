@@ -30,7 +30,7 @@ class EvaluationTerm(object):
         self._validate_self()
 
     def _validate_self(self):
-        """Make sure the term category is among the vategories listed in EVALUATION_TERM_CATEGORIES (scout.contants.variant_tags)
+        """Make sure the term category is among the categories listed in EVALUATION_TERM_CATEGORIES (scout.contants.variant_tags)
         Args:
             category(str):
         """
