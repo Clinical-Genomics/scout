@@ -401,7 +401,6 @@ def phenotypes_actions(institute_id, case_name):
 
     if action == "ADDGENE":
         hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
-        flash(f"hgnc_ids:{hgnc_ids}")
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
     if action == "GENES":
