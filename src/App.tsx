@@ -24,8 +24,8 @@ const mapDispatch = {
 } as const
 
 const mapState = ({ settings }: RootState) => ({ settings } as const)
-
 type Props = ReturnType<typeof mapState> & typeof mapDispatch
+
 export const AppComponent = ({
   settings,
   setUserInfo,
