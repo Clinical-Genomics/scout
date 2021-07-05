@@ -12,11 +12,6 @@ from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
-# TODO: Remove parse_individuals(samples) and fix the tests that break
-def parse_individuals(samples):
-    """Dummy function kept for pytests"""
-    return None
-
 
 def get_correct_date(date_info):
     """Convert dateinfo to correct date

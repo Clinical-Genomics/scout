@@ -23,7 +23,6 @@ class ChromographImages(BaseModel):
     upd_sites: Optional[str] = None
 
 
-# TODO: handle bam_path_options
 class ScoutIndividual(BaseModel):
     alignment_path: Optional[str] = None
     analysis_type: Literal["wgs", "wes", "mixed", "unknown", "panel", "external"] = None
@@ -220,9 +219,8 @@ class ScoutLoadConfig(BaseModel):
             raise ValueError("Owner and family can not be None")
         return v
 
-    # TODO: give better variable names in all controll funs
     @validator("synopsis")
-    def synopsis_pre(cls, my_synopsis):
+    def synopsis_pre_hook(cls, my_synopsis):
         if isinstance(my_synopsis, list):
             return ". ".join(my_synopsis)
         return my_synopsis
