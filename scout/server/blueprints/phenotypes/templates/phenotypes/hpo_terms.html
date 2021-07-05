@@ -15,8 +15,12 @@
 
 {% block content_main %}
 <div class="container-float">
+<!--
+  Local bundle
+  <script src="{{ url_for('static', filename='react-app/dist/phenotypes.js') }}"></script>
+ -->
  <div id="react-root"></div>
-    <script src="{{ url_for('static', filename='react-app/dist/bundle.js') }}"></script>
+  <script src="https://react-in-scout.web.app/phenotypes.js"></script>
 </div>
 {% endblock %}
 

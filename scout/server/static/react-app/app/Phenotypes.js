@@ -8,6 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import axios from 'axios'
+import Chip from '@material-ui/core/Chip';
+
 
 const useStyles = makeStyles({
   table: {
@@ -50,7 +52,7 @@ const Phenotypes = () => {
         <TableBody>
           {phenotypes.map((row) => (
             <TableRow key={row.name}>
-              <TableCell align="right">{row.hpo_id}</TableCell>
+              <TableCell align="right"><Chip label={row.hpo_id} color="primary" /></TableCell>
 							<TableCell align="right">{row.hpo_number}</TableCell>
               <TableCell align="right">{row.description}</TableCell>
               <TableCell align="right">{row.genes.length}</TableCell>

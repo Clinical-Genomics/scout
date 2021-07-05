@@ -3,7 +3,7 @@ const config = {
 	entry: __dirname + '/app/index.js',
 	output: {
 		path: __dirname + '/dist',
-		filename: 'bundle.js',
+		filename: 'phenotypes.js',
 	},
 	resolve: {
 		extensions: ['.js', '.jsx', '.css']
