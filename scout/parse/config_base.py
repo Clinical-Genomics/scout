@@ -80,14 +80,13 @@ class ScoutIndividual(BaseModel):
         if values.get("alignment_path"):
             values.update({"bam_file": values.get("alignment_path")})
             return values
-        elif values.get("bam_file"):
+        if values.get("bam_file"):
             # Dont't touch anything
             return values
-        elif values.get("bam_path"):
+        if values.get("bam_path"):
             values.update({"bam_file": values.get("bam_path")})
             return values
-        else:
-            return values
+        return values
 
     @root_validator
     def update_track_sample_id(cls, values):
@@ -96,12 +95,11 @@ class ScoutIndividual(BaseModel):
         if values.get("sample_name"):
             values.update({"display_name": values.get("sample_name")})
             return values
-        elif values.get("sample_id"):
+        if values.get("sample_id"):
             # Dont't touch anything
             values.update({"display_name": values.get("sample_id")})
             return values
-        else:
-            return values
+        return values
 
 
 # VCF Files
