@@ -3,6 +3,7 @@ import pkg_resources
 ###### Files ######
 
 # Gene sources:
+resources_folder = "demo/resources"
 hgnc_file = "demo/resources/hgnc_reduced_set.txt"
 exac_file = "demo/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt"
 transcripts37_file = "demo/resources/ensembl_transcripts_37_reduced.txt"
@@ -29,6 +30,7 @@ madeline_file = "demo/madeline.xml"
 ###### Paths ######
 
 # Gene paths
+reduced_resources_path = pkg_resources.resource_filename("scout", resources_folder)
 hgnc_reduced_path = pkg_resources.resource_filename("scout", hgnc_file)
 exac_reduced_path = pkg_resources.resource_filename("scout", exac_file)
 transcripts37_reduced_path = pkg_resources.resource_filename("scout", transcripts37_file)

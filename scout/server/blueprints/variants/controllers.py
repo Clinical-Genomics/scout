@@ -25,6 +25,7 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SO_TERMS,
+    VARIANT_FILTERS,
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
@@ -430,6 +431,13 @@ def parse_variant(
         variant_obj["first_rep_gene"] = first_rep_gene
     else:
         variant_obj["first_rep_gene"] = None
+
+    # annotate filters
+    variant_obj["filters"] = [
+        VARIANT_FILTERS[f]
+        for f in map(lambda x: x.lower(), variant_obj["filters"])
+        if f in VARIANT_FILTERS
+    ]
 
     return variant_obj
 
