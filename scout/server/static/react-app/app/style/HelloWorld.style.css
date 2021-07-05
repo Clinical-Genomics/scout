@@ -1,0 +1,7 @@
+.loadingAnimation div {
+  height: 150px;
+  width: 150px;
+  margin: auto;
+  background-repeat: no-repeat;
+  background-color: mediumpurple;
+}
