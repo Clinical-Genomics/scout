@@ -222,20 +222,15 @@ def str_variants(
     return return_view_data
 
 
-def _populate_assessment_type(
-    store, assessment_obj, variant_obj, assessment_type, assessment_terms=None
-):
+def _populate_assessment(store, assessment_obj, variant_obj, assessment_type):
     """Populate a variant assessment object specific to the type of assessment found in the variant
 
     Args:
         assessment_obj(dict)
         variant_obj(dict)
         assessment_type(str): "acmg_classification", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags"
-        assessment_terms(dict): eventual variant evaluattion terms associated to a type of assessment
     """
-    flash(f"assessment_type:{assessment_type}")
     variant_assessment = variant_obj[assessment_type]
-    flash(f"variant_assessment:{variant_assessment}")
 
     if assessment_type == "acmg_classification":
         if isinstance(variant_assessment, int):
@@ -247,19 +242,23 @@ def _populate_assessment_type(
         assessment_obj["display_class"] = variant_assessment["color"]
         return
 
-    # Variant evaluation terms stored in database
+    # Check if variant evaluation terms are valid
+    # Manual rank and cancer tier have assessment type of type int or str
     if assessment_type == "manual_rank":
         assessment_terms = store.manual_rank_options(["rare", "cancer"])
     elif assessment_type == "cancer_tier":
         assessment_terms = store.cancer_tier_terms()
     elif assessment_type == "dismiss_variant":
         assessment_terms = store.dismiss_variant_options(["rare", "cancer"])
-    elif assessment_type == "mosaic_tags":
+    else:  # mosaic tags
         assessment_terms = store.mosaicism_options()
 
-    if (
-        assessment_type in ["manual_rank", "cancer_tier"] and variant_assessment in assessment_terms
-    ):  # variant_assessment is a str or int
+    if assessment_type in ["manual_rank", "cancer_tier"]:  # variant_assessment is either str or int
+        if variant_assessment not in assessment_terms:
+            flash(
+                f"Evaluation term with key '{variant_assessment}' was not found in '{assessment_type}' database terms"
+            )
+            return
         assessment_obj["title"] = "{}: {}".format(
             assessment_type.replace(
                 "_",
@@ -270,23 +269,23 @@ def _populate_assessment_type(
         assessment_obj["label"] = assessment_terms[variant_assessment]["label"]
         assessment_obj["display_class"] = assessment_terms[variant_assessment]["label_class"]
 
-    elif variant_assessment in ["dismiss_variant", "mosaic_tags"]:  # variant_assessment is a list
-        flash("HERE")
-        assessment_obj["label"] = variant_assessment.split("_")[0]  # ->"dismiss" ot "mosaic"
+    else:  # dismissd terms or mosaicism options. # variant_assessment is a list
+        assessment_obj["label"] = assessment_type.split("_")[0]  # ->"dismiss" ot "mosaic"
         assessment_obj["title"] = "".join(
             [assessment_obj["label"], "<br>"]
         )  # ->"dismiss<br>" ot "mosaic<br>"
-        for reason in variant_obj[assessment_type]:
-            if reason not in assessment_terms:
-                flash("reason")
-                continue
-            assessment_obj["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                assessment_terms[reason]["label"],
-                assessment_terms[reason]["description"],
-            )
         assessment_obj["display_class"] = "secondary"
-
-    flash(assessment_obj)
+        for eval_key in variant_assessment:
+            if eval_key not in assessment_terms:
+                flash(
+                    f"Evaluation term with key '{eval_key}' was not found in '{assessment_type}' database terms"
+                )
+                assessment_obj["title"] += f"<strong>{eval_key}</strong> - Term not found<br><br>"
+            else:
+                assessment_obj["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                    assessment_terms[eval_key]["label"],
+                    assessment_terms[eval_key]["description"],
+                )
 
 
 def get_manual_assessments(store, variant_obj):
@@ -316,11 +315,9 @@ def get_manual_assessments(store, variant_obj):
         assessment = {}
         if variant_obj.get(assessment_type) is None:
             continue
-        _populate_assessment_type(store, assessment, variant_obj, assessment_type)
+        _populate_assessment(store, assessment, variant_obj, assessment_type)
         if assessment:
             assessments.append(assessment)
-
-        flash("-----------")
 
     return assessments
 
