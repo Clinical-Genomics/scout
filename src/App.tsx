@@ -26,7 +26,6 @@ const mapDispatch = {
 const mapState = ({ settings }: RootState) => ({ settings } as const)
 
 type Props = ReturnType<typeof mapState> & typeof mapDispatch
-/*{ setUserInfo, resetUserInfo, setGoogleToken, resetGoogleToken }*/
 export const AppComponent = ({
   settings,
   setUserInfo,
