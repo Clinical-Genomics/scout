@@ -18,7 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Demo cancer case config file to load somatic SNVs and SVs only.
 - Expand list of refseq trancripts in ClinVar submission form
 - Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
-- Add missing parameters to load-config documentation
+- Add missing parameters to case load-config documentation
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
