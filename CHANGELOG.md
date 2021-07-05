@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display matching tiered variants for cancer variants
 - Display a loading icon (spinner) until the page loads completely
 - Display filter badges in cancer variants list
+- Update genes from pre-downloaded file resources
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
@@ -37,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update to Scilifelab's 2020 logo
 - Update Gens URL to support Gens v2.0 format
 - Refactor tests for parsing case configurations
+- Updated links to HPO downloadable resources
 
 ## [4.36]
 ### Added
