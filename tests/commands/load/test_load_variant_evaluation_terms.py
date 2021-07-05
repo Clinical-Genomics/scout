@@ -9,7 +9,7 @@ def test_load_default_terms(mock_app, adapter):
 
     # GIVEN that the command for loading the default evaluation terms into database is executed
     runner = mock_app.test_cli_runner()
-    result = runner.invoke(cli, ["load", "evaluation-terms", "default-terms"], input="y")
+    result = runner.invoke(cli, ["load", "evaluation-terms", "default"], input="y")
 
     # THEN assert that the program exits without problems
     assert result.exit_code == 0
@@ -22,7 +22,7 @@ def test_load_custom_terms(mock_app, adapter):
     runner = mock_app.test_cli_runner()
     result = runner.invoke(
         cli,
-        ["load", "evaluation-terms", "custom-terms", "--file", default_evaluations_file_path],
+        ["load", "evaluation-terms", "custom", "--file", default_evaluations_file_path],
         input="y",
     )
 

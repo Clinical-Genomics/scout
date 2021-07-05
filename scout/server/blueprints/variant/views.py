@@ -158,6 +158,8 @@ def variant_update(institute_id, case_name, variant_id):
         manual_rank = store.validate_evaluation_key(
             key=request.form.get("manual_rank"), category="manual_rank"
         )
+        if manual_rank == -1:
+            manual_rank = None
         store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj, manual_rank)
         flash("Variant tag updated.", "info")
 
@@ -165,6 +167,8 @@ def variant_update(institute_id, case_name, variant_id):
         cancer_tier = store.validate_evaluation_key(
             key=request.form.get("cancer_tier"), category="cancer_tier"
         )
+        if cancer_tier == -1:
+            cancer_tier = None
         store.update_cancer_tier(institute_obj, case_obj, user_obj, link, variant_obj, cancer_tier)
         flash("Cancer tier updated.", "info")
 
