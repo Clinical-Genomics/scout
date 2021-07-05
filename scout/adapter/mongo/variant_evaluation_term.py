@@ -42,7 +42,7 @@ class EvaluationTerm(object):
             raise ValueError(f"Variant evaluation terms description must be defined")
         if self.category not in EVALUATION_TERM_CATEGORIES:
             raise ValueError(
-                f"Variant evaluation term category 'category' is not valid. Valid categories: {EVALUATION_TERM_CATEGORIES}"
+                f"Variant evaluation term category '{self.category}' is not valid. Valid categories: {EVALUATION_TERM_CATEGORIES}"
             )
         if len(self.tracks) == 0:
             raise ValueError(
@@ -105,7 +105,7 @@ class VariantEvaluationHandler(object):
             key(str or int): the evaluation term key validated against the database
 
         """
-        if key == "-1":  # User wants to Reset term
+        if key == "-1":  # User wants to reset term probably
             return -1
 
         evaluation_terms = {}  # evaluation terms for a given category

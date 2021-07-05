@@ -653,7 +653,7 @@ def test_keep_manual_rank_tag_after_reupload(
     ## GIVEN a database with a user
     adapter.user_collection.insert_one(user_obj)
 
-    ## WITH previos manual rank options
+    ## GIVEN that a manual rank option is present in database
     adapter.evaluation_terms_collection.insert_one(
         {
             "key": 8,

@@ -256,7 +256,8 @@ def _populate_assessment(store, assessment_obj, variant_obj, assessment_type):
     if assessment_type in ["manual_rank", "cancer_tier"]:  # variant_assessment is either str or int
         if variant_assessment not in assessment_terms:
             flash(
-                f"Evaluation term with key '{variant_assessment}' was not found in '{assessment_type}' database terms"
+                f"Evaluation term with key '{variant_assessment}' was not found in '{assessment_type}' database terms",
+                "danger",
             )
             return
         assessment_obj["title"] = "{}: {}".format(
@@ -278,7 +279,8 @@ def _populate_assessment(store, assessment_obj, variant_obj, assessment_type):
         for eval_key in variant_assessment:
             if eval_key not in assessment_terms:
                 flash(
-                    f"Evaluation term with key '{eval_key}' was not found in '{assessment_type}' database terms"
+                    f"Evaluation term with key '{eval_key}' was not found in '{assessment_type}' database terms",
+                    "danger",
                 )
                 assessment_obj["title"] += f"<strong>{eval_key}</strong> - Term not found<br><br>"
             else:

@@ -47,7 +47,7 @@ def load_evaluation_terms_from_file(adapter, json_file):
         LOG.error("Could not find any custom track entry in provided file. Aborting")
         return
 
-    # Remove all evaluation terms from database
+    # Remove all evaluation terms from database first
     adapter.drop_evaluation_terms(EVALUATION_TERM_CATEGORIES)
 
     for entry in entries:
@@ -55,7 +55,7 @@ def load_evaluation_terms_from_file(adapter, json_file):
         category = entry.get("category")
         terms = entry.get("terms")
 
-        # Load a single rvaluation term un database
+        # Load a single evaluation terms into database
         for term in terms:
             term_key = term.get("key")
             adapter.load_evaluation_term(category, tracks, term_key, term)
