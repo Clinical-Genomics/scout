@@ -280,10 +280,11 @@ class VariantEventHandler(object):
             if tier_id in tiered:
                 tiered[tier_id]["links"].add(tiered_event["link"])
             else:
-                cancer_tier_options = self.cancer_tier_terms()
                 tiered[tier_id] = {
                     "links": {tiered_event["link"]},
-                    "label": cancer_tier_options.get(tier_id, {}).get("label_class", "secondary"),
+                    "label": self.cancer_tier_terms.get(tier_id, {}).get(
+                        "label_class", "secondary"
+                    ),
                 }
         return tiered
 
@@ -584,30 +585,6 @@ class VariantEventHandler(object):
 
         return updated_case
 
-    def _match_keys(self, term_key, options_keys):
-        """Trying to match an evaluation tem key with a list of option keys
-
-        Args:
-            term_key(str or int): examples: "1",1,"1a"
-            options_keys(list) a list of evalution options keys, can be a list of ints, a list of strings or a mixed loist of strs and ints
-
-        Return:
-            term_key(int or str): A string or an Int if term is matched against the option keys, None if it's not matched
-        """
-        matched_term = None
-
-        if term_key in options_keys:
-            return term_key
-
-        if isinstance(term_key, int):
-            term_key = str(term_key)
-
-        if isinstance(term_key, str) and term_key.isnumeric():
-            term_key = int(term_key)
-
-        if term_key in options_keys:
-            return term_key
-
     def update_cancer_tier(self, institute, case, user, link, variant, cancer_tier):
         """Create an event for updating the manual rank of a variant
 
@@ -643,15 +620,11 @@ class VariantEventHandler(object):
         )
 
         if cancer_tier:
-            cancer_tier_options = self.cancer_tier_terms()
-            cancer_tier = self._match_keys(cancer_tier, cancer_tier_options)
-            if cancer_tier is None:
-                LOG.info(
-                    "Setting cancer tier to {0} for variant {1}".format(
-                        cancer_tier, variant["display_name"]
-                    )
+            LOG.info(
+                "Setting cancer tier to {0} for variant {1}".format(
+                    cancer_tier, variant["display_name"]
                 )
-                return
+            )
             action = "$set"
         else:
             LOG.info(
@@ -702,15 +675,8 @@ class VariantEventHandler(object):
             variant=variant,
             subject=variant["display_name"],
         )
-        if manual_rank:
-            manual_rank_options = self.manual_rank_options(["rare", "cancer"])
-            manual_rank = self._match_keys(manual_rank, manual_rank_options)
-            if manual_rank is None:
-                LOG.error(
-                    f"Manual rank {manual_rank} not found in manual rank options:{manual_rank_options.keys()}"
-                )
-                return
 
+        if manual_rank:
             LOG.info(
                 "Setting manual rank to {0} for variant {1}".format(
                     manual_rank, variant["display_name"]
@@ -770,14 +736,6 @@ class VariantEventHandler(object):
         )
 
         if dismiss_variant:
-            dismiss_variant_options = self.dismiss_variant_options(["rare", "cancer"])
-            for dismiss_option in dismiss_variant:
-                dismiss_option = self._match_keys(dismiss_option, dismiss_variant_options)
-                if dismiss_option is None:
-                    LOG.error(
-                        f"Dismiss variant option {dismiss_option} not found in dismiss variant options:{dismiss_variant_options.keys()}"
-                    )
-                    return
             LOG.info(
                 "Setting dismiss variant to {0} for variant {1}".format(
                     dismiss_variant, variant["display_name"]
@@ -791,6 +749,8 @@ class VariantEventHandler(object):
                 )
             )
             action = "$unset"
+
+        LOG.error(f"HERE:{dismiss_variant}")
 
         updated_variant = self.variant_collection.find_one_and_update(
             {"_id": variant["_id"]},
@@ -834,15 +794,6 @@ class VariantEventHandler(object):
         )
 
         if mosaic_tags:
-            mosaic_tags_options = self.mosaicism_options()
-            for m_tag in mosaic_tags:
-                m_tag = self._match_keys(m_tag, mosaic_tags_options)
-                if m_tag is None:
-                    LOG.error(
-                        f"Mosaic tag {m_tag} not found in mosaic tags options:{mosaic_tags_options.keys()}"
-                    )
-                    return
-
             LOG.info(
                 "Setting mosaic tags to {0} for variant {1}".format(
                     mosaic_tags, variant["display_name"]

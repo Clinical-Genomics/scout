@@ -17,6 +17,7 @@ class EvaluationTerm(object):
     def __init__(self, term_obj):
         self.key = term_obj.get("term_key")  # mandatory
         self.label = term_obj.get("term_label")  # mandatory
+        self.label_class = term_obj.get("label_class") or "secondary"
         self.description = term_obj.get("term_description")  # mandatory
         self.category = term_obj.get("term_category")  # mandatory
         self.tracks = term_obj.get("term_tracks")  # mandatory
@@ -24,8 +25,6 @@ class EvaluationTerm(object):
             self.name = term_obj["term_name"]
         if term_obj.get("term_evidence"):
             self.evidence = term_obj["term_evidence"]
-        if term_obj.get("label_class"):
-            self.label_class = term_obj["label_class"]
 
         self._validate_self()
 
@@ -95,6 +94,43 @@ class VariantEvaluationHandler(object):
 
         return self.evaluation_terms_collection.insert_one(evaluation_term.__repr__())
 
+    def validate_evaluation_key(self, key, category):
+        """Validate an evaluation term against database of existing terms
+
+        Args:
+            key(int or str): term returned by the update variant form
+            category(str): any variant evaluation category
+
+        Returns:
+            key(str or int): the evaluation term key validated against the database
+
+        """
+        if key == "-1":  # User wants to Reset term
+            return -1
+
+        evaluation_terms = {}  # evaluation terms for a given category
+
+        if category == "manual_rank":
+            evaluation_terms = self.manual_rank_options(["rare", "cancer"])
+        elif category == "cancer_tier":
+            evaluation_terms = self.cancer_tier_terms()
+        elif category == "dismissal_term":
+            evaluation_terms = self.dismiss_variant_options(["rare", "cancer"])
+        elif category == "mosaicism_option":
+            evaluation_terms = self.mosaicism_options()
+
+        if key in evaluation_terms:
+            return key
+        elif int(key) in evaluation_terms:
+            return int(key)
+
+    def validate_evaluation_key_list(self, key_list, category):
+        """Validate a list of evaluation terms against database of existing terms"""
+        validated_keys = []
+        for key in key_list:
+            validated_keys.append(self.validate_evaluation_key(key, category))
+        return validated_keys
+
     def manual_rank_options(self, tracks):
         """Return all manual rank evaluation terms for the given tracks.
 
@@ -104,7 +140,6 @@ class VariantEvaluationHandler(object):
         Returns:
             manual_rank_options(dict): Dictionary containing manual rank options ready to be used in server templates
         """
-
         manual_rank_terms = self._get_evaluation_terms("manual_rank", tracks)
         return manual_rank_terms
 

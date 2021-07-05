@@ -21,7 +21,7 @@ def evaluation_terms():
 
 @evaluation_terms.command()
 @with_appcontext
-def default_terms():
+def default():
     """Load default variant evaluation terms into database"""
 
     click.confirm(
@@ -40,7 +40,7 @@ def default_terms():
     required=True,
     help="Load a python file with multiple evaluation terms",
 )
-def custom_terms(file):
+def custom(file):
     """Load custom variant evaluation terms from a json file into database"""
 
     click.confirm(

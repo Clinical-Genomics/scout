@@ -154,26 +154,36 @@ def variant_update(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     link = request.referrer
 
-    manual_rank = request.form.get("manual_rank")
-    cancer_tier = request.form.get("cancer_tier")
-    if manual_rank:
-        new_manual_rank = manual_rank if manual_rank != "-1" else None
-        store.update_manual_rank(
-            institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
+    if request.form.get("manual_rank"):
+        manual_rank = store.validate_evaluation_key(
+            key=request.form.get("manual_rank"), category="manual_rank"
         )
-        if new_manual_rank:
-            flash("Variant tag updated!", "info")
-        else:
-            flash("Reset variant tag", "info")
-    elif cancer_tier:
-        new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
-        store.update_cancer_tier(
-            institute_obj, case_obj, user_obj, link, variant_obj, new_cancer_tier
+        store.update_manual_rank(institute_obj, case_obj, user_obj, link, variant_obj, manual_rank)
+        flash("Variant tag updated.", "info")
+
+    elif request.form.get("cancer_tier"):
+        cancer_tier = store.validate_evaluation_key(
+            key=request.form.get("cancer_tier"), category="cancer_tier"
         )
-        if new_cancer_tier:
-            flash("Cancer tier updated!", "info")
-        else:
-            flash("Reset cancer tier", "info")
+        store.update_cancer_tier(institute_obj, case_obj, user_obj, link, variant_obj, cancer_tier)
+        flash("Cancer tier updated.", "info")
+
+    elif request.form.getlist("dismiss_variant"):
+        dismiss_tags = store.validate_evaluation_key_list(
+            key_list=request.form.getlist("dismiss_variant"), category="dismissal_term"
+        )
+        flash(dismiss_tags)
+        store.update_dismiss_variant(
+            institute_obj, case_obj, user_obj, link, variant_obj, dismiss_tags
+        )
+        flash("Dismissed variant info updated", "info")
+
+    elif request.form.getlist("mosaic_tags"):
+        mosaic_tags = store.validate_evaluation_key_list(
+            key_list=request.form.getlist("mosaic_tags"), category="mosaicism_option"
+        )
+        store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags)
+        flash("Mosaic tags updated", "info")
 
     elif request.form.get("acmg_classification"):
         new_acmg = request.form["acmg_classification"]
@@ -191,39 +201,7 @@ def variant_update(institute_id, case_name, variant_id):
             link=link,
             classification=new_acmg,
         )
-        flash("updated ACMG classification", "info")
-
-    new_dismiss = request.form.getlist("dismiss_variant")
-    if new_dismiss:
-        store.update_dismiss_variant(
-            institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
-        )
-        flash("Dismissed variant", "info")
-
-    variant_dismiss = variant_obj.get("dismiss_variant")
-    if variant_dismiss and not new_dismiss:
-        if "dismiss" in request.form:
-            store.update_dismiss_variant(
-                institute_obj, case_obj, user_obj, link, variant_obj, new_dismiss
-            )
-            flash("Reset dismissed variant", "info")
-        else:
-            LOG.debug(
-                "DO NOT reset variant dismissal: {}".format(",".join(variant_dismiss), "info")
-            )
-
-    mosaic_tags = request.form.getlist("mosaic_tags")
-    if mosaic_tags:
-        store.update_mosaic_tags(institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags)
-        flash("Added mosaic tags", "info")
-
-    variant_mosaic = variant_obj.get("mosaic_tags")
-    if variant_mosaic and not mosaic_tags:
-        if "mosaic" in request.form:
-            store.update_mosaic_tags(
-                institute_obj, case_obj, user_obj, link, variant_obj, mosaic_tags
-            )
-            flash("Reset mosaic tags", "info")
+        flash("ACMG classification updated", "info")
 
     return redirect(request.referrer)
 
