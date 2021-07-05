@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update Gens URL to support Gens v2.0 format
 - Refactor tests for parsing case configurations
 - Updated links to HPO downloadable resources
+- Moved Gens button to individuals table
 
 ## [4.36]
 ### Added
