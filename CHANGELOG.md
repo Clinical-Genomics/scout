@@ -40,6 +40,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update Gens URL to support Gens v2.0 format
 - Refactor tests for parsing case configurations
 - Updated links to HPO downloadable resources
+- Managed variants filtering defaults to all variant categories
+- Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 
 ## [4.36]
 ### Added
