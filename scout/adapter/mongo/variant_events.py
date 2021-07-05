@@ -282,9 +282,9 @@ class VariantEventHandler(object):
             else:
                 tiered[tier_id] = {
                     "links": {tiered_event["link"]},
-                    "label": self.cancer_tier_terms.get(tier_id, {}).get(
-                        "label_class", "secondary"
-                    ),
+                    "label": self.cancer_tier_terms()
+                    .get(tier_id, {})
+                    .get("label_class", "secondary"),
                 }
         return tiered
 
