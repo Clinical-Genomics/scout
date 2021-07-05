@@ -73,18 +73,11 @@
         display: flex;
       }
     }
-
-    /** Login button */
-    .login_button {
-      background-color: global.$scout-color;
-      margin: 8px;
-      color: #fff;
-    }
   }
 
   /** Nav settings */
   ul.nav_settings {
-    margin-left: auto;
+    margin-right: 200px;
   }
 
   /** Collapse arrow animation */

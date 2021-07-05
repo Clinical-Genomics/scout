@@ -84,3 +84,63 @@ li {
 .flex {
   display: flex;
 }
+
+.login {
+  position: absolute;
+  top: 3px;
+  right: 50px;
+}
+
+/** Login button */
+.google-login_button {
+  background-color: $scout-color;
+  color: #fff;
+}
+
+.login-dropdown-header{
+  font-weight: 500;
+}
+
+
+.dropdown_item_space {
+  height: 100%;
+  width: 5px;
+  cursor: pointer;
+}
+
+
+ul {
+  margin: 0px;
+  padding: 0px;
+
+  > li {
+    display: flex;
+    align-items: center;
+  }
+
+  /** Nav item container */
+  li.nav_item {
+    /** Dropdown menu */
+    & > ul {
+      display: none;
+    }
+    &:hover > ul {
+      display: flex;
+    }
+  }
+
+  /** Collapse arrow animation */
+  .collapse_arrow {
+    cursor: pointer;
+    transition: transform 0.5s;
+  }
+  li:hover > .collapse_arrow {
+    transform: rotate(180deg);
+  }
+  .dropdown_item_space {
+    height: 100%;
+    width: 2px;
+    cursor: pointer;
+    margin-bottom: 50px;
+  }
+}
