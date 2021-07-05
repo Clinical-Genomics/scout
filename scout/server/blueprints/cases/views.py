@@ -401,6 +401,7 @@ def phenotypes_actions(institute_id, case_name):
 
     if action == "ADDGENE":
         hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
+        flash(f"hgnc_ids:{hgnc_ids}")
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
     if action == "GENES":
@@ -416,7 +417,7 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
-    return redirect(case_url)
+    return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/events", methods=["POST"])
