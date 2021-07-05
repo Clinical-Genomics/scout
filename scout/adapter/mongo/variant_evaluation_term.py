@@ -121,7 +121,7 @@ class VariantEvaluationHandler(object):
 
         if key in evaluation_terms:
             return key
-        elif int(key) in evaluation_terms:
+        if int(key) in evaluation_terms:
             return int(key)
 
     def validate_evaluation_key_list(self, key_list, category):

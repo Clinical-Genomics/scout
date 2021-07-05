@@ -750,8 +750,6 @@ class VariantEventHandler(object):
             )
             action = "$unset"
 
-        LOG.error(f"HERE:{dismiss_variant}")
-
         updated_variant = self.variant_collection.find_one_and_update(
             {"_id": variant["_id"]},
             {action: {"dismiss_variant": dismiss_variant}},
