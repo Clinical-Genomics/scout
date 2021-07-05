@@ -80,85 +80,85 @@
         "category": "dismissal_term",
         "terms": [
             {
-                "key": 2,
+                "key": "2",
                 "label": "Common public",
                 "description": "Too common in public databases.",
                 "evidence": ["freq"]
             },
             {
-                "key": 3,
+                "key": "3",
                 "label": "Common local",
                 "description": "Too common in local databases.",
                 "evidence": ["freq"]
             },
             {
-                "key": 5,
+                "key": "5",
                 "label": "Irrelevant phenotype",
                 "description": "Phenotype not relevant.",
                 "evidence": ["OMIM"]
             },
             {
-                "key": 7,
+                "key": "7",
                 "label": "Inconsistent inheritance pattern",
                 "description": "Inheritance pattern not relevant.",
                 "evidence": ["OMIM", "GT", "inheritance_model"]
             },
             {
-                "key": 11,
+                "key": "11",
                 "label": "No plausible compound",
                 "description": "No plausible compound - AR disease.",
                 "evidence": ["Compounds"]
             },
             {
-                "key": 13,
+                "key": "13",
                 "label": "Not in disease transcript",
                 "description": "Not in transcript relevant to disease.",
                 "evidence": ["transcript"]
             },
             {
-                "key": 17,
+                "key": "17",
                 "label": "Not in RefSeq transcript",
                 "description": "Not in a RefSeq transcript - could not be determined relevant.",
                 "evidence": ["transcript"]
             },
             {
-                "key": 19,
+                "key": "19",
                 "label": "Splicing unaffected",
                 "description": "Does not appear to affect splicing.",
                 "evidence": ["spidex"]
             },
             {
-                "key": 23,
+                "key": "23",
                 "label": "Inherited from unaffected",
                 "description": "Inherited from an unaffected individual.",
                 "evidence": ["GT", "pedigree"]
             },
             {
-                "key": 29,
+                "key": "29",
                 "label": "Technical issues",
                 "description": "Technical issues - likely false positive.",
                 "evidence": ["GT", "IGV"]
             },
             {
-                "key": 31,
+                "key": "31",
                 "label": "No protein function",
                 "description": "Not likely to alter protein function - eg benign polyQ expansion.",
                 "evidence": ["CADD", "conservation"]
             },
             {
-                "key": 37,
+                "key": "37",
                 "label": "Reputation benign",
                 "description": "Reputable source classified benign.",
                 "evidence": ["clinvar"]
             },
             {
-                "key": 41,
+                "key": "41",
                 "label": "Common variation type",
                 "description": "Found in a gene with much benign such (e.g. missense) variation.",
                 "evidence": ["type"]
             },
             {
-                "key": 43,
+                "key": "43",
                 "label": "Unstudied variation type",
                 "description": "In a gene where mainly other types of variation (e.g. repeat expansion) are established as pathologic.",
                 "evidence": ["type"]
@@ -170,19 +170,19 @@
         "category": "dismissal_term",
         "terms": [
             {
-                "key": 44,
+                "key": "44",
                 "label": "Possible Germline",
                 "description": "Variant is possibly a germline event.",
                 "evidence": []
             },
             {
-                "key": 45,
+                "key": "45",
                 "label": "Low count normal",
                 "description": "Variant has too few reads in normal sample 'AD'.",
                 "evidence": []
             },
             {
-                "key": 46,
+                "key": "46",
                 "label": "Low count tumor",
                 "description": "Variant has too few reads in tumor sample. 'AD'.",
                 "evidence": []
@@ -194,31 +194,31 @@
         "category": "mosaicism_option",
         "terms": [
             {
-                "key": 1,
+                "key": "1",
                 "label": "Suspected in parent",
                 "description": "Variant is suspected to be mosaic in a parent sample.",
                 "evidence": ["allele_count"]
             },
             {
-                "key": 2,
+                "key": "2",
                 "label": "Suspected in affected",
                 "description": "Variant is suspected to be mosaic in a affected sample.",
                 "evidence": ["allele_count"]
             },
             {
-                "key": 3,
+                "key": "3",
                 "label": "Confirmed in parent",
                 "description": "Variant is confirmed to be mosaic in a parent sample.",
                 "evidence": ["allele_count"]
             },
             {
-                "key": 4,
+                "key": "4",
                 "label": "Confirmed in affected",
                 "description": "Variant is confirmed to be mosaic in a affected sample.",
                 "evidence": ["allele_count"]
             },
             {
-                "key": 5,
+                "key": "5",
                 "label": "Not evident in parental reads",
                 "description": "Variant was inspected for mosaicism, but not seen in reads from parental samples.",
                 "evidence": ["allele_count"]

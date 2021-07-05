@@ -168,17 +168,16 @@ def variant_update(institute_id, case_name, variant_id):
         store.update_cancer_tier(institute_obj, case_obj, user_obj, link, variant_obj, cancer_tier)
         flash("Cancer tier updated.", "info")
 
-    elif request.form.getlist("dismiss_variant"):
+    elif request.form.get("dismiss"):
         dismiss_tags = store.validate_evaluation_key_list(
             key_list=request.form.getlist("dismiss_variant"), category="dismissal_term"
         )
-        flash(dismiss_tags)
         store.update_dismiss_variant(
             institute_obj, case_obj, user_obj, link, variant_obj, dismiss_tags
         )
         flash("Dismissed variant info updated", "info")
 
-    elif request.form.getlist("mosaic_tags"):
+    elif request.form.getlist("mosaic"):
         mosaic_tags = store.validate_evaluation_key_list(
             key_list=request.form.getlist("mosaic_tags"), category="mosaicism_option"
         )
