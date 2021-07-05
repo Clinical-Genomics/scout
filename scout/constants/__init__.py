@@ -31,6 +31,7 @@ from .gene_tags import (
     MODELS_MAP,
     PANEL_GENE_INFO_MODELS,
     PANEL_GENE_INFO_TRANSCRIPTS,
+    UPDATE_GENES_RESOURCES,
     VALID_MODELS,
 )
 from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
@@ -52,6 +53,7 @@ from .variant_tags import (
     SPIDEX_LEVELS,
     SV_TYPES,
     VARIANT_CALL,
+    VARIANT_FILTERS,
 )
 from .variants_export import (
     EXPORT_HEADER,
