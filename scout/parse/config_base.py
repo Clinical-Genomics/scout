@@ -45,6 +45,7 @@ class ScoutIndividual(BaseModel):
     predicted_ancestry: str = None  ## ??
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
+    rna_coverage_bigwig: Optional[str] = None
     sample_id: str
     sample_name: Optional[str] = None
     sex: Literal["unknown", "female", "male"]
@@ -52,6 +53,7 @@ class ScoutIndividual(BaseModel):
     smn2_cn: int = None
     smn2delta78_cn: int = None
     smn_27134_cn: int = None
+    splice_junctions_bed: Optional[str] = None
     tiddit_coverage_wig: Optional[str] = None
     tissue_type: Optional[str] = None
     tmb: Optional[str] = None
