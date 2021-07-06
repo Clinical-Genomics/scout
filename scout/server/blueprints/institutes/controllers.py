@@ -6,7 +6,7 @@ LOG = logging.getLogger(__name__)
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
-from flask import flash, jsonify
+from flask import flash
 from flask_login import current_user
 
 from scout.constants import CASE_STATUSES, PHENOTYPE_GROUPS
