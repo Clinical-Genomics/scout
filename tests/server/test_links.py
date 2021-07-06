@@ -1,6 +1,27 @@
 """Tests for scout server links"""
 
-from scout.server.links import add_gene_links, cbioportal, mycancergenome, snp_links
+from scout.server.links import add_gene_links, alamut_link, cbioportal, mycancergenome, snp_links
+
+
+def test_alamut_link(institute_obj, variant_obj):
+    """Test to add a link to alamut browser"""
+
+    # GIVEN an institute with settings for Alamut Visual Plus
+    alamut_inst = "test_alamut_institute"
+    alamut_api_key = "test_alamut_key"
+    institute_obj["alamut_institute"] = alamut_inst
+    institute_obj["alamut_key"] = alamut_api_key
+
+    # GIVEN that genome build 38 is provided
+    build = 38
+
+    # WHEN the alamut link is created
+    link_to_alamut = alamut_link(institute_obj, variant_obj, 38)
+    # THEN the link should contain genome build info
+    assert "GRCh38" in link_to_alamut
+    # As well as Alamut institution and API key
+    assert alamut_inst in link_to_alamut
+    assert alamut_api_key in link_to_alamut
 
 
 def test_add_gene_links():

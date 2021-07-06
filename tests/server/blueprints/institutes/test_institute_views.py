@@ -420,6 +420,8 @@ def test_institute_settings(app, user_obj, institute_obj):
                 "HP:0001250 , Seizures ( EP )",
             ],
             "gene_panels": [test_panel["panel_name"]],
+            "alamut_institute": "test_alamut_institute",
+            "alamut_key": "test_alamut_key",
         }
 
         # via POST request
@@ -441,6 +443,8 @@ def test_institute_settings(app, user_obj, institute_obj):
         assert updated_institute["gene_panels"] == {
             test_panel["panel_name"]: test_panel["display_name"]
         }
+        assert updated_institute["alamut_institute"] == form_data["alamut_institute"]
+        assert updated_institute["alamut_key"] == form_data["alamut_key"]
 
 
 def test_cases(app, institute_obj):
