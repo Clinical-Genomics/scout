@@ -347,10 +347,11 @@ def iarctp53(hgnc_symbol):
 ############# Variant links ####################
 
 
-def get_variant_links(variant_obj, build=None):
+def get_variant_links(institute_obj, variant_obj, build=None):
     """Update a variant object with links
 
     Args:
+        institute_obj(scout.models.Institute)
         variant_obj(scout.models.Variant)
         build(int)
 
@@ -371,7 +372,7 @@ def get_variant_links(variant_obj, build=None):
         ucsc_link=ucsc_link(variant_obj, build),
         decipher_link=decipher_link(variant_obj, build),
         ensembl_link=ensembl_link(variant_obj, build),
-        alamut_link=alamut_link(variant_obj, build),
+        alamut_link=alamut_link(institute_obj, variant_obj, build),
         mitomap_link=mitomap_link(variant_obj),
         hmtvar_link=hmtvar_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
@@ -604,8 +605,21 @@ def mutantp53(hgnc_id, protein_variant):
     return url_template.format(protein_variant)
 
 
-def alamut_link(variant_obj, build=None):
-    """Compose a link which open up variants in the Alamut software"""
+def alamut_link(
+    institute_obj,
+    variant_obj,
+    build=None,
+):
+    """Compose a link which open up variants in the Alamut software
+
+    Args:
+        institute_obj(scout.models.Institute)
+        variant_obj(scout.models.Variant):
+        build(str): "37" or "38"
+
+    Returns:
+        url_template(str): link to Alamut browser
+    """
     build = build or 37
 
     build_str = ""
@@ -613,11 +627,16 @@ def alamut_link(variant_obj, build=None):
         build_str = "(GRCh38)"
 
     url_template = (
-        "http://localhost:10000/show?request={this[chromosome]}{build_str}:"
+        "http://localhost:10000/show?institution={institute}&apikey={apikey}&request={this[chromosome]}{build_str}:"
         "{this[position]}{this[reference]}>{this[alternative]}"
     )
 
-    return url_template.format(this=variant_obj, build_str=build_str)
+    return url_template.format(
+        institute=institute_obj.get("alamut_institute"),
+        apikey=institute_obj.get("alamut_key"),
+        this=variant_obj,
+        build_str=build_str,
+    )
 
 
 def mitomap_link(variant_obj):
