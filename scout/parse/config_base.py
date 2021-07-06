@@ -62,20 +62,21 @@ class ScoutIndividual(BaseModel):
     vcf2cytosure: Optional[str] = None
 
     @validator("tumor_purity")
-    def cast_to_float(cls, value):
+    def cast_tumor_purity_float(cls, value):
         if isinstance(value, str):
             return float(Fraction(value))
         return value
 
     @validator("capture_kits")
-    def cast_to_string(cls, value):
+    def cast_capture_kits_string(cls, value):
         if isinstance(value, str):
             return [value]
         return value
 
     @root_validator
-    def update_track(cls, values):
-        # bam files have different aliases
+    def update_bam_file(cls, values):
+        """Update bam_file to either alignment_path, bam_file or
+        bam_path"""
         if values.get("alignment_path"):
             values.update({"bam_file": values.get("alignment_path")})
             return values
@@ -88,9 +89,9 @@ class ScoutIndividual(BaseModel):
         return values
 
     @root_validator
-    def update_track_sample_id(cls, values):
-        # set display_name to 1. sample_name
-        #                     2. sample_id
+    def set_display_name(cls, values):
+        """Set display_name to 1. sample_name
+        2. sample_id"""
         if values.get("sample_name"):
             values.update({"display_name": values.get("sample_name")})
             return values
@@ -163,29 +164,34 @@ class ScoutLoadConfig(BaseModel):
 
     @validator("analysis_date")
     def check_analysis_date(cls, dt):
+        """Check if analysis_date is on datetime format, if not
+        it will be corrected"""
         if isinstance(dt, datetime.datetime):
             # return datetime.datetime.strptime(dt, "%Y-%M-%d %H:%M%S")
             return dt
         correct_date = datetime.datetime.now()
         return correct_date
 
-    # Each case has to have a owner. If not provided in config file it needs to be given as a
-    # argument
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
+        """`owner` is mandatory in a case configuration. If not
+        provided in config file an exception is raised"""
         if value is None:
             raise ConfigError("A case has to have a owner")
         return value
 
     @validator("family", pre=True, always=True)
     def mandatory_check_family(cls, value):
+        """`family` is mandatory in a case configuration. If not
+        provided in config file an exception is raised"""
         if value is None:
             raise ConfigError("A case has to have a 'family'")
         return value
 
     @validator("madeline_info")
     def check_if_madeline_exists(cls, path):
-        """Add the pedigree figure, this is a xml file which is dumped in the db"""
+        """Add the pedigree figure, this is a xml file which is
+        dumped in the db"""
         mad_path = Path(path)
         if not mad_path.exists():
             raise ValueError("madeline path not found: {}".format(mad_path))
@@ -194,6 +200,8 @@ class ScoutLoadConfig(BaseModel):
 
     @validator("individuals")
     def family_relations_consistent(cls, individuals):
+        """Check family relationships. If configured parent exist. If
+        individual(s) are configured"""
         individual_dicts = [i.dict() for i in individuals]
         if len(individual_dicts) == 0:
             raise PedigreeError("No samples could be found")
@@ -210,14 +218,8 @@ class ScoutLoadConfig(BaseModel):
                     raise PedigreeError("mother %s does not exist in family" % mother)
         return individuals
 
-    @validator("track")
-    def field_not_none(cls, v):
-        if v is None:
-            raise ValueError("Owner and family can not be None")
-        return v
-
     @validator("synopsis")
-    def synopsis_pre_hook(cls, my_synopsis):
+    def cast_synopsis_to_string(cls, my_synopsis):
         if isinstance(my_synopsis, list):
             return ". ".join(my_synopsis)
         return my_synopsis
@@ -238,7 +240,7 @@ class ScoutLoadConfig(BaseModel):
         except Exception as error:
             LOG.error("exception in vcf_s! Not set? {}".format(error))
         return values
-    
+
     @root_validator
     def set_collaborators(cls, values):
         """Update collaborators to `owner` if not set"""
@@ -249,7 +251,8 @@ class ScoutLoadConfig(BaseModel):
 
     @root_validator
     def set_display_name(cls, values):
-        # set toplevel 'display_name' to 1. family_name  2. family
+        """Set toplevel 'display_name' to 1. family_name  2. family"""
+
         if values.get("family_name"):
             values.update({"display_name": values.get("family_name")})
         else:
