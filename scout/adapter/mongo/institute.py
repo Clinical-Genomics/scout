@@ -30,7 +30,7 @@ class InstituteHandler(object):
         )
 
         insert_info = self.institute_collection.insert_one(institute_obj)
-        ##TODO check if insert info was ok
+
         LOG.info("Institute saved")
 
     def update_institute(
