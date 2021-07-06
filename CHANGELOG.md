@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Expand list of refseq trancripts in ClinVar submission form
 - Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
 - Add missing parameters to case load-config documentation
+- Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
 - Loading of OMIM diagnoses in Scout demo instance
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
