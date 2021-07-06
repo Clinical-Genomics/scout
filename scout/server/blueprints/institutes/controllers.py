@@ -6,10 +6,10 @@ LOG = logging.getLogger(__name__)
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
-from flask import flash
+from flask import flash, jsonify
 from flask_login import current_user
 
-from scout.constants import CASE_STATUSES
+from scout.constants import CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
@@ -21,6 +21,36 @@ from .forms import CaseFilterForm
 
 # Do not assume all cases have a valid track set
 TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
+
+
+def institutes():
+    """Returns institutes info available for a user
+
+    Returns:
+        data(list): a list of institute dictionaries
+    """
+
+    institute_objs = user_institutes(store, current_user)
+    institutes = []
+    for ins_obj in institute_objs:
+        sanger_recipients = []
+        for user_mail in ins_obj.get("sanger_recipients", []):
+            user_obj = store.user(user_mail)
+            if not user_obj:
+                continue
+            sanger_recipients.append(user_obj["name"])
+        institutes.append(
+            {
+                "display_name": ins_obj["display_name"],
+                "internal_id": ins_obj["_id"],
+                "coverage_cutoff": ins_obj.get("coverage_cutoff", "None"),
+                "sanger_recipients": sanger_recipients,
+                "frequency_cutoff": ins_obj.get("frequency_cutoff", "None"),
+                "phenotype_groups": ins_obj.get("phenotype_groups", PHENOTYPE_GROUPS),
+                "case_count": sum(1 for i in store.cases(collaborator=ins_obj["_id"])),
+            }
+        )
+    return institutes
 
 
 def institute(store, institute_id):

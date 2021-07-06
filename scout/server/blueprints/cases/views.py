@@ -78,25 +78,6 @@ def case(institute_id, case_name):
     )
 
 
-@cases_bp.route("/api/v1/<institute_id>/<case_name>", methods=["GET"])
-def api_case(institute_id, case_name):
-    """API that returns case data for logged users
-
-    Args:
-        institute_id(str): _id of an institute
-        case_name(str): _id of a case
-
-    Returns:
-        data(dict): jsonified content of a case data dictionary
-    """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    if not case_obj:
-        LOG.error("Case {} does not exist in database!".format(case_name))
-        return redirect(request.referrer)
-    data = controllers.case(store, institute_obj, case_obj)
-    return jsonify(data)
-
-
 @cases_bp.route("/<institute_id>/<case_name>/sma", methods=["GET"])
 @templated("cases/case_sma.html")
 def sma(institute_id, case_name):
