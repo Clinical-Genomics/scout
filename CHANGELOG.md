@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display a loading icon (spinner) until the page loads completely
 - Display filter badges in cancer variants list
 - Update genes from pre-downloaded file resources
+- API to return case page as json object
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
