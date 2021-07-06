@@ -5,7 +5,7 @@ from ped_parser import FamilyParser
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.exceptions import PedigreeError
-from scout.parse.config_base import ScoutLoadConfig
+from scout.parse.models import ScoutLoadConfig
 from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
