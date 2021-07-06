@@ -14,6 +14,7 @@ from .gens_extension import GensViewer
 from .loqus_extension import LoqusDB
 from .matchmaker_extension import MatchMaker
 from .mongo_extension import MongoDB
+from .rerunner_extension import RerunnerError, RerunnerService
 
 toolbar = DebugToolbarExtension()
 bootstrap = Bootstrap()
@@ -25,5 +26,6 @@ mail = Mail()
 loqusdb = LoqusDB()
 mongo = MongoDB()
 gens = GensViewer()
+rerunner = RerunnerService()
 matchmaker = MatchMaker()
 cloud_tracks = AlignTrackHandler()

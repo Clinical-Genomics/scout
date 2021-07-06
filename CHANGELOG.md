@@ -6,9 +6,43 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Highlight and show version number for RefSeq MANE transcripts.
+- Added integration to a rerunner service for toggling reanalysis with updated pedigree information
+- SpliceAI display and parsing from VEP CSQ
+- Display matching tiered variants for cancer variants
+- Display a loading icon (spinner) until the page loads completely
+- Display filter badges in cancer variants list
+- Update genes from pre-downloaded file resources
 ### Fixed
+- Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
+- Demo cancer case config file to load somatic SNVs and SVs only.
+- Expand list of refseq trancripts in ClinVar submission form
+- Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
+- Add missing parameters to case load-config documentation
 - Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
 ### Changed
+- Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
+- Load case with missing panels in config files, but show warning.
+- Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
+- Print stacktrace if case load command fails
+- Added sort icon and a pointer to the cursor to all tables with sortable fields
+- Moved variant, gene and panel info from the basic pane to summary panel for all variants.
+- Renamed `Basics` panel to `Classify` on variant page.
+- Revamped `Basics` panel to a panel dedicated to classify variants
+- Revamped the summary panel to be more compact.
+- Added dedicated template for cancer variants
+- Removed Gene models, Gene annotations and Conservation panels for cancer variants
+- Reorganized the orders of panels for variant and cancer variant views
+- Added dedicated variant quality panel and removed relevant panes (mappability)
+- A more compact case page
+- Removed OMIM genes panel
+- Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
+- Update to Scilifelab's 2020 logo
+- Update Gens URL to support Gens v2.0 format
+- Refactor tests for parsing case configurations
+- Updated links to HPO downloadable resources
+- Managed variants filtering defaults to all variant categories
+- Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 
 ## [4.36]
 ### Added

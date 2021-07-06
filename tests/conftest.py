@@ -308,7 +308,7 @@ def phenotype_to_genes_file(request):
 
 @pytest.fixture
 def hpo_terms_handle(request, hpo_terms_file):
-    """Get a file handle to a hpo terms file (http://purl.obolibrary.org/obo/hp.obo)"""
+    """Get a file handle to a hpo terms file (https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo)"""
     hpo_lines = get_file_handle(hpo_terms_file)
     return hpo_lines
 
@@ -416,6 +416,8 @@ def cancer_case_obj(request, cancer_parsed_case):
 
     case["individuals"][0]["sex"] = "1"
     case["individuals"][1]["sex"] = "1"
+
+    case["phenotype_terms"] = []  # do not assign any phenotype
 
     return case
 

@@ -54,17 +54,18 @@ Below are available configuration parameters for a Scout case. Names marked with
 	- **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
 	- **mother** _String/Int_ Sample ID for mother or 0.
 	- **msi** _Int_ Microsatellite instability [0-60].
-        - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
+	- **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
 	- **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
+	- **rna_coverage_bigwig** _String_ Path to coverage islands file generated
 	- **rhocall_bed** _String_ Path to BED file to view alignments [Reference][rhocall].
 	- **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
 	- **samlple_id(*)** _String_ Identifyer for a sample.
 	- **sample_name**: _String_ Name of sample.
-	- **sex (*)**: _String_ One of: {male, female, unknown}.
+	- **sex (*)**: _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
 	- **smn1_cn** _Int_ Copynumber.
 	- **smn2_cn** _Int_ Copynumber.
 	- **smn2delta78_cn** _Int_ Copynumber.
-	- **sex(*)** _String_ Sex of the sample in human readable format.
+	- **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
 	- **tiddit_coverage_wig** _String_ Path to WIG file to view alignments [Reference][tiddit].
 	- **tissue_type** _String_ Sample tissue origin i.e. blood, muscle.
 	- **tmb** _Int_ Tumor mutational burden [0, 1000] (tumor case only).

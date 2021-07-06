@@ -27,7 +27,7 @@ def load_hpo(
         disease_lines(iterable(str)): These are the omim genemap2 information
         hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
         hpo_gene_lines(iterable(str)): lines from file
-            http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
+            https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/phenotype_to_genes.txt
 
     """
     # Create a map from gene aliases to gene objects
@@ -64,7 +64,7 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
         adapter(MongoAdapter)
         hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
         hpo_gene_lines(iterable(str)): lines from file
-            http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
+            https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/phenotype_to_genes.txt
         alias_genes
     """
     # Fetch the hpo terms if no file
@@ -130,7 +130,7 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
     """Load the omim phenotypes into the database
 
     Parse the phenotypes from genemap2.txt and find the associated hpo terms
-    from http://compbio.charite.de/jenkins/job/hpo.annotations/lastStableBuild/phenotype_to_genes.txt
+    from https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/phenotype_to_genes.txt
 
     Args:
         adapter(MongoAdapter)
