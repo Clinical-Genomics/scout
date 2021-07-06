@@ -97,7 +97,8 @@
               </select>
             </div>
             {% if "admin" in current_user.roles %}
-              <div class="col-md-5 align-self-center offset-md-2">
+              <!-- Admins can modify loqusdb settings -->
+              <div class="col-md-5">
                 {{ form.loqusdb_id.label(class="control-label", data_toggle="tooltip", data_placement="top", title="LoqudDB id" ) }}<br>
                 <select class="selectpicker" name="loqusdb_id">
                   {% for instance in loqus_instances %}
@@ -107,10 +108,28 @@
               </div>
             {% endif %}
           </div>
-          <div class="form-row mt-3 d-flex justify-content-center">
+          <br>
+          <!-- End of loqusdb settings -->
+          <!-- Alamut settings -->
+          {% if "admin" in current_user.roles %}
+          <div class="form-row mt-3">
+            <div class="form-group col-md-5">
+              {{ form.alamut_institute.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Eventual institution name to be associated to this institute when opening Alamut links") }}
+              {{ form.alamut_institute(class='form-control', value=institute.alamut_institute) }}
+            </div>
+            <div class="col-md-4 offset-md-1">
+              {{ form.alamut_key.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Eventual ALamut API key to be used when opening links to Alamut") }}
+              {{ form.alamut_key(class='form-control', value=institute.alamut_key) }}
+            </div>
+            <div class="d-flex justify-content-center align-items-center col-md-2">
+              <a class="ml-3" href="https://extranet.interactive-biosoftware.com/User%20Guide%20Alamut%20Visual%20Plus%20v1.2.pdf" target="_blank">Alamut Visual Plus settings</a>
+            </div>
+          </div>
+          {% endif %}
+          <!-- End of Alamut settings -->
+          <div class="form-row mt-3 d-flex justify-content-center mb-3">
               {{ form.submit_btn(class="btn-primary btn") }}
           </div>
-          <br>
       </div>
     </div>
   </div> <!-- end of div class="row" -->

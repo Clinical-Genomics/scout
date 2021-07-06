@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [x.x.x]
 ### Added
+- Optional alamut_institute and alamut_key in institute settings
 ### Fixed
 ### Changed
 

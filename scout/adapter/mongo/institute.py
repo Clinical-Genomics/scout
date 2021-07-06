@@ -49,6 +49,8 @@ class InstituteHandler(object):
         add_groups=None,
         sharing_institutes=None,
         cohorts=None,
+        alamut_institute=None,
+        alamut_key=None,
     ):
         """Update the information for an institute
 
@@ -67,11 +69,14 @@ class InstituteHandler(object):
             add_groups(bool): If groups should be added. If False replace groups
             sharing_institutes(list(str)): Other institutes to share cases with
             cohorts(list(str)): patient cohorts
+            alamut_institute(str): optional, Alamut institution -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
+            alamut_key(str): optional, Alamut apikey -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
 
         Returns:
             updated_institute(dict)
 
         """
+
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
@@ -155,6 +160,11 @@ class InstituteHandler(object):
         if loqusdb_id is not None:
             LOG.info("Updating loqusdb id for institute: %s to %s", internal_id, loqusdb_id)
             updates["$set"]["loqusdb_id"] = loqusdb_id
+
+        if alamut_institute is not None:
+            updates["$set"]["alamut_institute"] = alamut_institute
+        if alamut_key is not None:
+            updates["$set"]["alamut_key"] = alamut_key
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
