@@ -43,6 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated links to HPO downloadable resources
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
+- Moved Gens button to individuals table
 - Introduce resource file check before starting updating OMIM diagnoses
 
 ## [4.36]

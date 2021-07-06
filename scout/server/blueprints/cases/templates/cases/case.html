@@ -93,7 +93,7 @@
         {% if case.track == 'cancer' %}
           <div class="col-sm-12 col-md-12 mt-3">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
         {% else %}
-          <div class="mt-3 col-sm-8 col-md-{{"8" if case.madeline_info and case.individuals|length > 1 else "12"}}">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
+          <div class="mt-3 col-sm-8 col-md-{{"8" if case.madeline_info and case.individuals|length > 1 else "12"}}">{{ individuals_table(case, institute, tissue_types, display_rerunner, gens_info) }}</div>
           {% if case.madeline_info and case.individuals|length > 1 %}
             <div class="col-sm-4">
               {{ pedigree_panel(case) }}
@@ -196,9 +196,6 @@
         {% endif %}
         {% if case.vcf_files.vcf_cancer_sv %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}structural variants</a>
-        {% endif %}
-        {% if gens_info.display %}
-          <a class="btn btn-dark btn-sm text-white" target="_blank" href="http://{{gens_info.host}}/{{case.display_name}}?&genome_build={{case.genome_build}}">View CN profile</a>
         {% endif %}
       </div>
     </div>
