@@ -48,7 +48,9 @@ def build_gene(gene_info, adapter):
             "Gene {0} is missing hgnc id. Panel genes has to have hgnc_id".format(symbol)
         )
 
-    hgnc_gene = adapter.hgnc_gene(hgnc_id)
+    hgnc_gene = adapter.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or adapter.hgnc_gene(
+        hgnc_identifier=hgnc_id, build="38"
+    )
     if hgnc_gene is None:
         raise IntegrityError("hgnc_id {0} is not in the gene database!".format(hgnc_id))
 
