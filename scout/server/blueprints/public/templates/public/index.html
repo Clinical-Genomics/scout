@@ -20,7 +20,7 @@
         </a>
       </p>
     {% else %}
-      {% if not config.GOOGLE %}
+      {% if config.GOOGLE %}
         <a class="btn btn-primary" onclick="sendBrowserInfo()" href="{{ url_for('login.login') }}" role="button">
           Login with Google
         </a>
