@@ -1,6 +1,5 @@
 """Class to hold information about scout load config"""
 
-import copy
 import datetime
 import logging
 from fractions import Fraction
@@ -224,12 +223,8 @@ class ScoutLoadConfig(BaseModel):
         return my_synopsis
 
     @root_validator
-    def update_track(cls, values):
-        """Performt hooks to config:
-        * Set track to 'cancer' if certain vcf-files are set.
-        * Make sure `collaborators` is set."""
-
-        # Handle special circumstances
+    def update_track_to_cancer(cls, values):
+        """Set track to 'cancer' if certain vcf-files are set"""
         vcfs = values.get("vcf_files")
         try:
             vcf_dict = vcfs.dict()
@@ -242,8 +237,11 @@ class ScoutLoadConfig(BaseModel):
                 values.update({"track": "cancer"})
         except Exception as error:
             LOG.error("exception in vcf_s! Not set? {}".format(error))
-
-        # Update collaborators to [owner] if not set
+        return values
+    
+    @root_validator
+    def set_collaborators(cls, values):
+        """Update collaborators to `owner` if not set"""
         if values.get("collaborators") is None:
             owner = values.get("owner")
             values.update({"collaborators": [owner]})
