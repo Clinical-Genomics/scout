@@ -1,9 +1,12 @@
 const webpack = require('webpack');
 const config = {
-	entry: __dirname + '/app/index.js',
+	entry: {
+      phenotypes: '/app/phenotypes/index.js',
+      home: '/app/home/index.js'
+    },
 	output: {
 		path: __dirname + '/dist',
-		filename: 'phenotypes.js',
+		filename: '[name].js',
 	},
 	resolve: {
 		extensions: ['.js', '.jsx', '.css']

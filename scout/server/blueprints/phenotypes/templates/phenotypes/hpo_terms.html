@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
+ <!-- <link rel="stylesheet" href="{{ url_for('static', filename='/react-app/app/style/Phenotypes.style.css') }}">-->
 {% endblock %}
 
 {% block top_nav %}
@@ -19,8 +20,8 @@
   Local bundle
   <script src="{{ url_for('static', filename='react-app/dist/phenotypes.js') }}"></script>
  -->
- <div id="react-root"></div>
-  <script src="https://react-in-scout.web.app/phenotypes.js"></script>
+ <div id="react-phenotypes"></div>
+    <script src="{{ url_for('static', filename='react-app/dist/phenotypes.js') }}"></script>
 </div>
 {% endblock %}
 

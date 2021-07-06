@@ -30,6 +30,8 @@ const Phenotypes = () => {
         }
       ).then(function (response) {
 		   setPhenotypes(response.data.phenotypes)
+		         console.log(response)
+
       }).catch(function (error) {
         // handle error
         console.log(error)
