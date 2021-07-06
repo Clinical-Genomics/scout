@@ -6,12 +6,7 @@ from pydantic import ValidationError
 
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
-from scout.parse.case import (
-    parse_case,
-    parse_case_data,
-    parse_ped,
-    remove_none_values,
-)
+from scout.parse.case import parse_case, parse_case_data, parse_ped, remove_none_values
 
 
 def test_parse_case_no_date(scout_config):
