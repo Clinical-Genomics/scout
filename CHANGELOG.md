@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display a loading icon (spinner) until the page loads completely
 - Display filter badges in cancer variants list
 - Update genes from pre-downloaded file resources
+- On login, OS, browser version and screen size are saved anonymously to understand how users are using Scout
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
@@ -44,10 +45,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
-
-## [4.37]
-### Added
-- On login, OS, browser version and screen size are saved anonymously to understand how users are using Scout
 
 ## [4.36]
 ### Added
