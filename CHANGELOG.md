@@ -34,6 +34,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed OMIM genes panel
 - Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
 
+## [4.37]
+### Added
+- On login, the browser userAgent and screen size are saved anonymously to understand which browsers are used by Scout users
+
 ## [4.36]
 ### Added
 - Parse and save splice junction tracks from case config file
