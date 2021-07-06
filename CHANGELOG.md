@@ -36,7 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.37]
 ### Added
-- On login, the browser userAgent and screen size are saved anonymously to understand which browsers are used by Scout users
+- On login, OS, browser version and screen size are saved anonymously to understand how users are using Scout
 
 ## [4.36]
 ### Added
