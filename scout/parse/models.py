@@ -15,7 +15,7 @@ from scout.utils.date import get_date
 LOG = logging.getLogger(__name__)
 
 # As the class constructor is called twice, this messes with the
-# aliases, removing the set value the second time called. It seems 
+# aliases, removing the set value the second time called. It seems
 # to work by adding the aliased name as a attribute...
 #
 class ChromographImages(BaseModel):
@@ -141,7 +141,7 @@ class ScoutLoadConfig(BaseModel):
     individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
     # madeline: Optional[str] #!
-    madeline_info: Optional[str] = Field("", alias="madeline") #!
+    madeline_info: Optional[str] = Field("", alias="madeline")  #!
     multiqc: Optional[str] = None
     owner: str = None
     peddy_ped: Optional[str] = None
@@ -168,7 +168,6 @@ class ScoutLoadConfig(BaseModel):
             super().__init__(**data)
         except Exception as error:
             super().__init__(**data)
-            
 
     @validator("analysis_date")
     def check_analysis_date(cls, dt):
@@ -211,7 +210,6 @@ class ScoutLoadConfig(BaseModel):
         with mad_path.open("r") as in_handle:
             LOG.debug("READ MADELINE")
             return in_handle.read()
-    
 
     @validator("individuals")
     def family_relations_consistent(cls, individuals):
