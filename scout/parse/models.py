@@ -4,7 +4,7 @@ import datetime
 import logging
 from fractions import Fraction
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union, List
 
 from pydantic import BaseModel, Field, root_validator, validator
 from typing_extensions import Literal
@@ -14,7 +14,10 @@ from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
-
+# As the class constructor is called twice, this messes with the
+# aliases, removing the set value the second time called. It seems 
+# to work by adding the aliased name as a attribute...
+#
 class ChromographImages(BaseModel):
     autozygous: Optional[str] = None
     coverage: Optional[str] = None
@@ -27,7 +30,7 @@ class ScoutIndividual(BaseModel):
     analysis_type: Literal["wgs", "wes", "mixed", "unknown", "panel", "external"] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
-    capture_kits: Optional[str] = Field([], alias="capture_kit")
+    # capture_kits: Optional[str] = Field(..., alias="capture_kit") #!
     chromograph_images: ChromographImages = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
@@ -67,11 +70,12 @@ class ScoutIndividual(BaseModel):
             return float(Fraction(value))
         return value
 
-    @validator("capture_kits")
-    def cast_capture_kits_string(cls, value):
-        if isinstance(value, str):
-            return [value]
-        return value
+    # @validator("capture_kits")
+    # def cast_capture_kits_string(cls, value):
+    #     LOG.debug("return KIT: {}".format(value))
+    #     if isinstance(value, str):
+    #         return [value]
+    #     return value
 
     @root_validator
     def update_bam_file(cls, values):
@@ -136,12 +140,13 @@ class ScoutLoadConfig(BaseModel):
     human_genome_build: str = None
     individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
-    madeline_info: Optional[str] = Field("", alias="madeline")
+    # madeline: Optional[str] #!
+    madeline_info: Optional[str] = Field("", alias="madeline") #!
     multiqc: Optional[str] = None
     owner: str = None
-    peddy_check: Optional[str] = None
     peddy_ped: Optional[str] = None
-    peddy_sex: Optional[str] = None
+    peddy_ped_check: Optional[str] = Field("", alias="peddy_check")
+    peddy_sex_check: Optional[str] = Field("", alias="peddy_sex")
     phenotype_terms: Optional[List[str]] = None
     rank_model_version: Optional[str] = ""
     rank_score_threshold: int = 0
@@ -161,6 +166,9 @@ class ScoutLoadConfig(BaseModel):
             super().__init__(vcf_files=vcfs, **data)
         except TypeError as err:
             super().__init__(**data)
+        except Exception as error:
+            super().__init__(**data)
+            
 
     @validator("analysis_date")
     def check_analysis_date(cls, dt):
@@ -193,10 +201,17 @@ class ScoutLoadConfig(BaseModel):
         """Add the pedigree figure, this is a xml file which is
         dumped in the db"""
         mad_path = Path(path)
-        if not mad_path.exists():
-            raise ValueError("madeline path not found: {}".format(mad_path))
+        try:
+            if not mad_path.exists():
+                LOG.debug("PATH ERROR MADELINE")
+                raise ValueError("madeline path not found: {}".format(mad_path))
+        except OSError:
+            # 2nd time called, catch OSerror and return
+            return path
         with mad_path.open("r") as in_handle:
+            LOG.debug("READ MADELINE")
             return in_handle.read()
+    
 
     @validator("individuals")
     def family_relations_consistent(cls, individuals):
@@ -261,3 +276,4 @@ class ScoutLoadConfig(BaseModel):
 
     class Config:
         validate_assignment = True
+        allow_population_by_field_name = True
