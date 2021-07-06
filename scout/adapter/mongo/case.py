@@ -423,7 +423,6 @@ class CaseHandler(object):
         hgnc_symbols=None,
         hgnc_ids=None,
         phenotype_ids=None,
-        build="37",
         add_only=False,
     ):
         """Update the dynamic gene list for a case
@@ -446,6 +445,8 @@ class CaseHandler(object):
         Returns:
             updated_case(dict)
         """
+        case_build = str(case.get("genome_build", "37"))
+        build = case_build if case_build in ["37", "38"] else "37"
         dynamic_gene_list = []
         if add_only:
             dynamic_gene_list = list(
