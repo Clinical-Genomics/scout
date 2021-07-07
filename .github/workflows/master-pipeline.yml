@@ -24,16 +24,16 @@ jobs:
       with:
         name: build-master
         path: build
-    - name: Build Production
+    - name: Build Master
       run: yarn build
       env:
         REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_OAUTH_CLIENT_ID }}
-    - name: Archive Production Artifact
+    - name: Archive Master Artifact
       uses: actions/upload-artifact@master
       with:
         name: build-prod
         path: build
-  deploy-production:
+  deploy-master:
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -42,11 +42,11 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: build-production
+          name: build-master
           path: build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting -P production
+          args: deploy --only hosting -P master
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
