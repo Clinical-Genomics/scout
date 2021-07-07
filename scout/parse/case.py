@@ -111,6 +111,19 @@ def parse_case_data(**kwargs):
     if config_dict["smn_tsv"]:
         add_smn_info(config_dict)
 
+    if config_dict.get("synopsis"):
+        synopsis = (
+            ". ".join(config_dict["synopsis"])
+            if isinstance(config_dict["synopsis"], list)
+            else config_dict["synopsis"]
+        )
+
+    LOG.debug("Checking for SMN TSV..")
+    if config_dict["smn_tsv"]:
+        LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
+        add_smn_info_case(config_dict)
+
+        
     LOG.debug("parse_case_data/return: {}".format(remove_none_recursive(config_dict)))
     return remove_none_recursive(config_dict)
 
@@ -131,7 +144,7 @@ def add_smn_info(config_data):
     for smn_ind_info in parse_smn_file(file_handle):
         smn_info[smn_ind_info["sample_id"]] = smn_ind_info
 
-    for ind in config_data["samples"]:
+    for ind in config_data["individuals"]:
         ind_id = ind["sample_id"]
         try:
             for key in [
@@ -208,7 +221,7 @@ def add_peddy_information(config_data):
         return
 
     analysis_inds = {}
-    for ind in config_data["samples"]:
+    for ind in config_data["individuals"]:
         ind_id = ind["sample_id"]
         analysis_inds[ind_id] = ind
 
@@ -243,6 +256,7 @@ def add_peddy_information(config_data):
                     analysis_inds[ind[parent]]["confirmed_parent"] = True
 
 
+# XXX: No longer called! (previously called from mongo/case)
 def parse_case(config):
     """Parse case information from config or PED files.
 
@@ -253,7 +267,7 @@ def parse_case(config):
         dict: parsed case data
     """
     # create a config object based on pydantic rules
-    LOG.debug("parse_case/CONFIG: {}".format(config))
+    LOG.debug("*** NO LONGER CALLED ***")
     if config.get("synopsis"):
         synopsis = (
             ". ".join(config["synopsis"])

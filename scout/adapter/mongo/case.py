@@ -571,10 +571,8 @@ class CaseHandler(object):
         institute_obj = self.institute(config_data["owner"])
         if not institute_obj:
             raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
-        # Parse the case information
-        parsed_case = parse_case(config=config_data)
         # Build the case object
-        case_obj = build_case(parsed_case, self)
+        case_obj = build_case(config_data, self)
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
@@ -582,7 +580,7 @@ class CaseHandler(object):
 
         old_sanger_variants = self.case_sanger_variants(case_obj["_id"])
 
-        genome_build = str(parsed_case.get("genome_build", 37))
+        genome_build = str(config_data.get("genome_build", 37))
 
         if old_case:
             LOG.info(
