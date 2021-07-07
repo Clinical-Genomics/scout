@@ -63,10 +63,12 @@ services:
     image: clinicalgenomics/chanjo-report
     depends_on:
       - mariadb
+      - chanjo-cli
     networks:
       - custom-net
-    command: chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test report --render html
+    entrypoint: sh -c "chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test report --render html"
 
+  # Start the scout app containing demo data
   scout-web:
     image: clinicalgenomics/scout:latest
     container_name: scout-web
