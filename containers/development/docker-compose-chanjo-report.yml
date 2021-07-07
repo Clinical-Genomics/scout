@@ -1,0 +1,87 @@
+# Docker-compose file containing Scout demo and a running chanjo-report instance
+# OBS: edit scout config file and add these lines:
+# SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test" ?
+# REPORT_LANGUAGE = "en"  # or 'sv'
+version: '3'
+# usage:
+# (sudo) docker-compose up -d
+# (sudo) docker-compose down
+services:
+  # mongodb is used by Scout
+  mongodb:
+    image: mvertes/alpine-mongo
+    container_name: mongodb
+    ports:
+      - '27013:27017'
+    expose:
+      - '27017'
+    networks:
+      - custom-net
+
+  # MariaDB is used by Chanjo
+  mariadb:
+    container_name: mariadb
+    image: mariadb:latest
+    restart: 'always'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=chanjo4_test
+      - MYSQL_USER=chanjoUser
+      - MYSQL_PASSWORD=chanjoPassword
+    healthcheck: # Wait for the service to be ready before accepting incoming connections
+      test: "mysql --user=chanjoUser --password=chanjoPassword --execute \"SHOW DATABASES;\""
+      timeout: 10s
+      retries: 20
+    networks:
+      - custom-net
+
+  chanjo-cli:
+    container_name: chanjo-cli
+    image: clinicalgenomics/chanjo
+    depends_on:
+      mariadb:
+        condition: service_healthy # DB_URI=mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test
+    networks:
+      - custom-net
+    command: bash -c "
+      chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test init --auto demodata
+      && chanjo --config demodata/chanjo.yaml link demodata/hgnc.grch37p13.exons.bed
+      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load chanjo/init/demo-files/sample1.coverage.bed
+      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load chanjo/init/demo-files/sample2.coverage.bed
+      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load chanjo/init/demo-files/sample3.coverage.bed"
+
+  chanjo-report:
+    container_name: chanjo-report
+    image: clinicalgenomics/chanjo-report
+    depends_on:
+      - mariadb
+    networks:
+      - custom-net
+
+  scout-web:
+    image: clinicalgenomics/scout:latest
+    container_name: scout-web
+    expose:
+      - '5000'
+    ports:
+      - '5000:5000'
+    command: bash -c "
+      scout --host mongodb setup demo
+      && scout --host mongodb --demo serve --host 0.0.0.0"
+    volumes:
+      - ./scout:/home/worker/app/scout
+      - ./volumes/scout/data:/home/worker/data
+    depends_on:
+      - mariadb
+      - mongodb
+      - chanjo-report
+    networks:
+      - custom-net
+
+networks:
+  custom-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.21.0.0/24
