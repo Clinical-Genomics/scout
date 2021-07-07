@@ -36,6 +36,7 @@ services:
     networks:
       - custom-net
 
+  # Set up chanjo database and load some demo data
   chanjo-cli:
     container_name: chanjo-cli
     image: clinicalgenomics/chanjo
@@ -45,20 +46,26 @@ services:
     networks:
       - custom-net
     command: bash -c "
-      chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test init --auto demodata
-      && chanjo --config demodata/chanjo.yaml link demodata/hgnc.grch37p13.exons.bed"
+      chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test db setup --reset
+      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test init --auto demodata
+      && chanjo --config demodata/chanjo.yaml link demodata/hgnc.grch37p13.exons.bed
+      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample1 --group-name test_group -g test_group chanjo/init/demo-files/sample1.coverage.bed
+      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample2 --group-name test_group -g test_group chanjo/init/demo-files/sample2.coverage.bed
+      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample3 --group-name test_group -g test_group chanjo/init/demo-files/sample3.coverage.bed"
 
+  # Start the chanjo-report app
   chanjo-report:
     container_name: chanjo-report
+    expose:
+      - '5000'
+    ports:
+      - '4000:5000'
     image: clinicalgenomics/chanjo-report
     depends_on:
       - mariadb
     networks:
       - custom-net
-    command: bash -c "
-      chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample1 --group-name test_group -g test_group chanjo/init/demo-files/sample1.coverage.bed
-      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample2 --group-name test_group -g test_group chanjo/init/demo-files/sample2.coverage.bed
-      && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample3 --group-name test_group -b test_group chanjo/init/demo-files/sample3.coverage.bed"
+    command: chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test report --render html
 
   scout-web:
     image: clinicalgenomics/scout:latest
