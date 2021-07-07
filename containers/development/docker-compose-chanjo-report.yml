@@ -72,7 +72,6 @@ services:
       - ./scout:/home/worker/app/scout
       - ./volumes/scout/data:/home/worker/data
     depends_on:
-      - mariadb
       - mongodb
       - chanjo-report
     networks:
