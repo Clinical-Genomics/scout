@@ -123,7 +123,6 @@ def parse_case_data(**kwargs):
         LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
         add_smn_info_case(config_dict)
 
-        
     LOG.debug("parse_case_data/return: {}".format(remove_none_recursive(config_dict)))
     return remove_none_recursive(config_dict)
 
@@ -236,24 +235,27 @@ def add_peddy_information(config_data):
                 ind["confirmed_sex"] = False
             else:
                 ind["confirmed_sex"] = True
-
         # Check if peddy har confirmed parental relations
         for parent in ["mother", "father"]:
             # If we are looking at individual with parents
-            if ind[parent] == "0":
+            parent_id = ind[parent]
+            if parent_id == "0":
                 continue
             # Check if the child/parent pair is in peddy data
             for pair in ped_check:
-                if not (ind_id in pair and ind[parent] in pair):
+                if not (ind_id in pair and parent_id in pair):
                     continue
                 # If there is a parent error we mark that
                 if ped_check[pair]["parent_error"]:
-                    analysis_inds[ind[parent]]["confirmed_parent"] = False
+                    analysis_inds[parent_id]["confirmed_parent"] = False
                     continue
                 # Else if parent confirmation has not been done
-                if "confirmed_parent" not in analysis_inds[ind[parent]]:
+                if (
+                    "confirmed_parent" not in analysis_inds[parent_id]
+                    or analysis_inds[parent_id]["confirmed_parent"] is None
+                ):
                     # Set confirmatio to True
-                    analysis_inds[ind[parent]]["confirmed_parent"] = True
+                    analysis_inds[parent_id]["confirmed_parent"] = True
 
 
 # XXX: No longer called! (previously called from mongo/case)
