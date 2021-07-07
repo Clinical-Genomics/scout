@@ -30,7 +30,7 @@ class ScoutIndividual(BaseModel):
     analysis_type: Literal["wgs", "wes", "mixed", "unknown", "panel", "external"] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
-    # capture_kits: Optional[str] = Field(..., alias="capture_kit") #!
+    capture_kits: Optional[str] = Field(..., alias="capture_kit") #!
     chromograph_images: ChromographImages = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
@@ -70,12 +70,12 @@ class ScoutIndividual(BaseModel):
             return float(Fraction(value))
         return value
 
-    # @validator("capture_kits")
-    # def cast_capture_kits_string(cls, value):
-    #     LOG.debug("return KIT: {}".format(value))
-    #     if isinstance(value, str):
-    #         return [value]
-    #     return value
+    @validator("capture_kits")
+    def cast_capture_kits_string(cls, value):
+        LOG.debug("return KIT: {}".format(value))
+        if isinstance(value, str):
+            return [value]
+        return value
 
     @root_validator
     def update_bam_file(cls, values):
@@ -123,7 +123,6 @@ class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
     assignee: str = None  ## ??
     case_id: str = Field(..., alias="family")
-    #  chromograph_image_files: Optional[List[str]]
     cnv_report: Optional[str] = None
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
@@ -150,7 +149,6 @@ class ScoutLoadConfig(BaseModel):
     phenotype_terms: Optional[List[str]] = None
     rank_model_version: Optional[str] = ""
     rank_score_threshold: int = 0
-    samples: List[ScoutIndividual] = []
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = ""
     synopsis: Union[List[str], str] = None
@@ -166,8 +164,7 @@ class ScoutLoadConfig(BaseModel):
             super().__init__(vcf_files=vcfs, **data)
         except TypeError as err:
             super().__init__(**data)
-        except Exception as error:
-            super().__init__(**data)
+
 
     @validator("analysis_date")
     def check_analysis_date(cls, dt):
