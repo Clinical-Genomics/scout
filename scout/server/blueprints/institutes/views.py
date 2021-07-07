@@ -31,7 +31,7 @@ blueprint = Blueprint(
 )
 
 
-@blueprint.route("/api/v1/secure/institutes", methods=["GET"])
+@blueprint.route("/api/v1/institutes", methods=["GET"])
 def api_institutes():
     """API endpoint that returns institutes data"""
     data = dict(institutes=controllers.institutes())
