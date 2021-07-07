@@ -38,14 +38,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@production
+        uses: actions/checkout@master
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
           name: build-production
           path: build
       - name: Deploy to Firebase
-        uses: w9jds/firebase-action@production
+        uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting -P production
         env:
