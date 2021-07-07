@@ -1,5 +1,6 @@
 # Docker-compose file containing Scout demo and a running chanjo-report instance
-# OBS: edit scout config file and add these lines:
+# 1) Move this file under scout/
+# 2) edit scout config file and add these lines:
 # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test" ?
 # REPORT_LANGUAGE = "en"  # or 'sv'
 version: '3'
