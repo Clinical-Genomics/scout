@@ -44,7 +44,6 @@ export const AppComponent = ({
       expires: 365,
       path: '',
     })
-    console.log(response.profileObj.email)
   }
 
   const onLogoutSuccess = () => {
