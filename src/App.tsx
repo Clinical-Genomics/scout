@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { GoogleLogin, GoogleLogout } from 'react-google-login'
+import Cookies from 'js-cookie'
 import { connect } from 'react-redux'
 import { RootState } from './domain/rootReducer'
 import {
@@ -39,11 +40,16 @@ export const AppComponent = ({
   const onLoginSuccess = (response: any) => {
     setUserInfo(response.profileObj)
     setGoogleToken(response.tokenId)
+    Cookies.set('scout_remember_me', `${response.profileObj.email}|${response.tokenId}`, {
+      expires: 365,
+      path: '',
+    })
   }
 
   const onLogoutSuccess = () => {
     resetUserInfo()
     resetGoogleToken()
+    Cookies.remove('scout_remember_me', { path: '' })
   }
 
   return (
