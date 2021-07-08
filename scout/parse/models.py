@@ -72,7 +72,6 @@ class ScoutIndividual(BaseModel):
 
     @validator("capture_kits")
     def cast_capture_kits_string(cls, value):
-        LOG.debug("return KIT: {}".format(value))
         if isinstance(value, str):
             return [value]
         return value
@@ -198,13 +197,11 @@ class ScoutLoadConfig(BaseModel):
         mad_path = Path(path)
         try:
             if not mad_path.exists():
-                LOG.debug("PATH ERROR MADELINE")
                 raise ValueError("madeline path not found: {}".format(mad_path))
         except OSError:
             # 2nd time called, catch OSerror and return
             return path
         with mad_path.open("r") as in_handle:
-            LOG.debug("READ MADELINE")
             return in_handle.read()
 
     @validator("individuals")
