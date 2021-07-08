@@ -43,6 +43,36 @@ services:
       - scout-net
     depends_on:
       - mongodb
+      - mariadb
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+     - MYSQL_USER=chanjoUser
+     - MYSQL_PASSWORD=chanjoPassword
+     - MYSQL_DATABASE=chanjo
+    volumes:
+     - ./volumes/mariadb/data:/var/lib/mysql
+    healthcheck: # Wait for the service to be ready before accepting incoming connections
+        test: "mysql --user=chanjoUser --password=chanjoPassword --execute \"SHOW DATABASES;\""
+        timeout: 10s
+        retries: 20
+    networks:
+     - scout-net
+    restart: unless-stopped
+
+  chanjo-cli:
+    image: clinicalgenomics/scout
+    environment:
+     - SQLALCHEMY_DATABASE_URI=mysql+pymysql://chanjoUser@mariadb?password=chanjoPassword&db=chanjo
+    depends_on:
+      - mariadb
+    volumes:
+     - ./volumes/chanjo/data:/data/data
+    networks:
+     - scout-net
+    restart: unless-stopped
 
 networks:
   scout-net:
@@ -50,4 +80,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.21.0.0/24
+        - subnet: 172.30.0.0/24
