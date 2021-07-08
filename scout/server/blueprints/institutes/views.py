@@ -3,7 +3,7 @@ import logging
 
 import pymongo
 from bson import ObjectId
-from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
@@ -13,7 +13,6 @@ from scout.constants import (
     CASE_SEARCH_TERMS,
     CASEDATA_HEADER,
     CLINVAR_HEADER,
-    PHENOTYPE_GROUPS,
 )
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, templated, user_institutes
@@ -32,31 +31,17 @@ blueprint = Blueprint(
 )
 
 
+@blueprint.route("/api/v1/institutes", methods=["GET"])
+def api_institutes():
+    """API endpoint that returns institutes data"""
+    data = dict(institutes=controllers.institutes())
+    return jsonify(data)
+
+
 @blueprint.route("/overview")
 def institutes():
     """Display a list of all user institutes."""
-    institute_objs = user_institutes(store, current_user)
-    institutes = []
-    for ins_obj in institute_objs:
-        sanger_recipients = []
-        for user_mail in ins_obj.get("sanger_recipients", []):
-            user_obj = store.user(user_mail)
-            if not user_obj:
-                continue
-            sanger_recipients.append(user_obj["name"])
-        institutes.append(
-            {
-                "display_name": ins_obj["display_name"],
-                "internal_id": ins_obj["_id"],
-                "coverage_cutoff": ins_obj.get("coverage_cutoff", "None"),
-                "sanger_recipients": sanger_recipients,
-                "frequency_cutoff": ins_obj.get("frequency_cutoff", "None"),
-                "phenotype_groups": ins_obj.get("phenotype_groups", PHENOTYPE_GROUPS),
-                "case_count": sum(1 for i in store.cases(collaborator=ins_obj["_id"])),
-            }
-        )
-
-    data = dict(institutes=institutes)
+    data = dict(institutes=controllers.institutes())
     return render_template("overview/institutes.html", **data)
 
 
