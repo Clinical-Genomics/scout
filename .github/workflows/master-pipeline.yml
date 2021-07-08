@@ -31,7 +31,7 @@ jobs:
     - name: Archive Master Artifact
       uses: actions/upload-artifact@master
       with:
-        name: build-prod
+        name: build-production
         path: build
   deploy-master:
     needs: build
@@ -42,11 +42,11 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
-          name: build-master
+          name: build-production
           path: build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting -P master
+          args: deploy --only hosting -P production
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

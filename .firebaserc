@@ -2,6 +2,6 @@
   "projects": {
     "default": "scout-stage",
     "stage": "scout-stage",
-    "master": "scout-master-app"
+    "production": "scout-prod"
   }
 }
