@@ -341,7 +341,13 @@ def remove_none_recursive(dictionary):
 
 
 def remove_none_recursive_aux(dictionary, new_dict):
-    """Auxilary Function to remove_None_recursive"""
+    """Auxilary Function to remove_none_recursive. Recursively removes 
+    None from dictionary by adding non-None key/value pairs to new_dict.
+    Args:
+        dictionary: dict with configuration values
+        new_dict: assembly dict
+    Return:
+        dictionary with no None values"""
     for key, value in dictionary.items():
         if isinstance(value, dict):
             clean_value = remove_none_recursive(value)

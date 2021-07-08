@@ -4,7 +4,7 @@ import datetime
 import logging
 from fractions import Fraction
 from pathlib import Path
-from typing import Any, List, Optional, Union, List
+from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel, Field, root_validator, validator
 from typing_extensions import Literal
@@ -156,7 +156,7 @@ class ScoutLoadConfig(BaseModel):
 
     # override init() for handling nested vcf_files dicts
     # use try/except to handle TypeError if `vcf_files`is already set in
-    # previous call `parse_case_data()`, `parse_case()`.
+    # previous call `parse_case_data()` or `parse_case()`.
     def __init__(self, **data):
         vcfs = VcfFiles(**data)
         try:
@@ -257,7 +257,7 @@ class ScoutLoadConfig(BaseModel):
 
     @root_validator
     def set_display_name(cls, values):
-        """Set toplevel 'display_name' to 1. family_name  2. family"""
+        """Set toplevel 'display_name', in prioritised order 1. family_name  2. family"""
 
         if values.get("family_name"):
             values.update({"display_name": values.get("family_name")})
