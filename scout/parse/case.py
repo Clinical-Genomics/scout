@@ -336,7 +336,7 @@ def remove_none_values(dictionary):
 
 
 def remove_none_recursive(dictionary):
-    """Recusivly remove None from dictionary"""
+    """Recursively remove None from dictionary"""
     return remove_none_recursive_aux(dictionary, {})
 
 
