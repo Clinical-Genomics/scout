@@ -1,4 +1,4 @@
-@use 'App' as global;
+@import '../../App.css';
 
 .DropdownMenu {
   display: none;
@@ -7,9 +7,9 @@
   min-width: 100%;
   top: 100%;
   bottom: 0px;
-  height: fit-content; // Works in IE? Should we support IE?
+  height: fit-content; /* Works in IE? Should we support IE? */
   border-radius: 2px;
-  box-shadow: global.$shadow;
+  box-shadow: var(--shadow);
   background-color: inherit;
   overflow: auto;
   li > a,

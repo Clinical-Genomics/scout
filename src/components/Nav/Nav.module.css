@@ -1,13 +1,13 @@
-@use 'App' as global;
+@import '../../App.css';
 
 .Nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  //border-bottom: 1px solid rgba(217, 217, 217, 0.45);
-  box-shadow: global.$shadow;
-  background-color: global.$primary_bg_color;
-  color: global.$primary_text_color;
+  /* border-bottom: 1px solid rgba(217, 217, 217, 0.45); */
+  box-shadow: var(--shadow);
+  background-color: var(--primary_bg_color);
+  color: var(--primary_text_color);
   padding: 0px 4px;
 
   /** All ul elements in this component */
