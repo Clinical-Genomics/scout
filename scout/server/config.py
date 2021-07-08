@@ -74,3 +74,5 @@ RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/b
 RANK_MODEL_LINK_POSTFIX = "-.ini"
 SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
+
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser@mariadb?password=chanjoPassword&db=chanjo"
