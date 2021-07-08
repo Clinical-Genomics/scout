@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display filter badges in cancer variants list
 - Update genes from pre-downloaded file resources
 - On login, OS, browser version and screen size are saved anonymously to understand how users are using Scout
+- API returning institutes data for a given user
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
