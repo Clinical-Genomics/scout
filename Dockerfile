@@ -16,7 +16,7 @@ WORKDIR /home/worker/app
 COPY . /home/worker/app
 
 # Install scout app
-RUN pip install -e .[coverage]
+RUN pip install -e .[coverage] && pip install gunicorn
 
 # Run commands as non-root user
 RUN adduser -D worker
