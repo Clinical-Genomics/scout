@@ -17,20 +17,20 @@ jobs:
       run: yarn lint
     - name: Test
       run: yarn test
-    - name: Build stage
+    - name: Build Stage
       run: yarn build
       env:
         REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_OAUTH_CLIENT_ID }}
-    - name: Archive stage Artifact
+    - name: Archive Stage Artifact
       uses: actions/upload-artifact@master
       with:
         name: build-stage
         path: build
-    - name: Build production
+    - name: Build Production
       run: yarn build
       env:
         REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_OAUTH_CLIENT_ID }}
-    - name: Archive production Artifact
+    - name: Archive Production Artifact
       uses: actions/upload-artifact@master
       with:
         name: build-production
