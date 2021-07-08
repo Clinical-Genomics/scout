@@ -7,13 +7,7 @@ from flask import Blueprint, Response, flash, jsonify, redirect, render_template
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CASE_SEARCH_TERMS,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
-)
+from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, templated, user_institutes
 
@@ -45,66 +39,17 @@ def institutes():
     return render_template("overview/institutes.html", **data)
 
 
+@blueprint.route("/api/v1/<institute_id>/cases")
+def api_cases(institute_id):
+    """API endpoint that returns all cases for a given institute"""
+    pass
+
+
 @blueprint.route("/<institute_id>/cases")
 @templated("overview/cases.html")
 def cases(institute_id):
     """Display a list of cases for an institute."""
-
-    institute_obj = institute_and_case(store, institute_id)
-
-    name_query = None
-    if request.args.get("search_term"):
-        name_query = "".join([request.args.get("search_type"), request.args.get("search_term")])
-
-    limit = 100
-    if request.args.get("search_limit"):
-        limit = int(request.args.get("search_limit"))
-
-    skip_assigned = request.args.get("skip_assigned")
-    is_research = request.args.get("is_research")
-    all_cases = store.cases(
-        collaborator=institute_id,
-        name_query=name_query,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-    )
-    form = controllers.populate_case_filter_form(request.args)
-
-    sort_by = request.args.get("sort")
-    sort_order = request.args.get("order") or "asc"
-    if sort_by:
-        pymongo_sort = pymongo.ASCENDING
-        if sort_order == "desc":
-            pymongo_sort = pymongo.DESCENDING
-        if sort_by == "analysis_date":
-            all_cases.sort("analysis_date", pymongo_sort)
-        elif sort_by == "track":
-            all_cases.sort("track", pymongo_sort)
-        elif sort_by == "status":
-            all_cases.sort("status", pymongo_sort)
-
-    LOG.debug("Prepare all cases")
-
-    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
-
-    data = controllers.cases(store, all_cases, prioritized_cases, limit)
-    data["sort_order"] = sort_order
-    data["sort_by"] = sort_by
-    data["nr_cases"] = store.nr_cases(institute_id=institute_id)
-
-    sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
-    if len(sanger_unevaluated) > 0:
-        data["sanger_unevaluated"] = sanger_unevaluated
-
-    return dict(
-        institute=institute_obj,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-        query=name_query,
-        search_terms=CASE_SEARCH_TERMS,
-        form=form,
-        **data,
-    )
+    return controllers.cases(store, request, institute_id)
 
 
 @blueprint.route("/<institute_id>/causatives")
@@ -123,8 +68,7 @@ def causatives(institute_id):
     variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
     if variants:
         variants = sorted(
-            variants,
-            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
+            variants, key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
         )
     all_variants = {}
     all_cases = {}
