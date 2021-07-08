@@ -42,7 +42,8 @@ def institutes():
 @blueprint.route("/api/v1/<institute_id>/cases")
 def api_cases(institute_id):
     """API endpoint that returns all cases for a given institute"""
-    pass
+    data = dict(cases=controllers.cases(store, request, institute_id))
+    return jsonify(data)
 
 
 @blueprint.route("/<institute_id>/cases")

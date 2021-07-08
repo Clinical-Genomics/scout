@@ -187,7 +187,6 @@ def cases(store, request, institute_id):
         data(dict): includes the cases, how many there are and the limit.
     """
     data = {"search_terms": CASE_SEARCH_TERMS}
-    data["search_terms"]
     institute_obj = institute_and_case(store, institute_id)
     data["institute"] = institute_obj
     name_query = None
