@@ -42,8 +42,9 @@ def institutes():
 @blueprint.route("/api/v1/<institute_id>/cases")
 def api_cases(institute_id):
     """API endpoint that returns all cases for a given institute"""
-    data = dict(cases=controllers.cases(store, request, institute_id))
-    return jsonify(data)
+    return "HERE BITCHES"
+    # data = dict(cases=controllers.cases(store, request, institute_id))
+    # return jsonify(data)
 
 
 @blueprint.route("/<institute_id>/cases")
@@ -69,8 +70,7 @@ def causatives(institute_id):
     variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
     if variants:
         variants = sorted(
-            variants,
-            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
+            variants, key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
         )
     all_variants = {}
     all_cases = {}
