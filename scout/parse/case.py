@@ -343,9 +343,11 @@ def remove_none_recursive(dictionary):
 def remove_none_recursive_aux(dictionary, new_dict):
     """Auxilary Function to remove_None_recursive"""
     for key, value in dictionary.items():
-        if value is not None:
-            new_dict.update({key: value})
-        if (
+        if isinstance(value, dict):
+            clean_value = remove_none_recursive(value)
+            if len(clean_value) > 0:
+                new_dict.update({key: clean_value})
+        elif (
             isinstance(value, list)
             and len(value) > 0
             and key
@@ -363,5 +365,8 @@ def remove_none_recursive_aux(dictionary, new_dict):
         ):
             new_list = [remove_none_recursive_aux(item, {}) for item in value]
             new_dict.update({key: new_list})
-
+        elif value is not None:
+            new_dict.update({key: value})
+        else:
+            continue
     return new_dict
