@@ -2,6 +2,14 @@
   "name": "scout",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "webpack serve",
+    "build": "webpack",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color",
+    "format": "prettier --write 'src/**/*.{ts,tsx,scss,css,json}'",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -14,6 +22,7 @@
     "@types/node": "^12.0.0",
     "@types/react-dom": "^17.0.0",
     "dns-packet": "^5.2.4",
+    "file-loader": "^6.2.0",
     "firebase": "^8.6.8",
     "js-cookie": "^2.2.1",
     "react": "^17.0.2",
@@ -22,19 +31,9 @@
     "react-icons": "^4.2.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
     "sass": "^1.32.11",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color",
-    "format": "prettier --write 'src/**/*.{ts,tsx,scss,css,json}'",
-    "isready": "npm run format && npm run lint && npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -55,20 +54,43 @@
     ]
   },
   "devDependencies": {
+    "@babel/cli": "^7.11.6",
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "@babel/preset-react": "^7.10.4",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.0.4",
+    "@types/jest": "^26.0.14",
     "@types/material-ui": "^0.21.8",
+    "@types/prettier": "^2.1.2",
     "@types/react": "^17.0.3",
+    "@types/react-dom": "^16.9.8",
     "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^4.3.0",
     "eslint": "^7.29.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-import-resolver-webpack": "^0.13.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "html-webpack-plugin": "^4.5.0",
+    "html-webpack-template": "^6.2.0",
+    "jest": "^26.5.3",
+    "mini-css-extract-plugin": "^1.0.0",
     "prettier": "^2.3.1",
-    "react-test-renderer": "^17.0.2"
+    "react-test-renderer": "^17.0.2",
+    "source-map-loader": "^1.1.1",
+    "ts-jest": "^26.4.1",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^4.0.0",
+    "webpack-dev-server": "^3.11.0"
   }
 }

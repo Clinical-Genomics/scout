@@ -1,5 +1,4 @@
 import React from 'react'
-import styles from './Footer.module.scss'
 import packageJson from '../../../package.json'
 
 const Footer: React.FC = () => {
@@ -12,7 +11,7 @@ const Footer: React.FC = () => {
   return (
     <footer
       data-testid="footer"
-      className={styles.footer}
+      className={'styles.footer'}
     >{`${capitalText} © ${currentYear}`}</footer>
   )
 }

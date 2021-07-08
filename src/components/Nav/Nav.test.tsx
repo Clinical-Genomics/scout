@@ -16,5 +16,5 @@ test('Nav render correctly', () => {
     </Router>
   )
   const container = getByTestId('NavMenu')
-  expect(container.firstChild.textContent).toBe('Test')
+  expect(container?.firstChild?.textContent).toBe('Test')
 })
