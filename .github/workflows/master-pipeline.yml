@@ -15,25 +15,44 @@ jobs:
       run: yarn install
     - name: Run lint check
       run: yarn lint
-    - name: Build Master
+    - name: Test
+      run: yarn test
+    - name: Build stage
       run: yarn build
       env:
         REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_OAUTH_CLIENT_ID }}
-    - name: Archive Master Artifact
+    - name: Archive stage Artifact
       uses: actions/upload-artifact@master
       with:
-        name: build-master
+        name: build-stage
         path: build
-    - name: Build Master
+    - name: Build production
       run: yarn build
       env:
         REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_OAUTH_CLIENT_ID }}
-    - name: Archive Master Artifact
+    - name: Archive production Artifact
       uses: actions/upload-artifact@master
       with:
         name: build-production
         path: build
-  deploy-master:
+  deploy-stage:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: build-stage
+          path: build
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting -P stage
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  deploy-production:
     needs: build
     runs-on: ubuntu-latest
     steps:
