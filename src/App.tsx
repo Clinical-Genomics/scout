@@ -15,7 +15,7 @@ import { FaAngleDown } from 'react-icons/fa'
 import Button from '@material-ui/core/Button'
 import { Layout } from './components/Layout/Layout'
 import { Home } from './components/Pages/Home/HomePage'
-import './App.scss'
+import './App.css'
 
 const mapDispatch = {
   setUserInfo: setSettingsAction,

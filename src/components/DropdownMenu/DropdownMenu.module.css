@@ -1,0 +1,31 @@
+@import '../../App.css';
+
+.DropdownMenu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  min-width: 100%;
+  top: 100%;
+  bottom: 0px;
+  /* Works in IE? Should we support IE? */
+  height: fit-content;
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+  background-color: inherit;
+  overflow: auto;
+}
+.DropdownMenu li > a, .DropdownMenu li > button {
+  padding: 8px 20px;
+  width: 100%;
+  text-align: left;
+}
+.DropdownMenu li:focus, .DropdownMenu li:hover {
+  background-color: #e8e8e8;
+}
+.DropdownMenu li:first-child > a, .DropdownMenu li:first-child > button {
+  padding-top: 16px;
+}
+.DropdownMenu li:last-child > a, .DropdownMenu li:last-child > button {
+  padding-bottom: 16px;
+}
+

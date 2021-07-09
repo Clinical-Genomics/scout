@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect } from 'react'
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import Nav, { NavItem } from 'components/Nav/Nav'
@@ -7,7 +6,7 @@ import Footer from 'components/Footer/Footer'
 import { Paper } from '@material-ui/core'
 import { connect } from 'react-redux'
 import { RootState } from '../../domain/rootReducer'
-import styles from './Layout.module.scss'
+import styles from './Layout.module.css'
 import { setDarkMode as setSettingsAction } from '../../domain/settings/slice'
 
 const mapDispatch = { setDarkMode: setSettingsAction } as const
