@@ -175,6 +175,31 @@ def update_institute_settings(store, institute_obj, form):
     return updated_institute
 
 
+def _get_cases_sort_order(data, request):
+    """Set cases data sorting values in cases data
+
+    Args:
+        data(dict): dictionary containing cases data
+        request(flask.request) request sent by browser to the api_institutes endpoint
+    """
+
+    sort_by = request.args.get("sort")
+    sort_order = request.args.get("order") or "asc"
+    if sort_by:
+        pymongo_sort = ASCENDING
+        if sort_order == "desc":
+            pymongo_sort = DESCENDING
+        if sort_by == "analysis_date":
+            all_cases.sort("analysis_date", pymongo_sort)
+        elif sort_by == "track":
+            all_cases.sort("track", pymongo_sort)
+        elif sort_by == "status":
+            all_cases.sort("status", pymongo_sort)
+
+    data["sort_order"] = sort_order
+    data["sort_by"] = sort_by
+
+
 def cases(store, request, institute_id):
     """Preprocess case objects.
 
@@ -182,7 +207,7 @@ def cases(store, request, institute_id):
 
     Args:
         store(adapter.MongoAdapter)
-        request(flask.request) POST request sent by form submission
+        request(flask.request) request sent by browser to the api_institutes endpoint
         institute_id(str): An _id of an institute
 
     Returns:
@@ -208,21 +233,9 @@ def cases(store, request, institute_id):
         is_research=is_research,
     )
     data["form"] = populate_case_filter_form(request.args)
-    sort_by = request.args.get("sort")
-    sort_order = request.args.get("order") or "asc"
-    if sort_by:
-        pymongo_sort = ASCENDING
-        if sort_order == "desc":
-            pymongo_sort = DESCENDING
-        if sort_by == "analysis_date":
-            all_cases.sort("analysis_date", pymongo_sort)
-        elif sort_by == "track":
-            all_cases.sort("track", pymongo_sort)
-        elif sort_by == "status":
-            all_cases.sort("status", pymongo_sort)
 
-    data["sort_order"] = sort_order
-    data["sort_by"] = sort_by
+    _get_cases_sort_order(data, request)
+
     data["nr_cases"] = store.nr_cases(institute_id=institute_id)
 
     sanger_unevaluated = get_sanger_unevaluated(store, institute_id, current_user.email)
@@ -447,8 +460,7 @@ def update_clinvar_submission_status(store, request_obj, institute_id, submissio
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
     if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
-            clinvar_id=request_obj.form.get("clinvar_id"),
-            submission_id=submission_id,
+            clinvar_id=request_obj.form.get("clinvar_id"), submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission
         deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
@@ -470,8 +482,7 @@ def update_clinvar_sample_names(store, submission_id, case_id, old_name, new_nam
     """
     n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
     flash(
-        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
-        "info",
+        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'", "info",
     )
 
 
