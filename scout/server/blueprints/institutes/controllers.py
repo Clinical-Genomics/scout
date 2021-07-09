@@ -175,12 +175,16 @@ def update_institute_settings(store, institute_obj, form):
     return updated_institute
 
 
-def _get_cases_sort_order(data, request):
+def _sort_cases(data, request, all_cases):
     """Set cases data sorting values in cases data
 
     Args:
         data(dict): dictionary containing cases data
         request(flask.request) request sent by browser to the api_institutes endpoint
+        all_cases(pymongo Cursor)
+
+    Returns:
+        all_cases(pymongo Cursor): Cursor of eventually sorted cases
     """
 
     sort_by = request.args.get("sort")
@@ -198,6 +202,8 @@ def _get_cases_sort_order(data, request):
 
     data["sort_order"] = sort_order
     data["sort_by"] = sort_by
+
+    return all_cases
 
 
 def cases(store, request, institute_id):
@@ -222,6 +228,7 @@ def cases(store, request, institute_id):
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
     skip_assigned = request.args.get("skip_assigned")
+    data["form"] = populate_case_filter_form(request.args)
     data["skip_assigned"] = skip_assigned
     is_research = request.args.get("is_research")
     data["is_research"] = is_research
@@ -232,9 +239,7 @@ def cases(store, request, institute_id):
         skip_assigned=skip_assigned,
         is_research=is_research,
     )
-    data["form"] = populate_case_filter_form(request.args)
-
-    _get_cases_sort_order(data, request)
+    all_cases = _sort_cases(data, request, all_cases)
 
     data["nr_cases"] = store.nr_cases(institute_id=institute_id)
 
