@@ -73,6 +73,7 @@ setup(
         "coverage": [
             "chanjo@git+https://git@github.com/Clinical-Genomics/chanjo.git@4.6.1",
             "chanjo-report",
+            "pymysql",
         ],
     },
     entry_points=dict(console_scripts=["scout = scout.commands:cli"]),
