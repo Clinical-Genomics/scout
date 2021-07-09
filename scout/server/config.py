@@ -3,6 +3,8 @@ SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"
 
 MONGO_DBNAME = "scout"
+MONGO_HOST = "mongodb"
+MONGO_PORT = 27017
 
 BOOTSTRAP_SERVE_LOCAL = True
 TEMPLATES_AUTO_RELOAD = True
