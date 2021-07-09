@@ -2,6 +2,8 @@
 import datetime
 import logging
 
+from pymongo import ASCENDING, DESCENDING
+
 LOG = logging.getLogger(__name__)
 
 from anytree import Node, RenderTree
@@ -9,12 +11,12 @@ from anytree.exporter import DictExporter
 from flask import flash
 from flask_login import current_user
 
-from scout.constants import CASE_STATUSES, PHENOTYPE_GROUPS
+from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
-from scout.server.utils import user_institutes
+from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
 
 from .forms import CaseFilterForm
@@ -173,20 +175,78 @@ def update_institute_settings(store, institute_obj, form):
     return updated_institute
 
 
-def cases(store, case_query, prioritized_cases_query=None, limit=100):
+def _sort_cases(data, request, all_cases):
+    """Set cases data sorting values in cases data
+
+    Args:
+        data(dict): dictionary containing cases data
+        request(flask.request) request sent by browser to the api_institutes endpoint
+        all_cases(pymongo Cursor)
+
+    Returns:
+        all_cases(pymongo Cursor): Cursor of eventually sorted cases
+    """
+
+    sort_by = request.args.get("sort")
+    sort_order = request.args.get("order") or "asc"
+    if sort_by:
+        pymongo_sort = ASCENDING
+        if sort_order == "desc":
+            pymongo_sort = DESCENDING
+        if sort_by == "analysis_date":
+            all_cases.sort("analysis_date", pymongo_sort)
+        elif sort_by == "track":
+            all_cases.sort("track", pymongo_sort)
+        elif sort_by == "status":
+            all_cases.sort("status", pymongo_sort)
+
+    data["sort_order"] = sort_order
+    data["sort_by"] = sort_by
+
+    return all_cases
+
+
+def cases(store, request, institute_id):
     """Preprocess case objects.
 
-    Add the necessary information to display the 'cases' view
+    Add all the necessary information to display the 'cases' view
 
     Args:
         store(adapter.MongoAdapter)
-        case_query(pymongo.Cursor)
-        prioritized_cases_query(pymongo.Cursor)
-        limit(int): Maximum number of cases to display
+        request(flask.request) request sent by browser to the api_institutes endpoint
+        institute_id(str): An _id of an institute
 
     Returns:
         data(dict): includes the cases, how many there are and the limit.
     """
+    data = {"search_terms": CASE_SEARCH_TERMS}
+    institute_obj = institute_and_case(store, institute_id)
+    data["institute"] = institute_obj
+    name_query = None
+    if request.args.get("search_term"):
+        name_query = "".join([request.args.get("search_type"), request.args.get("search_term")])
+    data["name_query"] = name_query
+    limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
+    skip_assigned = request.args.get("skip_assigned")
+    data["form"] = populate_case_filter_form(request.args)
+    data["skip_assigned"] = skip_assigned
+    is_research = request.args.get("is_research")
+    data["is_research"] = is_research
+    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
+    all_cases = store.cases(
+        collaborator=institute_id,
+        name_query=name_query,
+        skip_assigned=skip_assigned,
+        is_research=is_research,
+    )
+    all_cases = _sort_cases(data, request, all_cases)
+
+    data["nr_cases"] = store.nr_cases(institute_id=institute_id)
+
+    sanger_unevaluated = get_sanger_unevaluated(store, institute_id, current_user.email)
+    if len(sanger_unevaluated) > 0:
+        data["sanger_unevaluated"] = sanger_unevaluated
+
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
 
@@ -214,13 +274,13 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
         case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
         return case_obj
 
-    for nr_cases, case_obj in enumerate(case_query.limit(limit), 1):
+    for nr_cases, case_obj in enumerate(all_cases.limit(limit), 1):
         case_obj = populate_case_obj(case_obj)
         case_groups[case_obj["status"]].append(case_obj)
 
-    if prioritized_cases_query:
+    if prioritized_cases:
         extra_prioritized = 0
-        for case_obj in prioritized_cases_query:
+        for case_obj in prioritized_cases:
             if any(
                 group_obj.get("display_name") == case_obj.get("display_name")
                 for group_obj in case_groups[case_obj["status"]]
@@ -233,11 +293,9 @@ def cases(store, case_query, prioritized_cases_query=None, limit=100):
         # extra prioritized cases are potentially shown in addition to the case query limit
         nr_cases += extra_prioritized
 
-    data = {
-        "cases": [(status, case_groups[status]) for status in CASE_STATUSES],
-        "found_cases": nr_cases,
-        "limit": limit,
-    }
+    data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
+    data["found_cases"] = nr_cases
+    data["limit"] = limit
     return data
 
 
