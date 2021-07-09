@@ -14,18 +14,21 @@
   background-color: inherit;
   overflow: auto;
 }
-.DropdownMenu li > a, .DropdownMenu li > button {
+.DropdownMenu li > a,
+.DropdownMenu li > button {
   padding: 8px 20px;
   width: 100%;
   text-align: left;
 }
-.DropdownMenu li:focus, .DropdownMenu li:hover {
+.DropdownMenu li:focus,
+.DropdownMenu li:hover {
   background-color: #e8e8e8;
 }
-.DropdownMenu li:first-child > a, .DropdownMenu li:first-child > button {
+.DropdownMenu li:first-child > a,
+.DropdownMenu li:first-child > button {
   padding-top: 16px;
 }
-.DropdownMenu li:last-child > a, .DropdownMenu li:last-child > button {
+.DropdownMenu li:last-child > a,
+.DropdownMenu li:last-child > button {
   padding-bottom: 16px;
 }
-
