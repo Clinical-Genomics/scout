@@ -9,14 +9,15 @@ LABEL about.license="MIT License (MIT)"
 # Install required libs
 RUN apk update
 RUN apk --no-cache add make automake gcc g++ linux-headers libffi-dev zlib-dev \
-   jpeg-dev libressl-dev cairo-dev pango-dev gdk-pixbuf ttf-freefont bash
-RUN pip install numpy Cython
+   jpeg-dev libressl-dev cairo-dev pango-dev gdk-pixbuf ttf-freefont bash libxml2-dev \
+   libxslt-dev git openssh-client
+RUN pip install --no-cache --upgrade pip && pip install --no-cache numpy Cython
 
 WORKDIR /home/worker/app
 COPY . /home/worker/app
 
 # Install scout app
-RUN pip install -e .
+RUN  pip install --no-cache -e .[coverage] && pip install gunicorn
 
 # Run commands as non-root user
 RUN adduser -D worker
