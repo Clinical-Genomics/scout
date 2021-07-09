@@ -29,7 +29,8 @@ services:
       - mongodb
 
   scout-web:
-    image: clinicalgenomics/scout
+    build: .
+    #image: clinicalgenomics/scout
     container_name: scout-web
     expose:
       - '5000'
@@ -65,9 +66,9 @@ services:
   chanjo-cli:
     image: clinicalgenomics/scout
     environment:
-     - SQLALCHEMY_DATABASE_URI=mysql+pymysql://chanjoUser@mariadb?password=chanjoPassword&db=chanjo
+     - SQLALCHEMY_DATABASE_URI=mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo
     depends_on:
-      - mariadb
+     - mariadb
     volumes:
      - ./volumes/chanjo/data:/data/data
     networks:
