@@ -66,33 +66,31 @@ def parse_case_data(**kwargs):
     LOG.debug("KWARGS: {}".format(kwargs))
     config = kwargs.pop("config", {})
 
+    # populate configuration according to Pydantic defined classes
+    LOG.debug("1st SCOUTLOADCONFIG: {}".format(config))
+    config_dict = parse_scout_config(config)
+
     # Default the analysis date to now if not specified in load config
-    config["analysis_date"] = get_correct_date(config.get("analysis_date"))
+    config_dict["analysis_date"] = get_correct_date(config_dict.get("analysis_date"))
 
     # If ped file  provided we need to parse that first
-    if "ped" in kwargs and kwargs["ped"] is not None:
+    if kwargs.get("ped"):
         family_id, samples = parse_ped(kwargs["ped"])
-        config["family"] = family_id
-        config["samples"] = samples
+        config_dict["family"] = family_id
+        config_dict["samples"] = samples
 
     # Give passed keyword arguments precedence over file configuration
     # Except for 'owner', prededence config file over arguments
-    if "owner" in config:
+    if "owner" in config_dict:
         kwargs.pop("owner", None)  # dont crash if 'owner' is missing
     for key in kwargs:
         if kwargs[key] is not None:
-            config[key] = kwargs[key]
+            config_dict[key] = kwargs[key]
         else:
             try:
-                config[key] = config[key]
+                config_dict[key] = config[key]
             except KeyError:
-                config[key] = None
-
-    # populate configuration according to Pydantic defined classes
-    LOG.debug("1st SCOUTLOADCONFIG: {}".format(config))
-    config_data = ScoutLoadConfig(**config)
-    # convert to dict
-    config_dict = config_data.dict()
+                config_dict[key] = None
 
     # handle whitespace in gene panel names
     try:
@@ -108,7 +106,7 @@ def parse_case_data(**kwargs):
 
     ##################### Add multiqc information #####################
     LOG.debug("Checking for SMN TSV..")
-    if config_dict["smn_tsv"]:
+    if config_dict.get("smn_tsv"):
         add_smn_info(config_dict)
 
     if config_dict.get("synopsis"):
@@ -117,14 +115,26 @@ def parse_case_data(**kwargs):
             if isinstance(config_dict["synopsis"], list)
             else config_dict["synopsis"]
         )
+    # Ensure case_id is set, this situation arises when no config file is given
+    if config_dict.get("case_id") is None:
+        config_dict["case_id"] = config_dict["family"]
 
     LOG.debug("Checking for SMN TSV..")
-    if config_dict["smn_tsv"]:
+    if config_dict.get("smn_tsv"):
         LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
         add_smn_info_case(config_dict)
 
     LOG.debug("parse_case_data/return: {}".format(remove_none_recursive(config_dict)))
     return remove_none_recursive(config_dict)
+
+def parse_scout_config(config):
+    """Parse configuration data. Returns a dict"""
+    LOG.warning("No configuration in command: {}".format(config))
+    if config == {}:
+        LOG.warning("No configuration in command")
+        return {}
+    parsed_config = ScoutLoadConfig(**config)
+    return parsed_config.dict()
 
 
 def add_smn_info(config_data):
@@ -276,16 +286,15 @@ def parse_case(config):
             if isinstance(config["synopsis"], list)
             else config["synopsis"]
         )
-    scout_load_config = ScoutLoadConfig(**config)
-    case_data = scout_load_config.dict()  # translate object to dict
+    config_dict = parse_scout_config(config)
 
     # add SMN info
     LOG.debug("Checking for SMN TSV..")
-    if case_data["smn_tsv"]:
-        LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
-        add_smn_info_case(case_data)
-    LOG.debug("parse_case/return: {}".format(remove_none_recursive(case_data)))
-    return remove_none_recursive(case_data)
+    if config_dict.get("smn_tsv"):
+        LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
+        add_smn_info_case(config_dict)
+    LOG.debug("parse_case/return: {}".format(remove_none_recursive(config_dict)))
+    return remove_none_recursive(config_dict)
 
 
 def parse_ped(ped_stream, family_type="ped"):
