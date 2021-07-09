@@ -128,14 +128,13 @@ class ScoutLoadConfig(BaseModel):
     coverage_qc_report: str = None  ## ??
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    display_name: str = None
+    display_name: str = Field(..., alias="family_name")
     family: str = None
     family_name: Optional[str] = None
     gene_panels: Optional[List[str]] = []
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
     genome_build: int = Field([], alias="human_genome_build")
-    human_genome_build: str = None
     individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
     # madeline: Optional[str] #!
