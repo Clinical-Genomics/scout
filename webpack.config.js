@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const path = require('path')
+const webpack = require('webpack')
 
 const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
   template: __dirname + '/src/index.html',
@@ -53,6 +54,10 @@ const config = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
+    new webpack.DefinePlugin({
+      'process.env.MY_ENV_VAR': JSON.stringify(process.env.GOOGLE_OAUTH_CLIENT_ID),
+    }),
+    new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID']),
   ],
 }
 
