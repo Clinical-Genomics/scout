@@ -2,6 +2,8 @@
 import datetime
 import logging
 
+from pymongo import ASCENDING, DESCENDING
+
 LOG = logging.getLogger(__name__)
 
 from anytree import Node, RenderTree
@@ -209,9 +211,9 @@ def cases(store, request, institute_id):
     sort_by = request.args.get("sort")
     sort_order = request.args.get("order") or "asc"
     if sort_by:
-        pymongo_sort = pymongo.ASCENDING
+        pymongo_sort = ASCENDING
         if sort_order == "desc":
-            pymongo_sort = pymongo.DESCENDING
+            pymongo_sort = DESCENDING
         if sort_by == "analysis_date":
             all_cases.sort("analysis_date", pymongo_sort)
         elif sort_by == "track":
