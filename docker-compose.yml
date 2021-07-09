@@ -30,15 +30,14 @@ services:
 
   scout-web:
     image: clinicalgenomics/scout
-    build:
-        context: .
-        dockerfile: Dockerfile.test
     container_name: scout-web
     expose:
       - '5000'
     ports:
       - '5000:5000'
-    command: scout --host mongodb --demo serve --host 0.0.0.0
+    environment:
+      - SCOUT_CONFIG=/home/worker/app/scout/server/config.py
+    command: gunicorn --bind 0.0.0.0:5000 scout.server.auto:app
     volumes:
       - ./scout:/home/worker/app/scout
       - ./volumes/scout/data:/home/worker/data
@@ -46,6 +45,7 @@ services:
       - scout-net
     depends_on:
       - mongodb
+      - mariadb
 
   mariadb:
     image: mariadb:latest
@@ -102,4 +102,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.21.0.0/24
+        - subnet: 172.30.0.0/24
