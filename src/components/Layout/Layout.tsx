@@ -6,8 +6,8 @@ import { connect } from 'react-redux'
 import { RootState } from '../../domain/rootReducer'
 import styles from './Layout.module.css'
 import { setDarkMode as setSettingsAction } from '../../domain/settings/slice'
-import Footer from '../Footer/Footer'
 import Nav, { NavItem } from '../Nav/Nav'
+import Footer from '../Footer/Footer'
 
 const mapDispatch = { setDarkMode: setSettingsAction } as const
 const mapState = ({ settings }: RootState) => ({ settings } as const)

@@ -34,7 +34,10 @@ const config = {
       },
       {
         test: /\.css$/,
-        loader: 'css-loader',
+        use: [
+          MiniCssExtractPlugin.loader, // instead of style-loader
+          'css-loader',
+        ],
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
