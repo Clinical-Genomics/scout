@@ -3,6 +3,12 @@ import re
 from scout.constants import AMINO_ACID_RESIDUE_3_TO_1
 
 
+def jsonconverter(obj):
+    """Converts non-serializable onjects into str"""
+    if isinstance(obj, datetime.datetime):
+        return obj.__str__()
+
+
 def isfloat(x):
     try:
         a = float(x)

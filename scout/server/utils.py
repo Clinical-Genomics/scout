@@ -1,4 +1,5 @@
 """Common utilities for the server code"""
+import datetime
 import io
 import logging
 import os
@@ -6,10 +7,22 @@ import pathlib
 import zipfile
 from functools import wraps
 
+from bson.objectid import ObjectId
 from flask import abort, flash, render_template, request
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
+
+
+def jsonconverter(obj):
+    """Converts non-serializable onjects into str"""
+    LOG.warning(f"An object of type {type(obj)} is not json-serializable: converting it.")
+    if "Form" in str(type(obj)):
+        return obj.__dict__
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat()
+    if isinstance(obj, ObjectId):
+        return obj.__str__()
 
 
 def templated(template=None):
@@ -133,17 +146,9 @@ def case_append_alignments(case_obj):
         {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
         {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": "no_index"},
         {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": "no_index"},
-        {
-            "path": "upd_regions_bed",
-            "append_to": "upd_regions_beds",
-            "index": "no_index",
-        },
+        {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": "no_index",},
         {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": "no_index"},
-        {
-            "path": "tiddit_coverage_wig",
-            "append_to": "tiddit_coverage_wigs",
-            "index": "no_index",
-        },
+        {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": "no_index",},
     ]
 
     for individual in case_obj["individuals"]:

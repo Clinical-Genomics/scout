@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 
 import pymongo
@@ -9,7 +10,7 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.extensions import loqusdb, store
-from scout.server.utils import institute_and_case, templated, user_institutes
+from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
@@ -39,15 +40,15 @@ def institutes():
     return render_template("overview/institutes.html", **data)
 
 
-@blueprint.route("/api/v1/<institute_id>/cases")
+@blueprint.route("/api/v1/institutes/<institute_id>/cases", methods=["GET", "POST"])
 def api_cases(institute_id):
     """API endpoint that returns all cases for a given institute"""
-    return "HERE BITCHES"
-    # data = dict(cases=controllers.cases(store, request, institute_id))
-    # return jsonify(data)
+    case_data = controllers.cases(store, request, institute_id)
+    json_cases = json.dumps({"cases": case_data}, default=jsonconverter)
+    return json_cases
 
 
-@blueprint.route("/<institute_id>/cases")
+@blueprint.route("/<institute_id>/cases", methods=["GET", "POST"])
 @templated("overview/cases.html")
 def cases(institute_id):
     """Display a list of cases for an institute."""
@@ -70,8 +71,7 @@ def causatives(institute_id):
     variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
     if variants:
         variants = sorted(
-            variants,
-            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
+            variants, key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
         )
     all_variants = {}
     all_cases = {}
