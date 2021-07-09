@@ -58,9 +58,7 @@ def test_parse_case_date(scout_config):
         "gene_fusion_report",
         "lims_id",
         "owner",
-        "peddy_check",
         "peddy_ped",
-        "peddy_sex",
         "phenotype_terms",
         "rank_model_version",
         "rank_score_threshold",
@@ -78,7 +76,7 @@ def test_parse_case_parsing(scout_config, param_name):
 
 @pytest.mark.parametrize(
     ("param_name", "alias_name"),
-    ([("case_id", "family"), ("default_panels", "default_gene_panels")]),
+    ([("case_id", "family"), ("default_panels", "default_gene_panels"), ("peddy_ped_check", "peddy_check"), ("peddy_sex_check", "peddy_sex")]),
 )
 def test_parse_case_aliases(scout_config, param_name, alias_name):
     """Certain configuration parameters have an alias externally"""
