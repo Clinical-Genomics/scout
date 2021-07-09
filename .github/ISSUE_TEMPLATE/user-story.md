@@ -1,6 +1,6 @@
 ---
-name: issue
-about: user story template
+name: Feature
+about: Template for new features
 ---
 
 ## User Story
