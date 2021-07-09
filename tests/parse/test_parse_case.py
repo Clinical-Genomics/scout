@@ -76,7 +76,14 @@ def test_parse_case_parsing(scout_config, param_name):
 
 @pytest.mark.parametrize(
     ("param_name", "alias_name"),
-    ([("case_id", "family"), ("default_panels", "default_gene_panels"), ("peddy_ped_check", "peddy_check"), ("peddy_sex_check", "peddy_sex")]),
+    (
+        [
+            ("case_id", "family"),
+            ("default_panels", "default_gene_panels"),
+            ("peddy_ped_check", "peddy_check"),
+            ("peddy_sex_check", "peddy_sex"),
+        ]
+    ),
 )
 def test_parse_case_aliases(scout_config, param_name, alias_name):
     """Certain configuration parameters have an alias externally"""

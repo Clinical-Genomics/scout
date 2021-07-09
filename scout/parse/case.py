@@ -127,6 +127,7 @@ def parse_case_data(**kwargs):
     LOG.debug("parse_case_data/return: {}".format(remove_none_recursive(config_dict)))
     return remove_none_recursive(config_dict)
 
+
 def parse_scout_config(config):
     """Parse configuration data. Returns a dict"""
     LOG.warning("No configuration in command: {}".format(config))
@@ -350,7 +351,7 @@ def remove_none_recursive(dictionary):
 
 
 def remove_none_recursive_aux(dictionary, new_dict):
-    """Auxilary Function to remove_none_recursive. Recursively removes 
+    """Auxilary Function to remove_none_recursive. Recursively removes
     None from dictionary by adding non-None key/value pairs to new_dict.
     Args:
         dictionary: dict with configuration values
