@@ -15,10 +15,7 @@ def test_phenomodel_checkgroups_filter(app, institute_obj, hpo_checkboxes, omim_
     hpo_id1 = hpo_checkboxes[0]["_id"]
     hpo_id2 = hpo_checkboxes[1]["_id"]
     omim_id = omim_checkbox["_id"]
-    checkbox2 = dict(
-        name=hpo_id2,
-        description=hpo_checkboxes[1]["description"],
-    )
+    checkbox2 = dict(name=hpo_id2, description=hpo_checkboxes[1]["description"],)
     checkbox1 = dict(
         name=hpo_id1,
         description=hpo_checkboxes[1]["description"],
@@ -45,51 +42,3 @@ def test_phenomodel_checkgroups_filter(app, institute_obj, hpo_checkboxes, omim_
         assert updated_model["subpanels"]["panel1"]["checkboxes"][hpo_id2]
         assert hpo_id1 not in updated_model["subpanels"]["panel1"]["checkboxes"]
         assert omim_id not in updated_model["subpanels"]["panel1"]["checkboxes"]
-
-
-def test_cases(adapter, case_obj, institute_obj):
-
-    # GIVEN a non prioritized case
-    case = case_obj
-    assert case["status"] == "inactive"
-    adapter.case_collection.insert_one(case)
-
-    # GIVEN a priotized case
-    case2 = copy.deepcopy(case)
-    case2["_id"] = "internal_id2"
-    case2["status"] = "prioritized"
-    adapter.case_collection.insert_one(case2)
-
-    all_cases = adapter.cases(collaborator=institute_obj["_id"])
-    assert len(list(all_cases)) == 2
-
-    prio_cases = adapter.prioritized_cases(institute_id=institute_obj["_id"])
-    assert len(list(prio_cases)) == 1
-
-    all_cases = adapter.cases(collaborator=institute_obj["_id"])
-    prio_cases = adapter.prioritized_cases(institute_id=institute_obj["_id"])
-
-    # WHEN the cases controller is invoked
-    data = cases(store=adapter, case_query=all_cases, prioritized_cases_query=prio_cases, limit=1)
-
-    # THEN 2 cases should be returned
-    assert data["found_cases"] == 2
-
-
-def test_controller_cases(adapter):
-    # GIVEN an adapter with a case
-    test_case = {
-        "case_id": "1",
-        "owner": "cust000",
-        "individuals": [
-            {"analysis_type": "wgs", "sex": 1, "phenotype": 2, "individual_id": "ind1"}
-        ],
-        "status": "inactive",
-    }
-    adapter.case_collection.insert_one(test_case)
-    case_query = adapter.case_collection.find()
-    # WHEN fetching a case with the controller
-    data = cases(adapter, case_query)
-    # THEN
-    assert isinstance(data, dict)
-    assert data["found_cases"] == 1
