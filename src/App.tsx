@@ -10,12 +10,12 @@ import {
   setGoogleToken as setGoogleTokenAction,
   resetGoogleToken as resetGoogleTokenAction,
 } from './domain/settings/slice'
-import DropdownMenu from 'components/DropdownMenu/DropdownMenu'
 import { FaAngleDown } from 'react-icons/fa'
 import Button from '@material-ui/core/Button'
 import { Layout } from './components/Layout/Layout'
 import { Home } from './components/Pages/Home/HomePage'
 import './App.css'
+import DropdownMenu from './components/DropdownMenu/DropdownMenu'
 
 const mapDispatch = {
   setUserInfo: setSettingsAction,
@@ -23,6 +23,8 @@ const mapDispatch = {
   setGoogleToken: setGoogleTokenAction,
   resetGoogleToken: resetGoogleTokenAction,
 } as const
+
+const { GOOGLE_OAUTH_CLIENT_ID } = process.env
 
 const mapState = ({ settings }: RootState) => ({ settings } as const)
 type Props = ReturnType<typeof mapState> & typeof mapDispatch
@@ -34,8 +36,7 @@ export const AppComponent = ({
   setGoogleToken,
   resetGoogleToken,
 }: Props) => {
-  const { REACT_APP_GOOGLE_OAUTH_CLIENT_ID } = process.env
-  const clientId = REACT_APP_GOOGLE_OAUTH_CLIENT_ID || 'no-id'
+  const clientId = GOOGLE_OAUTH_CLIENT_ID || 'no-id'
 
   const onLoginSuccess = (response: any) => {
     setUserInfo(response.profileObj)

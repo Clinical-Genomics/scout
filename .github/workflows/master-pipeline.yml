@@ -20,7 +20,7 @@ jobs:
     - name: Build Stage
       run: yarn build
       env:
-        REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_OAUTH_CLIENT_ID }}
+        GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
     - name: Archive Stage Artifact
       uses: actions/upload-artifact@master
       with:
@@ -29,7 +29,7 @@ jobs:
     - name: Build Production
       run: yarn build
       env:
-        REACT_APP_GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.REACT_APP_GOOGLE_OAUTH_CLIENT_ID }}
+        GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
     - name: Archive Production Artifact
       uses: actions/upload-artifact@master
       with:
