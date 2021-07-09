@@ -13,7 +13,7 @@ import SwedacLogo from 'assets/swedac.png'
 import { connect } from 'react-redux'
 import { RootState } from '../../../domain/rootReducer'
 import packageJson from '../../../../package.json'
-import styles from './HomePage.module.scss'
+import styles from './HomePage.module.css'
 import { setDarkMode as setSettingsAction } from '../../../domain/settings/slice'
 
 const mapDispatch = { setDarkMode: setSettingsAction } as const

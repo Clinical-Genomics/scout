@@ -6,7 +6,7 @@ import { FaAngleDown } from 'react-icons/fa'
 import Tooltip from '@material-ui/core/Tooltip'
 import Brightness4OutlinedIcon from '@material-ui/icons/Brightness4Outlined'
 import Brightness5OutlinedIcon from '@material-ui/icons/Brightness5Outlined'
-import styles from './Nav.module.scss'
+import styles from './Nav.module.css'
 
 export interface Header {
   icon?: string // Path to icon

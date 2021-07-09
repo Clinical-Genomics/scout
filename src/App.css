@@ -1,23 +1,22 @@
 /***** Global colors *****/
-:root{
+:root {
   /** Background for app, dropdown, etc */
   --primary_bg_color: white;
   --primary_text_color: black;
   /** Headers, footers, etc*/
   --secondary_bg_color: white;
   --secondary_text_color: black;
-  
+
   /** Background for app, dropdown, etc */
   --primary_bg_color_dark_mode: #212121;
   --primary_text_color_dark_mode: white;
   /** Headers, footers, etc*/
   --secondary_bg_color_dark_mode: #3d3d3d;
   --secondary_text_color_dark_mode: white;
-  
+
   --scout-color: #1181b2;
-  
+
   /** Shadow */
-  /* --shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important; */
   --shadow: 0px 0px 3px #cccccc;
 }
 
@@ -64,22 +63,22 @@ li {
   color: var(--secondary_text_color_dark_mode);
   box-shadow: none;
 }
+
 .dark_mode .dropdown_menu {
   background-color: var(--primary_bg_color_dark_mode);
   color: var(--primary_text_color_dark_mode);
   box-shadow: none;
   border: 1px solid white;
-  > li:focus,
-  > li:hover {
-    background-color: var(--secondary_bg_color_dark_mode);
-  }
 }
-.dark_mode nav > ul > li {
-  > a::before,
-  > span::before,
-  .selected_nav::before {
-    background-color: white;
-  }
+.dark_mode .dropdown_menu > li:focus,
+.dark_mode .dropdown_menu > li:hover {
+  background-color: var(--secondary_bg_color_dark_mode);
+}
+
+.dark_mode nav > ul > li > a::before,
+.dark_mode nav > ul > li > span::before,
+.dark_mode nav > ul > li .selected_nav::before {
+  background-color: white;
 }
 
 /** TODO: Add similar automatic library as Tailwind (e.g. ml-3) */
@@ -99,50 +98,39 @@ li {
   color: #fff;
 }
 
-.login-dropdown-header{
+.login-dropdown-header {
   font-weight: 500;
 }
-
 
 .dropdown_item_space {
   height: 100%;
   width: 5px;
   cursor: pointer;
 }
-
-
 ul {
   margin: 0px;
   padding: 0px;
-
-  > li {
-    display: flex;
-    align-items: center;
-  }
-
-  /** Nav item container */
-  li.nav_item {
-    /** Dropdown menu */
-    & > ul {
-      display: none;
-    }
-    &:hover > ul {
-      display: flex;
-    }
-  }
-
-  /** Collapse arrow animation */
-  .collapse_arrow {
-    cursor: pointer;
-    transition: transform 0.5s;
-  }
-  li:hover > .collapse_arrow {
-    transform: rotate(180deg);
-  }
-  .dropdown_item_space {
-    height: 100%;
-    width: 2px;
-    cursor: pointer;
-    margin-bottom: 50px;
-  }
+}
+ul > li {
+  display: flex;
+  align-items: center;
+}
+ul li.nav_item > ul {
+  display: none;
+}
+ul li.nav_item:hover > ul {
+  display: flex;
+}
+ul .collapse_arrow {
+  cursor: pointer;
+  transition: transform 0.5s;
+}
+ul li:hover > .collapse_arrow {
+  transform: rotate(180deg);
+}
+ul .dropdown_item_space {
+  height: 100%;
+  width: 2px;
+  cursor: pointer;
+  margin-bottom: 50px;
 }
