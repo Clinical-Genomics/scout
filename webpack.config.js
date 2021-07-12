@@ -11,7 +11,7 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 
 const config = {
   entry: {
-    home: '/src/modules/Home/index.js',
+    home: '/src/modules/Home/index.tsx',
     appShell: './src/index.tsx',
   },
   target: 'web',

@@ -2,6 +2,38 @@
 
 ## About
 
+This project contains react modules to be injected in the [Scout Python application](https://github.com/Clinical-Genomics/scout) as well as a React shell to be able to develop on these modules without the Python app.
+The modules are listed in the `/modules` directory
+
+### How to add a module
+
+- Add a directory with a React component in the `/modules` directory.
+- Add an `index.tsx` file that will be the webpack entry for the module. The file should include where the module will be rendered and which component:
+```
+ReactDOM.render(<Institutes />, document.getElementById('react-insitutes'))
+```
+- Edit the `webpack.config.js` file to include the new module entry point. When running `yarn build` react will create two bundle, one called `[name].js` and one `[name].css` (for example, for the institutes component, the files will be called `institutes.js` and `institutes.css`)
+```
+  entry: {
+    institutes: '/src/modules/Institutes/index.tsx',
+    home: '/src/modules/Home/index.tsx',
+    appShell: './src/index.tsx',
+  },
+```
+- Deploy the bundle to firebase
+- Add the bundle to Scout. In the page and place where you want your bundle to appear you should add:
+```  
+<div id="react-home"></div>
+<script src="https://scout-stage.web.app//institutes.js"></script>
+```
+- Add also the css to the Scout page:
+```
+{% block css %}
+{{ super() }}
+  <link rel="stylesheet" href="https://scout-stage.web.app/institutes.css">
+{% endblock %}
+```
+
 ## Available Scripts
 
 Once cloned the repo, install dependencies with:
