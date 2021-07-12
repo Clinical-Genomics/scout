@@ -13,7 +13,7 @@ import {
 import { FaAngleDown } from 'react-icons/fa'
 import Button from '@material-ui/core/Button'
 import { Layout } from './components/Layout/Layout'
-import { Home } from './components/Pages/Home/HomePage'
+import { Home } from './components/Home/HomePage'
 import './App.css'
 import DropdownMenu from './components/DropdownMenu/DropdownMenu'
 
