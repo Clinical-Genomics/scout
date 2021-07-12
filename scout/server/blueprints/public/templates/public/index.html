@@ -6,10 +6,9 @@
     <h1 class="display-4">Scout</h1>
     <p class="lead">Analyze VCFs quicker and easier</p>
     <hr class="my-4">
-    <p>
-      Scout allows you to browse VCFs in a web browser, identify
-      compound pairs, and solve cases as a team.
-    </p>
+  <div id="react-home"></div>
+  <script src="https://scout-stage.web.app//home.js"></script>
+
 
     <p>Version <strong>{{ version }}</strong></p>
 
@@ -65,6 +64,11 @@
     </div>
   </main>
 </div>
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+  <link rel="stylesheet" href="https://scout-stage.web.app/home.css">
 {% endblock %}
 
 {% block scripts %}
