@@ -2,7 +2,7 @@
 
 ## About
 
-This project contains react modules to be injected in the [Scout Python application](https://github.com/Clinical-Genomics/scout) as well as a React shell to be able to develop on these modules without the Python app.
+This project contains React modules to be injected in the [Scout Python application](https://github.com/Clinical-Genomics/scout) as well as a React shell to be able to develop on these modules without the Python app.
 The modules are listed in the `/modules` directory
 
 ### How to add a module
