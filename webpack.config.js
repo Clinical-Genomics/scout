@@ -10,12 +10,15 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 })
 
 const config = {
-  entry: './src/index.tsx',
+  entry: {
+    home: '/src/modules/Home/index.tsx',
+    appShell: './src/index.tsx',
+  },
   target: 'web',
   mode: 'development',
   output: {
     path: path.resolve(__dirname, './build'),
-    filename: 'bundle.js',
+    filename: '[name].js',
     publicPath: '/',
   },
   devServer: {

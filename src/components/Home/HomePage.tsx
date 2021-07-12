@@ -5,16 +5,17 @@ import Card from '@material-ui/core/Card'
 import CardContent from '@material-ui/core/CardContent'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
-import ScilifelabLogo from '../../../assets/SciLifeLab_Logotype_POS.png'
-import ScilifelabLogoDark from '../../../assets/SciLifeLab_Logotype_NEG.png'
-import KarolinskaLogoDark from '../../../assets/ki_logo_neg.png'
-import KarolinskaLogo from '../../../assets/ki_logo_pos.png'
-import SwedacLogo from '../../../assets/swedac.png'
+import ScilifelabLogo from '../../assets/SciLifeLab_Logotype_POS.png'
+import ScilifelabLogoDark from '../../assets/SciLifeLab_Logotype_NEG.png'
+import KarolinskaLogoDark from '../../assets/ki_logo_neg.png'
+import KarolinskaLogo from '../../assets/ki_logo_pos.png'
+import SwedacLogo from '../../assets/swedac.png'
 import { connect } from 'react-redux'
-import { RootState } from '../../../domain/rootReducer'
-import packageJson from '../../../../package.json'
+import { RootState } from '../../domain/rootReducer'
+import packageJson from '../../../package.json'
 import styles from './HomePage.module.css'
-import { setDarkMode as setSettingsAction } from '../../../domain/settings/slice'
+import { setDarkMode as setSettingsAction } from '../../domain/settings/slice'
+import { HomeDescription } from '../../modules/Home/HomeDescription'
 
 const mapDispatch = { setDarkMode: setSettingsAction } as const
 const mapState = ({ settings }: RootState) => ({ settings } as const)
@@ -74,10 +75,7 @@ function HomePage({ settings, setDarkMode }: Props) {
                 Analyze VCFs quicker and easier
               </Typography>
               <Divider className={classes.divider} />
-              <Typography variant="body1" component="p" className={classes.body}>
-                Scout allows you to browse VCFs in a web browser, identify compound pairs, and solve
-                cases as a team.
-              </Typography>
+              <HomeDescription />
               <Typography
                 className={classes.version}
                 variant="body2"
