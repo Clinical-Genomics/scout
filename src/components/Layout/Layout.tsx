@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react'
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
-import logo_scout from '../../assets/logo_scout.png'
+import logo_scout from 'assets/logo_scout.png'
 import { Paper } from '@material-ui/core'
 import { connect } from 'react-redux'
-import { RootState } from '../../domain/rootReducer'
+import { RootState } from 'domain/rootReducer'
 import styles from './Layout.module.css'
-import { setDarkMode as setSettingsAction } from '../../domain/settings/slice'
-import Nav, { NavItem } from '../Nav/Nav'
-import Footer from '../Footer/Footer'
+import { setDarkMode as setSettingsAction } from 'domain/settings/slice'
+import Nav, { NavItem } from 'components/Nav/Nav'
+import Footer from 'components/Footer/Footer'
 
 const mapDispatch = { setDarkMode: setSettingsAction } as const
 const mapState = ({ settings }: RootState) => ({ settings } as const)
