@@ -62,9 +62,10 @@ const config = {
       filename: '[name].css',
     }),
     new webpack.DefinePlugin({
-      'process.env.MY_ENV_VAR': JSON.stringify(process.env.GOOGLE_OAUTH_CLIENT_ID),
+      'process.env.GOOGLE_OAUTH_CLIENT_ID': JSON.stringify(process.env.GOOGLE_OAUTH_CLIENT_ID),
+      'process.env.BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
     }),
-    new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID']),
+    new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID', 'BACKEND_URL']),
   ],
 }
 

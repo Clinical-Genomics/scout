@@ -43,11 +43,12 @@ Once cloned the repo, install dependencies with:
 To run the app three environment variables are needed:
 
 - `GOOGLE_OAUTH_CLIENT_ID` Client ID for the authentication of Clinical Genomics applications via Google. It can be found in the Credentials page on the Clinical genomics Google Cloud Console.
+- `BACKEND_URL` The URL for calls to the backend
 
 These variables are stored in this repo secrets and are used by GitHub actions when deploying the application to Staging and Production.
 To run the app with the environment variables in development mode:
 
-### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" yarn start`
+### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" `BACKEND_URL="the-backend-url-here" yarn start`
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
@@ -66,7 +67,7 @@ will display linting issues.
 will fix the errors.
 
 
-### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" yarn build`
+### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" `BACKEND_URL="the-backend-url-here" yarn build`
 
 Builds the app for production to the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
