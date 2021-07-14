@@ -12,6 +12,7 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 const config = {
   entry: {
     home: '/src/modules/Home/index.tsx',
+    casesTable: '/src/modules/Cases/index.tsx',
     appShell: './src/index.tsx',
   },
   target: 'web',

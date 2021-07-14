@@ -1,30 +1,22 @@
 const { BACKEND_URL } = process.env
 const baseUrl = `${BACKEND_URL}/api/v1/`
 
-import { store } from '../domain/store'
-
-export const getAuthHeaders = (token: string) => ({
+export const getAuthHeaders = () => ({
   'Content-Type': 'application/json;charset=UTF-8',
   'Access-Control-Allow-Origin': '*',
   Accept: 'application/json, text/plain, */*',
-  Authorization: `Bearer ${token}`,
+  Cookie: document?.cookie,
 })
 
-const getToken = () => {
-  const token = store?.getState()?.settings?.googleToken
-  return token ? token : ''
-}
+export const getInstituteFromURL = () => document?.location.pathname.split('/')[1]
 
-export const getAnalyses = async (
-  token: string = getToken(),
-  isVisible?: boolean
-): Promise<any> => {
+export const getAnalyses = async (): Promise<any> => {
   let response = { analyses: [] }
 
   try {
-    const request = await fetch(`${baseUrl}/institutes/cust00/cases`, {
+    const request = await fetch(`${baseUrl}/institutes/${getInstituteFromURL()}/cases`, {
       mode: 'cors',
-      headers: getAuthHeaders(token),
+      headers: getAuthHeaders(),
     })
     response = await request.json()
   } catch (error) {
