@@ -57,10 +57,11 @@ export const AppComponent = ({
     <Router>
       <Layout>
         <Switch>
-          <Route path="/about">About</Route>
-          <Route path="/users">Users</Route>
-          <Route path="/">
+          <Route path="/" exact>
             <Home />
+          </Route>
+          <Route path={`/${settings.currentInstitute}/cases`} exact>
+            hola
           </Route>
         </Switch>
         {/* Greeting */}

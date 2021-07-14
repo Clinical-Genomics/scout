@@ -12,6 +12,8 @@ const userInitialState = {
 export const initialState = {
   user: userInitialState,
   darkMode: false,
+  institutes: [],
+  currentInstitute: 'cust000',
 } as AppState
 
 const settingsSlice = createSlice({
