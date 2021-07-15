@@ -1,4 +1,4 @@
-export const getCases = {
+export const getMockCases = {
   cases: {
     search_terms: {
       case: { label: 'Case or individual name', prefix: 'case:' },

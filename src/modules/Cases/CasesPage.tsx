@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { getCases } from '../../mocks/ScoutResponses'
+import { getMockCases } from '../../mocks/ScoutResponses'
 import { CasesTable } from '../../components/CasesTable/CasesTable'
 import styles from './CasesPage.module.css'
+import { getCases } from '../../services/ScoutApi'
 
 export const CasesPage = () => {
   const [cases, setCases] = useState<any>()
 
   useEffect(() => {
-    setCases(getCases.cases.cases)
+    getCases().then((response: any) => {
+      setCases(response.cases.cases ? response.cases.cases : getMockCases.cases.cases)
+    })
   }, [])
   return (
     <div className={styles.container}>

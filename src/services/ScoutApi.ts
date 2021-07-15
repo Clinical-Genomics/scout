@@ -10,7 +10,7 @@ export const getAuthHeaders = () => ({
 export const getInstituteFromURL = () => document?.location.pathname.split('/')[1]
 
 export const getCases = async (): Promise<any> => {
-  let response = { analyses: [] }
+  let response = { cases: [] }
 
   try {
     const request = await fetch(`${baseUrl}/institutes/${getInstituteFromURL()}/cases`, {
@@ -19,7 +19,7 @@ export const getCases = async (): Promise<any> => {
     })
     response = await request.json()
   } catch (error) {
-    alert(error)
+    console.error(error)
   }
   return response
 }
