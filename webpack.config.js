@@ -12,7 +12,7 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 const config = {
   entry: {
     home: '/src/modules/Home/index.tsx',
-    casesTable: '/src/modules/Cases/index.tsx',
+    cases: '/src/modules/Cases/index.tsx',
     appShell: './src/index.tsx',
   },
   target: 'web',
@@ -24,6 +24,9 @@ const config = {
   },
   devServer: {
     port: 3000,
+    historyApiFallback: true,
+    contentBase: './',
+    hot: true,
   },
   module: {
     rules: [

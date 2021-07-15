@@ -20,7 +20,7 @@ const headerScout = {
 function LayoutComponent({ children, settings, setDarkMode }: any) {
   /* Scout Navigation items */
   const scoutNavItems: Array<NavItem> = [
-    { linkTitle: 'Home', public: false, link: '/home' },
+    { linkTitle: 'Home', public: false, link: '/' },
     { linkTitle: 'Cases', public: false, link: `/${settings.currentInstitute}/cases` },
     {
       linkTitle: 'User guide',

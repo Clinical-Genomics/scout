@@ -1,5 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { CasesTable } from './CasesTable'
+import { CasesPage } from './CasesPage'
 
-ReactDOM.render(<CasesTable />, document.getElementById('react-cases-table'))
+ReactDOM.render(<CasesPage />, document.getElementById('react-cases'))

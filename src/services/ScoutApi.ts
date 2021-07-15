@@ -1,16 +1,15 @@
 const { BACKEND_URL } = process.env
-const baseUrl = `${BACKEND_URL}/api/v1/`
+const baseUrl = `${BACKEND_URL}/api/v1`
 
 export const getAuthHeaders = () => ({
   'Content-Type': 'application/json;charset=UTF-8',
   'Access-Control-Allow-Origin': '*',
-  Accept: 'application/json, text/plain, */*',
   Cookie: document?.cookie,
 })
 
 export const getInstituteFromURL = () => document?.location.pathname.split('/')[1]
 
-export const getAnalyses = async (): Promise<any> => {
+export const getCases = async (): Promise<any> => {
   let response = { analyses: [] }
 
   try {
