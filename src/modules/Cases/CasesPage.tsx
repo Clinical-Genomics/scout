@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { getMockCases } from '../../mocks/ScoutResponses'
-import { CasesTable } from '../../components/CasesTable/CasesTable'
+import { getMockCases } from 'mocks/ScoutResponses'
+import { CasesTable } from 'components/CasesTable/CasesTable'
 import styles from './CasesPage.module.css'
-import { getCases } from '../../services/ScoutApi'
+import { getCases } from 'services/ScoutApi'
 
 export const CasesPage = () => {
   const [cases, setCases] = useState<any>()
