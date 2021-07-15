@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { getCases } from '../../mocks/ScoutResponses'
 import { CasesTable } from '../../components/CasesTable/CasesTable'
+import styles from './CasesPage.module.css'
 
 export const CasesPage = () => {
   const [cases, setCases] = useState<any>()
@@ -9,14 +10,14 @@ export const CasesPage = () => {
     setCases(getCases.cases.cases)
   }, [])
   return (
-    <div>
+    <div className={styles.container}>
       {cases && (
         <div>
-          {cases.map((arrayPart: any) => (
-            <p>
-              <CasesTable cases={arrayPart[1]} casesStatus={arrayPart[0]} key={arrayPart[0]} />
-            </p>
-          ))}
+          {cases.map((arrayPart: any) => {
+            return arrayPart[1].length > 0 ? (
+              <CasesTable cases={arrayPart[1]} key={arrayPart[0]} />
+            ) : null
+          })}
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
+import { Chip } from '@material-ui/core'
 
 const useStyles = makeStyles({
   table: {
@@ -16,33 +17,36 @@ const useStyles = makeStyles({
 
 interface CasesTableProps {
   cases: any[]
-  casesStatus: string
 }
 
-export const CasesTable = ({ cases, casesStatus }: CasesTableProps) => {
+export const CasesTable = ({ cases }: CasesTableProps) => {
   const classes = useStyles()
-  console.log(cases)
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="cases table">
         <TableHead>
           <TableRow>
-            <TableCell>Cases</TableCell>
-            <TableCell align="right">Status</TableCell>
-            <TableCell align="right">Analysis date</TableCell>
-            <TableCell align="right">Link</TableCell>
-            <TableCell align="right">Sequencing</TableCell>
-            <TableCell align="right">Track</TableCell>
+            <TableCell align="center">Cases</TableCell>
+            <TableCell align="center">Status</TableCell>
+            <TableCell align="center">Analysis date</TableCell>
+            <TableCell align="center">Link</TableCell>
+            <TableCell align="center">Sequencing</TableCell>
+            <TableCell align="center">Track</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {cases.map((scoutCase) => (
-            <TableRow key={scoutCase.name}>
-              <TableCell align="right">{scoutCase.display_name}</TableCell>
-              <TableCell align="right">{scoutCase.status}</TableCell>
-              <TableCell align="right">{scoutCase.analysis_date}</TableCell>
-              <TableCell align="right">{scoutCase.analysis_types.toString()}</TableCell>
-              <TableCell align="right">{scoutCase.track}</TableCell>
+            <TableRow key={scoutCase.display_name}>
+              <TableCell align="center">{scoutCase.display_name}</TableCell>
+              <TableCell align="center">{scoutCase.status}</TableCell>
+              <TableCell align="center">
+                {new Date(scoutCase.analysis_date).toISOString().slice(0, 10)}
+              </TableCell>
+              <TableCell align="center">{scoutCase.link}</TableCell>
+              <TableCell align="center">{scoutCase.analysis_types.toString()}</TableCell>
+              <TableCell align="center">
+                <Chip label={scoutCase.track} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
