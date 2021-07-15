@@ -16,6 +16,7 @@ import { Layout } from './components/Layout/Layout'
 import { Home } from './components/Home/HomePage'
 import './App.css'
 import DropdownMenu from './components/DropdownMenu/DropdownMenu'
+import { CasesPage } from './modules/Cases/CasesPage'
 
 const mapDispatch = {
   setUserInfo: setSettingsAction,
@@ -57,10 +58,11 @@ export const AppComponent = ({
     <Router>
       <Layout>
         <Switch>
-          <Route path="/about">About</Route>
-          <Route path="/users">Users</Route>
-          <Route path="/">
+          <Route path="/" exact>
             <Home />
+          </Route>
+          <Route path={`/${settings.currentInstitute}/cases`} exact>
+            <CasesPage />
           </Route>
         </Switch>
         {/* Greeting */}

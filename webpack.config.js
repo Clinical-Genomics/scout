@@ -12,6 +12,7 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 const config = {
   entry: {
     home: '/src/modules/Home/index.tsx',
+    cases: '/src/modules/Cases/index.tsx',
     appShell: './src/index.tsx',
   },
   target: 'web',
@@ -23,6 +24,9 @@ const config = {
   },
   devServer: {
     port: 3000,
+    historyApiFallback: true,
+    contentBase: './',
+    hot: true,
   },
   module: {
     rules: [
@@ -62,9 +66,10 @@ const config = {
       filename: '[name].css',
     }),
     new webpack.DefinePlugin({
-      'process.env.MY_ENV_VAR': JSON.stringify(process.env.GOOGLE_OAUTH_CLIENT_ID),
+      'process.env.GOOGLE_OAUTH_CLIENT_ID': JSON.stringify(process.env.GOOGLE_OAUTH_CLIENT_ID),
+      'process.env.BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
     }),
-    new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID']),
+    new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID', 'BACKEND_URL']),
   ],
 }
 

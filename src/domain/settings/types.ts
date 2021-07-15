@@ -9,4 +9,6 @@ export type AppState = {
   user: UserInfo | null
   googleToken: string | null
   darkMode: boolean
+  institutes: string[] | []
+  currentInstitute: string | null
 }

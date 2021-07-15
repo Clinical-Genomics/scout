@@ -17,30 +17,23 @@ const headerScout = {
   title: 'Scout',
 }
 
-/* Scout Navigation items */
-const scoutNavItems: Array<NavItem> = [
-  { linkTitle: 'Home', public: false, link: '/home' },
-  { linkTitle: 'Genes', public: false, link: '/genes' },
-  { linkTitle: 'Gene Panels', public: false, link: '/gene-panels' },
-  { linkTitle: 'Phenotype', public: false, link: '/phenotype' },
-  { linkTitle: 'Diagnoses', public: false, link: '/diagnoses' },
-  { linkTitle: 'Manages variants', public: false, link: '/manages-variants' },
-  { linkTitle: 'Users', public: false, link: '/users' },
-  { linkTitle: 'Institutes', public: false, link: '/institutes' },
-  { linkTitle: 'Dashboard', public: false, link: '/dashboard' },
-  {
-    linkTitle: 'User guide',
-    public: true,
-    externalLink: 'https://clinical-genomics.github.io/scout/',
-  },
-  {
-    linkTitle: 'Open issues',
-    public: true,
-    externalLink: 'https://github.com/Clinical-Genomics/scout/issues',
-  },
-]
-
 function LayoutComponent({ children, settings, setDarkMode }: any) {
+  /* Scout Navigation items */
+  const scoutNavItems: Array<NavItem> = [
+    { linkTitle: 'Home', public: false, link: '/' },
+    { linkTitle: 'Cases', public: false, link: `/${settings.currentInstitute}/cases` },
+    {
+      linkTitle: 'User guide',
+      public: true,
+      externalLink: 'https://clinical-genomics.github.io/scout/',
+    },
+    {
+      linkTitle: 'Open issues',
+      public: true,
+      externalLink: 'https://github.com/Clinical-Genomics/scout/issues',
+    },
+  ]
+
   useEffect(() => {
     /** Check local storage */
     const darkModeStorage = localStorage.getItem('darkMode')

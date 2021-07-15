@@ -21,6 +21,7 @@ jobs:
       run: yarn build
       env:
         GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+        BACKEND_URL: ${{ secrets.BACKEND_STAGE_URL }}
     - name: Archive Stage Artifact
       uses: actions/upload-artifact@master
       with:
@@ -30,6 +31,7 @@ jobs:
       run: yarn build
       env:
         GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+        BACKEND_URL: ${{ secrets.BACKEND_PRODUCTION_URL }}
     - name: Archive Production Artifact
       uses: actions/upload-artifact@master
       with:
