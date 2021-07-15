@@ -33,7 +33,6 @@ export const CasesTable = ({ cases, casesStatus }: CasesTableProps) => {
             <TableCell align="right">Link</TableCell>
             <TableCell align="right">Sequencing</TableCell>
             <TableCell align="right">Track</TableCell>
-            <TableCell align="right">Clinvar</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -42,10 +41,8 @@ export const CasesTable = ({ cases, casesStatus }: CasesTableProps) => {
               <TableCell align="right">{scoutCase.display_name}</TableCell>
               <TableCell align="right">{scoutCase.status}</TableCell>
               <TableCell align="right">{scoutCase.analysis_date}</TableCell>
-              <TableCell align="right">{scoutCase.link}</TableCell>
-              <TableCell align="right">{scoutCase.sequencing}</TableCell>
+              <TableCell align="right">{scoutCase.analysis_types.toString()}</TableCell>
               <TableCell align="right">{scoutCase.track}</TableCell>
-              <TableCell align="right">{scoutCase.clinvar}</TableCell>
             </TableRow>
           ))}
         </TableBody>
