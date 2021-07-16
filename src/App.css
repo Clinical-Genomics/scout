@@ -1,3 +1,5 @@
+@import '~antd/dist/antd.css';
+
 /***** Global colors *****/
 :root {
   /** Background for app, dropdown, etc */
