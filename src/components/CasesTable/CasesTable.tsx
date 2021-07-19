@@ -10,7 +10,7 @@ const columns = [
     title: 'Name',
     dataIndex: 'display_name',
     key: 'display_name',
-    render: (name: string) => <a href={`${window.location}/${name}`}>{name}</a>,
+    render: (name: string) => <a href={`${window.location.href.slice(0, -5)}${name}`}>{name}</a>,
   },
   {
     title: 'Status',
