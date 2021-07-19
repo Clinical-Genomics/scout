@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { GoogleLogin, GoogleLogout } from 'react-google-login'
 import Cookies from 'js-cookie'
@@ -11,8 +11,8 @@ import {
   resetGoogleToken as resetGoogleTokenAction,
 } from './domain/settings/slice'
 import { FaAngleDown } from 'react-icons/fa'
-import Button from '@material-ui/core/Button'
 import { Layout } from './components/Layout/Layout'
+import { Button } from 'antd'
 import { Home } from './components/Home/HomePage'
 import './App.css'
 import DropdownMenu from './components/DropdownMenu/DropdownMenu'
