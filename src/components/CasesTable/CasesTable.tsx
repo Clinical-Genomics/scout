@@ -49,5 +49,13 @@ const columns = [
 ]
 
 export const CasesTable = ({ cases }: CasesTableProps) => {
-  return <Table columns={columns} dataSource={cases} pagination={false} rowKey={'display_name'} />
+  return (
+    <Table
+      bordered
+      columns={columns}
+      dataSource={cases}
+      pagination={false}
+      rowKey={'display_name'}
+    />
+  )
 }
