@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import logo_scout from 'assets/logo_scout.png'
-import { Paper } from '@material-ui/core'
 import { connect } from 'react-redux'
 import { RootState } from 'domain/rootReducer'
 import styles from './Layout.module.css'
@@ -62,20 +61,18 @@ function LayoutComponent({ children, settings, setDarkMode }: any) {
   })
   return (
     <ThemeProvider theme={theme}>
-      <Paper>
-        <div className={`${styles.Layout} ${settings.darkMode ? 'dark_mode' : ''}`}>
-          <header>
-            <Nav
-              header={headerScout}
-              navItems={scoutNavItems}
-              darkMode={settings.darkMode}
-              toggleDarkMode={toggleDarkMode}
-            />
-          </header>
-          <main>{children}</main>
-          <Footer />
-        </div>
-      </Paper>
+      <div className={`${styles.Layout} ${settings.darkMode ? 'dark_mode' : ''}`}>
+        <header>
+          <Nav
+            header={headerScout}
+            navItems={scoutNavItems}
+            darkMode={settings.darkMode}
+            toggleDarkMode={toggleDarkMode}
+          />
+        </header>
+        <main>{children}</main>
+        <Footer />
+      </div>
     </ThemeProvider>
   )
 }
