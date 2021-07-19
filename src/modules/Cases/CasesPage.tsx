@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getMockCases } from 'mocks/ScoutResponses'
+import { getMockCases } from '../../../__mocks__/ScoutResponses'
 import { CasesTable } from 'components/CasesTable/CasesTable'
 import styles from './CasesPage.module.css'
 import { getCases } from 'services/ScoutApi'

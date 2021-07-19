@@ -1,5 +1,5 @@
 import React from 'react'
-import { Space, Table, Tag } from 'antd'
+import { Table, Tag } from 'antd'
 
 interface CasesTableProps {
   cases: any[]
@@ -18,7 +18,7 @@ const columns = [
     key: 'status',
   },
   {
-    title: 'analysis date',
+    title: 'Analysis date',
     dataIndex: 'analysis_date',
     key: 'analysis_date',
     render: (date: string) => <div>{new Date(date).toISOString().slice(0, 10)}</div>,
