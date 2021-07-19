@@ -1,12 +1,11 @@
-/* eslint-disable react/button-has-type */
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaAngleDown } from 'react-icons/fa'
-import Tooltip from '@material-ui/core/Tooltip'
 import Brightness4OutlinedIcon from '@material-ui/icons/Brightness4Outlined'
 import Brightness5OutlinedIcon from '@material-ui/icons/Brightness5Outlined'
 import styles from './Nav.module.css'
 import DropdownMenu from 'components/DropdownMenu/DropdownMenu'
+import { Tooltip } from 'antd'
 
 export interface Header {
   icon?: string // Path to icon
