@@ -20,3 +20,33 @@
 .swedacLogo {
   height: 145px;
 }
+
+.root {
+    min-width: 275px;
+    max-width: 600px;
+}
+
+.title {
+    font-size: 45px;
+    font-weight: 100;
+}
+
+h2 {
+    font-size: 25px;
+    fontWeight: 400;
+}
+
+.divider {
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+  
+body {
+    font-size: 16px;
+}
+  
+.version {
+    font-size: 20px;
+    margin-top: 30px;
+    font-weight: 400;
+}
