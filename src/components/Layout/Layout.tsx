@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import { ThemeProvider, createTheme } from '@material-ui/core/styles'
 import logo_scout from 'assets/logo_scout.png'
 import { connect } from 'react-redux'
 import { RootState } from 'domain/rootReducer'
@@ -54,7 +54,7 @@ function LayoutComponent({ children, settings, setDarkMode }: any) {
     setDarkMode(newMode)
     localStorage.setItem('darkMode', newMode.toString())
   }
-  const theme = createMuiTheme({
+  const theme = createTheme({
     palette: {
       type: settings.darkMode ? 'dark' : 'light',
     },
