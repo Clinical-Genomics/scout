@@ -6,7 +6,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 50px;
+}
+
+.logosContainer > img {
+  margin: 30px;
 }
 
 .karolinskaLogo {
@@ -21,9 +24,10 @@
   height: 145px;
 }
 
-.root {
+.card {
     min-width: 275px;
     max-width: 600px;
+    margin: auto;
 }
 
 .title {

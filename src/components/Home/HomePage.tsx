@@ -18,6 +18,8 @@ type Props = ReturnType<typeof mapState> & typeof mapDispatch
 
 function HomePage({ settings, setDarkMode }: Props) {
   const scoutVersion = packageJson.version
+  const { Title } = Typography;
+
   useEffect(() => {
     /** Check local storage */
     const darkModeStorage = localStorage.getItem('darkMode')
@@ -29,8 +31,10 @@ function HomePage({ settings, setDarkMode }: Props) {
   })
   return (
     <div className={styles.container}>
-      <Card className={styles.root}>
-        <Typography className={styles.title}>Scout</Typography>
+      <Card className={styles.card}>
+        <Title level={2} className={styles.title}>
+          Scout
+        </Title>
         <Typography>Analyze VCFs quicker and easier</Typography>
         <Divider className={styles.divider} />
         <HomeDescription />
