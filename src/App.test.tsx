@@ -20,7 +20,7 @@ test('darkMode', () => {
     </Provider>
   )
   const container = getByTestId('darkMode')
-  expect(container.firstChild).toHaveAttribute('title', 'Toggle dark theme')
+  expect(container.firstChild).toHaveAttribute('data-testid', 'darkModeButton')
   fireEvent.click(screen.getByTestId('darkMode'))
-  expect(container.firstChild).toHaveAttribute('title', 'Toggle light theme')
+  expect(container.firstChild).toHaveAttribute('data-testid', 'lightModeButton')
 })

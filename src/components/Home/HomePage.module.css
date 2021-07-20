@@ -6,7 +6,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 50px;
+}
+
+.logosContainer > img {
+  margin: 30px;
 }
 
 .karolinskaLogo {
@@ -19,4 +22,30 @@
 
 .swedacLogo {
   height: 145px;
+}
+
+.card {
+    min-width: 275px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.title {
+    font-size: 45px;
+    font-weight: 100;
+}
+
+.divider {
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+  
+body {
+    font-size: 16px;
+}
+  
+.version {
+    font-size: 20px;
+    margin-top: 30px;
+    font-weight: 400;
 }

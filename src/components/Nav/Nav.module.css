@@ -115,3 +115,7 @@ nav > ul > li .selected_nav::before {
 nav > ul > li > a:not(header)::before {
   visibility: hidden;
 }
+
+.switchThemeIcon {
+  font-size: 24px;
+}
