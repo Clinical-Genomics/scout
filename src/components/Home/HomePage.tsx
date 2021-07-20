@@ -18,7 +18,7 @@ type Props = ReturnType<typeof mapState> & typeof mapDispatch
 
 function HomePage({ settings, setDarkMode }: Props) {
   const scoutVersion = packageJson.version
-  const { Title } = Typography;
+  const { Title } = Typography
 
   useEffect(() => {
     /** Check local storage */
