@@ -1,8 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaAngleDown } from 'react-icons/fa'
-import Brightness4OutlinedIcon from '@material-ui/icons/Brightness4Outlined'
-import Brightness5OutlinedIcon from '@material-ui/icons/Brightness5Outlined'
+import { MdBrightness4 } from 'react-icons/md'
+import { MdBrightness5 } from 'react-icons/md'
+
 import styles from './Nav.module.css'
 import DropdownMenu from 'components/DropdownMenu/DropdownMenu'
 import { Tooltip } from 'antd'
@@ -85,12 +86,12 @@ const Nav: React.FC<Props> = ({ header, navItems, darkMode, toggleDarkMode }) =>
           >
             {darkMode && (
               <Tooltip title="Toggle light theme" placement="bottom">
-                <Brightness5OutlinedIcon />
+                <MdBrightness4 className={styles.switchThemeIcon} />
               </Tooltip>
             )}
             {!darkMode && (
               <Tooltip title="Toggle dark theme" placement="bottom">
-                <Brightness4OutlinedIcon />
+                <MdBrightness5 className={styles.switchThemeIcon} />
               </Tooltip>
             )}
           </button>
