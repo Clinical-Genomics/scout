@@ -1,5 +1,7 @@
 .container {
-  margin-top: 50px;
+    min-width: 275px;
+    max-width: 600px;
+    margin: 50px auto auto auto;
 }
 
 .logosContainer {
@@ -22,12 +24,6 @@
 
 .swedacLogo {
   height: 145px;
-}
-
-.card {
-    min-width: 275px;
-    max-width: 600px;
-    margin: auto;
 }
 
 .title {

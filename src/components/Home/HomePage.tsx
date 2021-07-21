@@ -31,7 +31,7 @@ function HomePage({ settings, setDarkMode }: Props) {
   })
   return (
     <div className={styles.container}>
-      <Card className={styles.card}>
+      <Card>
         <Title level={2} className={styles.title}>
           Scout
         </Title>
