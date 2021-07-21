@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { ThemeProvider, createTheme } from '@material-ui/core/styles'
 import logo_scout from 'assets/logo_scout.png'
 import { connect } from 'react-redux'
 import { RootState } from 'domain/rootReducer'
@@ -54,13 +53,16 @@ function LayoutComponent({ children, settings, setDarkMode }: any) {
     setDarkMode(newMode)
     localStorage.setItem('darkMode', newMode.toString())
   }
-  const theme = createTheme({
-    palette: {
-      type: settings.darkMode ? 'dark' : 'light',
-    },
-  })
+
   return (
-    <ThemeProvider theme={theme}>
+    <div>
+      {settings?.darkMode && (
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href={'https://cdnjs.cloudflare.com/ajax/libs/antd/4.4.3/antd.dark.css'}
+        />
+      )}
       <div className={`${styles.Layout} ${settings.darkMode ? 'dark_mode' : ''}`}>
         <header>
           <Nav
@@ -73,7 +75,7 @@ function LayoutComponent({ children, settings, setDarkMode }: any) {
         <main>{children}</main>
         <Footer />
       </div>
-    </ThemeProvider>
+    </div>
   )
 }
 
