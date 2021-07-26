@@ -52,6 +52,12 @@
     {% endif %}
   </div>
   <main>
+    {% if accred_badge %}
+      <div class="row justify-content-center">
+        <img class="img-responsive center-block" width="100" src="{{ url_for('public.static', filename=accred_badge) }}">
+      </div>
+      <hr>
+    {% endif %}
     <p class="pb-1 mb-0">Developed by:</p>
     <div class="row justify-content-center align-items-center">
       <div class="col-xs-12 col-sm-4">
@@ -64,10 +70,12 @@
         <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-lund-university-hospital.png') }}">
       </div>
     </div>
-    <p class="pb-1 pt-2">Partners</p>
+    <p class="pb-1 pt-2">Collaborations:</p>
     <div class="row">
       <div class="col-xs-12 col-sm-3">
-        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-gms.png') }}">
+        <a href="https://genomicmedicine.se/" target="_blank">
+          <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-gms.png') }}">
+        </a>
       </div>
     </div>
   </main>
