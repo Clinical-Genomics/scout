@@ -1,3 +1,4 @@
+# THIS IS A LINE ADDED TO TRIGGER TESTS OF A NEW BRANCH 
 # Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
