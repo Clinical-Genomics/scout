@@ -3,7 +3,6 @@
 * Requires loqusdb version 2.5 or greater.
 * If multiple instances are configured, version will be default's.
 """
-import copy
 import json
 import logging
 import subprocess
@@ -170,7 +169,7 @@ class LoqusDB:
             try:
                 output = execute_command(case_call)
             except CalledProcessError:
-                # TODO: is returning 0 appropriate after catching a crash?
+                # is returning 0 appropriate after catching a crash?
                 return nr_cases
             try:
                 nr_cases = int(output.strip())
@@ -230,7 +229,6 @@ class LoqusDB:
         if category == "variants":  # SNVs
             search_url = f"{search_url}/{variant_info['_id']}"
         else:  # SVs
-            search_data = {}
             chrom = variant_info["chrom"]
             end_chrom = variant_info["end_chrom"]
             pos = variant_info["pos"]
