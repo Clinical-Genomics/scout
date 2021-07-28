@@ -212,7 +212,7 @@ def test_test_query_biomart_37_no_xml():
     # GIVEN defined biomart filters and attributes
     filters = {"ensembl_gene_id": "ENSG00000115091"}
     attributes = ["hgnc_symbol", "ensembl_transcript_id"]
-    url = """http://ensembl.org/biomart/martservice?query=<?xml version="1.0" encoding="UTF-8"?>
+    url = 'http://ensembl.org/biomart/martservice?query=<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Query>
 <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" \
 datasetConfigVersion = "0.6" completionStamp = "1">
@@ -222,7 +222,7 @@ datasetConfigVersion = "0.6" completionStamp = "1">
 \t\t<Attribute name = "hgnc_symbol" />
 \t\t<Attribute name = "ensembl_transcript_id" />
 \t</Dataset>
-</Query>"""
+</Query>'
 
     response = (
         b"ACTR3\tENST00000263238\n"
