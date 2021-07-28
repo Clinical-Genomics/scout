@@ -121,7 +121,6 @@ def test_convert_number_tricky():
     ## WHEN converting to number
     res = convert_number(a)
 
-    
     ## THEN assert it is None
     assert res is 1
 
