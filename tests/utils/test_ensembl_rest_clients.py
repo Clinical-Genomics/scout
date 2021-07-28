@@ -177,6 +177,7 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
     # GIVEN client with a xml query for a gene
     build = "38"
     url = "".join([ensembl_rest_clients.BIOMART_38, ensembl_biomart_xml_query])
+    ulr = url.encode("ascii")
     response = (
         b"ACTR3\tENST00000263238\n"
         b"ACTR3\tENST00000443297\n"

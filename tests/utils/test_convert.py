@@ -120,6 +120,8 @@ def test_convert_number_tricky():
     a = "1.0"
     ## WHEN converting to number
     res = convert_number(a)
+
+    
     ## THEN assert it is None
     assert res is 1
 
