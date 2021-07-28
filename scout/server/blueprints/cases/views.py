@@ -6,6 +6,7 @@ import os.path
 import re
 import shutil
 from operator import itemgetter
+from base64 import b64encode
 
 import requests
 from flask import (
@@ -66,6 +67,10 @@ def case(institute_id, case_name):
         flash("Case {} does not exist in database!".format(case_name))
         return redirect(request.referrer)
 
+    # re-encode images as base64
+    for images in case_obj.get("custom_images", {}).values():
+        for img in images:
+            img["data"] = b64encode(img["data"]).decode("utf-8")
     data = controllers.case(store, institute_obj, case_obj)
     return dict(
         institute=institute_obj,
