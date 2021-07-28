@@ -71,17 +71,18 @@ def fixture_ensembl_biomart_xml_query():
         </Dataset>
     </Query>
     """
-    _xmlbin = (b'<?xml version="1.0" encoding="UTF-8"?>'
-            b'<!DOCTYPE Query>'
-            b'<Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0"'
-            b'count = "" datasetConfigVersion = "0.6" completionStamp = "1">'
-            b'<Dataset name = "hsapiens_gene_ensembl" interface = "default" >'
-            b'<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>'
-            b'<Attribute name = "hgnc_symbol" />'
-            b'<Attribute name = "ensembl_transcript_id" />'
-            b'</Dataset>'
-            b'</Query>'
-)
+    _xmlbin = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b"<!DOCTYPE Query>"
+        b'<Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0"'
+        b'count = "" datasetConfigVersion = "0.6" completionStamp = "1">'
+        b'<Dataset name = "hsapiens_gene_ensembl" interface = "default" >'
+        b'<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>'
+        b'<Attribute name = "hgnc_symbol" />'
+        b'<Attribute name = "ensembl_transcript_id" />'
+        b"</Dataset>"
+        b"</Query>"
+    )
     return _xml
 
 
