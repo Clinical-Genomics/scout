@@ -3,8 +3,6 @@ SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"
 
 MONGO_DBNAME = "scout"
-MONGO_HOST = "mongodb"
-MONGO_PORT = 27017
 
 BOOTSTRAP_SERVE_LOCAL = True
 TEMPLATES_AUTO_RELOAD = True
@@ -17,10 +15,6 @@ MAIL_SERVER = "smtp.gmail.com"
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
-
-# Filename of accrediation bagde image in server/bluprints/public/static
-# If null no badge is displayed in scout
-ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
@@ -81,4 +75,3 @@ RANK_MODEL_LINK_POSTFIX = "-.ini"
 SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 
-SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo"
