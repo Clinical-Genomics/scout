@@ -43,7 +43,7 @@ def get_correct_date(date_info):
 
 def parse_custom_images(config_data):
     """Parse information on custom images assigned to the case."""
-    VALID_IMAGE_SUFFIXES = ["svg", "png", "jpeg"]
+    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
     LOG.debug("Parse custom images")
 
     # sort custom image sections
@@ -53,7 +53,7 @@ def parse_custom_images(config_data):
         for image in images:
             # skip entries that are not recognized as image on suffix
             path = Path(image["path"])
-            if path.suffix in VALID_IMAGE_SUFFIXES:
+            if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
                 LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
                 continue
             # load image file to memory
@@ -69,7 +69,7 @@ def parse_custom_images(config_data):
                     }
                 )
         # store parsed section
-        if len(parsed_images) != 0:
+        if len(parsed_images) > 0:
             parsed_sections[section_name] = parsed_images
         else:
             LOG.warning(f"Section: {section_name} had no valid images, skipping")
