@@ -193,12 +193,10 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
     )
     responses.add(responses.GET, url, body=response, status=200, stream=True)
     # WHEN querying ensembl
-    xml_ascii = ensembl_biomart_xml_query.encode('ascii')
+    xml_ascii = ensembl_biomart_xml_query.encode("ascii")
     old_xml = ensembl_biomart_xml_query
 
-    client = ensembl_rest_clients.EnsemblBiomartClient(
-        build=build, xml=old_xml, header=False
-    )
+    client = ensembl_rest_clients.EnsemblBiomartClient(build=build, xml=old_xml, header=False)
 
     # THEN assert that the result is correct
     for line in client:
