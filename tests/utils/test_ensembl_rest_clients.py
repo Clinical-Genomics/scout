@@ -1,8 +1,8 @@
 """Tests for ensembl rest api"""
 
+from urllib.parse import quote, urlencode
 import responses
 from requests.exceptions import HTTPError, MissingSchema
-from urllib.parse import urlencode, quote
 
 from scout.utils import ensembl_rest_clients
 
