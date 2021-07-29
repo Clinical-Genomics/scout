@@ -212,17 +212,20 @@ def test_test_query_biomart_38_no_xml():
     # GIVEN defined biomart filters and attributes
     filters = {"ensembl_gene_id": "ENSG00000115091"}
     attributes = ["hgnc_symbol", "ensembl_transcript_id"]
-    url = """http://ensembl.org/biomart/martservice?query=<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE Query>
-<Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" \
-datasetConfigVersion = "0.6" completionStamp = "1">
 
-\t<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
-\t\t<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>
-\t\t<Attribute name = "hgnc_symbol" />
-\t\t<Attribute name = "ensembl_transcript_id" />
-\t</Dataset>
-</Query>"""
+    query = '<?xml version="1.0" encoding="UTF-8"?>\
+<!DOCTYPE Query>\
+<Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" \
+datasetConfigVersion = "0.6" completionStamp = "1">\
+\t<Dataset name = "hsapiens_gene_ensembl" interface = "default" >\
+\t\t<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>\
+\t\t<Attribute name = "hgnc_symbol" />\
+\t\t<Attribute name = "ensembl_transcript_id" />\
+\t</Dataset>\
+</Query>'
+
+
+    url = "".join([ensembl_rest_clients.BIOMART_38, quote(query)])
 
     response = (
         b"ACTR3\tENST00000263238\n"
