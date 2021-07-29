@@ -168,7 +168,7 @@ class EnsemblBiomartClient:
 
     def build_url(self, xml=None):
         """Build a query url"""
-        return "".join([self.server, xml])
+        return "".join([self.server, xml]).encode('ascii')
 
     def _query_service(self, xml=None, filters=None, attributes=None):
         """Query the Ensembl biomart service and yield the resulting lines
