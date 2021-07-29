@@ -227,9 +227,6 @@ datasetConfigVersion = "0.6" completionStamp = "1">\
 \t</Dataset>\
 </Query>'
 
-
-
-
     response = (
         b"ACTR3\tENST00000263238\n"
         b"ACTR3\tENST00000443297\n"
