@@ -126,7 +126,7 @@ class EnsemblRestApiClient:
 
 
 class EnsemblBiomartClient:
-    """Class to handle requests to the ensembl biomart apis. Will send a request 
+    """Class to handle requests to the ensembl biomart apis. Will send a request
     upon object init."""
 
     def __init__(self, build="37", xml=None, filters=None, attributes=None, header=True):
