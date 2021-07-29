@@ -224,7 +224,6 @@ datasetConfigVersion = "0.6" completionStamp = "1">\
 \t</Dataset>\
 </Query>'
 
-
     url = "".join([ensembl_rest_clients.BIOMART_38, quote(query)])
 
     response = (
