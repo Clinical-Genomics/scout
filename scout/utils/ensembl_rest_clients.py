@@ -169,7 +169,7 @@ class EnsemblBiomartClient:
 
     def build_url(self, xml=None):
         """Build a query url"""
-        xml = quote(xml)
+        # xml = quote(xml)
         return "".join([self.server, xml])
 
     def _query_service(self, xml=None, filters=None, attributes=None):
