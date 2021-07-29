@@ -177,7 +177,7 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
     """
     # GIVEN client with a xml query for a gene
     build = "38"
-    url = "".join([ensembl_rest_clients.BIOMART_38, ensembl_biomart_xml_query])
+    url = "".join([ensembl_rest_clients.BIOMART_38, quote(ensembl_biomart_xml_query)])
     response = (
         b"ACTR3\tENST00000263238\n"
         b"ACTR3\tENST00000443297\n"
@@ -189,15 +189,15 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
         b"ACTR3\tENST00000478928\n"
         b"[success]"
     )
-    
+
+    # url is a xml-query, not percent encoded originally
+
     responses.add(responses.GET, url, body=response, status=200, stream=True)
     # WHEN querying ensembl
     client = ensembl_rest_clients.EnsemblBiomartClient(
         build=build, xml=ensembl_biomart_xml_query, header=False
     )
     print("******")
-    print(responses.registered())
-    1/0
     # THEN assert that the result is correct
     for line in client:
         # THEN assert that either the correct gene is fetched or that an
