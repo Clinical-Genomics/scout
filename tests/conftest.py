@@ -56,7 +56,7 @@ from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
 from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
-from scout.parse.case import parse_case
+from scout.parse.case import parse_case, parse_custom_images
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
