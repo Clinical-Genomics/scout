@@ -26,21 +26,21 @@ def test_ping_ensemble_37(ensembl_rest_client_37):
     assert data == {"ping": 1}
 
 
-# @responses.activate
-# def test_ping_ensemble_38(ensembl_rest_client_38):
-#     """Test ping ensembl server containing human build 38"""
-#     client = ensembl_rest_client_38
-#     assert client.server == ensembl_rest_clients.RESTAPI_38
-#     # GIVEN a ping response
-#     ping_resp = {"ping": 1}
-#     responses.add(
-#         responses.GET,
-#         "/".join([ensembl_rest_clients.RESTAPI_38, ensembl_rest_clients.PING_ENDPOINT]),
-#         json=ping_resp,
-#         status=200,
-#     )
-#     data = client.ping_server()
-#     assert data == {"ping": 1}
+@responses.activate
+def test_ping_ensemble_38(ensembl_rest_client_38):
+    """Test ping ensembl server containing human build 38"""
+    client = ensembl_rest_client_38
+    assert client.server == ensembl_rest_clients.RESTAPI_38
+    # GIVEN a ping response
+    ping_resp = {"ping": 1}
+    responses.add(
+        responses.GET,
+        "/".join([ensembl_rest_clients.RESTAPI_38, ensembl_rest_clients.PING_ENDPOINT]),
+        json=ping_resp,
+        status=200,
+    )
+    data = client.ping_server()
+    assert data == {"ping": 1}
 
 
 @responses.activate
@@ -176,10 +176,7 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
     """
     # GIVEN client with a xml query for a gene
     build = "38"
-    url = ensembl_rest_clients.BIOMART_38 + ensembl_biomart_xml_query
-    # url = "".join([ensembl_rest_clients.BIOMART_38, ensembl_biomart_xml_query])
-    rrurl = url.encode("ascii")
-
+    url = "".join([ensembl_rest_clients.BIOMART_38, ensembl_biomart_xml_query])
     response = (
         b"ACTR3\tENST00000263238\n"
         b"ACTR3\tENST00000443297\n"
@@ -193,10 +190,9 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
     )
     responses.add(responses.GET, url, body=response, status=200, stream=True)
     # WHEN querying ensembl
-    xml_ascii = ensembl_biomart_xml_query.encode("ascii")
-    old_xml = ensembl_biomart_xml_query
-
-    client = ensembl_rest_clients.EnsemblBiomartClient(build=build, xml=old_xml, header=False)
+    client = ensembl_rest_clients.EnsemblBiomartClient(
+        build=build, xml=ensembl_biomart_xml_query, header=False
+    )
 
     # THEN assert that the result is correct
     for line in client:
@@ -205,27 +201,24 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
 
 
 @responses.activate
-def test_test_query_biomart_38_no_xml(ensembl_biomart_xml_query):
+def test_test_query_biomart_37_no_xml():
     """Prepare a test xml document for the biomart service build 37 and
     query the service using it
     """
     # GIVEN defined biomart filters and attributes
     filters = {"ensembl_gene_id": "ENSG00000115091"}
     attributes = ["hgnc_symbol", "ensembl_transcript_id"]
-
-    # why is it called no_xml when request is xml?
-    # below is EXACLTY the same as ensembl_biomart_xml_query, except address line
-    url = 'http://ensembl.org/biomart/martservice?query=<?xml version="1.0" encoding="UTF-8"?>\
-<!DOCTYPE Query>\
+    url = """http://ensembl.org/biomart/martservice?query=<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Query>
 <Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows = "0" count = "" \
-datasetConfigVersion = "0.6" completionStamp = "1">\
-\
-\t<Dataset name = "hsapiens_gene_ensembl" interface = "default" >\
-\t\t<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>\
-\t\t<Attribute name = "hgnc_symbol" />\
-\t\t<Attribute name = "ensembl_transcript_id" />\
-\t</Dataset>\
-</Query>'
+datasetConfigVersion = "0.6" completionStamp = "1">
+
+\t<Dataset name = "hsapiens_gene_ensembl" interface = "default" >
+\t\t<Filter name = "ensembl_gene_id" value = "ENSG00000115091"/>
+\t\t<Attribute name = "hgnc_symbol" />
+\t\t<Attribute name = "ensembl_transcript_id" />
+\t</Dataset>
+</Query>"""
 
     response = (
         b"ACTR3\tENST00000263238\n"
