@@ -42,3 +42,6 @@ python-dateutil
 
 # Required by scripts
 tabulate
+
+# Fix mismatch towards Github
+urllib3==1.26.6

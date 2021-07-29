@@ -5,7 +5,7 @@ pytest-mock
 pytest>=5.2
 pytest-flask
 mongomock==3.20
-responses
+responses==0.13.3
 
 # utils
 invoke

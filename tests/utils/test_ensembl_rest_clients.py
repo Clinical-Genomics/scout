@@ -2,6 +2,7 @@
 
 import responses
 from requests.exceptions import HTTPError, MissingSchema
+from urllib.parse import urlencode, quote
 
 from scout.utils import ensembl_rest_clients
 
@@ -188,12 +189,15 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
         b"ACTR3\tENST00000478928\n"
         b"[success]"
     )
+    
     responses.add(responses.GET, url, body=response, status=200, stream=True)
     # WHEN querying ensembl
     client = ensembl_rest_clients.EnsemblBiomartClient(
         build=build, xml=ensembl_biomart_xml_query, header=False
     )
-
+    print("******")
+    print(responses.registered())
+    1/0
     # THEN assert that the result is correct
     for line in client:
         # THEN assert that either the correct gene is fetched or that an
@@ -201,7 +205,7 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
 
 
 @responses.activate
-def test_test_query_biomart_37_no_xml():
+def test_test_query_biomart_38_no_xml():
     """Prepare a test xml document for the biomart service build 37 and
     query the service using it
     """
