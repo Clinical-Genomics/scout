@@ -110,32 +110,39 @@ def test_parse_case_custom_images(scout_config):
     custom_images = parse_custom_images(scout_config)
     # WHEN images is parsed
     # THEN custom_images should have the same sections
-    cnf_img = scout_config['custom_images']
+    cnf_img = scout_config["custom_images"]
     assert cnf_img.keys() == custom_images.keys()
     # THEN custom_images should have the same number of images
-    assert all(len(custom_images[section]) == len(cnf_img[section])
-            for section in custom_images)
+    assert all(len(custom_images[section]) == len(cnf_img[section]) for section in custom_images)
     # Given that some custom images are of not supported formats
-    custom_images = parse_custom_images({
-        "custom_images": {
-            "section_one": [
-                {'title': 'A png image',
-                 'description': 'desc',
-                 'path': 'scout/demo/images/custom_images/640x480_one.png'},
-                {'title': 'A bitmap image',
-                 'description': 'desc',
-                 'path': 'scout/demo/images/custom_images/640x480_one.bnp'},
+    custom_images = parse_custom_images(
+        {
+            "custom_images": {
+                "section_one": [
+                    {
+                        "title": "A png image",
+                        "description": "desc",
+                        "path": "scout/demo/images/custom_images/640x480_one.png",
+                    },
+                    {
+                        "title": "A bitmap image",
+                        "description": "desc",
+                        "path": "scout/demo/images/custom_images/640x480_one.bnp",
+                    },
                 ],
-            "section_two": [
-                {'title': 'A pdf image',
-                 'description': 'desc',
-                 'path': 'scout/demo/images/custom_images/640x480_one.pdf'},
+                "section_two": [
+                    {
+                        "title": "A pdf image",
+                        "description": "desc",
+                        "path": "scout/demo/images/custom_images/640x480_one.pdf",
+                    },
                 ],
+            }
         }
-    })
+    )
     # THEN check that non valid image formats are being rejected
-    assert len(custom_images['section_one']) == 1
-    assert 'section_two' not in custom_images
+    assert len(custom_images["section_one"]) == 1
+    assert "section_two" not in custom_images
 
 
 def test_parse_case_collaborators(scout_config):

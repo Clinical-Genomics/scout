@@ -178,7 +178,7 @@ def test_institutes(app):
 
 
 def test_case_custom_images(app, institute_obj, case_obj):
-    """"Test that custom images are beign displayed"""
+    """ "Test that custom images are beign displayed"""
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -194,8 +194,8 @@ def test_case_custom_images(app, institute_obj, case_obj):
         )
         # THEN it should display the two custom images section
         dta = resp.get_data()
-        for section_name in case_obj['custom_images']:
-            assert bytes(f"{section_name}-accordion", 'utf-8') in dta
+        for section_name in case_obj["custom_images"]:
+            assert bytes(f"{section_name}-accordion", "utf-8") in dta
 
 
 def test_case_outdated_panel(app, institute_obj, case_obj):
