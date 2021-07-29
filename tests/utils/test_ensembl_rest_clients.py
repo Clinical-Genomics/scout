@@ -171,7 +171,7 @@ def test_xml_attributes(ensembl_biomart_client_37):
 
 
 @responses.activate
-def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
+def test_query_biomart_38_xml(ensembl_biomart_xml_query):
     """Prepare a test xml document for the biomart service build 38
     and query the service using it
     """
@@ -203,7 +203,7 @@ def test_test_query_biomart_38_xml(ensembl_biomart_xml_query):
 
 
 @responses.activate
-def test_test_query_biomart_38_no_xml():
+def test_query_biomart_38_no_xml():
     """Prepare a test xml document for the biomart service build 38 and
     query the service using it
     """
