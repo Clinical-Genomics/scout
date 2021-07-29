@@ -30,6 +30,7 @@ def igv_test_tracks(igv_public_track):
     """Returns a list with test tracks for igv.js"""
     return [igv_public_track]  # this will contain also a private track in the future
 
+
 @pytest.fixture
 def refseq_response():
     """Return the string that is a refseq response"""
