@@ -1,6 +1,6 @@
 """Code for talking to ensembl rest API"""
 import logging
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 
 import requests
 
@@ -126,7 +126,8 @@ class EnsemblRestApiClient:
 
 
 class EnsemblBiomartClient:
-    """Class to handle requests to the ensembl biomart api"""
+    """Class to handle requests to the ensembl biomart apis. Will send a request 
+    upon object init."""
 
     def __init__(self, build="37", xml=None, filters=None, attributes=None, header=True):
         """Initialise a ensembl biomart client"""
@@ -168,6 +169,7 @@ class EnsemblBiomartClient:
 
     def build_url(self, xml=None):
         """Build a query url"""
+        xml = quote(xml)
         return "".join([self.server, xml])
 
     def _query_service(self, xml=None, filters=None, attributes=None):
