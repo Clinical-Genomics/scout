@@ -177,6 +177,27 @@ def test_institutes(app):
         assert resp.status_code == 200
 
 
+def test_case_custom_images(app, institute_obj, case_obj):
+    """ "Test that custom images are beign displayed"""
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN case page is loaded
+        resp = client.get(
+            url_for(
+                "cases.case",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN it should display the two custom images section
+        dta = resp.get_data()
+        for section_name in case_obj["custom_images"]:
+            assert bytes(f"{section_name}-accordion", "utf-8") in dta
+
+
 def test_case_outdated_panel(app, institute_obj, case_obj):
     """Test case displaying an outdated panel warning badge"""
 
