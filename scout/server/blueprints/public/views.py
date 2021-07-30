@@ -1,15 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask import (
-    abort,
-    Blueprint,
-    current_app,
-    redirect,
-    render_template,
-    send_from_directory,
-    url_for
-)
+from flask import Blueprint, current_app, render_template, send_from_directory
 from flask_ldap3_login.forms import LDAPLoginForm
 
 from scout import __version__
