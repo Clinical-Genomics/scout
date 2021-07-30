@@ -1,9 +1,21 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, current_app, redirect, render_template, send_from_directory, url_for
+import logging
+
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    redirect,
+    render_template,
+    send_from_directory,
+    url_for,
+)
 from flask_ldap3_login.forms import LDAPLoginForm
 
 from scout import __version__
 from scout.server.utils import public_endpoint
+
+LOG = logging.getLogger(__name__)
 
 public_bp = Blueprint(
     "public",
@@ -21,7 +33,11 @@ def index():
     form = None
     if current_app.config.get("LDAP_HOST"):
         form = LDAPLoginForm()
-    return render_template("public/index.html", version=__version__, form=form)
+
+    badge_name = current_app.config.get("ACCREDITATION_BADGE")
+    return render_template(
+        "public/index.html", version=__version__, form=form, accred_badge=badge_name
+    )
 
 
 @public_bp.route("/favicon")
