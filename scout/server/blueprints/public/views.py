@@ -8,7 +8,7 @@ from flask import (
     redirect,
     render_template,
     send_from_directory,
-    url_for
+    url_for,
 )
 from flask_ldap3_login.forms import LDAPLoginForm
 
