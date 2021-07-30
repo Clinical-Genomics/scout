@@ -5,8 +5,8 @@ import logging
 import os.path
 import re
 import shutil
-from operator import itemgetter
 from base64 import b64encode
+from operator import itemgetter
 
 import requests
 from flask import (
