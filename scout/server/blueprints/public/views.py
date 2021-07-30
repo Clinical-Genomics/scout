@@ -7,7 +7,6 @@ from flask_ldap3_login.forms import LDAPLoginForm
 from scout import __version__
 from scout.server.utils import public_endpoint
 from pathlib import Path
-import logging
 
 LOG = logging.getLogger(__name__)
 
