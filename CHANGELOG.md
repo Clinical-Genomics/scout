@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
 - Add missing parameters to case load-config documentation
 - Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
+- Bugfix broken Pytests
 
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
