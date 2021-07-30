@@ -24,6 +24,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add missing parameters to case load-config documentation
 - Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
 - Fixed crash in institute settings page if "collaborators" key is not set in database
+- Bugfix broken Pytests
+
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
