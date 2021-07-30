@@ -12,6 +12,7 @@ from flask_ldap3_login.forms import LDAPLoginForm
 
 from scout import __version__
 from scout.server.utils import public_endpoint
+from pathlib import Path
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -34,6 +35,10 @@ def index():
         form = LDAPLoginForm()
 
     badge_name = current_app.config.get("ACCREDITATION_BADGE")
+    if badge_name and not Path(public_bp.static_folder, badge_name).is_file():
+            LOG.warning(f'No file with name "{badge_name}" in {public_bp.static_folder}')
+            badge_name = None
+
     return render_template(
         "public/index.html", version=__version__, form=form, accred_badge=badge_name
     )
