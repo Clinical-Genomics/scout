@@ -32,7 +32,6 @@ def index():
         LOG.warning(f'No file with name "{badge_name}" in {public_bp.static_folder}')
         badge_name = None
 
-
     return render_template(
         "public/index.html", version=__version__, form=form, accred_badge=badge_name
     )
