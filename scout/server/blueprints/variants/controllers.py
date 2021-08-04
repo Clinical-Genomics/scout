@@ -1,10 +1,12 @@
+import requests
+
 import datetime
 import logging
 import os.path
 from datetime import date
 
 import bson
-from flask import Response, flash, url_for
+from flask import Response, flash, url_for, Markup
 from flask_login import current_user
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
@@ -31,6 +33,7 @@ from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
 from scout.server.links import cosmic_link, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case
+from scout.utils.scout_requests import post_request_json
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -169,41 +172,33 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 
     return {"variants": variants, "more_variants": more_variants}
 
-
+    # store,
+    # institute_obj,
+    # case_obj,
 def str_variants_reviewer(
-    store, institute_obj, case_obj,
+
+    str_repid,
     # variants_query, variant_count, page=1, per_page=50
 ):
     """Pre-process list of STR variants."""
+    # print(store)
+    print('test', str_repid)
+    url = "http://127.0.0.1:8000/reviewer"
+    data = {
+        "reads": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat_realigned.bam",
+        "reads_index": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat_realigned.bam.bai",
+        "vcf": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat.vcf",
+        "catalog": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/catalog_test.json",
+        "locus": str_repid
+    }
+    # resp = post_request_json(url, data)
+    headers={
+      "Content-Type": "application/json",
+    }
+    resp = requests.post(url, json=data)
+    svg = Markup(resp.text)
 
-    return_view_data = {}
-
-    # # case bam_files for quick access to alignment view.
-    # case_append_alignments(case_obj)
-
-    # # Fetch ids for grouped cases and prepare alignment display
-    # case_groups = {}
-    # if case_obj.get("group"):
-    #     for group in case_obj.get("group"):
-    #         case_groups[group] = list(store.cases(group=group))
-    #         for grouped_case in case_groups[group]:
-    #             case_append_alignments(grouped_case)
-    #     return_view_data["case_groups"] = case_groups
-
-    # return_view_data.update(
-    #     variants(
-    #         store,
-    #         institute_obj,
-    #         case_obj,
-    #         variants_query,
-    #         variant_count,
-    #         page=page,
-    #         per_page=per_page,
-    #     )
-    # )
-
-    return return_view_data
-
+    return {"svg": svg}
 
 def str_variants(
     store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50

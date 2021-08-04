@@ -86,11 +86,13 @@
 {% endmacro %}
 
 {% macro reviewer_button(case, variant, case_groups, institute_id) %}
-  <a
-    href="{{url_for('variants.test', institute_id=institute_id, case_name=case.display_name, str_repid=variant.str_repid)}}"
-    class="link text-black"
-    title="{{variant.str_repid}}"
-    >Inspect alignments</a>
+  <div>
+    <a
+      href="{{url_for('variants.test', institute_id=institute_id, case_name=case.display_name, str_repid=variant.str_repid)}}"
+      class="link text-black"
+      title="{{variant.str_repid}}"
+      >Inspect alignments</a>
+    </div>
 {% endmacro %}
 
 {% macro igv_button(case, variant, case_groups) %}

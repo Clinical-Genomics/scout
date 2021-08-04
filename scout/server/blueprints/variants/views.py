@@ -143,16 +143,20 @@ def variants(institute_id, case_name):
         **data,
     )
 
-@variants_bp.route("/test/<institute_id>/<case_name>/str/variants/<str_repid>", methods=["GET", "POST"])
+@variants_bp.route(
+  "/test/<institute_id>/<case_name>/str/variants/<str_repid>",
+  methods=["GET", "POST"]
+)
 @templated("variants/str-variants-reviewer.html")
 def test(institute_id, case_name, str_repid):
     """Display STR variant alignment using the REViewer service."""
-    print("terst112")
+    print("terst112", str_repid)
     variant_type = request.args.get("variant_type", "clinical")
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # return f'{institute_id} – {case_name} - {locus}'
-    data = controllers.str_variants_reviewer(store, institute_obj, case_obj)
+    data = controllers.str_variants_reviewer(str_repid)
+    # print(data.get('svg'))
     return dict(
       institute=institute_obj,
       case=case_obj,
