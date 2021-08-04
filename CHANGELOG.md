@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added GMS and Lund university hospital logos to login page
 - Made display of Swedac logo configurable
 - Support for displaying custom images in case view
+- Fix typo in index documentation
 
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
