@@ -150,13 +150,11 @@ def variants(institute_id, case_name):
 @templated("variants/str-variants-reviewer.html")
 def test(institute_id, case_name, str_repid):
     """Display STR variant alignment using the REViewer service."""
-    print("terst112", str_repid)
     variant_type = request.args.get("variant_type", "clinical")
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    # return f'{institute_id} – {case_name} - {locus}'
-    data = controllers.str_variants_reviewer(str_repid)
-    # print(data.get('svg'))
+    data = controllers.str_variants_reviewer(case_obj, str_repid)
+
     return dict(
       institute=institute_obj,
       case=case_obj,
@@ -165,29 +163,6 @@ def test(institute_id, case_name, str_repid):
       str_repid=str_repid,
       **data,
     )
-
-    # institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
-    # # data = controllers.str_variants(
-    # #     store, institute_obj, case_obj,
-    # # )
-
-    # return dict(
-    #     institute=institute_obj,
-    #     case=case_obj,
-    #     locus=locus,
-    #     # dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-    #     # variant_type=variant_type,
-    #     # manual_rank_options=MANUAL_RANK_OPTIONS,
-    #     # cytobands=cytobands,
-    #     # form=form,
-    #     # page=page,
-    #     # filters=available_filters,
-    #     # expand_search=str(request.method == "POST"),
-    #     # result_size=result_size,
-    #     # total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-    #     # **data,
-    # )
 
 @variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
 @templated("variants/str-variants.html")

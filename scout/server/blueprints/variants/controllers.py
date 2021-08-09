@@ -172,28 +172,19 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 
     return {"variants": variants, "more_variants": more_variants}
 
-    # store,
-    # institute_obj,
-    # case_obj,
-def str_variants_reviewer(
 
+def str_variants_reviewer(
+    case_obj,
     str_repid,
-    # variants_query, variant_count, page=1, per_page=50
 ):
-    """Pre-process list of STR variants."""
-    # print(store)
-    print('test', str_repid)
+    print('str_variants_reviewer', str_repid)
+    alignment_path = case_obj.get("alignment_path")
     url = "http://127.0.0.1:8000/reviewer"
     data = {
-        "reads": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat_realigned.bam",
-        "reads_index": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat_realigned.bam.bai",
+        "reads": alignment_path,
+        "reads_index": f'{alignment_path}.bai',
         "vcf": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat.vcf",
-        "catalog": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/catalog_test.json",
         "locus": str_repid
-    }
-    # resp = post_request_json(url, data)
-    headers={
-      "Content-Type": "application/json",
     }
     resp = requests.post(url, json=data)
     svg = Markup(resp.text)
