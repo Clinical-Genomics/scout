@@ -23,7 +23,7 @@ from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
-print('__name__')
+print("__name__")
 print(__name__)
 variants_bp = Blueprint(
     "variants",
@@ -143,9 +143,9 @@ def variants(institute_id, case_name):
         **data,
     )
 
+
 @variants_bp.route(
-  "/test/<institute_id>/<case_name>/str/variants/<str_repid>",
-  methods=["GET", "POST"]
+    "/test/<institute_id>/<case_name>/str/variants/<str_repid>", methods=["GET", "POST"]
 )
 @templated("variants/str-variants-reviewer.html")
 def test(institute_id, case_name, str_repid):
@@ -156,13 +156,14 @@ def test(institute_id, case_name, str_repid):
     data = controllers.str_variants_reviewer(case_obj, str_repid)
 
     return dict(
-      institute=institute_obj,
-      case=case_obj,
-      variant_type=variant_type,
-      format="html",
-      str_repid=str_repid,
-      **data,
+        institute=institute_obj,
+        case=case_obj,
+        variant_type=variant_type,
+        format="html",
+        str_repid=str_repid,
+        **data,
     )
+
 
 @variants_bp.route("/<institute_id>/<case_name>/str/variants", methods=["GET", "POST"])
 @templated("variants/str-variants.html")
@@ -173,8 +174,8 @@ def str_variants(institute_id, case_name):
     page = int(request.form.get("page", 1))
     variant_type = request.args.get("variant_type", "clinical")
 
-    print('variant page')
-    print('args', request.args.get("variant_type", "clinical"))
+    print("variant page")
+    print("args", request.args.get("variant_type", "clinical"))
 
     category = "str"
 
@@ -231,7 +232,7 @@ def str_variants(institute_id, case_name):
         store, institute_obj, case_obj, variants_query, result_size, page
     )
 
-    print('form type data', form.variant_type.data)
+    print("form type data", form.variant_type.data)
 
     return dict(
         institute=institute_obj,

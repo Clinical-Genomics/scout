@@ -177,19 +177,20 @@ def str_variants_reviewer(
     case_obj,
     str_repid,
 ):
-    print('str_variants_reviewer', str_repid)
+    print("str_variants_reviewer", str_repid)
     alignment_path = case_obj.get("alignment_path")
     url = "http://127.0.0.1:8000/reviewer"
     data = {
         "reads": alignment_path,
-        "reads_index": f'{alignment_path}.bai',
+        "reads_index": f"{alignment_path}.bai",
         "vcf": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat.vcf",
-        "locus": str_repid
+        "locus": str_repid,
     }
     resp = requests.post(url, json=data)
     svg = Markup(resp.text)
 
     return {"svg": svg}
+
 
 def str_variants(
     store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
