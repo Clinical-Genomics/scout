@@ -806,6 +806,7 @@ class CaseHandler(object):
                     "analysis_date": case_obj["analysis_date"],
                     "chromograph_image_files": case_obj.get("chromograph_image_files"),
                     "chromograph_prefixes": case_obj.get("chromograph_prefixes"),
+                    "custom_images": case_obj.get("custom_images"),
                     "cnv_report": case_obj.get("cnv_report"),
                     "coverage_qc_report": case_obj.get("coverage_qc_report"),
                     "delivery_report": case_obj.get("delivery_report"),
