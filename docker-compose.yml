@@ -35,7 +35,9 @@ services:
       - '5000'
     ports:
       - '5000:5000'
-    command: scout --host mongodb --demo serve --host 0.0.0.0
+    environment:
+      - SCOUT_CONFIG=/home/worker/app/scout/server/config.py
+    command: gunicorn --bind 0.0.0.0:5000 scout.server.auto:app
     volumes:
       - ./scout:/home/worker/app/scout
       - ./volumes/scout/data:/home/worker/data
@@ -43,6 +45,56 @@ services:
       - scout-net
     depends_on:
       - mongodb
+      - mariadb
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+     - MYSQL_ROOT_PASSWORD=root
+     - MYSQL_USER=chanjoUser
+     - MYSQL_PASSWORD=chanjoPassword
+     - MYSQL_DATABASE=chanjo
+    volumes:
+     - ./volumes/mariadb/data:/var/lib/mysql
+    healthcheck: # Wait for the service to be ready before accepting incoming connections
+        test: "mysql --user=chanjoUser --password=chanjoPassword --execute \"SHOW DATABASES;\""
+        timeout: 10s
+        retries: 20
+    networks:
+     - scout-net
+    restart: unless-stopped
+
+  chanjo-cli:
+    build: chanjo
+    environment:
+     - SQLALCHEMY_DATABASE_URI=mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo
+    depends_on:
+      - mariadb
+    volumes:
+     - ./volumes/chanjo:/data
+     - ./chanjo/chanjo:/home/worker/app/chanjo
+    networks:
+     - scout-net
+    restart: unless-stopped
+
+  chanjo-report:
+    build: chanjo-report
+    environment:
+     - SQLALCHEMY_DATABASE_URI=mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo
+    expose:
+      - '5000'
+    ports:
+      - '4000:5000'
+    volumes:
+     - ./volumes/chanjo:/data
+     - ./chanjo-report/chanjo_report:/home/worker/app/chanjo_report
+    depends_on:
+      - mariadb
+      - chanjo-cli
+    networks:
+     - scout-net
+    command: sh -c "chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo report --render html"
+    restart: unless-stopped
 
 networks:
   scout-net:
@@ -50,4 +102,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.21.0.0/24
+        - subnet: 172.30.0.0/24
