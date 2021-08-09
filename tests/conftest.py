@@ -56,7 +56,7 @@ from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
 from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
-from scout.parse.case import parse_case
+from scout.parse.case import parse_case, parse_custom_images
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
@@ -828,6 +828,8 @@ def real_populated_database(request, real_panel_database, parsed_case):
 
     LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
+    # adapt custom images
+    case_obj["custom_images"] = parse_custom_images(case_obj)
     adapter._add_case(case_obj)
 
     return adapter
