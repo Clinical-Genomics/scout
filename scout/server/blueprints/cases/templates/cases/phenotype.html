@@ -252,7 +252,7 @@
     {% for ind in hpo_term.individuals %}
       {% for case_ind in case_individuals %}
         {% if ind.individual_name == case_ind.display_name%}
-          <i class="fa fa-user" data-toggle='tooltip' title="{{ind.individual_name}}" {% if case_ind.phenotype == 2 %} style="color:red" {% endif %}></i>
+          <i data-toggle='tooltip' title="{{ind.individual_name}}" class="fa fa-user {% if case_ind.phenotype == 2 %} text-danger {% endif %}"></i>
         {% endif %}
       {% endfor %}
     {% endfor %}

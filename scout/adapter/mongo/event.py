@@ -42,6 +42,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         variant=None,
         content=None,
         panel=None,
+        individuals=[],
+        hpo_term=None,
+        omim_term=None,
     ):
         """Create a Event with the parameters given.
 
@@ -56,6 +59,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             level (str): 'specific' or 'global'. Default is 'specific'
             variant (dict): A variant
             content (str): The content of the comment
+            panel(str): gene panel name
+            individuals(list): list of case individuals showing updated with a feature
+            hpo_term(str): an HPO term
 
         Returns:
             event(dict): The inserted event
@@ -77,6 +83,10 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
+        if individuals:
+            event["individuals"] = individuals
+        if hpo_term:
+            event["hpo_term"] = hpo_term
 
         LOG.debug("Saving Event")
         self.event_collection.insert_one(event)
@@ -260,6 +270,11 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 verb="add_phenotype",
                 subject=case["display_name"],
                 content=phenotype_id,
+                hpo_term=phenotype_id,
+                individuals=[
+                    pheno_ind["individual_name"]
+                    for pheno_ind in phenotype_term.get("individuals", [])
+                ],
             )
 
             if is_group:
