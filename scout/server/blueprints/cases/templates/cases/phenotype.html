@@ -198,7 +198,7 @@
       <div class="row mt-3">
         <div class="col-10 ml-3">
           {% for hpo_term in case.phenotype_terms %}
-            {{ hpo_item(hpo_term) }}
+            {{ hpo_item(hpo_term, case.individuals) }}
           {% else %}
             <span class="text-mute">No phenotypes added yet</span>
           {% endfor %}
@@ -239,7 +239,7 @@
     </form> <!-- End of form phenotype actions -->
 {% endmacro %}
 
-{% macro hpo_item(hpo_term) %}
+{% macro hpo_item(hpo_term, case_individuals) %}
   {% if hpo_term %}
     <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
            {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
@@ -250,7 +250,11 @@
       </a>
     </span>
     {% for ind in hpo_term.individuals %}
-      <i class="fa fa-user" data-toggle='tooltip' title="{{ind.individual_name}}"></i>
+      {% for case_ind in case_individuals %}
+        {% if ind.individual_name == case_ind.display_name%}
+          <i class="fa fa-user" data-toggle='tooltip' title="{{ind.individual_name}}" {% if case_ind.phenotype == 2 %} style="color:red" {% endif %}></i>
+        {% endif %}
+      {% endfor %}
     {% endfor %}
     &nbsp;&nbsp;&nbsp;&nbsp;
   {% else %}
