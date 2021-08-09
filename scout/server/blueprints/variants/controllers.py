@@ -268,12 +268,11 @@ def get_manual_assessments(variant_obj):
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            dismiss_variant_options[reason]["label"],
-                            dismiss_variant_options[reason]["description"],
-                        )
+                    reason = int(reason)
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                        dismiss_variant_options[reason]["label"],
+                        dismiss_variant_options[reason]["description"],
+                    )
                 assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":
