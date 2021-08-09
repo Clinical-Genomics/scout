@@ -15,8 +15,7 @@ cohorts:
   - pedhep
   - mito
 samples:
-  - alignment_path: scout/demo/reduced_mt.bam
-    analysis_type: wes
+  - analysis_type: wes
     sample_id: ADM1059A2
     capture_kit: Agilent_SureSelectCRE.V1
     father: ADM1059A1
