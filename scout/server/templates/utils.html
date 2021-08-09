@@ -149,7 +149,7 @@
             ({{ event.hpo_term }})
           {% endif %}
           {% if event.individuals %}
-            individuals: {{event.individuals|join(', ')}}
+            , individuals: {{event.individuals|join(', ')}}
           {% endif %}
           at <span class="timestamp">{{ event.created_at.date() }}</span>
         </li>
