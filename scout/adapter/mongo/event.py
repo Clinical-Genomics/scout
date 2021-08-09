@@ -44,7 +44,6 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         panel=None,
         individuals=[],
         hpo_term=None,
-        omim_term=None,
     ):
         """Create a Event with the parameters given.
 
@@ -60,7 +59,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             variant (dict): A variant
             content (str): The content of the comment
             panel(str): gene panel name
-            individuals(list): list of case individuals showing updated with a feature
+            individuals(list): list of case individuals updated with a feature
             hpo_term(str): an HPO term
 
         Returns:
