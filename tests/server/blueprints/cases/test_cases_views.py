@@ -18,7 +18,11 @@ def test_add_individual_phenotype(app, institute_obj):
     """Test adding a phenotype term (HPO) for a case"""
 
     # GIVEN a database with an HPO term
-    phenotype_term = {"_id": "HP:666", "phenotype_id": "HP:666", "description": "A phenotype"}
+    phenotype_term = {
+        "_id": "HP:666",
+        "phenotype_id": "HP:666",
+        "description": "A very bad phenotype",
+    }
     store.hpo_term_collection.insert_one(phenotype_term)
 
     # GIVEN a case with no phenotypes
@@ -56,6 +60,11 @@ def test_add_individual_phenotype(app, institute_obj):
             "individuals": [{"individual_id": ind_id, "individual_name": ind_name}],
         }
     ]
+
+    # AND a relatove event with specific HPO term and affected individual should be created in database
+    update_event = store.event_collection.find_one()
+    assert update_event["hpo_term"] == phenotype_term["phenotype_id"]
+    assert update_event["individuals"] == [ind_name]
 
 
 def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
