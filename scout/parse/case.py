@@ -41,6 +41,41 @@ def get_correct_date(date_info):
     return datetime.datetime.now()
 
 
+def parse_custom_images(config_data):
+    """Parse information on custom images assigned to the case."""
+    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
+    LOG.debug("Parse custom images")
+
+    # sort custom image sections
+    parsed_sections = {}
+    for section_name, images in config_data.get("custom_images", {}).items():
+        parsed_images = []
+        for image in images:
+            # skip entries that are not recognized as image on suffix
+            path = Path(image["path"])
+            if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
+                LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
+                continue
+            # load image file to memory
+            with open(image["path"], "rb") as image_file:
+                parsed_images.append(
+                    {
+                        "title": image["title"],
+                        "description": image["description"],
+                        "data": bytes(image_file.read()),
+                        "width": image.get("width"),
+                        "height": image.get("height"),
+                        "format": "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:],
+                    }
+                )
+        # store parsed section
+        if len(parsed_images) > 0:
+            parsed_sections[section_name] = parsed_images
+        else:
+            LOG.warning(f"Section: {section_name} had no valid images, skipping")
+    return parsed_sections
+
+
 def parse_case_data(
     config=None,
     ped=None,
@@ -112,6 +147,9 @@ def parse_case_data(
         config_data["default_gene_panels"] = [
             panel.strip() for panel in config_data["default_gene_panels"]
         ]
+
+    # handle scout/commands/load/case.py
+    config_data["custom_images"] = parse_custom_images(config_data)
 
     ##################### Add information from peddy if existing #####################
     config_data["peddy_ped"] = peddy_ped or config_data.get("peddy_ped")
@@ -539,6 +577,7 @@ def parse_case(config):
         "gene_fusion_report_research": config.get("gene_fusion_report_research"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
+        "custom_images": config.get("custom_images", {}),
     }
 
     # add SMN info

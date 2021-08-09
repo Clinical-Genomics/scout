@@ -18,6 +18,10 @@ MONGO_PORT = 27017
 MONGO_USERNAME = 'mongoUser'
 MONGO_PASSWORD = 'mongoUserPassword'
 
+# Filename of accrediation bagde image in server/bluprints/public/static
+# If not set no badge is displayed in scout
+ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
+
 # connection string for Chanjo coverage database
 SQLALCHEMY_DATABASE_URI = 'mysql://chanjo:CHANJO_PASSWORD@localhost:3306/chanjo'
 

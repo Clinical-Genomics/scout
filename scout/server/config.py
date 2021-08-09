@@ -16,6 +16,9 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
+# Filename of accrediation bagde image in server/bluprints/public/static
+# If null no badge is displayed in scout
+ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
