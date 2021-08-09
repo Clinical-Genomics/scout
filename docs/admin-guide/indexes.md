@@ -4,4 +4,4 @@ The indexes that are used is displayed in `scout/constants/indexes.md`. If index
 
 To update indexes simply run the cli command `scout index`.
 
-Existing indexes can be viewed by `scout view indexes`.
+Existing indexes can be viewed by `scout view index`.

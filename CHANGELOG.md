@@ -19,7 +19,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added GMS and Lund university hospital logos to login page
 - Made display of Swedac logo configurable
 - Support for displaying custom images in case view
-
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
@@ -28,6 +27,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add missing parameters to case load-config documentation
 - Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
 - Bugfix broken Pytests
+- Bulk dismissing variants error due to key conversion from string to integer
+- Fix typo in index documentation
 - Loading of OMIM diagnoses in Scout demo instance
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
