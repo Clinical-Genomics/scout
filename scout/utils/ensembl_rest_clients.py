@@ -221,7 +221,7 @@ class EnsemblBiomartClient:
             xml_lines.append("\t\t" + line)
         xml_lines += ["\t</Dataset>", "</Query>"]
 
-        return "\n".join(xml_lines)
+        return "".join(xml_lines)
 
     @staticmethod
     def xml_filters(filters):
