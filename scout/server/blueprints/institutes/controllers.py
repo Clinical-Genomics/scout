@@ -167,7 +167,6 @@ def update_institute_settings(store, institute_obj, form):
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
         loqusdb_id=form.get("loqusdb_id"),
-        alamut_institute=form.get("alamut_institute"),
         alamut_key=form.get("alamut_key"),
     )
     return updated_institute

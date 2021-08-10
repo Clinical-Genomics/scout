@@ -83,7 +83,6 @@ class InstituteForm(FlaskForm):
 
     loqusdb_id = NonValidatingSelectField("LoqusDB id", choices=[])
 
-    alamut_institute = TextField("Alamut institution", validators=[validators.Optional()])
     alamut_key = TextField("Alamut API key", validators=[validators.Optional()])
 
     submit_btn = SubmitField("Save settings")
