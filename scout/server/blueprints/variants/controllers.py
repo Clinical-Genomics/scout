@@ -25,12 +25,13 @@ from scout.constants import (
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SO_TERMS,
+    VARIANT_FILTERS,
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
 from scout.server.links import cosmic_link, str_source_link
-from scout.server.utils import case_append_alignments, institute_and_case
+from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -267,12 +268,11 @@ def get_manual_assessments(variant_obj):
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            dismiss_variant_options[reason]["label"],
-                            dismiss_variant_options[reason]["description"],
-                        )
+                    reason = int(reason)
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                        dismiss_variant_options[reason]["label"],
+                        dismiss_variant_options[reason]["description"],
+                    )
                 assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":
@@ -385,6 +385,10 @@ def parse_variant(
         institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
     )
 
+    variant_obj["matching_tiered"] = store.matching_tiered(
+        variant_obj, user_institutes(store, current_user)
+    )
+
     if variant_genes:
         variant_obj.update(predictions(variant_genes))
         if variant_obj.get("category") == "cancer":
@@ -424,6 +428,13 @@ def parse_variant(
         variant_obj["first_rep_gene"] = first_rep_gene
     else:
         variant_obj["first_rep_gene"] = None
+
+    # annotate filters
+    variant_obj["filters"] = [
+        VARIANT_FILTERS[f]
+        for f in map(lambda x: x.lower(), variant_obj["filters"])
+        if f in VARIANT_FILTERS
+    ]
 
     return variant_obj
 
@@ -1012,12 +1023,12 @@ def check_form_gene_symbols(
             "label": "info",
         },
         "not_found_symbols": {
-            "message": "HGNC symbols not present in database genes collection",
+            "message": "HGNC symbols not present in database's genes collection",
             "gene_list": not_found_symbols,
             "label": "warning",
         },
         "not_found_ids": {
-            "message": "HGNC ids not present in database genes collection",
+            "message": "HGNC ids not present in database's genes collection",
             "gene_list": not_found_ids,
             "label": "warning",
         },
@@ -1197,7 +1208,6 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         dismiss_reasons(list): list of dismiss options.
     """
     user_obj = store.user(current_user.email)
-    dismiss_reasons = [int(reason) for reason in dismiss_reasons]
     for variant_id in variants_list:
         variant_obj = store.variant(variant_id)
         if variant_obj is None:

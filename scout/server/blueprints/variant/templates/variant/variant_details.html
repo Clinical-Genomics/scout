@@ -138,15 +138,17 @@
         </tbody>
       </table>
     </div>
-    <div class="card-footer">
-      <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
-      <a href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
-      {% if variant.cosmic_link %}
-        <a href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
-      {% else %}
-        COSMIC
-      {% endif %}
-    </div>
+    {% if variant.track == "rd" %}
+      <div class="card-footer">
+        <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+        <a href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
+        {% if variant.cosmic_link %}
+          <a href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
+        {% else %}
+          COSMIC
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 {% endmacro %}
 
@@ -241,6 +243,22 @@
           SPIDEX
           <span class="float-right">{{ variant.spidex_human }}</span>
         </li>
+        <li class="list-group-item">
+          <a hfref="https://github.com/Illumina/SpliceAI">SpliceAI</a> DS max
+          <span class="float-right control-label" data-toggle="tooltip" data-html="true" data-placement="bottom"
+              title="<strong>{% if variant.spliceai_scores %}
+                 {% for entry in variant.spliceai_scores %}
+                    SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
+                    <br>All scores and positions(relative to variant):<br>
+                    {%  if variant.spliceai_predictions[loop.index0] is not none %}
+                       {{ variant.spliceai_predictions[loop.index0]|join("<br>")}}
+                    {%  endif %}
+                  {% endfor %}
+              {% else %}
+              'No SpliceAI positions annotated for this variant.' {% endif %}">
+            {{ variant.spliceai_scores|join(', ') or "-"}}
+          </span>
+        </li>
       </ul>
     </div>
   </div>
@@ -269,31 +287,35 @@
 {% endmacro %}
 
 
+{% macro mappability_list(variant) %}
+  {% set superdups_fracmatches = [] %}
+  {% for gene in variant.genes %}
+    {% for transcript in gene.transcripts %}
+      {% if transcript.superdups_fracmatch %}
+        {% for superdup in transcript.superdups_fracmatch %}
+          {% do superdups_fracmatches.append(superdup) %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  {% set superdups_fracmatches = superdups_fracmatches|sort %}
+  {% if superdups_fracmatches %}
+    <li class="list-group-item">
+      <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
+    </li>
+  {% else %}
+    <li class="list-group-item">
+      <p class="card-text">-</p>
+    </li>
+  {% endif %}
+{% endmacro %}
+
 {% macro mappability(variant) %}
   <div class="card panel-default">
     <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
-    {% set superdups_fracmatches = [] %}
-    {% for gene in variant.genes %}
-      {% for transcript in gene.transcripts %}
-        {% if transcript.superdups_fracmatch %}
-          {% for superdup in transcript.superdups_fracmatch %}
-            {% do superdups_fracmatches.append(superdup) %}
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-    {% endfor %}
-    {% set superdups_fracmatches = superdups_fracmatches|sort %}
     <div class="panel-body">
       <ul class="list-group">
-        {% if superdups_fracmatches %}
-          <li class="list-group-item">
-            <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
-          </li>
-        {% else %}
-          <li class="list-group-item">
-            <p class="card-text">-</p>
-          </li>
-        {% endif %}
+        {{ mappability_list(variant) }}
       </ul>
     </div>
   </div>

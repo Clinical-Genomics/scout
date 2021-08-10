@@ -3,7 +3,7 @@ import datetime
 
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, jsonify, url_for
+from flask import current_app, url_for
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
@@ -12,6 +12,83 @@ from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_ge
 from scout.server.extensions import mail, store
 
 TEST_TOKEN = "test_token"
+
+
+def test_add_individual_phenotype(app, institute_obj):
+    """Test adding a phenotype term (HPO) for a case"""
+
+    # GIVEN a database with an HPO term
+    phenotype_term = {
+        "_id": "HP:666",
+        "phenotype_id": "HP:666",
+        "description": "A very bad phenotype",
+    }
+    store.hpo_term_collection.insert_one(phenotype_term)
+
+    # GIVEN a case with no phenotypes
+    case_obj = store.case_collection.find_one()
+    assert case_obj.get("phenotype_terms") is None
+
+    # GIVEN an individual of a case
+    ind = case_obj["individuals"][0]
+    ind_id = ind["individual_id"]
+    ind_name = ind["display_name"]
+    data = {
+        "hpo_term": phenotype_term["phenotype_id"],
+        "phenotype_inds": [f"{ind_id}|{ind_name}"],
+    }
+
+    # WHEN a phenotype term is added for the case individual via POST request
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        resp = client.post(
+            url_for(
+                "cases.phenotypes",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+
+    # THEN the case phenotypes should be updated accordingly
+    updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
+    assert updated_case["phenotype_terms"] == [
+        {
+            "phenotype_id": phenotype_term["phenotype_id"],
+            "feature": phenotype_term["description"],
+            "individuals": [{"individual_id": ind_id, "individual_name": ind_name}],
+        }
+    ]
+
+    # AND a relatove event with specific HPO term and affected individual should be created in database
+    update_event = store.event_collection.find_one()
+    assert update_event["hpo_term"] == phenotype_term["phenotype_id"]
+    assert update_event["individuals"] == [ind_name]
+
+
+def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
+    """Test the call to the case reanalysis API"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    # WHEN the rerun is triggered using the reanalysis endpoint
+    with app.test_client() as client:
+
+        json_string = '[{"sample_id": "NA12882", "sex": 1, "phenotype": 2}]'
+        data = {"sample_metadata": json_string}
+
+        resp = client.post(
+            url_for(
+                "cases.reanalysis",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+
+        # It should return redirect to previous page
+        assert resp.status_code == 302
 
 
 def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
@@ -151,6 +228,27 @@ def test_institutes(app):
 
         # THEN it should return a page
         assert resp.status_code == 200
+
+
+def test_case_custom_images(app, institute_obj, case_obj):
+    """ "Test that custom images are beign displayed"""
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN case page is loaded
+        resp = client.get(
+            url_for(
+                "cases.case",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN it should display the two custom images section
+        dta = resp.get_data()
+        for section_name in case_obj["custom_images"]:
+            assert bytes(f"{section_name}-accordion", "utf-8") in dta
 
 
 def test_case_outdated_panel(app, institute_obj, case_obj):

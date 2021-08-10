@@ -194,6 +194,23 @@ def test_parse_cadd(vep_csq_header, vep_csq):
     assert transcripts[0]["cadd"] == tx_cadd
 
 
+def test_parse_spliceai(vep_103_csq_header, vep_103_csq):
+    """Testing parsing of CADD_PHRED score from VEP-annotated transcripts"""
+
+    # GIVEN a transcript with the CADD score in th CSQ
+    header = [word.upper() for word in vep_103_csq_header.split("|")]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_103_csq.split(",")]
+
+    tx_spliceai_delta_position = 3
+
+    ## WHEN parsing the transcripts
+    transcripts = list(parse_transcripts(raw_transcripts))
+
+    # CADD score should be parsed correctly
+    assert isinstance(transcripts[0]["spliceai_delta_score"], float)
+    assert transcripts[0]["spliceai_delta_position"] == tx_spliceai_delta_position
+
+
 def test_parse_hg38_mane_transcripts(vep_csq_header, vep_csq):
     """Testing MANE trascripts parsing for genome build 38"""
     # GIVEN a transcript with the MANE trancript value in th CSQ

@@ -21,7 +21,7 @@
       </p>
     {% else %}
       {% if config.GOOGLE %}
-        <a class="btn btn-primary" href="{{ url_for('login.login') }}" role="button">
+        <a class="btn btn-primary" onclick="sendBrowserInfo()" href="{{ url_for('login.login') }}" role="button">
           Login with Google
         </a>
       {% elif config.LDAP_HOST %}
@@ -33,7 +33,7 @@
             <label>Password{{ form.password(class="form-control") }}</label>
           </div>
           <div class="col-4">
-            <button type="submit" class="btn btn-primary form-control text-white">Login</button>
+            <button type="submit" class="btn btn-primary form-control text-white" onclick="sendBrowserInfo()">Login</button>
           </div>
           {{ form.hidden_tag() }}
         </form>
@@ -44,7 +44,7 @@
               <input type="text" placeholder="email" class="form-control" name="email">
             </div>
             <div class="col-4">
-              <button type="submit" class="btn btn-primary form-control text-white">Login</button>
+              <button type="submit" class="btn btn-primary form-control text-white" onclick="sendBrowserInfo()">Login</button>
             </div>
           </div>
         </form>
@@ -52,17 +52,60 @@
     {% endif %}
   </div>
   <main>
+    {% if accred_badge %}
+      <div class="row justify-content-center align-items-center">
+        <img id="accred-badge" class="img-responsive center-block" width="120" src="{{ url_for('public.static', filename=accred_badge) }}">
+      </div>
+      <hr>
+    {% endif %}
+    <p class="pb-1 mb-0">Developed by:</p>
     <div class="row justify-content-center align-items-center">
       <div class="col-xs-12 col-sm-4">
         <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-scilifelab.png') }}">
       </div>
       <div class="col-xs-12 col-sm-4">
-        <img class="img-responsive center-block" width="125" src="{{ url_for('public.static', filename='swedac.png') }}">
+        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-karolinska.png') }}">
       </div>
       <div class="col-xs-12 col-sm-4">
-        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-karolinska.png') }}">
+        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-lund-university-hospital.png') }}">
+      </div>
+    </div>
+    <p class="pb-1 pt-2">Collaborations:</p>
+    <div class="row">
+      <div class="col-xs-12 col-sm-3">
+        <a href="https://genomicmedicine.se/" target="_blank">
+          <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-gms.png') }}">
+        </a>
       </div>
     </div>
   </main>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+  <script type="text/javascript">
+    const sendBrowserInfo = () => {
+      console.log('Calling Netlify')
+      if (window.location.hostname.includes('scilifelab.se')) {
+          fetch('https://user-stats.netlify.app/.netlify/functions/add-browser', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                  agent: navigator.userAgent,
+                  screenWidth: window.screen.width,
+                  screenHeight: window.screen.height,
+                  env: window.location.hostname,
+                  date: new Date(),
+              }),
+          }).then((response) => {
+              console.log(response.json());
+          }).catch(() => {
+              console.error('Failed to submit browser info');
+          })
+      }
+        };
+  </script>
 {% endblock %}

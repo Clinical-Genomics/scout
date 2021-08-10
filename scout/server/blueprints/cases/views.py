@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import logging
 import os.path
 import re
 import shutil
+from base64 import b64encode
 from operator import itemgetter
 
+import requests
 from flask import (
     Blueprint,
     Response,
@@ -22,10 +25,11 @@ from flask import (
 )
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
+from requests.exceptions import ReadTimeout
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, matchmaker, store
+from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
 
 from . import controllers
@@ -63,6 +67,10 @@ def case(institute_id, case_name):
         flash("Case {} does not exist in database!".format(case_name))
         return redirect(request.referrer)
 
+    # re-encode images as base64
+    for images in case_obj.get("custom_images", {}).values():
+        for img in images:
+            img["data"] = b64encode(img["data"]).decode("utf-8")
     data = controllers.case(store, institute_obj, case_obj)
     return dict(
         institute=institute_obj,
@@ -70,6 +78,7 @@ def case(institute_id, case_name):
         mme_nodes=matchmaker.connected_nodes,
         tissue_types=SAMPLE_SOURCE,
         gens_info=gens.connection_settings(case_obj.get("genome_build")),
+        display_rerunner=rerunner.connection_settings.get("display", False),
         **data,
     )
 
@@ -300,25 +309,32 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
     else:
         try:
             # add a new phenotype item/group to the case
+            hpo_term = None
+            omim_term = None
+
             phenotype_term = request.form["hpo_term"]
+            phenotype_inds = request.form.getlist("phenotype_inds")  # Individual-level phenotypes
+
             if phenotype_term.startswith("HP:") or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(" | ", 1)[0]
-                store.add_phenotype(
-                    institute_obj,
-                    case_obj,
-                    user_obj,
-                    case_url,
-                    hpo_term=hpo_term,
-                    is_group=is_group,
-                )
             else:
-                # assume omim id
-                store.add_phenotype(
-                    institute_obj, case_obj, user_obj, case_url, omim_term=phenotype_term
-                )
+                omim_term = phenotype_term
+
+            store.add_phenotype(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=case_url,
+                hpo_term=hpo_term,
+                omim_term=omim_term,
+                is_group=is_group,
+                phenotype_inds=phenotype_inds,
+            )
         except ValueError:
-            return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
-    return redirect(case_url)
+            flash(f"Unable to add phenotype for the given terms:{phenotype_term}", "warning")
+            return redirect(case_url)
+
+    return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
 def parse_raw_gene_ids(raw_symbols):
@@ -416,7 +432,7 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
-    return redirect(case_url)
+    return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/events", methods=["POST"])
@@ -748,6 +764,22 @@ def rerun(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/reanalysis", methods=["POST"])
+def reanalysis(institute_id, case_name):
+    """Toggle a rerun by making a call to RERUNNER service."""
+
+    edited_metadata = json.loads(request.form.get("sample_metadata"))
+    try:
+        controllers.call_rerunner(store, institute_id, case_name, edited_metadata)
+
+    except Exception as err:
+        msg = f"Error processing request: {err.__class__.__name__} - {str(err)}"
+        LOG.error(msg)
+        flash(msg, "danger")
+
+    return redirect(request.referrer)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/research", methods=["POST"])
 def research(institute_id, case_name):
     """Open the research list for a case."""
@@ -769,7 +801,7 @@ def cohorts(institute_id, case_name):
         store.remove_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
     else:
         store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
-    return redirect(request.referrer)
+    return redirect("#".join([request.referrer, "cohorts"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/default-panels", methods=["POST"])

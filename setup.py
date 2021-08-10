@@ -69,7 +69,13 @@ setup(
     zip_safe=False,
     install_requires=REQUIRED,
     include_package_data=True,
-    extras_require=dict(coverage=["chanjo-report"]),
+    extras_require={
+        "coverage": [
+            "chanjo@git+https://git@github.com/Clinical-Genomics/chanjo.git@4.6.1",
+            "chanjo-report",
+            "pymysql",
+        ],
+    },
     entry_points=dict(console_scripts=["scout = scout.commands:cli"]),
     test_suite="tests",
     classifiers=[
