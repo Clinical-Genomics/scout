@@ -160,7 +160,9 @@ class InstituteHandler(object):
             updates["$set"]["loqusdb_id"] = loqusdb_id
 
         if alamut_key is not None:
-            updates["$set"]["alamut_key"] = alamut_key
+            updates["$set"]["alamut_key"] = (
+                alamut_key if alamut_key != "" else None
+            )  # allows to reset Alamut key to None
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
