@@ -621,23 +621,22 @@ def alamut_link(
         url_template(str): link to Alamut browser
     """
     build = build or 37
-    alamut_key = institute_obj.get("alamut_key")
-    search_verb = (
-        "search" if alamut_key else "show"
-    )  # Alamut Visual Plus API has a different search verb
-
     build_str = ""
     if build == 38:
         build_str = "(GRCh38)"
 
     url_template = (
-        "http://localhost:10000/{search_verb}?apikey={apikey}&request={this[chromosome]}{build_str}:"
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}request={this[chromosome]}{build_str}:"
         "{this[position]}{this[reference]}>{this[alternative]}"
     )
+    alamut_key = institute_obj.get("alamut_key")
+    # Alamut Visual Plus API has a different search verb
+    search_verb = "search" if alamut_key else "show"
+    alamut_key_arg = f"apikey={alamut_key}&" if alamut_key else ""
 
     return url_template.format(
         search_verb=search_verb,
-        apikey=alamut_key,
+        alamut_key_arg=alamut_key_arg,
         this=variant_obj,
         build_str=build_str,
     )
