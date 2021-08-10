@@ -309,24 +309,31 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
     else:
         try:
             # add a new phenotype item/group to the case
+            hpo_term = None
+            omim_term = None
+
             phenotype_term = request.form["hpo_term"]
+            phenotype_inds = request.form.getlist("phenotype_inds")  # Individual-level phenotypes
+
             if phenotype_term.startswith("HP:") or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(" | ", 1)[0]
-                store.add_phenotype(
-                    institute_obj,
-                    case_obj,
-                    user_obj,
-                    case_url,
-                    hpo_term=hpo_term,
-                    is_group=is_group,
-                )
             else:
-                # assume omim id
-                store.add_phenotype(
-                    institute_obj, case_obj, user_obj, case_url, omim_term=phenotype_term
-                )
+                omim_term = phenotype_term
+
+            store.add_phenotype(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=case_url,
+                hpo_term=hpo_term,
+                omim_term=omim_term,
+                is_group=is_group,
+                phenotype_inds=phenotype_inds,
+            )
         except ValueError:
-            return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
+            flash(f"Unable to add phenotype for the given terms:{phenotype_term}", "warning")
+            return redirect(case_url)
+
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
 

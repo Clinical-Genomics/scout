@@ -145,6 +145,10 @@
           <strong>{{ event.user_name }}</strong>
           {{ event.verb }}
           <a href="{{ event.link }}">{{ event.subject[0:30] }}</a>
+          {% if event.hpo_term %}
+            ({{ event.hpo_term }})
+          {%- endif %}
+          {%-if event.individuals %}, individuals: {{event.individuals|join(', ')}}{% endif %}
           at <span class="timestamp">{{ event.created_at.date() }}</span>
         </li>
       {% else %}
