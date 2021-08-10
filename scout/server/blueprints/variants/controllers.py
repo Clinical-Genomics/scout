@@ -292,13 +292,10 @@ def _populate_assessment(store, assessment_obj, variant_obj, assessment_type):
 
 def get_manual_assessments(store, variant_obj):
     """Return manual assessments ready for display.
-
     An assessment dict of str has keys "title", "label" and "display_class".
-
     args:
         store(scout.adapter.MongoAdapter)
         variant_obj(variant)
-
     returns:
         assessments(array(dict))
     """
@@ -1244,7 +1241,6 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         dismiss_reasons(list): list of dismiss options.
     """
     user_obj = store.user(current_user.email)
-    dismiss_reasons = [int(reason) for reason in dismiss_reasons]
     for variant_id in variants_list:
         variant_obj = store.variant(variant_id)
         if variant_obj is None:

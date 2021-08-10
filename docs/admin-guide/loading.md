@@ -86,6 +86,32 @@ human_genome_build: 37
 
 ```
 
+#### Adding custom images to a case
+
+Scout can display custom images as new panels on the case view which could be used to display analysis results from a seperate pipeline. The custom images are defined in the case config file and stored in the database. Scout currently supports `gif`, `jpeg`, `png` and `svg` images.
+
+One or more images constitute a group and are rendered together in a accordion-type UI elemment named after the group. The fields `title`, `description` and `path` are mandatory. The image size can be defined with the optional parameters `widht` and `height`. If you dont specify a unit its going to default to use pixels as unit. *Note*: adding images larger than 16mb are not reccomended as it might degrade the performance.
+
+``` yaml
+
+custom_images:
+  group_one:
+    - title: <string> title of image [mandatory]
+      description: <string> replacement description of image [mandatory]
+      width: <string> 500px
+      height: <string> 100px
+      path: <string> scout/demo/images/custom_images/640x480_one.png [mandatory]
+    - title: <string> A jpg image [mandatory]
+      description: <string> A very good description [mandatory]
+      width: <string> 500px
+      path: <string> scout/demo/images/custom_images/640x480_two.jpg [mandatory]
+  group_two:
+    - title: <string> A SVG image [mandatory]
+      description: <string> Another very good description
+      path: <string> scout/demo/images/custom_images/640x480_three.svg [mandatory]
+
+```
+
 ### Load case from CLI without config
 
 Cases can be loaded without config file, in that case the user needs to specify a ped file and optionally one or several VCF files. An example could look like
