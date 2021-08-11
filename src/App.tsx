@@ -10,12 +10,10 @@ import {
   setGoogleToken as setGoogleTokenAction,
   resetGoogleToken as resetGoogleTokenAction,
 } from './domain/settings/slice'
-import { FaAngleDown } from 'react-icons/fa'
 import { Layout } from './components/Layout/Layout'
 import { Home } from './components/Home/HomePage'
 import './App.css'
-import DropdownMenu from './components/DropdownMenu/DropdownMenu'
-import { Menu, Dropdown, Button, message, Space, Tooltip } from 'antd'
+import { Menu, Dropdown, Button } from 'antd'
 import { DownOutlined, MailOutlined, GoogleOutlined } from '@ant-design/icons'
 import { CasesPage } from './modules/Cases/CasesPage'
 
