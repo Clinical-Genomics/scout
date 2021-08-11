@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Made display of Swedac logo configurable
 - Support for displaying custom images in case view
 - Individual-specific HPO terms
+- Optional alamut_key in institute settings for Alamut Plus software
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
@@ -27,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
 - Add missing parameters to case load-config documentation
 - Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
+- Fixed crash in institute settings page if "collaborators" key is not set in database
 - Bugfix broken Pytests
 - Bulk dismissing variants error due to key conversion from string to integer
 - Fix typo in index documentation
