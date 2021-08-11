@@ -12,10 +12,11 @@ import {
 } from './domain/settings/slice'
 import { FaAngleDown } from 'react-icons/fa'
 import { Layout } from './components/Layout/Layout'
-import { Button } from 'antd'
 import { Home } from './components/Home/HomePage'
 import './App.css'
 import DropdownMenu from './components/DropdownMenu/DropdownMenu'
+import { Menu, Dropdown, Button, message, Space, Tooltip } from 'antd'
+import { DownOutlined, MailOutlined, GoogleOutlined } from '@ant-design/icons'
 import { CasesPage } from './modules/Cases/CasesPage'
 
 const mapDispatch = {
@@ -54,6 +55,52 @@ export const AppComponent = ({
     Cookies.remove('scout_remember_me', { path: '' })
   }
 
+  const loginMenu = (
+    <Menu>
+      <Menu.Item key="1" icon={<GoogleOutlined />}>
+        <GoogleLogin
+          render={(renderProps) => (
+            <button
+              onClick={renderProps.onClick}
+              disabled={renderProps.disabled}
+              className="google-login_button"
+            >
+              Login with Google
+            </button>
+          )}
+          clientId={clientId}
+          onSuccess={onLoginSuccess}
+          isSignedIn={true}
+          cookiePolicy="single_host_origin"
+        />
+      </Menu.Item>
+      <Menu.Item key="2" icon={<MailOutlined />} disabled>
+        Login with Email
+      </Menu.Item>
+    </Menu>
+  )
+
+  const loginOutMenu = (
+    <Menu>
+      <Menu.Item key="1">
+        <GoogleLogout
+          render={(renderProps) => (
+            <button
+              className="no_button_style"
+              onClick={renderProps.onClick}
+              disabled={renderProps.disabled}
+            >
+              Logout
+            </button>
+          )}
+          clientId={clientId}
+          buttonText="Sign out"
+          onLogoutSuccess={onLogoutSuccess}
+        />
+      </Menu.Item>
+    </Menu>
+  )
+
   return (
     <Router>
       <Layout>
@@ -69,57 +116,24 @@ export const AppComponent = ({
         <ul className="login">
           {settings.googleToken && (
             <li key="logout" className="nav_item">
-              <span className="login-dropdown-header">{`Hi ${settings?.user?.givenName}!`}</span>
               <div className="dropdown_item_space" />
-              <FaAngleDown className="collapse_arrow" />
-              <DropdownMenu>
-                <li>
-                  <GoogleLogout
-                    render={(renderProps) => (
-                      <button
-                        className="no_button_style"
-                        onClick={renderProps.onClick}
-                        disabled={renderProps.disabled}
-                      >
-                        Logout
-                      </button>
-                    )}
-                    clientId={clientId}
-                    buttonText="Sign out"
-                    onLogoutSuccess={onLogoutSuccess}
-                  />
-                </li>
-              </DropdownMenu>
+              <Dropdown overlay={loginOutMenu} placement="bottomLeft">
+                <Button>
+                  <span className="login-dropdown-header">{`Hi ${settings?.user?.givenName}!`}</span>{' '}
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
             </li>
           )}
           {/* Login button */}
           {!settings?.googleToken && (
             <li key="logout" className="nav_item">
-              <span className="login-dropdown-header">Login</span>
               <div className="dropdown_item_space" />
-              <FaAngleDown className="collapse_arrow" />
-              <DropdownMenu>
-                <li>
-                  <GoogleLogin
-                    render={(renderProps) => (
-                      <button
-                        className="google-login_button btn_style"
-                        onClick={renderProps.onClick}
-                        disabled={renderProps.disabled}
-                      >
-                        Login with Google
-                      </button>
-                    )}
-                    clientId={clientId}
-                    onSuccess={onLoginSuccess}
-                    isSignedIn={true}
-                    cookiePolicy="single_host_origin"
-                  />
-                </li>
-                <li>
-                  <Button color="primary">Login with email</Button>
-                </li>
-              </DropdownMenu>
+              <Dropdown overlay={loginMenu} placement="bottomLeft">
+                <Button>
+                  Login <DownOutlined />
+                </Button>
+              </Dropdown>
             </li>
           )}
         </ul>
