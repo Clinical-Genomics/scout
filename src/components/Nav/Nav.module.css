@@ -57,9 +57,6 @@
 .Nav ul li.nav_item:hover > ul {
   display: flex;
 }
-/* .Nav ul.nav_settings {
-  margin-right: 200px;
-} */
 .Nav .collapse_arrow {
   cursor: pointer;
   transition: transform 0.5s;
