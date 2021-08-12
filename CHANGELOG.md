@@ -32,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bugfix broken Pytests
 - Bulk dismissing variants error due to key conversion from string to integer
 - Fix typo in index documentation
+- Bug when case contains custom images with value `None`
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
