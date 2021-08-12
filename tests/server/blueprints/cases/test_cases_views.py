@@ -556,8 +556,21 @@ def test_api_case_report(app, institute_obj, case_obj):
             )
         )
         assert resp.status_code == 200
-        data = json.loads(resp.data)
-        assert data
+        json_data = json.loads(resp.data)
+        data = json_data["data"]
+        assert data["case"]
+        assert data["institute"]
+        variant_types = {
+            "causatives_detailed": "causatives",
+            "suspects_detailed": "suspects",
+            "classified_detailed": "acmg_classification",
+            "tagged_detailed": "manual_rank",
+            "tier_detailed": "cancer_tier",
+            "dismissed_detailed": "dismiss_variant",
+            "commented_detailed": "is_commented",
+        }
+        for var_type in variant_types:
+            assert var_type in data
 
 
 def test_case_report(app, institute_obj, case_obj):
