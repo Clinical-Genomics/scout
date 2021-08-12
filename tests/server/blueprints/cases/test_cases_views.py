@@ -543,11 +543,17 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
 def test_api_case_report(app, institute_obj, case_obj):
     """Test the API returning report case data in json format"""
 
+    # GIVEN a case with a causative variant
+    test_variant = store.variant_collection.find_one()
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"causatives": [test_variant["_id"]]}}
+    )
+
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
-        # THE api_case_report should return json data
+        # THE api_case_report should return valid json data
         resp = client.get(
             url_for(
                 "cases.api_case_report",
@@ -558,7 +564,9 @@ def test_api_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
         json_data = json.loads(resp.data)
         data = json_data["data"]
+        # case info should be present in the data
         assert data["case"]
+        # institute info should be present in the data
         assert data["institute"]
         variant_types = {
             "causatives_detailed": "causatives",
@@ -571,6 +579,9 @@ def test_api_case_report(app, institute_obj, case_obj):
         }
         for var_type in variant_types:
             assert var_type in data
+            # causative variant info should be present in the data
+            if var_type == "causatives_detailed":
+                assert data[var_type][0]["_id"] == test_variant["_id"]
 
 
 def test_case_report(app, institute_obj, case_obj):
