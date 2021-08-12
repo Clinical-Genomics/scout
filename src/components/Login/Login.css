@@ -1,0 +1,13 @@
+.google-login_button {
+    background-color: inherit;
+    font-size: inherit;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  
+ 
+  .ant-btn {
+    border: none !important;
+    font-weight: 600 !important;
+  }
