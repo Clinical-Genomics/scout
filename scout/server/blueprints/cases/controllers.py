@@ -4,6 +4,7 @@ import itertools
 import json
 import logging
 import os
+from base64 import b64encode
 
 import query_phenomizer
 import requests
@@ -207,6 +208,12 @@ def case(store, institute_obj, case_obj):
     evaluated_variants = store.evaluated_variants(case_obj["_id"])
 
     _populate_acmg(evaluated_variants)
+
+    if case_obj.get("custom_images"):
+        # re-encode images as base64
+        for img_section in case_obj["custom_images"].values():
+            for img in img_section:
+                img["data"] = b64encode(img["data"]).decode("utf-8")
 
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
