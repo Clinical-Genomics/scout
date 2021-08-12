@@ -30,7 +30,13 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
-from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
+from scout.server.utils import (
+    institute_and_case,
+    jsonconverter,
+    templated,
+    user_institutes,
+    zip_dir_to_obj,
+)
 
 from . import controllers
 
@@ -198,13 +204,20 @@ def case_synopsis(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/api/v1/<institute_id>/<case_name>/case_report", methods=["GET"])
+def api_case_report(institute_id, case_name):
+    """API endpoint that returns case report json data"""
+    data = controllers.case_report_content(store, institute_id, case_name)
+    json_data = json.dumps({"data": data}, default=jsonconverter)
+    return json_data
+
+
 @cases_bp.route("/<institute_id>/<case_name>/case_report", methods=["GET"])
 @templated("cases/case_report.html")
 def case_report(institute_id, case_name):
     """Visualize case report"""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, format="html", **data)
+    data = controllers.case_report_content(store, institute_id, case_name)
+    return dict(format="html", **data)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/pdf_report", methods=["GET"])
@@ -212,7 +225,7 @@ def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
+    data = controllers.case_report_content(store, institute_id, case_name)
 
     # add coverage report on the bottom of this report
     if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
@@ -225,9 +238,7 @@ def pdf_case_report(institute_id, case_name):
         with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
             temp_madeline.write(case_obj["madeline_info"])
 
-    html_report = render_template(
-        "cases/case_report.html", institute=institute_obj, case=case_obj, format="pdf", **data
-    )
+    html_report = render_template("cases/case_report.html", format="pdf", **data)
     return render_pdf(
         HTML(string=html_report),
         download_filename=case_obj["display_name"]

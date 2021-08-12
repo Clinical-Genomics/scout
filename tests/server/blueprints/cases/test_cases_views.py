@@ -3,7 +3,7 @@ import datetime
 
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, url_for
+from flask import current_app, json, url_for
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
@@ -538,6 +538,50 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
         assert resp.status_code == 200
         # And should download a PDF file
         assert resp.mimetype == "application/pdf"
+
+
+def test_api_case_report(app, institute_obj, case_obj):
+    """Test the API returning report case data in json format"""
+
+    # GIVEN a case with a causative variant
+    test_variant = store.variant_collection.find_one()
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"causatives": [test_variant["_id"]]}}
+    )
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+        # THE api_case_report should return valid json data
+        resp = client.get(
+            url_for(
+                "cases.api_case_report",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        assert resp.status_code == 200
+        json_data = json.loads(resp.data)
+        data = json_data["data"]
+        # case info should be present in the data
+        assert data["case"]
+        # institute info should be present in the data
+        assert data["institute"]
+        variant_types = {
+            "causatives_detailed": "causatives",
+            "suspects_detailed": "suspects",
+            "classified_detailed": "acmg_classification",
+            "tagged_detailed": "manual_rank",
+            "tier_detailed": "cancer_tier",
+            "dismissed_detailed": "dismiss_variant",
+            "commented_detailed": "is_commented",
+        }
+        for var_type in variant_types:
+            assert var_type in data
+            # causative variant info should be present in the data
+            if var_type == "causatives_detailed":
+                assert data[var_type][0]["_id"] == test_variant["_id"]
 
 
 def test_case_report(app, institute_obj, case_obj):
