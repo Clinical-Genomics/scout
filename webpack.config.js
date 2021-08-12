@@ -13,6 +13,7 @@ const config = {
   entry: {
     home: '/src/modules/Home/index.tsx',
     cases: '/src/modules/Cases/index.tsx',
+    casesReport: '/src/modules/CaseReport/index.tsx',
     appShell: './src/index.tsx',
   },
   target: 'web',
