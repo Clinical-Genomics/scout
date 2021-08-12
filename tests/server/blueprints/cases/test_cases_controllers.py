@@ -1,7 +1,6 @@
 """Tests for the cases controllers"""
 import requests  # import requests for the purposes of monkeypatching
 from flask import Blueprint, Flask, url_for
-from flask_login import current_user
 
 from scout.server.blueprints.cases.controllers import (
     case,
