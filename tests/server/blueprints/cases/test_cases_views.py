@@ -3,7 +3,7 @@ import datetime
 
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, url_for
+from flask import current_app, json, url_for
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
@@ -538,6 +538,26 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
         assert resp.status_code == 200
         # And should download a PDF file
         assert resp.mimetype == "application/pdf"
+
+
+def test_api_case_report(app, institute_obj, case_obj):
+    """Test the API returning report case data in json format"""
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+        # THE api_case_report should return json data
+        resp = client.get(
+            url_for(
+                "cases.api_case_report",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        assert resp.status_code == 200
+        data = json.loads(resp.data)
+        assert data
 
 
 def test_case_report(app, institute_obj, case_obj):
