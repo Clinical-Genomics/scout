@@ -210,19 +210,6 @@ def api_case_report(institute_id, case_name):
     data = controllers.case_report_content(store, institute_id, case_name)
     json_data = json.dumps({"data": data}, default=jsonconverter)
     return json_data
-    assert json_data["case"]
-    assert json_data["institute"]
-    variant_types = {
-        "causatives_detailed": "causatives",
-        "suspects_detailed": "suspects",
-        "classified_detailed": "acmg_classification",
-        "tagged_detailed": "manual_rank",
-        "tier_detailed": "cancer_tier",
-        "dismissed_detailed": "dismiss_variant",
-        "commented_detailed": "is_commented",
-    }
-    for var_type in variant_types:
-        assert json_data["data"][var_type]
 
 
 @cases_bp.route("/<institute_id>/<case_name>/case_report", methods=["GET"])
