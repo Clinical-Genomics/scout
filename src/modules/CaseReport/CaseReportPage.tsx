@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import { getMockCases } from '../../../__mocks__/ScoutResponses'
-import { CasesTable } from 'components/CasesTable/CasesTable'
+import { getMockCaseReport } from '../../../__mocks__/ScoutResponses'
 import styles from './CaseReport.module.css'
-import { getCases } from 'services/ScoutApi'
+import { getCaseReport } from 'services/ScoutApi'
+import { DownloadOutlined } from '@ant-design/icons'
 
 export const CaseReportPage = () => {
-  const [cases, setCases] = useState<any>()
+  const [report, setReport] = useState<any>()
 
   useEffect(() => {
-    getCases().then((response: any) => {
-      setCases(response.cases.cases ? response.cases.cases : getMockCases.cases.cases)
-    })
+    getCaseReport()
+      .then((response: any) => {
+        console.log(response)
+        setReport(response.report.data.case)
+      })
+      .catch(() => {
+        setReport(getMockCaseReport.data.case)
+      })
   }, [])
-  return (
+  return report ? (
     <div className={styles.container}>
-      {cases && (
-        <div>
-          {cases.map((arrayPart: any) => {
-            return arrayPart[1].length > 0 ? (
-              <CasesTable cases={arrayPart[1]} key={arrayPart[0]} />
-            ) : null
-          })}
-        </div>
-      )}
+      <DownloadOutlined twoToneColor="#eb2f96" size={900} style={{ fontSize: 60 }} />
+      {report.display_name}
     </div>
+  ) : (
+    <div>Loading</div>
   )
 }
