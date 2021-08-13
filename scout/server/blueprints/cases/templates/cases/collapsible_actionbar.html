@@ -68,15 +68,8 @@
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div>
-          <span class="menu-collapsed ml-2">General</span>
-        </div>
-        <div>
-          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
-                <i class="fa fa-link"></i></a>
-        </div>
-        <div>
-          <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}">
-                <i class="fa fa-file-pdf-o"></i></a>
+          <div id="react-case-report-download"></div>
+         <script src="https://scout-stage.web.app/casesReportDownload.js"></script>
         </div>
       </div>
     </div>
