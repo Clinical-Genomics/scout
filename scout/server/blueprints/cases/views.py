@@ -5,6 +5,7 @@ import logging
 import os.path
 import re
 import shutil
+from base64 import b64encode
 from operator import itemgetter
 
 import requests
@@ -29,7 +30,13 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
-from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
+from scout.server.utils import (
+    institute_and_case,
+    jsonconverter,
+    templated,
+    user_institutes,
+    zip_dir_to_obj,
+)
 
 from . import controllers
 
@@ -66,6 +73,10 @@ def case(institute_id, case_name):
         flash("Case {} does not exist in database!".format(case_name))
         return redirect(request.referrer)
 
+    # re-encode images as base64
+    for images in case_obj.get("custom_images", {}).values():
+        for img in images:
+            img["data"] = b64encode(img["data"]).decode("utf-8")
     data = controllers.case(store, institute_obj, case_obj)
     return dict(
         institute=institute_obj,
@@ -193,13 +204,20 @@ def case_synopsis(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/api/v1/<institute_id>/<case_name>/case_report", methods=["GET"])
+def api_case_report(institute_id, case_name):
+    """API endpoint that returns case report json data"""
+    data = controllers.case_report_content(store, institute_id, case_name)
+    json_data = json.dumps({"data": data}, default=jsonconverter)
+    return json_data
+
+
 @cases_bp.route("/<institute_id>/<case_name>/case_report", methods=["GET"])
 @templated("cases/case_report.html")
 def case_report(institute_id, case_name):
     """Visualize case report"""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, format="html", **data)
+    data = controllers.case_report_content(store, institute_id, case_name)
+    return dict(format="html", **data)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/pdf_report", methods=["GET"])
@@ -207,7 +225,7 @@ def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
+    data = controllers.case_report_content(store, institute_id, case_name)
 
     # add coverage report on the bottom of this report
     if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
@@ -220,9 +238,7 @@ def pdf_case_report(institute_id, case_name):
         with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
             temp_madeline.write(case_obj["madeline_info"])
 
-    html_report = render_template(
-        "cases/case_report.html", institute=institute_obj, case=case_obj, format="pdf", **data
-    )
+    html_report = render_template("cases/case_report.html", format="pdf", **data)
     return render_pdf(
         HTML(string=html_report),
         download_filename=case_obj["display_name"]
@@ -304,24 +320,31 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
     else:
         try:
             # add a new phenotype item/group to the case
+            hpo_term = None
+            omim_term = None
+
             phenotype_term = request.form["hpo_term"]
+            phenotype_inds = request.form.getlist("phenotype_inds")  # Individual-level phenotypes
+
             if phenotype_term.startswith("HP:") or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(" | ", 1)[0]
-                store.add_phenotype(
-                    institute_obj,
-                    case_obj,
-                    user_obj,
-                    case_url,
-                    hpo_term=hpo_term,
-                    is_group=is_group,
-                )
             else:
-                # assume omim id
-                store.add_phenotype(
-                    institute_obj, case_obj, user_obj, case_url, omim_term=phenotype_term
-                )
+                omim_term = phenotype_term
+
+            store.add_phenotype(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=case_url,
+                hpo_term=hpo_term,
+                omim_term=omim_term,
+                is_group=is_group,
+                phenotype_inds=phenotype_inds,
+            )
         except ValueError:
-            return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
+            flash(f"Unable to add phenotype for the given terms:{phenotype_term}", "warning")
+            return redirect(case_url)
+
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
 

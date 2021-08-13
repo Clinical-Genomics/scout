@@ -277,19 +277,19 @@ def _check_outdated_gene_panel(panel_obj, latest_panel):
     return extra_genes, missing_genes
 
 
-def case_report_content(store, institute_obj, case_obj):
+def case_report_content(store, institute_id, case_name):
     """Gather contents to be visualized in a case report
 
     Args:
         store(adapter.MongoAdapter)
-        institute_obj(models.Institute)
-        case_obj(models.Case)
+        institute_id(str): _id of an institute
+        case_name(str): case display name
 
     Returns:
         data(dict)
 
     """
-    variant_types = {
+    VARIANT_TYPES = {
         "causatives_detailed": "causatives",
         "partial_causatives_detailed": "partial_causatives",
         "suspects_detailed": "suspects",
@@ -299,9 +299,10 @@ def case_report_content(store, institute_obj, case_obj):
         "dismissed_detailed": "dismiss_variant",
         "commented_detailed": "is_commented",
     }
-    data = case_obj
 
-    for individual in data["individuals"]:
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = {"case": case_obj, "institute": institute_obj}
+    for individual in data["case"].get("individuals", []):
         try:
             sex = int(individual.get("sex", 0))
         except ValueError as err:
@@ -333,7 +334,7 @@ def case_report_content(store, institute_obj, case_obj):
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    evaluated_variants = {vt: [] for vt in variant_types}
+    evaluated_variants = {vt: [] for vt in VARIANT_TYPES}
     # We collect all causatives (including the partial ones) and suspected variants
     # These are handeled in separate since they are on case level
     for var_type in ["causatives", "suspects", "partial_causatives"]:
@@ -352,8 +353,8 @@ def case_report_content(store, institute_obj, case_obj):
     ## get variants for this case that are either classified, commented, tagged or dismissed.
     for var_obj in store.evaluated_variants(case_id=case_obj["_id"]):
         # Check which category it belongs to
-        for vt in variant_types:
-            keyword = variant_types[vt]
+        for vt in VARIANT_TYPES:
+            keyword = VARIANT_TYPES[vt]
             # When found we add it to the categpry
             # Eac variant can belong to multiple categories
             if keyword not in var_obj:
