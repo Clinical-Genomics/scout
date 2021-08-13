@@ -29,6 +29,5 @@ def test_execute_command_error(loqus_exe_app, monkeypatch):
     monkeypatch.setattr(subprocess, "check_output", mocksubprocess)
 
     with loqus_exe_app.app_context():
-        # Executing a command that starts the subprocess will trigger the same error
-        with pytest.raises(subprocess.CalledProcessError):
-            var_info = loqusdb.get_variant({"_id": "a variant"})
+        # THEN Executing a command will catch the exception and return an empty dict
+        assert {} == loqusdb.get_variant({"_id": "a variant"})
