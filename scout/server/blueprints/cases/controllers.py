@@ -1254,12 +1254,12 @@ def matchmaker_matches(request, institute_id, case_name):
     return data
 
 
-def matchmaker_match(request, match_type, institute_id, case_name):
+def matchmaker_match(request, target, institute_id, case_name):
     """Initiate a MatchMaker match against either other Scout patients or external nodes
 
     Args:
         request(werkzeug.local.LocalProxy)
-        match_type(str): 'internal' or 'external'
+        target(str): 'internal' for matches against internal patients, or id of a specific node
         institute_id(str): _id of an institute
         case_name(str): display name of a case
     """
@@ -1271,7 +1271,7 @@ def matchmaker_match(request, match_type, institute_id, case_name):
     ok_responses = 0
     for patient in query_patients:
         json_resp = None
-        if match_type == "internal":  # Interal match against other patients on the MME server
+        if target == "internal":  # Interal match against other patients on the MME server
             json_resp = matchmaker.match_internal(patient)
             if json_resp.get("status_code") != 200:
                 flash(
@@ -1286,6 +1286,8 @@ def matchmaker_match(request, match_type, institute_id, case_name):
             # Against every node
             nodes = [node["id"] for node in matchmaker.connected_nodes]
             for node in nodes:
+                if node != target:
+                    continue
                 json_resp = matchmaker.match_external(patient_id, node)
                 if json_resp.get("status_code") != 200:
                     flash(
@@ -1295,6 +1297,9 @@ def matchmaker_match(request, match_type, institute_id, case_name):
                     continue
                 ok_responses += 1
     if ok_responses > 0:
-        flash("Matching request sent. Look for eventual matches in 'Matches' page.", "info")
+        flash(
+            "Matching request sent. Click on 'Past Matches' to access eventual matching results.'",
+            "info",
+        )
 
     return ok_responses
