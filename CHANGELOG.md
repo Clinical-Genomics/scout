@@ -29,10 +29,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
 - Add missing parameters to case load-config documentation
 - Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
-- Fixed crash in institute settings page if "collaborators" key is not set in database
 - Bugfix broken Pytests
 - Bulk dismissing variants error due to key conversion from string to integer
 - Fix typo in index documentation
+- Fixed crash in institute settings page if "collaborators" key is not set in database
+- Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
 - MatchMaker matching one node at the time only
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
