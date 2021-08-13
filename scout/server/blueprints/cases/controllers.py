@@ -1298,7 +1298,7 @@ def matchmaker_match(request, target, institute_id, case_name):
                 ok_responses += 1
     if ok_responses > 0:
         flash(
-            "Matching request sent. Click on 'Past Matches' to access eventual matching results.'",
+            "Matching request sent. Click on 'Past Matches' to review eventual matching results.'",
             "info",
         )
 
