@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { getMockCaseReport } from '../../../__mocks__/ScoutResponses'
-import styles from './CaseReport.module.css'
 import { getCaseReport } from 'services/ScoutApi'
+import { CaseReportPDF } from '../../components/CaseReport/CaseReportPDF'
 import { DownloadOutlined } from '@ant-design/icons'
+import { PDFDownloadLink } from '@react-pdf/renderer'
 
-export const CaseReportPage = () => {
+export const CaseReportDownload = () => {
   const [report, setReport] = useState<any>()
 
   useEffect(() => {
@@ -17,12 +18,14 @@ export const CaseReportPage = () => {
         setReport(getMockCaseReport.data.case)
       })
   }, [])
-  return report ? (
-    <div className={styles.container}>
-      <DownloadOutlined twoToneColor="#eb2f96" size={900} style={{ fontSize: 60 }} />
-      {report.display_name}
-    </div>
-  ) : (
-    <div>Loading</div>
+  return (
+    <>
+      <DownloadOutlined twoToneColor="#eb2f96" size={900} style={{ fontSize: 20 }} />
+      <PDFDownloadLink document={<CaseReportPDF />} fileName="report.pdf">
+        {({ blob, url, loading, error }) =>
+          loading ? 'Loading document...' : 'General report'
+        }
+      </PDFDownloadLink>
+    </>
   )
 }

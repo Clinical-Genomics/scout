@@ -1,5 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { CaseReportPage } from './CaseReportPage'
+import { CaseReportDownload } from './CaseReportDownload'
 
-ReactDOM.render(<CaseReportPage />, document.getElementById('react-case-report'))
+ReactDOM.render(<CaseReportDownload />, document.getElementById('react-case-report-download'))
