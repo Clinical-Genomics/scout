@@ -4,7 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
+## []
+### Added
+### Fixed
+### Changed
+
+
+## [4.37]
 ### Added
 - Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
