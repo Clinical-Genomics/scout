@@ -45,15 +45,6 @@ li {
   cursor: pointer;
 }
 
-.btn_style {
-  box-sizing: content-box;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  padding: 8px 16px;
-  box-shadow: var(--shadow);
-}
-
 /** Dark mode */
 .dark_mode {
   background-color: var(--primary_bg_color_dark_mode);
@@ -81,58 +72,4 @@ li {
 .dark_mode nav > ul > li > span::before,
 .dark_mode nav > ul > li .selected_nav::before {
   background-color: white;
-}
-
-/** TODO: Add similar automatic library as Tailwind (e.g. ml-3) */
-.flex {
-  display: flex;
-}
-
-.login {
-  position: absolute;
-  top: 3px;
-  right: 50px;
-}
-
-/** Login button */
-.google-login_button {
-  background-color: var(--scout-color);
-  color: #fff;
-}
-
-.login-dropdown-header {
-  font-weight: 500;
-}
-
-.dropdown_item_space {
-  height: 100%;
-  width: 5px;
-  cursor: pointer;
-}
-ul {
-  margin: 0px;
-  padding: 0px;
-}
-ul > li {
-  display: flex;
-  align-items: center;
-}
-ul li.nav_item > ul {
-  display: none;
-}
-ul li.nav_item:hover > ul {
-  display: flex;
-}
-ul .collapse_arrow {
-  cursor: pointer;
-  transition: transform 0.5s;
-}
-ul li:hover > .collapse_arrow {
-  transform: rotate(180deg);
-}
-ul .dropdown_item_space {
-  height: 100%;
-  width: 2px;
-  cursor: pointer;
-  margin-bottom: 50px;
 }

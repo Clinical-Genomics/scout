@@ -1,7 +1,5 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { GoogleLogin, GoogleLogout } from 'react-google-login'
-import Cookies from 'js-cookie'
 import { connect } from 'react-redux'
 import { RootState } from './domain/rootReducer'
 import {
@@ -10,12 +8,9 @@ import {
   setGoogleToken as setGoogleTokenAction,
   resetGoogleToken as resetGoogleTokenAction,
 } from './domain/settings/slice'
-import { FaAngleDown } from 'react-icons/fa'
 import { Layout } from './components/Layout/Layout'
-import { Button } from 'antd'
 import { Home } from './components/Home/HomePage'
 import './App.css'
-import DropdownMenu from './components/DropdownMenu/DropdownMenu'
 import { CasesPage } from './modules/Cases/CasesPage'
 
 const mapDispatch = {
@@ -25,35 +20,10 @@ const mapDispatch = {
   resetGoogleToken: resetGoogleTokenAction,
 } as const
 
-const { GOOGLE_OAUTH_CLIENT_ID } = process.env
-
 const mapState = ({ settings }: RootState) => ({ settings } as const)
 type Props = ReturnType<typeof mapState> & typeof mapDispatch
 
-export const AppComponent = ({
-  settings,
-  setUserInfo,
-  resetUserInfo,
-  setGoogleToken,
-  resetGoogleToken,
-}: Props) => {
-  const clientId = GOOGLE_OAUTH_CLIENT_ID || 'no-id'
-
-  const onLoginSuccess = (response: any) => {
-    setUserInfo(response.profileObj)
-    setGoogleToken(response.tokenId)
-    Cookies.set('scout_remember_me', `${response.profileObj.email}|${response.tokenId}`, {
-      expires: 365,
-      path: '',
-    })
-  }
-
-  const onLogoutSuccess = () => {
-    resetUserInfo()
-    resetGoogleToken()
-    Cookies.remove('scout_remember_me', { path: '' })
-  }
-
+export const AppComponent = ({ settings }: Props) => {
   return (
     <Router>
       <Layout>
@@ -65,64 +35,6 @@ export const AppComponent = ({
             <CasesPage />
           </Route>
         </Switch>
-        {/* Greeting */}
-        <ul className="login">
-          {settings.googleToken && (
-            <li key="logout" className="nav_item">
-              <span className="login-dropdown-header">{`Hi ${settings?.user?.givenName}!`}</span>
-              <div className="dropdown_item_space" />
-              <FaAngleDown className="collapse_arrow" />
-              <DropdownMenu>
-                <li>
-                  <GoogleLogout
-                    render={(renderProps) => (
-                      <button
-                        className="no_button_style"
-                        onClick={renderProps.onClick}
-                        disabled={renderProps.disabled}
-                      >
-                        Logout
-                      </button>
-                    )}
-                    clientId={clientId}
-                    buttonText="Sign out"
-                    onLogoutSuccess={onLogoutSuccess}
-                  />
-                </li>
-              </DropdownMenu>
-            </li>
-          )}
-          {/* Login button */}
-          {!settings?.googleToken && (
-            <li key="logout" className="nav_item">
-              <span className="login-dropdown-header">Login</span>
-              <div className="dropdown_item_space" />
-              <FaAngleDown className="collapse_arrow" />
-              <DropdownMenu>
-                <li>
-                  <GoogleLogin
-                    render={(renderProps) => (
-                      <button
-                        className="google-login_button btn_style"
-                        onClick={renderProps.onClick}
-                        disabled={renderProps.disabled}
-                      >
-                        Login with Google
-                      </button>
-                    )}
-                    clientId={clientId}
-                    onSuccess={onLoginSuccess}
-                    isSignedIn={true}
-                    cookiePolicy="single_host_origin"
-                  />
-                </li>
-                <li>
-                  <Button color="primary">Login with email</Button>
-                </li>
-              </DropdownMenu>
-            </li>
-          )}
-        </ul>
       </Layout>
     </Router>
   )

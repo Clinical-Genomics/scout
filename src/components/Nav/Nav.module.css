@@ -17,8 +17,6 @@
   color: inherit;
   text-decoration: none;
   font-size: 14px;
-  display: flex;
-  align-items: center;
   cursor: pointer;
 }
 .Nav ul > li {
@@ -58,9 +56,6 @@
 }
 .Nav ul li.nav_item:hover > ul {
   display: flex;
-}
-.Nav ul.nav_settings {
-  margin-right: 200px;
 }
 .Nav .collapse_arrow {
   cursor: pointer;
