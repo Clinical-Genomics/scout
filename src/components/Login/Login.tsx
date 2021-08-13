@@ -84,7 +84,7 @@ export const LoginComponent = ({
         {/* Login button */}
         {!settings?.googleToken && (
           <Menu>
-            <Menu.Item icon={<GoogleOutlined />}>
+            <Menu.Item key="1" icon={<GoogleOutlined />}>
               <GoogleLogin
                 render={(renderProps) => (
                   <button
@@ -101,7 +101,7 @@ export const LoginComponent = ({
                 cookiePolicy="single_host_origin"
               />
             </Menu.Item>
-            <Menu.Item icon={<MailOutlined />} disabled>
+            <Menu.Item key="2" icon={<MailOutlined />} disabled>
               Login with Email
             </Menu.Item>
           </Menu>
