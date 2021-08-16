@@ -33,7 +33,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bulk dismissing variants error due to key conversion from string to integer
 - Fix typo in index documentation
 - Fixed crash in institute settings page if "collaborators" key is not set in database
-- Don't stop Scout execution if Loqusdb call fails and print stacktrace to log
+- Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
+- Bug when case contains custom images with value `None`
+- Loading of OMIM diagnoses in Scout demo instance
+- Remove the docker-compose with chanjo integration because it doesn't work yet.
+- Fixed standard docker-compose with scout demo data and database
 - Clinical variant assessments not present for pinned and causative variants on case page.
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
@@ -59,6 +63,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
+- Check resource files availability before starting updating OMIM diagnoses
 
 ## [4.36]
 ### Added
