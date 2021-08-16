@@ -6,7 +6,8 @@
 # MME_TOKEN = "custom_token"
 
 # THEN run this container with the command:
-# docker-compose -f containers/development/docker-compose-matchmaker.yml
+# Move this file under the main scout folder (at the same level of Dockerfile)
+# docker-compose -f docker-compose-matchmaker.yml
 
 version: '3'
 # usage:
@@ -63,7 +64,7 @@ services:
     command: bash -c 'pmatcher run --host 0.0.0.0 -p 9020'
 
   scout-cli:
-    build: ../../.
+    build: .
     container_name: scout-cli
     command: bash -c "
       scout --host mongodb setup demo
@@ -77,7 +78,7 @@ services:
       - custom-net
 
   scout-web:
-    build: ../../.
+    build: .
     container_name: scout-web
     expose:
       - '5000'
