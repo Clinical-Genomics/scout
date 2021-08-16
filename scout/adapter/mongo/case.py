@@ -568,7 +568,7 @@ class CaseHandler(object):
             update(bool): If existing case should be updated
             keep_actions(bool): If old evaluated variants should be kept when case is updated
 
-        returns:
+        Returns:
             previous_evaluated_variants(list): list of variants evaluated in previous case
                 or None if case is not already present in the database.
         """
