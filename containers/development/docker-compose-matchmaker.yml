@@ -53,7 +53,7 @@ services:
     command: bash -c 'pmatcher run --host 0.0.0.0 -p 9020'
 
   scout-cli:
-    build: .
+    build: ../.
     container_name: scout-cli
     command: bash -c "
       scout --host mongodb setup demo
@@ -67,7 +67,7 @@ services:
       - custom-net
 
   scout-web:
-    build: .
+    build: ../.
     container_name: scout-web
     expose:
       - '5000'

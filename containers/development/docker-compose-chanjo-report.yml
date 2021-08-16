@@ -70,7 +70,7 @@ services:
 
   # Start the scout app containing demo data
   scout-web:
-    image: clinicalgenomics/scout:latest
+    image: ../.
     container_name: scout-web
     expose:
       - '5000'
