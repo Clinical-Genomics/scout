@@ -36,6 +36,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
 - Bug when case contains custom images with value `None`
 - Loading of OMIM diagnoses in Scout demo instance
+- Remove the docker-compose with chanjo integration because it doesn't work yet.
+- Fixed standard docker-compose with scout demo data and database
 - MatchMaker matching one node at the time only
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
