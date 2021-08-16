@@ -20,7 +20,7 @@ RUN apt-get update &&                                               \
 
 # Copy app
 COPY . /usr/src/app
-RUN pip install --upgrade pip &&           \
+RUN pip install --no-cache-dir --upgrade pip &&           \
     pip wheel --no-cache-dir --no-deps     \
         --wheel-dir /usr/src/app/wheels    \
 		Cython gunicorn  &&                \
