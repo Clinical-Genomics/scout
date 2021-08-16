@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix typo in index documentation
 - Fixed crash in institute settings page if "collaborators" key is not set in database
 - Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
+- Bug when case contains custom images with value `None`
 - MatchMaker matching one node at the time only
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
