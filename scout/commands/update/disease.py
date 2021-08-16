@@ -41,7 +41,7 @@ def _check_resources(resources):
 
 
 def _fetch_downloaded_resources(resources, downloads_folder):
-    """Checks that the resource file exists on disk and valid data. Returns its content as a list of lines
+    """Populate resource lines if a resource exists in downloads folder
 
     Args:
         resources(dict):
