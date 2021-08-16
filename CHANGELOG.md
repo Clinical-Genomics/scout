@@ -36,6 +36,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
 - Bug when case contains custom images with value `None`
 - Fix bug introduced when fixing another bug towards Loqusdb
+- Loading of OMIM diagnoses in Scout demo instance
+- Remove the docker-compose with chanjo integration because it doesn't work yet.
+- Fixed standard docker-compose with scout demo data and database
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
@@ -60,6 +63,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
+- Check resource files availability before starting updating OMIM diagnoses
 
 ## [4.36]
 ### Added
