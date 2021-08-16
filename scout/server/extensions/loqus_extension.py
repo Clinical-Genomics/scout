@@ -34,7 +34,7 @@ def execute_command(cmd):
     cmd_string = " ".join(cmd)  # add spacing to create a command string
     LOG.info("Running command: %s", cmd_string)
     try:
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
+        output = subprocess.check_output(cmd, shell=False)
     except CalledProcessError as err:
         # traceback contains subprocess' error code and command that failed
         LOG.error("Error calling Loqusdb - {} ".format(traceback.format_exc()))
