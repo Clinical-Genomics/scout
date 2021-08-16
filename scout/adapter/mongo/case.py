@@ -570,6 +570,7 @@ class CaseHandler(object):
 
         returns:
             previous_evaluated_variants(list): list of variants evaluated in previous case
+                or None if case is not already present in the database.
         """
 
         if existing_case is None:
@@ -604,7 +605,7 @@ class CaseHandler(object):
         )
         if existing_case_inds != case_inds:
             raise IntegrityError(
-                "Updated case individuals don't match individuals from existing case. Please either delete old case or modify updated case individuals."
+                f"Updated case individuals ({case_inds}) don't match individuals from existing case ({existing_case_inds}). Please either delete old case or modify updated case individuals."
             )
 
         if keep_actions:
