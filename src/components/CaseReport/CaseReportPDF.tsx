@@ -35,7 +35,7 @@ export const CaseReportPDF = () => {
         <View style={styles.section}>
           <Text>Scout case {report.display_name} report</Text>
           <Text>
-            Created on {today.toISOString().slice(0, 10)} at {today.toISOString()}
+            Created on {today.toISOString().slice(0, 10)} at {today.toTimeString().slice(0, 8)}
           </Text>
         </View>
       </Page>
