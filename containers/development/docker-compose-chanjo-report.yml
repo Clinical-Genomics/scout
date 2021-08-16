@@ -1,7 +1,11 @@
-# Docker-compose file containing Scout demo and a running chanjo-report instance
-# 2) edit scout config file and add these lines:
+# HOWTO:
+# In: scout/server/config.py
+# ADD:
 # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test" ?
 # REPORT_LANGUAGE = "en"  # or 'sv'
+
+# THEN run this container with the command:
+# docker-compose -f containers/development/docker-compose-chanjo-report.yml
 
 version: '3'
 # usage:
@@ -70,7 +74,7 @@ services:
 
   # Start the scout app containing demo data
   scout-web:
-    image: ../.
+    image: ../../.
     container_name: scout-web
     expose:
       - '5000'

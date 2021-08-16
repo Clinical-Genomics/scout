@@ -1,3 +1,13 @@
+# HOWTO:
+# In: scout/server/config.py
+# ADD:
+# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+# MME_URL = "http://pmatcher-web:9020"
+# MME_TOKEN = "custom_token"
+
+# THEN run this container with the command:
+# docker-compose -f containers/development/docker-compose-matchmaker.yml
+
 version: '3'
 # usage:
 # sudo docker-compose up
@@ -53,7 +63,7 @@ services:
     command: bash -c 'pmatcher run --host 0.0.0.0 -p 9020'
 
   scout-cli:
-    build: ../.
+    build: ../../.
     container_name: scout-cli
     command: bash -c "
       scout --host mongodb setup demo
@@ -67,7 +77,7 @@ services:
       - custom-net
 
   scout-web:
-    build: ../.
+    build: ../../.
     container_name: scout-web
     expose:
       - '5000'
@@ -90,13 +100,3 @@ networks:
       driver: default
       config:
         - subnet: 172.21.0.0/24
-
-
-
-# MatchMaker
-# In: scout/server/config.py
-
-# ADD:
-# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
-# MME_URL = "http://pmatcher-web:9020"
-# MME_TOKEN = "custom_token"
