@@ -281,7 +281,7 @@ class LoqusDB:
         try:
             output = execute_command(cmd)
             if output is not None:
-                LOG.debug("json output: {}".format(output))
+                LOG.info("json output: {}".format(output))
                 return json.loads(output)
         except CalledProcessError:
             pass
