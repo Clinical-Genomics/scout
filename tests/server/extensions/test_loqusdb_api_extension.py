@@ -40,7 +40,7 @@ def test_get_api_loqus_version(loqus_api_app, monkeypatch):
         version = loqusdb.get_instance_version(loqusdb.loqusdb_settings["default"])
 
         # THEN the returned version should be a double
-        assert version == 2.5
+        assert version == "2.5"
 
 
 def test_loqus_api_variant_no_instance(loqus_api_app):
