@@ -35,6 +35,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed crash in institute settings page if "collaborators" key is not set in database
 - Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
 - Bug when case contains custom images with value `None`
+- Don't stop Scout execution if Loqusdb call fails and print stacktrace to log
+- Loading of OMIM diagnoses in Scout demo instance
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
@@ -59,6 +61,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
+- Check resource files availability before starting updating OMIM diagnoses
 
 ## [4.36]
 ### Added
