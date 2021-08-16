@@ -17,8 +17,6 @@ from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
 from scout.constants import (
-    ACMG_MAP,
-    ACMG_OPTIONS,
     CANCER_PHENOTYPE_MAP,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
@@ -241,7 +239,7 @@ def case(store, institute_obj, case_obj):
 
 def _populate_assessments(variants_list):
     """
-    Add ACMG classification, manual_rank, cancer_tier,dismiss_variant and mosaic_tags assessment options to a variant object.
+    Add ACMG classification, manual_rank, cancer_tier, dismiss_variant and mosaic_tags assessment options to a variant object.
     The list of variant objects can contain plain variant_id strings for deleted / no longer loaded variants.
     These should not be populated.
 
