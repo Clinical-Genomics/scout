@@ -1,7 +1,6 @@
 import pkg_resources
 
 ###### Files ######
-resources_folder = "demo/resources"
 
 # Gene sources:
 resources_folder = "demo/resources"
