@@ -34,6 +34,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix typo in index documentation
 - Fixed crash in institute settings page if "collaborators" key is not set in database
 - Don't stop Scout execution if Loqusdb call fails and print stacktrace to log
+- Remove the docker-compose with chanjo integration because it doesn't work yet.
+- Fixed standard docker-compose with scout demo data and database
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
