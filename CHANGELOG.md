@@ -63,6 +63,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
 - Check resource files availability before starting updating OMIM diagnoses
+- Config parameter `SHOW_ARCHIVED_OBSERVATIONS` to hide archived local observations panel when set to False
 
 ## [4.36]
 ### Added
