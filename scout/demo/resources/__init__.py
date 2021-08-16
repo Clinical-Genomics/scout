@@ -28,7 +28,6 @@ hpo_terms_def_file = "demo/resources/hpo_terms.csv"
 madeline_file = "demo/madeline.xml"
 
 ###### Paths ######
-reduced_resources_path = pkg_resources.resource_filename("scout", resources_folder)
 
 # Gene paths
 reduced_resources_path = pkg_resources.resource_filename("scout", resources_folder)
