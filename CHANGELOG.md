@@ -35,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed crash in institute settings page if "collaborators" key is not set in database
 - Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
 - Bug when case contains custom images with value `None`
+- Fix bug introduced when fixing another bug towards Loqusdb
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
