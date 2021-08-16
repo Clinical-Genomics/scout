@@ -18,7 +18,7 @@ import './App.css'
 import DropdownMenu from './components/DropdownMenu/DropdownMenu'
 import { CasesPage } from './modules/Cases/CasesPage'
 import { CasePage } from 'modules/Case/CasePage'
-import { CaseReportDownload } from './modules/CaseReport/CaseReportDownload'
+import { CaseReportPage } from './modules/CaseReportPage/CaseReportPage'
 
 const mapDispatch = {
   setUserInfo: setSettingsAction,
@@ -70,7 +70,7 @@ export const AppComponent = ({
             <CasePage />
           </Route>
           <Route path={`/${settings.currentInstitute}/:caseId/case_report`} exact>
-            <CaseReportDownload />
+            <CaseReportPage />
           </Route>
         </Switch>
         {/* Greeting */}

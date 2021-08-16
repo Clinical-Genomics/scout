@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
 
 export const CaseReportPDF = () => {
   const [report, setReport] = useState<any>()
+  const today = new Date()
 
   useEffect(() => {
     getCaseReport()
@@ -32,10 +33,10 @@ export const CaseReportPDF = () => {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.section}>
-          <Text>Case name: {report.display_name}</Text>
-        </View>
-        <View style={styles.section}>
-          <Text>Owner: {report.owner}</Text>
+          <Text>Scout case {report.display_name} report</Text>
+          <Text>
+            Created on {today.toISOString().slice(0, 10)} at {today.toISOString()}
+          </Text>
         </View>
       </Page>
     </Document>

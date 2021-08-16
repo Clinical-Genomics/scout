@@ -21,10 +21,9 @@ export const CaseReportDownload = () => {
   return (
     <>
       <DownloadOutlined twoToneColor="#eb2f96" size={900} style={{ fontSize: 20 }} />
+        <a href={'./'}>Case report page</a>
       <PDFDownloadLink document={<CaseReportPDF />} fileName="report.pdf">
-        {({ blob, url, loading, error }) =>
-          loading ? 'Loading document...' : 'General report'
-        }
+        {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'General report')}
       </PDFDownloadLink>
     </>
   )
