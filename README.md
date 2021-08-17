@@ -76,7 +76,15 @@ The build is minified and the filenames include the hashes.<br />
 
 ## API mocking library
 Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
-they are located inside server.js
+- The data are located as an object in __mocks__/ScoutResponses.ts
+
+### Routes
+#### The routs are located in server.js
+- GET /api/cases to fetch all case records
+- GET /api/cases/:id to fetch a single case record
+- POST /api/cases to create a new case record
+- PATCH /api/cases/:id to update an existing case record
+- DELETE /api/cases/:id to remove an existing case record
 
 ## Standards to be used for commit messages
 Commit messages should be a concise description of the task done in imperative present tense
