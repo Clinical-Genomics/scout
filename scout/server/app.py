@@ -6,6 +6,7 @@ import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
 from flask_login import current_user
+from flask_session import Session
 from flaskext.markdown import Markdown
 
 from . import extensions
@@ -49,6 +50,7 @@ def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
     app.jinja_env.add_extension("jinja2.ext.do")
+
     if config:
         app.config.update(config)
     elif config_file:
@@ -56,7 +58,10 @@ def create_app(config_file=None, config=None):
     else:
         app.config.from_pyfile("config.py")
 
+    LOG.error(app.config.__dict__)
+
     app.config["JSON_SORT_KEYS"] = False
+
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
     configure_extensions(app)

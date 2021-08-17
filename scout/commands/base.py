@@ -55,6 +55,7 @@ def get_app(ctx=None):
 
     if options.params.get("demo"):
         cli_config["demo"] = "scout-demo"
+        cli_config["secret_key"] = "this is not secret..."
 
     try:
         app = create_app(
@@ -68,6 +69,7 @@ def get_app(ctx=None):
                 MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
                 MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
+                SECRET_KEY=cli_config.get("secret_key"),
             ),
             config_file=flask_conf,
         )
