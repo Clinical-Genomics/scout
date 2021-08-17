@@ -652,7 +652,7 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
+{% macro assessment_cancer(variant, manual_rank_options, cancer_tier_options) %}
   {% if variant.cancer_tier %}
     <span class="badge badge-{{ cancer_tier_options[variant.cancer_tier].label_class }}" data-toggle="tooltip" data-placement="right"
       title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
