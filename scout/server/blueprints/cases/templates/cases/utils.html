@@ -1,4 +1,3 @@
-{% from "variants/utils.html" import tier_cell %}
 {% from "variants/indicators.html" import clinical_assessments_badge, research_assessments_badge %}
 
 {% macro matchmaker_modal(institute, case, mme_nodes) %}
@@ -367,11 +366,6 @@
                 </div>
                 {{ clinical_assessments_badge(variant) }}
                 {{ tumor_allele_freq(variant) }}
-                <div class="col-2">
-                    {% if case.track == 'cancer' %}
-                      {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-                    {% endif %}
-                </div>
                 <div class="col-1">
                   {{ remove_form(url_for('cases.mark_causative',
                                          institute_id=institute._id,
@@ -474,11 +468,6 @@
                       </div>
                         {{ clinical_assessments_badge(variant) }}
                         {{ tumor_allele_freq(variant) }}
-                      <div class="col-2">
-                        {% if case.track == 'cancer' %}
-                          {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-                        {% endif %}
-                      </div>
                       <div class="col-1">
                         <!-- remove classification placeholder -->
                       </div>
@@ -528,11 +517,7 @@
                     {{ pretty_link_variant(variant, case) }}
                   </div>
                   <div style="padding: 0 10px 3px">
-                    {% if case.track == 'cancer' %}
-                      {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-                    {% else %}
-                      {{ clinical_assessments_badge(variant) }}
-                    {% endif %}
+                    {{ clinical_assessments_badge(variant) }}
                     {{ variant_validation_badge(variant) }}
                     {% if variant.mosaic_tags %}
                       <span class="badge badge-info">mosaic</span>
