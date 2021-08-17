@@ -2,7 +2,7 @@
 import logging
 from pathlib import Path
 
-from flask import Blueprint, current_app, flash, render_template, send_from_directory
+from flask import Blueprint, current_app, render_template, send_from_directory
 from flask_ldap3_login.forms import LDAPLoginForm
 
 from scout import __version__
@@ -28,7 +28,6 @@ def index():
         form = LDAPLoginForm()
 
     badge_name = current_app.config.get("ACCREDITATION_BADGE")
-    flash(f"badge_name----->{badge_name}")
     if badge_name and not Path(public_bp.static_folder, badge_name).is_file():
         LOG.warning(f'No file with name "{badge_name}" in {public_bp.static_folder}')
         badge_name = None
