@@ -48,7 +48,6 @@ except ImportError:
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
-
     app.jinja_env.add_extension("jinja2.ext.do")
     if config:
         app.config.update(config)
