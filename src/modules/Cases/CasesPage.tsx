@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { getMockCases } from '../../../__mocks__/ScoutResponses'
 import { CasesTable } from 'components/CasesTable/CasesTable'
 import styles from './CasesPage.module.css'
-import { getCases } from 'services/ScoutApi'
 
 export const CasesPage = () => {
   const [cases, setCases] = useState<any>()
 
   useEffect(() => {
-    getCases().then((response: any) => {
-      setCases(response.cases.cases ? response.cases.cases : getMockCases.cases.cases)
-    })
+    fetch('/api/cases')
+      .then((res) => res.json())
+      .then((json) => setCases(json.cases[0].cases.cases))
+      .catch((err) => console.log(err))
   }, [])
+
   return (
     <div className={styles.container}>
       {cases && (
