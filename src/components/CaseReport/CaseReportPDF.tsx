@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
   },
   intro: {
     backgroundColor: '#f2f2f2',
+    padding: 30,
   },
   author: {
     fontSize: 12,
@@ -93,9 +94,25 @@ export const CaseReportPDF = () => {
             <Text key={individual.display_name}>
               {individual.display_name}, {individual.sex_human}, {individual.phenotype_human},
               {individual.analysis_type}, {individual.predicted_ancestry},
-              {individual.confirmed_parent || ' N / A'}
+              {individual.confirmed_parent || 'N/A'}
             </Text>
           ))}
+          {report.comments ? (
+            report.comments?.map((comment: any) => <Text key={comment}>{comment}</Text>)
+          ) : (
+            <Text>No comments available for this case</Text>
+          )}
+        </View>
+        <View style={styles.intro}>
+          {report.panels.map((panel: any) => {
+            return panel.is_default ? (
+              <Text key={panel.display_name}>
+                {panel.display_name}, {panel.version}, {panel.nr_genes}
+              </Text>
+            ) : (
+              <></>
+            )
+          })}
         </View>
       </Page>
     </Document>
