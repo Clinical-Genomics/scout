@@ -23,6 +23,7 @@ public_bp = Blueprint(
 @public_endpoint
 def index():
     """Show the static landing page."""
+    flash(f"Config file---->{current_app.config}")
     form = None
     if current_app.config.get("LDAP_HOST"):
         form = LDAPLoginForm()
