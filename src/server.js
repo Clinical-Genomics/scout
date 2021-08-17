@@ -368,7 +368,7 @@ export function makeServer({ environment = 'test' } = {}) {
       })
     },
     routes() {
-      this.namespace = 'api/cases'
+      this.namespace = '/cases'
       this.get('/', (schema) => {
         return schema.cases.all()
       })

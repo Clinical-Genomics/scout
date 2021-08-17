@@ -6,7 +6,7 @@ export const CasesPage = () => {
   const [cases, setCases] = useState<any>()
 
   useEffect(() => {
-    fetch('/api/cases')
+    fetch('/cases')
       .then((res) => res.json())
       .then((json) => setCases(json.cases[0].cases.cases))
       .catch((err) => console.log(err))
