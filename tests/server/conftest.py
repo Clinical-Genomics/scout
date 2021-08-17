@@ -74,6 +74,7 @@ def app(real_database_name, real_variant_database, user_obj):
     """A test app containing the endpoints of the real app"""
     app = create_app(
         config=dict(
+            SECRET_KEY=str(uuid.uuid4()),
             TESTING=True,
             DEBUG=True,
             MONGO_DBNAME=real_database_name,
@@ -99,6 +100,7 @@ def app(real_database_name, real_variant_database, user_obj):
 def rerunner_app(user_obj):
     _mock_app = create_app(
         config=dict(
+            SECRET_KEY=str(uuid.uuid4()),
             TESTING=True,
             LOGIN_DISABLED=True,
             SERVER_NAME="test",
@@ -131,6 +133,7 @@ def user_info(institute_info):
 def ldap_app(request):
     """app ficture for testing LDAP connections."""
     config = {
+        "SECRET_KEY": str(uuid.uuid4()),
         "TESTING": True,
         "DEBUG": True,
         "SERVER_NAME": "fakey.server.name",

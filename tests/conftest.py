@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+import uuid
 
 import pymongo
 import pytest
@@ -81,6 +82,7 @@ LOG = logging.getLogger(__name__)
 def _mock_an_app():
     _mock_app = create_app(
         config=dict(
+            SECRET_KEY=str(uuid.uuid4()),
             TESTING=True,
             DEBUG=True,
             MONGO_DBNAME=REAL_DATABASE,
