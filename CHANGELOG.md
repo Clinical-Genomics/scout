@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Loading of OMIM diagnoses in Scout demo instance
 - Remove the docker-compose with chanjo integration because it doesn't work yet.
 - Fixed standard docker-compose with scout demo data and database
+- Clinical variant assessments not present for pinned and causative variants on case page.
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
