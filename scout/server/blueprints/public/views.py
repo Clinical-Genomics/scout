@@ -29,7 +29,6 @@ def index():
 
     badge_name = current_app.config.get("ACCREDITATION_BADGE")
     flash(f"badge_name----->{badge_name}")
-    flash(f"config file:{current_app.config}")
     if badge_name and not Path(public_bp.static_folder, badge_name).is_file():
         LOG.warning(f'No file with name "{badge_name}" in {public_bp.static_folder}')
         badge_name = None
