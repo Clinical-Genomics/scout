@@ -74,6 +74,10 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 
+## API mocking library
+Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
+they are located inside server.js
+
 ## Standards to be used for commit messages
 Commit messages should be a concise description of the task done in imperative present tense
 
