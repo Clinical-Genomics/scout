@@ -8,7 +8,7 @@ export const CasesPage = () => {
 
   // Calling a fake API server using MirageJS to develop before Scout endopints are in place
   const getMockCases = () => {
-    fetch('/cases')
+    fetch('/api/cases')
       .then((res) => res.json())
       .then((json) => setCases(json.cases[0].getMockCases.cases.cases))
       .catch((err) => console.log(err))

@@ -10,9 +10,27 @@ export function makeServer({ environment = 'test' } = {}) {
       server.create('case', { getMockCases })
     },
     routes() {
-      this.namespace = '/cases'
-      this.get('/', (schema) => {
+      this.namespace = 'api/cases'
+      this.get('/', (schema, request) => {
         return schema.cases.all()
+      })
+      this.get('/:id', (schema, request) => {
+        let id = request.params.id
+        return schema.cases.find(id)
+      })
+      this.post('/', (schema, request) => {
+        let attrs = JSON.parse(request.requestBody)
+        return schema.cases.create(attrs)
+      })
+      this.patch('/:id', (schema, request) => {
+        let newAttrs = JSON.parse(request.requestBody)
+        let id = request.params.id
+        let note = schema.cases.find(id)
+        return note.update(newAttrs)
+      })
+      this.delete('/:id', (schema, request) => {
+        let id = request.params.id
+        return schema.cases.find(id).destroy()
       })
     },
   })
