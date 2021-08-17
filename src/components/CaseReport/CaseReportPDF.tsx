@@ -67,7 +67,6 @@ export const CaseReportPDF = () => {
   useEffect(() => {
     getCaseReport()
       .then((response: any) => {
-        console.log(response)
         setReport(response.report.data.case)
       })
       .catch(() => {
