@@ -716,6 +716,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
                 if len(in_panels & set(form.gene_panels.data)) > 0:
                     secondary_gene = gene
         variant_obj["second_rep_gene"] = secondary_gene
+        variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
         variants_list.append(variant_obj)
 
     data = dict(
