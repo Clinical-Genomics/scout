@@ -246,7 +246,7 @@ def _populate_assessments(variants_list):
     for variant in variants_list:
         if isinstance(variant, str):
             continue
-        variant["clinical_assessments"] = get_manual_assessments(variant)
+        variant["clinical_assessments"] = get_manual_assessments(store, variant)
 
 
 def _check_outdated_gene_panel(panel_obj, latest_panel):
