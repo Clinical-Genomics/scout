@@ -8,7 +8,7 @@ export const CasesPage = () => {
   useEffect(() => {
     fetch('/cases')
       .then((res) => res.json())
-      .then((json) => setCases(json.cases[0].cases.cases))
+      .then((json) => setCases(json.cases[0].getMockCases.cases.cases))
       .catch((err) => console.log(err))
   }, [])
 
