@@ -2,7 +2,7 @@
 import logging
 from pathlib import Path
 
-from flask import Blueprint, current_app, render_template, send_from_directory
+from flask import Blueprint, current_app, flash, render_template, send_from_directory
 from flask_ldap3_login.forms import LDAPLoginForm
 
 from scout import __version__
@@ -23,6 +23,7 @@ public_bp = Blueprint(
 @public_endpoint
 def index():
     """Show the static landing page."""
+    flash(current_app.config)
     form = None
     if current_app.config.get("LDAP_HOST"):
         form = LDAPLoginForm()
