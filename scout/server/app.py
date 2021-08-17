@@ -51,8 +51,10 @@ def create_app(config_file=None, config=None):
     app.jinja_env.add_extension("jinja2.ext.do")
 
     if config:
-        app.config.from_object(config)
-    if config_file:
+        app.config.update(config)
+    elif config_file:
+        app.config.from_pyfile(config_file)
+    else:
         app.config.from_pyfile(config_file)
 
     app.config["JSON_SORT_KEYS"] = False
