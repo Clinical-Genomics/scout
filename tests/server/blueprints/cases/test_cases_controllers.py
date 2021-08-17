@@ -128,41 +128,6 @@ def test_coverage_stats(app, monkeypatch):
                 assert key in coverage_stats[sample]
 
 
-def test_case_report_content(adapter, institute_obj, case_obj, variant_obj):
-    adapter.case_collection.insert_one(case_obj)
-    adapter.institute_collection.insert_one(institute_obj)
-    adapter.variant_collection.insert_one(variant_obj)
-    ## GIVEN an adapter with a case that have an existing causative
-    case_obj = adapter.case_collection.find_one()
-    institute_obj = adapter.institute_collection.find_one()
-    var_obj = adapter.variant_collection.find_one({"case_id": case_obj["_id"]})
-    assert var_obj
-    case_obj["causatives"] = [var_obj["_id"]]
-    ## WHEN fetching a case with the controller
-    data = case_report_content(adapter, institute_obj, case_obj)
-    ## THEN assert the result is on the correct format
-    assert isinstance(data, dict)
-    variant_types = {
-        "causatives_detailed": "causatives",
-        "suspects_detailed": "suspects",
-        "classified_detailed": "acmg_classification",
-        "tagged_detailed": "manual_rank",
-        "tier_detailed": "cancer_tier",
-        "dismissed_detailed": "dismiss_variant",
-        "commented_detailed": "is_commented",
-    }
-    for var_type in variant_types:
-        if var_type == "causatives_detailed":
-            assert len(data[var_type]) == 1
-            continue
-        assert len(data[var_type]) == 0
-
-
-def test_cancer_case_report_content(adapter, institute_obj, cancer_case_obj, cancer_variant_obj):
-    ## test case report for a cancer case
-    test_case_report_content(adapter, institute_obj, cancer_case_obj, cancer_variant_obj)
-
-
 def test_case_controller_rank_model_link(adapter, institute_obj, test_case):
     # GIVEN an adapter with a case
     test_case["rank_model_version"] = "1.3"

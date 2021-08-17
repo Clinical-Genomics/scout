@@ -88,16 +88,17 @@
             </div>
           </div>
           <div class="form-row mt-3 d-flex justify-content-center">
-            <div class="col-md-5 align-self-center">
+            <div class="col-md-4 align-self-center">
               {{ form.institutes.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Allow case sharing only with preselected institutes.") }}
               <select multiple="multiple" class="selectpicker" name="institutes">
               {% for choice in form.institutes.choices %}
-                <option value="{{choice[0]}}" {% if choice[0] in institute.collaborators %} selected {% endif %}>{{choice[1]}}</option>
+                <option value="{{choice[0]}}" {% if choice[0] in institute.get("collaborators", []) %} selected {% endif %}>{{choice[1]}}</option>
               {% endfor %}
               </select>
             </div>
             {% if "admin" in current_user.roles %}
-              <div class="col-md-5 align-self-center offset-md-2">
+              <!-- Admins can modify loqusdb settings -->
+              <div class="col-md-4">
                 {{ form.loqusdb_id.label(class="control-label", data_toggle="tooltip", data_placement="top", title="LoqudDB id" ) }}<br>
                 <select class="selectpicker" name="loqusdb_id">
                   {% for instance in loqus_instances %}
@@ -105,12 +106,20 @@
                   {% endfor %}
                 </select>
               </div>
+              <!-- End of loqusdb settings -->
+              <!-- Alamut settings -->
+              <div class="col-md-3">
+                {{ form.alamut_key.label(class="control-label",data_toggle="tooltip", data_placement="top", title="Optional Alamut Visual Plus API key to be used when opening links to Alamut") }}
+                <a class="ml-3" href="https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html" target="_blank">?</a>
+                {{ form.alamut_key(class='form-control', value=institute.alamut_key if institute.alamut_key) }}
+              </div>
+              <!-- End of Alamut settings -->
             {% endif %}
           </div>
-          <div class="form-row mt-3 d-flex justify-content-center">
+          <br>
+          <div class="form-row mt-3 d-flex justify-content-center mb-3">
               {{ form.submit_btn(class="btn-primary btn") }}
           </div>
-          <br>
       </div>
     </div>
   </div> <!-- end of div class="row" -->

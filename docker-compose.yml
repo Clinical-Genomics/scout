@@ -15,7 +15,7 @@ services:
       - scout-net
 
   scout-cli:
-    image: clinicalgenomics/scout
+    build: .
     container_name: scout-cli
     command: bash -c "
       scout --host mongodb setup demo
@@ -29,7 +29,7 @@ services:
       - mongodb
 
   scout-web:
-    image: clinicalgenomics/scout
+    build: .
     container_name: scout-web
     expose:
       - '5000'

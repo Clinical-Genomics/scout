@@ -16,6 +16,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On login, OS, browser version and screen size are saved anonymously to understand how users are using Scout
 - API returning institutes data for a given user: `/api/v1/institutes`
 - API returning case data for a given institute: `/api/v1/institutes/<institute_id>/cases`
+- Added GMS and Lund university hospital logos to login page
+- Made display of Swedac logo configurable
+- Support for displaying custom images in case view
+- Individual-specific HPO terms
+- Optional alamut_key in institute settings for Alamut Plus software
+- Case report API endpoint
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
@@ -23,6 +29,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
 - Add missing parameters to case load-config documentation
 - Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
+- Bugfix broken Pytests
+- Bulk dismissing variants error due to key conversion from string to integer
+- Fix typo in index documentation
+- Fixed crash in institute settings page if "collaborators" key is not set in database
+- Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
+- Bug when case contains custom images with value `None`
+- Bug introduced when fixing another bug in Scout-LoqusDB interaction
+- Loading of OMIM diagnoses in Scout demo instance
+- Remove the docker-compose with chanjo integration because it doesn't work yet.
+- Fixed standard docker-compose with scout demo data and database
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
@@ -47,6 +63,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Managed variants filtering defaults to all variant categories
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
+- Check resource files availability before starting updating OMIM diagnoses
 
 ## [4.36]
 ### Added
