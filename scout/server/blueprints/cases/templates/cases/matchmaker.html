@@ -186,7 +186,7 @@
                            {% for feature in match_result.patient.features %}
                              <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge badge-info">{{feature.label}}({{feature.id}})</span>
                            {% else %}
-                           <p class="text-center">-</p> 
+                           <p class="text-center">-</p>
                            {% endfor %}
                          </td>
                          <td style="width: 15%">
@@ -195,7 +195,7 @@
                                <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
                              </a>
                            {% else %}
-                           <p class="text-center">-</p> 
+                           <p class="text-center">-</p>
                            {% endfor %}
                          </td>
                        </tr>
@@ -221,8 +221,6 @@
                               {% endfor %}
                             </div>
                          </tr>
-                        {% else %}
-                          No gene/variant info available
                         {% endif %}
                     {% endfor %} <!-- end of for patient in match_obj.patients -->
                   </tbody>
