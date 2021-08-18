@@ -66,6 +66,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
 - Check resource files availability before starting updating OMIM diagnoses
+- Fix typo in `SHOW_OBSERVED_VARIANT_ARCHIVE` config param
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
 
