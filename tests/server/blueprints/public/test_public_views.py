@@ -2,6 +2,7 @@
 from flask import url_for
 
 from scout import __version__
+from scout.server.app import create_app
 
 
 def test_index(client):
@@ -15,22 +16,11 @@ def test_index(client):
 
 def test_accreditation_badge(app):
     """Test configuration of accreditation bage."""
-    # GIVEN initialized app
+
+    # GIVEN an initialized app with accreditation badge in settings
+    assert app.config["ACCREDITATION_BADGE"]
+
     with app.test_client() as client:
         resp = client.get(url_for("public.index"))
-        # THEN accred badge shuld be displayed by default
+        # THEN accred badge shuld not be displayed
         assert b'id="accred-badge"' in resp.data
-
-    # GIVEN initialized app and file is missing
-    app.config["ACCREDITATION_BADGE"] = "missing_file.png"
-    with app.test_client() as client:
-        resp = client.get(url_for("public.index"))
-        # THEN accred badge shuld not be displayed
-        assert b'id="accred-badge"' not in resp.data
-
-    # GIVEN initialized app and not configured accreditation badge
-    del app.config["ACCREDITATION_BADGE"]
-    with app.test_client() as client:
-        resp = client.get(url_for("public.index"))
-        # THEN accred badge shuld not be displayed
-        assert b'id="accred-badge"' not in resp.data

@@ -84,6 +84,7 @@ def app(real_database_name, real_variant_database, user_obj):
             MME_URL="test_matchmaker.com",
             MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
             MME_TOKEN=str(uuid.uuid4()),
+            ACCREDITATION_BADGE="swedac-1926-iso17025.png",
         )
     )
 
