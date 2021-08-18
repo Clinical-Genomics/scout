@@ -17,8 +17,6 @@ from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
 from scout.constants import (
-    ACMG_MAP,
-    ACMG_OPTIONS,
     CANCER_PHENOTYPE_MAP,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
@@ -37,6 +35,7 @@ from scout.constants.variant_tags import (
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import post_request_json
@@ -91,11 +90,15 @@ def case(store, institute_obj, case_obj):
     suspects = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]
-    _populate_acmg(suspects)
+    _populate_assessments(suspects)
     causatives = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
     ]
-    _populate_acmg(causatives)
+    _populate_assessments(causatives)
+
+    # get evaluated variants
+    evaluated_variants = store.evaluated_variants(case_obj["_id"])
+    _populate_assessments(evaluated_variants)
 
     # check for partial causatives and associated phenotypes
     partial_causatives = []
@@ -107,6 +110,7 @@ def case(store, institute_obj, case_obj):
                 "hpo_terms": values.get("phenotype_terms"),
             }
             partial_causatives.append(causative_obj)
+    _populate_assessments(partial_causatives)
 
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
@@ -204,11 +208,6 @@ def case(store, institute_obj, case_obj):
     # complete OMIM diagnoses specific for this case
     omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
 
-    # get evaluated variants
-    evaluated_variants = store.evaluated_variants(case_obj["_id"])
-
-    _populate_acmg(evaluated_variants)
-
     if case_obj.get("custom_images"):
         # re-encode images as base64
         for img_section in case_obj["custom_images"].values():
@@ -238,26 +237,22 @@ def case(store, institute_obj, case_obj):
     return data
 
 
-def _populate_acmg(evaluated_variants):
+def _populate_assessments(variants_list):
     """
-    Add ACMG classification options for display of ACMG badges to variants.
+    Add ACMG classification, manual_rank, cancer_tier, dismiss_variant and mosaic_tags assessment options to a variant object.
     The list of variant objects can contain plain variant_id strings for deleted / no longer loaded variants.
     These should not be populated.
 
     Args:
-        evaluated_variants: list(variant_obj or str)
+        variants_list: list(variant_obj or str)
 
     Returns:
 
     """
-
-    for variant in evaluated_variants:
-
-        if not isinstance(variant, str) and isinstance(variant.get("acmg_classification"), int):
-            classification = ACMG_MAP.get(variant["acmg_classification"])
-            for option in ACMG_OPTIONS:
-                if option["code"] == classification:
-                    variant["acmg_classification"] = option
+    for variant in variants_list:
+        if isinstance(variant, str):
+            continue
+        variant["clinical_assessments"] = get_manual_assessments(variant)
 
 
 def _check_outdated_gene_panel(panel_obj, latest_panel):
@@ -1261,12 +1256,12 @@ def matchmaker_matches(request, institute_id, case_name):
     return data
 
 
-def matchmaker_match(request, match_type, institute_id, case_name):
+def matchmaker_match(request, target, institute_id, case_name):
     """Initiate a MatchMaker match against either other Scout patients or external nodes
 
     Args:
         request(werkzeug.local.LocalProxy)
-        match_type(str): 'internal' or 'external'
+        target(str): 'internal' for matches against internal patients, or id of a specific node
         institute_id(str): _id of an institute
         case_name(str): display name of a case
     """
@@ -1278,7 +1273,7 @@ def matchmaker_match(request, match_type, institute_id, case_name):
     ok_responses = 0
     for patient in query_patients:
         json_resp = None
-        if match_type == "internal":  # Interal match against other patients on the MME server
+        if target == "internal":  # Interal match against other patients on the MME server
             json_resp = matchmaker.match_internal(patient)
             if json_resp.get("status_code") != 200:
                 flash(
@@ -1293,6 +1288,8 @@ def matchmaker_match(request, match_type, institute_id, case_name):
             # Against every node
             nodes = [node["id"] for node in matchmaker.connected_nodes]
             for node in nodes:
+                if node != target:
+                    continue
                 json_resp = matchmaker.match_external(patient_id, node)
                 if json_resp.get("status_code") != 200:
                     flash(
@@ -1302,6 +1299,9 @@ def matchmaker_match(request, match_type, institute_id, case_name):
                     continue
                 ok_responses += 1
     if ok_responses > 0:
-        flash("Matching request sent. Look for eventual matches in 'Matches' page.", "info")
+        flash(
+            "Matching request sent. Click on 'Past Matches' to review eventual matching results.'",
+            "info",
+        )
 
     return ok_responses
