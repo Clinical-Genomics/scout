@@ -66,6 +66,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
 - Moved Gens button to individuals table
 - Check resource files availability before starting updating OMIM diagnoses
+- Fix typo in `SHOW_OBSERVED_VARIANT_ARCHIVE` config param
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 - Replace default variant evaluation terms with custom terms included in a json file
 
