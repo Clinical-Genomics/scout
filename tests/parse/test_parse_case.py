@@ -102,7 +102,6 @@ def test_parse_case_madeline(scout_config):
     assert case_data["madeline_info"]
 
 
-
 def test_parse_case_collaborators(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
