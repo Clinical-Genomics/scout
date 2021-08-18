@@ -6,8 +6,8 @@ import { App } from './App'
 import { store } from './domain/store'
 import { makeServer } from './server'
 
-if (process.env.NODE_ENV === 'development') {
-  makeServer({ environment: 'development' })
+if (process.env.MOCK === 'true') {
+  makeServer()
 }
 
 ReactDOM.render(
