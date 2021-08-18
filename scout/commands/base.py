@@ -62,7 +62,7 @@ def get_app(ctx=None):
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
-    if config is None and config_file is None:
+    if config_file is None:
         config = dict(
             MONGO_DBNAME=options.params.get("mongodb") or cli_config.get("mongodb") or "scout",
             MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",

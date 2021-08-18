@@ -53,7 +53,7 @@ def create_app(config_file=None, config=None):
     if config:
         LOG.debug("Configuring the app from data dictionary")
         app.config.update(config)
-    if config_file:
+    elif config_file:
         LOG.debug("Configuring the app from config file")
         app.config.from_pyfile(config_file)
 
@@ -65,7 +65,7 @@ def create_app(config_file=None, config=None):
     register_blueprints(app)
     register_filters(app)
 
-    if not (app.debug or app.testing) and app.config.get("MAIL_SERVER"):
+    if app.config.get("MAIL_SERVER"):
         # setup email logging of errors
         configure_email_logging(app)
 
