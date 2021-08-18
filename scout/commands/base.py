@@ -4,6 +4,7 @@ import pathlib
 
 import click
 import coloredlogs
+import pkg_resources
 import yaml
 from flask.cli import FlaskGroup, with_appcontext
 
@@ -43,36 +44,24 @@ def get_app(ctx=None):
     """Create an app with the correct config or with default app params"""
     # store provided params into a options variable
     options = ctx.find_root()
-    cli_config = {}
+    config_file = None
+
+    # If a demo instance of Scout should be run, read config params from demo config file
+    if options.params.get("demo"):
+        demo_config_path = pkg_resources.resource_filename("scout", "server/config.py")
+        config_file = pathlib.Path(demo_config_path).absolute()
+
     # if a .yaml config file was provided use its params to intiate the app
     if options.params.get("config"):
         with open(options.params["config"], "r") as in_handle:
-            cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
+            config_file = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
-    flask_conf = None
+    # if a .py file is provided instead
     if options.params.get("flask_config"):
-        flask_conf = pathlib.Path(options.params["flask_config"]).absolute()
-
-    if options.params.get("demo"):
-        cli_config["demo"] = "scout-demo"
-        cli_config["secret_key"] = "this is not secret..."
+        config_file = pathlib.Path(options.params["flask_config"]).absolute()
 
     try:
-        app = create_app(
-            config=dict(
-                MONGO_DBNAME=cli_config.get("demo")
-                or options.params.get("mongodb")
-                or cli_config.get("mongodb")
-                or "scout",
-                MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",
-                MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
-                MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
-                MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
-                OMIM_API_KEY=cli_config.get("omim_api_key"),
-                SECRET_KEY=cli_config.get("secret_key"),
-            ),
-            config_file=flask_conf,
-        )
+        app = create_app(config_file, None)
     except SyntaxError as err:
         LOG.error(err)
         raise click.Abort

@@ -2,7 +2,7 @@
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"
 
-MONGO_DBNAME = "scout"
+MONGO_DBNAME = "scout-demo"
 
 BOOTSTRAP_SERVE_LOCAL = True
 TEMPLATES_AUTO_RELOAD = True
@@ -11,10 +11,10 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 # Flask-mail: http://pythonhosted.org/flask-mail/
 # see: https://bitbucket.org/danjac/flask-mail/issue/3
-MAIL_SERVER = "smtp.gmail.com"
-MAIL_PORT = 587
-MAIL_USE_TLS = True
-MAIL_USE_SSL = False
+# MAIL_SERVER = "smtp.gmail.com"
+# MAIL_PORT = 587
+# MAIL_USE_TLS = True
+# MAIL_USE_SSL = False
 
 # Filename of accrediation bagde image in server/bluprints/public/static
 # If null no badge is displayed in scout
