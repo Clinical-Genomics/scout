@@ -52,9 +52,9 @@
     {% endif %}
   </div>
   <main>
-    {% if accred_badge %}
+    {% if "ACCREDITATION_BADGE" in config %}
       <div class="row justify-content-center align-items-center">
-        <img id="accred-badge" class="img-responsive center-block" width="120" src="{{ url_for('public.static', filename=accred_badge) }}">
+        <img id="accred-badge" class="img-responsive center-block" width="120" src="{{ url_for('public.static', filename=config['ACCREDITATION_BADGE']) }}">
       </div>
       <hr>
     {% endif %}
