@@ -4,7 +4,7 @@ import datetime
 import logging
 from fractions import Fraction
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, root_validator, validator
 from typing_extensions import Literal
@@ -23,6 +23,37 @@ class ChromographImages(BaseModel):
     coverage: Optional[str] = None
     upd_regions: Optional[str] = None
     upd_sites: Optional[str] = None
+
+
+class Image(BaseModel):
+    description: Optional[str] = None
+    height: Optional[int] = None
+    format: Optional[str] = None
+    path: str = None
+    title: str = None
+    width: Optional[int] = None
+
+    def __eq__(self, other):
+        return self.title == other.title
+
+    @root_validator
+    def valid_image_suffix(cls, values):
+        LOG.debug("CLS (valid_image_suffix): {}".format(cls))
+        LOG.debug("VALUE (valid_image_suffix): {}".format(values))
+        path = Path(values["path"])
+
+        # Skip configured image if path suffix is not an image file type
+        if not path.suffix[1:] in ["gif", "svg", "png", "jpg", "jpeg"]:
+            LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
+            values["path"] = None
+            return values
+
+        # Read byte stream and to save to database
+        with open(values["path"], "rb") as file_handle:
+            bytestream = bytes(file_handle.read())
+            values["data"] = bytestream
+            values["format"] = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
+        return values
 
 
 class ScoutIndividual(BaseModel):
@@ -126,6 +157,7 @@ class ScoutLoadConfig(BaseModel):
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
     coverage_qc_report: str = None  ## ??
+    custom_images: Dict[str, List[Image]] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: str = Field(..., alias="family_name")
@@ -157,6 +189,7 @@ class ScoutLoadConfig(BaseModel):
     # use try/except to handle TypeError if `vcf_files`is already set in
     # previous call `parse_case_data()` or `parse_case()`.
     def __init__(self, **data):
+        LOG.debug("***INIT***")
         vcfs = VcfFiles(**data)
         try:
             super().__init__(vcf_files=vcfs, **data)
@@ -172,6 +205,24 @@ class ScoutLoadConfig(BaseModel):
             return dt
         correct_date = datetime.datetime.now()
         return correct_date
+
+    @validator("custom_images")
+    def remove_empty_images(cls, custom_images):
+        LOG.debug("CUSTOM: {}".format(custom_images))
+
+        for section in custom_images:
+            images = custom_images[section]
+            LOG.debug("IMAGES: {}".format(images))
+            for i in images:
+                LOG.debug("III: {}".format(i))
+                LOG.debug("III: {}".format(type(i)))
+                # correct image files will have a path set
+                # LOG.debug("III comp: {}".format(i == Image()))
+
+                if i.path is None:
+                    images.remove(i)
+
+        return custom_images
 
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):

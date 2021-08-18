@@ -1,6 +1,10 @@
 import datetime
 import logging
 
+from fractions import Fraction
+from pathlib import Path
+from pprint import pprint as pp
+
 from ped_parser import FamilyParser
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
@@ -165,9 +169,8 @@ def parse_case_data(**kwargs):
 
 def parse_scout_config(config):
     """Parse configuration data. Returns a dict"""
-    LOG.warning("No configuration in command: {}".format(config))
     if config == {}:
-        LOG.warning("No configuration in command")
+        LOG.warning("No configuration in command: {}".format(config))
         return {}
     parsed_config = ScoutLoadConfig(**config)
     return parsed_config.dict()
