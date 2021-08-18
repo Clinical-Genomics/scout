@@ -40,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove the docker-compose with chanjo integration because it doesn't work yet.
 - Fixed standard docker-compose with scout demo data and database
 - Clinical variant assessments not present for pinned and causative variants on case page.
+- MatchMaker matching one node at the time only
 - Do not read params from the demo config file when a custom config file is provided when launching the app
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
