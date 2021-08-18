@@ -18,7 +18,6 @@
                  <option selected>Match against</option>
                  <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
                  {% if mme_nodes %}
-                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</option>
                     {% for node in mme_nodes %}
                       <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
                     {% endfor %}
