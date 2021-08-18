@@ -13,6 +13,8 @@ const config = {
   entry: {
     home: '/src/modules/Home/index.tsx',
     cases: '/src/modules/Cases/index.tsx',
+    casesReportDownload: '/src/modules/CaseReport/index.tsx',
+    casesReportPage: '/src/modules/CaseReportPage/index.tsx',
     appShell: './src/index.tsx',
   },
   target: 'web',
@@ -59,6 +61,11 @@ const config = {
   resolve: {
     modules: [path.resolve(__dirname, './src'), 'node_modules'],
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    alias: {
+      process: 'process/browser',
+      stream: 'stream-browserify',
+      zlib: 'browserify-zlib',
+    },
   },
   plugins: [
     HTMLWebpackPluginConfig,
@@ -71,6 +78,10 @@ const config = {
       'process.env.MOCK': JSON.stringify(process.env.MOCK),
     }),
     new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID', 'BACKEND_URL', 'MOCK']),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
   ],
 }
 

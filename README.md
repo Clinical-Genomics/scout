@@ -49,7 +49,7 @@ To run the app three environment variables are needed:
 These variables are stored in this repo secrets and are used by GitHub actions when deploying the application to Staging and Production.
 To run the app with the environment variables in development mode:
 
-### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" `BACKEND_URL="the-backend-url-here" `MOCK="true" `yarn start`
+### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" `BACKEND_URL="the-backend-url-here" `MOCK="true"` yarn start`
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
@@ -68,12 +68,21 @@ will display linting issues.
 will fix the errors.
 
 
-### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" `BACKEND_URL="the-backend-url-here" yarn build`
+### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" `BACKEND_URL="the-backend-url-here" `MOCK="true"` yarn build`
 
 Builds the app for production to the `build` folder.<br />
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
 The build is minified and the filenames include the hashes.<br />
+
+## API mocking library
+Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
+- The data are located as an object in __mocks__/ScoutResponses.ts
+
+### Routes
+#### The routs are located in server.js
+- GET /api/cases to fetch all case records
+- GET /api/cases/:id to fetch a single case record
 
 ## Standards to be used for commit messages
 Commit messages should be a concise description of the task done in imperative present tense

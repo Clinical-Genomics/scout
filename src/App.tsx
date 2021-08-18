@@ -12,6 +12,8 @@ import { Layout } from './components/Layout/Layout'
 import { Home } from './components/Home/HomePage'
 import './App.css'
 import { CasesPage } from './modules/Cases/CasesPage'
+import { CasePage } from 'modules/Case/CasePage'
+import { CaseReportPage } from './modules/CaseReportPage/CaseReportPage'
 
 const mapDispatch = {
   setUserInfo: setSettingsAction,
@@ -33,6 +35,12 @@ export const AppComponent = ({ settings }: Props) => {
           </Route>
           <Route path={`/${settings.currentInstitute}/cases`} exact>
             <CasesPage />
+          </Route>
+          <Route path={`/${settings.currentInstitute}/:caseId`} exact>
+            <CasePage />
+          </Route>
+          <Route path={`/${settings.currentInstitute}/:caseId/case_report`} exact>
+            <CaseReportPage />
           </Route>
         </Switch>
       </Layout>
