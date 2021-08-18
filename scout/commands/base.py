@@ -45,6 +45,7 @@ def get_app(ctx=None):
     # store provided params into a options variable
     options = ctx.find_root()
     config_file = None
+    cli_config = {}
     config = None
 
     # If a demo instance of Scout should be run, read config params from demo config file
@@ -61,18 +62,14 @@ def get_app(ctx=None):
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
-        config = (
-            dict(
-                MONGO_DBNAME=cli_config.get("demo")
-                or options.params.get("mongodb")
-                or cli_config.get("mongodb")
-                or "scout",
-                MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",
-                MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
-                MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
-                MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
-                OMIM_API_KEY=cli_config.get("omim_api_key"),
-            ),
+    if config is None and config_file is None:
+        config = dict(
+            MONGO_DBNAME=options.params.get("mongodb") or cli_config.get("mongodb") or "scout",
+            MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",
+            MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
+            MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
+            MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
+            OMIM_API_KEY=cli_config.get("omim_api_key"),
         )
 
     try:
