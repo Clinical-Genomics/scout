@@ -34,6 +34,7 @@ def test_matchmaker_config_settings(mocker):
     # WHEN app is created
     test_app = create_app(
         config=dict(
+            MONGO_DBNAME="TEST",
             TESTING=True,
             MME_URL="test_matchmaker.com",
             MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",

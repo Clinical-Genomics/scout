@@ -1,4 +1,6 @@
 """Fixtures for extenstions"""
+import uuid
+
 import pytest
 
 from scout.server.app import create_app
@@ -47,12 +49,17 @@ def loqus_exe_variant():
 
 
 @pytest.fixture
-def loqus_exe_app(loqus_exe, loqus_config):
+def loqus_exe_app(loqus_exe, loqus_config, real_database_name):
     """Return an app connected to LoqusDB via Loqus executable"""
 
     app = create_app(
         config=dict(
+            SECRET_KEY=str(uuid.uuid4()),
             TESTING=True,
+            MONGO_DBNAME=real_database_name,
+            DEBUG_TB_ENABLED=False,
+            LOGIN_DISABLED=True,
+            WTF_CSRF_ENABLED=False,
             LOQUSDB_SETTINGS={
                 "binary_path": loqus_exe,
                 "config_path": loqus_config,
@@ -63,12 +70,17 @@ def loqus_exe_app(loqus_exe, loqus_config):
 
 
 @pytest.fixture
-def loqus_api_app():
+def loqus_api_app(real_database_name):
     """Return an app connected to LoqusDB via REST API"""
 
     app = create_app(
         config=dict(
+            SECRET_KEY=str(uuid.uuid4()),
             TESTING=True,
+            MONGO_DBNAME=real_database_name,
+            DEBUG_TB_ENABLED=False,
+            LOGIN_DISABLED=True,
+            WTF_CSRF_ENABLED=False,
             LOQUSDB_SETTINGS={"api_url": "url/to/loqus/api"},
         )
     )
@@ -76,8 +88,19 @@ def loqus_api_app():
 
 
 @pytest.fixture
-def gens_app():
+def gens_app(real_database_name):
     """Return an app containing the Gens extension"""
 
-    app = create_app(config=dict(TESTING=True, GENS_HOST="127.0.0.1", GENS_PORT=5000))
+    app = create_app(
+        config=dict(
+            SECRET_KEY=str(uuid.uuid4()),
+            TESTING=True,
+            MONGO_DBNAME=real_database_name,
+            DEBUG_TB_ENABLED=False,
+            LOGIN_DISABLED=True,
+            WTF_CSRF_ENABLED=False,
+            GENS_HOST="127.0.0.1",
+            GENS_PORT=5000,
+        )
+    )
     return app

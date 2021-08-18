@@ -103,13 +103,13 @@ def rerunner_app(user_obj):
         config=dict(
             SECRET_KEY=str(uuid.uuid4()),
             TESTING=True,
+            MONGO_DBNAME="TEST",
             LOGIN_DISABLED=True,
             SERVER_NAME="test",
             RERUNNER_API_ENTRYPOINT="http://rerunner:5001/v1.0/rerun",
             RERUNNER_API_KEY="test_key",
         )
     )
-
     return _mock_app
 
 
