@@ -51,6 +51,8 @@ def parse_case_data(**kwargs):
         cnv_report: Path to pdf file with CNV report
         config(dict): A yaml formatted config file
         coverage_qc_report: Path to html file with coverage and qc report
+        gene_fusion_report: Path to the gene fusions report
+        gene_fusion_report_research: Path to the gene fusions research report
         multiqc(str): Path to dir with multiqc information
         owner(str): The institute that owns a case
         ped(iterable(str)): A ped formatted family file
