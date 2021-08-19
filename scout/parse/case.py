@@ -257,7 +257,6 @@ def add_peddy_information(config_data):
             for pair in ped_check:
                 if not (ind_id in pair and parent_id in pair):
                     continue
-                # If there is a parent error we mark that
                 if ped_check[pair]["parent_error"]:
                     analysis_inds[parent_id]["confirmed_parent"] = False
                     continue
