@@ -67,8 +67,7 @@
     </div>
     {% endif %}
 
-    {{ matching_variants(managed_variant) }}
-    
+    {{ matching_variants(managed_variant, variant.matching_tiered) }}
     <div class="row">
       <div class="col-sm-3">
         {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) }}
