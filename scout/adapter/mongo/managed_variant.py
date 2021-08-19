@@ -136,7 +136,7 @@ class ManagedVariantHandler(object):
 
         """
 
-        query = {"category": {"$in": category}, "build": build}
+        query = {"category": {"$in": category}}
         query_with_options = self.add_options(query, query_options)
         LOG.error(query_with_options)
         return self.managed_variant_collection.find(query_with_options)

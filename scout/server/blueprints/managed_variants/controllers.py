@@ -30,7 +30,7 @@ def set_query_coordinates(query_options, request_form):
         request_form(ImmutableMultiDict): form submitted by user to filter managed variants
     """
     chrom = request_form.get("chromosome")
-    if chrom is None:
+    if chrom is None or chrom == "All":
         return
     query_options["chromosome"] = chrom
     if request_form.get("position"):
