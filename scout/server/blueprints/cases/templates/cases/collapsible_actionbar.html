@@ -14,7 +14,7 @@
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case) }}
-          {{ rank_model(case) }}
+          {{ rank_model(case) }}
           <li class="list-group-item sidebar-separator menu-collapsed"></li>
           {{ status(institute, case) }}
           {{ assign(institute, case) }}
@@ -30,7 +30,7 @@
             {{ matchmaker_share(institute, case, current_user) }}
           {% endif %}
           {% if case.needs_check %}
-            {{ check_decipher(case, institute) }}
+            {{ check_decipher(case, institute) }}
           {% endif %}
           {{ confirm_inactivate(institute,case) }}
           {{ archive_case(institute,case) }}
@@ -68,8 +68,15 @@
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div>
+          <span class="menu-collapsed ml-2">General</span>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+                <i class="fa fa-link"></i></a>
+        </div>
+        <div>
           <div id="react-case-report-download"></div>
-         <script src="https://scout-stage.web.app/casesReportDownload.js"></script>
+<script src="http://localhost:3000/caseReportDownload.js"></script>
         </div>
       </div>
     </div>

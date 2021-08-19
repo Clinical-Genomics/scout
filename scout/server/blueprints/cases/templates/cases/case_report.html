@@ -10,64 +10,8 @@
 {% set printed_vars = [] %}
 
 {% block body %}
-<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-  <!-- Brand and toggle get grouped for better mobile display -->
-  <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">Case {{case.display_name}}</a>
-
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarText">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="#phenotype">Phenotype overview<span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#gene_panels">Gene panels</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#causative_variants">Causative Variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#pinned_variants">Pinned variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#acmg_variants">ACMG-classified variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#manual_ranked_variants">Manual ranked</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#commented_variants">Commented variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#dismissed_variants">Dismissed variants</a>
-      </li>
-    </ul>
-    <span class="navbar-text">
-      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-outline-secondary" type="button">Download PDF</button></a>
-    </span>
-  </div>
-</nav>
-
-<div id="container" class="container">
-  <h4>Scout case analysis report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
-   {{ phenotype_panel() }}
-   {{ gene_panels_panel()}}
-   {{ causatives_panel()}}
-   {{ pinned_panel() }}
-   {{ classified_panel() }}
-   {{ tagged_panel() }}
-   {{ commented_panel() }}
-   {{ dismissed_panel() }}
-   [END OF VARIANT REPORT]<br><br>
-   {% if coverage_report %}
-    {{ coverage_report|safe }}<br>
-   {% endif %}
-   <a href="https://clinical-genomics.github.io/scout" target="_blank">clinical-genomics.github.io/scout</a>
-</div>
+ <div id="react-case-report-page"></div>
+<script src="http://localhost:3000/caseReportPage.js"></script>
 {% endblock %} <!-- end of block body -->
 
 {% macro phenotype_panel() %}
@@ -1168,7 +1112,7 @@
 {% endmacro %}
 
 <!-- STR -->
-{% macro str_variant_content(variant,index) %} 
+{% macro str_variant_content(variant,index) %}
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
     <div class="row d-flex align-items-center">
