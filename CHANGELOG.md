@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Individual-specific HPO terms
 - Optional alamut_key in institute settings for Alamut Plus software
 - Case report API endpoint
+- Add DeepVariant as a caller
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
