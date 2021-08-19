@@ -22,6 +22,23 @@ LOG = logging.getLogger(__name__)
 VARS_PER_PAGE = 50
 
 
+def set_query_coordinates(query_options, request_form):
+    """Set query coordinates based on submitted form
+
+    Args:
+        query_options(dict): managed variants optional params
+        request_form(ImmutableMultiDict): form submitted by user to filter managed variants
+    """
+    chrom = request_form.get("chromosome")
+    if chrom is None:
+        return
+    query_options["chromosome"] = chrom
+    if request_form.get("position"):
+        query_options["position"] = int(request_form.get("position"))
+    if request_form.get("end"):
+        query_options["end"] = int(request_form.get("end"))
+
+
 def managed_variants(request):
     """Create and return managed variants' data
 
@@ -44,10 +61,13 @@ def managed_variants(request):
     categories = request.form.getlist("category") or [cat[0] for cat in CATEGORY_CHOICES]
 
     query_options = {"sub_category": []}
+    # Set variant sub-category in query_options
     for sub_cat in request.form.getlist("sub_category") or [
         subcat[0] for subcat in SUBCATEGORY_CHOICES
     ]:
         query_options["sub_category"].append(sub_cat)
+    # Set requested variant coordinates in query options
+    set_query_coordinates(query_options, request.form)
 
     # Get all variants according to the selected fields in filter form
     managed_variants_query = store.managed_variants(

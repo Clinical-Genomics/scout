@@ -122,7 +122,7 @@ class ManagedVariantHandler(object):
         return managed_variant
 
     def managed_variants(
-        self, category=["snv", "sv", "cancer_snv", "cancer_sv"], build="37", query_options=None
+        self, category=["snv", "sv", "cancer_snv", "cancer_sv"], query_options=None, build=None
     ):
         """Return a cursor to all managed variants of a particular category and build.
 
@@ -138,6 +138,7 @@ class ManagedVariantHandler(object):
 
         query = {"category": {"$in": category}, "build": build}
         query_with_options = self.add_options(query, query_options)
+        LOG.error(query_with_options)
         return self.managed_variant_collection.find(query_with_options)
 
     def count_managed_variants(
