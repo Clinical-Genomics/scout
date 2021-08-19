@@ -183,7 +183,7 @@ class ScoutLoadConfig(BaseModel):
     vcf_files: Optional[VcfFiles] = None
 
     def __init__(self, **data):
-        """ Override init() for handling nested vcf_files dicts.
+        """Override init() for handling nested vcf_files dicts.
         Use try/except to handle TypeError if `vcf_files`is already set in
         previous call `parse_case_data()` or `parse_case()`."""
         vcfs = VcfFiles(**data)
