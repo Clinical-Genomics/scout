@@ -10,7 +10,6 @@ import pymongo
 from scout.build.case import build_case
 from scout.constants import ACMG_MAP
 from scout.exceptions import ConfigError, IntegrityError
-from scout.parse.case import parse_case
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
 

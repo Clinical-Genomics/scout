@@ -71,7 +71,7 @@ def parse_case_data(**kwargs):
     config = kwargs.pop("config", {})
 
     # populate configuration according to Pydantic defined classes
-    config_dict = parse_scout_config(config)
+    config_dict = parse_case_config(config)
 
     # Default the analysis date to now if not specified in load config
     config_dict["analysis_date"] = get_correct_date(config_dict.get("analysis_date"))
@@ -130,8 +130,8 @@ def parse_case_data(**kwargs):
     return remove_none_recursive(config_dict)
 
 
-def parse_scout_config(config):
-    """Parse configuration data. Returns a dict"""
+def parse_case_config(config):
+    """Parse configuration data for a case. Returns a dict"""
     if config == {}:
         LOG.warning("No configuration in command: {}".format(config))
         return {}
