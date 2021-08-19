@@ -16,30 +16,6 @@ from scout.utils.date import get_date
 LOG = logging.getLogger(__name__)
 
 
-def get_correct_date(date_info):
-    """Convert dateinfo to correct date
-
-    Args:
-        dateinfo: Something that represents a date
-
-    Returns:
-        correct_date(datetime.datetime)
-    """
-    if isinstance(date_info, datetime.datetime):
-        return date_info
-
-    if isinstance(date_info, str):
-        try:
-            correct_date = get_date(date_info)
-        except ValueError as err:
-            LOG.warning("Analysis date is on wrong format: {}".format(err))
-            LOG.info("Setting analysis date to todays date")
-            correct_date = datetime.datetime.now()
-        return correct_date
-    LOG.info("Setting analysis date to todays date")
-    return datetime.datetime.now()
-
-
 def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
 
@@ -72,9 +48,6 @@ def parse_case_data(**kwargs):
 
     # populate configuration according to Pydantic defined classes
     config_dict = parse_case_config(config)
-
-    # Default the analysis date to now if not specified in load config
-    config_dict["analysis_date"] = get_correct_date(config_dict.get("analysis_date"))
 
     # If ped file  provided we need to parse that first
     if kwargs.get("ped"):

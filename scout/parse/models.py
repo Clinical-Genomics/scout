@@ -193,14 +193,19 @@ class ScoutLoadConfig(BaseModel):
             super().__init__(**data)
 
     @validator("analysis_date")
-    def check_analysis_date(cls, dt):
-        """Check if analysis_date is on datetime format, if not
-        it will be corrected"""
-        if isinstance(dt, datetime.datetime):
-            # return datetime.datetime.strptime(dt, "%Y-%M-%d %H:%M%S")
-            return dt
-        correct_date = datetime.datetime.now()
-        return correct_date
+    def analysis_date_to_Datetime(cls, analysis_date):
+        """Check if analysis_date is on datetime format or string convertible to datetime.
+        Otherwise return now."""
+        if isinstance(analysis_date, datetime.datetime):
+            return analysis_date
+        try:
+            return get_date(analysis_date)
+        except ValueError as err:
+            LOG.warning("Analysis date is on wrong format: {}".format(err))
+            LOG.warning("Setting analysis date to todays date")
+            return datetime.datetime.now()
+
+
 
     @validator("custom_images")
     def remove_empty_images(cls, custom_images):
