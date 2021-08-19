@@ -1,4 +1,4 @@
-"""Class to hold information about scout load config"""
+"""Class to hold information about scout load config and subclasses used"""
 
 import datetime
 import logging
@@ -38,8 +38,6 @@ class Image(BaseModel):
 
     @root_validator
     def valid_image_suffix(cls, values):
-        LOG.debug("CLS (valid_image_suffix): {}".format(cls))
-        LOG.debug("VALUE (valid_image_suffix): {}".format(values))
         path = Path(values["path"])
 
         # Skip configured image if path suffix is not an image file type
@@ -74,7 +72,7 @@ class ScoutIndividual(BaseModel):
     msi: Optional[str] = None
     mt_bam: Optional[str] = None
     phenotype: Literal["affected", "unaffected", "unknown"]
-    predicted_ancestry: str = None  ## ??
+    predicted_ancestry: str = None
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
     rna_coverage_bigwig: Optional[str] = None
@@ -151,12 +149,12 @@ class VcfFiles(BaseModel):
 
 class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
-    assignee: str = None  ## ??
+    assignee: str = None
     case_id: str = Field(..., alias="family")
     cnv_report: Optional[str] = None
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
-    coverage_qc_report: str = None  ## ??
+    coverage_qc_report: str = None
     custom_images: Dict[str, List[Image]] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
@@ -169,7 +167,6 @@ class ScoutLoadConfig(BaseModel):
     genome_build: int = Field([], alias="human_genome_build")
     individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
-    # madeline: Optional[str] #!
     madeline_info: Optional[str] = Field("", alias="madeline")  #!
     multiqc: Optional[str] = None
     owner: str = None
@@ -185,11 +182,10 @@ class ScoutLoadConfig(BaseModel):
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles] = None
 
-    # override init() for handling nested vcf_files dicts
-    # use try/except to handle TypeError if `vcf_files`is already set in
-    # previous call `parse_case_data()` or `parse_case()`.
     def __init__(self, **data):
-        LOG.debug("***INIT***")
+        """ Override init() for handling nested vcf_files dicts.
+        Use try/except to handle TypeError if `vcf_files`is already set in
+        previous call `parse_case_data()` or `parse_case()`."""
         vcfs = VcfFiles(**data)
         try:
             super().__init__(vcf_files=vcfs, **data)
@@ -208,17 +204,9 @@ class ScoutLoadConfig(BaseModel):
 
     @validator("custom_images")
     def remove_empty_images(cls, custom_images):
-        LOG.debug("CUSTOM: {}".format(custom_images))
-
         for section in custom_images:
             images = custom_images[section]
-            LOG.debug("IMAGES: {}".format(images))
             for i in images:
-                LOG.debug("III: {}".format(i))
-                LOG.debug("III: {}".format(type(i)))
-                # correct image files will have a path set
-                # LOG.debug("III comp: {}".format(i == Image()))
-
                 if i.path is None:
                     images.remove(i)
 

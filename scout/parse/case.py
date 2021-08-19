@@ -68,11 +68,9 @@ def parse_case_data(**kwargs):
         config_data(dict): Holds all the necessary information for loading
                            Scout
     """
-    LOG.debug("KWARGS: {}".format(kwargs))
     config = kwargs.pop("config", {})
 
     # populate configuration according to Pydantic defined classes
-    LOG.debug("1st SCOUTLOADCONFIG: {}".format(config))
     config_dict = parse_scout_config(config)
 
     # Default the analysis date to now if not specified in load config
@@ -129,7 +127,6 @@ def parse_case_data(**kwargs):
         LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
         add_smn_info_case(config_dict)
 
-    LOG.debug("parse_case_data/return: {}".format(remove_none_recursive(config_dict)))
     return remove_none_recursive(config_dict)
 
 
@@ -273,35 +270,6 @@ def add_peddy_information(config_data):
                     analysis_inds[parent_id]["confirmed_parent"] = True
 
 
-# XXX: No longer called! (previously called from mongo/case)
-def parse_case(config):
-    """Parse case information from config or PED files.
-
-    Args:
-        config (dict): case config with detailed information
-
-    Returns:
-        dict: parsed case data
-    """
-    # create a config object based on pydantic rules
-    LOG.debug("*** NO LONGER CALLED ***")
-    if config.get("synopsis"):
-        synopsis = (
-            ". ".join(config["synopsis"])
-            if isinstance(config["synopsis"], list)
-            else config["synopsis"]
-        )
-    config_dict = parse_scout_config(config)
-
-    # add SMN info
-    LOG.debug("Checking for SMN TSV..")
-    if config_dict.get("smn_tsv"):
-        LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
-        add_smn_info_case(config_dict)
-    LOG.debug("parse_case/return: {}".format(remove_none_recursive(config_dict)))
-    return remove_none_recursive(config_dict)
-
-
 def parse_ped(ped_stream, family_type="ped"):
     """Parse out minimal family information from a PED file.
 
@@ -331,8 +299,6 @@ def parse_ped(ped_stream, family_type="ped"):
         }
         for ind_id, individual in family.individuals.items()
     ]
-
-    LOG.debug("return (parse_ped): {}".format(family_id))
     return family_id, samples
 
 
