@@ -205,8 +205,6 @@ class ScoutLoadConfig(BaseModel):
             LOG.warning("Setting analysis date to todays date")
             return datetime.datetime.now()
 
-
-
     @validator("custom_images")
     def remove_empty_images(cls, custom_images):
         for section in custom_images:
