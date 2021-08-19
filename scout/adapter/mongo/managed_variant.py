@@ -128,7 +128,7 @@ class ManagedVariantHandler(object):
 
         Arguments:
             category(str):
-            sub_category(str):
+            query_options(str):
             build(str):
 
         Returns:
@@ -138,7 +138,6 @@ class ManagedVariantHandler(object):
 
         query = {"category": {"$in": category}}
         query_with_options = self.add_options(query, query_options)
-        LOG.error(query_with_options)
         return self.managed_variant_collection.find(query_with_options)
 
     def count_managed_variants(
