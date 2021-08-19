@@ -60,7 +60,7 @@ export const getMockCases = {
         [
           {
             _id: 'cancer_test',
-            display_name: 'cancer_case',
+            display_name: 'mock_cancer_case',
             owner: 'cust000',
             collaborators: ['cust000'],
             smn_tsv: null,

@@ -9,9 +9,11 @@ export function makeServer() {
       server.create('case', { getMockCases })
     },
     routes() {
-      this.namespace = 'api/cases'
+      this.urlPrefix = 'https://scout-mocks-data.herokuapp.com'
+      this.namespace = '/cases'
       this.get('/', (schema) => {
-        return schema.cases.all()
+        let response = schema.cases.all().models[0].attrs.getMockCases.cases
+        return response
       })
       this.get('/:id', (schema, request) => {
         let id = request.params.id

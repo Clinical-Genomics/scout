@@ -13,9 +13,19 @@ export const getCaseFromURL = () => document?.location.pathname.split('/')[2]
 
 export const getCases = async (): Promise<any> => {
   let response = { cases: [] }
-
-  try {
+  /* try {
     const request = await fetch(`${baseUrl}/institutes/${getInstituteFromURL()}/cases`, {
+      mode: 'cors',
+      headers: getAuthHeaders(),
+    })
+    response = await request.json()
+  } catch (error) {
+    console.error(error)
+  }
+  return response
+} */
+  try {
+    const request = await fetch(`https://scout-mocks-data.herokuapp.com/cases`, {
       mode: 'cors',
       headers: getAuthHeaders(),
     })

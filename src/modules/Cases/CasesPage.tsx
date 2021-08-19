@@ -6,17 +6,9 @@ import { getCases } from 'services/ScoutApi'
 export const CasesPage = () => {
   const [cases, setCases] = useState<any>()
 
-  // Calling a fake API server using MirageJS to develop before Scout endopints are in place
-  const getMockCases = () => {
-    fetch('/api/cases')
-      .then((res) => res.json())
-      .then((json) => setCases(json.cases[0].getMockCases.cases.cases))
-      .catch((err) => console.log(err))
-  }
-
   useEffect(() => {
     getCases().then((response: any) => {
-      setCases(response.cases.cases ? response.cases.cases : getMockCases())
+      setCases(response.cases)
     })
   }, [])
 
