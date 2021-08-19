@@ -79,7 +79,7 @@
 {% endmacro %}
 
 
-{% macro matching_variants(managed_variant, causatives) %}
+{% macro matching_variants(managed_variant, causatives, matching_tiered=None) %}
   {% if causatives %}
     <div class="card panel-default">
       <div class="panel-heading">Matching causatives from other cases</div>
@@ -121,6 +121,24 @@
       </div> <!--end of card body-->
     </div><!--end of card-->
   {% endif%}
+  {% if matching_tiered %}
+    <div class="col">
+      Matching tiered:
+      {% for tier, tiered_info in matching_tiered.items() %}
+        <a class="btn btn-{{tiered_info.label}} btn-xs" data-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+          {{tier}} ({{tiered_info.links|length}}x)
+        </a>
+        <div class="collapse" id="collapse_{{tier}}">
+          <div>
+            {{tier}}:
+            {% for link in tiered_info["links"] %}
+              {% set match_case = link.split('/') %}
+                <a href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
+            {% endfor %}
+          </div>
+        </div>
+    </div>
+  {% endfor %}
 {% endmacro %}
 
 {% macro compounds_panel(institute, case, variant) %}
