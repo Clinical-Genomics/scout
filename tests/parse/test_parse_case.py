@@ -6,14 +6,14 @@ from pydantic import ValidationError
 
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import ConfigError, PedigreeError
-from scout.parse.case import parse_case, parse_case_data, parse_ped, remove_none_values
+from scout.parse.case import parse_case_config, parse_case_data, parse_ped, remove_none_values
 
 
 def test_parse_case_no_date(scout_config):
     # GIVEN a load config without a date
     scout_config.pop("analysis_date")
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the todays date should have been set
     assert "analysis_date" not in scout_config
     assert isinstance(case_data["analysis_date"], datetime)
@@ -23,7 +23,7 @@ def test_parse_case_wrong_date_string(scout_config):
     # GIVEN you load info thats not a date
     scout_config["analysis_date"] = "not a date"
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the todays date should have been set
     assert isinstance(scout_config["analysis_date"], str)
     assert isinstance(case_data["analysis_date"], datetime)
@@ -33,7 +33,7 @@ def test_parse_case_date_string(scout_config):
     # GIVEN a load config with date string
     # WHEN case is parsed
     scout_config["analysis_date"] = "2019-11-05"
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the case should have a datetime object
     assert isinstance(scout_config["analysis_date"], str)
     assert isinstance(case_data["analysis_date"], datetime)
@@ -42,7 +42,7 @@ def test_parse_case_date_string(scout_config):
 def test_parse_case_date(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the case should have an analysis_date
     assert isinstance(scout_config["analysis_date"], datetime)
     assert isinstance(case_data["analysis_date"], datetime)
@@ -69,7 +69,7 @@ def test_parse_case_date(scout_config):
 def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the case should have a the parameter
     assert case_data[param_name] == scout_config[param_name]
 
@@ -89,7 +89,7 @@ def test_parse_case_aliases(scout_config, param_name, alias_name):
     """Certain configuration parameters have an alias externally"""
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the case a correct case id
     assert case_data[param_name] == scout_config[alias_name]
 
@@ -97,7 +97,7 @@ def test_parse_case_aliases(scout_config, param_name, alias_name):
 def test_parse_case_madeline(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the case a correct case id
     assert case_data["madeline_info"]
 
@@ -105,7 +105,7 @@ def test_parse_case_madeline(scout_config):
 def test_parse_case_collaborators(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the case should have a list with collaborators
     assert case_data["collaborators"] == [scout_config["owner"]]
 
@@ -116,7 +116,7 @@ def test_parse_case_collaborators(scout_config):
 def test_parse_case_vcf_files(scout_config, vcf_file):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     # THEN the case should the same vcf files as specified in the
     assert case_data["vcf_files"][vcf_file] == scout_config[vcf_file]
 
@@ -128,7 +128,7 @@ def test_parse_case_bams(scout_config, bam_name):
     for sample in scout_config["samples"]:
         sample[bam_name] = bam_path
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
 
     # THEN assert that bam files are added correct
     for ind in case_data["individuals"]:
@@ -146,7 +146,7 @@ def test_parse_case_multiple_alignment_files(scout_config):
         sample["alignment_path"] = cram_path
 
     # WHEN case is parsed
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
 
     # THEN assert that cram files are added correctly, ignoring bam
     for ind in case_data["individuals"]:
@@ -181,7 +181,7 @@ def test_parse_case_ped_file(ped_file):
 def test_parse_case_minimal_config(minimal_config):
     # GIVEN a minimal config
     # WHEN parsing the config
-    case_data = parse_case(minimal_config)
+    case_data = parse_case_config(minimal_config)
     # THEN assert is was parsed correct
     assert case_data
 
@@ -227,7 +227,7 @@ def test_no_individuals(scout_config):
     # WHEN parsing the individuals
     with pytest.raises(PedigreeError):
         # THEN error should be raised since a family has to have individuals
-        parse_case(scout_config)
+        parse_case_config(scout_config)
 
 
 @pytest.mark.parametrize("param", ["sample_id", "sex", "phenotype"])
@@ -239,7 +239,7 @@ def test_mandatory_param_missing(scout_config, param):
     # WHEN a individual is parsed
     with pytest.raises(ValidationError):
         # THEN a ValidationError should be raised
-        parse_case(scout_config)
+        parse_case_config(scout_config)
 
 
 def test_parse_wrong_phenotype(scout_config):
@@ -248,7 +248,7 @@ def test_parse_wrong_phenotype(scout_config):
     # WHEN a individual is parsed
     with pytest.raises(ValidationError):
         # THEN a PedigreeError should be raised
-        parse_case(scout_config)
+        parse_case_config(scout_config)
 
 
 def test_parse_wrong_sex(scout_config):
@@ -257,13 +257,13 @@ def test_parse_wrong_sex(scout_config):
     # WHEN a individual is parsed
     with pytest.raises(ValidationError):
         # THEN a PedigreeError should be raised
-        parse_case(scout_config)
+        parse_case_config(scout_config)
 
 
 def test_wrong_relations(scout_config):
     # GIVEN a individual with correct family info
     # Nothing should happend here
-    assert parse_case(scout_config)
+    assert parse_case_config(scout_config)
 
     # WHEN changing mother id in proband to non-existing id
     samples_list = scout_config["samples"]
@@ -278,7 +278,7 @@ def test_wrong_relations(scout_config):
 
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
-        parse_case(scout_config)
+        parse_case_config(scout_config)
 
 
 def test_remove_none_values():
@@ -313,7 +313,7 @@ def test_parse_optional_igv_param(scout_config):
     scout_config["samples"] = samples
 
     # THEN parsing the config will add those to case data
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     case_list = []
     config_list = []
     for individual in case_data["individuals"]:
@@ -351,7 +351,7 @@ def test_missing_optional_igv_param(scout_config):
     scout_config.pop("tiddit_coverage_wig", "ignore_return")
 
     # THEN parsing the config will not raise an exception
-    case_data = parse_case(scout_config)
+    case_data = parse_case_config(scout_config)
     assert case_data
 
 
@@ -361,6 +361,6 @@ def test_missing_mandatory_config_key(scout_config, key):
 
     ## WHEN deleting key
     scout_config.pop(key)
-    ## THEN calling parse_case() will raise ConfigError
+    ## THEN calling parse_case_config() will raise ConfigError
     with pytest.raises(ConfigError):
-        parse_case(scout_config)
+        parse_case_config(scout_config)
