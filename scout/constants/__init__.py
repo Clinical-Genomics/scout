@@ -118,6 +118,7 @@ CALLERS = {
         {"id": "freebayes", "name": "Freebayes"},
         {"id": "samtools", "name": "SAMtools"},
         {"id": "bcftools", "name": "Bcftools"},
+        {"id": "deepvariant", "name": "DeepVariant"},
     ],
     "cancer": [
         {"id": "mutect", "name": "MuTect"},
