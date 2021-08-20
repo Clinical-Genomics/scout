@@ -8,7 +8,7 @@ export const CasesPage = () => {
 
   useEffect(() => {
     getCases().then((response: any) => {
-      setCases(response.cases)
+      setCases(response.cases.data)
     })
   }, [])
   return (

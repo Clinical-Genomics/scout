@@ -23,7 +23,7 @@ export const getCases = async (): Promise<any> => {
         withCredentials: true,
       }
     )
-    response = request.data
+    response = await request.json()
   } catch (error) {
     console.error(error)
   }
