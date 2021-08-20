@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+- Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
 ### Changed
 
 
