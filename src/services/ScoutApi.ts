@@ -31,11 +31,11 @@ export const getCaseReport = async (): Promise<any> => {
   let response = { report: [] }
 
   try {
-    const request = await fetch(
+    const request = await axios.get(
       `${baseUrl}/institutes/${getInstituteFromURL()}/${getCaseFromURL()}/case_report`,
       {
-        mode: 'cors',
         headers: getAuthHeaders(),
+        withCredentials: true,
       }
     )
     response = await request.json()
