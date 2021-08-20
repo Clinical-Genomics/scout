@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Enforce same case _id and display_name when updating a case
+- Enforce same individual ids, display names and affected status when updating a case
 
 
 ## [4.37]
@@ -78,8 +80,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved Gens button to individuals table
 - Check resource files availability before starting updating OMIM diagnoses
 - Fix typo in `SHOW_OBSERVED_VARIANT_ARCHIVE` config param
-- Enforce same case _id and display_name when updating a case
-- Enforce same individual ids, display names and affected status when updating a case
 
 ## [4.36]
 ### Added
