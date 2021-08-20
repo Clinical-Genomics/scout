@@ -77,7 +77,7 @@ def test_phenotype_genes_matching_phenotypes(gene_database, case_obj, hpo_term, 
         "description": "Encephalopathy",
         "genes": gene_list[:3],  # this term has last 3 genes overlapping with term 1
     }
-    assert adapter.hpo_term_collection.insert([hpo_term, hpo_term2])
+    assert adapter.hpo_term_collection.insert_many([hpo_term, hpo_term2])
     # And a case with that dynamic phenotype and gene list
     case_obj["dynamic_panel_phenotypes"] = ["HP:0001250", "HP:0001298"]
     case_obj["dynamic_gene_list"] = [{"hgnc_id": gene_id} for gene_id in gene_list[:3]]
