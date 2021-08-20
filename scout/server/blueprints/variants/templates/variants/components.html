@@ -10,7 +10,7 @@
             <div>
               <strong>Models</strong>: {{ variant.first_rep_gene.inheritance|join(',') }}
             </div>
-          {% endif %}>
+          {% endif %}
         {% if variant.first_rep_gene.phenotypes %}
           <div><strong>OMIM disease</strong>
           {% for disease in variant.first_rep_gene.phenotypes %}
