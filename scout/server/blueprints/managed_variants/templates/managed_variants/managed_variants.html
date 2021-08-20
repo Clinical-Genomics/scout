@@ -237,13 +237,13 @@
         {{ wtf.form_field(filters_form.build, onchange="setChromosomes()") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.chromosome, onchange="setCytobands()") }}
+        {{ wtf.form_field(filters_form.chromosome, onchange="setCytobands();set_coords_fields()") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.position, type="number") }}
+        {{ wtf.form_field(filters_form.position, type="number", disabled=True) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.end, type="number") }}
+        {{ wtf.form_field(filters_form.end, type="number", disabled=True) }}
       </div>
       <div class="col-2">
         {{ wtf.form_field(filters_form.cytoband_start, onchange="setElemCoordinate('cytoband_start', 'position')") }}
@@ -291,7 +291,10 @@
 
   var cytoStart = document.forms["filters_form"].elements["cytoband_start"]; // filter form
   var cytoEnd = document.forms["filters_form"].elements["cytoband_end"]; // filter form
-  var chromSelect = document.forms["filters_form"].elements["chromosome"]; // filter form
+  var chromSelect = document.forms["filters_form"].elements["chromosome"]; // filter form chromosome
+  var start_coord_field = document.forms["filters_form"].elements["position"]; // filter form start coord
+  var end_coord_field = document.forms["filters_form"].elements["end"]; // filter form end coord
+
 
   // clear option elements from any given select
   function clearSelect(selectElem){
@@ -337,6 +340,20 @@
     })
     populateSelect(chromSelect, chrom_options); // populate chromosome select with chromosome options
     setCytobands(); // Reset cytobands select elements
+  }
+
+  function set_coords_fields(){
+    //Make chromosome coordinates editable if a valid chromsome is selected
+    selectedChrom = chromSelect.value;
+    if (selectedChrom !== 'undefined' && selectedChrom !== "All" ){
+      start_coord_field.disabled = false;
+      end_coord_field.disabled = false;
+    }
+    else {
+      start_coord_field.disabled = true;
+      end_coord_field.disabled = true;
+    }
+
   }
 
   // Set cytobands select options according to selected chrom
