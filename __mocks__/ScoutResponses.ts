@@ -362,7 +362,7 @@ export const getMockCaseReport = {
   data: {
     case: {
       _id: 'givingcrab',
-      display_name: '620573fam50M',
+      display_name: 'Mock response',
       owner: 'cust000',
       collaborators: ['cust000'],
       individuals: [
