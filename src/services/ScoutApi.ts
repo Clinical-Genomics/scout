@@ -16,14 +16,11 @@ export const getCaseFromURL = () => document?.location.pathname.split('/')[2]
 export const getCases = async (): Promise<any> => {
   let response = { cases: [] }
   try {
-    const request = await axios.get(
-      `${baseUrl}/institutes/${getInstituteFromURL()}/${getCaseFromURL()}/cases`,
-      {
-        headers: getAuthHeaders(),
-        withCredentials: true,
-      }
-    )
-    response = await request.json()
+    const request = await axios.get(`https://scout-mocks-data.herokuapp.com/cases`, {
+      headers: getAuthHeaders(),
+      withCredentials: true,
+    })
+    response = request.data
   } catch (error) {
     console.error(error)
   }
