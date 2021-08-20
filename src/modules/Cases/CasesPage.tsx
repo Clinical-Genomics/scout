@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { getMockCases } from '../../../__mocks__/ScoutResponses'
 import { CasesTable } from 'components/CasesTable/CasesTable'
 import styles from './CasesPage.module.css'
 import { getCases } from 'services/ScoutApi'
@@ -9,7 +8,7 @@ export const CasesPage = () => {
 
   useEffect(() => {
     getCases().then((response: any) => {
-      setCases(response.cases.cases ? response.cases.cases : getMockCases.cases.cases)
+      setCases(response.cases)
     })
   }, [])
   return (

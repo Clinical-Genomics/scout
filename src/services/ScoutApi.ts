@@ -1,23 +1,24 @@
+const axios = require('axios').default
 const { BACKEND_URL } = process.env
 const baseUrl = `${BACKEND_URL}/api/v1`
 
 export const getAuthHeaders = () => ({
-  'Content-Type': 'application/json;charset=UTF-8',
-  'Access-Control-Allow-Origin': '*',
-  Cookie: document?.cookie,
+  headers: {
+    Authorization: `Bearer ${document?.cookie},
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Access-Control-Allow-Origin': '*'`,
+  },
 })
 
 export const getInstituteFromURL = () => document?.location.pathname.split('/')[1]
-
 export const getCases = async (): Promise<any> => {
   let response = { cases: [] }
-
   try {
-    const request = await fetch(`${baseUrl}/institutes/${getInstituteFromURL()}/cases`, {
-      mode: 'cors',
+    const request = await axios.get(`${baseUrl}/institutes/${getInstituteFromURL()}/cases`, {
       headers: getAuthHeaders(),
+      withCredentials: true,
     })
-    response = await request.json()
+    response = request.data
   } catch (error) {
     console.error(error)
   }
