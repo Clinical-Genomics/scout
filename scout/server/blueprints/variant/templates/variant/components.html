@@ -79,30 +79,26 @@
 {% endmacro %}
 
 
-{% macro matching_variants(managed_variant, causatives) %}
+{% macro matching_variants(managed_variant, causatives, matching_tiered=None) %}
   {% if causatives %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching causatives from other cases</div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          {% for other_variant in causatives %}
-            <li class="list-group-item" style="padding: 0;">
-              <a href="{{ url_for('variant.variant',
-                                  institute_id=other_variant.owner,
-                                  case_name=other_variant.case_display_name,
-                                  variant_id=other_variant._id) }}">
-                {{ other_variant.case_display_name }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-3 mb-1" style="padding: 0;">
+        Matching causatives from other cases:&nbsp;
+        {% for other_variant in causatives %}
+          <a href="{{ url_for('variant.variant',
+                              institute_id=other_variant.owner,
+                              case_name=other_variant.case_display_name,
+                              variant_id=other_variant._id) }}">
+            {{ other_variant.case_display_name }}
+          </a>&nbsp;
+        {% endfor %}
       </div> <!--end of card body-->
     </div><!--end of card-->
   {% endif %}
   {% if managed_variant %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching managed variant</div>
-      <div class="card-body">
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-3 mb-1">
+        Matching managed variant:
         <div class="row">
           <div class="col-2">
             {{ managed_variant.display_id }}
@@ -121,6 +117,28 @@
       </div> <!--end of card body-->
     </div><!--end of card-->
   {% endif%}
+
+  {% if matching_tiered %}
+    <div class="card">
+      <div class="card-body mt-1 ml-3 mb-1 d-flex align-items-center" style="padding: 0;">
+        Matching tiered:&nbsp;
+        {% for tier, tiered_info in matching_tiered.items() %}
+          <a class="btn btn-{{tiered_info.label}} btn-xs" data-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+            {{tier}} ({{tiered_info.links|length}}x)
+          </a>
+          <div class="collapse" id="collapse_{{tier}}">
+            <div>
+              {{tier}}:
+              {% for link in tiered_info["links"] %}
+                {% set match_case = link.split('/') %}
+                  <a href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro compounds_panel(institute, case, variant) %}
