@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Case configuration parsing now uses Pydantic for improved typechecking and config handling
 
 
 ## [4.37]
@@ -109,7 +110,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Don't display OMIM disease card in case view for cancer cases
 - Refactored Individuals and Causative card in case view for cancer cases
 - Update and style STR case report
-- Case configuration parsing now uses Pydantic for improved typechecking and config handling
 
 ## [4.34]
 ### Added
