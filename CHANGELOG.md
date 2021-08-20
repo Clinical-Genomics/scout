@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Individual-specific HPO terms
 - Optional alamut_key in institute settings for Alamut Plus software
 - Case report API endpoint
+- Tooltip in case explaining that genes with genome build different than case genome build will not be added to dynamic HPO panel.
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
@@ -41,6 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed standard docker-compose with scout demo data and database
 - Clinical variant assessments not present for pinned and causative variants on case page.
 - MatchMaker matching one node at the time only
+- Remove link from previously tiered variants badge in cancer variants page
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
