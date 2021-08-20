@@ -11,11 +11,7 @@ export const getAuthHeaders = () => ({
 })
 
 export const getInstituteFromURL = () => document?.location.pathname.split('/')[1]
-
-
-
 export const getCaseFromURL = () => document?.location.pathname.split('/')[2]
-
 
 export const getCases = async (): Promise<any> => {
   let response = { cases: [] }
