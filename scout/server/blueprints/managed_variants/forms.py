@@ -29,7 +29,9 @@ class ManagedVariantForm(FlaskForm):
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
     description = TextField(label="Description")
-    build = SelectField("Genome build", [validators.Optional()], choices=["37", "38"])
+    build = SelectField(
+        "Genome build", [validators.Optional()], choices=[("37", "37"), ("38", "38")]
+    )
 
 
 class ManagedVariantsFilterForm(ManagedVariantForm):
