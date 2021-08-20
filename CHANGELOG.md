@@ -4,7 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
+## []
+### Added
+### Fixed
+### Changed
+
+
+## [4.37]
 ### Added
 - Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
@@ -23,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Optional alamut_key in institute settings for Alamut Plus software
 - Case report API endpoint
 - Tooltip in case explaining that genes with genome build different than case genome build will not be added to dynamic HPO panel.
+- Add DeepVariant as a caller
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
@@ -43,6 +50,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clinical variant assessments not present for pinned and causative variants on case page.
 - MatchMaker matching one node at the time only
 - Remove link from previously tiered variants badge in cancer variants page
+- Typo in gene cell on cancer variants page
+- Managed variants filter form
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
@@ -56,7 +65,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added dedicated template for cancer variants
 - Removed Gene models, Gene annotations and Conservation panels for cancer variants
 - Reorganized the orders of panels for variant and cancer variant views
-- Added dedicated variant quality panel and removed relevant panes (mappability)
+- Added dedicated variant quality panel and removed relevant panes
 - A more compact case page
 - Removed OMIM genes panel
 - Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
