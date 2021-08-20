@@ -44,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clinical variant assessments not present for pinned and causative variants on case page.
 - MatchMaker matching one node at the time only
 - Remove link from previously tiered variants badge in cancer variants page
+- Typo in gene cell on cancer variants page
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
