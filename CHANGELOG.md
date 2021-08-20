@@ -4,7 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
+## []
+### Added
+### Fixed
+### Changed
+
+
+## [4.37]
 ### Added
 - Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
@@ -60,7 +66,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added dedicated template for cancer variants
 - Removed Gene models, Gene annotations and Conservation panels for cancer variants
 - Reorganized the orders of panels for variant and cancer variant views
-- Added dedicated variant quality panel and removed relevant panes (mappability)
+- Added dedicated variant quality panel and removed relevant panes
 - A more compact case page
 - Removed OMIM genes panel
 - Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
