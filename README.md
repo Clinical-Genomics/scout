@@ -84,6 +84,12 @@ Mirage JS is used in the project to mock the backend endpoints to continue the d
 - GET /api/cases to fetch all case records
 - GET /api/cases/:id to fetch a single case record
 
+### Fake Rest API. [More info](https://github.com/Clinical-Genomics/scout-mocks-data)  
+There are some endpoints to test the API calls if the actual APIs are not in place or not working.
+The API is created with JSON-server and deployed to Heroku.
+- https://scout-mocks-data.herokuapp.com/cases
+- https://scout-mocks-data.herokuapp.com/case_report
+
 ## Standards to be used for commit messages
 Commit messages should be a concise description of the task done in imperative present tense
 
