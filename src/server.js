@@ -1,5 +1,11 @@
 import { createServer, Model } from 'miragejs'
 import { getMockCases, getMockCaseReport } from '../__mocks__/ScoutResponses'
+
+const { BACKEND_URL } = process.env
+const baseUrl = `${BACKEND_URL}/api/v1`
+
+export const getInstituteFromURL = () => document?.location.pathname.split('/')[1]
+
 export function makeServer() {
   let server = createServer({
     models: {
@@ -9,7 +15,7 @@ export function makeServer() {
       server.create('case', { getMockCases }), server.create('case', { getMockCaseReport })
     },
     routes() {
-      this.urlPrefix = 'https://scout-mocks-data.herokuapp.com'
+      this.urlPrefix = `${baseUrl}/institutes/${getInstituteFromURL()}`
       this.get('cases/', (schema) => {
         let response = schema.cases.all().models[0].attrs.getMockCases
         return response
