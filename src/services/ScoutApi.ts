@@ -18,8 +18,8 @@ export const getCases = async (): Promise<any> => {
 
   try {
     /* Test link, for more info: https://github.com/Clinical-Genomics/scout-mocks-data  */
-    /* https://scout-mocks-data.herokuapp.com/cases */
-    const request = await axios.get(`${baseUrl}/institutes/${getInstituteFromURL()}/cases`, {
+    /* The actual API`${baseUrl}/institutes/${getInstituteFromURL()}/cases` */
+    const request = await axios.get(`https://scout-mocks-data.herokuapp.com/cases`, {
       mode: 'cors',
       headers: getAuthHeaders(),
     })
@@ -35,8 +35,8 @@ export const getCaseReport = async (): Promise<any> => {
 
   try {
     /* Test link, for more info: https://github.com/Clinical-Genomics/scout-mocks-data  */
-    /* https://scout-mocks-data.herokuapp.com/cases */
-    const request = await axios.get(`${baseUrl}/institutes/${getInstituteFromURL()}/case_report`, {
+    /* `${baseUrl}/institutes/${getInstituteFromURL()}/case_report` */
+    const request = await axios.get(`https://scout-mocks-data.herokuapp.com/case_report`, {
       headers: getAuthHeaders(),
       withCredentials: true,
     })
