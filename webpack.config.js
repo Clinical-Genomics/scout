@@ -75,8 +75,9 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.GOOGLE_OAUTH_CLIENT_ID': JSON.stringify(process.env.GOOGLE_OAUTH_CLIENT_ID),
       'process.env.BACKEND_URL': JSON.stringify(process.env.BACKEND_URL),
+      'process.env.MOCK': JSON.stringify(process.env.MOCK),
     }),
-    new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID', 'BACKEND_URL']),
+    new webpack.EnvironmentPlugin(['GOOGLE_OAUTH_CLIENT_ID', 'BACKEND_URL', 'MOCK']),
     new webpack.ProvidePlugin({
       process: 'process/browser',
       Buffer: ['buffer', 'Buffer'],

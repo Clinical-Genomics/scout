@@ -92,6 +92,7 @@
     "html-webpack-template": "^6.2.0",
     "jest": "^26.5.3",
     "mini-css-extract-plugin": "^1.0.0",
+    "miragejs": "^0.1.41",
     "prettier": "^2.3.1",
     "react-test-renderer": "^17.0.2",
     "source-map-loader": "^1.1.1",

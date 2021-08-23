@@ -11,6 +11,7 @@ export const CasesPage = () => {
       setCases(response.cases.cases)
     })
   }, [])
+
   return (
     <div className={styles.container}>
       {cases && (

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { getMockCaseReport } from '../../../__mocks__/ScoutResponses'
 import { getCaseReport } from 'services/ScoutApi'
 import ReactPDF, { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer'
 
@@ -67,10 +66,10 @@ export const CaseReportPDF = () => {
   useEffect(() => {
     getCaseReport()
       .then((response: any) => {
-        setReport(response.report.data.case)
+        setReport(response.data.case)
       })
-      .catch(() => {
-        setReport(getMockCaseReport.data.case)
+      .catch((error) => {
+        console.log(error)
       })
   }, [])
   return report ? (

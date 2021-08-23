@@ -22,6 +22,7 @@ jobs:
       env:
         GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
         BACKEND_URL: ${{ secrets.BACKEND_STAGE_URL }}
+        MOCK: ${{ secrets.MOCK }}
     - name: Archive Stage Artifact
       uses: actions/upload-artifact@master
       with:
@@ -32,6 +33,7 @@ jobs:
       env:
         GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
         BACKEND_URL: ${{ secrets.BACKEND_PRODUCTION_URL }}
+        MOCK: ${{ secrets.MOCK }}
     - name: Archive Production Artifact
       uses: actions/upload-artifact@master
       with:

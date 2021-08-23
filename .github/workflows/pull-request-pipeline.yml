@@ -19,6 +19,7 @@ jobs:
       env:
         GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
         BACKEND_URL: ${{ secrets.BACKEND_STAGE_URL }}
+        MOCK: ${{ secrets.MOCK }}
     - name: Archive Stage Artifact
       uses: actions/upload-artifact@v2
       with:
