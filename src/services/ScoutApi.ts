@@ -15,14 +15,15 @@ export const getCaseFromURL = () => document?.location.pathname.split('/')[2]
 
 export const getCases = async (): Promise<any> => {
   let response = { cases: [] }
+
   try {
     /* Test link, for more info: https://github.com/Clinical-Genomics/scout-mocks-data  */
-    /* https://scout-mocks-data.herokuapp.com/cases */
-    const request = await axios.get(`${baseUrl}/institutes/${getInstituteFromURL()}/cases`, {
+    /* The actual API`${baseUrl}/institutes/${getInstituteFromURL()}/cases` */
+    const request = await axios.get(`https://scout-mocks-data.herokuapp.com/cases`, {
+      mode: 'cors',
       headers: getAuthHeaders(),
-      withCredentials: true,
     })
-    response = request.data
+    response = await request.data
   } catch (error) {
     console.error(error)
   }
@@ -34,12 +35,12 @@ export const getCaseReport = async (): Promise<any> => {
 
   try {
     /* Test link, for more info: https://github.com/Clinical-Genomics/scout-mocks-data  */
-    /* https://scout-mocks-data.herokuapp.com/case_report */
-    const request = await axios.get(`${baseUrl}/institutes/${getInstituteFromURL()}/case_report`, {
+    /* `${baseUrl}/institutes/${getInstituteFromURL()}/case_report` */
+    const request = await axios.get(`https://scout-mocks-data.herokuapp.com/case_report`, {
       headers: getAuthHeaders(),
       withCredentials: true,
     })
-    response = await request.json()
+    response = await request.data
   } catch (error) {
     console.error(error)
   }
