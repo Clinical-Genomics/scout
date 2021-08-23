@@ -60,7 +60,7 @@ export const getMockCases = {
         [
           {
             _id: 'cancer_test',
-            display_name: 'mock_cancer_case',
+            display_name: 'cancer_case_mock',
             owner: 'cust000',
             collaborators: ['cust000'],
             smn_tsv: null,
@@ -179,7 +179,7 @@ export const getMockCases = {
           },
           {
             _id: 'internal_id',
-            display_name: '643594',
+            display_name: '643594_mock',
             owner: 'cust000',
             collaborators: ['cust000'],
             smn_tsv: 'scout/demo/643594.solo.smn.tsv',
@@ -362,7 +362,7 @@ export const getMockCaseReport = {
   data: {
     case: {
       _id: 'givingcrab',
-      display_name: 'Mock response',
+      display_name: '620573fam50M_mock',
       owner: 'cust000',
       collaborators: ['cust000'],
       individuals: [
