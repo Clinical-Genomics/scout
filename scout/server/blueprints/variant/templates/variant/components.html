@@ -68,7 +68,7 @@
         {% endif %}
       </div>
       {% if evaluations %} <!-- scrollable previous ACMG evaluations div-->
-        <div class="list-group mt-3" style="height:200px;overflow-y: scroll;">
+        <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
           {% for evaluation in evaluations %}
             {{ acmg_classification_item(variant, evaluation) }}
           {% endfor %}
