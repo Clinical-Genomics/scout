@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+- Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
+- Update genes command will not trigger an update of database indices any more
 - Do not read params from the demo config file when a custom config file is provided when launching the app
 ### Changed
 
