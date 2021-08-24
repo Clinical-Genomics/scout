@@ -76,8 +76,6 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
         builds(list): a list containing both genome builds or one genome build ['37', '38']
 
     """
-    LOG.error(os.listdir(downloads_folder))
-
     for resname, filenames in UPDATE_GENES_RESOURCES.items():
         for filename in filenames:
             resource_path = os.path.join(downloads_folder, filename)
@@ -137,7 +135,6 @@ def genes(build, downloads_folder, api_key):
         downloads_folder = tempfile.TemporaryDirectory(
             dir=os.getcwd()
         )  # Create a temp dir in working dir
-        LOG.error(downloads_folder.name)
         try:
             download_resources(downloads_folder.name, api_key, builds)
         except Exception as ex:
