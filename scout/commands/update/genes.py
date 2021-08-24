@@ -181,6 +181,4 @@ def genes(build, downloads_folder, api_key):
 
         load_transcripts(adapter, ensembl_tx_res, genome_build, ensembl_genes_dict)
 
-    adapter.update_indexes()
-
     LOG.info("Genes and transcripts loaded")

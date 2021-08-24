@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 - Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
+- Update genes command will not trigger an update of database indices any more
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
