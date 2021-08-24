@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
 - Update genes command will not trigger an update of database indices any more
 - Missing resources in temporary downloading directory when updating genes using the command line
-- Loading spinner not stopping after downloading general report or delivery report
+- Loading spinner not stopping after downloading PDF case reports
 ### Changed
 
 
