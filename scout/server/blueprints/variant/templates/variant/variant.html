@@ -317,7 +317,10 @@
       </ul>
       <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
-          <div>
+          <div class="d-flex flex-row align-items-center">
+            {% if config.SHOW_ALAMUT_LINK %}
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary mr-3" target="_blank">Alamut</a>
+            {% endif %}
             {{ igv_button(case, variant, case_groups) }}
           </div>
 

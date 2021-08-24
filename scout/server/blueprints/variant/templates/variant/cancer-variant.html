@@ -303,7 +303,10 @@
     <div class="h6 ml-4">Alignment</div>
     <table class="table table-sm ml-3">
       <tr>
-        <td style="width:20%;">
+        <td class="d-flex flex-row align-items-center">
+          {% if config.SHOW_ALAMUT_LINK %}
+            <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary mr-3" target="_blank">Alamut</a>
+          {% endif %}
           {{ igv_button(case, variant, case_groups) }}
         </td>
         {% if config.SQLALCHEMY_DATABASE_URI %}
