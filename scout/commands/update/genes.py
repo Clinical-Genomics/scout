@@ -131,14 +131,14 @@ def genes(build, downloads_folder, api_key):
     api_key = api_key or current_app.config.get("OMIM_API_KEY")
     resources = {}
 
-    # If required resources are missing, download them to a temporary file
+    # If required resources are missing, download them to a temporary directory
     if downloads_folder is None:
         with tempfile.TemporaryDirectory() as tempdir:
             try:
                 download_resources(tempdir, api_key, builds)
             except Exception as ex:
                 LOG.error(ex)
-        fetch_downloaded_resources(resources, tempdir, builds)
+            fetch_downloaded_resources(resources, tempdir, builds)
     else:  # If resources have been previosly downloaded, read those file and return their lines
         fetch_downloaded_resources(resources, downloads_folder, builds)
 
