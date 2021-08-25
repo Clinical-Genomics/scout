@@ -71,7 +71,7 @@
     <div class="row">
       <div class="col-sm-12">{{ matching_variants(managed_variant, causatives) }}</div>
       <div class="col-sm-4">
-        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) }}
+        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) }}
         {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
         {{ omim_phenotypes(variant) }}
       </div>

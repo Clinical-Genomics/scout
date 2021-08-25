@@ -4,7 +4,7 @@
 {% from "variant/buttons.html" import igv_button, splice_junctions_button %}
 {% from "variant/utils.html" import igv_track_selection  %}
 
-{% macro acmg_classification_item(data) %}
+{% macro acmg_classification_item(variant, data) %}
   {% set current_variant = (data.variant_specific == variant._id) %}
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
     <div class="d-flex">
@@ -82,7 +82,7 @@
 {% endmacro %}
 
 
-{% macro panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options) %}
+{% macro panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) %}
   <div class="card panel-default">
     <div class="panel-heading">Classify</div>
     <div class="card-body">
@@ -105,10 +105,10 @@
           <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
         {% endif %}
       </div>
-      {% if evaluations %}
-        <div class="list-group mt-3">
+      {% if evaluations %} <!-- scrollable previous ACMG evaluations div-->
+        <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
           {% for evaluation in evaluations %}
-            {{ acmg_classification_item(evaluation) }}
+            {{ acmg_classification_item(variant, evaluation) }}
           {% endfor %}
         </div>
       {% endif %}
