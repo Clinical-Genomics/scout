@@ -458,7 +458,7 @@ def download_str_variants(case_obj, variant_objs):
     DOCUMENT_HEADER = [
         "Index",
         "Repeat locus",
-        "Reference repeat unit",
+        "Repeat unit",
         "Estimated size",
         "Reference size",
         "Status",
