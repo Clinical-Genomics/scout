@@ -1,6 +1,8 @@
 {% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
 {% from "variants/utils.html" import compounds_table %}
 {% from "variant/variant_details.html" import severity_list %}
+{% from "variant/buttons.html" import igv_button, splice_junctions_button %}
+{% from "variant/utils.html" import igv_track_selection  %}
 
 {% macro acmg_classification_item(variant, data) %}
   {% set current_variant = (data.variant_specific == variant._id) %}
@@ -29,6 +31,42 @@
   </li>
 {% endmacro %}
 
+{% macro alignments(institute, case, variant, current_user, case_groups, config) %}
+   <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between">
+          <div>
+            {{ igv_button(case, variant, case_groups) }}
+          </div>
+          <div>
+            {% if variant.alamut_link and config.SHOW_ALAMUT_LINK %}
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank"
+            data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
+            {% endif %}
+           </div>
+          {% if config.SQLALCHEMY_DATABASE_URI %}
+          <div class="d-flex flex-wrap">
+            {% for gene in variant.genes %}
+              <span class="ml-5">
+                <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </li>
+        <li class="list-group-item">
+          <div>
+            {{ igv_track_selection(igv_tracks, current_user) }}
+          </div>
+        </li>
+        {% if splice_junctions_tracks %}
+          <li class="list-group-item">
+            <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
+          </li>
+        {% endif %}
+      </ul>
+{% endmacro %}
 
 {% macro acmg_form(institute, case, variant, ACMG_OPTIONS, selected=None) %}
   <label class="mt-3">ACMG classification</label>
@@ -170,7 +208,9 @@
           <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
           <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
-          <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          {% if config.SHOW_ALAMUT_LINK %}
+            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
           {% if variant.chromosome == 'MT' %}
             <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
