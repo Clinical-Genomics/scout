@@ -439,6 +439,72 @@ def parse_variant(
     return variant_obj
 
 
+def download_str_variants(store, case_obj, variant_objs):
+    """Download filtered STR variants for a case to an excel file
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        variant_objs(PyMongo cursor)
+
+    Returns:
+        an HTTP response containing a csv file
+    """
+
+    def generate(header, lines):
+        yield header + "\n"
+        for line in lines:
+            yield line + "\n"
+
+    DOCUMENT_HEADER = [
+        "Index",
+        "Repeat locus",
+        "Reference repeat unit",
+        "Estimated size",
+        "Reference size",
+        "Status",
+        "Genotype",
+        "Chromosome",
+        "Position",
+    ]
+
+    export_lines = []
+    for variant in variant_objs:
+        variant_line = []
+        variant_line.append(str(variant["variant_rank"]))  # index
+        variant_line.append(variant.get("str_repid"))  # Repeat locus
+        variant_line.append(
+            variant.get("str_display_ru", variant.get("str_ru", ""))
+        )  # Reference repeat unit
+        variant_line.append(
+            variant["alternative"].replace("STR", "").replace("<", "").replace(">", "")
+        )  # Estimated size
+        variant_line.append(str(variant["str_ref"]))  # Reference size
+        variant_line.append(str(variant["str_status"]))  # Status
+        gt_cell = ""
+        for sample in variant["samples"]:
+            if sample["genotype_call"] == "./.":
+                continue
+            gt_cell += f"{sample['display_name']}:{sample['genotype_call']} "
+
+        variant_line.append(gt_cell)  # Genotype
+        variant_line.append(variant["chromosome"])  # Chromosome
+        variant_line.append(str(variant["position"]))  # Position
+
+        export_lines.append(",".join(variant_line))
+
+    headers = Headers()
+    headers.add(
+        "Content-Disposition",
+        "attachment",
+        filename=str(case_obj["display_name"]) + "-filtered-str_variants.csv",
+    )
+    # return a csv with the exported variants
+    return Response(
+        generate(",".join(DOCUMENT_HEADER), export_lines), mimetype="text/csv", headers=headers
+    )
+
+
 def download_variants(store, case_obj, variant_objs):
     """Download filtered variants for a case to an excel file
 

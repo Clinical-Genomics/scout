@@ -200,6 +200,9 @@ def str_variants(institute_id, case_name):
 
     result_size = store.count_variants(case_obj["_id"], query, None, category)
 
+    if request.form.get("export"):
+        return controllers.download_str_variants(store, case_obj, variants_query)
+
     data = controllers.str_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
