@@ -112,8 +112,9 @@ function validateForm(){
     }
   }
 
+  // Avoid page spinner being stuck on Filter and export variants option
   $(window).unbind('beforeunload');
-  
+
   return true;
 }
 
