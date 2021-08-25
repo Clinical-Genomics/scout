@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
 - Update genes command will not trigger an update of database indices any more
 - Missing resources in temporary downloading directory when updating genes using the command line
+- Restore previous variant ACMG classification in a scrollable div
 ### Changed
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 - Replace default variant evaluation terms with custom terms included in a json file
