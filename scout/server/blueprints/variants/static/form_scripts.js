@@ -66,28 +66,7 @@ function populateCytobands(cytobands){
   }
 }
 
-/* exported validateForm */
-// ValidateForm()
-// Controll user input fields (start, end) in varaint filter.
-// Verify the format of Chromosome position
-//
-function validateForm(){
-  var start = document.forms["filters_form"].elements["start"].value
-  var end = document.forms["filters_form"].elements["end"].value
-  if(start || end){
-    if(!chrom){
-      alert("Chromosome field is required");
-      return false;
-    }
-    else if( !start || !end){
-      alert("Both start and end coordinates are required");
-      return false;
-    }
-    else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
-      alert("Coordinate field not valid");
-      return false;
-    }
-  }
+function validateChromPos(){
   // Validate Chromosome position form
   //Expected format: <chr number>:<start>-<end>[+-]?<padding>
   var chrPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?)?$";
@@ -112,10 +91,33 @@ function validateForm(){
       alert("Padding must be greater than zero!")
     }
   }
+}
 
+/* exported validateForm */
+// ValidateForm()
+// Controll user input fields (start, end) in varaint filter.
+// Verify the format of Chromosome position
+//
+function validateForm(){
+  var start = document.forms["filters_form"].elements["start"].value
+  var end = document.forms["filters_form"].elements["end"].value
+  if(start || end){
+    if(!chrom){
+      alert("Chromosome field is required");
+      return false;
+    }
+    else if( !start || !end){
+      alert("Both start and end coordinates are required");
+      return false;
+    }
+    else if( (isNaN(start) || isNaN(end)) || Number(end)<Number(start) ){
+      alert("Coordinate field not valid");
+      return false;
+    }
+  }
+  validateChromPos();
   // Avoid page spinner being stuck on Filter and export variants option
   $(window).unbind('beforeunload');
-
   return true;
 }
 
