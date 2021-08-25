@@ -625,6 +625,9 @@ def alamut_link(
     if build == 38:
         build_str = "(GRCh38)"
 
+    if current_app.config.get("HIDE_ALAMUT_LINK"):
+        return False
+
     url_template = (
         "http://localhost:10000/{search_verb}?{alamut_key_arg}request={this[chromosome]}{build_str}:"
         "{this[position]}{this[reference]}>{this[alternative]}"

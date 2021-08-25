@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
-- Option to hide Alamut button in app config file
+- Option to hide Alamut button in the app config file
 ### Fixed
 - Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
 - Update genes command will not trigger an update of database indices any more
@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Loading spinner not stopping after downloading PDF case reports and variant list export
 - Add extra Alamut links higher up on variant pages
 - Improve UX for phenootypes in case page
+- Filter and export of STR variants
 ### Changed
 
 
