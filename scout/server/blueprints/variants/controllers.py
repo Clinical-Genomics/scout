@@ -470,7 +470,7 @@ def download_str_variants(case_obj, variant_objs):
     export_lines = []
     for variant in variant_objs:
         variant_line = []
-        variant_line.append(str(variant["variant_rank"]))  # index
+        variant_line.append(str(variant.get("variant_rank"), ""))  # index
         variant_line.append(variant.get("str_repid"))  # Repeat locus
         variant_line.append(
             variant.get("str_display_ru", variant.get("str_ru", ""))
@@ -478,8 +478,8 @@ def download_str_variants(case_obj, variant_objs):
         variant_line.append(
             variant["alternative"].replace("STR", "").replace("<", "").replace(">", "")
         )  # Estimated size
-        variant_line.append(str(variant["str_ref"]))  # Reference size
-        variant_line.append(str(variant["str_status"]))  # Status
+        variant_line.append(str(variant.get("str_ref", "")))  # Reference size
+        variant_line.append(str(variant.get("str_status", "")))  # Status
         gt_cell = ""
         for sample in variant["samples"]:
             if sample["genotype_call"] == "./.":
