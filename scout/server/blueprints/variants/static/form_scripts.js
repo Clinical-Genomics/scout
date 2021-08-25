@@ -111,6 +111,9 @@ function validateForm(){
       alert("Padding must be greater than zero!")
     }
   }
+
+  $(window).unbind('beforeunload');
+  
   return true;
 }
 
