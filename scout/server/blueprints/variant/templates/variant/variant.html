@@ -1,13 +1,13 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
-{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
+{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
-{% from "variant/components.html" import panel_classify, compounds_panel, matching_variants , external_links %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
-{% from "variant/buttons.html" import igv_button, splice_junctions_button %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -315,35 +315,9 @@
           {% endfor %}
         </div>
       </ul>
-      <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between">
-          <div>
-            {{ igv_button(case, variant, case_groups) }}
-          </div>
 
-          {% if config.SQLALCHEMY_DATABASE_URI %}
-          <div class="d-flex flex-wrap">
-            {% for gene in variant.genes %}
-              <span class="ml-5">
-                <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </span>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </li>
-        <li class="list-group-item">
-          <div>
-            {{ igv_track_selection(igv_tracks, current_user) }}
-          </div>
-        </li>
-        {% if splice_junctions_tracks %}
-          <li class="list-group-item">
-            <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
-          </li>
-        {% endif %}
-      </ul>
+      {{ alignments(institute, case, variant, current_user, case_groups, config) }}
+
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
 	<thead>
