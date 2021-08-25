@@ -90,9 +90,10 @@ function validateForm(){
   }
   // Validate Chromosome position form
   //Expected format: <chr number>:<start>-<end>[+-]?<padding>
-  var chrom_pos = document.forms["filters_form"].elements["chrom_pos"].value.replaceAll(',', '')
   var chrPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1}[0-9]+)?)?$";
-  if(chrom_pos) {
+  var chromoPosField = document.forms["filters_form"].elements["chrom_pos"]
+  if (chromoPosField && chromoPosField.vaLue) {
+    var chrom_pos = chromoPosField.value.replaceAll(',', '')
     if (!RegExp(chrPosPattern).test(chrom_pos)) {
       alert("Invalid format of chromosome position, expected format <chr number>:<start>-<end>[+-]?<padding>");
       return false;
