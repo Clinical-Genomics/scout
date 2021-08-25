@@ -4,7 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.38]
+### Added
+### Fixed
+### Changed
+
+## [4.38]
 ### Added
 - Option to hide Alamut button in the app config file
 ### Fixed
