@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update genes command will not trigger an update of database indices any more
 - Missing resources in temporary downloading directory when updating genes using the command line
 - Restore previous variant ACMG classification in a scrollable div
+- Loading spinner not stopping after downloading PDF case reports and variant list export
 - Do not read params from the demo config file when a custom config file is provided when launching the app
 ### Changed
 
