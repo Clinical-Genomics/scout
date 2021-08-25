@@ -95,7 +95,7 @@ function validateChromPos(){
 
 /* exported validateForm */
 // ValidateForm()
-// Controll user input fields (start, end) in varaint filter.
+// Control user input fields (start, end) in variant filter.
 // Verify the format of Chromosome position
 //
 function validateForm(){
