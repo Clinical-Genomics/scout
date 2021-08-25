@@ -439,11 +439,10 @@ def parse_variant(
     return variant_obj
 
 
-def download_str_variants(store, case_obj, variant_objs):
+def download_str_variants(case_obj, variant_objs):
     """Download filtered STR variants for a case to an excel file
 
     Args:
-        store(adapter.MongoAdapter)
         case_obj(dict)
         variant_objs(PyMongo cursor)
 
