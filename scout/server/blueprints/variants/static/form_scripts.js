@@ -111,6 +111,10 @@ function validateForm(){
       alert("Padding must be greater than zero!")
     }
   }
+
+  // Avoid page spinner being stuck on Filter and export variants option
+  $(window).unbind('beforeunload');
+
   return true;
 }
 
