@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Loading spinner not stopping after downloading PDF case reports and variant list export
 - Add extra Alamut links higher up on variant pages
 - Filter and export of STR variants
+- Update look of variants page navigation buttons
 ### Changed
 
 
