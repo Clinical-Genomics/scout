@@ -203,14 +203,11 @@
             <span class="text-mute">No phenotypes added yet</span>
           {% endfor %}
         </div>
-        <div class="col-12">
-          <button data-toggle='tooltip' title="Remove selected HPO terms" class="btn btn-danger btn fa fa-trash float-right" type="submit" name="action" value="DELETE"></button>
-        </div>
       </div>
-      <hr>
+
       <div id="phenotypes_panel" class="mt-3">
         <div class="row d-flex justify-content-between">
-          <div class="col-12">
+          <div class="col-11">
             <button class="btn btn-sm btn-secondary" type="submit" name="action" value="GENERATE">Create HPO panel</button>
             <input class="ml-3" name="min_match" type="number" min="0" step="1" placeholder="Min matches" style="width:130px"/>
             {% if config.PHENOMIZER_USERNAME %}
@@ -218,8 +215,11 @@
               {%if case.phenotype_terms|length == 0 %} disabled {%endif%}>Phenomizer</button>
             {% endif %}
           </div>
+          <div class="col-1">
+            <button data-toggle='tooltip' title="Remove selected HPO terms" class="btn btn-danger btn fa fa-trash float-right" type="submit" name="action" value="DELETE"></button>
+          </div>
         </div>
-
+        <hr>
         <div class="row d-flex justify-content-between mt-3">
           <div class="col-4">
             <div data-toggle='tooltip' title="Manually add a gene (must have the same genome build as case analysis) to the dynamic HPO panel.
