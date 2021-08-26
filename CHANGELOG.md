@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add extra Alamut links higher up on variant pages
 - Improve UX for phenootypes in case page
 - Filter and export of STR variants
+- Update look of variants page navigation buttons
 ### Changed
 
 
