@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
-- Option to hide Alamut button in app config file
+- Option to hide Alamut button in the app config file
 ### Fixed
 - Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
 - Update genes command will not trigger an update of database indices any more
@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Loading spinner not stopping after downloading PDF case reports and variant list export
 - Add extra Alamut links higher up on variant pages
 - Filter and export of STR variants
+- Update look of variants page navigation buttons
 ### Changed
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 - Replace default variant evaluation terms with custom terms included in a json file

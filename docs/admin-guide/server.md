@@ -41,6 +41,15 @@ MAIL_PASSWORD = 'mySecretPassw0rd'
 
 TICKET_SYSTEM_EMAIL = 'support@sekvens.nu'
 
+## FEATURE FLAGS
+# Allow users to browse variants marked causative from among all their institutes cases
+SHOW_CAUSATIVES = True
+# Optionally show cards with legacy observed variant frequencies on variant pages
+SHOW_OBSERVED_VARIANT_ARCHIVE = True
+# Optionally hide API link to Alamut Visual. If False or non-existing Scout will show Alamut links.
+HIDE_ALAMUT_LINK = False
+
+
 # emails to send error log message to
 ADMINS = ['robin.andeer@scilifelab.se']
 
