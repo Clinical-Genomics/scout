@@ -38,7 +38,7 @@
             {{ igv_button(case, variant, case_groups) }}
           </div>
           <div>
-            {% if variant.alamut_link and config.SHOW_ALAMUT_LINK %}
+            {% if variant.alamut_link %}
               <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank"
             data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
             {% endif %}
@@ -208,7 +208,7 @@
           <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
           <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
-          {% if config.SHOW_ALAMUT_LINK %}
+          {% if variant.alamut_link %}
             <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
           {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
