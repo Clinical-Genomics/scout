@@ -54,6 +54,8 @@ function add_image_to_individual_panel(individuals, institute, case_name){
  * genome regions- onto the dashboard.
  */
 function draw_tracks(individual, institute, case_name){
+    // First add all new image elements to a fragment, then lastly add the fragmen to main DOM.
+    var fragment = document.createDocumentFragment();
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 530 ;
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
@@ -79,21 +81,16 @@ function draw_tracks(individual, institute, case_name){
         var coverage_images = make_names("coverage-");
     }
 
-
     // ideograms always exist
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
     var ideo_images = make_names('')
-
     var autozygous_imgObj = new Image()
     var upd_regions_imgObj = new Image()
     var coverage_imgObj = new Image()
-
-
     var chromspecs_list = get_chromosomes(individual.sex)
-
-    for(i = 0; i< chromspecs_list.length; i++){
-        // autozygous_imgObj.src = autozygous_imgPath + autozygous_images[i]
-        // upd_regions_imgObj.src = upd_regions_imgPath + upd_regions_images[i]
+    const chromspecs_list_length = chromspecs_list.length
+    
+    for(i = 0; i< chromspecs_list_length; i++){
         x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X + 5
         y_pos =  Math.floor( i/number_of_columns ) * 140;
 
@@ -102,7 +99,6 @@ function draw_tracks(individual, institute, case_name){
                                        x_pos+15,
                                        y_pos,
                                        "25px", "500px", );
-
 
         var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos);
         var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
@@ -142,8 +138,9 @@ function draw_tracks(individual, institute, case_name){
                                           "25px", "500px", );
             g.appendChild(coverage_image);
         }
-       svg_element.append(g)
+       fragment.append(g)
     }
+    svg_element.append(fragment)
 }
 
 
@@ -208,7 +205,8 @@ function static_path_ideograms(institute, case_name, individual, dir_name){
  */
 function make_names(prefix){
     var names = [];
-    for (var i = 0; i < CHROMOSOMES.length; i++){
+    const chrom_length = CHROMOSOMES.length
+    for (var i = 0; i < chrom_length; i++){
         id = CHROMOSOMES[i];
         names[i] = prefix+id+".png";
     }
