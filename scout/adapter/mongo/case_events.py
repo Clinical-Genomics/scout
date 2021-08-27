@@ -482,6 +482,7 @@ class CaseEventHandler(object):
                 return_document=pymongo.ReturnDocument.AFTER,
             )
         else:
+            LOG.error("HERE BITCHES")
             updated_case = self.case_collection.find_one_and_update(
                 {"_id": case["_id"]},
                 {"$unset": {"diagnosis_phenotypes": 1}},
@@ -498,10 +499,6 @@ class CaseEventHandler(object):
                 verb="update_diagnosis",
                 subject=case["display_name"],
                 content=omim_modif_id,
-                individuals=[
-                    omim_ind["individual_name"]
-                    for omim_ind in updated_diagnoses[omim_modif_id]["individuals"]
-                ],
             )
 
         return updated_case

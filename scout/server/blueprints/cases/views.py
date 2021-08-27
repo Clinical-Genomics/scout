@@ -273,8 +273,6 @@ def mt_report(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/diagnose", methods=["POST"])
 def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
-
-    flash(request.form)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)

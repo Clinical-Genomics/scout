@@ -51,30 +51,32 @@
   </div>
   <!--Display assigned OMIM terms -->
   <div class="col-6">
-  {% for omim_key, omim_term in case.diagnosis_phenotypes.items() %}
-    <div class="row d-flex justify-content-between ml-3">
-      <div>
-        {% if omim_key in omim_terms %}
-          <a href="http://omim.org/entry/{{ omim_id }}" target="_blank" class="ttext-dark" >
-            {{ omim_key }} - {{ omim_terms[omim_key]["description"]|truncate(50, true) }}
-          </a>
-          <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_key].disease_nr)}}">
-            <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_key].genes|length}}</span>
-            <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_key].hpo_terms|length}}</span>
-          </a>
-        {% endif %}
-      </div>
+  {% if "diagnosis_phenotypes" in case %}
+    {% for omim_key, omim_term in case.diagnosis_phenotypes.items() %}
+      <div class="row d-flex justify-content-between ml-3">
+        <div>
+          {% if omim_key in omim_terms %}
+            <a href="http://omim.org/entry/{{ omim_id }}" target="_blank" class="ttext-dark" >
+              {{ omim_key }} - {{ omim_terms[omim_key]["description"]|truncate(50, true) }}
+            </a>
+            <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_key].disease_nr)}}">
+              <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_key].genes|length}}</span>
+              <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_key].hpo_terms|length}}</span>
+            </a>
+          {% endif %}
+        </div>
 
-      <!--option to remove OMIM term for case-->
-      <span class="mr-3">
-        {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                              case_name=case.display_name, remove='yes'),
-                     hidden_input=('omim_term', omim_id), button_name='phenotype') }}
-      </span>
-    </div>
+        <!--option to remove OMIM term for case-->
+        <span class="mr-3">
+          {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
+                                case_name=case.display_name, remove='yes'),
+                       hidden_input=('omim_term', omim_key)) }}
+        </span>
+      </div>
+    {% endfor %}
   {% else %}
     <span class="text-mute">No diagnoses added</span>
-  {% endfor %}
+  {% endif %}
   </div>
 {% endmacro %}
 
