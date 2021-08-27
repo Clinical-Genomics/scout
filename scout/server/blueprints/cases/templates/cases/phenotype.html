@@ -45,35 +45,36 @@
 {% endmacro %}
 
 {% macro diagnosis_phenotypes(case, institute, omim_terms) %}
-  {{ diagnosis_form('phenotype', case, institute) }}
+  <!--Form to add OMIM terms -->
   <div class="col-6">
-    <ul class="list-group">
-      {% for omim_id in case.diagnosis_phenotypes %}
-        <li class="list-group-item d-flex">
-          {% if omim_id in omim_terms %}
-            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
-              {{ omim_id }} - {{ omim_terms[omim_id].description }}
-            </a>
-            <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
-              <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
-              <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
-            </a>
-          {% else %}
-            <a class="flex-fill" target="_blank" href="http://omim.org/entry/{{ omim_id }}">
-                {{ omim_id }}
-            </a>
-          {% endif %}
-          &nbsp;&nbsp;&nbsp;
-          <span class="pull-right">
-            {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
-                                  case_name=case.display_name, remove='yes'),
-                         hidden_input=('omim_term', omim_id), button_name='phenotype') }}
-          </span>
-        </li>
-      {% else %}
-        <li class="list-group-item">No phenotypes added</li>
-      {% endfor %}
-    </ul>
+  {{ diagnosis_form('phenotype', case, institute) }}
+  </div>
+  <!--Display assigned OMIM terms -->
+  <div class="col-6">
+  {% for omim_id in case.diagnosis_phenotypes %}
+    <div class="row d-flex justify-content-between ml-3">
+      <div>
+        {% if omim_id in omim_terms %}
+          <a href="http://omim.org/entry/{{ omim_id }}" target="_blank" class="ttext-dark" >
+            {{ omim_id }} - {{ omim_terms[omim_id].description }}
+          </a>
+          <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_id].disease_nr)}}">
+            <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_id].genes|length}}</span>
+            <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_id].hpo_terms|length}}</span>
+          </a>
+        {% endif %}
+      </div>
+
+      <!--option to remove OMIM term for case-->
+      <span class="mr-3">
+        {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
+                              case_name=case.display_name, remove='yes'),
+                     hidden_input=('omim_term', omim_id), button_name='phenotype') }}
+      </span>
+    </div>
+  {% else %}
+    <span class="text-mute">No diagnoses added</span>
+  {% endfor %}
   </div>
 {% endmacro %}
 
@@ -82,8 +83,8 @@
     <div class="row ml-1" id="omim_assign">
       <div class="col-4">
         {% if type == "phenotype"%}
-          <input name="omim_term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
-            required placeholder="Search...">
+          <input name="omim_term" id="assign-omim-term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
+            required placeholder="Search..." oninput="toggleClickableButtons('assign-omim-button', 'assign-omim-term');">
         {% else %}
           <input type="number" name="omim_term" class="form-control" required placeholder="Gene MIM number">
         {% endif %}
@@ -98,11 +99,10 @@
         </select>
       </div>
       <div class="col-5">
-        <button class="btn no-hover btn-outline-secondary btn-sm form-control" type="submit" name="{{ type }}">Assign Diagnosis</button>
+        <button class="btn no-hover btn-outline-secondary btn-sm form-control" type="submit" id="assign-omim-button" name="{{ type }}">Assign Diagnosis</button>
       </div>
     </div>
   </form>
-  <br>
 {% endmacro %}
 
 {% macro phenotype_groups_panel(case, institute, hpo_groups) %}
