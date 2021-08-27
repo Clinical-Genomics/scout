@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+### Fixed
+### Changed
+
+## [4.38]
+### Added
 - Option to hide Alamut button in the app config file
 ### Fixed
 - Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
@@ -14,11 +19,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restore previous variant ACMG classification in a scrollable div
 - Loading spinner not stopping after downloading PDF case reports and variant list export
 - Add extra Alamut links higher up on variant pages
+- Improve UX for phenotypes in case page
 - Filter and export of STR variants
 - Update look of variants page navigation buttons
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
+
 
 
 ## [4.37]
