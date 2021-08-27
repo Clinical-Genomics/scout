@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Individual-specific OMIM terms
 ### Fixed
 ### Changed
 
