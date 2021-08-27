@@ -45,9 +45,7 @@
 {% endmacro %}
 
 {% macro diagnosis_phenotypes(case, institute, omim_terms) %}
-  <div class="col-6">OMIM Phenotypes</div>
-    {{ diagnosis_form('phenotype', case, institute) }}
-  </div>
+  {{ diagnosis_form('phenotype', case, institute) }}
   <div class="col-6">
     <ul class="list-group">
       {% for omim_id in case.diagnosis_phenotypes %}
@@ -81,19 +79,26 @@
 
 {% macro diagnosis_form(type, case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row ml-3 data-width="80%">
-      <div class="col-md-10">
+    <div class="row ml-1" id="omim_assign">
+      <div class="col-4">
         {% if type == "phenotype"%}
           <input name="omim_term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
-            required placeholder="Disease description or OMIM number">
+            required placeholder="Search...">
         {% else %}
           <input type="number" name="omim_term" class="form-control" required placeholder="Gene MIM number">
         {% endif %}
       </div>
-      <div class="col-md-2">
-        <button class="btn btn-secondary form-control" type="submit" name="{{ type }}">
-          Add
-        </button>
+      <div class="col-3">
+        <select name="phenotype_inds" multiple class="selectpicker">
+          {% for ind in case.individuals %}
+            <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
+              {{ind.display_name}}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-5">
+        <button class="btn no-hover btn-outline-secondary btn-sm form-control" type="submit" name="{{ type }}">Assign Diagnosis</button>
       </div>
     </div>
   </form>

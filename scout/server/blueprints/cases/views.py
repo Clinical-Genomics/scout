@@ -294,7 +294,8 @@ def case_diagnosis(institute_id, case_name):
     store.diagnose(
         institute_obj, case_obj, user_obj, link, level=level, omim_id=omim_id, remove=remove
     )
-    return redirect(request.referrer)
+    case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
+    return redirect("#".join([case_url, "omim_assign"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])

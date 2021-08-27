@@ -142,7 +142,7 @@
                      </div>
                  </div>
             </div>
-            <div class="row mt-3">
+            <div class="row mt-1">
               <div class="col-sm-6">
                 {{ diagnosis_phenotypes(case, institute, omim_terms) }}
                </div>
@@ -571,7 +571,7 @@ function toggleClickableButtons(button, select_field) {
        document.getElementById(button).classList.remove('no-hover');
        document.getElementById(button).classList.add('btn-secondary');
     }
-    else { 
+    else {
        document.getElementById(button).classList.remove('btn-secondary');
        document.getElementById(button).classList.add('no-hover');
        document.getElementById(button).classList.add('btn-outline-secondary');
