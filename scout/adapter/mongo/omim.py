@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from pymongo import ASCENDING
+from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
@@ -61,7 +61,7 @@ class DiagnosisHandler(object):
         return self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
-            return_document=pymongo.ReturnDocument.AFTER,
+            return_document=ReturnDocument.AFTER,
         )
 
     def case_omim_diagnoses(self, case_obj):
@@ -79,7 +79,7 @@ class DiagnosisHandler(object):
         # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
         case_diagnoses = case_obj.get("diagnosis_phenotypes", {})
         if isinstance(case_diagnoses, list):
-            self.convert_diagnoses_format(case_obj)
+            case_obj = self.convert_diagnoses_format(case_obj)
         omim_ids = list(case_obj.get("diagnosis_phenotypes", {}).keys())
         res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING

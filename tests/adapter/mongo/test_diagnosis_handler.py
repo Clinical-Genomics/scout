@@ -141,19 +141,20 @@ def test_fetch_disease_term_by_hgnc_id_again(adapter):
 def test_case_omim_diagnoses(adapter, case_obj, test_omim_term):
     """Test search for all complete diagnoses for a case"""
 
+    assert "description" in test_omim_term.keys()
+
     # GIVEN a database with an OMIN term
     adapter.disease_term_collection.insert_one(test_omim_term)
 
     # AND a case with BOTH diagnosis_phenotypes and disease genes:
-    case_obj["diagnosis_phenotypes"] = [test_omim_term["disease_nr"]]
-    case_obj["diagnosis_genes"] = [test_omim_term["disease_nr"]]
+    case_obj["diagnosis_phenotypes"] = {
+        test_omim_term["disease_id"]: {"description": test_omim_term["description"]}
+    }
+
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN the database queried for the case diagnoses
-    result = list(adapter.case_omim_diagnoses(case_obj))
-
-    # THEN it should return the OMIM term
-    assert result[0] == test_omim_term
+    case_diagnoses = adapter.case_omim_diagnoses(case_obj)
+    assert list(case_diagnoses)[0]["disease_id"] == test_omim_term["disease_id"]
 
 
 def test_omim_genes(adapter, test_omim_term):
