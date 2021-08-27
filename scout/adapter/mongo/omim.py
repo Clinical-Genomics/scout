@@ -42,6 +42,28 @@ class DiagnosisHandler(object):
         )
         return res
 
+    def convert_diagnoses_format(self, case_obj):
+        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a dictionary or OMIM terms
+        Args:
+            case_obj(dict)
+
+        Returns:
+            updated_case(dict)
+        """
+        updated_diagnoses = {}
+        for omim_nr in case_obj.get("case_diagnoses", []):
+            disease_term = self.disease_term(disease_identifier=omim_nr)
+            if disease_term is None:
+                continue
+            updated_diagnoses[disease_term["_id"]] = {
+                "description": disease_term.get("description")
+            }
+        return self.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+
     def case_omim_diagnoses(self, case_obj):
         """Return all complete OMIM diagnoses for a case
 
@@ -55,8 +77,11 @@ class DiagnosisHandler(object):
         result = None
 
         # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
-        omim_ids = case_obj.get("diagnosis_phenotypes", []) + case_obj.get("diagnosis_genes", [])
-        res = self.disease_term_collection.find({"disease_nr": {"$in": omim_ids}}).sort(
+        case_diagnoses = case_obj.get("diagnosis_phenotypes", {})
+        if isinstance(case_diagnoses, list):
+            self.convert_diagnoses_format(case_obj)
+        omim_ids = list(case_obj.get("diagnosis_phenotypes", {}).keys())
+        res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING
         )
         return res

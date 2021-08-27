@@ -206,7 +206,7 @@ def case(store, institute_obj, case_obj):
     pheno_groups = institute_obj.get("phenotype_groups") or PHENOTYPE_GROUPS
 
     # complete OMIM diagnoses specific for this case
-    omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
+    omim_terms = {term["disease_id"]: term for term in store.case_omim_diagnoses(case_obj)}
 
     if case_obj.get("custom_images"):
         # re-encode images as base64
