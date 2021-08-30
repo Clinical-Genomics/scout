@@ -222,7 +222,7 @@
       <div class="row mt-3">
         <div class="col-12 ml-3">
           {% for hpo_term in case.phenotype_terms %}
-            {{ hpo_item(hpo_term, case.individuals) }}
+            {{ hpo_item(hpo_term, case) }}
           {% else %}
             <span class="text-mute">No phenotypes added yet</span>
           {% endfor %}
@@ -273,7 +273,9 @@
         {{ hpo_term.phenotype_id }}
       </a>
     </span>
-    {{ feature_individuals(case, hpo_term) }}
+    {% if hpo_term.individuals %}
+      {{ feature_individuals(case, hpo_term) }}
+    {% endif %}
     &nbsp;&nbsp;&nbsp;&nbsp;
   {% else %}
   {% endif %}
