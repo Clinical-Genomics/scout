@@ -496,14 +496,14 @@ def cosmic_links(variant_obj):
 
     cosmic_links = []
 
-    for id in cosmic_ids:
-        cosmic_id = str(cosmic_ids[0])
+    for c_id in cosmic_ids:
+        cosmic_id = str(c_id)
         if cosmic_id.startswith("COS"):
             url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
         else:
             url_template = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}"
-
         cosmic_links.append(url_template.format(cosmic_id))
+
     return cosmic_links
 
 
