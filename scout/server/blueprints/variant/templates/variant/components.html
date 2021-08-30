@@ -124,7 +124,7 @@
         Matching causatives from other cases:&nbsp;
         {% for other_variant in causatives %}
           <a href="{{ url_for('variant.variant',
-                              institute_id=other_variant.owner,
+                              institute_id=other_variant.institute_id,
                               case_name=other_variant.case_display_name,
                               variant_id=other_variant._id) }}">
             {{ other_variant.case_display_name }}
