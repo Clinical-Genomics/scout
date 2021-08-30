@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Improve Javascript performance for displaying Chromograph images
 
 ## [4.38]
 ### Added
@@ -21,9 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add extra Alamut links higher up on variant pages
 - Improve UX for phenotypes in case page
 - Filter and export of STR variants
-- Imporve Javascript performance for displaying images
 - Update look of variants page navigation buttons
-
 ### Changed
 
 
