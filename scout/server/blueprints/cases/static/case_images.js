@@ -54,6 +54,8 @@ function add_image_to_individual_panel(individuals, institute, case_name){
  * genome regions- onto the dashboard.
  */
 function draw_tracks(individual, institute, case_name){
+    // First add all new image elements to a fragment, then lastly add the fragmen to main DOM.
+    var fragment = document.createDocumentFragment();
     const CYT_HEIGHT = 50 ;
     const CYT_WIDTH = 530 ;
     var number_of_columns = $(window).width() < WIDTH_BREAKPOINT? 2:3
@@ -79,71 +81,73 @@ function draw_tracks(individual, institute, case_name){
         var coverage_images = make_names("coverage-");
     }
 
-
     // ideograms always exist
     var ideo_imgPath = static_path_ideograms(institute, case_name, individual, 'ideaograms')
     var ideo_images = make_names('')
-
     var autozygous_imgObj = new Image()
     var upd_regions_imgObj = new Image()
     var coverage_imgObj = new Image()
-
-
     var chromspecs_list = get_chromosomes(individual.sex)
+    const chromspecs_list_length = chromspecs_list.length
 
-    for(i = 0; i< chromspecs_list.length; i++){
-        // autozygous_imgObj.src = autozygous_imgPath + autozygous_images[i]
-        // upd_regions_imgObj.src = upd_regions_imgPath + upd_regions_images[i]
+    for(i = 0; i< chromspecs_list_length; i++){
         x_pos = i % number_of_columns == 0? 0 : CYT_WIDTH * (i% number_of_columns) + OFFSET_X + 5
         y_pos =  Math.floor( i/number_of_columns ) * 140;
-
+        var graphics_fragment = document.createDocumentFragment();
         var g = document.createElementNS('http://www.w3.org/2000/svg','g');
         var ideo_image = make_svgimage(ideo_imgPath + ideo_images[i],
                                        x_pos+15,
                                        y_pos,
                                        "25px", "500px", );
 
-
         var t = chromosome_text(CHROMOSOMES[i], x_pos, y_pos);
         var clipPath = make_clipPath(CHROMSPECS_LIST[i], x_pos, y_pos)
         path_ideo = make_ideogram_shape(CHROMSPECS_LIST[i], x_pos, y_pos)
+
         ideo_image.setAttributeNS(null, 'clip-path', "url(#clip-chr"+CHROMSPECS_LIST[i].name +")")
+        graphics_fragment.appendChild(ideo_image);
+
         // add polygon to outline ideogram
         var border_path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         border_path.setAttributeNS(null, 'd', path_ideo)
         border_path.setAttributeNS(null, 'style', "stroke:black;stroke-width:1")
         border_path.setAttributeNS(null, 'fill-opacity', '0.0')
 
+        graphics_fragment.appendChild(clipPath);
+        graphics_fragment.appendChild(t);
+        graphics_fragment.appendChild(border_path)
 
-        g.appendChild(ideo_image);
-        g.appendChild(clipPath);
-        g.appendChild(t);
-        g.appendChild(border_path)
 	if(individual.chromograph_images.upd_regions){
-            var upd_regions_image = make_svgimage(upd_regions_imgPath + upd_regions_images[i],
-                                          x_pos+15,
-                                          y_pos + 90,
-                                          "25px", "500px", );
-            g.appendChild(upd_regions_image);
+            var upd_img = ideo_image.cloneNode()
+            upd_img = update_svgimage(upd_img, upd_regions_imgPath + upd_regions_images[i],
+                                      x_pos+15,
+                                      y_pos + 90,
+                                      "25px", "500px", );
+            graphics_fragment.appendChild(upd_img);
         }
 
         if(individual.chromograph_images.autozygous){
-            var autozygous_image = make_svgimage(autozygous_imgPath + autozygous_images[i],
-                                          x_pos + 0+15,  //
-                                          y_pos + 30 , // place below UPD
-                                          "25px", "500px", );
-            g.appendChild(autozygous_image);
+            var auto_img = ideo_image.cloneNode()
+            auto_img = update_svgimage(auto_img, autozygous_imgPath + autozygous_images[i],
+                                       x_pos + 0+15,  //
+                                       y_pos + 30 , // place below UPD
+                                       "25px", "500px", );
+            graphics_fragment.appendChild(auto_img);
         }
 
         if(individual.chromograph_images.coverage){
-            var coverage_image = make_svgimage(coverage_imgPath + coverage_images[i],
-                                          x_pos + 0+15, //
-                                          y_pos + 60 , // place below UPD
-                                          "25px", "500px", );
-            g.appendChild(coverage_image);
+            var cov_img = ideo_image.cloneNode()
+            cov_img = update_svgimage(cov_img, coverage_imgPath + coverage_images[i],
+                                      x_pos + 0+15, //
+                                      y_pos + 60 , // place below UPD
+                                      "25px", "500px", );
+            graphics_fragment.appendChild(cov_img);
         }
-       svg_element.append(g)
+
+        g.appendChild(graphics_fragment)
+        fragment.append(g)
     }
+    svg_element.append(fragment)
 }
 
 
@@ -208,7 +212,8 @@ function static_path_ideograms(institute, case_name, individual, dir_name){
  */
 function make_names(prefix){
     var names = [];
-    for (var i = 0; i < CHROMOSOMES.length; i++){
+    const chrom_length = CHROMOSOMES.length
+    for (var i = 0; i < chrom_length; i++){
         id = CHROMOSOMES[i];
         names[i] = prefix+id+".png";
     }
@@ -350,12 +355,21 @@ function calc_centromere_lower(pos){
 function make_svgimage(src, x, y, height, width){
     var svgimg = document.createElementNS('http://www.w3.org/2000/svg','image');
     svgimg.setAttributeNS('http://www.w3.org/1999/xlink','href', src);
-    svgimg.setAttributeNS(null, 'x', String(x));
-    svgimg.setAttributeNS(null, 'y', String(y));
-    svgimg.setAttributeNS(null, 'height', String(height));
-    svgimg.setAttributeNS(null, 'width', String(width));
+    svgimg.setAttribute('x', String(x));
+    svgimg.setAttribute('y', String(y));
+    svgimg.setAttribute('height', String(height));
+    svgimg.setAttribute('width', String(width));
+    return svgimg;
+}
 
-    // svgimg.setAttributeNS(null, 'clip-path', "url(#left)");
+
+function update_svgimage(svgimg, src, x, y, height, width){
+    svgimg.setAttributeNS('http://www.w3.org/1999/xlink','href', src);
+    svgimg.setAttribute('x', String(x));
+    svgimg.setAttribute('y', String(y));
+    svgimg.setAttribute('height', String(height));
+    svgimg.setAttribute('width', String(width));
+    svgimg.setAttribute('clip-path', null);
     return svgimg;
 }
 
