@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Improve Javascript performance for displaying Chromograph images
 
 ## [4.38]
 ### Added
