@@ -23,7 +23,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter and export of STR variants
 - Imporve Javascript performance for displaying images
 - Update look of variants page navigation buttons
-
 ### Changed
 
 
