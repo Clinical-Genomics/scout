@@ -652,6 +652,7 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case_causatives:
                 other_causative = {
                     "_id": other_causative_id,
+                    "institute_id": other_case["owner"],
                     "case_id": other_case["_id"],
                     "case_display_name": other_case["display_name"],
                 }
