@@ -56,15 +56,24 @@
       <div class="row d-flex justify-content-between ml-3">
         <div>
           {% if omim_key in omim_terms %}
-            <a href="http://omim.org/entry/{{ omim_id }}" target="_blank" class="ttext-dark" >
-              {{ omim_key }} - {{ omim_terms[omim_key]["description"]|truncate(50, true) }}
+            <a href="http://omim.org/entry/{{ omim_id }}" target="_blank" class="text-dark" data-toggle='tooltip' title="{{omim_terms[omim_key]['description']}}">
+              {{ omim_key }} - {{ omim_terms[omim_key]["description"]|truncate(40, true) }}
             </a>
             <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[omim_key].disease_nr)}}">
               <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[omim_key].genes|length}}</span>
               <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[omim_key].hpo_terms|length}}</span>
             </a>
+          {% else %}
+          <a href="http://omim.org/entry/{{ omim_id }}" target="_blank" class="text-dark" >
+            {{ omim_key }}
+          </a>
+          {% endif %}
+          <!--display diseases at the individual level -->
+          {% if omim_term.individuals %}
+            {{ feature_individuals(case, omim_term) }}
           {% endif %}
         </div>
+
 
         <!--option to remove OMIM term for case-->
         <span class="mr-3">
@@ -79,6 +88,18 @@
   {% endif %}
   </div>
 {% endmacro %}
+
+<!-- This macro is used to display case individuals associated with an HPO phenotype or an OMIM disease -->
+{% macro feature_individuals(case, feature) %}
+  {% for feature_ind in feature.individuals %}
+    {% for case_ind in case.individuals %}
+      {% if feature_ind.individual_name == case_ind.display_name%}
+        <i data-toggle='tooltip' title="{{feature_ind.individual_name}}" class="fa fa-user {% if case_ind.phenotype == 2 %} text-danger {% endif %}"></i>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+{% endmacro %}
+
 
 {% macro diagnosis_form(case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
@@ -242,7 +263,7 @@
     </form> <!-- End of form phenotype actions -->
 {% endmacro %}
 
-{% macro hpo_item(hpo_term, case_individuals) %}
+{% macro hpo_item(hpo_term, case) %}
   {% if hpo_term %}
     <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
            {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
@@ -252,13 +273,7 @@
         {{ hpo_term.phenotype_id }}
       </a>
     </span>
-    {% for ind in hpo_term.individuals %}
-      {% for case_ind in case_individuals %}
-        {% if ind.individual_name == case_ind.display_name%}
-          <i data-toggle='tooltip' title="{{ind.individual_name}}" class="fa fa-user {% if case_ind.phenotype == 2 %} text-danger {% endif %}"></i>
-        {% endif %}
-      {% endfor %}
-    {% endfor %}
+    {{ feature_individuals(case, hpo_term) }}
     &nbsp;&nbsp;&nbsp;&nbsp;
   {% else %}
   {% endif %}
