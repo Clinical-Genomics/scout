@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+- Allow multiple COSMIC links for a cancer variant
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 
