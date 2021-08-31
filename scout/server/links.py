@@ -367,7 +367,7 @@ def get_variant_links(institute_obj, variant_obj, build=None):
         exac_link=exac_link(variant_obj),
         gnomad_link=gnomad_link(variant_obj, build),
         swegen_link=swegen_link(variant_obj),
-        cosmic_link=cosmic_link(variant_obj),
+        cosmic_links=cosmic_links(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
         ucsc_link=ucsc_link(variant_obj, build),
         decipher_link=decipher_link(variant_obj, build),
@@ -481,29 +481,30 @@ def swegen_link(variant_obj):
     return url_template.format(this=variant_obj)
 
 
-def cosmic_link(variant_obj):
+def cosmic_links(variant_obj):
     """Compose link to COSMIC Database.
 
     Args:
         variant_obj(scout.models.Variant)
 
     Returns:
-        url_template(str): Link to COSMIC database if cosmic id is present
+        cosmic_links(list): a list of tuples : [(id1, link1), (id2, link2), ..]
     """
-
     cosmic_ids = variant_obj.get("cosmic_ids")
-
     if not cosmic_ids:
         return None
 
-    cosmic_id = str(cosmic_ids[0])
+    cosmic_links = []
 
-    if cosmic_id.startswith("COS"):
-        url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
-    else:
-        url_template = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}"
+    for c_id in cosmic_ids:
+        cosmic_id = str(c_id)
+        if cosmic_id.startswith("COS"):
+            url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
+        else:
+            url_template = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}"
+        cosmic_links.append((cosmic_id, url_template.format(cosmic_id)))
 
-    return url_template.format(cosmic_id)
+    return cosmic_links
 
 
 def beacon_link(variant_obj, build=None):
