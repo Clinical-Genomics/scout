@@ -153,6 +153,14 @@ def variant(
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    # is variant located on the mitochondria
+    variant_obj["is_mitochondrial"] = any(
+        [
+            (genome_build == "38" and variant_obj["chromosome"] == "M"),
+            (genome_build == "37" and variant_obj["chromosome"] == "MT"),
+        ]
+    )
+
     # add default panels extra gene information
     panels = default_panels(store, case_obj)
     variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
