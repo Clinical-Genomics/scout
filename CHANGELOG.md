@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
+- Fixed MitoMap and HmtVar links for hg38 cases
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 
@@ -28,8 +29,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
-
-
 
 ## [4.37]
 ### Added
