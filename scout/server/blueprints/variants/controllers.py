@@ -25,7 +25,7 @@ from scout.constants import (
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
 from scout.server.blueprints.variant.utils import clinsig_human, predictions
-from scout.server.links import cosmic_link, str_source_link
+from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
@@ -440,7 +440,7 @@ def parse_variant(
         variant_obj["end_chrom"] = variant_obj["chromosome"]
 
     # variant level links shown on variants page
-    variant_obj["cosmic_link"] = cosmic_link(variant_obj)
+    variant_obj["cosmic_links"] = cosmic_links(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
