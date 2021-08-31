@@ -196,49 +196,13 @@
   <div class="card panel-default">
     <div class="panel-heading">Summary</div>
     <div class="card-body">
-      {% set tmp_gene_info = [] %}
       {% for gene in variant.genes %}
-        {% for transcript in gene.transcripts %}
-          {% if transcript.is_primary %}
-            {% do tmp_gene_info.append(gene) %}
-            {% do tmp_gene_info.append(transcript) %}
-          {% endif %}
-        {% endfor %}
-      {% endfor %}
-      {% if tmp_gene_info | length  == 0 %}
-        {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts %}
-            {% if transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
-              {% do tmp_gene_info.append(gene) %}
-              {% do tmp_gene_info.append(transcript) %}
-            {% endif %}
-          {% endfor %}
-        {% endfor %}
-      {% endif %}
-      {% set primary_gene = tmp_gene_info[0] %}
-      {% if tmp_gene_info %}
-        {% set primary_transcript = tmp_gene_info[1] %}
-        <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}"><h5 class="card-title">
-          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }}
-        </h5></a>
-      {% endif %}
-      <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
-        {% if primary_transcript %}
-          <li class="list-group-item">{{ primary_transcript.refseq_id }}
-        {% endif %}
-        {% if primary_gene and primary_gene.exon %}
-          <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
-        {% endif %}
-        {% if primary_transcript and primary_transcript.coding_sequence_name %}
-              {{ primary_transcript.coding_sequence_name | url_decode }}
-        {% endif %}
-        {% if primary_transcript and primary_transcript.protein_sequence_name %}
-          <strong>{{ primary_transcript.protein_sequence_name | url_decode }}</strong>
-        {% endif %}
-        {% if primary_gene and primary_gene.region_annotation %}
-          <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
-        {% endif %}
+         <li class="list-group-item">
+           <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}"><h5 class="card-title">
+             {{ gene.hgnc_symbol }}; {{ gene.description }}</h5>
+           </a>
         </li>
+      {% endfor %}
        <li class="list-group-item">
           <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
           {%- if variant.reference|length > 8 -%}
