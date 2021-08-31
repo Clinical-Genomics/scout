@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
+- Fixed MitoMap and HmtVar links for hg38 cases
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 
@@ -28,8 +29,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 - Replace default variant evaluation terms with custom terms included in a json file
-
-
 
 ## [4.37]
 ### Added

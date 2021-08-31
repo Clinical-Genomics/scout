@@ -377,7 +377,7 @@
           <input type="hidden" name="stop" value="{{ initial_view.end }}">
         {% endif %}
 
-        {% if variant.chromosome == "MT" and case.mt_bams %}
+        {% if variant.is_mitochondrial and case.mt_bams %}
           <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
           <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
           - Alignment:
