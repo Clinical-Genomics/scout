@@ -32,7 +32,7 @@ def test_build_hgnc_gene():
     assert gene_obj["ensembl_id"] == gene_info["ensembl_gene_id"]
 
 
-@pytest.mark.parametrize("key", ['hgnc_id'])
+@pytest.mark.parametrize("key", ["hgnc_id"])
 def test_build_hgnc_gene_inappropriate_value(test_gene, key):
     ## GIVEN a dictionary with gene information
 
@@ -42,7 +42,8 @@ def test_build_hgnc_gene_inappropriate_value(test_gene, key):
     with pytest.raises(ValueError):
         build_hgnc_gene(test_gene)
 
-@pytest.mark.parametrize('key', ['start', 'end'])
+
+@pytest.mark.parametrize("key", ["start", "end"])
 def test_build_hgnc_gene_inappropriate_type(test_gene, key):
     ## GIVEN a dictionary with gene information
 
@@ -54,7 +55,7 @@ def test_build_hgnc_gene_inappropriate_type(test_gene, key):
 
 
 # TODO: are 'ensembl_gene_id' and 'ensembl_id' the same thing? -both seem to be used!
-@pytest.mark.parametrize("key", ['hgnc_id', 'hgnc_symbol', 'chromosome', 'start', 'end'])
+@pytest.mark.parametrize("key", ["hgnc_id", "hgnc_symbol", "chromosome", "start", "end"])
 def test_build_hgnc_gene_missing_key(test_gene, key):
     ## GIVEN a dictionary with gene information
 

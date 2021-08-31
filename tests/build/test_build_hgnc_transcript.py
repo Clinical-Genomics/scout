@@ -15,7 +15,9 @@ def test_build_hgnc_transcripts(parsed_transcripts):
         assert tx_obj["hgnc_id"]
 
 
-@pytest.mark.parametrize("key", ['hgnc_id', 'transcript_start', 'transcript_end', 'chrom', 'ensembl_transcript_id'])
+@pytest.mark.parametrize(
+    "key", ["hgnc_id", "transcript_start", "transcript_end", "chrom", "ensembl_transcript_id"]
+)
 def test_build_hgnc_transcripts_missing_key(transcript_info, key):
     ## GIVEN a dictionary with transcript information
 
@@ -26,7 +28,7 @@ def test_build_hgnc_transcripts_missing_key(transcript_info, key):
         build_transcript(transcript_info)
 
 
-@pytest.mark.parametrize("key", ['hgnc_id', 'transcript_start', 'transcript_end'])
+@pytest.mark.parametrize("key", ["hgnc_id", "transcript_start", "transcript_end"])
 def test_build_hgnc_transcript_inappropriate_type(transcript_info, key):
     ## GIVEN a dictionary with transcript information
 

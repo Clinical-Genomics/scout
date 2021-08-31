@@ -43,6 +43,36 @@ class GeneHandler(object):
 
         return result
 
+    def hgnc_gene_symbol(self, hgnc_identifier, build="37"):
+        """Fetch the current hgnc gene symbol
+
+        Args:
+            hgnc_identifier(int)
+            build(str)
+
+        Returns:
+            gene_symbol(str)
+        """
+
+        if build:
+            build = str(build)
+        if not build in ["37", "38"]:
+            build = "37"
+        query = {}
+        projection = {}
+
+        hgnc_identifier = int(hgnc_identifier)
+        query["hgnc_id"] = hgnc_identifier
+        query["build"] = build
+
+        projection["hgnc_symbol"] = 1
+        LOG.debug("Fetching gene %s" % hgnc_identifier)
+        gene_symbol_obj = self.hgnc_collection.find_one(query, projection)
+        if not gene_symbol_obj:
+            return None
+
+        return gene_symbol_obj.get("hgnc_symbol", None)
+
     def hgnc_gene(self, hgnc_identifier, build="37"):
         """Fetch a hgnc gene
 
