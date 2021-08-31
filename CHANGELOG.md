@@ -28,8 +28,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update look of variants page navigation buttons
 ### Changed
 
-
-
 ## [4.37]
 ### Added
 - Highlight and show version number for RefSeq MANE transcripts.
