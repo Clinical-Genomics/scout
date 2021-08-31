@@ -196,13 +196,13 @@
   <div class="card panel-default">
     <div class="panel-heading">Summary</div>
     <div class="card-body">
-      {% for gene in variant.genes %}
-         <li class="list-group-item">
-           <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}"><h5 class="card-title">
-             {{ gene.hgnc_symbol }}; {{ gene.description }}</h5>
-           </a>
-        </li>
-      {% endfor %}
+      <li class="list-group-item">
+        {% for gene in variant.genes %}
+         <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}"><h5 class="card-title">
+           {{ gene.hgnc_symbol }}; {{ gene.description }}</h5>
+         </a>
+        {% endfor %}
+       </li>
        <li class="list-group-item">
           <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
           {%- if variant.reference|length > 8 -%}
