@@ -20,10 +20,12 @@
         {% for clinsig in variant.clinsig_human %}
           <tr>
             <td>{{ clinsig.human }}</td>
-            <td>
-              <a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a>
-            </td>
-            <td>{{ clinsig.revstat }}</td>
+            {% if clinsig.accession %}
+              <td><a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a></td>
+            {% else %}
+              <td>n.a.</td>
+            {% endif %}
+            <td>{{ clinsig.revstat or "n.a." }}</td>
           </tr>
         {% else %}
           <i>No annotations</i>
