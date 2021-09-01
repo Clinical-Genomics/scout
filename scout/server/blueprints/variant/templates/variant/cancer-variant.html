@@ -4,7 +4,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
 {% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
-{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links  %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table  %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
 
@@ -262,8 +262,11 @@
         <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
         </li>
       </ul>
+      <div class="h6 mt-1">
+        {{ clinsig_table(variant) }}
+      </div>
     <!--LINK out resources-->
-      <div class="h6">Databases</div>
+      <div class="h6 mt-1">Databases</div>
       <div>
         <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
         <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
@@ -296,14 +299,6 @@
             data-toggle="tooltip" title="MyCancerGenome">MCG</a>
         {% endif %}
       </div>
-
-      {% if variant.clinsig_human %}
-        {% for clinsig in variant.clinsig_human %}
-          {% if clinsig.accession %}
-            <a class="btn btn-sm btn-info text-white mr-1"  role="button" href="{{ clinsig.link }}" role="button" target="_blank">Clinvar {{ clinsig.accession }}</a>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
     </div>
 
     <!--IGV URLS-->
