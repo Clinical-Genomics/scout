@@ -232,6 +232,10 @@ def variant(
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
 
+
+    variant_genes = variant_obj.get("genes", [])
+    update_representative_gene(variant_obj, variant_genes)
+
     # Add display information about callers
     variant_obj["callers"] = callers(variant_obj, category=variant_category)
 

@@ -1,6 +1,6 @@
 import logging
 
-from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP
+from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS
 from scout.server.links import add_gene_links, add_tx_links, ensembl
 
 LOG = logging.getLogger(__name__)
@@ -51,6 +51,27 @@ def add_panel_specific_gene_info(panel_info):
 
     return panel_specific
 
+def update_representative_gene(variant_obj, variant_genes):
+    """ Set the gene with most severe consequence as being representative
+    Used for display purposes
+
+    Args:
+        variant_obj(Variant): a variant object
+        variant_genes(list(Genes): a list of genes
+    """
+    if variant_genes:
+        first_rep_gene = min(
+            variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
+        )
+        # get HGVNp identifier from the canonical transcript
+        hgvsp_identifier = None
+        for tc in first_rep_gene["transcripts"]:
+            if tc["is_canonical"]:
+                hgvsp_identifier = tc.get("protein_sequence_name")
+        first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
+        variant_obj["first_rep_gene"] = first_rep_gene
+    else:
+        variant_obj["first_rep_gene"] = None
 
 def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None):
     """Collect tx info from the hgnc gene and panels and update variant transcripts
