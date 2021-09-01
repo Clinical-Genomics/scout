@@ -28,7 +28,11 @@ from scout.constants import (
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.variant.utils import clinsig_human, predictions, update_representative_gene
+from scout.server.blueprints.variant.utils import (
+    clinsig_human,
+    predictions,
+    update_representative_gene,
+)
 from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
