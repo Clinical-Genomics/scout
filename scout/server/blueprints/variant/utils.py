@@ -51,8 +51,9 @@ def add_panel_specific_gene_info(panel_info):
 
     return panel_specific
 
+
 def update_representative_gene(variant_obj, variant_genes):
-    """ Set the gene with most severe consequence as being representative
+    """Set the gene with most severe consequence as being representative
     Used for display purposes
 
     Args:
@@ -72,6 +73,7 @@ def update_representative_gene(variant_obj, variant_genes):
         variant_obj["first_rep_gene"] = first_rep_gene
     else:
         variant_obj["first_rep_gene"] = None
+
 
 def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None):
     """Collect tx info from the hgnc gene and panels and update variant transcripts
