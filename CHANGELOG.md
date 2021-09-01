@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid loading all transcripts when checking gene symbol
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
+- Make ClinVar classification more evident in cancer variant page
 
 ## [4.38]
 ### Added
