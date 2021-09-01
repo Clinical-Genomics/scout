@@ -198,9 +198,12 @@
     <div class="card-body">
       <li class="list-group-item">
         {% for gene in variant.genes %}
-         <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}"><h5 class="card-title">
-           {{ gene.hgnc_symbol }}; {{ gene.description }}</h5>
-         </a>
+          {% if gene.hgnc_symbol %}
+           <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}"><h5>
+             {{ gene.hgnc_symbol }}; {{ gene.description }}</h5>
+           </a>
+          {% else %} <h5>n.a.</h5>
+          {% endif %}
         {% endfor %}
        </li>
        <li class="list-group-item">
