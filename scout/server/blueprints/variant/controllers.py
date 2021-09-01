@@ -18,6 +18,7 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
+from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -27,7 +28,6 @@ from scout.server.utils import (
     variant_case,
 )
 from scout.utils.scout_requests import fetch_refseq_version
-from scout.server.blueprints.variant.utils import update_representative_gene
 
 from .utils import (
     add_gene_info,
