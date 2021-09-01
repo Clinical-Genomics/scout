@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
 - Fixed MitoMap and HmtVar links for hg38 cases
+- Refactor variantS representative gene selection, and use it also for cancer variant summary
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 
