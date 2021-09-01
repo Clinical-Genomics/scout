@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed MitoMap and HmtVar links for hg38 cases
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
+- Make ClinVar classification more evident in cancer variant page
 
 ## [4.38]
 ### Added
