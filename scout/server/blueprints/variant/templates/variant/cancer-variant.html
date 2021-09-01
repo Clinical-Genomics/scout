@@ -196,25 +196,23 @@
   <div class="card panel-default">
     <div class="panel-heading">Summary</div>
     <div class="card-body">
-      {% set tmp_gene_info = [] %}
-      {% for gene in variant.genes %}
-        {% for transcript in gene.transcripts %}
-          {% if transcript.is_primary %}
-            {% do tmp_gene_info.append(gene) %}
-            {% do tmp_gene_info.append(transcript) %}
-          {% endif %}
-        {% endfor %}
+    {% set tmp_gene_info = [] %}
+      {% for transcript in variant.first_rep_gene.transcripts %}
+        {% if transcript.is_primary %}
+          {% do tmp_gene_info.append(variant.first_rep_gene) %}
+          {% do tmp_gene_info.append(transcript) %}
+        {% endif %}
       {% endfor %}
+
       {% if tmp_gene_info | length  == 0 %}
-        {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts %}
+          {% for transcript in variant.first_rep_gene.transcripts %}
             {% if transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
               {% do tmp_gene_info.append(gene) %}
               {% do tmp_gene_info.append(transcript) %}
             {% endif %}
           {% endfor %}
-        {% endfor %}
       {% endif %}
+
       {% set primary_gene = tmp_gene_info[0] %}
       {% if tmp_gene_info %}
         {% set primary_transcript = tmp_gene_info[1] %}
