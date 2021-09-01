@@ -5,7 +5,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
-{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
 
 
@@ -235,32 +235,7 @@
           </tr>
         </tbody>
       </table>
-      {% if variant.clinsig_human %}
-        <table class="table table-bordered table-fixed table-sm">
-          <thead>
-            <thead>
-              <tr class="active">
-                <th>CLINSIG</th>
-                <th>Accession</th>
-                <th>Revstat</th>
-              </tr>
-            </thead>
-          </thead>
-          <tbody>
-            {% for clinsig in variant.clinsig_human %}
-              <tr>
-                <td>{{ clinsig.human }}</td>
-                <td>
-                  <a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a>
-                </td>
-                <td>{{ clinsig.revstat }}</td>
-              </tr>
-            {% else %}
-              <i>No annotations</i>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% endif %}
+      {{ clinsig_table(variant) }}
       {% if variant.mitomap_associated_diseases %}
         <table class="table table-bordered table-fixed table-sm">
           <tbody>

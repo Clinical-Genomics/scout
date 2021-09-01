@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified gene info in cancer variant summary
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
+- Make ClinVar classification more evident in cancer variant page
 
 ## [4.38]
 ### Added
