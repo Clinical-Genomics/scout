@@ -207,7 +207,7 @@
       {% if tmp_gene_info | length  == 0 %}
           {% for transcript in variant.first_rep_gene.transcripts %}
             {% if transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
-              {% do tmp_gene_info.append(gene) %}
+              {% do tmp_gene_info.append(variant.first_rep_gene) %}
               {% do tmp_gene_info.append(transcript) %}
             {% endif %}
           {% endfor %}
