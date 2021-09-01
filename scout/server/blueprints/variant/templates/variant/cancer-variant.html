@@ -236,7 +236,11 @@
         {% if primary_gene and primary_gene.region_annotation %}
           <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
         {% endif %}
-        </li>
+        {% if primary_transcript %}
+          </li>
+        {% else %}
+          <span><i>Check complete list of transcripts</i></span>
+        {% endif %}
        <li class="list-group-item">
           <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
           {%- if variant.reference|length > 8 -%}
