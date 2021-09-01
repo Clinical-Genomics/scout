@@ -4,6 +4,35 @@
 {% from "variant/buttons.html" import igv_button, splice_junctions_button %}
 {% from "variant/utils.html" import igv_track_selection  %}
 
+{% macro clinsig_table(variant) %}
+  {% if variant.clinsig_human %}
+    <table class="table table-bordered table-fixed table-sm">
+      <thead>
+        <thead>
+          <tr class="active">
+            <th>CLINSIG</th>
+            <th>Accession</th>
+            <th>Revstat</th>
+          </tr>
+        </thead>
+      </thead>
+      <tbody>
+        {% for clinsig in variant.clinsig_human %}
+          <tr>
+            <td>{{ clinsig.human }}</td>
+            <td>
+              <a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a>
+            </td>
+            <td>{{ clinsig.revstat }}</td>
+          </tr>
+        {% else %}
+          <i>No annotations</i>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endmacro %}
+
 {% macro acmg_classification_item(variant, data) %}
   {% set current_variant = (data.variant_specific == variant._id) %}
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
