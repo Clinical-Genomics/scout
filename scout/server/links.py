@@ -488,7 +488,7 @@ def cosmic_links(variant_obj):
         variant_obj(scout.models.Variant)
 
     Returns:
-        url_template(str): Link to COSMIC database if cosmic id is present
+        cosmic_links(list): a list of tuples : [(id1, link1), (id2, link2), ..]
     """
     cosmic_ids = variant_obj.get("cosmic_ids")
     if not cosmic_ids:

@@ -10,8 +10,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
 - Fix floating text in severity box #2808
+- Fixed MitoMap and HmtVar links for hg38 cases
+- Do not open new browser tabs when downloading files
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
+- Make ClinVar classification more evident in cancer variant page
 
 ## [4.38]
 ### Added
@@ -27,8 +30,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter and export of STR variants
 - Update look of variants page navigation buttons
 ### Changed
-
-
 
 ## [4.37]
 ### Added
