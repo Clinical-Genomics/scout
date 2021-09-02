@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
+- Fix floating text in severity box #2808
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 
