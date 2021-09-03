@@ -196,35 +196,36 @@
   <div class="card panel-default">
     <div class="panel-heading">Summary</div>
     <div class="card-body">
-      {% set tmp_gene_info = [] %}
-      {% for gene in variant.genes %}
-        {% for transcript in gene.transcripts %}
+
+    {% set tmp_gene_info = [] %}
+      {% if variant.first_rep_gene %}
+        {% for transcript in variant.first_rep_gene.transcripts %}
           {% if transcript.is_primary %}
-            {% do tmp_gene_info.append(gene) %}
+            {% do tmp_gene_info.append(variant.first_rep_gene) %}
             {% do tmp_gene_info.append(transcript) %}
           {% endif %}
         {% endfor %}
-      {% endfor %}
-      {% if tmp_gene_info | length  == 0 %}
-        {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts %}
+        {% if tmp_gene_info | length  == 0 %}
+          {% for transcript in variant.first_rep_gene.transcripts %}
             {% if transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
-              {% do tmp_gene_info.append(gene) %}
+              {% do tmp_gene_info.append(variant.first_rep_gene) %}
               {% do tmp_gene_info.append(transcript) %}
             {% endif %}
           {% endfor %}
-        {% endfor %}
+        {% endif %}
       {% endif %}
+
       {% set primary_gene = tmp_gene_info[0] %}
       {% if tmp_gene_info %}
         {% set primary_transcript = tmp_gene_info[1] %}
-        <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}"><h5 class="card-title">
-          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }}
+        {% set nr_genes = variant.genes | length %}
+        <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details."><h5 class="card-title">
+          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }} {% if nr_genes > 1 %} <span class="badge badge-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
         </h5></a>
       {% endif %}
       <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
         {% if primary_transcript %}
-          <li class="list-group-item">{{ primary_transcript.refseq_id }}
+          <li class="list-group-item" data-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id }}
         {% endif %}
         {% if primary_gene and primary_gene.exon %}
           <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
@@ -238,7 +239,11 @@
         {% if primary_gene and primary_gene.region_annotation %}
           <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
         {% endif %}
-        </li>
+        {% if primary_transcript %}
+          </li>
+        {% else %}
+          <span data-toggle="tooltip" title="No HGNC primary or RefSeq NM_ transcript found"><i>Check complete list of transcripts</i></span>
+        {% endif %}
        <li class="list-group-item">
           <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
           {%- if variant.reference|length > 8 -%}
@@ -301,7 +306,7 @@
 
     <!--IGV URLS-->
     <div class="h6 ml-4">Alignment</div>
-    {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks) }}
+    {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
 
     </div>
 {% endmacro %}
