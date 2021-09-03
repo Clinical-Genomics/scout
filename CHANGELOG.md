@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not open new browser tabs when downloading files
 - Selectable IGV tracks on variant page
 - Missing splice junctions button on variant page
+- Refactor variantS representative gene selection, and use it also for cancer variant summary
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 - Make ClinVar classification more evident in cancer variant page
