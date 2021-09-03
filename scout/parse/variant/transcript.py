@@ -229,12 +229,18 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["dbsnp"] = []
         transcript["cosmic"] = []
         variant_ids = entry.get("EXISTING_VARIATION")
+
         if variant_ids:
             for variant_id in variant_ids.split("&"):
                 if variant_id.startswith("rs"):
                     transcript["dbsnp"].append(variant_id)
                 elif variant_id.startswith("COSM") or variant_id.startswith("COSV"):
                     transcript["cosmic"].append(variant_id)
+
+        cosmic_ids = entry.get("COSMIC")
+        if cosmic_ids:
+            for cosmic_id in cosmic_ids.split("&"):
+                transcript["cosmic"].append(cosmic_id)
 
         yield transcript
 
