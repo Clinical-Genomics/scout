@@ -1,5 +1,5 @@
 {% macro splice_junctions_button(institute_id, case_name, variant_id) %}
-  <a class="btn btn-secondary btn-sm text-white mt-1" href="{{url_for('alignviewers.sashimi_igv', institute_id=institute_id, case_name=case_name, variant_id=variant_id)}}" target="_blank"
+  <a class="btn btn-sm btn-secondary text-white" href="{{url_for('alignviewers.sashimi_igv', institute_id=institute_id, case_name=case_name, variant_id=variant_id)}}" target="_blank"
     data-toggle="tooltip" data-placement="top" title="Only available in build GRCh38">RNA splicing</a>
 {% endmacro %}
 
