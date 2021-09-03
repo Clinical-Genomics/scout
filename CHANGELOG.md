@@ -7,6 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+### Changed
+
+## [4.39]
+### Added
+- COSMIC IDs collected from CSQ field named `COSMIC`
+### Fixed
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
 - Fixed MitoMap and HmtVar links for hg38 cases
@@ -14,7 +20,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Selectable IGV tracks on variant page
 - Missing splice junctions button on variant page
 - Refactor variantS representative gene selection, and use it also for cancer variant summary
-- Missing COSMIC IDs collected from CSQ field named `COSMIC`
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 - Make ClinVar classification more evident in cancer variant page
