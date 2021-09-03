@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow multiple COSMIC links for a cancer variant
 - Fixed MitoMap and HmtVar links for hg38 cases
 - Do not open new browser tabs when downloading files
+- Selectable IGV tracks on variant page
 - Missing COSMIC IDs collected from CSQ field named `COSMIC`
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
