@@ -477,9 +477,13 @@ class VariantLoader(object):
                         load = True
                 # Associate variant with image
                 if custom_images:
-                    images = [img for img in custom_images if img['hgnc_symbol'] == variant_obj['str_repid']]
+                    images = [
+                        img
+                        for img in custom_images
+                        if img["hgnc_symbol"] == variant_obj["str_repid"]
+                    ]
                     if len(images) > 0:
-                        variant_obj['custom_images'] = images
+                        variant_obj["custom_images"] = images
                 # Load the variant object
                 if load:
                     # If the variant bulk contains coding variants we want to update the compounds
@@ -585,7 +589,7 @@ class VariantLoader(object):
         end=None,
         gene_obj=None,
         custom_images=None,
-        build="37"
+        build="37",
     ):
         """Load variants for a case into scout.
 

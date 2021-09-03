@@ -640,7 +640,11 @@ class CaseHandler(object):
                     )
 
                 # get custom images
-                custom_images = config_data['custom_images'][category] if category in config_data.get('custom_images', {}) else None
+                custom_images = (
+                    config_data["custom_images"][category]
+                    if category in config_data.get("custom_images", {})
+                    else None
+                )
                 # add variants
                 self.load_variants(
                     case_obj=case_obj,
@@ -648,7 +652,7 @@ class CaseHandler(object):
                     category=category,
                     build=genome_build,
                     rank_threshold=case_obj.get("rank_score_threshold", 5),
-                    custom_images=custom_images
+                    custom_images=custom_images,
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:

@@ -75,7 +75,7 @@ def parse_custom_images(config_data):
     images = {}
     img_cnf = config_data.get("custom_images", {})
     for page_name in img_cnf:
-        if page_name == 'case':
+        if page_name == "case":
             sections = {}
             for section_name, imgs in img_cnf[page_name].items():
                 parsed_images = _parse_images(imgs)
@@ -84,7 +84,7 @@ def parse_custom_images(config_data):
                 else:
                     LOG.warning(f"Section: {section_name} had no valid images, skipping")
             images[page_name] = sections
-        elif page_name == 'str':
+        elif page_name == "str":
             parsed_images = _parse_images(img_cnf[page_name])
             if len(parsed_images) > 0:
                 images[page_name] = parsed_images
