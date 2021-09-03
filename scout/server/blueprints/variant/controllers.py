@@ -3,6 +3,7 @@ from datetime import date
 
 from flask import url_for
 from flask_login import current_user
+from base64 import b64encode
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
@@ -272,6 +273,11 @@ def variant(
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
+
+    # re-encode images as base64
+    if variant_obj.get("custom_images"):
+        for img in variant_obj["custom_images"]:
+            img["data"] = b64encode(img["data"]).decode("utf-8")
 
     return {
         "institute": institute_obj,

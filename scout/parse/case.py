@@ -41,39 +41,56 @@ def get_correct_date(date_info):
     return datetime.datetime.now()
 
 
+def _parse_images(images):
+    """Parse images."""
+    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
+    parsed_images = []
+    for image in images:
+        # skip entries that are not recognized as image on suffix
+        path = Path(image["path"])
+        if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
+            LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
+            continue
+        # load image file to memory
+        with open(image["path"], "rb") as image_file:
+            parsed_images.append(
+                {
+                    "title": image["title"],
+                    "description": image["description"],
+                    "data": bytes(image_file.read()),
+                    "width": image.get("width"),
+                    "height": image.get("height"),
+                    "hgnc_symbol": image.get("hgnc_symbol"),
+                    "format": "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:],
+                }
+            )
+    return parsed_images
+
+
 def parse_custom_images(config_data):
     """Parse information on custom images assigned to the case."""
-    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
     LOG.debug("Parse custom images")
 
     # sort custom image sections
-    parsed_sections = {}
-    for section_name, images in config_data.get("custom_images", {}).items():
-        parsed_images = []
-        for image in images:
-            # skip entries that are not recognized as image on suffix
-            path = Path(image["path"])
-            if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
-                LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
-                continue
-            # load image file to memory
-            with open(image["path"], "rb") as image_file:
-                parsed_images.append(
-                    {
-                        "title": image["title"],
-                        "description": image["description"],
-                        "data": bytes(image_file.read()),
-                        "width": image.get("width"),
-                        "height": image.get("height"),
-                        "format": "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:],
-                    }
-                )
-        # store parsed section
-        if len(parsed_images) > 0:
-            parsed_sections[section_name] = parsed_images
-        else:
-            LOG.warning(f"Section: {section_name} had no valid images, skipping")
-    return parsed_sections
+    images = {}
+    img_cnf = config_data.get("custom_images", {})
+    for page_name in img_cnf:
+        if page_name == 'case':
+            sections = {}
+            for section_name, imgs in img_cnf[page_name].items():
+                parsed_images = _parse_images(imgs)
+                if len(parsed_images) > 0:
+                    sections[section_name] = parsed_images
+                else:
+                    LOG.warning(f"Section: {section_name} had no valid images, skipping")
+            images[page_name] = sections
+        elif page_name == 'str':
+            parsed_images = _parse_images(img_cnf[page_name])
+            if len(parsed_images) > 0:
+                images[page_name] = parsed_images
+            else:
+                LOG.warning(f"Variant {page_name}: had no valid images, skipping")
+    return images
 
 
 def parse_case_data(

@@ -359,6 +359,7 @@ class VariantLoader(object):
         vep_header=None,
         category="snv",
         sample_info=None,
+        custom_images=None,
     ):
         """Perform the loading of variants
 
@@ -474,6 +475,11 @@ class VariantLoader(object):
                     # We need to have a max size of the bulk
                     if len(bulk) > 10000:
                         load = True
+                # Associate variant with image
+                if custom_images:
+                    images = [img for img in custom_images if img['hgnc_symbol'] == variant_obj['str_repid']]
+                    if len(images) > 0:
+                        variant_obj['custom_images'] = images
                 # Load the variant object
                 if load:
                     # If the variant bulk contains coding variants we want to update the compounds
@@ -578,7 +584,8 @@ class VariantLoader(object):
         start=None,
         end=None,
         gene_obj=None,
-        build="37",
+        custom_images=None,
+        build="37"
     ):
         """Load variants for a case into scout.
 
@@ -693,6 +700,7 @@ class VariantLoader(object):
                 vep_header=vep_header,
                 category=category,
                 sample_info=sample_info,
+                custom_images=custom_images,
             )
         except Exception as error:
             LOG.exception("unexpected error")
