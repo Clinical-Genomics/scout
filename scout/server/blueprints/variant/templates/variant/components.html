@@ -62,23 +62,18 @@
   </li>
 {% endmacro %}
 
-{% macro alignments(institute, case, variant, current_user, case_groups, config, splice_junctions_tracks=False) %}
+{% macro alignments(institute, case, variant, current_user, case_groups, config) %}
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
           <div>
             {{ igv_button(case, variant, case_groups) }}
           </div>
-          {% if splice_junctions_tracks %}
-            <div>
-              {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
-            </div>
-          {% endif %}
-          {% if variant.alamut_link %}
-            <div>
+          <div>
+            {% if variant.alamut_link %}
               <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank"
-              data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
-            </div>
-          {% endif %}
+            data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
+            {% endif %}
+           </div>
           {% if config.SQLALCHEMY_DATABASE_URI %}
           <div class="d-flex flex-wrap">
             {% for gene in variant.genes %}
@@ -96,6 +91,11 @@
             {{ igv_track_selection(igv_tracks, current_user) }}
           </div>
         </li>
+        {% if splice_junctions_tracks %}
+          <li class="list-group-item">
+            <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
+          </li>
+        {% endif %}
       </ul>
 {% endmacro %}
 
