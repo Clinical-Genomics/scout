@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix floating text in severity box #2808
 - Fixed MitoMap and HmtVar links for hg38 cases
 - Do not open new browser tabs when downloading files
+- Selectable IGV tracks on variant page
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 - Make ClinVar classification more evident in cancer variant page
