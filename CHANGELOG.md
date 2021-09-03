@@ -7,6 +7,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+### Changed
+
+## [4.39]
+### Added
+### Fixed
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
 - Fixed MitoMap and HmtVar links for hg38 cases
