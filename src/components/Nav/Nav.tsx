@@ -84,16 +84,10 @@ const Nav: React.FC<Props> = ({ header, navItems, darkMode, toggleDarkMode }) =>
             className="no_button_style flex"
             onClick={() => toggleDarkMode()}
           >
-            {darkMode && (
-              <Tooltip title="Toggle light theme" placement="bottom">
-                <MdBrightness4 className={styles.switchThemeIcon} data-testid="lightModeButton" />
-              </Tooltip>
-            )}
-            {!darkMode && (
-              <Tooltip title="Toggle dark theme" placement="bottom">
-                <MdBrightness5 className={styles.switchThemeIcon} data-testid="darkModeButton" />
-              </Tooltip>
-            )}
+            <Tooltip title={`Toggle ${darkMode ? 'Light' : 'Dark'} Mode`} placement="bottom">
+              {darkMode && <MdBrightness4 className={styles.switchThemeIcon} data-testid="Light" />}
+              {!darkMode && <MdBrightness5 className={styles.switchThemeIcon} data-testid="Dark" />}
+            </Tooltip>
           </button>
         </li>
         <li className={styles.nav_item}>

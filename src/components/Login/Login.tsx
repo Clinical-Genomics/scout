@@ -50,7 +50,7 @@ export const LoginComponent = ({
 
   const loginOutMenu = (
     <Menu>
-      <Menu.Item>
+      <Menu.Item key="logout">
         <GoogleLogout
           render={(renderProps) => (
             <button
@@ -84,7 +84,7 @@ export const LoginComponent = ({
         {/* Login button */}
         {!settings?.googleToken && (
           <Menu>
-            <Menu.Item key="1" icon={<GoogleOutlined />}>
+            <Menu.Item key="login-google" icon={<GoogleOutlined />}>
               <GoogleLogin
                 render={(renderProps) => (
                   <button
@@ -101,7 +101,7 @@ export const LoginComponent = ({
                 cookiePolicy="single_host_origin"
               />
             </Menu.Item>
-            <Menu.Item key="2" icon={<MailOutlined />} disabled>
+            <Menu.Item key="login-email" icon={<MailOutlined />} disabled>
               Login with Email
             </Menu.Item>
           </Menu>
