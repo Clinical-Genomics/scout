@@ -25,7 +25,7 @@ const config = {
     publicPath: '/',
   },
   devServer: {
-    port: 3000,
+    port: 7084,
     historyApiFallback: true,
     contentBase: './',
     hot: true,
