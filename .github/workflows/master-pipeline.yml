@@ -6,6 +6,17 @@ on:
       - master
 
 jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    name: Bump version and push tags to master
+    steps:
+      - name: Bump version
+        uses: Clinical-Genomics/bump2version-ci@v3
+        env:
+          BUMPVERSION_TOKEN: ${{ secrets.BUMPVERSION_TOKEN }}
+          BUMPVERSION_AUTHOR: ${{ secrets.BUMPVERSION_AUTHOR }}
+          BUMPVERSION_EMAIL: ${{ secrets.BUMPVERSION_EMAIL }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
   build:
     runs-on: ubuntu-latest
     steps:
