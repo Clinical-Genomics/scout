@@ -18,6 +18,7 @@ jobs:
     - name: Test
       run: yarn test
   docker-image-push-staging:
+    needs: [build]
     runs-on: ubuntu-latest
     name: Create staging docker image
     steps:
@@ -48,6 +49,7 @@ jobs:
           push: true
           tags: "clinicalgenomics/scout-react-stage:master, clinicalgenomics/scout-react-stage:latest"
   docker-image-push-production:
+    needs: [build]
     runs-on: ubuntu-latest
     name: Push production docker image to dockerhub
     steps:
@@ -73,6 +75,7 @@ jobs:
           push: true
           tags: "clinicalgenomics/scout-react:master, clinicalgenomics/scout-react:latest"
   deploy-staging:
+    needs: [docker-image-push-staging]
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -83,11 +86,12 @@ jobs:
             -H "Authorization: token ${{ secrets.BUMPVERSION_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/deployments \
             -d '{
-            "ref": "${{ github.event.inputs.branch_name }}",
+            "ref": "master",
             "environment": "stage",
             "auto_merge": false,
             "description": "${{secrets.DEPLOYMENT_INFO}}"}'
   deploy-production:
+    needs: [docker-image-push-production]
     runs-on: ubuntu-latest
     steps:
       - run: |
