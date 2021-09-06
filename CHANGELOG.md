@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Stop updating database indexes after loading exons via command line
 
 ## [4.39]
 ### Added
