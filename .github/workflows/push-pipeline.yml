@@ -3,7 +3,7 @@ name: Push pipeline
 on: [push]
 
 jobs:
-  docker-image-staging-push:
+  docker-image-push-staging:
     runs-on: ubuntu-latest
     name: Release staging docker image
     steps:
