@@ -1,4 +1,4 @@
-# Scout react https://scout-stage.web.app/
+# Scout react https://scout-react-stage.scilifelab.se/
 
 ## About
 
@@ -20,17 +20,17 @@ ReactDOM.render(<Institutes />, document.getElementById('react-insitutes'))
     appShell: './src/index.tsx',
   },
 ```
-- Deploy the bundle to firebase
+- Deploy the bundle to the server farm
 - Add the bundle to Scout. In the page and place where you want your bundle to appear you should add:
 ```  
 <div id="react-home"></div>
-<script src="https://scout-stage.web.app//institutes.js"></script>
+<script src="https://scout-react-stage.scilifelab.com//institutes.js"></script>
 ```
 - Add also the css to the Scout page:
 ```
 {% block css %}
 {{ super() }}
-  <link rel="stylesheet" href="https://scout-stage.web.app/institutes.css">
+  <link rel="stylesheet" href="https://scout-react-stage.scilifelab.com/institutes.css">
 {% endblock %}
 ```
 
@@ -75,14 +75,35 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br />
 
+
+## Docker
+
+Every merge to master is published on DockerHub via GitHub Actions.
+To pull the latest image from the Clinical Genomics dockerhub repository
+
+```bash
+ docker pull clinicalgenomics/scout-react:latest
+```
+
+Make sure you are logged in with your DockerHub account.
+To run the image and serve the app on port 3000:
+
+```bash
+docker run --name scout-react -e BACKEND_URL="here-your-url" -e GOOGLE_OAUTH_CLIENT_ID="here-your-client-id" -e MOCK=true -e PORT=3000 -it -p 3000:3000 scout-react
+```
+
+To build a docker image
+
+```bash
+docker build --build-arg PORT="3000"  -t scout-react .
+```
+
+## Deployment
+The app is published on the server farm staging environment on pull requests and on staging and production after merge.
+
 ## API mocking library
 Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
 - The data are located as an object in __mocks__/ScoutResponses.ts
-
-### Routes
-#### The routs are located in server.js
-- GET /api/cases to fetch all case records
-- GET /api/cases/:id to fetch a single case record
 
 ### Fake Rest API. [More info](https://github.com/Clinical-Genomics/scout-mocks-data)  
 There are some endpoints to test the API calls if the actual APIs are not in place or not working.
@@ -108,5 +129,3 @@ Examples:
 Examples: 
 - `feature/add-institutes-endpoint`
 - `fix/dialog-not-showing-on-safari`
-
-

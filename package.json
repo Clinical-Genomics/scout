@@ -27,7 +27,6 @@
     "buffer": "^6.0.3",
     "dns-packet": "^5.2.4",
     "file-loader": "^6.2.0",
-    "firebase": "^8.6.8",
     "js-cookie": "^2.2.1",
     "process": "^0.11.10",
     "react": "^17.0.2",
