@@ -15,6 +15,7 @@ jobs:
     - name: Test
       run: yarn test
   docker-image-staging-push:
+    needs: [build]
     runs-on: ubuntu-latest
     name: Release staging docker image
     steps:
@@ -45,6 +46,7 @@ jobs:
          push: true
          tags: "clinicalgenomics/scout-react-stage:${{steps.get_branch_name.outputs.branch}}, clinicalgenomics/scout-react-stage:latest"
   create_deployment:
+    needs: [docker-image-staging-push]
     runs-on: ubuntu-latest
     steps:
       - run: |
