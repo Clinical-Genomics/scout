@@ -9,11 +9,11 @@ from scout.constants import (
     ACMG_CRITERIA,
     ACMG_MAP,
     ACMG_OPTIONS,
-    CALLERS,
     CLINVAR_INHERITANCE_MODELS,
     IGV_TRACKS,
     VERBS_MAP,
 )
+from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -226,6 +226,9 @@ def variant(
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+
+    variant_genes = variant_obj.get("genes", [])
+    update_representative_gene(variant_obj, variant_genes)
 
     # Add display information about callers
     variant_obj["callers"] = callers(variant_obj, category=variant_category)
