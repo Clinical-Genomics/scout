@@ -80,7 +80,7 @@ The build is minified and the filenames include the hashes.<br />
 
 ## Docker
 
-Every merge to master is published on DockerHub via GitHub Actions.
+The app is shipped to docker hub at every push in the `scout-react-stage` project and to `scout-react` at every merge to master.
 To pull the latest image from the Clinical Genomics dockerhub repository
 
 ```bash
@@ -101,7 +101,7 @@ docker build --build-arg PORT="3000"  -t scout-react .
 ```
 
 ## Deployment
-The app is published on the server farm staging environment on pull requests and on staging and production after merge.
+The app is deployed on prod and staging on the server farm on merge to master. Staging can be also deployed manually in the [GitHub Action UI](https://github.com/Clinical-Genomics/scout-react/actions) by choosing the workflow `Deploy branch to staging environment`, then `Run workflow` and input the branch that you want to deploy.
 
 ## API mocking library
 Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
