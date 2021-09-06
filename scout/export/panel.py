@@ -102,7 +102,11 @@ def export_panels(adapter, panels, versions=None, build="37"):
             chrom = "".join(["chr", chrom])
 
         gene_line = bed_string.format(
-            chrom, gene_obj["start"], gene_obj["end"], gene_obj["hgnc_id"], gene_obj["hgnc_symbol"],
+            chrom,
+            gene_obj["start"],
+            gene_obj["end"],
+            gene_obj["hgnc_id"],
+            gene_obj["hgnc_symbol"],
         )
         yield gene_line
 

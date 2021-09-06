@@ -30,7 +30,9 @@ def test_update_hpo(mock_app, demo_files):
     hpo_to_genes = demo_files["hpo_to_genes_path"]
     # WHEN running CLI with arguments arguments
     result = runner.invoke(
-        cli, ["update", "hpo", "--hpoterms", hpoterms, "--hpo-to-genes", hpo_to_genes], input="y",
+        cli,
+        ["update", "hpo", "--hpoterms", hpoterms, "--hpo-to-genes", hpo_to_genes],
+        input="y",
     )
     # THEN assert that the program exits without problems
     assert result.exit_code == 0

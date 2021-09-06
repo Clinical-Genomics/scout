@@ -159,7 +159,7 @@ def is_likely_benign(bs_terms, bp_terms):
 
 def get_acmg(acmg_terms):
     """Use the algorithm described in ACMG paper to get a ACMG calssification
-    
+
     If no terms return None
 
     Args:
@@ -168,7 +168,7 @@ def get_acmg(acmg_terms):
     Returns:
         prediction(str): in ['uncertain_significance','benign','likely_benign',
                              'likely_pathogenic','pathogenic']
-        
+
     """
     if not acmg_terms:
         return None

@@ -170,7 +170,8 @@ def clinvar_submissions(institute_id):
                 "clinvar_id"
             ):  # provide an official clinvar submission ID
                 result = store.update_clinvar_id(
-                    clinvar_id=request.form.get("clinvar_id"), submission_id=submission_id,
+                    clinvar_id=request.form.get("clinvar_id"),
+                    submission_id=submission_id,
                 )
             elif request.form.get("update_submission") == "delete":  # delete a submission
                 deleted_objects, deleted_submissions = store.delete_submission(
@@ -277,7 +278,8 @@ def matchmaker_matches(institute_id, case_name):
     data["panel"] = panel
     if data and data.get("server_errors"):
         flash(
-            "MatchMaker server returned error:{}".format(data["server_errors"]), "danger",
+            "MatchMaker server returned error:{}".format(data["server_errors"]),
+            "danger",
         )
         return redirect(request.referrer)
     if not data:
@@ -423,7 +425,9 @@ def matchmaker_add(institute_id, case_name):
         store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=add_result)
     flash(
         "Number of new patients in matchmaker:{0}, number of updated records:{1}, number of failed requests:{2}".format(
-            n_inserted, n_updated, len(add_result.get("server_responses")) - n_succes_response,
+            n_inserted,
+            n_updated,
+            len(add_result.get("server_responses")) - n_succes_response,
         ),
         category,
     )
@@ -555,7 +559,8 @@ def gene_variants(institute_id):
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
             flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning",
+                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
+                "warning",
             )
         if non_clinical_symbols:
             flash(
@@ -567,7 +572,10 @@ def gene_variants(institute_id):
         LOG.debug("query {}".format(form.data))
 
         variants_query = store.gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type,
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
         )
 
         data = controllers.gene_variants(store, variants_query, institute_id, page)
@@ -659,7 +667,11 @@ def pdf_case_report(institute_id, case_name):
             temp_madeline.write(case_obj["madeline_info"])
 
     html_report = render_template(
-        "cases/case_report.html", institute=institute_obj, case=case_obj, format="pdf", **data,
+        "cases/case_report.html",
+        institute=institute_obj,
+        case=case_obj,
+        format="pdf",
+        **data,
     )
     return render_pdf(
         HTML(string=html_report),
@@ -726,7 +738,13 @@ def case_diagnosis(institute_id, case_name):
 
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
-        institute_obj, case_obj, user_obj, link, level=level, omim_id=omim_id, remove=remove,
+        institute_obj,
+        case_obj,
+        user_obj,
+        link,
+        level=level,
+        omim_id=omim_id,
+        remove=remove,
     )
     return redirect(request.referrer)
 
@@ -762,7 +780,11 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
             else:
                 # assume omim id
                 store.add_phenotype(
-                    institute_obj, case_obj, user_obj, case_url, omim_term=phenotype_term,
+                    institute_obj,
+                    case_obj,
+                    user_obj,
+                    case_url,
+                    omim_term=phenotype_term,
                 )
         except ValueError:
             return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
@@ -770,13 +792,13 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
 
 
 def parse_raw_gene_ids(raw_symbols):
-    """ Parse raw gene symbols for hgnc_symbols from web form autocompletion.
+    """Parse raw gene symbols for hgnc_symbols from web form autocompletion.
 
-        Arguments:
-            raw_symbol_strings(list(string)) - formated "17284 | POT1 (hPot1, POT1)"
+    Arguments:
+        raw_symbol_strings(list(string)) - formated "17284 | POT1 (hPot1, POT1)"
 
-        Returns:
-            hgnc_ids(set(int))
+    Returns:
+        hgnc_ids(set(int))
     """
     hgnc_ids = set()
 
@@ -800,13 +822,13 @@ def parse_raw_gene_ids(raw_symbols):
 
 
 def parse_raw_gene_symbols(raw_symbols_list):
-    """ Parse list of concatenated gene symbol list for hgnc_symbols from Phenomizer.
+    """Parse list of concatenated gene symbol list for hgnc_symbols from Phenomizer.
 
-        Arguments:
-            raw_symbols(list(string)) - e.g. ("POT1 | MUTYH", "POT1 | ATXN1 | ATXN7")
+    Arguments:
+        raw_symbols(list(string)) - e.g. ("POT1 | MUTYH", "POT1 | ATXN1 | ATXN7")
 
-        Returns:
-            hgnc_symbols(set(string)) - set of (unique) gene symbols without intervening chars
+    Returns:
+        hgnc_symbols(set(string)) - set of (unique) gene symbols without intervening chars
     """
     hgnc_symbols = set()
 
@@ -839,7 +861,10 @@ def phenotypes_actions(institute_id, case_name):
         password = current_app.config["PHENOMIZER_PASSWORD"]
         diseases = controllers.hpo_diseases(username, password, hpo_ids)
         return render_template(
-            "cases/diseases.html", diseases=diseases, institute=institute_obj, case=case_obj,
+            "cases/diseases.html",
+            diseases=diseases,
+            institute=institute_obj,
+            case=case_obj,
         )
 
     if action == "DELETE":
@@ -970,7 +995,10 @@ def pin_variant(institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -987,14 +1015,18 @@ def mark_validation(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     validate_type = request.form["type"] or None
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
     return redirect(request.referrer or link)
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative", methods=["POST"],
+    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative",
+    methods=["POST"],
 )
 def mark_causative(institute_id, case_name, variant_id, partial_causative=False):
     """Mark a variant as confirmed causative."""
@@ -1002,14 +1034,23 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id,
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         if "partial_causative" in request.form:
             omim_terms = request.form.getlist("omim_select")
             hpo_terms = request.form.getlist("hpo_select")
             store.mark_partial_causative(
-                institute_obj, case_obj, user_obj, link, variant_obj, omim_terms, hpo_terms,
+                institute_obj,
+                case_obj,
+                user_obj,
+                link,
+                variant_obj,
+                omim_terms,
+                hpo_terms,
             )
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -1027,7 +1068,7 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
 @cases_bp.route("/<institute_id>/<case_name>/check-case", methods=["POST"])
 def check_case(institute_id, case_name):
     """Mark a case that is has been checked.
-       This means to set case['needs_check'] to False
+    This means to set case['needs_check'] to False
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     store.case_collection.find_one_and_update(

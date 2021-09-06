@@ -18,11 +18,11 @@ LOG = logging.getLogger(__name__)
 
 def export_exons(adapter, build="37"):
     """Export all exons of a certain build from the database
-    
+
     Args:
         adapter(scout.adapter.MongoAdapter)
         build(str)
-    
+
     Yields:
         transcript(scout.models.Transcript)
     """

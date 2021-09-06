@@ -14,7 +14,7 @@ from scout.server.blueprints.cases.views import (
 
 
 def test_parse_raw_gene_symbols(app):
-    """ Test parse gene symbols"""
+    """Test parse gene symbols"""
 
     # GIVEN a list of autocompleted gene symbols
     gene_symbols = ["MUTYH |POT1", "POT1 0.1|APC|PMS2"]
@@ -27,7 +27,7 @@ def test_parse_raw_gene_symbols(app):
 
 
 def test_parse_raw_gene_ids(app):
-    """ Test parse gene symbols"""
+    """Test parse gene symbols"""
 
     # GIVEN a list of autocompleted gene symbols
     gene_symbols = ["1234 | SYM (OLDSYM, SYM)", "4321 | MYS (OLDMYS, MYS)"]
@@ -182,7 +182,11 @@ def test_cases(app, institute_obj):
             "query": "case_id",
         }
         resp = client.get(
-            url_for("cases.cases", institute_id=institute_obj["internal_id"], params=request_data,)
+            url_for(
+                "cases.cases",
+                institute_id=institute_obj["internal_id"],
+                params=request_data,
+            )
         )
         # response should return a page
         assert resp.status_code == 200
@@ -193,7 +197,9 @@ def test_cases(app, institute_obj):
             request_data = {"sort": option}
             resp = client.get(
                 url_for(
-                    "cases.cases", institute_id=institute_obj["internal_id"], params=request_data,
+                    "cases.cases",
+                    institute_id=institute_obj["internal_id"],
+                    params=request_data,
                 )
             )
             # response should return a page
@@ -213,7 +219,11 @@ def test_cases_query(app, case_obj, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "cases.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # THEN it should return a page
@@ -233,7 +243,11 @@ def test_cases_panel_query(app, case_obj, parsed_panel, institute_obj):
 
         # WHEN accessing the cases page with a query
         resp = client.get(
-            url_for("cases.cases", query=slice_query, institute_id=institute_obj["internal_id"],)
+            url_for(
+                "cases.cases",
+                query=slice_query,
+                institute_id=institute_obj["internal_id"],
+            )
         )
 
         # THEN it should return a page
@@ -707,7 +721,8 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]},
+            {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page
@@ -734,7 +749,8 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
         # AND the case has a delivery report
         store.case_collection.update_one(
-            {"_id": case_obj["_id"]}, {"$set": {"delivery_report": delivery_report_path}},
+            {"_id": case_obj["_id"]},
+            {"$set": {"delivery_report": delivery_report_path}},
         )
 
         # WHEN accessing the delivery report page with the format=pdf param

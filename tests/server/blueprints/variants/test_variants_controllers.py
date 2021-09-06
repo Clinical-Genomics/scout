@@ -106,7 +106,8 @@ def test_sv_variants_research_shadow_clinical_assessments(
     )
     # GIVEN the variant is an SV
     adapter.variant_collection.update_one(
-        {"_id": variant_clinical["_id"]}, {"$set": {"category": "sv", "sub_category": "dup"}},
+        {"_id": variant_clinical["_id"]},
+        {"$set": {"category": "sv", "sub_category": "dup"}},
     )
 
     # GIVEN a copy of that variant marked research
@@ -120,7 +121,13 @@ def test_sv_variants_research_shadow_clinical_assessments(
     # WHEN updating the manual assessments of the clinical variant
     adapter.variant_collection.update_one(
         {"_id": variant_clinical["_id"]},
-        {"$set": {"manual_rank": 2, "mosaic_tags": ["1"], "dismiss_variant": ["2", "3"],}},
+        {
+            "$set": {
+                "manual_rank": 2,
+                "mosaic_tags": ["1"],
+                "dismiss_variant": ["2", "3"],
+            }
+        },
     )
 
     # WHEN filtering for that variant in research

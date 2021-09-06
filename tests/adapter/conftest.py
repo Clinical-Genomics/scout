@@ -17,10 +17,18 @@ def real_oldcase_database(real_panel_database, scout_config):
     user_obj = real_panel_database.users()[0]
     variant_obj = real_panel_database.variant_collection.find_one()
     real_panel_database.pin_variant(
-        institute=institute_obj, case=case_obj, user=user_obj, link="", variant=variant_obj,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="",
+        variant=variant_obj,
     )
     real_panel_database.mark_causative(
-        institute=institute_obj, case=case_obj, user=user_obj, link="", variant=variant_obj,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="",
+        variant=variant_obj,
     )
     # add ACMG evaluation
     real_panel_database.submit_evaluation(

@@ -152,7 +152,9 @@ def parse_variant(
 
     ################# Add compound information #################
     compounds = parse_compounds(
-        compound_info=variant.INFO.get("Compounds"), case_id=genmod_key, variant_type=variant_type,
+        compound_info=variant.INFO.get("Compounds"),
+        case_id=genmod_key,
+        variant_type=variant_type,
     )
     if compounds:
         parsed_variant["compounds"] = compounds

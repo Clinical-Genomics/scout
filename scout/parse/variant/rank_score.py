@@ -1,12 +1,12 @@
 def parse_rank_score(rank_score_entry, case_id):
     """Parse the rank score
 
-        Args:
-            rank_score_entry(str): The raw rank score entry
-            case_id(str)
+    Args:
+        rank_score_entry(str): The raw rank score entry
+        case_id(str)
 
-        Returns:
-            rank_score(float)
+    Returns:
+        rank_score(float)
     """
     rank_score = None
     if rank_score_entry:

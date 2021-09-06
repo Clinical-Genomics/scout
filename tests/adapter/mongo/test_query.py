@@ -56,7 +56,13 @@ def test_panel_query(real_populated_database, case_obj, variant_objs):
     # grab a variant and add the above gene to it:
     adapter.variant_collection.find_one_and_update(
         {"_id": "4c7d5c70d955875504db72ef8e1abe77"},
-        {"$set": {"genes": [{"hgnc_id": 17284}], "hgnc_ids": [17284], "hgnc_symbols": ["POT1"],}},
+        {
+            "$set": {
+                "genes": [{"hgnc_id": 17284}],
+                "hgnc_ids": [17284],
+                "hgnc_symbols": ["POT1"],
+            }
+        },
     )
     # test generate HPO gene list for the above term
     hpo_genes = adapter.generate_hpo_gene_list(*["HP1"])
@@ -119,7 +125,12 @@ def test_build_gnomad_query(adapter):
     assert mongo_query["category"] == "snv"
     assert mongo_query["variant_type"] == "clinical"
     assert mongo_query["$and"] == [
-        {"$or": [{"gnomad_frequency": {"$lt": freq}}, {"gnomad_frequency": {"$exists": False}},]}
+        {
+            "$or": [
+                {"gnomad_frequency": {"$lt": freq}},
+                {"gnomad_frequency": {"$exists": False}},
+            ]
+        }
     ]
 
 
@@ -166,7 +177,12 @@ def test_build_gnomad_and_cadd(adapter):
     mongo_query = adapter.build_query(case_id, query=query)
 
     assert mongo_query["$and"] == [
-        {"$or": [{"gnomad_frequency": {"$lt": freq}}, {"gnomad_frequency": {"$exists": False}},]},
+        {
+            "$or": [
+                {"gnomad_frequency": {"$lt": freq}},
+                {"gnomad_frequency": {"$exists": False}},
+            ]
+        },
         {"cadd_score": {"$gt": cadd}},
     ]
 
@@ -267,7 +283,8 @@ def test_build_clinsig_filter(real_variant_database):
 
     # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
     adapter.variant_collection.update_one(
-        {"_id": a_variant["_id"]}, {"$set": {"clnsig.0.value": "Pathogenic, Likely pathogenic"}},
+        {"_id": a_variant["_id"]},
+        {"$set": {"clnsig.0.value": "Pathogenic, Likely pathogenic"}},
     )
 
     # One variant has multiple clssig now:
@@ -420,8 +437,18 @@ def test_build_spidex_high(adapter):
             "$or": [
                 {
                     "$or": [
-                        {"$and": [{"spidex": {"$gt": -2}}, {"spidex": {"$lt": -float("inf")}},]},
-                        {"$and": [{"spidex": {"$gt": 2}}, {"spidex": {"$lt": float("inf")}},]},
+                        {
+                            "$and": [
+                                {"spidex": {"$gt": -2}},
+                                {"spidex": {"$lt": -float("inf")}},
+                            ]
+                        },
+                        {
+                            "$and": [
+                                {"spidex": {"$gt": 2}},
+                                {"spidex": {"$lt": float("inf")}},
+                            ]
+                        },
                     ]
                 }
             ]
@@ -530,7 +557,12 @@ def test_build_swegen_sv(adapter):
 
     mongo_query = adapter.build_query(case_id, query=query)
     assert mongo_query["$and"] == [
-        {"$or": [{"swegen": {"$exists": False}}, {"swegen": {"$lt": query["swegen"] + 1}},]}
+        {
+            "$or": [
+                {"swegen": {"$exists": False}},
+                {"swegen": {"$lt": query["swegen"] + 1}},
+            ]
+        }
     ]
 
 

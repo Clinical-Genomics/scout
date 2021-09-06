@@ -130,9 +130,17 @@ def case_append_alignments(case_obj):
         {"path": "mt_bam", "append_to": "mt_bams", "index": "mt_bais"},
         {"path": "rhocall_bed", "append_to": "rhocall_beds", "index": "no_index"},
         {"path": "rhocall_wig", "append_to": "rhocall_wigs", "index": "no_index"},
-        {"path": "upd_regions_bed", "append_to": "upd_regions_beds", "index": "no_index",},
+        {
+            "path": "upd_regions_bed",
+            "append_to": "upd_regions_beds",
+            "index": "no_index",
+        },
         {"path": "upd_sites_bed", "append_to": "upd_sites_beds", "index": "no_index"},
-        {"path": "tiddit_coverage_wig", "append_to": "tiddit_coverage_wigs", "index": "no_index",},
+        {
+            "path": "tiddit_coverage_wig",
+            "append_to": "tiddit_coverage_wigs",
+            "index": "no_index",
+        },
     ]
 
     for individual in case_obj["individuals"]:

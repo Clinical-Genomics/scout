@@ -56,7 +56,16 @@ def test_export_panel(mock_app):
     # Pass a valid panel name, valid version, bed file format option and genome build GRCh38
     result = runner.invoke(
         cli,
-        ["export", "panel", panel_obj["panel_name"], "--version", 1.0, "-b", "GRCh38", "--bed",],
+        [
+            "export",
+            "panel",
+            panel_obj["panel_name"],
+            "--version",
+            1.0,
+            "-b",
+            "GRCh38",
+            "--bed",
+        ],
     )
 
     # The CLI command shoud return gene panel formatted in the expected way

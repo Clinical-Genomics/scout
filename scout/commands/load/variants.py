@@ -15,7 +15,9 @@ LOG = logging.getLogger(__name__)
 @click.option("--cancer-research", is_flag=True, help="Upload research cancer variants")
 @click.option("--cancer-sv", is_flag=True, help="Upload clinical cancer structural variants")
 @click.option(
-    "--cancer-sv-research", is_flag=True, help="Upload research cancer structural variants",
+    "--cancer-sv-research",
+    is_flag=True,
+    help="Upload research cancer structural variants",
 )
 @click.option("--sv", is_flag=True, help="Upload clinical structural variants")
 @click.option("--sv-research", is_flag=True, help="Upload research structural variants")
@@ -28,7 +30,10 @@ LOG = logging.getLogger(__name__)
 @click.option("--hgnc-id", type=int, help="If all variants from a gene, specify the gene id")
 @click.option("--hgnc-symbol", help="If all variants from a gene, specify the gene symbol")
 @click.option(
-    "--rank-treshold", default=5, help="Specify the rank score treshold", show_default=True,
+    "--rank-treshold",
+    default=5,
+    help="Specify the rank score treshold",
+    show_default=True,
 )
 @click.option("-f", "--force", is_flag=True, help="upload without request")
 @click.option(
@@ -60,8 +65,8 @@ def variants(
 ):
     """Upload variants to a case
 
-        Note that the files has to be linked with the case,
-        if they are not use 'scout update case'.
+    Note that the files has to be linked with the case,
+    if they are not use 'scout update case'.
     """
     LOG.info("Running scout load variants")
     adapter = store
@@ -84,7 +89,11 @@ def variants(
         {"category": "cancer", "variant_type": "clinical", "upload": cancer},
         {"category": "cancer_sv", "variant_type": "clinical", "upload": cancer_sv},
         {"category": "cancer", "variant_type": "research", "upload": cancer_research},
-        {"category": "cancer_sv", "variant_type": "research", "upload": cancer_sv_research,},
+        {
+            "category": "cancer_sv",
+            "variant_type": "research",
+            "upload": cancer_sv_research,
+        },
         {"category": "sv", "variant_type": "clinical", "upload": sv},
         {"category": "sv", "variant_type": "research", "upload": sv_research},
         {"category": "snv", "variant_type": "clinical", "upload": snv},

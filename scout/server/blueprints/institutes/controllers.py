@@ -5,7 +5,7 @@ LOG = logging.getLogger(__name__)
 
 
 def institute(store, institute_id):
-    """ Process institute data.
+    """Process institute data.
 
     Args:
         store(adapter.MongoAdapter)
@@ -23,7 +23,7 @@ def institute(store, institute_id):
 
 
 def update_institute_settings(store, institute_obj, form):
-    """ Update institute settings with data collected from institute form
+    """Update institute settings with data collected from institute form
 
     Args:
         score(adapter.MongoAdapter)

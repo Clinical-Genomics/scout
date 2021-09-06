@@ -8,13 +8,13 @@ LOG = logging.getLogger(__name__)
 def parse_compounds(compound_info, case_id, variant_type):
     """Get a list with compounds objects for this variant.
 
-        Arguments:
-            compound_info(str): A Variant dictionary
-            case_id (str): unique family id
-            variant_type(str): 'research' or 'clinical'
+    Arguments:
+        compound_info(str): A Variant dictionary
+        case_id (str): unique family id
+        variant_type(str): 'research' or 'clinical'
 
-        Returns:
-            compounds(list(dict)): A list of compounds
+    Returns:
+        compounds(list(dict)): A list of compounds
     """
     # We need the case to construct the correct id
     compounds = []

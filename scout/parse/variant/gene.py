@@ -18,11 +18,11 @@ def parse_genes(transcripts):
     """Parse transcript information and get the gene information from there.
 
     Use hgnc_id as identifier for genes and ensembl transcript id to identify transcripts.
-    
-    First group all transcripts on gene. Choose to group by hgnc id when available, otherwise 
+
+    First group all transcripts on gene. Choose to group by hgnc id when available, otherwise
     hgnc symbol. If no gene identifier we skip the transcript.
-    
-    Then go through all transcript for every gene and find out which one that has the most severe 
+
+    Then go through all transcript for every gene and find out which one that has the most severe
     consequence.
 
     Args:

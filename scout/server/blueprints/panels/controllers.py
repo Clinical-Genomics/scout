@@ -105,7 +105,13 @@ def update_panel(store, panel_name, csv_lines, option):
 
 
 def new_panel(
-    store, institute_id, panel_name, display_name, csv_lines, maintainer=None, description=None,
+    store,
+    institute_id,
+    panel_name,
+    display_name,
+    csv_lines,
+    maintainer=None,
+    description=None,
 ):
     """Create a new gene panel.
 

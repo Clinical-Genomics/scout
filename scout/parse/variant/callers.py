@@ -8,12 +8,12 @@ LOG = logging.getLogger(__name__)
 def parse_callers(variant, category="snv"):
     """Parse how the different variant callers have performed
 
-        Args:
-            variant (cyvcf2.Variant): A variant object
+    Args:
+        variant (cyvcf2.Variant): A variant object
 
-        Returns:
-            callers (dict): A dictionary on the format
-            {'gatk': <filter>,'freebayes': <filter>,'samtools': <filter>}
+    Returns:
+        callers (dict): A dictionary on the format
+        {'gatk': <filter>,'freebayes': <filter>,'samtools': <filter>}
     """
     relevant_callers = CALLERS[category]
     callers = {caller["id"]: None for caller in relevant_callers}

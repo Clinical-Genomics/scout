@@ -24,12 +24,12 @@ GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 def parse_genotypes(variant, individuals, individual_positions):
     """Parse the genotype calls for a variant
 
-        Args:
-            variant(cyvcf2.Variant)
-            individuals: List[dict]
-            individual_positions(dict)
-        Returns:
-            genotypes(list(dict)): A list of genotypes
+    Args:
+        variant(cyvcf2.Variant)
+        individuals: List[dict]
+        individual_positions(dict)
+    Returns:
+        genotypes(list(dict)): A list of genotypes
     """
     genotypes = []
     for ind in individuals:

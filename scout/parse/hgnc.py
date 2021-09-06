@@ -7,12 +7,12 @@ logger = logging.getLogger(__name__)
 def parse_hgnc_line(line, header):
     """Parse an hgnc formated line
 
-        Args:
-            line(list): A list with hgnc gene info
-            header(list): A list with the header info
+    Args:
+        line(list): A list with hgnc gene info
+        header(list): A list with the header info
 
-        Returns:
-            hgnc_info(dict): A dictionary with the relevant info
+    Returns:
+        hgnc_info(dict): A dictionary with the relevant info
     """
     hgnc_gene = {}
     line = line.rstrip().split("\t")
@@ -88,14 +88,14 @@ def parse_hgnc_line(line, header):
 def parse_hgnc_genes(lines):
     """Parse lines with hgnc formated genes
 
-        This is designed to take a dump with genes from HGNC.
-        This is downloaded from:
-        ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt
+    This is designed to take a dump with genes from HGNC.
+    This is downloaded from:
+    ftp://ftp.ebi.ac.uk/pub/databases/genenames/new/tsv/hgnc_complete_set.txt
 
-        Args:
-            lines(iterable(str)): An iterable with HGNC formated genes
-        Yields:
-            hgnc_gene(dict): A dictionary with the relevant information
+    Args:
+        lines(iterable(str)): An iterable with HGNC formated genes
+    Yields:
+        hgnc_gene(dict): A dictionary with the relevant information
     """
     header = []
     logger.info("Parsing hgnc genes...")

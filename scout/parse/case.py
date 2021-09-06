@@ -284,44 +284,44 @@ def add_peddy_information(config_data):
 def parse_individual(sample):
     """Parse individual information
 
-        Args:
-            sample (dict)
+    Args:
+        sample (dict)
 
-        Returns:
-            {
-                'individual_id': str,
-                'father': str,
-                'mother': str,
-                'display_name': str,
-                'sex': str,
-                'phenotype': str,
-                'bam_file': str,
-                'mt_bam': str,
-                'analysis_type': str,
-                'vcf2cytosure': str,
-                'capture_kits': list(str),
+    Returns:
+        {
+            'individual_id': str,
+            'father': str,
+            'mother': str,
+            'display_name': str,
+            'sex': str,
+            'phenotype': str,
+            'bam_file': str,
+            'mt_bam': str,
+            'analysis_type': str,
+            'vcf2cytosure': str,
+            'capture_kits': list(str),
 
-                'upd_sites_bed': str,
-                'upd_regions_bed': str,
-                'rhocall_bed': str,
-                'rhocall_wig': str,
-                'tiddit_coverage_wig': str,
+            'upd_sites_bed': str,
+            'upd_regions_bed': str,
+            'rhocall_bed': str,
+            'rhocall_wig': str,
+            'tiddit_coverage_wig': str,
 
-                'predicted_ancestry' = str,
+            'predicted_ancestry' = str,
 
-                'is_sma': boolean,
-                'is_sma_carrier': boolean,
-                'smn1_cn' = int,
-                'smn2_cn' = int,
-                'smn2delta78_cn' = int,
-                'smn_27134_cn' = int,
+            'is_sma': boolean,
+            'is_sma_carrier': boolean,
+            'smn1_cn' = int,
+            'smn2_cn' = int,
+            'smn2delta78_cn' = int,
+            'smn_27134_cn' = int,
 
-                'tumor_type': str,
-                'tmb': str,
-                'msi': str,
-                'tumor_purity': float,
-                'tissue_type': str,
-            }
+            'tumor_type': str,
+            'tmb': str,
+            'msi': str,
+            'tumor_purity': float,
+            'tissue_type': str,
+        }
 
     """
     ind_info = {}
@@ -415,13 +415,13 @@ def parse_individual(sample):
 def parse_individuals(samples):
     """Parse the individual information
 
-        Reformat sample information to proper individuals
+    Reformat sample information to proper individuals
 
-        Args:
-            samples(list(dict))
+    Args:
+        samples(list(dict))
 
-        Returns:
-            individuals(list(dict))
+    Returns:
+        individuals(list(dict))
     """
     individuals = []
     if len(samples) == 0:
@@ -562,7 +562,7 @@ def parse_ped(ped_stream, family_type="ped"):
 
 
 def removeNoneValues(dict):
-    """ If value = None in key/value pair, the pair is removed.
+    """If value = None in key/value pair, the pair is removed.
         Python >3
     Args:
         dict: dictionary

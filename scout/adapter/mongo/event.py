@@ -20,8 +20,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     def delete_event(self, event_id):
         """Delete a event
 
-            Arguments:
-                event_id (str): The database key for the event
+        Arguments:
+            event_id (str): The database key for the event
         """
         LOG.info("Deleting event{0}".format(event_id))
         if not isinstance(event_id, ObjectId):
@@ -84,20 +84,26 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return event
 
     def events(
-        self, institute, case=None, variant_id=None, level=None, comments=False, panel=None,
+        self,
+        institute,
+        case=None,
+        variant_id=None,
+        level=None,
+        comments=False,
+        panel=None,
     ):
         """Fetch events from the database.
 
-          Args:
-            institute (dict): An institute
-            case (dict): A case
-            variant_id (str, optional): global variant id
-            level (str, optional): restrict comments to 'specific' or 'global'
-            comments (bool, optional): restrict events to include only comments
-            panel (str): A panel name
+        Args:
+          institute (dict): An institute
+          case (dict): A case
+          variant_id (str, optional): global variant id
+          level (str, optional): restrict comments to 'specific' or 'global'
+          comments (bool, optional): restrict events to include only comments
+          panel (str): A panel name
 
-          Returns:
-              pymongo.Cursor: Query result
+        Returns:
+            pymongo.Cursor: Query result
         """
 
         query = {}
@@ -159,16 +165,16 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
     ):
         """Add a new phenotype term to a case
 
-            Create a phenotype term and event with the given information
+        Create a phenotype term and event with the given information
 
-            Args:
-                institute (Institute): A Institute object
-                case (Case): Case object
-                user (User): A User object
-                link (str): The url to be used in the event
-                hpo_term (str): A hpo id
-                omim_term (str): A omim id
-                is_group (bool): is phenotype term a group?
+        Args:
+            institute (Institute): A Institute object
+            case (Case): Case object
+            user (User): A User object
+            link (str): The url to be used in the event
+            hpo_term (str): A hpo id
+            omim_term (str): A omim id
+            is_group (bool): is phenotype term a group?
 
         """
         hpo_results = []
@@ -293,7 +299,14 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return updated_case
 
     def comment(
-        self, institute, case, user, link, variant=None, content="", comment_level="specific",
+        self,
+        institute,
+        case,
+        user,
+        link,
+        variant=None,
+        content="",
+        comment_level="specific",
     ):
         """Add a comment to a variant or a case.
 
@@ -375,7 +388,10 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         # collect all comments for the old variant
         comments_query = self.events(
-            variant_id=old_var["variant_id"], comments=True, institute=institute_obj, case=case_obj,
+            variant_id=old_var["variant_id"],
+            comments=True,
+            institute=institute_obj,
+            case=case_obj,
         )
 
         # and create the same comment for the new variant

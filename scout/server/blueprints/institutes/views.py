@@ -45,10 +45,11 @@ def institutes():
 
 @blueprint.route("/overview/edit/<institute_id>", methods=["GET", "POST"])
 def institute(institute_id):
-    """ Edit institute data """
+    """Edit institute data"""
     if institute_id not in current_user.institutes and current_user.is_admin is False:
         flash(
-            "Current user doesn't have the permission to modify this institute", "warning",
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
         )
         return redirect(request.referrer)
 

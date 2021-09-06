@@ -109,7 +109,11 @@ def test_update_synopsis(adapter, institute_obj, case_obj, user_obj):
     link = "synopsislink"
     synopsis = "The updated synopsis"
     updated_case = adapter.update_synopsis(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, content=synopsis,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        content=synopsis,
     )
     # THEN the case should have the synopsis added
     assert updated_case["synopsis"] == synopsis
@@ -191,7 +195,11 @@ def test_add_hpo(adapter, institute_obj, case_obj, user_obj):
     link = "addhpolink"
 
     updated_case = adapter.add_phenotype(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, hpo_term=hpo_term,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        hpo_term=hpo_term,
     )
     ## THEN the case should have a hpo term
     for term in updated_case["phenotype_terms"]:
@@ -290,7 +298,11 @@ def test_add_non_existing_mim(adapter, institute_obj, case_obj, user_obj):
 
     # WHEN adding a non existing phenotype term
     updated_case = adapter.add_phenotype(
-        institute=institute_obj, case=case_obj, user=user_obj, link="mimlink", omim_term=mim_term,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="mimlink",
+        omim_term=mim_term,
     )
     # THEN the case should not have any phenotypes
     assert len(updated_case.get("phenotype_terms", [])) == 0
@@ -342,7 +354,11 @@ def test_add_mim(adapter, institute_obj, case_obj, user_obj):
 
     # WHEN adding a existing phenotype term
     updated_case = adapter.add_phenotype(
-        institute=institute_obj, case=case_obj, user=user_obj, link="mimlink", omim_term=mim_term,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="mimlink",
+        omim_term=mim_term,
     )
     # THEN the case should have phenotypes
     assert len(updated_case["phenotype_terms"]) > 0
@@ -362,7 +378,11 @@ def test_remove_hpo(hpo_database, institute_obj, case_obj, user_obj):
     hpo_term = "HP:0000878"
 
     updated_case = adapter.add_phenotype(
-        institute=institute_obj, case=case_obj, user=user_obj, link="addhpolink", hpo_term=hpo_term,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link="addhpolink",
+        hpo_term=hpo_term,
     )
 
     # Assert that the term was added to the case
@@ -398,7 +418,11 @@ def test_add_cohort(adapter, institute_obj, case_obj, user_obj):
     link = "cohortlink"
     ## WHEN adding a cohort to a case
     updated_case = adapter.add_cohort(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, tag=cohort_name,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        tag=cohort_name,
     )
     # THEN the case should have the cohort saved
     assert set(updated_case["cohorts"]) == set([cohort_name])
@@ -421,14 +445,22 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
     link = "cohortlink"
     ## WHEN adding a cohort to a case
     updated_case = adapter.add_cohort(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, tag=cohort_name,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        tag=cohort_name,
     )
     assert sum(1 for i in adapter.event_collection.find()) == 1
 
     remove_cohort_link = "removeCohortlink"
     ## WHEN removing a cohort from a case
     updated_case = adapter.remove_cohort(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, tag=cohort_name,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        tag=cohort_name,
     )
     # THEN the case should have the cohort saved
     assert updated_case["cohorts"] == []

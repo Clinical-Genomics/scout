@@ -21,16 +21,16 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def mt_report(case_id, test, outpath=None):
     """Export all mitochondrial variants for each sample of a case
-       and write them to an excel file
+    and write them to an excel file
 
-        Args:
-            adapter(MongoAdapter)
-            case_id(str)
-            test(bool): True if the function is called for testing purposes
-            outpath(str): path to output file
+     Args:
+         adapter(MongoAdapter)
+         case_id(str)
+         test(bool): True if the function is called for testing purposes
+         outpath(str): path to output file
 
-        Returns:
-            written_files(int): number of written or simulated files
+     Returns:
+         written_files(int): number of written or simulated files
     """
     LOG.info('exporting mitochondrial variants for case "{}"'.format(case_id))
 

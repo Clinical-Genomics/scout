@@ -70,7 +70,8 @@ def add_ensembl_info(genes, ensembl_lines):
     for ensembl_gene in ensembl_genes:
         if not "hgnc_id" in ensembl_gene:
             LOG.debug(
-                "Ensembl gene %s is missing hgnc id. Skipping", ensembl_gene.get("ensembl_gene_id"),
+                "Ensembl gene %s is missing hgnc id. Skipping",
+                ensembl_gene.get("ensembl_gene_id"),
             )
             continue
         gene_obj = genes.get(ensembl_gene["hgnc_id"])
@@ -171,7 +172,12 @@ def get_correct_ids(hgnc_symbol, alias_genes):
 
 
 def link_genes(
-    ensembl_lines, hgnc_lines, exac_lines, hpo_lines, mim2gene_lines=None, genemap_lines=None,
+    ensembl_lines,
+    hgnc_lines,
+    exac_lines,
+    hpo_lines,
+    mim2gene_lines=None,
+    genemap_lines=None,
 ):
     """Gather information from different sources and return a gene dict
 

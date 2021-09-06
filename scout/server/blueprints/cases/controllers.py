@@ -193,7 +193,11 @@ def case(store, institute_obj, case_obj):
     if case_obj.get("rank_model_version"):
         rank_model_link_postfix = current_app.config.get("RANK_MODEL_LINK_POSTFIX", "")
         rank_model_link = "".join(
-            [rank_model_link_prefix, str(case_obj["rank_model_version"]), rank_model_link_postfix,]
+            [
+                rank_model_link_prefix,
+                str(case_obj["rank_model_version"]),
+                rank_model_link_postfix,
+            ]
         )
         print(rank_model_link)
         case_obj["rank_model_link"] = rank_model_link
@@ -420,14 +424,14 @@ def clinvar_submissions(store, institute_id):
 
 
 def clinvar_header(submission_objs, csv_type):
-    """ Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
+    """Call clinvar parser to extract required fields to include in csv header from clinvar submission objects"""
 
     clinvar_header_obj = clinvar_submission_header(submission_objs, csv_type)
     return clinvar_header_obj
 
 
 def clinvar_lines(clinvar_objects, clinvar_header):
-    """ Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
+    """Call clinvar parser to extract required lines to include in csv file from clinvar submission objects and header"""
 
     clinvar_lines = clinvar_submission_lines(clinvar_objects, clinvar_header)
     return clinvar_lines
@@ -487,7 +491,9 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
     # create event only if synopsis was actually changed
     if case_obj["synopsis"] != new_synopsis:
         link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
 
@@ -511,7 +517,9 @@ def update_individuals(store, institute_obj, case_obj, user_obj, ind, age, tissu
 
     # create an associated event
     link = url_for(
-        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
     )
     store.create_event(
         institute=institute_obj,
@@ -549,7 +557,9 @@ def update_cancer_samples(
 
     # create an associated event
     link = url_for(
-        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"],
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
     )
 
     store.create_event(
@@ -753,13 +763,13 @@ def multiqc(store, institute_id, case_name):
 def get_sanger_unevaluated(store, institute_id, user_id):
     """Get all variants for an institute having Sanger validations ordered but still not evaluated
 
-        Args:
-            store(scout.adapter.MongoAdapter)
-            institute_id(str)
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_id(str)
 
-        Returns:
-            unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
-                         where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
+    Returns:
+        unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, {'case2' : [varID_1, varID_2, .., varID_n]} ],
+                     where the keys are case_ids and the values are lists of variants with Sanger ordered but not yet validated
 
     """
 

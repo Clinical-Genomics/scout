@@ -31,10 +31,14 @@ LOG = logging.getLogger(__name__)
     type=click.Choice(["clinical", "research"]),
 )
 @click.option(
-    "--genemap2", type=click.Path(exists=True), help="Path to file in omim genemap2 format",
+    "--genemap2",
+    type=click.Path(exists=True),
+    help="Path to file in omim genemap2 format",
 )
 @click.option(
-    "--mim2genes", type=click.Path(exists=True), help="Path to file in omim mim2genes format",
+    "--mim2genes",
+    type=click.Path(exists=True),
+    help="Path to file in omim mim2genes format",
 )
 @click.option(
     "--omim",
@@ -102,7 +106,7 @@ def panel(
 
 
 def _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer):
-    """ Add OMIM panel to the database. """
+    """Add OMIM panel to the database."""
 
     mim_files = None
     if genemap2 and mim2genes:

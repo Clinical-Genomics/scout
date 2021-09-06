@@ -85,7 +85,11 @@ def test_case_variant_check_causatives(app, real_variant_database):
     # WHEN the original case has a causative variant flagged,
     link = "junk/{}".format(variant_obj["_id"])
     updated_case = adapter.mark_causative(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, variant=variant_obj,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant_obj,
     )
 
     # THEN an event object should have been created linking the variant
@@ -141,7 +145,11 @@ def test_case_variant_check_causatives_carrier(app, real_variant_database):
     # WHEN the original case has a causative variant flagged,
     link = "junk/{}".format(variant_obj["_id"])
     updated_case = adapter.mark_causative(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, variant=variant_obj,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant_obj,
     )
 
     # THEN an event object should have been created linking the variant

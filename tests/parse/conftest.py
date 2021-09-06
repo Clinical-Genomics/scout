@@ -10,7 +10,9 @@ class CyvcfVariant:
     quality.
     """
 
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         self._chrom = "1"
         self._position = 80000
         self._reference = "A"

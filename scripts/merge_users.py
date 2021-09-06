@@ -202,7 +202,12 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
             event_id = event.get("_id")
             operation = pymongo.UpdateOne(
                 {"_id": event_id},
-                {"$set": {"user_id": oi_user_email, "user_name": alt_user_obj.get("name"),}},
+                {
+                    "$set": {
+                        "user_id": oi_user_email,
+                        "user_name": alt_user_obj.get("name"),
+                    }
+                },
             )
             event_requests.append(operation)
 
@@ -217,7 +222,12 @@ def merge_users(context, mongodb, username, password, authdb, host, port, loglev
                 LOG.info("acmg: {}".format(acmg))
                 operation = pymongo.UpdateOne(
                     {"_id": acmg.get("_id")},
-                    {"$set": {"user_id": oi_user_email, "user_name": alt_user_obj.get("name"),}},
+                    {
+                        "$set": {
+                            "user_id": oi_user_email,
+                            "user_name": alt_user_obj.get("name"),
+                        }
+                    },
                 )
                 acmg_requests.append(operation)
 

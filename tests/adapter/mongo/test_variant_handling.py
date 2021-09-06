@@ -10,7 +10,7 @@ LOG = logging.getLogger(__name__)
 
 
 def test_variant(real_variant_database, variant_objs, case_obj):
-    """"Test querying a variant"""
+    """ "Test querying a variant"""
     adapter = real_variant_database
     test_variant = list(variant_objs)[0]
 
@@ -32,7 +32,7 @@ def test_variant(real_variant_database, variant_objs, case_obj):
 
 
 def test_query_all_gene_variants(real_variant_database):
-    """"Test querying gene variants using gene symbol."""
+    """ "Test querying gene variants using gene symbol."""
     adapter = real_variant_database
 
     ## GIVEN a populated database with variants in a certain gene
@@ -56,7 +56,9 @@ def test_query_all_gene_variants(real_variant_database):
     )
     nr_high_ranked_variants_in_gene = sum(1 for i in res)
     LOG.info(
-        "Number of high ranked variants in %s: %s", gene_symbol, nr_high_ranked_variants_in_gene,
+        "Number of high ranked variants in %s: %s",
+        gene_symbol,
+        nr_high_ranked_variants_in_gene,
     )
 
     assert nr_high_ranked_variants_in_gene > 0

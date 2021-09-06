@@ -147,7 +147,11 @@ def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
     link = "synopsislink"
     synopsis = "Recurrent seizures"
     updated_case = adapter.update_synopsis(
-        institute=institute_obj, case=case_obj, user=user_obj, link=link, content=synopsis,
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        content=synopsis,
     )
 
     # WHEN providing an empty value for synopsis:
@@ -672,7 +676,9 @@ def test_keep_manual_rank_tag_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["manual_rank"] == ["new_id"]
 
@@ -716,7 +722,9 @@ def test_keep_dismiss_variant_tag_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["dismiss_variant"] == ["new_id"]
 
@@ -758,7 +766,9 @@ def test_keep_mosaic_tags_after_reupload(adapter, case_obj, variant_obj, user_ob
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["mosaic_tags"] == ["new_id"]
 
@@ -800,7 +810,9 @@ def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_ob
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["cancer_tier"] == ["new_id"]
 
@@ -842,7 +854,9 @@ def test_keep_manual_acmg_after_reupload(adapter, case_obj, variant_obj, user_ob
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[updated_old],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[updated_old],
     )
     assert updated_new_vars["acmg_classification"] == ["new_id"]
 
@@ -898,7 +912,9 @@ def test_keep_variant_comments_after_reupload(
 
     # THE update actions function should return the id of the new variant
     updated_new_vars = adapter.update_variant_actions(
-        institute_obj=institute_obj, case_obj=case_obj, old_eval_variants=[old_variant],
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        old_eval_variants=[old_variant],
     )
 
     assert updated_new_vars["is_commented"] == [new_variant["_id"]]

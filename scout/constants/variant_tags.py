@@ -127,7 +127,10 @@ MANUAL_RANK_OPTIONS = {
         "label": "Possibly pathogenic",
         "description": "Uncertain significance, but cannot disregard yet",
     },
-    2: {"label": "Likely benign", "description": "Uncertain significance, but can discard",},
+    2: {
+        "label": "Likely benign",
+        "description": "Uncertain significance, but can discard",
+    },
     1: {"label": "Benign", "description": "Does not cause phenotype"},
     0: {"label": "Other", "description": "Phenotype not related to disease"},
 }

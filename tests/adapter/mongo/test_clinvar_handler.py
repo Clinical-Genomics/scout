@@ -183,7 +183,9 @@ def test_add_remove_subm_objects(adapter, institute_obj, case_obj):
     # Removal of clinvar objects from submission and from clinvar collection in database
     # remove case_data object
     updated_submission = adapter.delete_clinvar_object(
-        object_id=case_data[0]["_id"], object_type="case_data", submission_id=submission_obj["_id"],
+        object_id=case_data[0]["_id"],
+        object_type="case_data",
+        submission_id=submission_obj["_id"],
     )
     assert updated_submission["case_data"] == []
 

@@ -32,7 +32,9 @@ def amazon_s3_url(credentials, key):
         key = "/".join([credentials["folder"], key])
 
     url = s3_client.generate_presigned_url(
-        "get_object", Params={"Bucket": credentials["bucket"], "Key": key}, ExpiresIn=500,
+        "get_object",
+        Params={"Bucket": credentials["bucket"], "Key": key},
+        ExpiresIn=500,
     )
 
     return url

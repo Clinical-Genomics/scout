@@ -48,7 +48,17 @@ def test_load_variants(mock_app, case_obj):
     # Test CLI by uploading variants for given coordinates
     result = runner.invoke(
         cli,
-        ["load", "variants", case_obj["_id"], "--chrom", "3", "--start", 60090, "--end", 78000,],
+        [
+            "load",
+            "variants",
+            case_obj["_id"],
+            "--chrom",
+            "3",
+            "--start",
+            60090,
+            "--end",
+            78000,
+        ],
     )
     assert result.exit_code == 0
 
@@ -107,7 +117,16 @@ def test_reload_variants(mock_app, case_obj, user_obj, institute_obj):
 
     # force re-upload the same variants using the command line:
     result = runner.invoke(
-        cli, ["load", "variants", case_obj["_id"], "--snv", "--rank-treshold", 10, "--force",],
+        cli,
+        [
+            "load",
+            "variants",
+            case_obj["_id"],
+            "--snv",
+            "--rank-treshold",
+            10,
+            "--force",
+        ],
     )
     assert result.exit_code == 0
 

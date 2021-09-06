@@ -27,7 +27,8 @@ def test_update_panel(mock_app):
 
     # update panel version specifying original panel version
     result = runner.invoke(
-        cli, ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
+        cli,
+        ["update", "panel", "-p", "panel1", "--version", 1.0, "--update-version", 2.0],
     )
     assert "$set': {'panels.$.version': 2.0" in result.output
 

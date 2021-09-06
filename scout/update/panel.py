@@ -8,7 +8,12 @@ LOG = logging.getLogger(__name__)
 
 
 def update_panel(
-    adapter, panel_name, panel_version, new_version=None, new_date=None, new_maintainer=None,
+    adapter,
+    panel_name,
+    panel_version,
+    new_version=None,
+    new_date=None,
+    new_maintainer=None,
 ):
     """Update a gene panel in the database
 

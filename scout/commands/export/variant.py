@@ -145,12 +145,12 @@ def variants(collaborator, document_id, case_id, json):
 
 def get_vcf_entry(variant_obj, case_id=None):
     """
-        Get vcf entry from variant object
+    Get vcf entry from variant object
 
-        Args:
-            variant_obj(dict)
-        Returns:
-            variant_string(str): string representing variant in vcf format
+    Args:
+        variant_obj(dict)
+    Returns:
+        variant_string(str): string representing variant in vcf format
     """
     if variant_obj["category"] == "snv":
         var_type = "TYPE"
@@ -158,7 +158,10 @@ def get_vcf_entry(variant_obj, case_id=None):
         var_type = "SVTYPE"
 
     info_field = ";".join(
-        ["END=" + str(variant_obj["end"]), var_type + "=" + variant_obj["sub_category"].upper(),]
+        [
+            "END=" + str(variant_obj["end"]),
+            var_type + "=" + variant_obj["sub_category"].upper(),
+        ]
     )
 
     variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(

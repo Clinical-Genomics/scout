@@ -103,11 +103,11 @@ def get_all_ancestors(hpo_tree, term, res=set()):
 def parse_hpo_genes(hpo_lines):
     """Parse HPO gene information
 
-        Args:
-            hpo_lines(iterable(str))
+    Args:
+        hpo_lines(iterable(str))
 
-        Returns:
-            genes(dict): A dictionary with hgnc symbols as keys
+    Returns:
+        genes(dict): A dictionary with hgnc symbols as keys
     """
     LOG.info("Parsing HPO genes ...")
     genes = {}
@@ -148,11 +148,11 @@ def parse_hpo_genes(hpo_lines):
 def parse_hpo_gene(hpo_line):
     """Parse hpo gene information
 
-        Args:
-            hpo_line(str): A iterable with hpo phenotype lines
+    Args:
+        hpo_line(str): A iterable with hpo phenotype lines
 
-        Yields:
-            hpo_info(dict)
+    Yields:
+        hpo_info(dict)
     """
     if not len(hpo_line) > 3:
         return {}

@@ -732,7 +732,8 @@ class VariantEventHandler(object):
 
         """
         LOG.info(
-            "Creating event for updating mosaic tags for variant %s", variant["display_name"],
+            "Creating event for updating mosaic tags for variant %s",
+            variant["display_name"],
         )
 
         self.create_event(

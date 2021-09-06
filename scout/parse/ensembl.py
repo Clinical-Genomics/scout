@@ -149,14 +149,14 @@ def parse_transcripts(transcript_lines):
 def parse_ensembl_genes(lines):
     """Parse lines with ensembl formated genes
 
-        This is designed to take a biomart dump with genes from ensembl.
-        Mandatory columns are:
-        'Gene ID' 'Chromosome' 'Gene Start' 'Gene End' 'HGNC symbol'
+    This is designed to take a biomart dump with genes from ensembl.
+    Mandatory columns are:
+    'Gene ID' 'Chromosome' 'Gene Start' 'Gene End' 'HGNC symbol'
 
-        Args:
-            lines(iterable(str)): An iterable with ensembl formated genes
-        Yields:
-            ensembl_gene(dict): A dictionary with the relevant information
+    Args:
+        lines(iterable(str)): An iterable with ensembl formated genes
+    Yields:
+        ensembl_gene(dict): A dictionary with the relevant information
     """
     LOG.info("Parsing ensembl genes from file")
     header = []
@@ -174,14 +174,14 @@ def parse_ensembl_genes(lines):
 def parse_ensembl_transcripts(lines):
     """Parse lines with ensembl formated transcripts
 
-        This is designed to take a biomart dump with transcripts from ensembl.
-        Mandatory columns are:
-        'Gene ID' 'Transcript ID' 'Transcript Start' 'Transcript End' 'RefSeq mRNA'
+    This is designed to take a biomart dump with transcripts from ensembl.
+    Mandatory columns are:
+    'Gene ID' 'Transcript ID' 'Transcript Start' 'Transcript End' 'RefSeq mRNA'
 
-        Args:
-            lines(iterable(str)): An iterable with ensembl formated genes
-        Yields:
-            ensembl_gene(dict): A dictionary with the relevant information
+    Args:
+        lines(iterable(str)): An iterable with ensembl formated genes
+    Yields:
+        ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
     LOG.info("Parsing ensembl genes from file")

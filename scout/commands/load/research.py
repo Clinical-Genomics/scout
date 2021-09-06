@@ -18,11 +18,11 @@ LOG = logging.getLogger(__name__)
 def research(case_id, institute, force):
     """Upload research variants to cases
 
-        If a case is specified, all variants found for that case will be
-        uploaded.
+    If a case is specified, all variants found for that case will be
+    uploaded.
 
-        If no cases are specified then all cases that have 'research_requested'
-        will have there research variants uploaded
+    If no cases are specified then all cases that have 'research_requested'
+    will have there research variants uploaded
     """
     LOG.info("Running scout load research")
     adapter = store

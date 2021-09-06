@@ -338,7 +338,8 @@ def upload_panel(institute_id, case_name):
             code=307,
         )
     return redirect(
-        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data), code=307,
+        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
+        code=307,
     )
 
 

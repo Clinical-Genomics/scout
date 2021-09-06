@@ -19,12 +19,19 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
 
 
 class InstituteForm(FlaskForm):
-    """ Instutute-specif settings """
+    """Instutute-specif settings"""
 
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
         option_name = " ".join(
-            [key, ",", PHENOTYPE_GROUPS[key]["name"], "(", PHENOTYPE_GROUPS[key]["abbr"], ")",]
+            [
+                key,
+                ",",
+                PHENOTYPE_GROUPS[key]["name"],
+                "(",
+                PHENOTYPE_GROUPS[key]["abbr"],
+                ")",
+            ]
         )
         hpo_tuples.append((option_name, option_name))
 
@@ -36,7 +43,8 @@ class InstituteForm(FlaskForm):
         "Sanger recipients", validators=[validators.Optional()]
     )
     coverage_cutoff = IntegerField(
-        "Coverage cutoff", validators=[validators.Optional(), validators.NumberRange(min=1)],
+        "Coverage cutoff",
+        validators=[validators.Optional(), validators.NumberRange(min=1)],
     )
     frequency_cutoff = DecimalField(
         "Frequency cutoff",

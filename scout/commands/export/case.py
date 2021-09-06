@@ -25,7 +25,10 @@ LOG = logging.getLogger(__name__)
 @click.option("--research-requested", is_flag=True, help="If research is requested")
 @click.option("--is-research", is_flag=True, help="If case is in research mode")
 @click.option(
-    "-s", "--status", type=click.Choice(CASE_STATUSES), help="Specify what status to look for",
+    "-s",
+    "--status",
+    type=click.Choice(CASE_STATUSES),
+    help="Specify what status to look for",
 )
 @click.option("--within-days", type=int, help="Days since event related to case")
 @json_option

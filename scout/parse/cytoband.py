@@ -4,13 +4,13 @@ import intervaltree
 
 def parse_cytoband(lines):
     """Parse iterable with cytoband coordinates
-    
-    
+
+
     Args:
         lines(iterable): Strings on format "chr1\t2300000\t5400000\tp36.32\tgpos25"
-    
+
     Returns:
-        cytobands(dict): Dictionary with chromosome names as keys and 
+        cytobands(dict): Dictionary with chromosome names as keys and
                          interval trees as values
     """
     cytobands = {}

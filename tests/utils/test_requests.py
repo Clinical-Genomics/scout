@@ -27,7 +27,9 @@ def test_get_request_bad_request():
     # GIVEN an URL
     url = "http://www.badurl.com"
     responses.add(
-        responses.GET, url, status=404,
+        responses.GET,
+        url,
+        status=404,
     )
     # WHEN requesting
     with pytest.raises(requests.exceptions.HTTPError):
@@ -42,7 +44,9 @@ def test_send_request_timout():
     # GIVEN a request and a request that timouts
     url = "http://www.badurl.com"
     responses.add(
-        responses.GET, url, body=requests.exceptions.Timeout(),
+        responses.GET,
+        url,
+        body=requests.exceptions.Timeout(),
     )
     # WHEN requesting
     with pytest.raises(requests.exceptions.Timeout):
@@ -57,7 +61,9 @@ def test_get_request():
     # GIVEN an URL
     url = "http://www.github.com"
     responses.add(
-        responses.GET, url, status=200,
+        responses.GET,
+        url,
+        status=200,
     )
 
     # WHEN requesting
@@ -74,7 +80,10 @@ def test_fetch_resource():
     url = "http://www.github.com"
     content = "Some things\n That are not so\ninteresting"
     responses.add(
-        responses.GET, url, body=content, status=200,
+        responses.GET,
+        url,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -92,7 +101,10 @@ def test_fetch_resource_gzipped(variant_clinical_file):
     with open(variant_clinical_file, "rb") as zipped_file:
         content = zipped_file.read()
     responses.add(
-        responses.GET, url, body=content, status=200,
+        responses.GET,
+        url,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -112,7 +124,10 @@ def test_fetch_hpo(hpo_terms_file):
     with open(hpo_terms_file, "r") as hpo_file:
         content = hpo_file.read()
     responses.add(
-        responses.GET, url, body=content, status=200,
+        responses.GET,
+        url,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -131,7 +146,10 @@ def test_fetch_genes_to_hpo_to_disease(hpo_genes_file):
     with open(hpo_genes_file, "r") as hpo_file:
         content = hpo_file.read()
     responses.add(
-        responses.GET, url, body=content, status=200,
+        responses.GET,
+        url,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -151,7 +169,10 @@ def test_fetch_hpo_to_genes_to_disease(phenotype_to_genes_file):
     with open(phenotype_to_genes_file, "r") as hpo_file:
         content = hpo_file.read()
     responses.add(
-        responses.GET, url, body=content, status=200,
+        responses.GET,
+        url,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -173,14 +194,20 @@ def test_fetch_hpo_files(phenotype_to_genes_file, hpo_genes_file):
         content = hpo_file.read()
 
     responses.add(
-        responses.GET, url_1, body=content, status=200,
+        responses.GET,
+        url_1,
+        body=content,
+        status=200,
     )
 
     with open(hpo_genes_file, "r") as hpo_file:
         content = hpo_file.read()
 
     responses.add(
-        responses.GET, url_2, body=content, status=200,
+        responses.GET,
+        url_2,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching all hpo files
@@ -245,7 +272,10 @@ def test_fetch_exac_constraint_failed_ftp(variant_clinical_file, mocker):
         content = zipped_file.read()
 
     responses.add(
-        responses.GET, url, body=content, status=200,
+        responses.GET,
+        url,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -265,7 +295,10 @@ def test_fetch_mim_files_mim2genes(phenotype_to_genes_file):
     with open(phenotype_to_genes_file, "r") as hpo_file:
         content = hpo_file.read()
     responses.add(
-        responses.GET, url, body=content, status=200,
+        responses.GET,
+        url,
+        body=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -335,7 +368,10 @@ def test_fetch_resource_json():
     url = "http://www.github.com"
     content = [{"first": "second"}]
     responses.add(
-        responses.GET, url, json=content, status=200,
+        responses.GET,
+        url,
+        json=content,
+        status=200,
     )
 
     # WHEN fetching the resource
@@ -358,7 +394,10 @@ def test_fetch_refseq_version(refseq_response):
     )
     url = base_url.format(refseq_acc)
     responses.add(
-        responses.GET, url, body=refseq_response, status=200,
+        responses.GET,
+        url,
+        body=refseq_response,
+        status=200,
     )
     # WHEN fetching complete refseq version for accession that has version
     refseq_version = scout_requests.fetch_refseq_version(refseq_acc)
@@ -381,7 +420,10 @@ def test_fetch_refseq_version_non_existing(refseq_response_non_existing):
     )
     url = base_url.format(refseq_acc)
     responses.add(
-        responses.GET, url, body=refseq_response_non_existing, status=200,
+        responses.GET,
+        url,
+        body=refseq_response_non_existing,
+        status=200,
     )
     refseq_version = scout_requests.fetch_refseq_version(refseq_acc)
 

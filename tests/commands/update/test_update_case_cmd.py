@@ -134,7 +134,8 @@ def test_update_case_change_vcf_research_path(mock_app, case_obj, variant_clinic
 
     ## WHEN updating the research vcf path
     result = runner.invoke(
-        cli, ["update", "case", case_obj["_id"], "--vcf-research", variant_clinical_file],
+        cli,
+        ["update", "case", case_obj["_id"], "--vcf-research", variant_clinical_file],
     )
     ## THEN assert it exits without problems
     assert result.exit_code == 0
@@ -154,7 +155,8 @@ def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_cli
 
     ## WHEN updating the sv research vcf path
     result = runner.invoke(
-        cli, ["update", "case", case_obj["_id"], "--vcf-sv-research", variant_clinical_file],
+        cli,
+        ["update", "case", case_obj["_id"], "--vcf-sv-research", variant_clinical_file],
     )
     ## THEN assert it exits without problems
     assert result.exit_code == 0
@@ -174,7 +176,14 @@ def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_cli
 
     ## WHEN updating the sv research vcf path
     result = runner.invoke(
-        cli, ["update", "case", case_obj["_id"], "--vcf-cancer-research", variant_clinical_file,],
+        cli,
+        [
+            "update",
+            "case",
+            case_obj["_id"],
+            "--vcf-cancer-research",
+            variant_clinical_file,
+        ],
     )
     ## THEN assert it exits without problems
     assert result.exit_code == 0
