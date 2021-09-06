@@ -44,7 +44,7 @@ jobs:
          context: ./
          file: ./Dockerfile
          push: true
-         tags: "clinicalgenomics/scout-react-stage:${{steps.get_branch_name.outputs.branch}}, clinicalgenomics/scout-react-stage:latest"
+         tags: "clinicalgenomics/scout-react-stage:${{steps.get_branch_name.outputs.branch}}"
   create_deployment:
     needs: [docker-image-push-staging]
     runs-on: ubuntu-latest

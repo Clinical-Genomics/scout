@@ -1,6 +1,6 @@
 name: Push pipeline
 
-on: [push]
+on:
 
 jobs:
   docker-image-push-staging:
@@ -32,4 +32,4 @@ jobs:
          context: ./
          file: ./Dockerfile
          push: true
-         tags: "clinicalgenomics/scout-react-stage:${{steps.get_branch_name.outputs.branch}}, clinicalgenomics/scout-react-stage:latest"
+         tags: "clinicalgenomics/scout-react-stage:${{steps.get_branch_name.outputs.branch}}"
