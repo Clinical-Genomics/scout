@@ -1,6 +1,6 @@
 name: Push pipeline
 
-on:
+on: [push]
 
 jobs:
   docker-image-push-staging:
