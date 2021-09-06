@@ -43,7 +43,7 @@ jobs:
             -H "Authorization: token ${{ secrets.BUMPVERSION_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/deployments \
             -d '{
-            "ref": "${{ github.event.inputs.tag_name }}",
+            "ref": "master",
             "environment": "production",
             "auto_merge": false,
             "description": "${{secrets.DEPLOYMENT_INFO}}"}'
