@@ -1,4 +1,6 @@
-# Scout react https://scout-react-stage.scilifelab.se/
+# Scout react
+### prod: https://scout-react.scilifelab.se/ 
+### staging: https://scout-react-stage.scilifelab.se/
 
 ## About
 
@@ -24,13 +26,13 @@ ReactDOM.render(<Institutes />, document.getElementById('react-insitutes'))
 - Add the bundle to Scout. In the page and place where you want your bundle to appear you should add:
 ```  
 <div id="react-home"></div>
-<script src="https://scout-react-stage.scilifelab.com//institutes.js"></script>
+<script src="https://scout-react.scilifelab.com//institutes.js"></script>
 ```
 - Add also the css to the Scout page:
 ```
 {% block css %}
 {{ super() }}
-  <link rel="stylesheet" href="https://scout-react-stage.scilifelab.com/institutes.css">
+  <link rel="stylesheet" href="https://scout-react.scilifelab.com/institutes.css">
 {% endblock %}
 ```
 
