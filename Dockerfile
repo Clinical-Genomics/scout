@@ -11,7 +11,6 @@ ENV PATH /scout-react/node_modules/.bin:$PATH
 # update and install dependency
 RUN apk update && apk upgrade
 RUN apk add git
-RUN apk add curl
 
 # copy the app, note .dockerignore
 COPY package.json ./
