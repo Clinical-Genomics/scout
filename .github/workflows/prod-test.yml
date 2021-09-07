@@ -1,3 +1,5 @@
+---
+
 name: Deploy release to production environment
 
 on:
