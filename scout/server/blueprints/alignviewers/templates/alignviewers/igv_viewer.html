@@ -22,6 +22,11 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript"
             src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+    {% for custTrack in custom_tracks %}
+      {% if custTrack.track_name in ["genes_track", "gencode_track"] %}
+          {{custTrack}}<br>
+      {% endif %}
+    {% endfor %}
     {{ igv_script() }}
 </head>
 
@@ -53,11 +58,12 @@
                             type: "{{ custTrack.type }}",
                             format: "{{ custTrack.format }}",
                             sourceType: "{{ custTrack.sourceType }}",
-                            url: "{{ custTrack.url|replace('%2F','/') }}",
+                            url: "{{ custTrack.url }}",
+                            indexURL: "{{ custTrack.indexURL }}",
                             displayMode: "{{ custTrack.displayMode }}",
                             order: Number.MIN_VALUE,
-                            {% if custTrack.name == "Genes" %}
-                                indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                            {% if custTrack.track_name in ['genes_track', 'gencode_track'] %}
+                                "visibilityWindow": 10000000,
                             {% endif %}
                         },
                       {% endfor %}

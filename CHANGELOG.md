@@ -10,7 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Stop updating database indexes after loading exons via command line
 - Display validation status badge also for not Sanger-sequenced variants
-- Upgraded igv.js to version 2.9.4 to (exon number support)
+- Upgraded igv.js to version 2.10 to (exon number support)
+- Use Gencode v.24 as igv.js genes track
 
 ## [4.39]
 ### Added
