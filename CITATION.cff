@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+title: Scout
+abstract: Clinical DNA variant visualizer and browser.
+authors:
+  - family-names: Andeer
+    given-names: Robin
+  - family-names: Dalberg
+    given-names: Mats
+  - family-names: Laaksonen
+    given-names: Mikael
+  - family-names: Magnusson
+    given-names: Måns
+    orcid: "https://https://orcid.org/0000-0002-0001-1047"
+  - family-names: Nilsson
+    given-names: Daniel
+  - family-names: Rasi
+    given-names: Chiara
+    orcid: "https://orcid.org/0000-0002-7001-3988"
+version: 4.39
+date-released: "2021-09-03"
+identifiers:
+  - description: Bugfixes, improvements to layout and performance
+    type: doi
+    value: "10.5281/zenodo.5416151"
+license: BSD-3-Clause License
+repository-code: "https://github.com/Clinical-Genomics/scout"
