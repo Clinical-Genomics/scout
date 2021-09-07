@@ -57,7 +57,7 @@
                             indexURL: "{{ custTrack.indexURL }}",
                             displayMode: "{{ custTrack.displayMode }}",
                             order: Number.MIN_VALUE,
-                            {% if custTrack.track_name in ['genes_track', 'gencode_track'] %}
+                            {% if custTrack.track_name == 'genes_track' %}
                                 "visibilityWindow": 10000000,
                             {% endif %}
                         },
