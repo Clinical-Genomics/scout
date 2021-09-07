@@ -1,3 +1,5 @@
+---
+
 name: Deploy branch to staging environment
 
 on:
@@ -5,6 +7,7 @@ on:
     inputs:
       branch_name:
         description: 'Branch name'
+
 
 jobs:
   create_deployment:
