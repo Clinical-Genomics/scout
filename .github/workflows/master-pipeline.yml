@@ -57,5 +57,5 @@ jobs:
             -d '{
             "ref": "master",
             "environment": "production",
-            "auto_merge": true,
+            "auto_merge": false,
             "description": "${{secrets.DEPLOYMENT_INFO}}"}'
