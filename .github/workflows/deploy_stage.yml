@@ -15,11 +15,12 @@ jobs:
     steps:
       - name: Check out git repository
         uses: actions/checkout@v2
+        run: echo "Hola ${INPUT_BRANCH_NAME}"
 
       - name: Extract branch name and remove illegal chars
         id: get_branch_name
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo "$(tr "/" "-" <<<${INPUT_BRANCH_NAME})")"
+        run: echo "##[set-output name=branch;]$(echo "$(tr "/" "-" <<<${{INPUT_BRANCH_NAME}})")"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
