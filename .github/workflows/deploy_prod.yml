@@ -42,7 +42,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: "clinicalgenomics/atlas:${{github.event.release.tag_name}}, clinicalgenomics/atlas:latest"
+          tags: "clinicalgenomics/scout-react:${{github.event.release.tag_name}}, clinicalgenomics/scout-react:latest"
 
   create_deployment:
     needs: docker-image-release
