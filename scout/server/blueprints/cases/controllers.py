@@ -311,13 +311,13 @@ def case_report_content(store, institute_id, case_name):
     data["institute"] = {
         "_id": institute_obj["_id"],
     }
-    # Populate data with required case info
+    # Populate case individuals with required information
     case_individuals = []
     for ind in case_obj.get("individuals"):
         ind_feat = {}
         for feat in [
             "display_name",
-            "sex_human",
+            "sex",
             "confirmed_sex",
             "phenotype",
             "phenotype_human",
@@ -326,28 +326,26 @@ def case_report_content(store, institute_id, case_name):
             "confirmed_parent",
         ]:
             ind_feat[feat] = ind.get(feat)
-            case_individuals.append(ind_feat)
+            pheno_map = PHENOTYPE_MAP
+            if case_obj.get("track", "rare") == "cancer":
+                pheno_map = CANCER_PHENOTYPE_MAP
+            ind_feat["phenotype_human"] = pheno_map.get(ind["phenotype"])
 
-    data["case"] = {
-        "display_name": case_obj.get("display_name"),
-        "created_at": case_obj.get("created_at"),
-        "updated_at": case_obj.get("updated_at"),
-        "status": case_obj.get("status"),
-        "madeline_info": case_obj.get("madeline_info"),
-    }
+        case_individuals.append(ind_feat)
 
-    for individual in data["case"].get("individuals", []):
-        try:
-            sex = int(individual.get("sex", 0))
-        except ValueError as err:
-            sex = 0
-        individual["sex_human"] = SEX_MAP[sex]
+    case_info = {"individuals": case_individuals}
+    for feat in [
+        "display_name",
+        "created_at",
+        "updated_at",
+        "status",
+        "madeline_info",
+        "synopsis",
+        "phenotype_terms",
+    ]:
+        case_info[feat] = case_obj.get(feat)
 
-        pheno_map = PHENOTYPE_MAP
-        if case_obj.get("track", "rare") == "cancer":
-            pheno_map = CANCER_PHENOTYPE_MAP
-
-        individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
+    data["case"] = case_info
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
     data["cancer"] = case_obj.get("track") == "cancer"
@@ -362,6 +360,7 @@ def case_report_content(store, institute_id, case_name):
         category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
     )
 
+    data["sex_map"] = SEX_MAP
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
     data["cancer_tier_options"] = CANCER_TIER_OPTIONS
     data["dismissed_options"] = dismiss_options

@@ -113,9 +113,9 @@
 	                <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
 	                  <td>{{ ind.display_name }}</td>
 	                  <td>
-                      {% if ind.sex_human == 'female' %}
+                      {% if ind.sex == '2' %}
                         F
-                      {% elif ind.sex_human == 'male' %}
+                      {% elif ind.sex == '1' %}
                         M
                       {% else %}
                         n.a.
@@ -1168,7 +1168,7 @@
 {% endmacro %}
 
 <!-- STR -->
-{% macro str_variant_content(variant,index) %} 
+{% macro str_variant_content(variant,index) %}
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
     <div class="row d-flex align-items-center">
