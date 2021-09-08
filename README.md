@@ -82,7 +82,7 @@ The build is minified and the filenames include the hashes.<br />
 
 ## Docker
 
-The app is shipped to docker hub at every push in the `scout-react-stage` project and to `scout-react` at every merge to master.
+The app is shipped to docker hub at every push in the `scout-react-stage` project and to `scout-react` when deploying via a workflow.
 To pull the latest image from the Clinical Genomics dockerhub repository
 
 ```bash
