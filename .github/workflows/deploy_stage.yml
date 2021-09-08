@@ -16,10 +16,6 @@ jobs:
       - name: Check out git repository
         uses: actions/checkout@v2
 
-      - name: prints
-        run: echo "Hola ${{github.event.inputs.branch_name}}"
-
-
       - name: Extract branch name and remove illegal chars
         id: get_branch_name
         shell: bash
