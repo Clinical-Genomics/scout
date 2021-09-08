@@ -41,6 +41,7 @@ jobs:
         path: build
   docker-image-push:
     runs-on: ubuntu-latest
+    needs: build
     name: Create staging docker image
     steps:
       - name: Check out git repository
@@ -70,7 +71,7 @@ jobs:
           push: true
           tags: "clinicalgenomics/scout-react:${{steps.get_branch_name.outputs.branch}}, clinicalgenomics/scout-react:latest"
   create_deployment:
-    needs: docker-image-push-prod
+    needs: docker-image-push
     name: Deploy to production
     runs-on: ubuntu-latest
     steps:
