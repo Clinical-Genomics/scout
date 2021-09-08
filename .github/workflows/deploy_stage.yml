@@ -15,7 +15,10 @@ jobs:
     steps:
       - name: Check out git repository
         uses: actions/checkout@v2
+
+      - name: prints
         run: echo "Hola ${INPUT_BRANCH_NAME}"
+
 
       - name: Extract branch name and remove illegal chars
         id: get_branch_name
