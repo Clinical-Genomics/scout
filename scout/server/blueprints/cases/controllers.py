@@ -306,7 +306,36 @@ def case_report_content(store, institute_id, case_name):
     }
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {"case": case_obj, "institute": institute_obj}
+    data = {}
+    # Populate data with required institute _id
+    data["institute"] = {
+        "_id": institute_obj["_id"],
+    }
+    # Populate data with required case info
+    case_individuals = []
+    for ind in case_obj.get("individuals"):
+        ind_feat = {}
+        for feat in [
+            "display_name",
+            "sex_human",
+            "confirmed_sex",
+            "phenotype",
+            "phenotype_human",
+            "analysis_type",
+            "predicted_ancestry",
+            "confirmed_parent",
+        ]:
+            ind_feat[feat] = ind.get(feat)
+            case_individuals.append(ind_feat)
+
+    data["case"] = {
+        "display_name": case_obj.get("display_name"),
+        "created_at": case_obj.get("created_at"),
+        "updated_at": case_obj.get("updated_at"),
+        "status": case_obj.get("status"),
+        "madeline_info": case_obj.get("madeline_info"),
+    }
+
     for individual in data["case"].get("individuals", []):
         try:
             sex = int(individual.get("sex", 0))
