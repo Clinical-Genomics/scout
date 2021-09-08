@@ -801,7 +801,7 @@
 
               <td>
                 <ul>
-                  {% for reason in dismiss_variant if not reason == "Select a tag"  %}
+                  {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
                     <li>{{dismissed_options[reason|int]['description']}}
                       {% if reason == '2' and variant.category == 'snv'%} <!--variant dismissed as too common in public databases-->
                         <table class="table-borderless table-sm">

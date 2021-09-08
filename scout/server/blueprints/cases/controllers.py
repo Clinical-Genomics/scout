@@ -329,7 +329,7 @@ def case_report_variants(store, case_obj, institute_obj, data):
             # We decorate the variant with some extra information
             filtered_var_obj = {}
             for feat in VARIANT_REPORT_VARIANT_FEATURES:
-                filtered_var_obj[feat] = variant_obj.get(feat)
+                filtered_var_obj[feat] = var_obj.get(feat)
 
             decorated_info = variant_decorator(
                 store=store,
