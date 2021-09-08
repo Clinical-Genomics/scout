@@ -46,3 +46,37 @@ export const getCaseReport = async (): Promise<any> => {
   }
   return response
 }
+
+export const getPhenotypes = async (): Promise<any> => {
+  let response = { phenotypes: [] }
+
+  try {
+    /* Test link, for more info: https://github.com/Clinical-Genomics/scout-mocks-data  */
+    /* `${baseUrl}/institutes/${getInstituteFromURL()}/phenotypes` */
+    const request = await axios.get(`https://scout-mocks-data.herokuapp.com/phenotypes`, {
+      headers: getAuthHeaders(),
+      withCredentials: true,
+    })
+    response = await request.data
+  } catch (error) {
+    console.error(error)
+  }
+  return response
+}
+
+export const getPhenotypesID = async (id: any): Promise<any> => {
+  let response = { phenotypeID: [] }
+
+  try {
+    /* Test link, for more info: https://github.com/Clinical-Genomics/scout-mocks-data  */
+    /* `${baseUrl}/institutes/${getInstituteFromURL()}/phenotypes` */
+    const request = await axios.get(`https://scout-mocks-data.herokuapp.com/phenotypes/:${id}`, {
+      headers: getAuthHeaders(),
+      withCredentials: true,
+    })
+    response = await request.data
+  } catch (error) {
+    console.error(error)
+  }
+  return response
+}

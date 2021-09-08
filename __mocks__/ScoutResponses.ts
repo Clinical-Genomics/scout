@@ -2677,3 +2677,77 @@ export const getMockCaseReport = {
     commented_detailed: [],
   },
 }
+export const getMockPhenotypes = {
+  phenotypes: [
+    {
+      _id: 'HP:0000001',
+      hpo_id: 'HP:0000001',
+      hpo_number: 1,
+      description: 'All',
+      genes: 0,
+    },
+    {
+      _id: 'HP:0000002',
+      hpo_id: 'HP:0000002',
+      hpo_number: 2,
+      description: 'Abnormality of body height',
+      genes: 1398,
+    },
+    {
+      _id: 'HP:0000003',
+      hpo_id: 'HP:0000003',
+      hpo_number: 3,
+      description: 'Multicystic kidney dysplasia',
+      genes: 111,
+    },
+    {
+      _id: 'HP:0000005',
+      hpo_id: 'HP:0000005',
+      hpo_number: 5,
+      description: 'Mode of inheritance',
+      genes: 0,
+    },
+    {
+      _id: 'HP:0000006',
+      hpo_id: 'HP:0000006',
+      hpo_number: 6,
+      description: 'Autosomal dominant inheritance',
+      genes: 1815,
+    },
+    {
+      _id: 'HP:0000007',
+      hpo_id: 'HP:0000007',
+      hpo_number: 7,
+      description: 'Autosomal recessive inheritance',
+      genes: 2730,
+    },
+    {
+      _id: 'HP:0000008',
+      hpo_id: 'HP:0000008',
+      hpo_number: 8,
+      description: 'Abnormal morphology of female internal genitalia',
+      genes: 463,
+    },
+    {
+      _id: 'HP:0000009',
+      hpo_id: 'HP:0000009',
+      hpo_number: 9,
+      description: 'Functional abnormality of the bladder',
+      genes: 424,
+    },
+    {
+      _id: 'HP:0000010',
+      hpo_id: 'HP:0000010',
+      hpo_number: 10,
+      description: 'Recurrent urinary tract infections',
+      genes: 138,
+    },
+    {
+      _id: 'HP:0000011',
+      hpo_id: 'HP:0000011',
+      hpo_number: 11,
+      description: 'Neurogenic bladder',
+      genes: 33,
+    },
+  ],
+}

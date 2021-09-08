@@ -14,6 +14,7 @@ import './App.css'
 import { CasesPage } from './modules/Cases/CasesPage'
 import { CasePage } from 'modules/Case/CasePage'
 import { CaseReportPage } from './modules/CaseReportPage/CaseReportPage'
+import { PhenotypesPage } from './modules/Phenotypes/PhenotypesPage'
 
 const mapDispatch = {
   setUserInfo: setSettingsAction,
@@ -35,6 +36,9 @@ export const AppComponent = ({ settings }: Props) => {
           </Route>
           <Route path={`/${settings.currentInstitute}/cases`} exact>
             <CasesPage />
+          </Route>
+          <Route path={`/${settings.currentInstitute}/phenotypes`} exact>
+            <PhenotypesPage />
           </Route>
           <Route path={`/${settings.currentInstitute}/:caseId`} exact>
             <CasePage />

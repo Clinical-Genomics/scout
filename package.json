@@ -16,17 +16,19 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@types/file-saver": "^2.0.3",
     "@types/jest": "^26.0.15",
     "@types/js-cookie": "^2.2.7",
     "@types/node": "^12.0.0",
     "@types/react-dom": "^17.0.0",
     "antd": "^4.16.7",
-    "axios": "^0.21.1",
     "assert": "^2.0.0",
+    "axios": "^0.21.1",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "dns-packet": "^5.2.4",
     "file-loader": "^6.2.0",
+    "file-saver": "^2.0.5",
     "js-cookie": "^2.2.1",
     "process": "^0.11.10",
     "react": "^17.0.2",
@@ -39,7 +41,8 @@
     "typescript": "^4.1.2",
     "typings-for-css-modules-loader": "^1.7.0",
     "util": "^0.12.4",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "xlsx": "^0.17.1"
   },
   "eslintConfig": {
     "extends": [
