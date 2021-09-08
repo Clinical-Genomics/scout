@@ -2,6 +2,8 @@
 ### prod: https://scout-react.scilifelab.se/ 
 ### staging: https://scout-react-stage.scilifelab.se/
 
+You need to be connected to the Scilifelab VPN to access these URLs.
+
 ## About
 
 This project contains React modules to be injected in the [Scout Python application](https://github.com/Clinical-Genomics/scout) as well as a React shell to be able to develop on these modules without the Python app.
@@ -48,7 +50,7 @@ To run the app three environment variables are needed:
 - `BACKEND_URL` The URL for calls to the backend.
 - `MOCK` A boolean to define whether to start the fake server using (Mirage js) to mock out backend APIs.
 
-These variables are stored in this repo secrets and are used by GitHub actions when deploying the application to Staging and Production.
+These variables are stored in the server farm and used when deploying the application to Staging and Production.
 To run the app with the environment variables in development mode:
 
 ### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" BACKEND_URL="the-backend-url-here" MOCK="true" yarn start`
@@ -101,7 +103,8 @@ docker build --build-arg PORT="3000"  -t scout-react .
 ```
 
 ## Deployment
-The app is deployed on prod and staging on the server farm on merge to master. Staging can be also deployed manually in the [GitHub Action UI](https://github.com/Clinical-Genomics/scout-react/actions) by choosing the workflow `Deploy branch to staging environment`, then `Run workflow` and input the branch that you want to deploy.
+The app is deployed manually. For staging, in the [GitHub Action UI](https://github.com/Clinical-Genomics/scout-react/actions) by choosing the workflow `Publish and deploy staging`, then `Run workflow` and input the branch that you want to deploy.
+For deploying to production, use the workflow `Publish and deploy production`, only the `master` branch can be deployed.
 
 ## API mocking library
 Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
