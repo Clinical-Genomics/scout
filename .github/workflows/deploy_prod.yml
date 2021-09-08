@@ -1,10 +1,12 @@
 ---
 
-name: Release Actions
+name: Deploy release to production environment
+
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Branch name'
 
 jobs:
   build:
@@ -61,7 +63,7 @@ jobs:
             -H "Authorization: token ${{ secrets.BUMPVERSION_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/deployments \
             -d '{
-            "ref": "master",
+            "ref": "${{ github.event.inputs.branch_name }}",
             "environment": "production",
             "auto_merge": false,
             "description": "${{secrets.DEPLOYMENT_INFO}}"}'
