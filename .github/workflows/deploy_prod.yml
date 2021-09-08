@@ -1,5 +1,6 @@
-name: Master pipeline
+---
 
+name: Release Actions
 on:
   push:
     branches:
@@ -9,16 +10,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout to master
-      uses: actions/checkout@master
-    - name: Install
-      run: yarn install
-    - name: Run lint check
-      run: yarn lint
-    - name: Test
-      run: yarn test
-  docker-image-push-production:
-    needs: [build]
+      - name: Checkout to master
+        uses: actions/checkout@master
+      - name: Install
+        run: yarn install
+      - name: Run lint check
+        run: yarn lint
+      - name: Test
+        run: yarn test
+  docker-image-release:
     runs-on: ubuntu-latest
     name: Push production docker image to dockerhub
     steps:
@@ -42,9 +42,10 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: "clinicalgenomics/scout-react:master, clinicalgenomics/scout-react:latest"
-  deploy-production:
-    needs: [docker-image-push-production]
+          tags: "clinicalgenomics/atlas:${{github.event.release.tag_name}}, clinicalgenomics/atlas:latest"
+
+  create_deployment:
+    needs: docker-image-release
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -55,7 +56,7 @@ jobs:
             -H "Authorization: token ${{ secrets.BUMPVERSION_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/deployments \
             -d '{
-            "ref": "master",
+            "ref": "${{ github.event.release.tag_name }}",
             "environment": "production",
             "auto_merge": false,
             "description": "${{secrets.DEPLOYMENT_INFO}}"}'
