@@ -1,5 +1,5 @@
 
-name: Deploy branch to staging environment
+name: Publish and deploy staging
 
 on:
   workflow_dispatch:
@@ -41,6 +41,7 @@ jobs:
           tags: "clinicalgenomics/scout-react-stage:${{steps.get_branch_name.outputs.branch}}, clinicalgenomics/scout-react-stage:latest"
   create_deployment:
     needs: [ docker-image-push-staging ]
+    name: Deploy to staging
     runs-on: ubuntu-latest
     steps:
       - run: |
