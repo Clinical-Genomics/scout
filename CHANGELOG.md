@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Stop updating database indexes after loading exons via command line
 - Display validation status badge also for not Sanger-sequenced variants
+- Enforce same case _id and display_name when updating a case
+- Enforce same individual ids, display names and affected status when updating a case
 
 ## [4.39]
 ### Added
@@ -41,8 +43,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter and export of STR variants
 - Update look of variants page navigation buttons
 ### Changed
-- Enforce same case _id and display_name when updating a case
-- Enforce same individual ids, display names and affected status when updating a case
 
 ## [4.37]
 ### Added
