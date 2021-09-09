@@ -147,14 +147,16 @@ def test_case_omim_diagnoses(adapter, case_obj, test_omim_term):
     adapter.disease_term_collection.insert_one(test_omim_term)
 
     # AND a case with BOTH diagnosis_phenotypes and disease genes:
-    case_obj["diagnosis_phenotypes"] = {
-        test_omim_term["disease_id"]: {"description": test_omim_term["description"]}
+    disease_info = {
+        "disease_id": test_omim_term["_id"],
+        "description": test_omim_term["description"],
     }
+    case_obj["diagnosis_phenotypes"] = [disease_info]
 
     adapter.case_collection.insert_one(case_obj)
 
-    case_diagnoses = adapter.case_omim_diagnoses(case_obj)
-    assert list(case_diagnoses)[0]["disease_id"] == test_omim_term["disease_id"]
+    case_omim_diagnoses = adapter.case_omim_diagnoses(case_obj["diagnosis_phenotypes"])
+    assert list(case_omim_diagnoses)[0] == test_omim_term
 
 
 def test_omim_genes(adapter, test_omim_term):
