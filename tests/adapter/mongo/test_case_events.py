@@ -1,3 +1,44 @@
+def test_diagnose(adapter, institute_obj, case_obj, user_obj):
+    """Test update a case onject with a diagnosis"""
+
+    # Given a database with no events
+    assert adapter.event_collection.find_one() is None
+
+    # GIVEN a test case with no assigned diagnosis
+    assert case_obj.get("diagnosis_phenotypes") is None
+    adapter.case_collection.insert_one(case_obj)
+
+    # GIVEN a disease term
+    disease_term = dict(
+        _id="OMIM:1",
+        disease_id="OMIM:1",
+        disease_nr=1,
+        source="OMIM",
+        description="First disease",
+        genes=[1],  # List with integers that are hgnc_ids
+    )
+
+    # WHEN case is diagnosis is updated via the "diagnose" function
+    updated_case = adapter.diagnose(
+        institute_obj,
+        case_obj,
+        user_obj,
+        "test_link",
+        disease_term,
+        ["ind1_id|ind1_name", "ind2_id|ind2_name"],
+        False,
+    )
+
+    # THEN case should be updated with diagnosis data
+    assert updated_case["diagnosis_phenotypes"][0]["disease_id"] == disease_term["disease_id"]
+    assert updated_case["diagnosis_phenotypes"][0]["disease_nr"]
+    assert updated_case["diagnosis_phenotypes"][0]["description"]
+    assert updated_case["diagnosis_phenotypes"][0]["individuals"]
+
+    # And a relative event should have been created in database
+    assert adapter.event_collection.find_one()
+
+
 def test_case_dismissed_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
     """Test adaptter function that retrieves the list of dismissed variant ids for a case"""
     # GIVEN a variant db with at least one variant, and no events
