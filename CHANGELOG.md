@@ -6,9 +6,27 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- A .cff citation file
 - Individual-specific OMIM terms
 ### Fixed
 ### Changed
+- Stop updating database indexes after loading exons via command line
+- Display validation status badge also for not Sanger-sequenced variants
+
+## [4.39]
+### Added
+- COSMIC IDs collected from CSQ field named `COSMIC`
+### Fixed
+- Link to other causative variants on variant page
+- Allow multiple COSMIC links for a cancer variant
+- Fixed MitoMap and HmtVar links for hg38 cases
+- Do not open new browser tabs when downloading files
+- Selectable IGV tracks on variant page
+- Missing splice junctions button on variant page
+- Refactor variantS representative gene selection, and use it also for cancer variant summary
+### Changed
+- Improve Javascript performance for displaying Chromograph images
+- Make ClinVar classification more evident in cancer variant page
 
 ## [4.38]
 ### Added
@@ -24,8 +42,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter and export of STR variants
 - Update look of variants page navigation buttons
 ### Changed
-
-
 
 ## [4.37]
 ### Added
