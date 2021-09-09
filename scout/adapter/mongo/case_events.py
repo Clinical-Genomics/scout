@@ -457,36 +457,40 @@ class CaseEventHandler(object):
             updated_case
 
         """
-        updated_diagnoses = {}
-        case_diagnoses = case.get("diagnosis_phenotypes") or {}
-        omim_modif_id = omim_obj["_id"]
+        omim_modif_id = omim_obj["_id"]  # OMIM ID to add or remove from case diagnoses
+        updated_diagnoses = []
+        case_diagnoses = case.get("diagnosis_phenotypes") or []
 
-        updated_diagnoses = case_diagnoses
-
-        if remove is True:  # Remove term from case diagnoses
-            updated_diagnoses.pop(omim_modif_id)
-        else:  # Add term to case diagnoses
-            updated_diagnoses[omim_modif_id] = {"description": omim_obj["description"]}
+        if remove is True:  # Remove term from case diagnoses list
+            for case_dia in case_diagnoses:
+                if case_dia.get("disease_id") == omim_modif_id:
+                    continue
+                updated_diagnoses.append(case_dia)
+        else:  # Add new diagnosis term to case diseases list
+            updated_diagnoses = case_diagnoses
+            new_dia = {
+                "disease_id": omim_modif_id,
+                "description": omim_obj["description"],
+            }
             if omim_inds:
-                updated_diagnoses[omim_modif_id]["individuals"] = [
+                new_dia["individuals"] = [
                     {
                         "individual_id": ind.split("|")[0],
                         "individual_name": ind.split("|")[1],
                     }
                     for ind in omim_inds
                 ]
-        if updated_diagnoses:
-            updated_case = self.case_collection.find_one_and_update(
-                {"_id": case["_id"]},
-                {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
-                return_document=pymongo.ReturnDocument.AFTER,
-            )
-        else:
-            updated_case = self.case_collection.find_one_and_update(
-                {"_id": case["_id"]},
-                {"$unset": {"diagnosis_phenotypes": 1}},
-                return_document=pymongo.ReturnDocument.AFTER,
-            )
+            updated_diagnoses.append(new_dia)
+
+        LOG.error(updated_diagnoses)
+
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case["_id"]},
+            {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+
+        LOG.error(updated_case.get("diagnosis_phenotypes"))
 
         if updated_case:
             self.create_event(

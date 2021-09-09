@@ -43,21 +43,24 @@ class DiagnosisHandler(object):
         return res
 
     def convert_diagnoses_format(self, case_obj):
-        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a dictionary or OMIM terms
+        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a list of dictinaries
         Args:
             case_obj(dict)
 
         Returns:
             updated_case(dict)
         """
-        updated_diagnoses = {}
+        updated_diagnoses = []
         for omim_nr in case_obj.get("case_diagnoses", []):
             disease_term = self.disease_term(disease_identifier=omim_nr)
             if disease_term is None:
                 continue
-            updated_diagnoses[disease_term["_id"]] = {
-                "description": disease_term.get("description")
-            }
+            updated_diagnoses.append(
+                {
+                    "disease_id": disease_term.get("disease_id"),
+                    "description": disease_term.get("description"),
+                }
+            )
         return self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
@@ -77,10 +80,11 @@ class DiagnosisHandler(object):
         result = None
 
         # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
-        case_diagnoses = case_obj.get("diagnosis_phenotypes", {})
-        if isinstance(case_diagnoses, list):
-            case_obj = self.convert_diagnoses_format(case_obj)
-        omim_ids = list(case_obj.get("diagnosis_phenotypes", {}).keys())
+        case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
+        omim_ids = [dia["disease_id"] for dia in case_diagnoses]
+        # If case diagnoses are a list of integers, convert into a list of dictionaries
+        if omim_ids and isinstance(omim_ids[0], int):
+            self.convert_diagnoses_format(case_obj)
         res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING
         )
