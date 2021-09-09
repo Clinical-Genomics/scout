@@ -77,14 +77,14 @@ class DiagnosisHandler(object):
             result(pymongo.Cursor): A cursor with OMIM terms
 
         """
-        result = None
-
         # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
         case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
-        omim_ids = [dia["disease_id"] for dia in case_diagnoses]
         # If case diagnoses are a list of integers, convert into a list of dictionaries
-        if omim_ids and isinstance(omim_ids[0], int):
-            self.convert_diagnoses_format(case_obj)
+        if case_diagnoses and isinstance(case_diagnoses[0], int):
+            updated_case = self.convert_diagnoses_format(case_obj)
+            case_diagnoses = updated_case.get("diagnosis_phenotypes")
+
+        omim_ids = [dia["disease_id"] for dia in case_diagnoses]
         res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING
         )
