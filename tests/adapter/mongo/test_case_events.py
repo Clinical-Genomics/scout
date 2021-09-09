@@ -1,4 +1,4 @@
-def test_diagnose(adapter, institute_obj, case_obj, user_obj):
+def test_diagnose(adapter, institute_obj, case_obj, user_obj, omim_term):
     """Test update a case onject with a diagnosis"""
 
     # Given a database with no events
@@ -8,29 +8,19 @@ def test_diagnose(adapter, institute_obj, case_obj, user_obj):
     assert case_obj.get("diagnosis_phenotypes") is None
     adapter.case_collection.insert_one(case_obj)
 
-    # GIVEN a disease term
-    disease_term = dict(
-        _id="OMIM:1",
-        disease_id="OMIM:1",
-        disease_nr=1,
-        source="OMIM",
-        description="First disease",
-        genes=[1],  # List with integers that are hgnc_ids
-    )
-
     # WHEN case is diagnosis is updated via the "diagnose" function
     updated_case = adapter.diagnose(
         institute_obj,
         case_obj,
         user_obj,
         "test_link",
-        disease_term,
+        omim_term,
         ["ind1_id|ind1_name", "ind2_id|ind2_name"],
         False,
     )
 
     # THEN case should be updated with diagnosis data
-    assert updated_case["diagnosis_phenotypes"][0]["disease_id"] == disease_term["disease_id"]
+    assert updated_case["diagnosis_phenotypes"][0]["disease_id"] == omim_term["disease_id"]
     assert updated_case["diagnosis_phenotypes"][0]["disease_nr"]
     assert updated_case["diagnosis_phenotypes"][0]["description"]
     assert updated_case["diagnosis_phenotypes"][0]["individuals"]
