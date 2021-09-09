@@ -52,7 +52,7 @@ class DiagnosisHandler(object):
         """
         updated_diagnoses = []
         for omim_id in case_obj.get("diagnosis_phenotypes", []):
-            disease_term = self.disease_term(disease_identifier=omim_nr)
+            disease_term = self.disease_term(disease_identifier=omim_id)
             if disease_term is None:
                 continue
             updated_diagnoses.append(
@@ -67,23 +67,16 @@ class DiagnosisHandler(object):
             return_document=ReturnDocument.AFTER,
         )
 
-    def case_omim_diagnoses(self, case_obj):
+    def case_omim_diagnoses(self, case_diagnoses):
         """Return all complete OMIM diagnoses for a case
 
         Args:
-            case_obj(dict)
+            case_diagnoses(list) list of case diagnoses disctionaries
 
         Returns:
             result(pymongo.Cursor): A cursor with OMIM terms
 
         """
-        # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
-        case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
-        # If case diagnoses are a list of integers, convert into a list of dictionaries
-        if case_diagnoses and isinstance(case_diagnoses[0], int):
-            updated_case = self.convert_diagnoses_format(case_obj)
-            case_diagnoses = updated_case.get("diagnosis_phenotypes")
-
         omim_ids = [dia["disease_id"] for dia in case_diagnoses]
         res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING
