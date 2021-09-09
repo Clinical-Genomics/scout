@@ -210,7 +210,7 @@ def case(store, institute_obj, case_obj):
     # If case diagnoses are a list of integers, convert into a list of dictionaries
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
     if case_diagnoses and isinstance(case_diagnoses[0], int):
-        case_obj = convert_diagnoses_format(case_obj)
+        case_obj = store.convert_diagnoses_format(case_obj)
     omim_terms = {
         term["disease_id"]: term
         for term in store.case_omim_diagnoses(case_obj.get("diagnosis_phenotypes"))

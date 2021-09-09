@@ -469,6 +469,7 @@ class CaseEventHandler(object):
         else:  # Add new diagnosis term to case diseases list
             updated_diagnoses = case_diagnoses
             new_dia = {
+                "disease_nr": omim_obj["disease_nr"],
                 "disease_id": omim_modif_id,
                 "description": omim_obj["description"],
             }

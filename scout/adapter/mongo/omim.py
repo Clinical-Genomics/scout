@@ -51,12 +51,13 @@ class DiagnosisHandler(object):
             updated_case(dict)
         """
         updated_diagnoses = []
-        for omim_id in case_obj.get("diagnosis_phenotypes", []):
-            disease_term = self.disease_term(disease_identifier=omim_id)
+        for disease_nr in case_obj.get("diagnosis_phenotypes", []):
+            disease_term = self.disease_term(disease_identifier=disease_nr)
             if disease_term is None:
                 continue
             updated_diagnoses.append(
                 {
+                    "disease_nr": disease_nr,
                     "disease_id": disease_term.get("disease_id"),
                     "description": disease_term.get("description"),
                 }
