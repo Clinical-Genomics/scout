@@ -4,7 +4,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
 {% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
-{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links  %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table  %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
 
@@ -196,35 +196,36 @@
   <div class="card panel-default">
     <div class="panel-heading">Summary</div>
     <div class="card-body">
-      {% set tmp_gene_info = [] %}
-      {% for gene in variant.genes %}
-        {% for transcript in gene.transcripts %}
+
+    {% set tmp_gene_info = [] %}
+      {% if variant.first_rep_gene %}
+        {% for transcript in variant.first_rep_gene.transcripts %}
           {% if transcript.is_primary %}
-            {% do tmp_gene_info.append(gene) %}
+            {% do tmp_gene_info.append(variant.first_rep_gene) %}
             {% do tmp_gene_info.append(transcript) %}
           {% endif %}
         {% endfor %}
-      {% endfor %}
-      {% if tmp_gene_info | length  == 0 %}
-        {% for gene in variant.genes %}
-          {% for transcript in gene.transcripts %}
+        {% if tmp_gene_info | length  == 0 %}
+          {% for transcript in variant.first_rep_gene.transcripts %}
             {% if transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
-              {% do tmp_gene_info.append(gene) %}
+              {% do tmp_gene_info.append(variant.first_rep_gene) %}
               {% do tmp_gene_info.append(transcript) %}
             {% endif %}
           {% endfor %}
-        {% endfor %}
+        {% endif %}
       {% endif %}
+
       {% set primary_gene = tmp_gene_info[0] %}
       {% if tmp_gene_info %}
         {% set primary_transcript = tmp_gene_info[1] %}
-        <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}"><h5 class="card-title">
-          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }}
+        {% set nr_genes = variant.genes | length %}
+        <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details."><h5 class="card-title">
+          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }} {% if nr_genes > 1 %} <span class="badge badge-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
         </h5></a>
       {% endif %}
       <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
         {% if primary_transcript %}
-          <li class="list-group-item">{{ primary_transcript.refseq_id }}
+          <li class="list-group-item" data-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id }}
         {% endif %}
         {% if primary_gene and primary_gene.exon %}
           <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
@@ -238,7 +239,11 @@
         {% if primary_gene and primary_gene.region_annotation %}
           <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
         {% endif %}
-        </li>
+        {% if primary_transcript %}
+          </li>
+        {% else %}
+          <span data-toggle="tooltip" title="No HGNC primary or RefSeq NM_ transcript found"><i>Check complete list of transcripts</i></span>
+        {% endif %}
        <li class="list-group-item">
           <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
           {%- if variant.reference|length > 8 -%}
@@ -260,50 +265,48 @@
         <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
         </li>
       </ul>
+      <div class="h6 mt-1">
+        {{ clinsig_table(variant) }}
+      </div>
     <!--LINK out resources-->
-      <div class="h6">Databases</div>
-      <div class="btn-group"><a class="btn btn-sm btn-info" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
-      <a class="btn btn-sm btn-info" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
-      {% if variant.cosmic_link %}
-          <a class="btn btn-sm btn-info text-white" role="button" href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
-      {% endif %}
-      {% if variant.dbsnp_id %}
-        {% for snp in variant.dbsnp_id.split(';') %}
-          <a class="btn btn-sm btn-info text-white" role="button" target="_blank" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
-        {% endfor %}
-      {% endif %}
+      <div class="h6 mt-1">Databases</div>
+      <div>
+        <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+        <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
+        {% if variant.cosmic_links %} <!-- This is a list of tuples : [(id1, link1), (id2, link2), ..] -->
+          {% for cosmic_link in variant.cosmic_links %}
+            <a data-toggle="tooltip" title="COSMIC" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{cosmic_link[1]}}" target="_blank">{{cosmic_link[0]}}</a>
+          {% endfor %}
+        {% endif %}
+        {% if variant.dbsnp_id %}
+          {% for snp in variant.dbsnp_id.split(';') %}
+            <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
+          {% endfor %}
+        {% endif %}
       </div>
       <div class="btn-group">
         {% if primary_transcript and primary_transcript.varsome_link %}
-        <a href="{{ primary_transcript.varsome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+        <a href="{{ primary_transcript.varsome_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
           data-toggle="tooltip" title="Varsome">V</a>
         {% endif %}
         {% if primary_transcript and primary_transcript.tp53_link %}
-          <a href="{{ primary_transcript.tp53_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+          <a href="{{ primary_transcript.tp53_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
             data-toggle="tooltip" title="MutanTP53">TP53</a>
         {% endif %}
         {% if primary_transcript and primary_transcript.cbioportal_link %}
-          <a href="{{ primary_transcript.cbioportal_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+          <a href="{{ primary_transcript.cbioportal_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
             data-toggle="tooltip" title="cBioPortal">CBP</a>
         {% endif %}
         {% if primary_transcript and primary_transcript.mycancergenome_link %}
-          <a href="{{ primary_transcript.mycancergenome_link }}" class="btn btn-sm btn-info text-white" role="button" target="_blank"
+          <a href="{{ primary_transcript.mycancergenome_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
             data-toggle="tooltip" title="MyCancerGenome">MCG</a>
         {% endif %}
       </div>
-
-      {% if variant.clinsig_human %}
-        {% for clinsig in variant.clinsig_human %}
-          {% if clinsig.accession %}
-            <a class="btn btn-sm btn-info text-white"  role="button" href="{{ clinsig.link }}" role="button" target="_blank">Clinvar {{ clinsig.accession }}</a>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
     </div>
 
     <!--IGV URLS-->
     <div class="h6 ml-4">Alignment</div>
-    {{ alignments(institute, case, variant, current_user, case_groups, config) }}
+    {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
 
     </div>
 {% endmacro %}

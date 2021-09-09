@@ -157,7 +157,7 @@
               <td>
                 {% if ind.vcf2cytosure %}
                 <a href="{{ url_for('cases.vcf2cytosure', institute_id=institute._id,
-                      case_name=case.display_name, individual_id=ind.individual_id) }}" target="_blank" class="btn">
+                      case_name=case.display_name, individual_id=ind.individual_id) }}" download class="btn">
                   <i class="fa fa-download"></i>
                 </a>
                 {% else %}

@@ -4,6 +4,37 @@
 {% from "variant/buttons.html" import igv_button, splice_junctions_button %}
 {% from "variant/utils.html" import igv_track_selection  %}
 
+{% macro clinsig_table(variant) %}
+  {% if variant.clinsig_human %}
+    <table class="table table-bordered table-fixed table-sm">
+      <thead>
+        <thead>
+          <tr class="active">
+            <th>CLINSIG</th>
+            <th>Accession</th>
+            <th>Revstat</th>
+          </tr>
+        </thead>
+      </thead>
+      <tbody>
+        {% for clinsig in variant.clinsig_human %}
+          <tr>
+            <td>{{ clinsig.human }}</td>
+            {% if clinsig.accession %}
+              <td><a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a></td>
+            {% else %}
+              <td>n.a.</td>
+            {% endif %}
+            <td>{{ clinsig.revstat or "n.a." }}</td>
+          </tr>
+        {% else %}
+          <i>No annotations</i>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endmacro %}
+
 {% macro acmg_classification_item(variant, data) %}
   {% set current_variant = (data.variant_specific == variant._id) %}
   <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
@@ -31,28 +62,32 @@
   </li>
 {% endmacro %}
 
-{% macro alignments(institute, case, variant, current_user, case_groups, config) %}
+{% macro alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks=False) %}
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
           <div>
             {{ igv_button(case, variant, case_groups) }}
           </div>
-          <div>
-            {% if variant.alamut_link %}
-              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank"
-            data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
-            {% endif %}
-           </div>
+          {% if splice_junctions_tracks %}
+            <div>
+              {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
+            </div>
+          {% endif %}
+          {% if variant.alamut_link %}
+            <div>
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
+            </div>
+          {% endif %}
           {% if config.SQLALCHEMY_DATABASE_URI %}
-          <div class="d-flex flex-wrap">
-            {% for gene in variant.genes %}
-              <span class="ml-5">
-                <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </span>
-            {% endfor %}
-          </div>
+            <div class="d-flex flex-wrap">
+              {% for gene in variant.genes %}
+                <span class="ml-5">
+                  <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                </span>
+              {% endfor %}
+            </div>
           {% endif %}
         </li>
         <li class="list-group-item">
@@ -60,11 +95,6 @@
             {{ igv_track_selection(igv_tracks, current_user) }}
           </div>
         </li>
-        {% if splice_junctions_tracks %}
-          <li class="list-group-item">
-            <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
-          </li>
-        {% endif %}
       </ul>
 {% endmacro %}
 
@@ -124,7 +154,7 @@
         Matching causatives from other cases:&nbsp;
         {% for other_variant in causatives %}
           <a href="{{ url_for('variant.variant',
-                              institute_id=other_variant.owner,
+                              institute_id=other_variant.institute_id,
                               case_name=other_variant.case_display_name,
                               variant_id=other_variant._id) }}">
             {{ other_variant.case_display_name }}
@@ -212,8 +242,11 @@
             <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
           {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
-          {% if variant.chromosome == 'MT' %}
+          {% if variant.is_mitochondrial %}
             <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
+          {% endif %}
+          {% if variant.hmtvar_variant_id %}
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
           {% endif %}
           {% if gene.tp53_link %}
             <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>

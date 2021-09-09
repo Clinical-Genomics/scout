@@ -9,7 +9,6 @@ from scout.constants import (
     ACMG_CRITERIA,
     ACMG_MAP,
     ACMG_OPTIONS,
-    CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
@@ -19,6 +18,7 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
+from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -153,6 +153,14 @@ def variant(
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    # is variant located on the mitochondria
+    variant_obj["is_mitochondrial"] = any(
+        [
+            (genome_build == "38" and variant_obj["chromosome"] == "M"),
+            (genome_build == "37" and variant_obj["chromosome"] == "MT"),
+        ]
+    )
+
     # add default panels extra gene information
     panels = default_panels(store, case_obj)
     variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
@@ -223,6 +231,9 @@ def variant(
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+
+    variant_genes = variant_obj.get("genes", [])
+    update_representative_gene(variant_obj, variant_genes)
 
     # Add display information about callers
     variant_obj["callers"] = callers(variant_obj, category=variant_category)
