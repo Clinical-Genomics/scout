@@ -43,7 +43,7 @@ class DiagnosisHandler(object):
         return res
 
     def convert_diagnoses_format(self, case_obj):
-        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a list of dictinaries
+        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a list of OMIM terms dictionaries
         Args:
             case_obj(dict)
 

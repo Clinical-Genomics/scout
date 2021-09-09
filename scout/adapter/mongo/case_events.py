@@ -498,6 +498,7 @@ class CaseEventHandler(object):
                 verb="update_diagnosis",
                 subject=case["display_name"],
                 content=omim_modif_id,
+                individuals=[ind.split("|")[1] for ind in omim_inds],
             )
 
         return updated_case
