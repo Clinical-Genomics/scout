@@ -482,15 +482,11 @@ class CaseEventHandler(object):
                 ]
             updated_diagnoses.append(new_dia)
 
-        LOG.error(updated_diagnoses)
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-
-        LOG.error(updated_case.get("diagnosis_phenotypes"))
 
         if updated_case:
             self.create_event(
