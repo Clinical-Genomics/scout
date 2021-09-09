@@ -53,6 +53,7 @@ class DiagnosisHandler(object):
         updated_diagnoses = []
         for omim_nr in case_obj.get("case_diagnoses", []):
             disease_term = self.disease_term(disease_identifier=omim_nr)
+            LOG.error(f"Disease term---->{disease_term}")
             if disease_term is None:
                 continue
             updated_diagnoses.append(
