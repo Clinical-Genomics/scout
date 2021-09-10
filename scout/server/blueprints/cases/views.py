@@ -27,8 +27,8 @@ from flask_weasyprint import HTML, render_pdf
 from requests.exceptions import ReadTimeout
 from werkzeug.datastructures import Headers
 
-from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
+from scout.constants import CUSTOM_CASE_REPORTS
+from scout.server.extensions import mail, store
 from scout.server.utils import (
     institute_and_case,
     jsonconverter,
@@ -74,12 +74,6 @@ def case(institute_id, case_name):
 
     data = controllers.case(store, institute_obj, case_obj)
     return dict(
-        institute=institute_obj,
-        case=case_obj,
-        mme_nodes=matchmaker.connected_nodes,
-        tissue_types=SAMPLE_SOURCE,
-        gens_info=gens.connection_settings(case_obj.get("genome_build")),
-        display_rerunner=rerunner.connection_settings.get("display", False),
         **data,
     )
 

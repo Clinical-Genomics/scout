@@ -22,6 +22,7 @@ from scout.constants import (
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
+    SAMPLE_SOURCE,
     SEX_MAP,
     VERBS_MAP,
 )
@@ -36,7 +37,7 @@ from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
+from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import post_request_json
 
@@ -224,6 +225,8 @@ def case(store, institute_obj, case_obj):
                 img["data"] = b64encode(img["data"]).decode("utf-8")
 
     data = {
+        "institute": institute_obj,
+        "case": case_obj,
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
         "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
@@ -241,6 +244,10 @@ def case(store, institute_obj, case_obj):
         "omim_terms": omim_terms,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
+        "tissue_types": SAMPLE_SOURCE,
+        "mme_nodes": matchmaker.connected_nodes,
+        "gens_info": gens.connection_settings(case_obj.get("genome_build")),
+        "display_rerunner": rerunner.connection_settings.get("display", False),
     }
 
     return data
