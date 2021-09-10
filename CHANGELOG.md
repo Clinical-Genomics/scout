@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display validation status badge also for not Sanger-sequenced variants
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
 - Upgraded igv.js to version 2.10 to (exon number support)
-- Use Gencode v.24 as igv.js genes track
+- GenCode v.38 comprehensive gene track (selectable from igv settings)
 
 ## [4.39]
 ### Added
