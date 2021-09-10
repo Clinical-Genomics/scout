@@ -231,15 +231,29 @@
       <ul class="list-group">
         <li class="list-group-item">
           <a href="https://sift.bii.a-star.edu.sg/www/SIFT_help.html" target="_blank">SIFT</a>
-          <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
+          {% if variant.sift_predictions  %}
+           <br> {{ variant.sift_predictions|join(', ') }}
+          {% else %}
+             <span class="float-right">{{ "-" }}</span>
+          {% endif %}
         </li>
         <li class="list-group-item">
           <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
-          <span class="float-right">{{ variant.revel_score or "-" }}</span>
+          <span class="float-right">
+          {% if variant.revel_score  %}
+             {{ variant.revel_score }}
+          {% else %}
+             {{ "-" }}
+          {% endif %}
+          </span>
         </li>
         <li class="list-group-item">
           <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
-          <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
+          {% if variant.polyphen_predictions %}
+            <br> {{ variant.polyphen_predictions|join(', ') }}
+          {% else %}
+             <span class="float-right">{{ "-" }}</span>
+          {% endif %}
         </li>
         <li class="list-group-item">
           SPIDEX
