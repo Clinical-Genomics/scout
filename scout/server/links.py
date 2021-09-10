@@ -502,7 +502,7 @@ def cosmic_links(variant_obj):
             url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
         else:
             url_template = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}"
-        cosmic_links.append(url_template.format(cosmic_id))
+        cosmic_links.append((cosmic_id, url_template.format(cosmic_id)))
 
     return cosmic_links
 
