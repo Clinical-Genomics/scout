@@ -15,19 +15,19 @@ HG38CYTOBAND_URL = (
 
 # ----- refSeq genes annotation tracks -----
 HG19GENES_FORMAT = "bed"
-HG19GENES_URL = " https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726131/NCBI_Refseq_genes_GRCh37_sorted.bed.gz"
-HG19GENES_INDEX_URL = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726128/NCBI_Refseq_genes_GRCh37_sorted.bed.gz.tbi"
+HG19GENES_URL = " https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/NCBI_Refseq_genes_GRCh37_sorted.bed.gz"
+HG19GENES_INDEX_URL = "https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/NCBI_Refseq_genes_GRCh37_sorted.bed.gz.tbi"
 HG38GENES_FORMAT = "bed"
-HG38GENES_URL = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726146/NCBI_Refseq_genes_GRCh38_sorted.bed.gz"
-HG38GENES_INDEX_URL = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726143/NCBI_Refseq_genes_GRCh38_sorted.bed.gz.tbi"
+HG38GENES_URL = "https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/NCBI_Refseq_genes_GRCh38_sorted.bed.gz"
+HG38GENES_INDEX_URL = "https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/NCBI_Refseq_genes_GRCh38_sorted.bed.gz.tbi"
 
 # ----- GenCode genes annotation tracks -----
 GENCODE_HG19_GENES_FORMAT = "bed"
-GENCODE_HG19_GENES_URL = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726194/GenCode_comprehensive_genes_v38_lift37_sorted.bed.gz"
-GENCODE_HG19_GENES_INDEX_URL = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726191/GenCode_comprehensive_genes_v38_lift37_sorted.bed.gz.tbi"
+GENCODE_HG19_GENES_URL = "https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/GenCode_comprehensive_genes_v38_lift37_sorted.bed.gz"
+GENCODE_HG19_GENES_INDEX_URL = "https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/GenCode_comprehensive_genes_v38_lift37_sorted.bed.gz.tbi"
 GENCODE_HG38_GENES_FORMAT = "bed"
-GENCODE_HG38_GENES_URL = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726227/GenCode_comprehensive_genes_v38_sorted.bed.gz"
-GENCODE_HG38_GENES_INDEX_URL = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/30726224/GenCode_comprehensive_genes_v38_sorted.bed.gz.tbi"
+GENCODE_HG38_GENES_URL = "https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/GenCode_comprehensive_genes_v38_sorted.bed.gz"
+GENCODE_HG38_GENES_INDEX_URL = "https://cloud-object-storage-scout-igv-tracks.s3.eu-de.cloud-object-storage.appdomain.cloud/GenCode_comprehensive_genes_v38_sorted.bed.gz.tbi"
 
 # ----- ClinVar tracks -----
 HG38CLINVAR_URL = "https://hgdownload.soe.ucsc.edu/gbdb/hg38/bbi/clinvar/clinvarMain.bb"
