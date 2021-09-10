@@ -43,6 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter and export of STR variants
 - Update look of variants page navigation buttons
 ### Changed
+- Case configuration parsing now uses Pydantic for improved typechecking and config handling
 
 ## [4.37]
 ### Added
