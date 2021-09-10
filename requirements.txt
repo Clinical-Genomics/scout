@@ -29,9 +29,8 @@ flask_login
 
 # Parsing
 cyvcf2<0.10.0
-ped_parser
-pydantic
 PyYaml>=5.1
+ped_parser
 
 # extras
 intervaltree==3.0.2

@@ -1,7 +1,7 @@
 from pprint import pprint as pp
 
 
-def test_update_caseid(real_oldcase_database, parsed_case):
+def test_update_caseid(real_oldcase_database, scout_config):
     # GIVEN a case with a "old-style" case id
     adapter = real_oldcase_database["adapter"]
     old_case = real_oldcase_database["case"]
@@ -11,7 +11,7 @@ def test_update_caseid(real_oldcase_database, parsed_case):
     ## THEN assert that the case has old id as case_id
     assert isinstance(adapter.case(old_caseid), dict)
     ## THEN assert that grabbing the case with disaply name does not work
-    assert adapter.case(parsed_case["family"]) is None
+    assert adapter.case(scout_config["family"]) is None
 
     case_lists = {"suspects": None, "causatives": None}
     for case_variants in case_lists:
@@ -29,11 +29,11 @@ def test_update_caseid(real_oldcase_database, parsed_case):
         assert event_obj["case"] == old_caseid
 
     # WHEN updating the case it as part of a upload
-    adapter.load_case(parsed_case, update=True)
+    adapter.load_case(scout_config, update=True)
 
     # THEN it should replace the case in the database
     assert adapter.case(old_caseid) is None
-    new_case = adapter.case(parsed_case["family"])
+    new_case = adapter.case(scout_config["family"])
     assert isinstance(new_case, dict)
     # AND the suspect/causative variant should have an updated id
     for case_variants, old_variantid in case_lists.items():
