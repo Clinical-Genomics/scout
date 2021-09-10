@@ -76,28 +76,38 @@
         {{ omim_phenotypes(variant) }}
       </div>
       <div class="col-sm-8">
-        <div class="col-sm-12">{{ panel_summary() }}</div>
+        <div class="row">
+          <div class="col-sm-6">{{ panel_summary() }}</div>
+          <div class="col-sm-6">
+            <div class="row">
+              {{ frequencies(variant) }}
+              {{ severity_list(variant) }}
+            </div>
+            <div class="row">
+              {% if config['LOQUSDB_SETTINGS'] %}
+                {{ observations_panel(variant, observations, case) }}
+              {% endif %}
+              {{  old_observations(variant) }}
+            </div>
+          </div>
+
+        </div>
         {% if variant.disease_associated_transcripts %}
           <div class="col-sm-12">{{ disease_associated(variant) }}</div>
         {% endif %}
         <div class="col-sm-12">{{ transcripts_overview(variant) }}</div>
+        <div class="row">
+          <div class="col-sm-6">
+            {{ genemodels_panel(variant) }}
+          </div>
+          <div class="col-sm-6">
+            {{ inheritance_panel(variant) }}
+            {% if variant.azlength %}
+              {{ autozygosity_panel(variant) }}
+            {% endif %}
+          </div>
+        </div>
       </div>
-    </div>
-
-    <div class="card-columns">
-      {{ genemodels_panel(variant) }}
-      {{ inheritance_panel(variant) }}
-        {% if variant.azlength %}
-          {{ autozygosity_panel(variant) }}
-        {% endif %}
-      {{ frequencies(variant) }}
-      {% if config['LOQUSDB_SETTINGS'] %}
-        {{ observations_panel(variant, observations, case) }}
-      {% endif %}
-      {{  old_observations(variant) }}
-      {{ severity_list(variant) }}
-      {{ conservations(variant) }}
-      {{ mappability(variant) }}
     </div>
 
     <div class="row">
@@ -106,6 +116,10 @@
         <div class="col-sm-3">{{ pedigree_panel(case) }}</div>
       {% endif %}
       <div class="col-sm-5">{{ gtcall_panel(variant) }}</div>
+      <div class="col-sm">
+        {{ conservations(variant) }}
+        {{ mappability(variant) }}
+      </div>
     </div>
     {% if variant.compounds %}
       <div class="row">
