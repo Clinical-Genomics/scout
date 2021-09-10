@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Stop updating database indexes after loading exons via command line
 - Display validation status badge also for not Sanger-sequenced variants
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
-- Upgraded igv.js to version 2.10 to (exon number support)
+- Upgraded igv.js to version 2.10 (exon number support)
 - GenCode v.38 comprehensive gene track (selectable from igv settings)
 
 ## [4.39]
