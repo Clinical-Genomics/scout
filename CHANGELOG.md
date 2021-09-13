@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - A .cff citation file
 - Individual-specific OMIM terms
+- OMIM disease descriptions in ClinVar submission form
 ### Fixed
 ### Changed
 - Stop updating database indexes after loading exons via command line

@@ -273,8 +273,8 @@
                       <td style="width:30%">OMIM diagnoses:<br>(associated to the variant)</td>
                       <td>
                         {% for omim in pheno_omims %}
-                          <input type="checkbox" id="conditions@{{pinned._id}}" value="OMIM_{{omim}}" name="conditions@{{pinned._id}}"><a href="http://omim.org/entry/{{omim}}"
-                            target="_blank" class="text-blue"> {{ omim }} </a></input><br>
+                          <input type="checkbox" id="conditions@{{pinned._id}}" value="OMIM_{{omim.disease_nr}}" name="conditions@{{pinned._id}}"><a href="http://omim.org/entry/{{omim.disease_nr}}"
+                            target="_blank" class="text-blue"> {{omim.disease_id}} - {{omim.description}}</a></input><br>
                         {% else %}
                           No preselected OMIM diagnosis available.
                         {% endfor %}

@@ -56,7 +56,7 @@
       <div class="row d-flex justify-content-between ml-3">
         <div>
           {% if diagnosis.disease_id and diagnosis.description %}
-            <a href="http://omim.org/entry/{{diagnosis.disease_id}}" target="_blank" class="text-dark" data-toggle='tooltip' title="{{diagnosis.description}}">
+            <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-toggle='tooltip' title="{{diagnosis.description}}">
               {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
             {% if diagnosis.disease_id in omim_terms %}
