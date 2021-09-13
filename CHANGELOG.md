@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
+- Add the Scout-react repository as a front-end folder
 ### Fixed
 ### Changed
 - Stop updating database indexes after loading exons via command line
