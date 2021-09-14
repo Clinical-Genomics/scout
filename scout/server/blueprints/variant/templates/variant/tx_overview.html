@@ -45,12 +45,13 @@
           {% for tx in variant.overview_transcripts %}
             <tr {% if tx.is_primary %} class="bg-info-light" {% endif %}>
               <td class="d-flex justify-content-between align-items-center"> <!-- gene col-->
-                <a href="{{ url_for('genes.gene', hgnc_id=tx.hgnc_id) }}">
+                <a href="{{ url_for('genes.gene', hgnc_id=tx.hgnc_id) }}" target="_blank">
                   {{ tx.hgnc_symbol if tx.hgnc_symbol else tx.hgnc_id }}
                 </a>
               </td> <!-- end of gene symbol col-->
 
               <td> <!-- Refseq IDs col -->
+                {{tx|join(", ")|safe or '<font class="text-muted font-italic">Check complete list of transcripts</font>'|safe}}
               </td> <!-- end of Refseq IDs col-->
 
               <td> <!-- ID col-->

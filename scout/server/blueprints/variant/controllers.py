@@ -56,21 +56,43 @@ def tx_overview(variant_obj):
     for gene in variant_obj.get("genes", []):
         # overview_txs.append(tx)
         for tx in gene.get("transcripts", []):
-            ov_tx = tx
+            ovw_tx = {}
             if ("refseq_identifiers" in tx or tx.get("is_canonical", False)) is False:
                 continue  # collect only RefSeq or canonical transcripts
-            ov_tx["hgnc_symbol"] = (
+            # create content for the gene column
+            ovw_tx["hgnc_symbol"] = (
                 gene["common"].get("hgnc_symbol", gene.get("hgnc_id"))
                 if gene.get("common")
                 else gene.get("hgnc_id")
             )
-            ov_tx["hgnc_id"] = gene.get("hgnc_id")
+            ovw_tx["hgnc_id"] = gene.get("hgnc_id")
 
-            ov_tx["mane_select_transcript"] = tx.get("mane_select_transcript", None)
-            ov_tx["mane_plus_clinical_transcript"] = tx.get("mane_plus_clinical_transcript", None)
+            # create content for the Refseq IDs column
+            ovw_tx["mane_select_transcript"] = tx.get("mane_select_transcript", None)
+            ovw_tx["mane_plus_clinical_transcript"] = tx.get("mane_plus_clinical_transcript", None)
+            ovw_tx["mane_tx"] = bool(
+                ovw_tx["mane_select_transcript"] or ovw_tx["mane_plus_clinical_transcript"]
+            )
+            ovw_tx["decorated_refseq_ids"] = []
+            for refseq_id in tx.get("refseq_identifiers"):
+                decorated_tx = refseq_id
+                if refseq_id.startswith("XM") is False or ovw_tx["mane_tx"] is False:
+                    ovw_tx["decorated_refseq_ids"].append(decorated_tx)
+                    continue
+                # print the refseq ids of minor importance in italics and text-muted style
+                if (
+                    ovw_tx["mane_select_transcript"]
+                    and ovw_tx["mane_select_transcript"].startswith(refseq_id)
+                    or ovw_tx["mane_plus_clinical_transcript"]
+                    and ovw_tx["mane_plus_clinical_transcript"].startswith(refseq_id)
+                ):
+                    LOG.warning("HERE BITCHES")
+                    ovw_tx["decorated_refseq_ids"].append(
+                        "".join(['<font class="text-muted font-italic">', decorated_tx, "</font>"])
+                    )
 
-            LOG.error(ov_tx)
-            overview_txs.append(ov_tx)
+            LOG.error(ovw_tx)
+            overview_txs.append(ovw_tx)
 
     # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
     variant_obj["overview_transcripts"] = sorted_overview_txs = sorted(
