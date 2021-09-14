@@ -59,8 +59,10 @@ def tx_overview(variant_obj):
             ov_tx = tx
             if ("refseq_identifiers" in tx or tx.get("is_canonical", False)) is False:
                 continue  # collect only RefSeq or canonical transcripts
-            ov_tx["gene_symbol"] = (
-                gene["common"].get("hgnc_symbol") if gene.get("common") else gene.get("hgnc_id")
+            ov_tx["hgnc_symbol"] = (
+                gene["common"].get("hgnc_symbol", gene.get("hgnc_id"))
+                if gene.get("common")
+                else gene.get("hgnc_id")
             )
             ov_tx["hgnc_id"] = gene.get("hgnc_id")
 
