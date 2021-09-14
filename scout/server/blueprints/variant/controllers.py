@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from flask import url_for
+from flask import flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -43,6 +43,39 @@ from .utils import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def tx_overview(variant_obj):
+    """Prepares the content of the transcript overview to be shown on variant and general report pages.
+       Basically show transcripts that contain RefSeq or are canonical.
+
+    Args:
+        variant_obj(dict)
+    """
+    overview_txs = []  # transcripts to be shown in transcripts overview
+    for gene in variant_obj.get("genes", []):
+        # overview_txs.append(tx)
+        for tx in gene.get("transcripts", []):
+            ov_tx = tx
+            if ("refseq_identifiers" in tx or tx.get("is_canonical", False)) is False:
+                continue  # collect only RefSeq or canonical transcripts
+            ov_tx["gene_symbol"] = (
+                gene["common"].get("hgnc_symbol") if gene.get("common") else gene.get("hgnc_id")
+            )
+            ov_tx["hgnc_id"] = gene.get("hgnc_id")
+
+            ov_tx["mane_select_transcript"] = tx.get("mane_select_transcript", None)
+            ov_tx["mane_plus_clinical_transcript"] = tx.get("mane_plus_clinical_transcript", None)
+
+            LOG.error(ov_tx)
+            overview_txs.append(ov_tx)
+
+    # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
+    variant_obj["overview_transcripts"] = sorted_overview_txs = sorted(
+        overview_txs,
+        key=lambda tx: (tx["mane_select_transcript"], tx["mane_plus_clinical_transcript"]),
+    )
+    LOG.error(variant_obj["overview_transcripts"])
 
 
 def has_rna_tracks(case_obj):
@@ -275,6 +308,8 @@ def variant(
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
+
+    tx_overview(variant_obj)
 
     return {
         "institute": institute_obj,
