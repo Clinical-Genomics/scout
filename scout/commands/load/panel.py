@@ -108,7 +108,6 @@ def panel(
 def _panel_omim(adapter, genemap2, mim2genes, api_key, institute):
     """Add OMIM panel to the database.
     Args:
-        adapter(scout.adapter.MongoAdapter)
         genemap2(str): Path to file in omim genemap2 format
         mim2genes(str): Path to file in omim mim2genes format
         api_key(str): OMIM API key
@@ -125,13 +124,14 @@ def _panel_omim(adapter, genemap2, mim2genes, api_key, institute):
     api_key = api_key or current_app.config.get("OMIM_API_KEY")
     if not api_key and mim_files is None:
         LOG.warning(
-            "Please provide either an OMIM api key or the path to genemap2 and mim2genes files to load the OMIM gene panel"
+            "Please provide either an OMIM api key or the path to genemap2 and mim2genesto to load the omim gene panel"
         )
         raise click.Abort()
     # Check if OMIM-AUTO exists
     if adapter.gene_panel(panel_id="OMIM-AUTO"):
-        LOG.warning("OMIM-AUTO already exists in database")
-        LOG.info("To create a new version use scout update omim")
+        LOG.warning(
+            "OMIM-AUTO already exists in database. Use the command 'scout update omim' to create a new OMIM panel version"
+        )
         return
 
     if not mim_files:
