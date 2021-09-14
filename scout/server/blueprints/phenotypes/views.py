@@ -29,6 +29,7 @@ def api_hpo_terms():
     data = controllers.hpo_terms(store=store)
     return jsonify(data)
 
+
 @hpo_bp.route("/api/v1/phenotype/<hpo_id>", methods=["GET"])
 @public_endpoint
 def api_hpo_term(hpo_id):
@@ -40,6 +41,7 @@ def api_hpo_term(hpo_id):
 
     data = controllers.hpo_term(store=store, hpo_id=hpo_id)
     return jsonify(data)
+
 
 @hpo_bp.route("/api/v1/phenotype/search/<search_string>", methods=["GET"])
 @public_endpoint
