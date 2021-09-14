@@ -6,20 +6,31 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- A .cff citation file
 - Phenotypes search API endpoint
+### Fixed
+- Command to load the OMIM gene panel (`scout load panel --omim`)
+### Changed
+- Stop updating database indexes after loading exons via command line
+- Display validation status badge also for not Sanger-sequenced variants
+- Moved Frequencies, Severity and Local observations panels up in RD variants page
+- Enabled Flask CORS to communicate CORS status to js apps
+
+## [4.39]
+### Added
+- COSMIC IDs collected from CSQ field named `COSMIC`
 ### Fixed
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
+- Fix floating text in severity box #2808
 - Fixed MitoMap and HmtVar links for hg38 cases
 - Do not open new browser tabs when downloading files
 - Selectable IGV tracks on variant page
 - Missing splice junctions button on variant page
 - Refactor variantS representative gene selection, and use it also for cancer variant summary
-- Missing COSMIC IDs collected from CSQ field named `COSMIC`
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 - Make ClinVar classification more evident in cancer variant page
-- Enabled Flask CORS to communicate CORS status to js apps
 
 ## [4.38]
 ### Added
