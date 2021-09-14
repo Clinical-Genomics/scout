@@ -72,7 +72,7 @@ def tx_overview(variant_obj):
             ovw_tx["mane"] = tx.get("mane_select_transcript")
             ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript")
 
-            for refseq_id in tx.get("refseq_identifiers"):
+            for refseq_id in tx.get("refseq_identifiers", []):
                 decorated_tx = None
                 if ovw_tx["mane"] and ovw_tx["mane"].startwith(refseq_id):
                     decorated_tx = ovw_tx["mane"]
