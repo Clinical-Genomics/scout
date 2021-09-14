@@ -54,12 +54,12 @@ def tx_overview(variant_obj):
     """
     overview_txs = []  # transcripts to be shown in transcripts overview
     for gene in variant_obj.get("genes", []):
-        # overview_txs.append(tx)
         for tx in gene.get("transcripts", []):
             ovw_tx = {}
             if ("refseq_identifiers" in tx or tx.get("is_canonical", False)) is False:
                 continue  # collect only RefSeq or canonical transcripts
-            # create content for the gene column
+
+            # ---- create content for the gene column -----#
             ovw_tx["hgnc_symbol"] = (
                 gene["common"].get("hgnc_symbol", gene.get("hgnc_id"))
                 if gene.get("common")
@@ -67,39 +67,42 @@ def tx_overview(variant_obj):
             )
             ovw_tx["hgnc_id"] = gene.get("hgnc_id")
 
-            # create content for the Refseq IDs column
-            ovw_tx["mane_select_transcript"] = tx.get("mane_select_transcript", None)
-            ovw_tx["mane_plus_clinical_transcript"] = tx.get("mane_plus_clinical_transcript", None)
-            ovw_tx["mane_tx"] = bool(
-                ovw_tx["mane_select_transcript"] or ovw_tx["mane_plus_clinical_transcript"]
-            )
+            # ---- create content for the Refseq IDs column -----#
             ovw_tx["decorated_refseq_ids"] = []
-            for refseq_id in tx.get("refseq_identifiers"):
-                decorated_tx = refseq_id
-                if refseq_id.startswith("XM") is False or ovw_tx["mane_tx"] is False:
-                    ovw_tx["decorated_refseq_ids"].append(decorated_tx)
-                    continue
-                # print the refseq ids of minor importance in italics and text-muted style
-                if (
-                    ovw_tx["mane_select_transcript"]
-                    and ovw_tx["mane_select_transcript"].startswith(refseq_id)
-                    or ovw_tx["mane_plus_clinical_transcript"]
-                    and ovw_tx["mane_plus_clinical_transcript"].startswith(refseq_id)
-                ):
-                    LOG.warning("HERE BITCHES")
-                    ovw_tx["decorated_refseq_ids"].append(
-                        "".join(['<font class="text-muted font-italic">', decorated_tx, "</font>"])
-                    )
+            ovw_tx["mane"] = tx.get("mane_select_transcript")
+            ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript")
 
-            LOG.error(ovw_tx)
+            for refseq_id in tx.get("refseq_identifiers"):
+                decorated_tx = None
+                if ovw_tx["mane"] and ovw_tx["mane"].startwith(refseq_id):
+                    decorated_tx = ovw_tx["mane"]
+                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startwith(refseq_id):
+                    decorated_tx = ovw_tx["mane_plus"]
+                elif refseq_id.startswith("XM"):
+                    decorated_tx = "".join(
+                        ['<font class="text-muted font-italic">', decorated_tx, "</font>"]
+                    )
+                else:
+                    decorated_tx = refseq_id
+                ovw_tx["decorated_refseq_ids"].append(decorated_tx)
+
+            # ---- create content for ID column -----#
+            ovw_tx["transcript_id"] = tx.get("transcript_id")
+            ovw_tx["is_primary"] = (
+                True
+                if gene.get("common", {}).get("primary_transcripts")
+                and tx.get("refseq_id") in gene["common"]["primary_transcripts"]
+                else False
+            )
+            ovw_tx["is_canonical"] = tx.get("is_canonical")
+
             overview_txs.append(ovw_tx)
 
     # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
     variant_obj["overview_transcripts"] = sorted_overview_txs = sorted(
         overview_txs,
-        key=lambda tx: (tx["mane_select_transcript"], tx["mane_plus_clinical_transcript"]),
+        key=lambda tx: (tx["mane"], tx["mane_plus"]),
     )
-    LOG.error(variant_obj["overview_transcripts"])
 
 
 def has_rna_tracks(case_obj):

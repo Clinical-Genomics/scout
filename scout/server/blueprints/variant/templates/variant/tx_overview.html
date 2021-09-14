@@ -51,10 +51,25 @@
               </td> <!-- end of gene symbol col-->
 
               <td> <!-- Refseq IDs col -->
-                {{tx|join(", ")|safe or '<font class="text-muted font-italic">Check complete list of transcripts</font>'|safe}}
+                {{tx.decorated_refseq_ids|join(", ")|safe or '<font class="text-muted font-italic">Check complete list of transcripts</font>'|safe}}
               </td> <!-- end of Refseq IDs col-->
 
-              <td> <!-- ID col-->
+              <td class="d-flex align-items-center"> <!-- ID col-->
+                <span class="text"> {{ tx.transcript_id }}</span>
+                {% if tx.is_primary %}
+                  <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary ml-1" title="hgnc primary">P</span></a>
+                {% endif %}
+                {% if tx.mane %}
+                    <a href="#" data-toggle="tooltip" title="MANE Select"><span class="badge badge-success ml-1" title="MANE Select">M</span></a>
+                {% endif %}
+                {% if tx.mane_plus %}
+                    <a href="#" data-toggle="tooltip" title="MANE Plus Clinical"><span class="badge badge-success ml-1" title="MANE Plus Clinical">M+</span></a>
+                {% endif %}
+                {% if tx.is_canonical %}
+                  <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info ml-1" title="vep canonical">C</span></a>
+                {% endif %}
+
+
               </td> <!-- end of ID col-->
 
               <td> <!-- HGVS Description col -->
