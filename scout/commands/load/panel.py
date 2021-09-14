@@ -108,6 +108,7 @@ def panel(
 def _panel_omim(adapter, genemap2, mim2genes, api_key, institute):
     """Add OMIM panel to the database.
     Args:
+        adapter(scout.adapter.MongoAdapter)
         genemap2(str): Path to file in omim genemap2 format
         mim2genes(str): Path to file in omim mim2genes format
         api_key(str): OMIM API key
