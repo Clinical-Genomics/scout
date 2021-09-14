@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
 - Moved the code preparing the transcripts overview to the backend 
 
+
 ## [4.39]
 ### Added
 - COSMIC IDs collected from CSQ field named `COSMIC`
