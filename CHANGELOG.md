@@ -8,10 +8,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - A .cff citation file
 ### Fixed
+- Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
 - Stop updating database indexes after loading exons via command line
 - Display validation status badge also for not Sanger-sequenced variants
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
+- Moved the code preparing the transcripts overview to the backend
 
 ## [4.39]
 ### Added
