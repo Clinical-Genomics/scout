@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Phenotypes search API endpoint
 ### Fixed
 - Link to other causative variants on variant page
 - Allow multiple COSMIC links for a cancer variant
@@ -18,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 - Make ClinVar classification more evident in cancer variant page
+- Enabled Flask CORS to communicate CORS status to js apps
 
 ## [4.38]
 ### Added
