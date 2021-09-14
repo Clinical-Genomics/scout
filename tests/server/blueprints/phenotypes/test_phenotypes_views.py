@@ -31,6 +31,7 @@ def test_phenotypes_api(app, real_adapter, hpo_term):
         # THEN the response should be JSON
         assert resp.content_type == "application/json"
 
+
 def test_phenotypes_api(app, real_adapter, hpo_term):
 
     adapter = real_adapter
