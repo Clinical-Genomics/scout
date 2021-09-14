@@ -109,7 +109,7 @@ def tx_overview(variant_obj):
             overview_txs.append(ovw_tx)
 
     # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
-    variant_obj["overview_transcripts"] = sorted_overview_txs = sorted(
+    variant_obj["overview_transcripts"] = sorted(
         overview_txs,
         key=lambda tx: (tx["mane"], tx["mane_plus"]),
     )
