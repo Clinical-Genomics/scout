@@ -68,15 +68,38 @@
                 {% if tx.is_canonical %}
                   <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info ml-1" title="vep canonical">C</span></a>
                 {% endif %}
-
-
               </td> <!-- end of ID col-->
 
               <td> <!-- HGVS Description col -->
+                {% set hgvs_c = (tx.coding_sequence_name or '')|truncate(20, True) %}
+                {% if variant.chromosome in ["MT","M"] %}
+                  {% set mt_notation = "m." ~ variant.position ~ variant.reference ~ ">" ~ variant.alternative %}
+                  {{ mt_notation|truncate(20,True) }} <span class="text-muted">({{ hgvs_c }})</span>
+                {% else %}
+                  {{ hgvs_c }}
+                {% endif %}
+                <span class="text-muted float-right">
+                  {{ (tx.protein_sequence_name or '')|url_decode }}
+                </span>
               </td> <!-- end of HGVS Description col -->
 
-              <td> <!-- links col -->
-
+              <td class="text-center"> <!-- links col -->
+                {% if tx.varsome_link %}
+                  <a href="{{ tx.varsome_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="Varsome">V</a>
+                {% endif %}
+                {% if tx.tp53_link %}
+                  <a href="{{ tx.tp53_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="MutanTP53">TP53</a>
+                {% endif %}
+                {% if tx.cbioportal_link %}
+                  <a href="{{ tx.cbioportal_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="cBioPortal">CBP</a>
+                {% endif %}
+                {% if tx.mycancergenome_link %}
+                  <a href="{{ tx.mycancergenome_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="MyCancerGenome">MCG</a>
+                {% endif %}
               </td> <!-- end of links col -->
             </tr>
           {% endfor %} <!-- end of for tx in variant.overview_transcripts -->

@@ -96,6 +96,16 @@ def tx_overview(variant_obj):
             )
             ovw_tx["is_canonical"] = tx.get("is_canonical")
 
+            # ---- create content for HGVS description column -----#
+            ovw_tx["coding_sequence_name"] = tx.get("coding_sequence_name")
+            ovw_tx["protein_sequence_name"] = tx.get("protein_sequence_name")
+
+            # ---- create content for links column -----#
+            ovw_tx["varsome_link"] = tx.get("varsome_link")
+            ovw_tx["tp53_link"] = tx.get("tp53_link")
+            ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
+            ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
+
             overview_txs.append(ovw_tx)
 
     # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
