@@ -28,3 +28,27 @@ def api_hpo_terms():
 
     data = controllers.hpo_terms(store=store)
     return jsonify(data)
+
+@hpo_bp.route("/api/v1/phenotype/<hpo_id>", methods=["GET"])
+@public_endpoint
+def api_hpo_term(hpo_id):
+    """Public API for HPO phenotype term: retrieve a single HPO term
+
+    Returns:
+        data(phenotype): dict with the phenotype term
+    """
+
+    data = controllers.hpo_term(store=store, hpo_id=hpo_id)
+    return jsonify(data)
+
+@hpo_bp.route("/api/v1/phenotype/search/<search_string>", methods=["GET"])
+@public_endpoint
+def api_hpo_term_search(search_string):
+    """Public API for HPO phenotype term: search for a HPO terms matching a string
+
+    Returns:
+        data(dict): result dict with key "phenotypes" set to an array of all matching phenotype terms
+    """
+
+    data = controllers.hpo_terms(store=store, query=search_string)
+    return jsonify(data)
