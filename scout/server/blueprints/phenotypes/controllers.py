@@ -18,18 +18,3 @@ def hpo_terms(store, query=None):
         hpo_phenotypes["phenotypes"] = list(store.hpo_terms())
     return hpo_phenotypes
 
-
-def hpo_term(store, hpo_id):
-    """Retrieves a list of HPO terms from scout database
-
-    Args:
-        store (obj): an adapter to the scout database
-        hpo_id (str): an hpo_id
-    Returns:
-        hpo_phenotypes (dict): the requested HPO object
-
-    """
-    hpo_phenotypes = {}
-    hpo_phenotypes["phenotypes"] = list(store.hpo_term(hpo_id=hpo_id))
-    return hpo_phenotypes
-
