@@ -51,7 +51,6 @@
 
 .Nav ul li.nav_item > a,
 .Nav ul li.nav_item > header > a,
-.Nav ul li.nav_item > span,
 .Nav ul li.nav_item > button {
   display: flex;
   align-items: center;
@@ -91,7 +90,6 @@
 }
 
 /** Underline animation */
-nav > ul > li > a,
 nav > ul > li .selected_nav {
   position: relative;
 }
@@ -123,10 +121,6 @@ nav > ul > li:hover > span::before {
 
 nav > ul > li .selected_nav::before {
   visibility: visible;
-}
-
-nav > ul > li > a:not(header)::before {
-  visibility: hidden;
 }
 
 .switchThemeIcon {
