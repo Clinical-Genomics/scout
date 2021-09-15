@@ -60,10 +60,10 @@
                   <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary ml-1" title="hgnc primary">P</span></a>
                 {% endif %}
                 {% if tx.mane %}
-                    <a href="#" data-toggle="tooltip" title="MANE Select"><span class="badge badge-success ml-1" title="MANE Select">M</span></a>
+                    <a href="#" data-toggle="tooltip" title="MANE Select - {{tx.mane}}"><span class="badge badge-success ml-1" title="MANE Select">M</span></a>
                 {% endif %}
                 {% if tx.mane_plus %}
-                    <a href="#" data-toggle="tooltip" title="MANE Plus Clinical"><span class="badge badge-success ml-1" title="MANE Plus Clinical">M+</span></a>
+                    <a href="#" data-toggle="tooltip" title="MANE Plus Clinical - {{tx.mane_plus}}"><span class="badge badge-success ml-1" title="MANE Plus Clinical">M+</span></a>
                 {% endif %}
                 {% if tx.is_canonical %}
                   <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info ml-1" title="vep canonical">C</span></a>

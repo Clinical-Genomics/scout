@@ -56,7 +56,8 @@ def tx_overview(variant_obj):
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
             ovw_tx = {}
-            if ("refseq_identifiers" in tx or tx.get("is_canonical", False)) is False:
+
+            if "refseq_identifiers" not in tx and tx.get("is_canonical", False) is False:
                 continue  # collect only RefSeq or canonical transcripts
 
             # ---- create content for the gene column -----#
@@ -80,7 +81,7 @@ def tx_overview(variant_obj):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
                     decorated_tx = "".join(
-                        ['<font class="text-muted font-italic">', decorated_tx, "</font>"]
+                        ['<font class="text-muted font-italic">', refseq_id, "</font>"]
                     )
                 else:
                     decorated_tx = refseq_id
@@ -90,8 +91,7 @@ def tx_overview(variant_obj):
             ovw_tx["transcript_id"] = tx.get("transcript_id")
             ovw_tx["is_primary"] = (
                 True
-                if gene.get("common", {}).get("primary_transcripts")
-                and tx.get("refseq_id") in gene["common"]["primary_transcripts"]
+                if tx.get("refseq_id") in gene.get("common", {}).get("primary_transcripts", [])
                 else False
             )
             ovw_tx["is_canonical"] = tx.get("is_canonical")
