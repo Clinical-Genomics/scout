@@ -71,10 +71,6 @@ will display linting issues for Typescript and Javascript files.
 ### `yarn stylelint`
 will display linting issues for CSS files.
 
-### `yarn format`
-will fix the errors.
-
-
 ### `GOOGLE_OAUTH_CLIENT_ID="the-app-id-here" BACKEND_URL="the-backend-url-here" MOCK="true" yarn build`
 
 Builds the app for production to the `build` folder.<br />
