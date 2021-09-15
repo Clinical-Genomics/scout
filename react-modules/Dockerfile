@@ -15,6 +15,7 @@ RUN apk add git
 COPY package.json ./
 COPY yarn.lock ./
 RUN yarn install
+RUN yarn cache clean
 COPY . .
 
 EXPOSE $PORT
