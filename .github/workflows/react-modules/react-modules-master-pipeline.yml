@@ -1,0 +1,75 @@
+name: Master pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout to master
+      uses: actions/checkout@master
+    - name: Install
+      run: yarn install
+    - name: Run lint check
+      run: yarn lint
+    - name: Test
+      run: yarn test
+    - name: Build Stage
+      run: yarn build
+      env:
+        GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+        BACKEND_URL: ${{ secrets.BACKEND_STAGE_URL }}
+        MOCK: ${{ secrets.MOCK }}
+    - name: Archive Stage Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: build-stage
+        path: build
+    - name: Build Production
+      run: yarn build
+      env:
+        GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+        BACKEND_URL: ${{ secrets.BACKEND_PRODUCTION_URL }}
+        MOCK: ${{ secrets.MOCK }}
+    - name: Archive Production Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: build-production
+        path: build
+  deploy-stage:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: build-stage
+          path: build
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting -P stage
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: build-production
+          path: build
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only hosting -P production
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
