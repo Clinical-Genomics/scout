@@ -5,6 +5,7 @@ import re
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
+from flask_cors import CORS
 from flask_login import current_user
 from flaskext.markdown import Markdown
 
@@ -48,6 +49,8 @@ except ImportError:
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
+    CORS(app)
+
     app.config.from_pyfile("config.py")
     app.jinja_env.add_extension("jinja2.ext.do")
     if config:
