@@ -6,6 +6,7 @@
     "start": "webpack serve",
     "build": "webpack",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color",
+    "stylelint": "stylelint **/*.css",
     "format": "prettier --write 'src/**/*.{ts,tsx,scss,css,json}'",
     "test": "jest",
     "test:watch": "jest --watch"
