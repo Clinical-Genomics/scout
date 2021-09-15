@@ -7,12 +7,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
+- Phenotypes search API endpoint
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
 - Stop updating database indexes after loading exons via command line
 - Display validation status badge also for not Sanger-sequenced variants
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
+- Enabled Flask CORS to communicate CORS status to js apps
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
 
