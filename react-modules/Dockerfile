@@ -9,7 +9,6 @@ WORKDIR /app
 ENV PATH /scout-react/node_modules/.bin:$PATH
 
 # update and install dependency
-RUN apk update && apk upgrade
 RUN apk add git
 
 # copy the app, note .dockerignore
