@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
 ### Fixed
+- Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
 - Stop updating database indexes after loading exons via command line
 - Display validation status badge also for not Sanger-sequenced variants
