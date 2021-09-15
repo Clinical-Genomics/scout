@@ -8,7 +8,7 @@ cases.
 
 Events are stored in its own collection
 
-The frontend will use the user + verb + link to display the activity.
+The react-modules will use the user + verb + link to display the activity.
 
 The Event model is designed to cover a range of user generated events.
 
