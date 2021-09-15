@@ -1,5 +1,5 @@
 # Scout react
-### prod: https://scout-react.scilifelab.se/ 
+### prod: https://scout-react.scilifelab.se/
 ### staging: https://scout-react-stage.scilifelab.se/
 
 You need to be connected to the Scilifelab VPN to access these URLs.
@@ -26,7 +26,7 @@ ReactDOM.render(<Institutes />, document.getElementById('react-insitutes'))
 ```
 - Deploy the bundle to the server farm
 - Add the bundle to Scout. In the page and place where you want your bundle to appear you should add:
-```  
+```
 <div id="react-home"></div>
 <script src="https://scout-react.scilifelab.com//institutes.js"></script>
 ```
@@ -66,7 +66,10 @@ Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `yarn lint`
-will display linting issues.
+will display linting issues for Typescript and Javascript files.
+
+### `yarn stylelint`
+will display linting issues for CSS files.
 
 ### `yarn format`
 will fix the errors.
@@ -110,7 +113,7 @@ For deploying to production, use the workflow `Publish and deploy production`, o
 Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
 - The data are located as an object in __mocks__/ScoutResponses.ts
 
-### Fake Rest API. [More info](https://github.com/Clinical-Genomics/scout-mocks-data)  
+### Fake Rest API. [More info](https://github.com/Clinical-Genomics/scout-mocks-data)
 There are some endpoints to test the API calls if the actual APIs are not in place or not working.
 The API is created with JSON-server and deployed to Heroku.
 - https://scout-mocks-data.herokuapp.com/cases
@@ -131,6 +134,6 @@ Examples:
 - `docs`: (changes to the documentation)
 - `refactor`: (refactoring production code, eg. renaming a variable)
 
-Examples: 
+Examples:
 - `feature/add-institutes-endpoint`
 - `fix/dialog-not-showing-on-safari`
