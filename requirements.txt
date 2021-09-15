@@ -5,6 +5,7 @@ werkzeug
 Flask>=0.10
 Flask-DebugToolbar
 Flask-Bootstrap
+Flask-CORS
 path.py
 Flask-Markdown
 Flask-WTF
