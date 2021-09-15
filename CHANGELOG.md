@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
+- A development docker-compose file illustrating the scout/chanjo-report integration
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
