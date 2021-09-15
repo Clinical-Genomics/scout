@@ -70,14 +70,14 @@ def tx_overview(variant_obj):
 
             # ---- create content for the Refseq IDs column -----#
             ovw_tx["decorated_refseq_ids"] = []
-            ovw_tx["mane"] = tx.get("mane_select_transcript")
-            ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript")
+            ovw_tx["mane"] = tx.get("mane_select_transcript", "")
+            ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript", "")
 
             for refseq_id in tx.get("refseq_identifiers", []):
                 decorated_tx = None
-                if ovw_tx["mane"] and ovw_tx["mane"].startwith(refseq_id):
+                if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane"]
-                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startwith(refseq_id):
+                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].starstwith(refseq_id):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
                     decorated_tx = "".join(
@@ -110,8 +110,7 @@ def tx_overview(variant_obj):
 
     # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
     variant_obj["overview_transcripts"] = sorted(
-        overview_txs,
-        key=lambda tx: (tx["mane"], tx["mane_plus"]),
+        overview_txs, key=lambda tx: (tx["mane"], tx["mane_plus"]), reverse=True
     )
 
 
