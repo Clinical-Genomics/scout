@@ -24,11 +24,6 @@ def test_tx_overview(app):
     test_variant = store.variant_collection.find_one({"hgnc_symbols": "POT1"})
     assert len(test_variant["genes"][0]["transcripts"]) > 1
 
-    # GIVEN that the last transcript of the gene has MANE and MANE plus annotation
-    last_tx_refseq = test_variant["genes"][0]["transcripts"][-1]
-    test_variant["genes"][0]["transcripts"][-1]["mane_select_transcript"] = "mane_id"
-    test_variant["genes"][0]["transcripts"][-1]["mane_plus_clinical_transcript"] = "mane_plus_id"
-
     # WHEN the variant is used to prepare the transcript overview table using the controllers function
     tx_overview(test_variant)
     # THEN variant should be populated with overview_transcripts
