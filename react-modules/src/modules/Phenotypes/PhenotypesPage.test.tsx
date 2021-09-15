@@ -10,83 +10,83 @@ import { windowMatchMedia } from '../../testHelpers'
 let server: any
 
 beforeEach(() => {
-  server = makeServer()
+	server = makeServer()
 })
 
 afterEach(() => {
-  server.shutdown()
+	server.shutdown()
 })
 
 describe('PhenotypesPage', () => {
-  test('PhenotypesPage render correctly', () => {
-    const { getByTestId } = render(
-      <Provider store={store}>
-        <PhenotypesPage />
-      </Provider>
-    )
-    const container = getByTestId('phenotypes')
-    expect(container?.firstElementChild).toHaveAttribute('data-testid', 'test-phenotypes')
-  })
+	test('PhenotypesPage render correctly', () => {
+		const { getByTestId } = render(
+			<Provider store={store}>
+				<PhenotypesPage />
+			</Provider>
+		)
+		const container = getByTestId('phenotypes')
+		expect(container?.firstElementChild).toHaveAttribute('data-testid', 'test-phenotypes')
+	})
 
-  test('Download-btn render', () => {
-    render(
-      <Provider store={store}>
-        <PhenotypesPage />
-      </Provider>
-    )
-    const download_btn = screen.getByRole('button', {
-      name: /Download/i,
-    })
-    expect(download_btn).toBeInTheDocument()
-  })
+	test('Download-btn render', () => {
+		render(
+			<Provider store={store}>
+				<PhenotypesPage />
+			</Provider>
+		)
+		const download_btn = screen.getByRole('button', {
+			name: /Download/i,
+		})
+		expect(download_btn).toBeInTheDocument()
+	})
 
-  test('CopyToClipboard-btn render', () => {
-    render(
-      <Provider store={store}>
-        <PhenotypesPage />
-      </Provider>
-    )
-    const clipboard_btn = screen.getByRole('button', {
-      name: /Copy to clipboard/i,
-    })
-    expect(clipboard_btn).toBeInTheDocument()
-  })
+	test('CopyToClipboard-btn render', () => {
+		render(
+			<Provider store={store}>
+				<PhenotypesPage />
+			</Provider>
+		)
+		const clipboard_btn = screen.getByRole('button', {
+			name: /Copy to clipboard/i,
+		})
+		expect(clipboard_btn).toBeInTheDocument()
+	})
 
-  test('Add input', () => {
-    render(
-      <Provider store={store}>
-        <PhenotypesPage />
-      </Provider>
-    )
-    const inputElement = screen.getByPlaceholderText('Search penotypes ...')
-    expect(inputElement).toBeInTheDocument()
-  })
+	test('Add input', () => {
+		render(
+			<Provider store={store}>
+				<PhenotypesPage />
+			</Provider>
+		)
+		const inputElement = screen.getByPlaceholderText('Search penotypes ...')
+		expect(inputElement).toBeInTheDocument()
+	})
 
-  test('Should be able to type in input', () => {
-    render(
-      <Provider store={store}>
-        <PhenotypesPage />
-      </Provider>
-    )
-    const inputElement = screen.getByPlaceholderText('Search penotypes ...') as HTMLInputElement
-    fireEvent.change(inputElement, { target: { value: 'HP:0000002' } })
-    expect(inputElement.value).toBe('HP:0000002')
-  })
+	test('Should be able to type in input', () => {
+		render(
+			<Provider store={store}>
+				<PhenotypesPage />
+			</Provider>
+		)
+		const inputElement = screen.getByPlaceholderText('Search penotypes ...') as HTMLInputElement
+		fireEvent.change(inputElement, { target: { value: 'HP:0000002' } })
+		expect(inputElement.value).toBe('HP:0000002')
+	})
 
-  test('Search for phenotypes', async () => {
-    server.create('case', { getMockPhenotypes })
-    window.matchMedia = windowMatchMedia() as any
-    render(
-      <Provider store={store}>
-        <PhenotypesPage />
-      </Provider>
-    )
-    const inputElement = screen.getByPlaceholderText('Search penotypes ...') as HTMLInputElement
-    const buttonElement = screen.getByRole('button', {
-      name: /Search/i,
-    })
-    fireEvent.change(inputElement, { target: { value: 'HP:0000002' } })
-    fireEvent.click(buttonElement)
-    await screen.findByText('Abnormality of body height')
-  })
+	test('Search for phenotypes', async () => {
+		server.create('case', { getMockPhenotypes })
+		window.matchMedia = windowMatchMedia() as any
+		render(
+			<Provider store={store}>
+				<PhenotypesPage />
+			</Provider>
+		)
+		const inputElement = screen.getByPlaceholderText('Search penotypes ...') as HTMLInputElement
+		const buttonElement = screen.getByRole('button', {
+			name: /Search/i,
+		})
+		fireEvent.change(inputElement, { target: { value: 'HP:0000002' } })
+		fireEvent.click(buttonElement)
+		await screen.findByText('Abnormality of body height')
+	})
 })

@@ -1,47 +1,47 @@
 .container {
-    min-width: 275px;
-    max-width: 600px;
-    margin: 50px auto auto auto;
+	min-width: 275px;
+	max-width: 600px;
+	margin: 50px auto auto auto;
 }
 
 .logosContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .logosContainer > img {
-  margin: 30px;
+	margin: 30px;
 }
 
 .karolinskaLogo {
-  height: 150px;
+	height: 150px;
 }
 
 .sciLifeLabLogo {
-  height: 50px;
+	height: 50px;
 }
 
 .swedacLogo {
-  height: 145px;
+	height: 145px;
 }
 
 .title {
-    font-size: 45px;
-    font-weight: 100;
+	font-size: 45px;
+	font-weight: 100;
 }
 
 .divider {
-    margin-bottom: 30px;
-    margin-top: 20px;
+	margin-bottom: 30px;
+	margin-top: 20px;
 }
-  
+
 body {
-    font-size: 16px;
+	font-size: 16px;
 }
-  
+
 .version {
-    font-size: 20px;
-    margin-top: 30px;
-    font-weight: 400;
+	font-size: 20px;
+	margin-top: 30px;
+	font-weight: 400;
 }

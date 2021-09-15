@@ -7,14 +7,14 @@ import { store } from './domain/store'
 import { makeServer } from './server'
 
 if (process.env.MOCK === 'true') {
-  makeServer()
+	makeServer()
 }
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById('app')
+	<React.StrictMode>
+		<Provider store={store}>
+			<App />
+		</Provider>
+	</React.StrictMode>,
+	document.getElementById('app')
 )

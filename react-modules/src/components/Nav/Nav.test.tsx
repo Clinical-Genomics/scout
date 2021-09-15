@@ -12,13 +12,13 @@ const toggleDarkMode = () => {}
 const scoutNavItemsTest: Array<NavItem> = [{ linkTitle: 'Test', public: false, link: '/test' }]
 
 test('Nav render correctly', () => {
-  const { getByTestId } = render(
-    <Provider store={store}>
-      <Router>
-        <Nav navItems={scoutNavItemsTest} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      </Router>
-    </Provider>
-  )
-  const container = getByTestId('NavMenu')
-  expect(container?.firstChild?.textContent).toBe('Test')
+	const { getByTestId } = render(
+		<Provider store={store}>
+			<Router>
+				<Nav navItems={scoutNavItemsTest} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+			</Router>
+		</Provider>
+	)
+	const container = getByTestId('NavMenu')
+	expect(container?.firstChild?.textContent).toBe('Test')
 })

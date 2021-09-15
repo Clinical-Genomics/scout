@@ -2,74 +2,74 @@
 
 /***** Global colors *****/
 :root {
-  /** Background for app, dropdown, etc */
-  --primary_bg_color: white;
-  --primary_text_color: black;
-  /** Headers, footers, etc*/
-  --secondary_bg_color: white;
-  --secondary_text_color: black;
+	/** Background for app, dropdown, etc */
+	--primary_bg_color: white;
+	--primary_text_color: black;
+	/** Headers, footers, etc*/
+	--secondary_bg_color: white;
+	--secondary_text_color: black;
 
-  /** Background for app, dropdown, etc */
-  --primary_bg_color_dark_mode: #212121;
-  --primary_text_color_dark_mode: white;
-  /** Headers, footers, etc*/
-  --secondary_bg_color_dark_mode: #3d3d3d;
-  --secondary_text_color_dark_mode: white;
+	/** Background for app, dropdown, etc */
+	--primary_bg_color_dark_mode: #212121;
+	--primary_text_color_dark_mode: white;
+	/** Headers, footers, etc*/
+	--secondary_bg_color_dark_mode: #3d3d3d;
+	--secondary_text_color_dark_mode: white;
 
-  --scout-color: #1181b2;
+	--scout-color: #1181b2;
 
-  /** Shadow */
-  --shadow: 0px 0px 3px #cccccc;
+	/** Shadow */
+	--shadow: 0px 0px 3px #cccccc;
 }
 
 /***** Clobal styles *****/
 *,
 *::before,
 *::after {
-  box-sizing: inherit;
+	box-sizing: inherit;
 }
 
 html {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 li {
-  list-style-type: none;
+	list-style-type: none;
 }
 
 .no_button_style {
-  background-color: inherit;
-  color: inherit;
-  border: none;
-  padding: 0px;
-  cursor: pointer;
+	background-color: inherit;
+	color: inherit;
+	border: none;
+	padding: 0px;
+	cursor: pointer;
 }
 
 /** Dark mode */
 .dark_mode {
-  background-color: var(--primary_bg_color_dark_mode);
-  color: var(--primary_text_color_dark_mode);
+	background-color: var(--primary_bg_color_dark_mode);
+	color: var(--primary_text_color_dark_mode);
 }
 .dark_mode Nav,
 .dark_mode Footer {
-  background-color: var(--secondary_bg_color_dark_mode);
-  color: var(--secondary_text_color_dark_mode);
-  box-shadow: none;
+	background-color: var(--secondary_bg_color_dark_mode);
+	color: var(--secondary_text_color_dark_mode);
+	box-shadow: none;
 }
 
 .dark_mode .dropdown_menu {
-  background-color: var(--primary_bg_color_dark_mode);
-  color: var(--primary_text_color_dark_mode);
-  box-shadow: none;
-  border: 1px solid white;
+	background-color: var(--primary_bg_color_dark_mode);
+	color: var(--primary_text_color_dark_mode);
+	box-shadow: none;
+	border: 1px solid white;
 }
 .dark_mode .dropdown_menu > li:focus,
 .dark_mode .dropdown_menu > li:hover {
-  background-color: var(--secondary_bg_color_dark_mode);
+	background-color: var(--secondary_bg_color_dark_mode);
 }
 
 .dark_mode nav > ul > li > a::before,
 .dark_mode nav > ul > li > span::before,
 .dark_mode nav > ul > li .selected_nav::before {
-  background-color: white;
+	background-color: white;
 }
