@@ -7,7 +7,8 @@ def hpo_terms(store, query=None, limit=None, page=None):
     Args:
         store (obj): an adapter to the scout database
         query (str): an optional search string requesting the return of only matching HPO terms
-
+        limit:  max number of phenotypes to return
+        page: the page in multiples of limit to return
     Returns:
         hpo_phenotypes (dict): the complete list of HPO objects stored in scout, or same matching HPO terms
 
