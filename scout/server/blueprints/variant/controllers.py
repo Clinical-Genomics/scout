@@ -40,6 +40,76 @@ from .utils import (
 LOG = logging.getLogger(__name__)
 
 
+def tx_overview(variant_obj):
+    """Prepares the content of the transcript overview to be shown on variant and general report pages.
+       Basically show transcripts that contain RefSeq or are canonical.
+
+    Args:
+        variant_obj(dict)
+    """
+    overview_txs = []  # transcripts to be shown in transcripts overview
+    for gene in variant_obj.get("genes", []):
+        for tx in gene.get("transcripts", []):
+            ovw_tx = {}
+
+            if "refseq_identifiers" not in tx and tx.get("is_canonical", False) is False:
+                continue  # collect only RefSeq or canonical transcripts
+
+            # ---- create content for the gene column -----#
+            ovw_tx["hgnc_symbol"] = (
+                gene["common"].get("hgnc_symbol", gene.get("hgnc_id"))
+                if gene.get("common")
+                else gene.get("hgnc_id")
+            )
+            ovw_tx["hgnc_id"] = gene.get("hgnc_id")
+
+            # ---- create content for the Refseq IDs column -----#
+            ovw_tx["mane"] = tx.get("mane_select_transcript", "")
+            ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript", "")
+
+            ovw_tx["decorated_refseq_ids"] = []
+            ovw_tx["muted_refseq_ids"] = []
+
+            for refseq_id in tx.get("refseq_identifiers", []):
+                decorated_tx = None
+                if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
+                    decorated_tx = ovw_tx["mane"]
+                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].starstwith(refseq_id):
+                    decorated_tx = ovw_tx["mane_plus"]
+                elif refseq_id.startswith("XM"):
+                    ovw_tx["muted_refseq_ids"].append(refseq_id)
+                    continue
+                else:
+                    decorated_tx = refseq_id
+                ovw_tx["decorated_refseq_ids"].append(decorated_tx)
+
+            # ---- create content for ID column -----#
+            ovw_tx["transcript_id"] = tx.get("transcript_id")
+            ovw_tx["is_primary"] = (
+                True
+                if tx.get("refseq_id") in gene.get("common", {}).get("primary_transcripts", [])
+                else False
+            )
+            ovw_tx["is_canonical"] = tx.get("is_canonical")
+
+            # ---- create content for HGVS description column -----#
+            ovw_tx["coding_sequence_name"] = tx.get("coding_sequence_name")
+            ovw_tx["protein_sequence_name"] = tx.get("protein_sequence_name")
+
+            # ---- create content for links column -----#
+            ovw_tx["varsome_link"] = tx.get("varsome_link")
+            ovw_tx["tp53_link"] = tx.get("tp53_link")
+            ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
+            ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
+
+            overview_txs.append(ovw_tx)
+
+    # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
+    variant_obj["overview_transcripts"] = sorted(
+        overview_txs, key=lambda tx: (tx["mane"], tx["mane_plus"]), reverse=True
+    )
+
+
 def has_rna_tracks(case_obj):
     """Returns True if one of more individuals of the case contain RNA-seq data
 
@@ -267,6 +337,9 @@ def variant(
     dismiss_options = store.dismiss_variant_options(["rare"])
     if case_obj.get("track") == "cancer":
         dismiss_options = store.dismiss_variant_options(["rare", "cancer"])
+        
+    tx_overview(variant_obj)
+
     return {
         "institute": institute_obj,
         "case": case_obj,
