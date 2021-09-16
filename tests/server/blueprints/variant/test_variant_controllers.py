@@ -10,11 +10,43 @@ from scout.server.blueprints.variant.controllers import (
     get_igv_tracks,
     has_rna_tracks,
     observations,
+    tx_overview,
     variant,
 )
 from scout.server.extensions import cloud_tracks, loqusdb, store
 
 LOG = logging.getLogger(__name__)
+
+
+def test_tx_overview(app):
+    """Tests function that collects RefSeq or canonical transcripts to show in the variant view"""
+    # GIVEN a variant populated with genes having more than 1 transcripts:
+    test_variant = store.variant_collection.find_one({"hgnc_symbols": "POT1"})
+    assert len(test_variant["genes"][0]["transcripts"]) > 1
+
+    # WHEN the variant is used to prepare the transcript overview table using the controllers function
+    tx_overview(test_variant)
+    # THEN variant should be populated with overview_transcripts
+    # Overview transcripts should contain the expected keys
+    for tx in test_variant["overview_transcripts"]:
+        for key in [
+            "hgnc_symbol",
+            "hgnc_id",
+            "decorated_refseq_ids",
+            "muted_refseq_ids",
+            "transcript_id",
+            "is_primary",
+            "is_canonical",
+            "coding_sequence_name",
+            "protein_sequence_name",
+            "varsome_link",
+            "tp53_link",
+            "cbioportal_link",
+            "mycancergenome_link",
+            "mane",
+            "mane_plus",
+        ]:
+            assert key in tx
 
 
 def test_has_rna_tracks(case_obj):
