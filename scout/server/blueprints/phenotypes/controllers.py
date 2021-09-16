@@ -19,9 +19,9 @@ def hpo_terms(store, query=None, limit=None, page=None):
         limit = int(limit)
 
     if page and limit:
-        page=int(page)
+        page = int(page)
         if page > 0:
-            skip = (page - 1)*limit
+            skip = (page - 1) * limit
         else:
             skip = 0
     if query:
