@@ -62,28 +62,32 @@
   </li>
 {% endmacro %}
 
-{% macro alignments(institute, case, variant, current_user, case_groups, config) %}
+{% macro alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks=False) %}
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
           <div>
             {{ igv_button(case, variant, case_groups) }}
           </div>
-          <div>
-            {% if variant.alamut_link %}
-              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank"
-            data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
-            {% endif %}
-           </div>
+          {% if splice_junctions_tracks %}
+            <div>
+              {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
+            </div>
+          {% endif %}
+          {% if variant.alamut_link %}
+            <div>
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
+            </div>
+          {% endif %}
           {% if config.SQLALCHEMY_DATABASE_URI %}
-          <div class="d-flex flex-wrap">
-            {% for gene in variant.genes %}
-              <span class="ml-5">
-                <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </span>
-            {% endfor %}
-          </div>
+            <div class="d-flex flex-wrap">
+              {% for gene in variant.genes %}
+                <span class="ml-5">
+                  <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                </span>
+              {% endfor %}
+            </div>
           {% endif %}
         </li>
         <li class="list-group-item">
@@ -91,11 +95,6 @@
             {{ igv_track_selection(igv_tracks, current_user) }}
           </div>
         </li>
-        {% if splice_junctions_tracks %}
-          <li class="list-group-item">
-            <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
-          </li>
-        {% endif %}
       </ul>
 {% endmacro %}
 
