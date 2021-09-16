@@ -594,7 +594,6 @@ def parse_case(config):
         "gene_fusion_report_research": config.get("gene_fusion_report_research"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
-        "custom_images": config.get("custom_images", {}),
     }
 
     # add SMN info
