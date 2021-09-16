@@ -55,9 +55,11 @@ class CaseHandler(object):
                 if not hpo_term:
                     continue
                 set_2 = set_2.union(set(hpo_term.get("all_ancestors", [])))
+
             LOG.debug(
                 f"Check phenotypic similarity between terms:{phenotype_terms} and case {case['_id']}"
             )
+
             scores[case["_id"]] = ui_score(set_1, set_2)
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
@@ -576,11 +578,11 @@ class CaseHandler(object):
         if existing_case is None:
             return
 
-        # Avoid saving a new case in database with a display_name that already exists for another case from the same customer
-        if existing_case["_id"] != case_obj["_id"]:
+        if (
+            existing_case["_id"] != case_obj["_id"]
+        ):  # This happens whenever institute and case display name coincide
             raise IntegrityError(
-                "A case with display name %s already exists in database for this customer"
-                % case_obj["display_name"]
+                f"A case with different _id ({existing_case['_id']} vs {case_obj['_id']}) and same display name ({case_obj['display_name']}) already exists for this institute."
             )
 
         if existing_case and not update:
