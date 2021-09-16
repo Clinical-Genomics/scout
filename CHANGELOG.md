@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - A .cff citation file
 - Phenotypes search API endpoint
+- Added pagination to phenotypes API
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
@@ -15,7 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display validation status badge also for not Sanger-sequenced variants
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
 - Enabled Flask CORS to communicate CORS status to js apps
-- Moved the code preparing the transcripts overview to the backend 
+- Moved the code preparing the transcripts overview to the backend
 
 ## [4.39]
 ### Added
