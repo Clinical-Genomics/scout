@@ -69,9 +69,11 @@ def tx_overview(variant_obj):
             ovw_tx["hgnc_id"] = gene.get("hgnc_id")
 
             # ---- create content for the Refseq IDs column -----#
-            ovw_tx["decorated_refseq_ids"] = []
             ovw_tx["mane"] = tx.get("mane_select_transcript", "")
             ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript", "")
+
+            ovw_tx["decorated_refseq_ids"] = []
+            ovw_tx["muted_refseq_ids"] = []
 
             for refseq_id in tx.get("refseq_identifiers", []):
                 decorated_tx = None
@@ -80,9 +82,8 @@ def tx_overview(variant_obj):
                 elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].starstwith(refseq_id):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
-                    decorated_tx = "".join(
-                        ['<font class="text-muted font-italic">', refseq_id, "</font>"]
-                    )
+                    ovw_tx["muted_refseq_ids"].append(refseq_id)
+                    continue
                 else:
                     decorated_tx = refseq_id
                 ovw_tx["decorated_refseq_ids"].append(decorated_tx)

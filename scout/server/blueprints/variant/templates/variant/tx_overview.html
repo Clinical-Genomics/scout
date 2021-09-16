@@ -51,7 +51,12 @@
               </td> <!-- end of gene symbol col-->
 
               <td> <!-- Refseq IDs col -->
-                {{tx.decorated_refseq_ids|join(", ")|safe or '<font class="text-muted font-italic">Check complete list of transcripts</font>'|safe}}
+                {% if tx.decorated_refseq_ids or tx.muted_refseq_ids %}
+                  {{tx.decorated_refseq_ids|join(", ")}}
+                  <font class="text-muted font-italic">{{tx.muted_refseq_ids|join(", ")}}</font>
+                {% else %}
+                  <font class="text-muted font-italic">Check complete list of transcripts
+                {% endif %}
               </td> <!-- end of Refseq IDs col-->
 
               <td class="d-flex align-items-center"> <!-- ID col-->
