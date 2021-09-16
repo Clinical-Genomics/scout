@@ -337,7 +337,7 @@ def variant(
     dismiss_options = store.dismiss_variant_options(["rare"])
     if case_obj.get("track") == "cancer":
         dismiss_options = store.dismiss_variant_options(["rare", "cancer"])
-        
+
     tx_overview(variant_obj)
 
     return {
