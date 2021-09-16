@@ -33,6 +33,7 @@ def test_tx_overview(app):
             "hgnc_symbol",
             "hgnc_id",
             "decorated_refseq_ids",
+            "muted_refseq_ids",
             "transcript_id",
             "is_primary",
             "is_canonical",
