@@ -15,7 +15,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display validation status badge also for not Sanger-sequenced variants
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
 - Enabled Flask CORS to communicate CORS status to js apps
-- Moved the code preparing the transcripts overview to the backend 
+- Moved the code preparing the transcripts overview to the backend
+- Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
+- Replace default variant evaluation terms with custom terms included in a json file
 
 ## [4.39]
 ### Added
@@ -47,8 +49,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter and export of STR variants
 - Update look of variants page navigation buttons
 ### Changed
-- Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
-- Replace default variant evaluation terms with custom terms included in a json file
 
 ## [4.37]
 ### Added
