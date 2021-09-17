@@ -1,9 +1,10 @@
 import logging
+from base64 import b64encode
 from datetime import date
 
 from flask import url_for
 from flask_login import current_user
-from base64 import b64encode
+
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
