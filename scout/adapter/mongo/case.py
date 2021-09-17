@@ -559,6 +559,7 @@ class CaseHandler(object):
         """Load a case into the database
 
         Check if the owner and the institute exists.
+        If update is True, old case variants will be removed.
 
         Args:
             config_data(dict): A dictionary with all the necessary information
@@ -631,7 +632,6 @@ class CaseHandler(object):
 
                 variant_type = vcf_file["variant_type"]
                 category = vcf_file["category"]
-                # remove old variants if performing update
                 if update:
                     self.delete_variants(
                         case_id=case_obj["_id"],
