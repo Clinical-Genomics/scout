@@ -70,7 +70,6 @@ def _parse_images(images):
 def parse_custom_images(config_data):
     """Parse information on custom images assigned to the case."""
 
-
     # sort custom image sections
     images = {}
     img_cnf = config_data.get("custom_images", {})
