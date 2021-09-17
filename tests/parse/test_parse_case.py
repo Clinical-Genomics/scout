@@ -118,30 +118,32 @@ def test_parse_case_custom_images(scout_config):
     custom_images = parse_custom_images(
         {
             "custom_images": {
-                "section_one": [
-                    {
-                        "title": "A png image",
-                        "description": "desc",
-                        "path": "scout/demo/images/custom_images/640x480_one.png",
-                    },
-                    {
-                        "title": "A bitmap image",
-                        "description": "desc",
-                        "path": "scout/demo/images/custom_images/640x480_one.bnp",
-                    },
-                ],
-                "section_two": [
-                    {
-                        "title": "A pdf image",
-                        "description": "desc",
-                        "path": "scout/demo/images/custom_images/640x480_one.pdf",
-                    },
-                ],
+                "case": {
+                    "section_one": [
+                        {
+                            "title": "A png image",
+                            "description": "desc",
+                            "path": "scout/demo/images/custom_images/640x480_one.png",
+                        },
+                        {
+                            "title": "A bitmap image",
+                            "description": "desc",
+                            "path": "scout/demo/images/custom_images/640x480_one.bnp",
+                        },
+                    ],
+                    "section_two": [
+                        {
+                            "title": "A pdf image",
+                            "description": "desc",
+                            "path": "scout/demo/images/custom_images/640x480_one.pdf",
+                        },
+                    ],
+                }
             }
         }
     )
     # THEN check that non valid image formats are being rejected
-    assert len(custom_images["section_one"]) == 1
+    assert len(custom_images["case"]["section_one"]) == 1
     assert "section_two" not in custom_images
 
 
