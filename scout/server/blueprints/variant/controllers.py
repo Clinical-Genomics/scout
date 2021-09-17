@@ -5,7 +5,6 @@ from datetime import date
 from flask import url_for
 from flask_login import current_user
 
-
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_CRITERIA,
