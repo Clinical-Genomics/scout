@@ -476,7 +476,7 @@ class VariantLoader(object):
                     if len(bulk) > 10000:
                         load = True
                 # Associate variant with image
-                if custom_images:
+                if custom_images and category in ["str"]:
                     images = [
                         img
                         for img in custom_images
