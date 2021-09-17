@@ -602,6 +602,9 @@ def parse_case(config):
         LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
         add_smn_info_case(case_data)
 
+    if config.get("custom_images"):
+        case_data["custom_images"] = parse_custom_images(config)
+
     # add the pedigree figure, this is a xml file which is dumped in the db
     if "madeline" in config:
         mad_path = Path(config["madeline"])
