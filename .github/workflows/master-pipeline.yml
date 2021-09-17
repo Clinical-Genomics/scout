@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    name: Test and build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout to master
@@ -40,6 +41,7 @@ jobs:
         name: build-production
         path: build
   deploy-stage:
+    name: Deploy to Firebase Stage project
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -50,13 +52,15 @@ jobs:
         with:
           name: build-stage
           path: build
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+      - name: Deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          args: deploy --only hosting -P stage
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGE }}
+          projectId: scout-stage
+          channelId: live
   deploy-production:
+    name: Deploy to Firebase Production project
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -67,9 +71,10 @@ jobs:
         with:
           name: build-production
           path: build
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
+      - name: Deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          args: deploy --only hosting -P production
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
+          projectId: scout-prod-d00c
+          channelId: live
