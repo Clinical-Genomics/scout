@@ -1,8 +1,8 @@
 # Scout react
-### prod: https://scout-react.scilifelab.se/ 
-### staging: https://scout-react-stage.scilifelab.se/
+### prod: https://scout-prod-d00cb.web.app/
+### staging: https://scout-stage.web.app/
 
-You need to be connected to the Scilifelab VPN to access these URLs.
+You need to be connected to the ScilifeLab VPN to access these URLs.
 
 ## About
 
@@ -82,7 +82,6 @@ The build is minified and the filenames include the hashes.<br />
 
 ## Docker
 
-The app is shipped to docker hub at every push in the `scout-react-stage` project and to `scout-react` when deploying via a workflow.
 To pull the latest image from the Clinical Genomics dockerhub repository
 
 ```bash
@@ -103,8 +102,8 @@ docker build --build-arg PORT="3000"  -t scout-react .
 ```
 
 ## Deployment
-The app is deployed manually. For staging, in the [GitHub Action UI](https://github.com/Clinical-Genomics/scout-react/actions) by choosing the workflow `Publish and deploy staging`, then `Run workflow` and input the branch that you want to deploy.
-For deploying to production, use the workflow `Publish and deploy production`, only the `master` branch can be deployed.
+The app is deployed to a Firebase channel at every pull request in the scout-test Firebase project. 
+After changes are merged to master, it is deployed to the staging and production Firebase projects.
 
 ## API mocking library
 Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
