@@ -210,8 +210,10 @@ def case(store, institute_obj, case_obj):
 
     if case_obj.get("custom_images"):
         # re-encode images as base64
-        for img_section in case_obj["custom_images"].values():
-            for img in img_section:
+        if "case" in case_obj.get("custom_images"):
+            case_obj["custom_images"] = case_obj["custom_images"]["case"]
+        for img_section in case_obj["custom_images"].keys():
+            for img in case_obj["custom_images"][img_section]:
                 img["data"] = b64encode(img["data"]).decode("utf-8")
 
     data = {

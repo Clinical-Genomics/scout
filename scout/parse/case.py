@@ -69,7 +69,7 @@ def _parse_images(images):
 
 def parse_custom_images(config_data):
     """Parse information on custom images assigned to the case."""
-    LOG.debug("Parse custom images")
+
 
     # sort custom image sections
     images = {}
@@ -166,7 +166,6 @@ def parse_case_data(
         ]
 
     # handle scout/commands/load/case.py
-    config_data["custom_images"] = parse_custom_images(config_data)
 
     ##################### Add information from peddy if existing #####################
     config_data["peddy_ped"] = peddy_ped or config_data.get("peddy_ped")

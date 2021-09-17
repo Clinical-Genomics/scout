@@ -476,7 +476,7 @@ class VariantLoader(object):
                     if len(bulk) > 10000:
                         load = True
                 # Associate variant with image
-                if custom_images and category in ["str"]:
+                if custom_images:
                     images = [
                         img
                         for img in custom_images
@@ -484,7 +484,7 @@ class VariantLoader(object):
                     ]
                     if len(images) > 0:
                         variant_obj["custom_images"] = images
-                # Load the variant object
+               # Load the variant object
                 if load:
                     # If the variant bulk contains coding variants we want to update the compounds
                     if current_region:

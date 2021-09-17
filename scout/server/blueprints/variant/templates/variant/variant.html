@@ -179,19 +179,16 @@
 
 
 {% macro panel_custom_images(images) %}
-  <div id="attached-img-panel" class="card mt-3 panel-default card">
+  <div id="attached-img-panel" class="card mt-3 panel-default">
     <div class="panel-heading">
       <div
-        class="collapsed"
-        type="button"
-        data-toggle="collapse"
-        data-parent="#attached-img-panel"
-        data-target="#attached-images"
-        onclick="flipArrowIcon(this)"
-      ><span
-          class="fa fa-angle-down rotate-icon"
-        ></span>
-        &nbsp;Attached images
+          class="panel-heading collapsed"
+          data-toggle="collapse"
+          data-parent="#attached-img-panel"
+          data-target="#attached-images"
+          onclick="flipArrowIcon(this)"
+      ><span class="fa fa-angle-down rotate-icon"></span>
+          &nbsp;Attached images
       </div>
     </div>
     <div id="attached-images" class="card-body collapse" data-parent="#attached-img-panel">

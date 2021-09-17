@@ -641,8 +641,8 @@ class CaseHandler(object):
 
                 # get custom images
                 custom_images = (
-                    config_data["custom_images"][category]
-                    if category in config_data.get("custom_images", {})
+                    case_obj["custom_images"][category]
+                    if category in case_obj.get("custom_images", {})
                     else None
                 )
                 # add variants
