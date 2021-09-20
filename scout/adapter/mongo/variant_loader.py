@@ -478,9 +478,7 @@ class VariantLoader(object):
                 # Associate variant with image
                 if custom_images:
                     images = [
-                        img
-                        for img in custom_images
-                        if img["str_repid"] == variant_obj["str_repid"]
+                        img for img in custom_images if img["str_repid"] == variant_obj["str_repid"]
                     ]
                     if len(images) > 0:
                         variant_obj["custom_images"] = images
