@@ -4,6 +4,8 @@ import logging
 from fractions import Fraction
 from pathlib import Path
 from pprint import pprint as pp
+import re
+from glob import glob
 
 from ped_parser import FamilyParser
 
@@ -43,28 +45,73 @@ def get_correct_date(date_info):
 
 def _parse_images(images):
     """Parse images."""
-    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
     parsed_images = []
     for image in images:
-        # skip entries that are not recognized as image on suffix
-        path = Path(image["path"])
-        if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
-            LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
-            continue
-        # load image file to memory
-        with open(image["path"], "rb") as image_file:
-            parsed_images.append(
-                {
-                    "title": image["title"],
-                    "description": image["description"],
-                    "data": bytes(image_file.read()),
-                    "width": image.get("width"),
-                    "height": image.get("height"),
-                    "hgnc_symbol": image.get("hgnc_symbol"),
-                    "format": "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:],
+        img = image['path']
+        if '{' in img and '}' in img:
+            for match in _glob_wildcard(image["path"]):
+                # replace wildcard variable name with match
+                replaced_info = {
+                    key: val.replace("{%s}" % match["variable_name"], match["match"])
+                    for key, val
+                    in image.items()
                 }
-            )
+                # read image data
+                try:
+                    parsed_images.append(_read_image({
+                        **replaced_info,
+                        **{
+                            'str_repid': match['match'],
+                            'path': match['path']}
+                    }))
+                except ValueError as err:
+                    LOG.warning(str(err))
+        else:
+            image['path'] = Path(img)
+            # skip entries that are not recognized as image on suffix
+            try:
+                parsed_images.append(_read_image(image))
+            except ValueError as err:
+                LOG.warning(str(err))
     return parsed_images
+
+
+def _read_image(image):
+    # load image file to memory
+    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
+    path = image['path']
+    if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
+        raise ValueError(
+            f"Image: {path.name} is not recognized as an image, skipping"
+        )
+    with open(image["path"], "rb") as image_file:
+        image_obj = {
+            "title": image["title"],
+            "description": image["description"],
+            "data": bytes(image_file.read()),
+            "width": image.get("width"),
+            "height": image.get("height"),
+            "str_repid": image.get("str_repid"),
+            "format": "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:],
+            }
+    return image_obj
+
+
+def _glob_wildcard(path):
+    """Search for multiple files using a wildcard path."""
+    wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
+    glob_path = path[:wildcard.start()] + "*" + path[wildcard.end():]
+    wildcard_end = len(path) - wildcard.end()
+    paths = tuple(
+        {
+            "match": match[wildcard.start():-wildcard_end],
+            "variable_name": wildcard.group(1),
+            "path": Path(match),
+        }
+        for match
+        in glob(glob_path)
+    )
+    return paths
 
 
 def parse_custom_images(config_data):

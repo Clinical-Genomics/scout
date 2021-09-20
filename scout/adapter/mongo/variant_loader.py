@@ -480,7 +480,7 @@ class VariantLoader(object):
                     images = [
                         img
                         for img in custom_images
-                        if img["hgnc_symbol"] == variant_obj["str_repid"]
+                        if img["str_repid"] == variant_obj["str_repid"]
                     ]
                     if len(images) > 0:
                         variant_obj["custom_images"] = images

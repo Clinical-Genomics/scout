@@ -65,15 +65,19 @@ samples:
 custom_images:
   str:
     - title: A png image
-      hgnc_symbol: AFF2
+      str_repid: AFF2
       description: A very good description
       width: 500
       height: 100
       path: scout/demo/images/custom_images/640x480_one.png
     - title: A SVG image
-      hgnc_symbol: AFF2
+      str_repid: AFF2
       description: Another very good description
       path: scout/demo/images/custom_images/640x480_three.svg
+    - title: Image for replicon {REPID}
+      str_repid: '{REPID}'
+      description: Usage of substitution
+      path: scout/demo/images/custom_images/640x480_{REPID}.svg
   case:
     section_one:
       - title: A png image
