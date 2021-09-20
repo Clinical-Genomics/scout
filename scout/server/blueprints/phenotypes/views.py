@@ -50,7 +50,7 @@ def api_hpo_term_search(search_string):
     Returns:
         data(dict): result dict with key "phenotypes" set to an array of all matching phenotype terms
     """
-    limit=request.args.get("limit", None)
-    page=request.args.get("page", None)
+    limit = request.args.get("limit", None)
+    page = request.args.get("page", None)
     data = controllers.hpo_terms(store=store, query=search_string, limit=limit, page=page)
     return jsonify(data)
