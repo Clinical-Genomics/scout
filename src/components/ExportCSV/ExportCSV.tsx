@@ -20,7 +20,7 @@ export const ExportCSV = ({ csvData, fileName }: { csvData: any[]; fileName: str
       const exportData = csvData.map((item) => ({
         HPO_term: item._id,
         Phenotype_description: item.description,
-        Number_of_associated_genes: item.genes,
+        Number_of_associated_genes: item.genes.length,
       }))
       // more info https://docs.sheetjs.com/
       const ws = XLSX.utils.json_to_sheet(exportData)

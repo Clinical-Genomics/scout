@@ -1,8 +1,10 @@
 import { createServer, Model } from 'miragejs'
+import { getInstituteFromURL } from 'services/ScoutApi'
 import { getMockCases, getMockCaseReport, getMockPhenotypes } from '../__mocks__/ScoutResponses'
 
 const { BACKEND_URL } = process.env
 const baseUrl = `${BACKEND_URL}/api/v1/institutes/`
+
 export function makeServer({ environment = 'test' } = {}) {
   const server = createServer({
     models: {
@@ -28,6 +30,7 @@ export function makeServer({ environment = 'test' } = {}) {
         let id = request.params.id
         return schema.cases.find(id)
       }) */
+      this.passthrough(`/https://scout-stage.scilifelab.se/***`)
       this.urlPrefix = `https://scout-mocks-data.herokuapp.com`
       this.get(`/cases`, (schema: any) => {
         const response = schema.cases.all().models[0].attrs.getMockCases
