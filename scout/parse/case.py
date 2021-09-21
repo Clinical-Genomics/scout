@@ -43,8 +43,16 @@ def get_correct_date(date_info):
     return datetime.datetime.now()
 
 
-def _parse_images(images):
-    """Parse images."""
+def _parse_images_cnf(images):
+    """
+    Parse image info from configuration file and process wildcard searches.
+
+    Args:
+        images: array with image configuration
+
+    Returns:
+        parsed_images: array with image binary blob
+    """
     parsed_images = []
     for image in images:
         img = image["path"]
@@ -78,11 +86,25 @@ def _parse_images(images):
 
 
 def _read_image(image):
+    """Read image configuration and store as image object.
+
+    Image are read and stored with additional metadata according to
+    its format.
+
+    Args:
+        image: image configuration
+
+    Returns:
+        image_obj: stored image information
+    """
     # load image file to memory
     VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
     path = image["path"]
     if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
-        raise ValueError(f"Image: {path.name} is not recognized as an image, skipping")
+        raise ValueError(
+            f"Image: {path.name} is not recognized as an image, skipping"
+        )
+    # convert to image object
     with open(image["path"], "rb") as image_file:
         image_obj = {
             "title": image["title"],
@@ -97,9 +119,10 @@ def _read_image(image):
 
 
 def _glob_wildcard(path):
-    """Search for multiple files using a wildcard path."""
+    """Search for multiple files using a path with wildcard."""
     wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
-    glob_path = path[: wildcard.start()] + "*" + path[wildcard.end() :]
+    # make proper wildcard path
+    glob_path = path[:wildcard.start()] + "*" + path[wildcard.end():]
     wildcard_end = len(path) - wildcard.end()
     paths = tuple(
         {
@@ -122,14 +145,14 @@ def parse_custom_images(config_data):
         if page_name == "case":
             sections = {}
             for section_name, imgs in img_cnf[page_name].items():
-                parsed_images = _parse_images(imgs)
+                parsed_images = _parse_images_cnf(imgs)
                 if len(parsed_images) > 0:
                     sections[section_name] = parsed_images
                 else:
                     LOG.warning(f"Section: {section_name} had no valid images, skipping")
             images[page_name] = sections
         elif page_name == "str":
-            parsed_images = _parse_images(img_cnf[page_name])
+            parsed_images = _parse_images_cnf(img_cnf[page_name])
             if len(parsed_images) > 0:
                 images[page_name] = parsed_images
             else:

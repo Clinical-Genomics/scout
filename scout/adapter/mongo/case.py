@@ -639,7 +639,7 @@ class CaseHandler(object):
                         category=category,
                     )
 
-                # get custom images
+                # get custom images from config file
                 custom_images = (
                     case_obj["custom_images"][category]
                     if category in case_obj.get("custom_images", {})
