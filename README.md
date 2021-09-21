@@ -121,15 +121,3 @@ Commit messages should be a concise description of the task done in imperative p
 Examples:
 - `Update standards for commit message`
 - `Adding navigation menu`
-
-### Branch name standard
-[type]/[concise description of the issue]
-
-- `feature`: (new feature for the user, not a new feature for build script)
-- `fix`: (bug fix for the user, not a fix to a build script)
-- `docs`: (changes to the documentation)
-- `refactor`: (refactoring production code, eg. renaming a variable)
-
-Examples: 
-- `feature/add-institutes-endpoint`
-- `fix/dialog-not-showing-on-safari`

@@ -30,7 +30,7 @@ export function makeServer({ environment = 'test' } = {}) {
         let id = request.params.id
         return schema.cases.find(id)
       }) */
-      this.passthrough(`/https://scout-stage.scilifelab.se/***`)
+      this.passthrough(`/${BACKEND_URL}/***`)
       this.urlPrefix = `https://scout-mocks-data.herokuapp.com`
       this.get(`/cases`, (schema: any) => {
         const response = schema.cases.all().models[0].attrs.getMockCases
