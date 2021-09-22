@@ -7,7 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
-- Phenotypes search API endpoint
+- Phenotype search API endpoint
+- Added pagination to phenotype API
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
 ### Fixed
