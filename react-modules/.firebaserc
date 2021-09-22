@@ -1,7 +1,8 @@
 {
   "projects": {
-    "default": "scout-stage",
+    "default": "scout-test-bb076",
     "stage": "scout-stage",
+    "test": "scout-test-bb076",
     "production": "scout-prod-d00cb"
   }
 }

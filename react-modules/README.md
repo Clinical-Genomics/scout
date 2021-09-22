@@ -102,8 +102,25 @@ docker build --build-arg PORT="3000"  -t scout-react .
 ```
 
 ## Deployment
-The app is deployed manually. For staging, in the [GitHub Action UI](https://github.com/Clinical-Genomics/scout-react/actions) by choosing the workflow `Publish and deploy staging`, then `Run workflow` and input the branch that you want to deploy.
-For deploying to production, use the workflow `Publish and deploy production`, only the `master` branch can be deployed.
+We are using firebase for deploying. In the `.firebaserc` file we are using our project aliases, you can use yours there or ignore this file if you deploy in some other ways.
+to login
+`firebase login`
+to choose a project, for example stage
+`firebase use stage`
+build the app
+`yarn build`
+to deploy the done bundle
+`firebase deploy`
+
+Firebase [supports channel deployments](https://firebase.google.com/docs/hosting/test-preview-deploy), to deploy in the test project to a unique url
+`firebase use test`
+`firebase hosting:channel:deploy name-of-the-channel`
+
+For example
+`firebase hosting:channel:deploy add-case-page`
+will deploy to the URL https://scout-test-bb076--add-case-page-9jjr2pec.web.app
+the deploy will be wiped after 7 days.
+
 
 ## API mocking library
 Mirage JS is used in the project to mock the backend endpoints to continue the development before the actual endpoints are in place.
@@ -114,22 +131,3 @@ There are some endpoints to test the API calls if the actual APIs are not in pla
 The API is created with JSON-server and deployed to Heroku.
 - https://scout-mocks-data.herokuapp.com/cases
 - https://scout-mocks-data.herokuapp.com/case_report
-
-## Standards to be used for commit messages
-Commit messages should be a concise description of the task done in imperative present tense
-
-Examples:
-- `Update standards for commit message`
-- `Adding navigation menu`
-
-### Branch name standard
-[type]/[concise description of the issue]
-
-- `feature`: (new feature for the user, not a new feature for build script)
-- `fix`: (bug fix for the user, not a fix to a build script)
-- `docs`: (changes to the documentation)
-- `refactor`: (refactoring production code, eg. renaming a variable)
-
-Examples:
-- `feature/add-institutes-endpoint`
-- `fix/dialog-not-showing-on-safari`
