@@ -95,10 +95,10 @@ To run the image and serve the app on port 3000:
 docker run --name scout-react -e BACKEND_URL="here-your-url" -e GOOGLE_OAUTH_CLIENT_ID="here-your-client-id" -e MOCK=true -e PORT=3000 -it -p 3000:3000 scout-react
 ```
 
-To build a docker image
+To build a docker image from the Dockerfile.react
 
 ```bash
-docker build --build-arg PORT="3000"  -t scout-react .
+docker build -f Dockerfile.react --build-arg PORT="3000"  -t scout-react .
 ```
 
 ## Deployment
