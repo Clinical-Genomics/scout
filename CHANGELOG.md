@@ -7,7 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
-- Phenotypes search API endpoint
+- Phenotype search API endpoint
+- Added pagination to phenotype API
 - A development docker-compose file illustrating the scout/chanjo-report integration
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
