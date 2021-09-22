@@ -800,12 +800,11 @@
               <td width="15%">
                 {{ dismissed_gene_list(variant) }}
               </td>
-
               <td>
                 <ul>
                   {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
-                    <li>{{dismissed_options[reason|int]['description']}}
-                      {% if reason == '2' and variant.category == 'snv'%} <!--variant dismissed as too common in public databases-->
+                    <li>{{dismissed_options[reason]['description']}}
+                      {% if reason in [2,"2"] and variant.category == 'snv'%} <!--variant dismissed as too common in public databases-->
                         <table class="table-borderless table-sm">
                           <thead>
                             <tr style="background-color: transparent">
@@ -871,7 +870,7 @@
                             </tr>
                           </tbody>
                         </table>
-                      {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
+                      {% elif reason in [7, "7"] %} <!-- Inheritance pattern not relevant -->
                       <br>
                         ({% for model in variant.genetic_models|sort %}
                           <span class="badge badge-info" title="{{genetic_models[model]}}">{{model}}</span>
@@ -879,7 +878,7 @@
                           No models followed
                         {% endfor %})
                         <br>
-                      {% elif reason== '23' %} <!-- inherited from unaffected -->
+                      {% elif reason in [23, "23"] %} <!-- inherited from unaffected -->
                         <table id="panel-table" class="table-borderless table-sm" >
                           <thead>
                             <tr style="background-color: transparent">
