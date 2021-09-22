@@ -8,6 +8,8 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v1
+    - name: Go to react-modules directory
+      run: cd ./react-modules
     - name: Install
       run: yarn install
     - name: Run lint check
