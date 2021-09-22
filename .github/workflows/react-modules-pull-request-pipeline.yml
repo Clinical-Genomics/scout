@@ -8,17 +8,20 @@ jobs:
     steps:
     - name: Git checkout
       uses: actions/checkout@v1
-    - name: Go to react-modules directory
-      run: cd ./react-modules
     - name: Install
+      working-directory: ./react-modules
       run: yarn install
     - name: Run lint check
+      working-directory: ./react-modules
       run: yarn lint
     - name: Run stylelint check
+      working-directory: ./react-modules
       run: yarn stylelint
     - name: Test
+      working-directory: ./react-modules
       run: yarn test
     - name: Build Stage
+      working-directory: ./react-modules
       run: yarn build
       env:
         GOOGLE_OAUTH_CLIENT_ID: 'id'
