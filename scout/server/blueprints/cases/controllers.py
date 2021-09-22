@@ -18,11 +18,15 @@ from xlsxwriter import Workbook
 
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
+    CASE_REPORT_CASE_FEATURES,
+    CASE_REPORT_CASE_IND_FEATURES,
+    CASE_REPORT_VARIANT_TYPES,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
     SEX_MAP,
+    VARIANT_REPORT_VARIANT_FEATURES,
     VERBS_MAP,
 )
 from scout.constants.variant_tags import (
@@ -282,6 +286,70 @@ def _check_outdated_gene_panel(panel_obj, latest_panel):
     return extra_genes, missing_genes
 
 
+def case_report_variants(store, case_obj, institute_obj, data):
+    """Gather evaluated variants info to include in case report
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict): case dictionary
+        data(dict): data dictionary containing case report information
+    """
+    evaluated_variants = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
+    # We collect all causatives (including the partial ones) and suspected variants
+    # These are handeled in separate since they are on case level
+    for var_type in ["causatives", "suspects", "partial_causatives"]:
+        # These include references to variants
+        vt = "_".join([var_type, "detailed"])
+        for var_id in case_obj.get(var_type, []):
+            variant_obj = store.variant(var_id)
+            if not variant_obj:
+                continue
+            if var_type == "partial_causatives":  # Collect associated phenotypes
+                variant_obj["phenotypes"] = [
+                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
+                ][0]
+            evaluated_variants[vt].append(variant_obj)
+
+    ## get variants for this case that are either classified, commented, tagged or dismissed.
+    for var_obj in store.evaluated_variants(case_id=case_obj["_id"]):
+        # Check which category it belongs to
+        for vt in CASE_REPORT_VARIANT_TYPES:
+            keyword = CASE_REPORT_VARIANT_TYPES[vt]
+            # When found we add it to the categpry
+            # Eac variant can belong to multiple categories
+            if keyword not in var_obj:
+                continue
+            evaluated_variants[vt].append(var_obj)
+
+    data["variants"] = {}
+
+    for var_type in evaluated_variants:
+        decorated_variants = []
+        for var_obj in evaluated_variants[var_type]:
+            # We decorate the variant with some extra information
+            filtered_var_obj = {}
+            for feat in VARIANT_REPORT_VARIANT_FEATURES:
+                filtered_var_obj[feat] = var_obj.get(feat)
+
+            decorated_info = variant_decorator(
+                store=store,
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                variant_id=None,
+                variant_obj=filtered_var_obj,
+                add_case=False,
+                add_other=False,
+                get_overlapping=False,
+                add_compounds=False,
+                variant_type=var_obj["category"],
+                institute_obj=institute_obj,
+                case_obj=case_obj,
+            )
+            decorated_variants.append(decorated_info["variant"])
+        # Add the decorated variants to the case
+        data["variants"][var_type] = decorated_variants
+
+
 def case_report_content(store, institute_id, case_name):
     """Gather contents to be visualized in a case report
 
@@ -294,31 +362,29 @@ def case_report_content(store, institute_id, case_name):
         data(dict)
 
     """
-    VARIANT_TYPES = {
-        "causatives_detailed": "causatives",
-        "partial_causatives_detailed": "partial_causatives",
-        "suspects_detailed": "suspects",
-        "classified_detailed": "acmg_classification",
-        "tagged_detailed": "manual_rank",
-        "tier_detailed": "cancer_tier",
-        "dismissed_detailed": "dismiss_variant",
-        "commented_detailed": "is_commented",
-    }
-
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {"case": case_obj, "institute": institute_obj}
-    for individual in data["case"].get("individuals", []):
-        try:
-            sex = int(individual.get("sex", 0))
-        except ValueError as err:
-            sex = 0
-        individual["sex_human"] = SEX_MAP[sex]
+    data = {}
+    # Populate data with required institute _id
+    data["institute"] = {
+        "_id": institute_obj["_id"],
+    }
+    # Populate case individuals with required information
+    case_individuals = []
+    for ind in case_obj.get("individuals"):
+        ind_feat = {}
+        for feat in CASE_REPORT_CASE_IND_FEATURES:
+            ind_feat[feat] = ind.get(feat)
+            pheno_map = PHENOTYPE_MAP
+            if case_obj.get("track", "rare") == "cancer":
+                pheno_map = CANCER_PHENOTYPE_MAP
+            ind_feat["phenotype_human"] = pheno_map.get(ind["phenotype"])
+        case_individuals.append(ind_feat)
 
-        pheno_map = PHENOTYPE_MAP
-        if case_obj.get("track", "rare") == "cancer":
-            pheno_map = CANCER_PHENOTYPE_MAP
+    case_info = {"individuals": case_individuals}
+    for feat in CASE_REPORT_CASE_FEATURES:
+        case_info[feat] = case_obj.get(feat)
 
-        individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
+    data["case"] = case_info
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
     data["cancer"] = case_obj.get("track") == "cancer"
@@ -339,54 +405,7 @@ def case_report_content(store, institute_id, case_name):
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    evaluated_variants = {vt: [] for vt in VARIANT_TYPES}
-    # We collect all causatives (including the partial ones) and suspected variants
-    # These are handeled in separate since they are on case level
-    for var_type in ["causatives", "suspects", "partial_causatives"]:
-        # These include references to variants
-        vt = "_".join([var_type, "detailed"])
-        for var_id in case_obj.get(var_type, []):
-            variant_obj = store.variant(var_id)
-            if not variant_obj:
-                continue
-            if var_type == "partial_causatives":  # Collect associated phenotypes
-                variant_obj["phenotypes"] = [
-                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
-                ][0]
-            evaluated_variants[vt].append(variant_obj)
-
-    ## get variants for this case that are either classified, commented, tagged or dismissed.
-    for var_obj in store.evaluated_variants(case_id=case_obj["_id"]):
-        # Check which category it belongs to
-        for vt in VARIANT_TYPES:
-            keyword = VARIANT_TYPES[vt]
-            # When found we add it to the categpry
-            # Eac variant can belong to multiple categories
-            if keyword not in var_obj:
-                continue
-            evaluated_variants[vt].append(var_obj)
-
-    for var_type in evaluated_variants:
-        decorated_variants = []
-        for var_obj in evaluated_variants[var_type]:
-            # We decorate the variant with some extra information
-            decorated_info = variant_decorator(
-                store=store,
-                institute_id=institute_obj["_id"],
-                case_name=case_obj["display_name"],
-                variant_id=None,
-                variant_obj=var_obj,
-                add_case=False,
-                add_other=False,
-                get_overlapping=False,
-                add_compounds=False,
-                variant_type=var_obj["category"],
-                institute_obj=institute_obj,
-                case_obj=case_obj,
-            )
-            decorated_variants.append(decorated_info["variant"])
-        # Add the decorated variants to the case
-        data[var_type] = decorated_variants
+    case_report_variants(store, case_obj, institute_obj, data)
 
     return data
 
