@@ -8,7 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Enabled inclusion of custom images to STR variant view
 - A .cff citation file
-- Phenotypes search API endpoint
+- Phenotype search API endpoint
+- Added pagination to phenotype API
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
