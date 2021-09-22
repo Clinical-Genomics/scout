@@ -43,6 +43,13 @@ services:
       - scout-net
     depends_on:
       - mongodb
+  scout-react-modules:
+      build:
+          context: ./react-modules
+          dockerfile: Dockerfile.react
+      image: scout-react-modules
+      ports:
+          - "3000:3000"
 
 networks:
   scout-net:
