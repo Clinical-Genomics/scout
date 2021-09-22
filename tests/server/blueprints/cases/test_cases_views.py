@@ -578,10 +578,10 @@ def test_api_case_report(app, institute_obj, case_obj):
             "commented_detailed": "is_commented",
         }
         for var_type in variant_types:
-            assert var_type in data
+            assert var_type in data["variants"]
             # causative variant info should be present in the data
             if var_type == "causatives_detailed":
-                assert data[var_type][0]["_id"] == test_variant["_id"]
+                assert data["variants"][var_type][0]["_id"] == test_variant["_id"]
 
 
 def test_case_report(app, institute_obj, case_obj):

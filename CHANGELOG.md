@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
 - Enabled Flask CORS to communicate CORS status to js apps
 - Moved the code preparing the transcripts overview to the backend
+- Refactored and filtered json data used in general case report
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
 
