@@ -8,6 +8,39 @@ CUSTOM_CASE_REPORTS = [
     "gene_fusion_report_research",
 ]
 
+CASE_REPORT_CASE_FEATURES = [
+    "display_name",
+    "created_at",
+    "updated_at",
+    "status",
+    "madeline_info",
+    "synopsis",
+    "phenotype_terms",
+    "panels",
+]
+
+CASE_REPORT_CASE_IND_FEATURES = [
+    "display_name",
+    "sex",
+    "confirmed_sex",
+    "phenotype",
+    "phenotype_human",
+    "analysis_type",
+    "predicted_ancestry",
+    "confirmed_parent",
+]
+
+CASE_REPORT_VARIANT_TYPES = {
+    "causatives_detailed": "causatives",
+    "partial_causatives_detailed": "partial_causatives",
+    "suspects_detailed": "suspects",
+    "classified_detailed": "acmg_classification",
+    "tagged_detailed": "manual_rank",
+    "tier_detailed": "cancer_tier",
+    "dismissed_detailed": "dismiss_variant",
+    "commented_detailed": "is_commented",
+}
+
 SEX_MAP = {
     1: "male",
     2: "female",

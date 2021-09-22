@@ -7,7 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
-- Phenotypes search API endpoint
+- Phenotype search API endpoint
+- Added pagination to phenotype API
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
@@ -16,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved Frequencies, Severity and Local observations panels up in RD variants page
 - Enabled Flask CORS to communicate CORS status to js apps
 - Moved the code preparing the transcripts overview to the backend
+- Refactored and filtered json data used in general case report
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 - Replace default variant evaluation terms with custom terms included in a json file
 
