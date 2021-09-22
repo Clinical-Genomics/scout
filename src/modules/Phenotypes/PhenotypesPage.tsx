@@ -5,16 +5,23 @@ import { PhenotypesTable } from '../../components/PhenotypesTable/PhenotypesTabl
 import { getPhenotypesSearch } from 'services/ScoutApi'
 import { ExportCSV } from 'components/ExportCSV/ExportCSV'
 import CopyToClipboard from 'components/CopyToClipboard/CopyToClipboard'
+import { Loading } from '../../components/Loading/Loading'
 
 const { Search } = Input
 const { Text } = Typography
 export const PhenotypesPage = () => {
   const [phenotypes, setPhenotypes] = useState<any>()
+  const [isLoaded, setIsLoaded] = useState<boolean>(true)
   const onSearch = (value: any) => {
     if (value != '' && value.length > 2) {
-      getPhenotypesSearch(value).then((response: any) => {
-        setPhenotypes(response.phenotypes)
-      })
+      setIsLoaded(false)
+      getPhenotypesSearch(value)
+        .then((response: any) => {
+          setPhenotypes(response.phenotypes)
+        })
+        .then(() => {
+          setIsLoaded(true)
+        })
     } else {
       message.error('Search terms must contain at least 3 characters.')
     }
@@ -35,13 +42,14 @@ export const PhenotypesPage = () => {
           style={{ width: '30vw' }}
         />
       </div>
-      {phenotypes && (
+      {isLoaded && phenotypes && (
         <div>
           <Text>{`About ${phenotypes.length} ${
             phenotypes.length > 1 ? 'results' : 'result'
           }`}</Text>
         </div>
       )}
+      {!isLoaded && <Loading />}
       <PhenotypesTable phenotypes={phenotypes} />
     </div>
   )
