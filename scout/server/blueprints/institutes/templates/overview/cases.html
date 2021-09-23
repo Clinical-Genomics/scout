@@ -278,6 +278,6 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
+  <script src="{{ url_for('public.static', filename='external/jquery.stickytableheaders.min.js') }}"></script>
   <script src="{{ url_for('overview.static', filename='form_scripts.js') }}"></script>
 {% endblock %}

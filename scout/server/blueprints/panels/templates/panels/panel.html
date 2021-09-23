@@ -233,7 +233,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+  <script src="{{ url_for('public.static', filename='external/bootstrap3-typeahead.min.js') }}"></script>
 
   <script>
     function editDescription() {

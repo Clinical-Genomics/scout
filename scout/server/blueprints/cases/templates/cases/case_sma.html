@@ -199,9 +199,9 @@
 {% block scripts %}
 {{ super() }}
 <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="{{ url_for('public.static', filename='external/jquery.stickytableheaders.min.js') }}"></script>
+<script src="{{ url_for('public.static', filename='external/bootstrap3-typeahead.min.js') }}"></script>
+<script src="{{ url_for('public.static', filename='external/bootstrap-multiselect.min.js') }}"></script>
 <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
 

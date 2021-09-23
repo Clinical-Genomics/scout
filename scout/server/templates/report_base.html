@@ -4,8 +4,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
 	{% block css %}
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="{{ url_for('public.static', filename='external/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('public.static', filename='external/font-awesome.min.css') }}">
 	{% endblock %}
 
 	{% block css_style %}{% endblock %}
@@ -17,7 +17,7 @@
 	{% endblock %}
 
 	{% block scripts %}
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="{{ url_for('public.static', filename='external/bootstrap.min.js') }}"></script>
 	{% endblock %}
 </body>
 </html>

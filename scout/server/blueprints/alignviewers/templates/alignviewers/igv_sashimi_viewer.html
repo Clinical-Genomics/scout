@@ -10,7 +10,7 @@
     {{ igv_script() }}
 
     <!-- Flash eventual messages due to errors when creating the tracks -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('public.static', filename='external/bootstrap.min.css') }}">
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}

@@ -12,16 +12,16 @@
 
     <!-- jQuery UI CSS -->
     <link rel="stylesheet" type="text/css"
-          href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css"/>
+          href="{{ url_for('public.static', filename='external/jquery-ui.css') }}"/>
 
     <!-- Font Awesome CSS -->
     <link rel="stylesheet" type="text/css"
-          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"/>
+          href="{{ url_for('public.static', filename='external/font-awesome.min.css') }}"/>
 
     <!-- jQuery JS -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('public.static', filename='external/jquery.min.js') }}"></script>
     <script type="text/javascript"
-            src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+            src="{{ url_for('public.static', filename='external/jquery-ui.min.js') }}"></script>
     {{ igv_script() }}
 </head>
 

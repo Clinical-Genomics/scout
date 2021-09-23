@@ -7,8 +7,8 @@
 
 {% block css %}
 {{ super() }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{{ url_for('public.static', filename='external/bootstrap-select.min.css') }}">
+<link href="{{ url_for('public.static', filename='external/select2.min.css') }}" rel="stylesheet" />
 <style>
 .tree {
   list-style-type: none;
