@@ -7,8 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
-- Add the Scout-react repository as a front-end folder
-- Phenotypes search API endpoint
+- Phenotype search API endpoint
+- Added pagination to phenotype API
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
