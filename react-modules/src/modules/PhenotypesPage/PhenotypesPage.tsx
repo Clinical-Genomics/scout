@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import styles from './Phenotypes.module.css'
+import styles from './PhenotypesPage.module.css'
 import { Input, message, Space, Typography } from 'antd'
 import { PhenotypesTable } from '../../components/PhenotypesTable/PhenotypesTable'
 import { getPhenotypesSearch } from 'services/ScoutApi'

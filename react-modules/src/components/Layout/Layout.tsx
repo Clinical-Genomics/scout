@@ -19,7 +19,6 @@ function LayoutComponent({ children, settings, setDarkMode }: any) {
 	/* Scout Navigation items */
 	const scoutNavItems: Array<NavItem> = [
 		{ linkTitle: 'Home', public: false, link: '/' },
-		{ linkTitle: 'Cases', public: false, link: `/${settings.currentInstitute}/cases` },
 		{ linkTitle: 'Phenotypes', public: false, link: `/${settings.currentInstitute}/phenotypes` },
 		{
 			linkTitle: 'User guide',
