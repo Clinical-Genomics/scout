@@ -14,6 +14,10 @@
 {% endblock %}
 
 {% block content_main %}
+<div id="react-root">
+</div>
+<script src="{{ url_for('static', filename='dist/bundle.js') }}"></script>
+<!--
 <div class="container-float">
   <div class="row mt-3">
     <div class="col-md-12">
@@ -43,6 +47,7 @@
     </div>
   </div>
 </div>
+-->
 {% endblock %}
 
 {% block scripts %}

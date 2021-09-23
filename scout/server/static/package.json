@@ -1,0 +1,39 @@
+{
+  "name": "scout",
+  "version": "1.0.0",
+  "description": "<p align=\"center\"> \t<a href=\"https://Clinical-Genomics.github.io/scout/\"> \t\t<img height=\"165\" width=\"637\" src=\"artwork/logo-display.png\"> \t</a> \t<h3 align=\"center\">Analyze VCFs and collaborate on solving rare diseases quicker</h3> </p>",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "webpack -p --progress --config webpack.config.js",
+    "dev-build": "webpack --progress -d --config webpack.config.js",
+    "watch": "webpack --progress -d eval-source-map --config webpack.config.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Clinical-Genomics/scout.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Clinical-Genomics/scout/issues"
+  },
+  "homepage": "https://github.com/Clinical-Genomics/scout#readme",
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-react": "^7.14.5",
+    "babel-loader": "^8.2.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "webpack": "^5.53.0",
+    "webpack-cli": "^4.8.0"
+  },
+  "dependencies": {},
+  "babel": {
+    "presets": [ "@babel/react", "@babel/env" ]
+  }
+}
