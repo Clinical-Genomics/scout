@@ -59,7 +59,7 @@ class ScoutIndividual(BaseModel):
     analysis_type: Literal["wgs", "wes", "mixed", "unknown", "panel", "external"] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
-    capture_kits: Optional[str] = Field(..., alias="capture_kit")  #!
+    capture_kits: Optional[str] = Field(alias="capture_kit")  #!
     chromograph_images: ChromographImages = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
