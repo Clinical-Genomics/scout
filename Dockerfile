@@ -16,7 +16,7 @@ RUN apt-get update &&                                               \
 	libffi-dev libgdk-pixbuf2.0-0 liblzma-dev libpango-1.0-0        \
 	libpangocairo-1.0-0 libssl-dev make python3-cffi python3-dev    \
 	python3-pip python3-wheel shared-mime-info zlib1g-dev           \
-	openssl ca-certificates gcc wget git
+	openssl ca-certificates gcc wget git npm
 
 # Copy app
 COPY . /usr/src/app

@@ -35,7 +35,16 @@ services:
       - '5000'
     ports:
       - '5000:5000'
-    command: scout --host mongodb --demo serve --host 0.0.0.0
+    command: bash -c "
+      scout --host mongodb --demo serve --host 0.0.0.0
+      && npm i webpack --save-dev
+      && npm i webpack-cli --save-dev
+      && npm i @babel/core --save-dev
+      && npm i babel-loader --save-dev
+      && npm i @babel/preset-env --save-dev
+      && npm i @babel/preset-react --save-dev
+      && npm run watch --prefix /home/worker/app/scout/scout/server/static"
+
     volumes:
       - ./scout:/home/worker/app/scout
       - ./volumes/scout/data:/home/worker/data
