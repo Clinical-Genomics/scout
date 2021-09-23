@@ -1,0 +1,80 @@
+name: Master pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Test and build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout to master
+      uses: actions/checkout@master
+    - name: Install
+      run: yarn install
+    - name: Run lint check
+      run: yarn lint
+    - name: Test
+      run: yarn test
+    - name: Build Stage
+      run: yarn build
+      env:
+        GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+        BACKEND_URL: ${{ secrets.BACKEND_STAGE_URL }}
+        MOCK: ${{ secrets.MOCK }}
+    - name: Archive Stage Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: build-stage
+        path: build
+    - name: Build Production
+      run: yarn build
+      env:
+        GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+        BACKEND_URL: ${{ secrets.BACKEND_PRODUCTION_URL }}
+        MOCK: ${{ secrets.MOCK }}
+    - name: Archive Production Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: build-production
+        path: build
+  deploy-stage:
+    name: Deploy to Firebase Stage project
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: build-stage
+          path: build
+      - name: Deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGE }}
+          projectId: scout-stage
+          channelId: live
+  deploy-production:
+    name: Deploy to Firebase Production project
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: build-production
+          path: build
+      - name: Deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
+          projectId: scout-prod-d00cb
+          channelId: live
