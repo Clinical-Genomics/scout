@@ -320,7 +320,7 @@
 
 {% macro variant_validation_badge(variant) %}
   {% if variant.validation in ['True positive','False positive'] %}
-    <span class="badge badge-success">Validated</span>    
+    <span class="badge badge-success">Validated</span>
   {% elif variant.sanger_ordered %}
     <span class="badge badge-default">Verification ordered</span>
   {% endif %}
@@ -359,13 +359,13 @@
           <li class="list-group-item list-group-item-action">
             {% if variant._id %}
               {% do already_displayed_variant_ids.append( variant._id ) %}
-              <div class="row align-items-between align-items-center">
+              <div class="row">
                 <div class="col">
                   {{ pretty_link_variant(variant, case) }}
                   {{ variant_validation_badge(variant) }}
+                  {{ clinical_assessments_badge(variant) }}
+                  {{ tumor_allele_freq(variant) }}
                 </div>
-                {{ clinical_assessments_badge(variant) }}
-                {{ tumor_allele_freq(variant) }}
                 <div class="col-1">
                   {{ remove_form(url_for('cases.mark_causative',
                                          institute_id=institute._id,
@@ -512,21 +512,19 @@
           {% if variant._id %}
             <div class="row">
               <div class="col">
-                <div class="form-group row align-items-center">
-                  <div class="ml-3">
-                    {{ pretty_link_variant(variant, case) }}
-                  </div>
-                  <div style="padding: 0 10px 3px">
+                <div class="row align-items-between">
+                  <div class="col">
+                    {{ pretty_link_variant(variant, case)}}
                     {{ clinical_assessments_badge(variant) }}
                     {{ variant_validation_badge(variant) }}
+                    {{ tumor_allele_freq(variant) }}
                     {% if variant.mosaic_tags %}
                       <span class="badge badge-info">mosaic</span>
                     {% endif %}
                   </div>
                 </div>
               </div>
-              {{ tumor_allele_freq(variant) }}
-              <div class="col-4">
+              <div class="col-5">
               <form action="{{ url_for('cases.mark_validation',
                                          institute_id=variant.institute,
                                          case_name=case.display_name,
