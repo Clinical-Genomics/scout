@@ -160,7 +160,7 @@ class ScoutLoadConfig(BaseModel):
     delivery_report: Optional[str] = None
     display_name: str = Field(..., alias="family_name")
     family: str = None
-    family_name: Optional[str] = None # 1: family_name 2: family
+    family_name: Optional[str] = None  # 1: family_name 2: family
     gene_panels: Optional[List[str]] = []
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
