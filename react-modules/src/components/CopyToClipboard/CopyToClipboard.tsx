@@ -12,16 +12,16 @@ export default function CopyToClipboard({ copiedData }: { copiedData: any[] }) {
 				description: 'There is no data to copy!',
 			})
 		} else {
-			const dummy = document.createElement('textarea')
-			document.body.appendChild(dummy)
-			dummy.value =
+			const placeholder = document.createElement('textarea')
+			document.body.appendChild(placeholder)
+			placeholder.value =
 				'Exported data \n\nHPO term	Phenotype description\tNumber of associated genes \n\n'
 			copiedData.map((data) => {
-				dummy.value += data.hpo_id + '\t' + data.description + '\t' + data.genes.length + '\n'
+				placeholder.value += data.hpo_id + '\t' + data.description + '\t' + data.genes.length + '\n'
 			})
-			dummy.select()
+			placeholder.select()
 			document.execCommand('copy')
-			document.body.removeChild(dummy)
+			document.body.removeChild(placeholder)
 			SuccessNotification({
 				type: 'success',
 				message: 'Copy successful!',
