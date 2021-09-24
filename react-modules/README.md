@@ -2,7 +2,7 @@
 ### prod: https://scout-react.scilifelab.se/
 ### staging: https://scout-react-stage.scilifelab.se/
 
-You need to be connected to the Scilifelab VPN to access these URLs.
+You need to be connected to the ScilifeLab VPN to access these URLs.
 
 ## About
 
