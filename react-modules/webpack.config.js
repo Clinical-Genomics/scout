@@ -12,9 +12,7 @@ const HTMLWebpackPluginConfig = new HtmlWebpackPlugin({
 const config = {
 	entry: {
 		home: '/src/modules/Home/index.tsx',
-		cases: '/src/modules/Cases/index.tsx',
-		casesReportDownload: '/src/modules/CaseReport/index.tsx',
-		casesReportPage: '/src/modules/CaseReportPage/index.tsx',
+		phenotypesPage: '/src/modules/PhenotypesPage/index.tsx',
 		appShell: './src/index.tsx',
 	},
 	target: 'web',

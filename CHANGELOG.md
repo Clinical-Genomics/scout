@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dockerfile for React
 - Phenotype search API endpoint
 - Added pagination to phenotype API
+- Monorepo remove unused code
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 - Unify style of pinned and causative variants' badges on case page
