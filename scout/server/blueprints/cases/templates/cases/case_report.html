@@ -1159,7 +1159,7 @@
           {% for comment in variant.comments %}
             <tr>
               <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-              <td class="text-break"><strong>{{ comment.content | fix_punctuation}}</strong></td>
+              <td class="text-break"><strong>{{ comment.content }}</strong></td>
             </tr>
           {% endfor %}
         </tbody>
@@ -1327,7 +1327,7 @@
           {% for comment in variant.comments %}
             <tr>
               <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-              <td class="text-break"><strong>{{ comment.content | fix_punctuation}}</strong></td>
+              <td class="text-break"><strong>{{ comment.content }}</strong></td>
             </tr>
           {% endfor %}
         </tbody>
