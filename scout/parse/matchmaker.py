@@ -56,13 +56,14 @@ def omim_terms(case_obj):
     return disorders
 
 
-def genomic_features(store, case_obj, sample_name, genes_only):
+def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
     """Extract and parse matchmaker-like genomic features from pinned variants
         of a patient
     Args:
         store(MongoAdapter) : connection to the database
         case_obj(dict): a scout case object
         sample_name(str): sample display name
+        candidate_vars(list): a list of variants/genes chosen from the user
         genes_only(bool): if True only gene names will be included in genomic features
 
     Returns:
@@ -95,7 +96,9 @@ def genomic_features(store, case_obj, sample_name, genes_only):
         build = "GRCh" + build
 
     individual_pinned_snvs = list(
-        store.sample_variants(variants=case_obj.get("suspects"), sample_name=sample_name)
+        store.sample_variants(
+            [var for var in candidate_vars if not "|" in var], sample_name=sample_name
+        )
     )
 
     # if genes_only is True don't add duplicated genes
