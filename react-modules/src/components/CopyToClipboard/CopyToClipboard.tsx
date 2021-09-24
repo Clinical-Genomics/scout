@@ -17,7 +17,7 @@ export default function CopyToClipboard({ copiedData }: { copiedData: any[] }) {
 			dummy.value =
 				'Exported data \n\nHPO term	Phenotype description\tNumber of associated genes \n\n'
 			copiedData.map((data) => {
-				dummy.value += data.hpo_id + '\t' + data.description + '\t' + data.genes + '\n'
+				dummy.value += data.hpo_id + '\t' + data.description + '\t' + data.genes.length + '\n'
 			})
 			dummy.select()
 			document.execCommand('copy')

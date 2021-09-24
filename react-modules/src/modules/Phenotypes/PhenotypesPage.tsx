@@ -1,20 +1,29 @@
 import React, { useState } from 'react'
 import styles from './Phenotypes.module.css'
-import { Input, Space } from 'antd'
+import { Input, message, Space, Typography } from 'antd'
 import { PhenotypesTable } from '../../components/PhenotypesTable/PhenotypesTable'
-import { getPhenotypes } from 'services/ScoutApi'
+import { getPhenotypesSearch } from 'services/ScoutApi'
 import { ExportCSV } from 'components/ExportCSV/ExportCSV'
 import CopyToClipboard from 'components/CopyToClipboard/CopyToClipboard'
+import { Loading } from '../../components/Loading/Loading'
 
 const { Search } = Input
+const { Text } = Typography
 export const PhenotypesPage = () => {
 	const [phenotypes, setPhenotypes] = useState<any>()
+	const [isLoaded, setIsLoaded] = useState<boolean>(true)
 	const onSearch = (value: any) => {
-		if (value != '') {
-			// The Mirage.js dose not support search
-			getPhenotypes().then((response: any) => {
-				setPhenotypes(response)
-			})
+		if (value != '' && value.length > 2) {
+			setIsLoaded(false)
+			getPhenotypesSearch(value)
+				.then((response: any) => {
+					setPhenotypes(response.phenotypes)
+				})
+				.then(() => {
+					setIsLoaded(true)
+				})
+		} else {
+			message.error('Search terms must contain at least 3 characters.')
 		}
 	}
 	return (
@@ -33,11 +42,15 @@ export const PhenotypesPage = () => {
 					style={{ width: '30vw' }}
 				/>
 			</div>
-			{phenotypes && (
+			{isLoaded && phenotypes && (
 				<div>
-					<PhenotypesTable phenotypes={phenotypes} />
+					<Text>{`About ${phenotypes.length} ${
+						phenotypes.length > 1 ? 'results' : 'result'
+					}`}</Text>
 				</div>
 			)}
+			{!isLoaded && <Loading />}
+			<PhenotypesTable phenotypes={phenotypes} />
 		</div>
 	)
 }
