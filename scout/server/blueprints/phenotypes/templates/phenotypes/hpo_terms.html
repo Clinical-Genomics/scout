@@ -5,6 +5,8 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://scout-prod-d00cb.web.app/phenotypesPage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.17.0-alpha.3/antd.compact.min.css">
 {% endblock %}
 
 {% block top_nav %}
@@ -14,35 +16,8 @@
 {% endblock %}
 
 {% block content_main %}
-<div class="container-float">
-  <div class="row mt-3">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">HPO terms</div>
-        <div class="card-body">
-          {% if phenotypes|length == 0 %}
-            The search didn't return any phenotype term
-          {% else %}
-            <table id="phenotypes_table" class="table table-sm">
-                <thead>
-                  <th>HPO term</th>
-                  <th>Phenotype description</th>
-                  <th>Number of associated genes</th>
-                </thead>
-                {% for pheno in phenotypes %}
-                <tr>
-                  <td><a href="http://hpo.jax.org/app/browse/term/{{pheno.hpo_id}}" target="_blank">{{ pheno.hpo_id }}</a></td>
-                  <td>{{ pheno.description }}</td>
-                  <td>{{pheno.genes|length}}</td>
-                </tr>
-                {% endfor %}
-              </table>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="react-phenotypes"></div>
+<script src="https://scout-prod-d00cb.web.app/phenotypesPage.js"></script>
 {% endblock %}
 
 {% block scripts %}
