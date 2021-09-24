@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - A .cff citation file
+- Add the Scout-react repository as a front-end folder
+- Phenotypes search API endpoint
+- Dockerfile for React
 - Phenotype search API endpoint
 - Added pagination to phenotype API
 ### Fixed
