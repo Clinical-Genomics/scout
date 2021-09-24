@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A .cff citation file
 - Phenotype search API endpoint
 - Added pagination to phenotype API
+- Monorepo update phenotypes
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 ### Changed
