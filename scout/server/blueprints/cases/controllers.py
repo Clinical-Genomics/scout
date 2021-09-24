@@ -1114,6 +1114,7 @@ def matchmaker_add(request, institute_id, case_name):
     """
     # Check that general MME request requirements are fulfilled
     matchmaker_check_requirements(request)
+    flash(request.form.getlist("selected_var"))
     _, case_obj = institute_and_case(store, institute_id, case_name)
     candidate_vars = case_obj.get("suspects") or []
     if len(candidate_vars) > 3:
