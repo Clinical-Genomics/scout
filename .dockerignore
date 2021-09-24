@@ -20,3 +20,7 @@ scripts
 Dockerfile*
 docker-compose.*yml
 volumes
+
+# React modules
+react-modules/node_modules
+react-modules/build

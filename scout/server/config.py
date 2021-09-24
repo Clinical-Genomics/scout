@@ -7,6 +7,9 @@ MONGO_DBNAME = "scout"
 BOOTSTRAP_SERVE_LOCAL = True
 TEMPLATES_AUTO_RELOAD = True
 
+# URL for injected React modules. Change to localhost:3000 if using the local instance of React Modules
+REACT_MODULE_URL = "https://scout-prod-d00cb.web.app"
+
 DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 # Flask-mail: http://pythonhosted.org/flask-mail/

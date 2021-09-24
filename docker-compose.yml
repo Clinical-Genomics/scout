@@ -43,6 +43,17 @@ services:
       - scout-net
     depends_on:
       - mongodb
+  scout-react-modules:
+      build:
+          context: ./react-modules
+          dockerfile: Dockerfile.react
+      environment:
+          BACKEND_URL: 'http://localhost:5000/'
+          MOCK: 'false'
+          GOOGLE_OAUTH_CLIENT_ID: 'no-id'
+      image: scout-react-modules
+      ports:
+          - "3000:3000"
 
 networks:
   scout-net:

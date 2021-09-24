@@ -2,7 +2,7 @@
 ### prod: https://scout-react.scilifelab.se/
 ### staging: https://scout-react-stage.scilifelab.se/
 
-You need to be connected to the Scilifelab VPN to access these URLs.
+You need to be connected to the ScilifeLab VPN to access these URLs.
 
 ## About
 
@@ -81,7 +81,6 @@ The build is minified and the filenames include the hashes.<br />
 
 ## Docker
 
-The app is shipped to docker hub at every push in the `scout-react-stage` project and to `scout-react` when deploying via a workflow.
 To pull the latest image from the Clinical Genomics dockerhub repository
 
 ```bash
@@ -89,16 +88,16 @@ To pull the latest image from the Clinical Genomics dockerhub repository
 ```
 
 Make sure you are logged in with your DockerHub account.
-To run the image and serve the app on port 3000:
+To run the image and serve the app on port 3000 in development mode:
 
 ```bash
 docker run --name scout-react -e BACKEND_URL="here-your-url" -e GOOGLE_OAUTH_CLIENT_ID="here-your-client-id" -e MOCK=true -e PORT=3000 -it -p 3000:3000 scout-react
 ```
 
-To build a docker image
+To build a docker image from the Dockerfile.react
 
 ```bash
-docker build --build-arg PORT="3000"  -t scout-react .
+docker build -f Dockerfile.react --build-arg PORT="3000"  -t scout-react .
 ```
 
 ## Deployment
