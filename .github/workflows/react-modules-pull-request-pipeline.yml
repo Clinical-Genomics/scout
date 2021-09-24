@@ -9,38 +9,21 @@ jobs:
     - name: Git checkout
       uses: actions/checkout@v1
     - name: Install
+      working-directory: ./react-modules
       run: yarn install
     - name: Run lint check
+      working-directory: ./react-modules
       run: yarn lint
     - name: Run stylelint check
+      working-directory: ./react-modules
       run: yarn stylelint
     - name: Test
+      working-directory: ./react-modules
       run: yarn test
     - name: Build Stage
+      working-directory: ./react-modules
       run: yarn build
       env:
-        GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
-        BACKEND_URL: ${{ secrets.BACKEND_STAGE_URL }}
-        MOCK: ${{ secrets.MOCK }}
-    - name: Archive Stage Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: build-stage-branch
-        path: build
-  deploy-stage:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v1
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: build-stage-branch
-          path: build
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only hosting -P stage
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        GOOGLE_OAUTH_CLIENT_ID: 'id'
+        BACKEND_URL: 'none'
+        MOCK: false

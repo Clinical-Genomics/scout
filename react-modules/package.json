@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "webpack serve",
-    "build": "webpack",
+    "build": "webpack --mode production",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color",
 	"stylelint": "stylelint **/*.module.css",
     "test": "jest",
