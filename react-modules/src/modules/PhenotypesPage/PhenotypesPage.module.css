@@ -1,14 +1,14 @@
 .container {
-    padding: 20px;
-  }
+  padding: 20px;
+}
 
-  .header{
-    display: flex;
-    justify-content: space-between;
-    margin: 0 0 25px;
-  }
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 25px;
+}
 
-  .buttons{
-    display: flex;
-    justify-content: space-between;
-  }
+.buttons {
+  display: flex;
+  justify-content: space-between;
+}
