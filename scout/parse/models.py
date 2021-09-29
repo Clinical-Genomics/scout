@@ -214,7 +214,6 @@ class ScoutLoadConfig(BaseModel):
 
         return custom_images
 
-
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
         """`owner` is mandatory in a case configuration. If not
@@ -230,7 +229,6 @@ class ScoutLoadConfig(BaseModel):
         if value is None:
             raise ConfigError("A case has to have a 'family'")
         return value
-
 
     @validator("madeline_info")
     def check_if_madeline_exists(cls, path):
