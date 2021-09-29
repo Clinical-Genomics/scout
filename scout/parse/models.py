@@ -158,9 +158,8 @@ class ScoutLoadConfig(BaseModel):
     custom_images: Dict[str, List[Image]] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    display_name: str = Field(..., alias="family_name")
+    display_name: Optional[str] = Field(alias="family_name")
     family: str = None
-    family_name: Optional[str] = None # 1: family_name 2: family
     gene_panels: Optional[List[str]] = []
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
@@ -215,6 +214,7 @@ class ScoutLoadConfig(BaseModel):
 
         return custom_images
 
+
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
         """`owner` is mandatory in a case configuration. If not
@@ -230,6 +230,7 @@ class ScoutLoadConfig(BaseModel):
         if value is None:
             raise ConfigError("A case has to have a 'family'")
         return value
+
 
     @validator("madeline_info")
     def check_if_madeline_exists(cls, path):
@@ -299,10 +300,7 @@ class ScoutLoadConfig(BaseModel):
     @root_validator
     def set_display_name(cls, values):
         """Set toplevel 'display_name', in prioritised order 1. family_name  2. family"""
-
-        if values.get("family_name"):
-            values.update({"display_name": values.get("family_name")})
-        else:
+        if values.get("display_name") is None:
             values.update({"display_name": values.get("family")})
         return values
 
