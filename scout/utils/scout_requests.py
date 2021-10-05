@@ -35,6 +35,7 @@ def post_request_json(url, data, headers=None):
     json_response = {}
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
+        LOG.error(data)
         if headers:
             resp = requests.post(url, headers=headers, json=data)
         else:

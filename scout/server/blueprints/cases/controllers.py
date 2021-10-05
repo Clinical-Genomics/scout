@@ -1057,7 +1057,7 @@ def beacon_add(form):
         data["vcf_path"] = case_obj["vcf_files"].get(vcf_key)
         resp = post_request_json("/".join([request_url, "add"]), data, req_headers)
         if resp.get("status_code") != 200:
-            flash(f"Beacon responded:{resp['message']}", "warning")
+            flash(f"Beacon responded:{resp.get('content',{}).get('message')}", "warning")
             continue
         submission["vcf_files"].append(vcf_key)
 

@@ -35,6 +35,10 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # MME_URL = "http://localhost:9020"
 # MME_TOKEN = "matchmaker_token"
 
+# Beacon connection settings
+BEACON_URL = "http://localhost:6000/apiv1.0"
+BEACON_TOKEN = "DEMO"
+
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
 # When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
