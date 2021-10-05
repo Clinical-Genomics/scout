@@ -42,7 +42,7 @@ from scout.server.blueprints.variant.controllers import variant as variant_decor
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case
-from scout.utils.scout_requests import post_request_json
+from scout.utils.scout_requests import delete_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
 
@@ -986,14 +986,12 @@ def beacon_remove(case_id):
     dataset_id = "_".join([case_obj["owner"], assembly])
     samples = [sample for sample in beacon_submission.get("samples", [])]
     data = {"dataset_id": dataset_id, "samples": samples}
-    resp = post_request_json("/".join([request_url, "delete"]), data, req_headers)
+    resp = delete_request_json("/".join([request_url, "delete"]), req_headers, data)
     flash_color = "success"
-    message = None
+    message = resp.get("content", {}).get("message")
     if resp.get("status_code") == 200:
-        message = resp.get("content", {}).get("message")
         store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
     else:
-        message = resp.get("message")
         flash_color = "warning"
     flash(f"Beacon responded:{message}", flash_color)
 

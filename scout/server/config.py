@@ -36,8 +36,9 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # MME_TOKEN = "matchmaker_token"
 
 # Beacon connection settings
-BEACON_URL = "http://localhost:6000/apiv1.0"
-BEACON_TOKEN = "DEMO"
+# - Tested with PatientMatcher (https://github.com/Clinical-Genomics/cgbeacon2) -
+# BEACON_URL = "http://localhost:6000/apiv1.0"
+# BEACON_TOKEN = "DEMO"
 
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
