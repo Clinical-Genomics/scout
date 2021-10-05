@@ -38,6 +38,9 @@
       <li class="list-group-item">
         <label for="panel_name">Panel ID</label>
         <span class="float-right" id="panel_name">{{ panel.panel_name }}</span>
+        {% if panel.hidden %}
+          <span class="badge badge-danger">Removed</span>
+        {% endif %}
       </li>
 
       <div class="list-group-item">
