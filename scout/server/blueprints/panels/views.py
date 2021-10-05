@@ -186,6 +186,27 @@ def panel_update(panel_id):
     return redirect(url_for("panels.panel", panel_id=panel_id))
 
 
+@panels_bp.route("/panels/<panel_id>/delete", methods=["POST"])
+def panel_delete(panel_id):
+    """Remove an existing panel."""
+    panel_obj = store.panel(panel_id)
+    # abort when trying to hide an already hidden panel
+    if panel_obj.get('hidden', False):
+        abort(404)
+
+    if panel_write_granted(panel_obj, current_user):
+        LOG.info('Mark gene panel: %s as deleted (hidden)' % panel_obj['display_name'])
+        panel_obj['hidden'] = True
+        store.update_panel(panel_obj=panel_obj)
+        flash("Removed gene panel", "success")
+    else:
+        flash(
+            "Permission denied: please ask a panel maintainer or admin for help.",
+            "danger",
+        )
+    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
+
+
 @panels_bp.route("/panels/export-panel/<panel_id>", methods=["GET", "POST"])
 def panel_export(panel_id):
     """Export panel to PDF file"""
