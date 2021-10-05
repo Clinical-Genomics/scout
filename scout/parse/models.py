@@ -65,7 +65,7 @@ class ScoutIndividual(BaseModel):
     confirmed_sex: Optional[bool] = None
     display_name: Optional[str] = None
     father: Optional[str] = None
-    individual_id: str = Field(..., alias="sample_id")
+    individual_id: str = Field(alias="sample_id")
     is_sma: Optional[str] = None
     is_sma_carrier: Optional[str] = None
     mother: Optional[str] = None
@@ -149,20 +149,20 @@ class VcfFiles(BaseModel):
 
 class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
-    assignee: str = None
+    assignee: Optional[str] = None
     case_id: str = Field(alias="family")
     cnv_report: Optional[str] = None
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
-    coverage_qc_report: str = None
+    coverage_qc_report: Optional[str] = None
     custom_images: Dict[str, List[Image]] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(alias="family_name")
     family: str = None
-    gene_panels: Optional[List[str]] = []
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
+    gene_panels: Optional[List[str]] = []
     genome_build: int = Field([], alias="human_genome_build")
     individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
@@ -174,7 +174,7 @@ class ScoutLoadConfig(BaseModel):
     peddy_sex_check: Optional[str] = Field("", alias="peddy_sex")
     phenotype_terms: Optional[List[str]] = None
     rank_model_version: Optional[str] = ""
-    rank_score_threshold: int = 0
+    rank_score_threshold: Optional[int] = 0
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = ""
     synopsis: Union[List[str], str] = None
