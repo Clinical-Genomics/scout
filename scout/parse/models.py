@@ -60,7 +60,7 @@ class ScoutIndividual(BaseModel):
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
     capture_kits: Optional[str] = Field(alias="capture_kit")  #!
-    chromograph_images: ChromographImages = ChromographImages()
+    chromograph_images: Optional[ChromographImages] = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
     display_name: Optional[str] = None
@@ -72,22 +72,21 @@ class ScoutIndividual(BaseModel):
     msi: Optional[str] = None
     mt_bam: Optional[str] = None
     phenotype: Literal["affected", "unaffected", "unknown"]
-    predicted_ancestry: str = None
+    predicted_ancestry: Optional[str] = None
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
     rna_coverage_bigwig: Optional[str] = None
-    sample_id: str
     sample_name: Optional[str] = None
     sex: Literal["unknown", "female", "male"]
-    smn1_cn: int = None
-    smn2_cn: int = None
-    smn2delta78_cn: int = None
-    smn_27134_cn: int = None
+    smn1_cn: Optional[int] = None
+    smn2_cn: Optional[int] = None
+    smn2delta78_cn: Optional[int] = None
+    smn_27134_cn: Optional[int] = None
     splice_junctions_bed: Optional[str] = None
     tiddit_coverage_wig: Optional[str] = None
     tissue_type: Optional[str] = None
     tmb: Optional[str] = None
-    tumor_purity: float = 0.0
+    tumor_purity: Optional[float] = 0.0
     tumor_type: Optional[str] = None
     upd_regions_bed: Optional[str] = None
     upd_sites_bed: Optional[str] = None
@@ -179,7 +178,7 @@ class ScoutLoadConfig(BaseModel):
     sv_rank_model_version: Optional[str] = ""
     synopsis: Union[List[str], str] = None
     track: Literal["rare", "cancer"] = "rare"
-    vcf_files: Optional[VcfFiles] = None
+    vcf_files: Optional[VcfFiles]
 
     def __init__(self, **data):
         """Override init() for handling nested vcf_files dicts.
