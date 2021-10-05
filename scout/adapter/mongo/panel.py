@@ -235,7 +235,7 @@ class PanelHandler:
 
         return None
 
-    def gene_panels(self, panel_id=None, institute_id=None, version=None):
+    def gene_panels(self, panel_id=None, institute_id=None, version=None, include_hidden=False):
         """Return all gene panels
 
         If panel_id return all versions of panels by that panel name
@@ -253,6 +253,12 @@ class PanelHandler:
                 query["version"] = version
         if institute_id:
             query["institute"] = institute_id
+        # include documents where field hidden is undefined or false
+        if not include_hidden:
+            query["$or"] = [
+                {"hidden": {"$exists": False}},
+                {"hidden": False},
+            ]
 
         return self.panel_collection.find(query)
 
