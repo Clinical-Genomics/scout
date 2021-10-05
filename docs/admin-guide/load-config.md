@@ -40,7 +40,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
 - **samples** _List_ List of samples included in the case:
 	- **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
-	- **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel}.
+	- **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel, unknown, external}.
 	- **bam_file** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
 	- **bam_path** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
 	- **capture_kit** _String_ Exome specifies the capture kit.
