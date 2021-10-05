@@ -23,10 +23,11 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **default_gene_panels** _List of strings_ List of default gene panels. Variants from the genes in the gene panels specified will be shown when opening the case in scout.
 - **delivery_report** _String_: Path to HTML delivery report.
 - **family(*)**  _String_ Unique ID of the case.
+- **family_name**  _String_ Optional name of the case.
 - **gene_fusion_report** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
 - **gene_fusion_report_research** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
 - **gene_panels** _List of strings_ List of gene panels. Specifies what panels the case has been run with.
-- **human_genome_build** _String_ Version of genome version used.
+- **human_genome_build** _String_ Version of genome version used, 37 or 38. Defaults to 37.
 - **lims_id** _String_ Case ID in Lims
 - **madeline** _String_ Path to a madeline pedigree file in XML format.
 - **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
