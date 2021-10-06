@@ -1,0 +1,60 @@
+# Howto (from this fantastic tutorial:https://gist.github.com/asoorm/7822cc742831639c93affd734e97ce4f):
+# 1) From Scout main folder, run:
+# docker-compose -f containers/development/docker-compose-mongo-replicaset.yml up (-d)
+#
+# 2) In another terminal (or the same, if you used the -d param in the command above), exec into one of the mongos:
+# docker exec -it localmongo1 /bin/bash
+#
+# 3) Access the mongo console:
+#  mongo
+#
+# 4) Configure replica set by pasting the following command:
+#rs.initiate(
+#  {
+#    _id : 'rs0',
+#    members: [
+#      { _id : 0, host : "mongo1:27017" },
+#      { _id : 1, host : "mongo2:27017" },
+#      { _id : 2, host : "mongo3:27017" }
+#    ]
+#  }
+#)
+#
+# The connection to the replicaset has the following string:
+# mongodb://localhost:27011,localhost:27012,localhost:27013/DB_NAME?replicaSet=scout-rs
+#
+# Remove used images, containers and volumes by running:
+# docker-compose down
+
+version: "3"
+services:
+  mongo1:
+    hostname: mongo1
+    container_name: localmongo1
+    image: mongo:4.4.9
+    expose:
+    - 27017
+    ports:
+      - 27011:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "scout-rs" ]
+  mongo2:
+    hostname: mongo2
+    container_name: localmongo2
+    image: mongo:4.4.9
+    expose:
+    - 27017
+    ports:
+    - 27012:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "scout-rs" ]
+  mongo3:
+    hostname: mongo3
+    container_name: localmongo3
+    image: mongo:4.4.9
+    expose:
+    - 27017
+    ports:
+    - 27013:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "scout-rs" ]
