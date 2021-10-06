@@ -1,4 +1,8 @@
-from northwestwitch/python3.8.1-slim_numpy
+###########
+# BUILDER #
+###########
+
+from northwestwitch/python3.8.1-slim_numpy AS builder
 
 LABEL base_image="northwestwitch/python3.8.1-slim_numpy"
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
@@ -26,7 +30,17 @@ COPY . /home/worker/app
 
 # Install the app with its requirements
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --editable .[coverage]
+    pip install --editable .[coverage] && \
+    pip install gunicorn
+
+
+#########
+# FINAL #
+#########
+
+FROM scratch
+WORKDIR /home/worker/app
+COPY --from=builder /home/worker/app /home/worker/app
 
 # Run it as non-root user
 RUN chown -R worker:worker /home/worker/app
