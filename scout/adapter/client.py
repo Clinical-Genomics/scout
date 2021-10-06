@@ -6,7 +6,7 @@ Establish a connection to the database
 """
 import logging
 
-from pymongo import MongoClient, ReadPreference
+from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
 
 try:
@@ -58,7 +58,6 @@ def get_connection(
 
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
-        # client.server_info()
     except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
         LOG.warning(err)
 
