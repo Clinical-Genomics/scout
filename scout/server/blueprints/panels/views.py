@@ -57,7 +57,9 @@ def panels():
         # modify an existing panel
         update_option = request.form["modify_option"]
 
-        panel_obj = store.gene_panel(request.form["panel_name"])
+        panel_obj = store.gene_panel(
+            request.form["panel_name"], include_hidden=current_user.is_admin
+        )
         if panel_obj is None:
             return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
 
@@ -80,16 +82,18 @@ def panels():
     panel_names = [
         name
         for institute in institutes
-        for name in store.gene_panels(institute_id=institute["_id"]).distinct("panel_name")
+        for name in store.gene_panels(institute_id=institute["_id"], include_hidden=current_user.is_admin).distinct("panel_name")
     ]
 
     panel_versions = {}
     for name in panel_names:
-        panel_versions[name] = store.gene_panels(panel_id=name)
+        panel_versions[name] = store.gene_panels(panel_id=name, include_hidden=current_user.is_admin)
 
     panel_groups = []
     for institute_obj in institutes:
-        institute_panels = store.latest_panels(institute_obj["_id"])
+        institute_panels = store.latest_panels(
+            institute_obj["_id"], include_hidden=current_user.is_admin
+        )
         panel_groups.append((institute_obj, institute_panels))
 
     return dict(
@@ -198,7 +202,24 @@ def panel_delete(panel_id):
         LOG.info('Mark gene panel: %s as deleted (hidden)' % panel_obj['display_name'])
         panel_obj['hidden'] = True
         store.update_panel(panel_obj=panel_obj)
-        flash("Removed gene panel", "success")
+        flash("Removed gene panel: %s" % panel_obj['display_name'], "success")
+    else:
+        flash(
+            "Permission denied: please ask a panel maintainer or admin for help.",
+            "danger",
+        )
+    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
+
+
+@panels_bp.route("/panels/<panel_id>/restore", methods=["POST"])
+def panel_restore(panel_id):
+    """Remove an existing panel."""
+    panel_obj = store.panel(panel_id)
+    # abort when trying to hide an already hidden panel
+    if current_user.is_admin:
+        panel_obj['hidden'] = False
+        store.update_panel(panel_obj=panel_obj)
+        flash("Restored gene panel: %s" % panel_obj['display_name'], "success")
     else:
         flash(
             "Permission denied: please ask a panel maintainer or admin for help.",

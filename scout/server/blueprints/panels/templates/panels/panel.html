@@ -33,14 +33,16 @@
     <ul class="list-group">
       <li class="list-group-item">
         <label for="display_name">Full name</label>
-        <span class="float-right" id="display_name">{{ panel.display_name }}</span>
+        <span class="float-right" id="display_name">
+          {{ panel.display_name }}
+        </span>
+        {% if panel.hidden %}
+          <span class="badge badge-danger">Removed</span>
+        {% endif %}
       </li>
       <li class="list-group-item">
         <label for="panel_name">Panel ID</label>
         <span class="float-right" id="panel_name">{{ panel.panel_name }}</span>
-        {% if panel.hidden %}
-          <span class="badge badge-danger">Removed</span>
-        {% endif %}
       </li>
 
       <div class="list-group-item">
