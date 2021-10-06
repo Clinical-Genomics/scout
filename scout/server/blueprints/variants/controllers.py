@@ -811,8 +811,8 @@ def gene_panel_choices(store, institute_obj, case_obj):
     panel_list = []
     # Add case default panels and the institute-specific panels to the panel select options
     for panel in case_obj.get("panels", []):
-        latest_panel = store.gene_panel(panel['panel_name'])
-        if not latest_panel.get('hidden', False):
+        latest_panel = store.gene_panel(panel["panel_name"])
+        if not latest_panel.get("hidden", False):
             panel_option = (panel["panel_name"], panel["display_name"])
             panel_list.append(panel_option)
 

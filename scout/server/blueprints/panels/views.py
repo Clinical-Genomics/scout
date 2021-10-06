@@ -82,12 +82,16 @@ def panels():
     panel_names = [
         name
         for institute in institutes
-        for name in store.gene_panels(institute_id=institute["_id"], include_hidden=current_user.is_admin).distinct("panel_name")
+        for name in store.gene_panels(
+            institute_id=institute["_id"], include_hidden=current_user.is_admin
+        ).distinct("panel_name")
     ]
 
     panel_versions = {}
     for name in panel_names:
-        panel_versions[name] = store.gene_panels(panel_id=name, include_hidden=current_user.is_admin)
+        panel_versions[name] = store.gene_panels(
+            panel_id=name, include_hidden=current_user.is_admin
+        )
 
     panel_groups = []
     for institute_obj in institutes:
@@ -195,14 +199,14 @@ def panel_delete(panel_id):
     """Remove an existing panel."""
     panel_obj = store.panel(panel_id)
     # abort when trying to hide an already hidden panel
-    if panel_obj.get('hidden', False):
+    if panel_obj.get("hidden", False):
         abort(404)
 
     if panel_write_granted(panel_obj, current_user):
-        LOG.info('Mark gene panel: %s as deleted (hidden)' % panel_obj['display_name'])
-        panel_obj['hidden'] = True
+        LOG.info("Mark gene panel: %s as deleted (hidden)" % panel_obj["display_name"])
+        panel_obj["hidden"] = True
         store.update_panel(panel_obj=panel_obj)
-        flash("Removed gene panel: %s" % panel_obj['display_name'], "success")
+        flash("Removed gene panel: %s" % panel_obj["display_name"], "success")
     else:
         flash(
             "Permission denied: please ask a panel maintainer or admin for help.",
@@ -217,9 +221,9 @@ def panel_restore(panel_id):
     panel_obj = store.panel(panel_id)
     # abort when trying to hide an already hidden panel
     if current_user.is_admin:
-        panel_obj['hidden'] = False
+        panel_obj["hidden"] = False
         store.update_panel(panel_obj=panel_obj)
-        flash("Restored gene panel: %s" % panel_obj['display_name'], "success")
+        flash("Restored gene panel: %s" % panel_obj["display_name"], "success")
     else:
         flash(
             "Permission denied: please ask a panel maintainer or admin for help.",
