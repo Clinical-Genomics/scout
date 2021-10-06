@@ -27,11 +27,13 @@ def serve(host, port, debug, livereload, test):
         MONGO_DBNAME=current_app.config.get("MONGO_DBNAME", "scout"),
         MONGO_USERNAME=current_app.config.get("MONGO_USERNAME", None),
         MONGO_PASSWORD=current_app.config.get("MONGO_PASSWORD", None),
+        MONGO_URI=current_app.config.get("MONGO_URI", None),
     )
 
     valid_connection = check_connection(
         host=pymongo_config["MONGO_HOST"],
         port=pymongo_config["MONGO_PORT"],
+        uri=pymongo_config["MONGO_URI"],
         username=pymongo_config["MONGO_USERNAME"],
         password=pymongo_config["MONGO_PASSWORD"],
         authdb=current_app.config.get("MONGO_DBNAME", "scout"),

@@ -6,11 +6,10 @@ Establish a connection to the database
 """
 import logging
 
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
+from pymongo import MongoClient, ReadPreference
+from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
 
 try:
-    # Python 3.x
     from urllib.parse import quote_plus
 except ImportError:
     # Python 2.x
@@ -30,7 +29,7 @@ def get_connection(
     authdb=None,
     timeout=20,
     *args,
-    **kwargs
+    **kwargs,
 ):
     """Get a client to the mongo database
 
@@ -44,6 +43,8 @@ def get_connection(
 
     """
     authdb = authdb or mongodb
+    log_uri = uri
+
     if uri is None:
         if username and password:
             uri = "mongodb://{}:{}@{}:{}/{}".format(
@@ -54,11 +55,11 @@ def get_connection(
             log_uri = uri = "mongodb://%s:%s" % (host, port)
 
     LOG.info("Try to connect to %s" % log_uri)
+
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
-    except ServerSelectionTimeoutError as err:
-        LOG.warning("Connection Refused")
-        raise ConnectionFailure
+        # client.server_info()
+    except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
+        LOG.warning(err)
 
-    LOG.info("Connection established")
     return client
