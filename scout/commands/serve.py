@@ -7,8 +7,6 @@ from flask.cli import current_app, with_appcontext
 from livereload import Server
 from werkzeug.serving import run_simple
 
-from scout.adapter.utils import check_connection
-
 LOG = logging.getLogger(__name__)
 
 
@@ -29,25 +27,6 @@ def serve(host, port, debug, livereload, test):
         MONGO_PASSWORD=current_app.config.get("MONGO_PASSWORD", None),
         MONGO_URI=current_app.config.get("MONGO_URI", None),
     )
-
-    valid_connection = check_connection(
-        host=pymongo_config["MONGO_HOST"],
-        port=pymongo_config["MONGO_PORT"],
-        uri=pymongo_config["MONGO_URI"],
-        username=pymongo_config["MONGO_USERNAME"],
-        password=pymongo_config["MONGO_PASSWORD"],
-        authdb=current_app.config.get("MONGO_DBNAME", "scout"),
-    )
-
-    LOG.info("Test if mongod is running")
-    if not valid_connection:
-        LOG.warning("Connection could not be established")
-        LOG.info("Is mongod running?")
-        raise click.Abort()
-
-    if test:
-        LOG.info("Connection could be established")
-        return
 
     if livereload:
         server = Server(current_app.wsgi_app)

@@ -5,6 +5,7 @@ Establish a connection to the database
 
 """
 import logging
+import sys
 
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
@@ -14,7 +15,6 @@ try:
 except ImportError:
     # Python 2.x
     from urllib import quote_plus
-
 
 LOG = logging.getLogger(__name__)
 
@@ -58,7 +58,9 @@ def get_connection(
 
     try:
         client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
+        client.server_info()
     except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
-        LOG.warning(err)
+        LOG.error(f"Database connection error:{err}")
+        sys.exit()
 
     return client
