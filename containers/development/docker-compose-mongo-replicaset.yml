@@ -20,10 +20,10 @@
 #  }
 #)
 #
-# The connection to the replicaset has the following string:
+# 5) The connection to the replicaset has the following string:
 # mongodb://localhost:27011,localhost:27012,localhost:27013/DB_NAME?replicaSet=scout-rs
 #
-# Remove used images, containers and volumes by running:
+# 6) Remove used images, containers and volumes by running:
 # docker-compose down
 
 version: "3"
