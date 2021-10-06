@@ -206,7 +206,7 @@ def add_peddy_information(config_data):
 
     analysis_inds = {}
     for ind in config_data["individuals"]:
-        ind_id = ind["sample_id"]
+        ind_id = ind["individual_id"]
         analysis_inds[ind_id] = ind
 
     for ind_id in analysis_inds:
