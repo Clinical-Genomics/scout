@@ -129,7 +129,7 @@ def add_smn_info(config_data):
         smn_info[smn_ind_info["sample_id"]] = smn_ind_info
 
     for ind in config_data["individuals"]:
-        ind_id = ind["sample_id"]
+        ind_id = ind["individual_id"]
         try:
             for key in [
                 "is_sma",

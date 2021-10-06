@@ -126,9 +126,9 @@ class ScoutIndividual(BaseModel):
         if values.get("sample_name"):
             values.update({"display_name": values.get("sample_name")})
             return values
-        if values.get("sample_id"):
+        if values.get("individual_id"):
             # Dont't touch anything
-            values.update({"display_name": values.get("sample_id")})
+            values.update({"display_name": values.get("individual_id")})
             return values
         return values
 
