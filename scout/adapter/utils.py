@@ -45,8 +45,8 @@ def check_connection(
 
     LOG.info("Test connection with uri: %s", log_uri)
 
+    client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
     try:
-        client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
         client.server_info()
     except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
         LOG.warning(err)
