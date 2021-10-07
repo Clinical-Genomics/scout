@@ -6,7 +6,6 @@ import click
 import coloredlogs
 import pymongo
 import yaml
-from pymongo.errors import ConnectionFailure
 
 # General, logging
 from scout import __version__
@@ -14,7 +13,6 @@ from scout.adapter.client import get_connection
 
 # Adapter stuff
 from scout.adapter.mongo import MongoAdapter
-from scout.adapter.utils import check_connection
 
 try:
     from scoutconfig import *
@@ -74,23 +72,8 @@ def update_panels(context, mongodb, username, password, authdb, host, port, logl
     LOG.debug("Setting host to %s", mongo_config["host"])
     LOG.debug("Setting port to %s", mongo_config["port"])
 
-    valid_connection = check_connection(
-        host=mongo_config["host"],
-        port=mongo_config["port"],
-        username=mongo_config["username"],
-        password=mongo_config["password"],
-        authdb=mongo_config["authdb"],
-    )
-
-    LOG.info("Test if mongod is running")
-    if not valid_connection:
-        LOG.warning("Connection could not be established")
-        context.abort()
-
-    try:
-        client = get_connection(**mongo_config)
-    except ConnectionFailure:
-        context.abort()
+    # Connection validity will be checked in adapter.client
+    client = get_connection(**mongo_config)
 
     database = client[mongo_config["mongodb"]]
 
