@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A .cff citation file
 - Phenotype search API endpoint
 - Added pagination to phenotype API
+- Support for connecting to a MongoDB replica set
 - Added function for maintainers and admins to remove gene panels
 - Admins can restore deleted gene panels
 ### Fixed
