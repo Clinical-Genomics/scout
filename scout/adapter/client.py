@@ -56,8 +56,8 @@ def get_connection(
 
     LOG.info("Try to connect to %s" % log_uri)
 
+    client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
     try:
-        client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
         client.server_info()
     except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
         LOG.error(f"Database connection error:{err}")
