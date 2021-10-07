@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enabled Flask CORS to communicate CORS status to js apps
 - Moved the code preparing the transcripts overview to the backend
 - Refactored and filtered json data used in general case report
+- Modified the Python and MongoDB versions used in testing matrices (github actions)
 
 ## [4.39]
 ### Added
