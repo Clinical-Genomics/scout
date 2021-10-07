@@ -19,15 +19,6 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def serve(host, port, debug, livereload, test):
     """Start the web server."""
-    pymongo_config = dict(
-        MONGO_HOST=current_app.config.get("MONGO_HOST", "localhost"),
-        MONGO_PORT=current_app.config.get("MONGO_PORT", 27017),
-        MONGO_DBNAME=current_app.config.get("MONGO_DBNAME", "scout"),
-        MONGO_USERNAME=current_app.config.get("MONGO_USERNAME", None),
-        MONGO_PASSWORD=current_app.config.get("MONGO_PASSWORD", None),
-        MONGO_URI=current_app.config.get("MONGO_URI", None),
-    )
-
     if livereload:
         server = Server(current_app.wsgi_app)
         server.serve(host=host, port=port, debug=debug)

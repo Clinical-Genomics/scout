@@ -43,20 +43,17 @@ def get_connection(
 
     """
     authdb = authdb or mongodb
-    log_uri = uri
 
     if uri is None:
         if username and password:
             uri = "mongodb://{}:{}@{}:{}/{}".format(
                 quote_plus(username), quote_plus(password), host, port, authdb
             )
-            log_uri = "mongodb://{}:****@{}:{}/{}".format(quote_plus(username), host, port, authdb)
         else:
-            log_uri = uri = "mongodb://%s:%s" % (host, port)
-
-    LOG.info("Try to connect to %s" % log_uri)
+            uri = "mongodb://%s:%s" % (host, port)
 
     client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
+
     try:
         client.server_info()
     except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:

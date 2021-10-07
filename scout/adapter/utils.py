@@ -32,18 +32,14 @@ def check_connection(
     """
     # uri looks like:
     # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
-    log_uri = uri
 
     if uri is None:
         if username and password:
             uri = "mongodb://{}:{}@{}:{}/{}".format(
                 quote_plus(username), quote_plus(password), host, port, authdb
             )
-            log_uri = "mongodb://{}:****@{}:{}/{}".format(quote_plus(username), host, port, authdb)
         else:
-            log_uri = uri = "mongodb://%s:%s" % (host, port)
-
-    LOG.info("Test connection with uri: %s", log_uri)
+            uri = "mongodb://%s:%s" % (host, port)
 
     client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
     try:
