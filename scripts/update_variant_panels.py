@@ -6,7 +6,6 @@ import click
 import coloredlogs
 import pymongo
 import yaml
-from pymongo.errors import ConnectionFailure
 
 # General, logging
 from scout import __version__
