@@ -31,7 +31,7 @@ LOG = logging.getLogger(__name__)
 @click.pass_context
 def loglevel(ctx):
     """Set app cli log level"""
-    log_level = ctx.find_root().params["loglevel"]
+    log_level = ctx.find_root().params.get("loglevel")
     log_format = None
     coloredlogs.install(level=log_level, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
@@ -41,6 +41,7 @@ def loglevel(ctx):
 @click.pass_context
 def get_app(ctx=None):
     """Create an app with the correct config or with default app params"""
+    loglevel()
     # store provided params into a options variable
     options = ctx.find_root()
     cli_config = {}
@@ -67,6 +68,7 @@ def get_app(ctx=None):
                 MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
                 MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
                 MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
+                MONGO_URI=options.params.get("uri") or cli_config.get("mongo_uri"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,
@@ -99,6 +101,7 @@ def get_app(ctx=None):
     show_default=True,
 )
 @click.option("--demo", is_flag=True, help="If the demo database should be used")
+@click.option("-uri", "--mongo_uri", help="MongoDB connection uri")
 @click.option("-db", "--mongodb", help="Name of mongo database [scout]")
 @click.option("-u", "--username")
 @click.option("-p", "--password")
@@ -109,7 +112,6 @@ def get_app(ctx=None):
 @with_appcontext
 def cli(**_):
     """scout: manage interactions with a scout instance."""
-    loglevel()
 
 
 cli.add_command(load_command)
