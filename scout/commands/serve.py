@@ -19,6 +19,10 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def serve(host, port, debug, livereload, test):
     """Start the web server."""
+    if test:
+        if current_app.config.get("MONGO_DATABASE"):
+            return "Connection could be established"
+
     if livereload:
         server = Server(current_app.wsgi_app)
         server.serve(host=host, port=port, debug=debug)
