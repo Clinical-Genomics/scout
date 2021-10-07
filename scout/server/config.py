@@ -2,6 +2,7 @@
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"
 
+# MONGO_URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=rs0&readPreference=primary&ssl=false"
 MONGO_DBNAME = "scout-demo"
 
 BOOTSTRAP_SERVE_LOCAL = True
