@@ -5,17 +5,16 @@ Establish a connection to the database
 
 """
 import logging
+import sys
 
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
+from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
 
 try:
-    # Python 3.x
     from urllib.parse import quote_plus
 except ImportError:
     # Python 2.x
     from urllib import quote_plus
-
 
 LOG = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ def get_connection(
     authdb=None,
     timeout=20,
     *args,
-    **kwargs
+    **kwargs,
 ):
     """Get a client to the mongo database
 
@@ -44,21 +43,21 @@ def get_connection(
 
     """
     authdb = authdb or mongodb
+
     if uri is None:
         if username and password:
             uri = "mongodb://{}:{}@{}:{}/{}".format(
                 quote_plus(username), quote_plus(password), host, port, authdb
             )
-            log_uri = "mongodb://{}:****@{}:{}/{}".format(quote_plus(username), host, port, authdb)
         else:
-            log_uri = uri = "mongodb://%s:%s" % (host, port)
+            uri = "mongodb://%s:%s" % (host, port)
 
-    LOG.info("Try to connect to %s" % log_uri)
+    client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
+
     try:
-        client = MongoClient(uri, serverSelectionTimeoutMS=timeout)
-    except ServerSelectionTimeoutError as err:
-        LOG.warning("Connection Refused")
-        raise ConnectionFailure
+        client.server_info()
+    except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
+        LOG.error(f"Database connection error:{err}")
+        sys.exit()
 
-    LOG.info("Connection established")
     return client
