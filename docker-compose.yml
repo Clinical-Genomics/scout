@@ -12,7 +12,7 @@ services:
     ports:
       - '27013:27013'
     expose:
-      - '27013'
+      - '27017'
 
   scout-cli:
     build: .
