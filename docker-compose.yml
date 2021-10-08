@@ -22,7 +22,6 @@ services:
       && scout --host mongodb --demo load case scout/demo/cancer.load_config.yaml"
     volumes:
       - ./scout:/home/worker/app/scout
-      - ./volumes/scout/data:/home/worker/data
     networks:
       - scout-net
     depends_on:
@@ -38,7 +37,6 @@ services:
     command: scout --host mongodb --demo serve --host 0.0.0.0
     volumes:
       - ./scout:/home/worker/app/scout
-      - ./volumes/scout/data:/home/worker/data
     networks:
       - scout-net
     depends_on:
