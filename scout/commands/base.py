@@ -1,12 +1,10 @@
 """Code for CLI base"""
 import logging
 import pathlib
-import sys
 
 import click
 import coloredlogs
 import yaml
-from flask import Flask
 from flask.cli import FlaskGroup, with_appcontext
 
 # General, logging
