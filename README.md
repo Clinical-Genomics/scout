@@ -34,7 +34,7 @@ A simple demo instance of Scout requires the installation of Docker and can be l
 The repository includes a Makefile with common shortcuts to simplify setting up and working with Scout. To see a full list and description of these shortcuts run: `make help`.
 
 This demo is consisting of 3 containers:
-- a lightweight mongodb instance
+- a MongoDB instance, on the default port 27017 in the container, mapped to host port 27013
 - scout-cli --> the Scout command line, connected to the database. Populates the database with demo data
 - scout-web --> the Scout web app, that serves the app on localhost, port 5000.
 
