@@ -88,7 +88,7 @@ class MongoAdapter(
     def init_app(self, app):
         """Setup via Flask."""
         dbname = app.config["MONGO_DBNAME"]
-        LOG.info(f"connecting to database: {dbname}")
+        LOG.info(f"Database name: {dbname}")
         self.setup(app.config["MONGO_DATABASE"])
 
     def setup(self, database):
