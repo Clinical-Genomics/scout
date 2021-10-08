@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+import sys
 
 import click
 from flask.cli import current_app, with_appcontext
 from livereload import Server
+from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
 from werkzeug.serving import run_simple
 
 LOG = logging.getLogger(__name__)
@@ -19,10 +21,16 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def serve(host, port, debug, livereload, test):
     """Start the web server."""
-    if test:
-        if current_app.config.get("MONGO_DATABASE"):
+
+    # Verify the database connectivity before launching the app
+    mongo_client = current_app.config.get("MONGO_DATABASE")._Database__client
+    try:
+        mongo_client.server_info()
+        if test:
             LOG.info("Connection could be established")
             return
+    except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
+        sys.exit("No database connection available")
 
     if livereload:
         server = Server(current_app.wsgi_app)
