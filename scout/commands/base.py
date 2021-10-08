@@ -69,8 +69,8 @@ def get_app(ctx=None):
                 or cli_config.get("demo")
                 or cli_config.get("mongodb")
                 or "scout",
-                MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",
-                MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
+                MONGO_HOST=options.params.get("host") or cli_config.get("host"),
+                MONGO_PORT=options.params.get("port") or cli_config.get("port"),
                 MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
                 MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
                 MONGO_URI=options.params.get("mongo-uri") or cli_config.get("mongo_uri"),
@@ -96,7 +96,7 @@ def get_app(ctx=None):
     "-c",
     "--config",
     type=click.Path(exists=True),
-    help="Specify the path to a config file with database info.",
+    help="Path to a YAML config file with database info.",
 )
 @click.option(
     "--loglevel",
@@ -113,7 +113,12 @@ def get_app(ctx=None):
 @click.option("-a", "--authdb", help="database to use for authentication")
 @click.option("-port", "--port", help="Specify on what port to listen for the mongod")
 @click.option("-h", "--host", help="Specify the host for the mongo database.")
-@click.option("-f", "--flask-config", type=click.Path(exists=True), help="Path to flask config.")
+@click.option(
+    "-f",
+    "--flask-config",
+    type=click.Path(exists=True),
+    help="Path to a PYTHON config file",
+)
 @with_appcontext
 def cli(**_):
     """scout: manage interactions with a scout instance."""

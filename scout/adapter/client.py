@@ -56,6 +56,6 @@ def get_connection(
         server_info = client.server_info()
         LOG.info(f"Connected to MongoDB {server_info.get('version')}")
     except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
-        LOG.error(f"Database connection error:{err}")
+        LOG.warning(f"Database connection error:{err}")
 
     return client
