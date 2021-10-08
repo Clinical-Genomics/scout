@@ -53,7 +53,7 @@ from .transcript import TranscriptHandler
 from .user import UserHandler
 from .variant import VariantHandler
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 
 class MongoAdapter(
@@ -87,10 +87,8 @@ class MongoAdapter(
 
     def init_app(self, app):
         """Setup via Flask."""
-        host = app.config.get("MONGO_HOST", "localhost")
-        port = app.config.get("MONGO_PORT", 27017)
         dbname = app.config["MONGO_DBNAME"]
-        log.info("connecting to database: %s:%s/%s", host, port, dbname)
+        LOG.debug(f"Database name: {dbname}")
         self.setup(app.config["MONGO_DATABASE"])
 
     def setup(self, database):
