@@ -10,7 +10,7 @@ services:
     networks:
       - scout-net
     ports:
-      - '27013:27013'
+      - '27013:27017'
     expose:
       - '27017'
 
