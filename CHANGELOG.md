@@ -9,7 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A .cff citation file
 - Phenotype search API endpoint
 - Added pagination to phenotype API
-- Support for connecting to a MongoDB replica set
+- Support for connecting to a MongoDB replica set (.py config files)
+- Support for connecting to a MongoDB replica set (.yaml config files)
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
 ### Fixed
@@ -24,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enabled Flask CORS to communicate CORS status to js apps
 - Moved the code preparing the transcripts overview to the backend
 - Refactored and filtered json data used in general case report
+- Changed the database used in docker-compose file to use the official MongoDB v4.4 image
 
 ## [4.39]
 ### Added
@@ -267,7 +269,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display only number of affected genes for dismissed SVs in general report
 - Chromosome build check when populating the variants filter chromosome selection
 - Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
-
 
 ## [4.31.1]
 ### Added
