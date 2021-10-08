@@ -1,10 +1,12 @@
 """Code for CLI base"""
 import logging
 import pathlib
+import sys
 
 import click
 import coloredlogs
 import yaml
+from flask import Flask
 from flask.cli import FlaskGroup, with_appcontext
 
 # General, logging
@@ -41,7 +43,9 @@ def loglevel(ctx):
 @click.pass_context
 def get_app(ctx=None):
     """Create an app with the correct config or with default app params"""
-    loglevel()
+
+    loglevel()  # Set up log level even before creating the app object
+
     # store provided params into a options variable
     options = ctx.find_root()
     cli_config = {}
@@ -68,7 +72,6 @@ def get_app(ctx=None):
                 MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
                 MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
                 MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
-                MONGO_URI=options.params.get("uri") or cli_config.get("mongo_uri"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,
@@ -101,7 +104,6 @@ def get_app(ctx=None):
     show_default=True,
 )
 @click.option("--demo", is_flag=True, help="If the demo database should be used")
-@click.option("-uri", "--mongo_uri", help="MongoDB connection uri")
 @click.option("-db", "--mongodb", help="Name of mongo database [scout]")
 @click.option("-u", "--username")
 @click.option("-p", "--password")
