@@ -9,7 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A .cff citation file
 - Phenotype search API endpoint
 - Added pagination to phenotype API
-- Support for connecting to a MongoDB replica set
+- Support for connecting to a MongoDB replica set (.py config files)
+- Support for connecting to a MongoDB replica set (.yaml config files)
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 - Unify style of pinned and causative variants' badges on case page
@@ -22,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enabled Flask CORS to communicate CORS status to js apps
 - Moved the code preparing the transcripts overview to the backend
 - Refactored and filtered json data used in general case report
+- Changed the database used in docker-compose file to use the official MongoDB v4.4 image
 - Moved variant evaluation terms ("dismissal_term", "manual_rank", "cancer_tier", "mosaicism_options") from constants file to database
 - Replace default variant evaluation terms with custom terms included in a json file
 
@@ -267,7 +269,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display only number of affected genes for dismissed SVs in general report
 - Chromosome build check when populating the variants filter chromosome selection
 - Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
-
 
 ## [4.31.1]
 ### Added
