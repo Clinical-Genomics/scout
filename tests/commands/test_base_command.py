@@ -32,4 +32,4 @@ def test_base_cmd():
     # test the cli with --demo option
     result = runner.invoke(cli, ["--demo"])
     assert result.exit_code == 0
-    assert "connecting to database:" in result.output and "scout-demo" in result.output
+    assert "Database name: scout-demo" in result.output
