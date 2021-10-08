@@ -73,7 +73,7 @@ def get_app(ctx=None):
                 MONGO_PORT=options.params.get("port") or cli_config.get("port"),
                 MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
                 MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
-                MONGO_URI=options.params.get("mongo-uri") or cli_config.get("mongo_uri"),
+                MONGO_URI=options.params.get("mongo_uri") or cli_config.get("mongo_uri"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,
