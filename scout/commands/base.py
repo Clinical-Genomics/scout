@@ -51,6 +51,7 @@ def get_app(ctx=None):
     cli_config = {}
     # if a .yaml config file was provided use its params to intiate the app
     if options.params.get("config"):
+
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
@@ -64,14 +65,15 @@ def get_app(ctx=None):
     try:
         app = create_app(
             config=dict(
-                MONGO_DBNAME=cli_config.get("demo")
-                or options.params.get("mongodb")
+                MONGO_DBNAME=options.params.get("mongodb")
+                or cli_config.get("demo")
                 or cli_config.get("mongodb")
                 or "scout",
                 MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",
                 MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
                 MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
                 MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
+                MONGO_URI=options.params.get("mongo-uri") or cli_config.get("mongo_uri"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,
@@ -105,6 +107,7 @@ def get_app(ctx=None):
 )
 @click.option("--demo", is_flag=True, help="If the demo database should be used")
 @click.option("-db", "--mongodb", help="Name of mongo database [scout]")
+@click.option("-uri", "--mongo-uri", help="MongoDB connection string")
 @click.option("-u", "--username")
 @click.option("-p", "--password")
 @click.option("-a", "--authdb", help="database to use for authentication")
