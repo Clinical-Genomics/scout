@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved the code preparing the transcripts overview to the backend
 - Refactored and filtered json data used in general case report
 - Changed the database used in docker-compose file to use the official MongoDB v4.4 image
+- Modified the Python (3.6, 3.8) and MongoDB (3.2, 4.4, 5.0) versions used in testing matrices (github actions)
 
 ## [4.39]
 ### Added
