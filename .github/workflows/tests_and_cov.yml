@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        mongodb-version: ["4.4"]
+        mongodb-version: [4.4]
 
     steps:
 
