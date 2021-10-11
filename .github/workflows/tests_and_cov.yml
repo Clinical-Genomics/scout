@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        mongodb-version: [4.4]
+        mongodb-version: ['4.4']
 
     steps:
 
@@ -24,9 +24,9 @@ jobs:
 
     # Set up mongodb
     - name: Start MongoDB
-      uses: wbari/start-mongoDB@v0.2
+      uses: supercharge/mongodb-github-action@1.6.0
       with:
-        mongoDBVersion: ${{ matrix.mongodb-version}}
+        mongodb-version: ${{ matrix.mongodb-version}}
 
     - name: Production Dependencies
       run: |
