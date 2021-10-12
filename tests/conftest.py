@@ -769,13 +769,6 @@ def real_gene_database(
         hpo_lines=hpo_genes_handle,
         build="37",
     )
-
-    LOG.info("Creating index on hgnc collection")
-    adapter.hgnc_collection.create_index(
-        [("build", pymongo.ASCENDING), ("hgnc_symbol", pymongo.ASCENDING)]
-    )
-    LOG.info("Index done")
-
     return adapter
 
 
