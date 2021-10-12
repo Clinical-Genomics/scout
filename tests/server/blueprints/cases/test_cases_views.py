@@ -915,7 +915,7 @@ def test_beacon_remove(
     def mock_response(*args, **kwargs):
         return mocked_beacon
 
-    monkeypatch.setattr(requests, "post", mock_response)
+    monkeypatch.setattr(requests, "delete", mock_response)
 
     # GIVEN a case with variants saved to Beacon
     store.case_collection.find_one_and_update(
