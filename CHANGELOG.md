@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+### Fixed
+### Changed
+
+## [4.40]
+### Added
 - A .cff citation file
 - Phenotype search API endpoint
 - Added pagination to phenotype API
