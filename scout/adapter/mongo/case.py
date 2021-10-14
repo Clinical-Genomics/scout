@@ -162,6 +162,7 @@ class CaseHandler(object):
             query["$or"] = [
                 {"display_name": {"$regex": query_term}},
                 {"individuals.display_name": {"$regex": query_term}},
+                {"_id": {"$regex": query_term}},
             ]
 
         if query_field == "exact_pheno":
