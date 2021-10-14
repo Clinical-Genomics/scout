@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A .cff citation file
 - Phenotype search API endpoint
 - Added pagination to phenotype API
+- Extend case search to include internal MongoDB id
 - Support for connecting to a MongoDB replica set (.py config files)
 - Support for connecting to a MongoDB replica set (.yaml config files)
 ### Fixed
