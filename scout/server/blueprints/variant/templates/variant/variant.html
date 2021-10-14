@@ -248,7 +248,7 @@
           </tr>
         </tbody>
       </table>
-      <div style="overflow-y: scroll;">
+      <div style="overflow-y: scroll; max-height: 120px; !important"> 
       {{ clinsig_table(variant) }}
       </div>
       {% if variant.mitomap_associated_diseases %}
@@ -400,8 +400,6 @@
     set_scrolly_table('transcript_overview_table', 350)
     set_scrolly_table('proteins_panel_table', 350)
     set_scrolly_table('transcripts_panel_table', 350)
-
-    set_scrolly_table('clinsig_table', 100)
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
