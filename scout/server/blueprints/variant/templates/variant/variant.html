@@ -105,16 +105,19 @@
         <div class="row"><div class="col-12">{{ transcripts_overview(variant) }}</div></div>
           <div class="row">
             <div class="col-4">
-              {{ mappability(variant) }}
+
               {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
               {% if has_pedigree %}
                 {{ pedigree_panel(case) }}
               {% endif %}
-              {% if variant.azlength %}
-                    {{ autozygosity_panel(variant) }}
-              {% endif %}
               {{ conservations(variant) }}</div>
-            <div class="col-8">{{ gtcall_panel(variant) }}</div>
+            <div class="col-8">
+              {{ gtcall_panel(variant) }}
+              {{ mappability(variant) }}
+              {% if variant.azlength %}
+                {{ autozygosity_panel(variant) }}
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
