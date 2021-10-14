@@ -377,10 +377,10 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
   <script>
-    function set_scrolly_table(table_id) {
+    function set_scrolly_table(table_id, pixels) {
     if (document.getElementById(table_id).rows.length > 5) {
       $('#' + table_id).DataTable({
-        scrollY: 350,
+        scrollY: pixels,
         stripeClasses: [],
         scrollCollapse: true,
         paging: false,
@@ -395,11 +395,11 @@
       .columns.adjust()
     });
 
-    set_scrolly_table('transcript_overview_table')
-    set_scrolly_table('proteins_panel_table')
-    set_scrolly_table('transcripts_panel_table')
+    set_scrolly_table('transcript_overview_table', 350)
+    set_scrolly_table('proteins_panel_table', 350)
+    set_scrolly_table('transcripts_panel_table', 350)
 
-    set_scrolly_table('clinsig_table')
+    set_scrolly_table('clinsig_table', 100)
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
