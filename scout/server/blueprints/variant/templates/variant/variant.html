@@ -248,7 +248,9 @@
           </tr>
         </tbody>
       </table>
+      <div style="overflow-y: scroll;">
       {{ clinsig_table(variant) }}
+      </div>
       {% if variant.mitomap_associated_diseases %}
         <table class="table table-bordered table-fixed table-sm">
           <tbody>
@@ -381,10 +383,9 @@
     if (document.getElementById(table_id).rows.length > 5) {
       $('#' + table_id).DataTable({
         scrollY: pixels,
-        overflow-y: scroll,
         stripeClasses: [],
         scrollCollapse: true,
-        paging: false,
+        paging: true,
         searching: false,
         ordering: true,
         info: false})
