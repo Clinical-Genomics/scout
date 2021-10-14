@@ -248,9 +248,7 @@
           </tr>
         </tbody>
       </table>
-      <div style="overflow-y: scroll; max-height: 140px; !important">
       {{ clinsig_table(variant) }}
-      </div>
       {% if variant.mitomap_associated_diseases %}
         <table class="table table-bordered table-fixed table-sm">
           <tbody>
@@ -379,10 +377,10 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
   <script>
-    function set_scrolly_table(table_id, pixels) {
+    function set_scrolly_table(table_id) {
     if (document.getElementById(table_id).rows.length > 5) {
       $('#' + table_id).DataTable({
-        scrollY: pixels,
+        scrollY: 350,
         stripeClasses: [],
         scrollCollapse: true,
         paging: false,
@@ -397,9 +395,9 @@
       .columns.adjust()
     });
 
-    set_scrolly_table('transcript_overview_table', 350)
-    set_scrolly_table('proteins_panel_table', 350)
-    set_scrolly_table('transcripts_panel_table', 350)
+    set_scrolly_table('transcript_overview_table')
+    set_scrolly_table('proteins_panel_table')
+    set_scrolly_table('transcripts_panel_table')
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
