@@ -50,12 +50,14 @@ def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
     CORS(app)
-
-    app.config.from_pyfile("config.py")
     app.jinja_env.add_extension("jinja2.ext.do")
-    if config:
-        app.config.update(config)
-    if config_file:
+
+    app.config.from_pyfile("config.py")  # Load default config file
+    if (
+        config
+    ):  # Params from an optional .yaml config file provided by the user or created by the app cli
+        app.config.update((k, v) for k, v in config.items() if v is not None)
+    if config_file:  # Params from an optional .py config file provided by the user
         app.config.from_pyfile(config_file)
 
     app.config["JSON_SORT_KEYS"] = False
@@ -91,6 +93,7 @@ def create_app(config_file=None, config=None):
 
 def configure_extensions(app):
     """Configure Flask extensions."""
+
     extensions.toolbar.init_app(app)
     extensions.bootstrap.init_app(app)
     extensions.mongo.init_app(app)

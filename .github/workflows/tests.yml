@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
-        mongodb-version: ["3.6"]
+        python-version: [3.6]
+        mongodb-version: ["3.2", "5.0"]
 
     steps:
 

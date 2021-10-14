@@ -2,7 +2,7 @@
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"
 
-# MONGO_URI = "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=rs0&readPreference=primary&ssl=false"
+# MONGO_URI = "mongodb://127.0.0.1:27011,127.0.0.1:27012,127.0.0.1:27013/?replicaSet=rs0&readPreference=primary"
 MONGO_DBNAME = "scout"
 
 BOOTSTRAP_SERVE_LOCAL = True
@@ -35,6 +35,11 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
 # MME_URL = "http://localhost:9020"
 # MME_TOKEN = "matchmaker_token"
+
+# Beacon connection settings
+# - Tested with cgbeacon2 (https://github.com/Clinical-Genomics/cgbeacon2) -
+# BEACON_URL = "http://localhost:6000/apiv1.0"
+# BEACON_TOKEN = "DEMO"
 
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API

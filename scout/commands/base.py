@@ -31,7 +31,7 @@ LOG = logging.getLogger(__name__)
 @click.pass_context
 def loglevel(ctx):
     """Set app cli log level"""
-    log_level = ctx.find_root().params["loglevel"]
+    log_level = ctx.find_root().params.get("loglevel")
     log_format = None
     coloredlogs.install(level=log_level, fmt=log_format)
     LOG.info("Running scout version %s", __version__)
@@ -41,11 +41,15 @@ def loglevel(ctx):
 @click.pass_context
 def get_app(ctx=None):
     """Create an app with the correct config or with default app params"""
+
+    loglevel()  # Set up log level even before creating the app object
+
     # store provided params into a options variable
     options = ctx.find_root()
     cli_config = {}
     # if a .yaml config file was provided use its params to intiate the app
     if options.params.get("config"):
+
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
@@ -59,14 +63,15 @@ def get_app(ctx=None):
     try:
         app = create_app(
             config=dict(
-                MONGO_DBNAME=cli_config.get("demo")
-                or options.params.get("mongodb")
+                MONGO_DBNAME=options.params.get("mongodb")
+                or cli_config.get("demo")
                 or cli_config.get("mongodb")
                 or "scout",
-                MONGO_HOST=options.params.get("host") or cli_config.get("host") or "localhost",
-                MONGO_PORT=options.params.get("port") or cli_config.get("port") or 27017,
+                MONGO_HOST=options.params.get("host") or cli_config.get("host"),
+                MONGO_PORT=options.params.get("port") or cli_config.get("port"),
                 MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
                 MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
+                MONGO_URI=options.params.get("mongo_uri") or cli_config.get("mongo_uri"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,
@@ -89,7 +94,7 @@ def get_app(ctx=None):
     "-c",
     "--config",
     type=click.Path(exists=True),
-    help="Specify the path to a config file with database info.",
+    help="Path to a YAML config file with database info.",
 )
 @click.option(
     "--loglevel",
@@ -100,16 +105,21 @@ def get_app(ctx=None):
 )
 @click.option("--demo", is_flag=True, help="If the demo database should be used")
 @click.option("-db", "--mongodb", help="Name of mongo database [scout]")
+@click.option("-uri", "--mongo-uri", help="MongoDB connection string")
 @click.option("-u", "--username")
 @click.option("-p", "--password")
 @click.option("-a", "--authdb", help="database to use for authentication")
 @click.option("-port", "--port", help="Specify on what port to listen for the mongod")
 @click.option("-h", "--host", help="Specify the host for the mongo database.")
-@click.option("-f", "--flask-config", type=click.Path(exists=True), help="Path to flask config.")
+@click.option(
+    "-f",
+    "--flask-config",
+    type=click.Path(exists=True),
+    help="Path to a PYTHON config file",
+)
 @with_appcontext
 def cli(**_):
     """scout: manage interactions with a scout instance."""
-    loglevel()
 
 
 cli.add_command(load_command)
