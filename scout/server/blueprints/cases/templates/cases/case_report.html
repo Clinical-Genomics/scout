@@ -705,27 +705,29 @@
           </tr>
         </thead>
         <tbody>
-          {% for gene in variant.genes %}
-            <tr>
-              <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </td>
-              <td>{{gene.description|title}}</td>
-              <td>{{gene.region_annotation}}</td>
-              <td>
-                {{ variant_transcripts(gene) }}
-              </td>
-              <td>
-                <ul>
-                {% for disease_term in gene.disease_terms %}
-                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
-                {% endfor %}
-              </ul>
-              </td>
-            </tr>
-          {% endfor %}
+          {% if variant.genes %}
+            {% for gene in variant.genes %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                </td>
+                <td>{{gene.description|title}}</td>
+                <td>{{gene.region_annotation}}</td>
+                <td>
+                  {{ variant_transcripts(gene) }}
+                </td>
+                <td>
+                  <ul>
+                  {% for disease_term in gene.disease_terms %}
+                    <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                  {% endfor %}
+                </ul>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endif %}
         </tbody>
       </table>
       {% if variant.comments | count_cursor > 0  %}
@@ -1131,26 +1133,28 @@
         </tr>
       </thead>
       <tbody>
-        {% for gene in variant.genes %}
-          <tr>
-            <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-              </a>
-            </td>
-            <td>{{gene.description|title}}</td>
-            <td>{{gene.region_annotation}}</td>
-            <td>
-              {{ variant_transcripts(gene) }}
-            </td>
-            <td>
-              <ul>
-              {% for disease_term in gene.disease_terms %}
-                <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
-              {% endfor %}
-              </ul>
-            </td>
-          </tr>
+        {% if variant.genes%}
+          {% for gene in variant.genes %}
+            <tr>
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </td>
+              <td>{{gene.description|title}}</td>
+              <td>{{gene.region_annotation}}</td>
+              <td>
+                {{ variant_transcripts(gene) }}
+              </td>
+              <td>
+                <ul>
+                {% for disease_term in gene.disease_terms %}
+                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                {% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
         {% endfor %}
       </tbody>
     </table>
