@@ -762,10 +762,10 @@
     {% else %}
       {% for gene in variant.genes %}
        <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}&nbsp;<span class="badge badge-secondary">{{gene.region_annotation}}</span></a><br>
-      {% else %} <!-- 0 genes. strs for instance -->
-        <span class="badge badge-secondary">-</span>
       {% endfor %}
     {% endif %}
+  {% else %} <!-- 0 genes. strs for instance -->
+    <span class="badge badge-secondary">-</span>
   {% endif %}
 {% endmacro %}
 
