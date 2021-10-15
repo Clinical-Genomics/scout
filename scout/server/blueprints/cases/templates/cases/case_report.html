@@ -1224,7 +1224,7 @@
             <td>-</td>
           {% endif %}
           <td>
-            {% if variant.panels%}
+            {% if variant.panels %}
               {% for panel_id in variant.panels %}
                 <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
               {% endfor %}
