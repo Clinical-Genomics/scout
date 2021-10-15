@@ -35,6 +35,7 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "category",
     "dismiss_variant",
     "variant_rank",
+    "str_repid"
 ]
 
 CONSEQUENCE = (
