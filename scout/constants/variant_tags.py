@@ -38,7 +38,7 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "str_repid",
     "str_display_ru",
     "str_ru",
-    "str_status"
+    "str_status",
 ]
 
 CONSEQUENCE = (
