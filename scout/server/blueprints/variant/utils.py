@@ -242,7 +242,7 @@ def predictions(genes):
         "spliceai_positions": [],
         "spliceai_predictions": [],
     }
-    for gene_obj in genes:
+    for gene_obj in genes or []:
         for pred_key in data:
             gene_key = pred_key[:-1]
             if len(genes) == 1:

@@ -53,6 +53,9 @@ def tx_overview(variant_obj):
         variant_obj(dict)
     """
     overview_txs = []  # transcripts to be shown in transcripts overview
+    if variant_obj.get("genes") is None:
+        variant_obj["overview_transcripts"] = []
+        return
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
             ovw_tx = {}
