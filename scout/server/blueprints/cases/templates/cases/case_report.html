@@ -875,11 +875,14 @@
                         </table>
                       {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
                       <br>
-                        ({% for model in variant.genetic_models|sort %}
-                          <span class="badge badge-info" title="{{genetic_models[model]}}">{{model}}</span>
+
+                        ({% if variant.genetic_models %}
+                          {% for model in variant.genetic_models|sort %}
+                            <span class="badge badge-info" title="{{genetic_models[model]}}">{{model}}</span>
+                          {% endfor %}
                         {% else %}
                           No models followed
-                        {% endfor %})
+                        {% endif %})
                         <br>
                       {% elif reason== '23' %} <!-- inherited from unaffected -->
                         <table id="panel-table" class="table-borderless table-sm" >
@@ -1096,11 +1099,13 @@
           </td>
           <td>
             <span class="float-left">
-              {% for model in variant.genetic_models|sort %}
-                <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+              {% if variant.genetic_models %}
+                {% for model in variant.genetic_models|sort %}
+                  <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                {% endfor %}
               {% else %}
                 <span class="badge badge-warning">No models followed</span>
-              {% endfor %}
+              {% endif %}
             </span>
           </td>
           <td>
