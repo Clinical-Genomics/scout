@@ -233,7 +233,7 @@ def variant(
 
     # add default panels extra gene information
     panels = default_panels(store, case_obj)
-    variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
+    add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
 
     # Add information about bam files and create a region vcf
     if add_case:
