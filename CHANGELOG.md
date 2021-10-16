@@ -7,6 +7,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+### Changed
+
+## [4.40.1]
+### Added
+### Fixed
 - Variants dismissed with inconsistent inheritance pattern can again be shown in general case report
 - General report page for variants with genes=None
 - General report crashing when variants have no panels
