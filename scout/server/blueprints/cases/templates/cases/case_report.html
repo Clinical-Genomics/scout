@@ -91,7 +91,7 @@
 	          <table class="table table-sm">
 	            <tr>
 	              <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
-	              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d')}}</strong></td>
+	              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d') if case.updated_at else "n.a." }}</strong></td>
 	            </tr>
 	          </table>
 	          <br>
@@ -705,27 +705,29 @@
           </tr>
         </thead>
         <tbody>
-          {% for gene in variant.genes %}
-            <tr>
-              <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </td>
-              <td>{{gene.description|title}}</td>
-              <td>{{gene.region_annotation}}</td>
-              <td>
-                {{ variant_transcripts(gene) }}
-              </td>
-              <td>
-                <ul>
-                {% for disease_term in gene.disease_terms %}
-                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
-                {% endfor %}
-              </ul>
-              </td>
-            </tr>
-          {% endfor %}
+          {% if variant.genes %}
+            {% for gene in variant.genes %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                </td>
+                <td>{{gene.description|title}}</td>
+                <td>{{gene.region_annotation}}</td>
+                <td>
+                  {{ variant_transcripts(gene) }}
+                </td>
+                <td>
+                  <ul>
+                  {% for disease_term in gene.disease_terms %}
+                    <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                  {% endfor %}
+                </ul>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endif %}
         </tbody>
       </table>
       {% if variant.comments | count_cursor > 0  %}
@@ -792,6 +794,8 @@
               <td width="25%">
                 {% if variant.category == 'snv' %}
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>
+                {% elif variant.category == 'cancer' %}
+                  <a href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>
                 {% elif variant.category == 'sv' %}
                   <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
                 {% else %} <!--strs -->
@@ -982,9 +986,11 @@
             <td>-</td>
           {% endif %}
           <td>
-            {% for panel_id in variant.panels %}
-              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
-            {% endfor %}
+            {% if variant.panels %}
+              {% for panel_id in variant.panels %}
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+              {% endfor %}
+            {% endif %}
           </td>
           <td>
             {% if variant.callers %}
@@ -1129,27 +1135,29 @@
         </tr>
       </thead>
       <tbody>
-        {% for gene in variant.genes %}
-          <tr>
-            <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-              </a>
-            </td>
-            <td>{{gene.description|title}}</td>
-            <td>{{gene.region_annotation}}</td>
-            <td>
-              {{ variant_transcripts(gene) }}
-            </td>
-            <td>
-              <ul>
-              {% for disease_term in gene.disease_terms %}
-                <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
-              {% endfor %}
-              </ul>
-            </td>
-          </tr>
-        {% endfor %}
+        {% if variant.genes %}
+          {% for gene in variant.genes %}
+            <tr>
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </td>
+              <td>{{gene.description|title}}</td>
+              <td>{{gene.region_annotation}}</td>
+              <td>
+                {{ variant_transcripts(gene) }}
+              </td>
+              <td>
+                <ul>
+                {% for disease_term in gene.disease_terms %}
+                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                {% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        {% endif %}
       </tbody>
     </table>
 
@@ -1224,9 +1232,11 @@
             <td>-</td>
           {% endif %}
           <td>
-            {% for panel_id in variant.panels %}
-              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
-            {% endfor %}
+            {% if variant.panels %}
+              {% for panel_id in variant.panels %}
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+              {% endfor %}
+            {% endif %}
           </td>
         </tr>
       </tbody>
