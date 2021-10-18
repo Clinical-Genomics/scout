@@ -8,7 +8,8 @@ import logging
 
 from click import Abort
 
-from scout.parse.panel import get_panel_info, parse_gene_panel, parse_panel_app_panel
+from scout.parse.panel import (get_panel_info, parse_gene_panel,
+                               parse_panel_app_panel)
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_resource
 
@@ -137,7 +138,9 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
         parsed_panel["panel_id"] = _panel_id
 
         if len(parsed_panel["genes"]) == 0:
-            LOG.warning("Panel %s is missing genes. Skipping.", parsed_panel["display_name"])
+            LOG.warning(
+                "Panel %s is missing genes. Skipping.", parsed_panel["display_name"]
+            )
             continue
 
         try:

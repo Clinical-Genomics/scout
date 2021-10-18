@@ -6,12 +6,13 @@ from bson import ObjectId
 
 from scout.constants import CASE_STATUSES, REV_ACMG_MAP
 
+from .case_events import CaseEventHandler
+from .variant_events import VariantEventHandler
+
 COMMENT_LEVELS = ["global", "specific"]
 
 LOG = logging.getLogger(__name__)
 
-from .case_events import CaseEventHandler
-from .variant_events import VariantEventHandler
 
 
 class EventHandler(CaseEventHandler, VariantEventHandler):
@@ -219,7 +220,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         if hpo_term:  # User specified an HPO term
             hpo_results = [hpo_term]
-        elif omim_term:  # User specified an OMIM diagnosys, collect its associated HPO terms
+        elif (
+            omim_term
+        ):  # User specified an OMIM diagnosys, collect its associated HPO terms
             disease_obj = self.disease_term(omim_term)
             if disease_obj:
                 for term in disease_obj.get("hpo_terms", []):
@@ -230,7 +233,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 "Must supply either an HPO term or an OMIM diagnosis with associated HPO terms"
             )
 
-        existing_terms = set(term["phenotype_id"] for term in case.get("phenotype_terms", []))
+        existing_terms = set(
+            term["phenotype_id"] for term in case.get("phenotype_terms", [])
+        )
 
         updated_case = case
         phenotype_terms = []
@@ -299,7 +304,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         LOG.debug("Case updated")
         return updated_case
 
-    def remove_phenotype(self, institute, case, user, link, phenotype_id, is_group=False):
+    def remove_phenotype(
+        self, institute, case, user, link, phenotype_id, is_group=False
+    ):
         """Remove an existing phenotype from a case
 
         Args:
@@ -383,7 +390,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             comment(dict): The comment event that was inserted
         """
         if comment_level not in COMMENT_LEVELS:
-            raise SyntaxError("Comment levels can only be in {}".format(",".join(COMMENT_LEVELS)))
+            raise SyntaxError(
+                "Comment levels can only be in {}".format(",".join(COMMENT_LEVELS))
+            )
 
         if variant:
             LOG.info(
@@ -406,7 +415,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             )
 
         else:
-            LOG.info("Creating event for a comment on case {0}".format(case["display_name"]))
+            LOG.info(
+                "Creating event for a comment on case {0}".format(case["display_name"])
+            )
 
             comment = self.create_event(
                 institute=institute,
@@ -478,7 +489,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         if new_var["_id"] == old_var["_id"]:
             return new_comments
 
-        link = "/{0}/{1}/{2}".format(new_var["institute"], case_obj["display_name"], new_var["_id"])
+        link = "/{0}/{1}/{2}".format(
+            new_var["institute"], case_obj["display_name"], new_var["_id"]
+        )
 
         # collect all comments for the old variant
         comments_query = self.events(

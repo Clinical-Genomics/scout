@@ -16,7 +16,6 @@ from pymongo.errors import BulkWriteError, DuplicateKeyError
 from scout.build import build_variant
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
-
 # Local modules
 from scout.parse.variant.rank_score import parse_rank_score
 from scout.utils.coordinates import is_par
@@ -142,7 +141,9 @@ class VariantHandler(VariantLoader):
 
                 # Since a ensemble transcript can have multiple refseq identifiers we add all of
                 # those
-                transcript["refseq_identifiers"] = hgnc_transcript.get("refseq_identifiers", [])
+                transcript["refseq_identifiers"] = hgnc_transcript.get(
+                    "refseq_identifiers", []
+                )
 
             variant_gene["common"] = hgnc_gene
             # Add the associated disease terms
@@ -203,9 +204,9 @@ class VariantHandler(VariantLoader):
         if sort_key == "position":
             sorting = [("position", pymongo.ASCENDING)]
 
-        result = self.variant_collection.find(mongo_query, skip=skip, limit=nr_of_variants).sort(
-            sorting
-        )
+        result = self.variant_collection.find(
+            mongo_query, skip=skip, limit=nr_of_variants
+        ).sort(sorting)
 
         return result
 
@@ -222,7 +223,9 @@ class VariantHandler(VariantLoader):
              integer
         """
 
-        query = self.build_query(case_id, query=query, variant_ids=variant_ids, category=category)
+        query = self.build_query(
+            case_id, query=query, variant_ids=variant_ids, category=category
+        )
         return self.variant_collection.count_documents(query)
 
     def sanger_variants(self, institute_id=None, case_id=None):
@@ -289,11 +292,15 @@ class VariantHandler(VariantLoader):
                 build=case_obj["genome_build"],
             )
         else:
-            variant_obj = self.add_gene_info(variant_obj=variant_obj, gene_panels=gene_panels)
+            variant_obj = self.add_gene_info(
+                variant_obj=variant_obj, gene_panels=gene_panels
+            )
 
         if variant_obj["chromosome"] in ["X", "Y"]:
             # TO DO add the build here
-            variant_obj["is_par"] = is_par(variant_obj["chromosome"], variant_obj["position"])
+            variant_obj["is_par"] = is_par(
+                variant_obj["chromosome"], variant_obj["position"]
+            )
 
         return variant_obj
 
@@ -505,7 +512,9 @@ class VariantHandler(VariantLoader):
         if len(positional_variant_ids) == 0:
             return []
 
-        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
+        return self.match_affected_gt(
+            case_obj, institute_obj, positional_variant_ids, limit_genes
+        )
 
     def _find_affected(self, case_obj):
         """Internal method to find affected individuals.
@@ -528,7 +537,9 @@ class VariantHandler(VariantLoader):
 
         return affected_ids
 
-    def match_affected_gt(self, case_obj, institute_obj, positional_variant_ids, limit_genes):
+    def match_affected_gt(
+        self, case_obj, institute_obj, positional_variant_ids, limit_genes
+    ):
         """Match positional_variant_ids against variants from affected individuals
         in a case, ensuring that they at least are carriers.
 
@@ -601,7 +612,9 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case.get("causatives", []):
                 positional_variant_ids.add(var_event["variant_id"])
 
-        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
+        return self.match_affected_gt(
+            case_obj, institute_obj, positional_variant_ids, limit_genes
+        )
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
@@ -671,7 +684,9 @@ class VariantHandler(VariantLoader):
         """
         category = category or ""
         LOG.info(
-            "Deleting old {0} {1} variants for case {2}".format(variant_type, category, case_id)
+            "Deleting old {0} {1} variants for case {2}".format(
+                variant_type, category, case_id
+            )
         )
         query = {"case_id": case_id, "variant_type": variant_type}
         if category:
@@ -744,14 +759,18 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
-        case_obj = self.case(case_id=case_id)  # case exists since it's used in the query above
+        case_obj = self.case(
+            case_id=case_id
+        )  # case exists since it's used in the query above
         for var in self.variant_collection.find(query):
             variants[var["variant_id"]] = self.add_gene_info(
                 variant_obj=var, build=case_obj["genome_build"]
             )
 
         # Collect all variant comments from the case
-        event_query = {"$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]}
+        event_query = {
+            "$and": [{"case": case_id}, {"category": "variant"}, {"verb": "comment"}]
+        }
 
         # Get all variantids for commented variants
         comment_variants = {
@@ -829,7 +848,9 @@ class VariantHandler(VariantLoader):
             vcf_obj = VCF(variant_file)
         except Exception:
             raise FileNotFoundError(
-                "Could not access {}. The file is missing or malformed".format(variant_file)
+                "Could not access {}. The file is missing or malformed".format(
+                    variant_file
+                )
             )
 
         region = ""
@@ -857,11 +878,15 @@ class VariantHandler(VariantLoader):
                 for variant in vcf_obj(region):
                     temp.write(str(variant))
             except Exception:
-                raise FileNotFoundError("Could not find index for {}".format(variant_file))
+                raise FileNotFoundError(
+                    "Could not find index for {}".format(variant_file)
+                )
 
         return file_name
 
-    def case_variants_count(self, case_id, institute_id, variant_type=None, force_update_case=True):
+    def case_variants_count(
+        self, case_id, institute_id, variant_type=None, force_update_case=True
+    ):
         """Returns the sum of all variants for a case by type
 
         Args:
@@ -893,7 +918,11 @@ class VariantHandler(VariantLoader):
         variants_stats = case_obj.get("variants_stats") or {}
 
         # if case has stats and no update is needed, return variant count
-        if variant_type and variant_type in variants_stats and force_update_case is False:
+        if (
+            variant_type
+            and variant_type in variants_stats
+            and force_update_case is False
+        ):
             return case_obj["variants_stats"]
 
         # Update case variant stats

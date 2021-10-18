@@ -203,9 +203,7 @@ def ppaint(hgnc_symbol):
 
 
 def vega(vega_id):
-    link = (
-        "http://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=OTTHUMG00000018506{}"
-    )
+    link = "http://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=OTTHUMG00000018506{}"
 
     if not vega_id:
         return None
@@ -254,9 +252,15 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     tx_obj["varsome_link"] = varsome(
         build, tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name")
     )
-    tx_obj["tp53_link"] = mutantp53(tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name"))
-    tx_obj["cbioportal_link"] = cbioportal(hgnc_symbol, tx_obj.get("protein_sequence_name"))
-    tx_obj["mycancergenome_link"] = mycancergenome(hgnc_symbol, tx_obj.get("protein_sequence_name"))
+    tx_obj["tp53_link"] = mutantp53(
+        tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name")
+    )
+    tx_obj["cbioportal_link"] = cbioportal(
+        hgnc_symbol, tx_obj.get("protein_sequence_name")
+    )
+    tx_obj["mycancergenome_link"] = mycancergenome(
+        hgnc_symbol, tx_obj.get("protein_sequence_name")
+    )
 
     return tx_obj
 
@@ -413,10 +417,14 @@ def thousandg_link(variant_obj, build=None):
 
     if build == 37:
         url_template = (
-            "http://grch37.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
+            "http://grch37.ensembl.org/Homo_sapiens/Variation/Explore"
+            "?v={};vdb=variation"
         )
     else:
-        url_template = "http://www.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
+        url_template = (
+            "http://www.ensembl.org/Homo_sapiens/Variation/Explore"
+            "?v={};vdb=variation"
+        )
 
     return url_template.format(dbsnp_id)
 
@@ -425,7 +433,9 @@ def ensembl_link(variant_obj, build=37):
     """Compose (sv) variant link to ensembl"""
 
     my_end = variant_obj["end"]
-    if variant_obj["chromosome"] != variant_obj.get("end_chrom", variant_obj["chromosome"]):
+    if variant_obj["chromosome"] != variant_obj.get(
+        "end_chrom", variant_obj["chromosome"]
+    ):
         my_end = variant_obj["position"]
 
     if build == 37:
@@ -439,7 +449,9 @@ def decipher_link(variant_obj, build=37):
     """Compose DECIPHER SV variant links"""
 
     my_end = variant_obj["end"]
-    if variant_obj["chromosome"] != variant_obj.get("end_chrom", variant_obj["chromosome"]):
+    if variant_obj["chromosome"] != variant_obj.get(
+        "end_chrom", variant_obj["chromosome"]
+    ):
         my_end = variant_obj["position"]
 
     if build == 37:
@@ -598,7 +610,11 @@ def mutantp53(hgnc_id, protein_variant):
     """Compose link to variant in mutantp53"""
     if hgnc_id != 11998:
         return None
-    if not protein_variant or protein_variant.endswith("=") or protein_variant.endswith("%3D"):
+    if (
+        not protein_variant
+        or protein_variant.endswith("=")
+        or protein_variant.endswith("%3D")
+    ):
         return None
 
     url_template = "http://mutantp53.broadinstitute.org/?query={}"

@@ -10,33 +10,24 @@ from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
 from xlsxwriter import Workbook
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CALLERS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    CHROMOSOMES,
-    CHROMOSOMES_38,
-    CLINICAL_FILTER_BASE,
-    CLINICAL_FILTER_BASE_CANCER,
-    CLINICAL_FILTER_BASE_SV,
-    DISMISS_VARIANT_OPTIONS,
-    MANUAL_RANK_OPTIONS,
-    MOSAICISM_OPTIONS,
-    VARIANT_FILTERS,
-)
-from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS,
+                             CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                             CANCER_TIER_OPTIONS, CHROMOSOMES, CHROMOSOMES_38,
+                             CLINICAL_FILTER_BASE, CLINICAL_FILTER_BASE_CANCER,
+                             CLINICAL_FILTER_BASE_SV, DISMISS_VARIANT_OPTIONS,
+                             MANUAL_RANK_OPTIONS, MOSAICISM_OPTIONS,
+                             VARIANT_FILTERS)
+from scout.constants.variants_export import (EXPORT_HEADER,
+                                             VERIFIED_VARIANTS_HEADER)
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.variant.utils import (
-    clinsig_human,
-    predictions,
-    update_representative_gene,
-)
+from scout.server.blueprints.variant.utils import (clinsig_human, predictions,
+                                                   update_representative_gene)
 from scout.server.links import cosmic_links, str_source_link
-from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
+from scout.server.utils import (case_append_alignments, institute_and_case,
+                                user_institutes)
 
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
+from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
+                    SvFiltersForm, VariantFiltersForm)
 
 LOG = logging.getLogger(__name__)
 
@@ -44,11 +35,15 @@ LOG = logging.getLogger(__name__)
 def populate_chrom_choices(form, case_obj):
     """Populate the option of the chromosome select accordig to the case genome build"""
     # Populate chromosome choices
-    chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+    chromosomes = (
+        CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+    )
     form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
 
 
-def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
+def variants(
+    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
+):
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
@@ -86,13 +81,17 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
             variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
 
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
+                case_id=case_obj["_id"],
+                simple_id=variant_obj["simple_id"],
+                variant_type="clinical",
             )
 
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
         if case_obj.get("group"):
-            variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
+            variant_obj["group_assessments"] = _get_group_assessments(
+                store, case_obj, variant_obj
+            )
 
         variants.append(
             parse_variant(
@@ -138,7 +137,9 @@ def _get_group_assessments(store, case_obj, variant_obj):
     return group_assessments
 
 
-def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
+def sv_variants(
+    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
+):
     """Pre-process list of SV variants."""
     skip_count = per_page * max(page - 1, 0)
 
@@ -155,10 +156,14 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
+                case_id=case_obj["_id"],
+                simple_id=variant_obj["simple_id"],
+                variant_type="clinical",
             )
         if clinical_var_obj is not None:
-            variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+            variant_obj["clinical_assessments"] = get_manual_assessments(
+                clinical_var_obj
+            )
 
         variants.append(
             parse_variant(
@@ -243,7 +248,9 @@ def get_manual_assessments(variant_obj):
                     MANUAL_RANK_OPTIONS[manual_rank]["description"]
                 )
                 assessment["label"] = MANUAL_RANK_OPTIONS[manual_rank]["label"]
-                assessment["display_class"] = MANUAL_RANK_OPTIONS[manual_rank]["label_class"]
+                assessment["display_class"] = MANUAL_RANK_OPTIONS[manual_rank][
+                    "label_class"
+                ]
 
             if assessment_type == "cancer_tier":
                 cancer_tier = variant_obj[assessment_type]
@@ -251,7 +258,9 @@ def get_manual_assessments(variant_obj):
                     CANCER_TIER_OPTIONS[cancer_tier]["description"]
                 )
                 assessment["label"] = CANCER_TIER_OPTIONS[cancer_tier]["label"]
-                assessment["display_class"] = CANCER_TIER_OPTIONS[cancer_tier]["label_class"]
+                assessment["display_class"] = CANCER_TIER_OPTIONS[cancer_tier][
+                    "label_class"
+                ]
 
             if assessment_type == "acmg_classification":
                 classification = variant_obj[assessment_type]
@@ -285,7 +294,8 @@ def get_manual_assessments(variant_obj):
                     if not isinstance(reason, int):
                         reason = int(reason)
                     assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        MOSAICISM_OPTIONS[reason]["label"], MOSAICISM_OPTIONS[reason]["description"]
+                        MOSAICISM_OPTIONS[reason]["label"],
+                        MOSAICISM_OPTIONS[reason]["description"],
                     )
                 assessment["display_class"] = "secondary"
 
@@ -309,7 +319,10 @@ def compounds_need_updating(compounds, dismissed):
         if "not_loaded" not in compound:  # This key should be always present
             return True
 
-        if compound["variant"] in dismissed and compound.get("is_dismissed") is not True:
+        if (
+            compound["variant"] in dismissed
+            and compound.get("is_dismissed") is not True
+        ):
             return True
 
         if compound.get("is_dismissed") and compound["variant"] not in dismissed:
@@ -364,7 +377,10 @@ def parse_variant(
             if not gene_obj["hgnc_id"]:
                 continue
             # Else we collect the gene object and check the id
-            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
+            if (
+                gene_obj.get("hgnc_symbol") is None
+                or gene_obj.get("phenotypes") is None
+            ):
                 hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
                 if not hgnc_gene:
                     continue
@@ -385,7 +401,10 @@ def parse_variant(
             )
 
     variant_obj["comments"] = store.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     variant_obj["matching_tiered"] = store.matching_tiered(
@@ -407,7 +426,9 @@ def parse_variant(
 
     # convert length for SV variants
     variant_length = variant_obj.get("length")
-    variant_obj["length"] = {100000000000: "inf", -1: "n.d."}.get(variant_length, variant_length)
+    variant_obj["length"] = {100000000000: "inf", -1: "n.d."}.get(
+        variant_length, variant_length
+    )
     if not "end_chrom" in variant_obj:
         variant_obj["end_chrom"] = variant_obj["chromosome"]
 
@@ -415,7 +436,9 @@ def parse_variant(
     variant_obj["cosmic_links"] = cosmic_links(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    )
 
     update_representative_gene(variant_obj, variant_genes)
 
@@ -466,7 +489,10 @@ def download_str_variants(case_obj, variant_objs):
             variant.get("str_display_ru", variant.get("str_ru", ""))
         )  # Reference repeat unit
         variant_line.append(
-            variant.get("alternative", "").replace("STR", "").replace("<", "").replace(">", "")
+            variant.get("alternative", "")
+            .replace("STR", "")
+            .replace("<", "")
+            .replace(">", "")
         )  # Estimated size
         variant_line.append(str(variant.get("str_ref", "")))  # Reference size
         variant_line.append(str(variant.get("str_status", "")))  # Status
@@ -490,7 +516,9 @@ def download_str_variants(case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(DOCUMENT_HEADER), export_lines), mimetype="text/csv", headers=headers
+        generate(",".join(DOCUMENT_HEADER), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
@@ -523,7 +551,9 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers
+        generate(",".join(document_header), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
@@ -555,7 +585,9 @@ def variant_export_lines(store, case_obj, variants_query):
 
         # if variant is in genes
         if gene_list is not None and len(gene_list) > 0:
-            gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
+            gene_info = variant_export_genes_info(
+                store, gene_list, case_obj.get("genome_build")
+            )
             variant_line += gene_info
         else:
             empty_col = 0
@@ -565,7 +597,9 @@ def variant_export_lines(store, case_obj, variants_query):
                 )  # empty HGNC id, emoty gene name and empty transcripts columns
                 empty_col += 1
 
-        variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
+        variant_gts = variant[
+            "samples"
+        ]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
             for variant_gt in variant_gts:
                 if individual["individual_id"] == variant_gt["sample_id"]:
@@ -645,7 +679,9 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
             continue
         gene_names.append(hgnc_gene.get("hgnc_symbol"))
 
-        gene_canonical_txs, gene_primary_txs = match_gene_txs_variant_txs(gene_obj, hgnc_gene)
+        gene_canonical_txs, gene_primary_txs = match_gene_txs_variant_txs(
+            gene_obj, hgnc_gene
+        )
 
         canonical_txs += gene_canonical_txs
         primary_txs += gene_primary_txs
@@ -669,9 +705,15 @@ def variants_export_header(case_obj):
     # Add fields specific for case samples
     for individual in case_obj["individuals"]:
         display_name = str(individual["display_name"])
-        header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
-        header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
-        header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+        header.append(
+            "AD_reference_" + display_name
+        )  # Add AD reference field for a sample
+        header.append(
+            "AD_alternate_" + display_name
+        )  # Add AD alternate field for a sample
+        header.append(
+            "GT_quality_" + display_name
+        )  # Add Genotype quality field for a sample
     return header
 
 
@@ -699,7 +741,9 @@ def get_variant_info(genes):
     return data
 
 
-def cancer_variants(store, institute_id, case_name, variants_query, variant_count, form, page=1):
+def cancer_variants(
+    store, institute_id, case_name, variants_query, variant_count, form, page=1
+):
     """Fetch data related to cancer variants for a case.
 
     For each variant, if one or more gene panels are selected, assign the gene present
@@ -768,7 +812,8 @@ def get_clinvar_submission(store, institute_id, case_name, variant_id, submissio
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     pinned = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
+        store.variant(variant_id) or variant_id
+        for variant_id in case_obj.get("suspects", [])
     ]
     variant_obj = store.variant(variant_id)
     clinvar_submission_objs = store.clinvars(submission_id=submission_id)
@@ -786,7 +831,9 @@ def upload_panel(store, institute_id, case_name, stream):
     """Parse out HGNC symbols from a stream."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     raw_symbols = [
-        line.strip().split("\t")[0] for line in stream if line and not line.startswith("#")
+        line.strip().split("\t")[0]
+        for line in stream
+        if line and not line.startswith("#")
     ]
     # check if supplied gene symbols exist
     hgnc_symbols = []
@@ -826,7 +873,9 @@ def gene_panel_choices(institute_obj, case_obj):
     return panel_list
 
 
-def populate_filters_form(store, institute_obj, case_obj, user_obj, category, request_form):
+def populate_filters_form(
+    store, institute_obj, case_obj, user_obj, category, request_form
+):
     """Update filter settings if Clinical Filter was requested.
         Ensure that persistent actions get acted on.
 
@@ -891,7 +940,13 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         form = FiltersFormClass(clinical_filter)
     else:
         form = persistent_filter_actions(
-            store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+            store,
+            institute_obj,
+            case_obj,
+            user_obj,
+            category,
+            request_form,
+            FiltersFormClass,
         )
 
     return form
@@ -939,7 +994,9 @@ def persistent_filter_actions(
 
     if bool(request_form.get("audit_filter")):
         filter_id = request_form.get("filters")
-        filter_obj = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        filter_obj = store.audit_filter(
+            filter_id, institute_obj, case_obj, user_obj, category
+        )
         if filter_obj is not None:
             form = FiltersFormClass(request_form)
         else:
@@ -1170,7 +1227,9 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
 
     for cust in institute_list:
         verif_vars = store.verified(institute_id=cust)
-        LOG.info("Found {} verified variants for customer {}".format(len(verif_vars), cust))
+        LOG.info(
+            "Found {} verified variants for customer {}".format(len(verif_vars), cust)
+        )
 
         if not verif_vars:
             continue
@@ -1190,7 +1249,9 @@ def verified_excel_file(store, institute_list, temp_excel_dir):
             Report_Sheet.write(row, col, field)
 
         # Write variant lines, after header (start at line 1)
-        for row, line in enumerate(cust_verified, 1):  # each line becomes a row in the document
+        for row, line in enumerate(
+            cust_verified, 1
+        ):  # each line becomes a row in the document
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
         workbook.close()
@@ -1217,7 +1278,9 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 
@@ -1234,7 +1297,9 @@ def reset_all_dimissed(store, institute_obj, case_obj):
     user_obj = store.user(current_user.email)
     # Create an associated case-level event
     link = url_for(
-        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
     )
     store.order_dismissed_variants_reset(institute_obj, case_obj, user_obj, link)
 
@@ -1242,17 +1307,25 @@ def reset_all_dimissed(store, institute_obj, case_obj):
     for variant in evaluated_vars:
         if not variant.get("dismiss_variant"):  # not a dismissed variant
             continue
-        link_page = "variant.sv_variant" if variant.get("category") == "sv" else "variant.variant"
+        link_page = (
+            "variant.sv_variant"
+            if variant.get("category") == "sv"
+            else "variant.variant"
+        )
         link = url_for(
             link_page,
             institute_id=institute_obj["_id"],
             case_name=case_obj["display_name"],
             variant_id=variant["_id"],
         )
-        store.update_dismiss_variant(institute_obj, case_obj, user_obj, link, variant, [])
+        store.update_dismiss_variant(
+            institute_obj, case_obj, user_obj, link, variant, []
+        )
 
 
-def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_list, dismiss_reasons):
+def dismiss_variant_list(
+    store, institute_obj, case_obj, link_page, variants_list, dismiss_reasons
+):
     """Dismiss a list of variants for a case
 
     Args:

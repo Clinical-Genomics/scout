@@ -75,7 +75,9 @@ class GeneHandler(object):
         # Add the transcripts:
         transcripts = []
         tx_objs = self.transcripts(build=build, hgnc_id=gene_obj["hgnc_id"])
-        nr_tx = sum(1 for i in self.transcripts(build=build, hgnc_id=gene_obj["hgnc_id"]))
+        nr_tx = sum(
+            1 for i in self.transcripts(build=build, hgnc_id=gene_obj["hgnc_id"])
+        )
         if nr_tx > 0:
             for tx in tx_objs:
                 transcripts.append(tx)
@@ -122,7 +124,10 @@ class GeneHandler(object):
 
         if search:
             # first search for a full match
-            query_full_match = {**self.get_query_alias_or_id(hgnc_symbol, build), **build_query}
+            query_full_match = {
+                **self.get_query_alias_or_id(hgnc_symbol, build),
+                **build_query,
+            }
             nr_genes = self.nr_genes(query=query_full_match)
             if nr_genes != 0:
                 return self.hgnc_collection.find(query_full_match)
@@ -146,7 +151,9 @@ class GeneHandler(object):
         """
 
         LOG.debug("Find one genes with symbol %s" % hgnc_symbol)
-        return self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
+        return self.hgnc_collection.find_one(
+            filter={"build": build, "aliases": hgnc_symbol}
+        )
 
     def get_query_alias_or_id(self, hgnc_symbol, build):
         """Return query to search for hgnc-symbol or aliases"""
@@ -295,8 +302,13 @@ class GeneHandler(object):
 
         res = self.hgnc_collection.find({"hgnc_symbol": symbol, "build": str(build)})
 
-        if self.hgnc_collection.find_one({"aliases": symbol, "build": str(build)}) is None:
-            LOG.debug("No gene with symbol {} was found. Attempting an alias.".format(symbol))
+        if (
+            self.hgnc_collection.find_one({"aliases": symbol, "build": str(build)})
+            is None
+        ):
+            LOG.debug(
+                "No gene with symbol {} was found. Attempting an alias.".format(symbol)
+            )
             res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
 
         return res

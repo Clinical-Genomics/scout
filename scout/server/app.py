@@ -10,22 +10,9 @@ from flask_login import current_user
 from flaskext.markdown import Markdown
 
 from . import extensions
-from .blueprints import (
-    alignviewers,
-    api,
-    cases,
-    dashboard,
-    diagnoses,
-    genes,
-    institutes,
-    login,
-    managed_variants,
-    panels,
-    phenotypes,
-    public,
-    variant,
-    variants,
-)
+from .blueprints import (alignviewers, api, cases, dashboard, diagnoses, genes,
+                         institutes, login, managed_variants, panels,
+                         phenotypes, public, variant, variants)
 
 try:
     from urllib.parse import unquote
@@ -79,7 +66,9 @@ def create_app(config_file=None, config=None):
                 "report.report",
                 "report.json_chrom_coverage",
             ]
-            public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
+            public_endpoint = getattr(
+                app.view_functions[request.endpoint], "is_public", False
+            )
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
@@ -116,7 +105,13 @@ def configure_extensions(app):
         LOG.info("Gens enabled")
         extensions.gens.init_app(app)
 
-    if all([app.config.get("MME_URL"), app.config.get("MME_ACCEPTS"), app.config.get("MME_TOKEN")]):
+    if all(
+        [
+            app.config.get("MME_URL"),
+            app.config.get("MME_ACCEPTS"),
+            app.config.get("MME_TOKEN"),
+        ]
+    ):
         LOG.info("MatchMaker Exchange enabled")
         extensions.matchmaker.init_app(app)
 
@@ -242,7 +237,8 @@ def configure_email_logging(app):
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(
         logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"
+            "%(asctime)s - %(name)s - %(levelname)s: %(message)s "
+            "[in %(pathname)s:%(lineno)d]"
         )
     )
     app.logger.addHandler(mail_handler)

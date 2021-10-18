@@ -41,7 +41,9 @@ def load_delivery_report(
     return adapter.replace_case(case_obj)
 
 
-def load_cnv_report(adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False):
+def load_cnv_report(
+    adapter: MongoAdapter, report_path: str, case_id: str, update: bool = False
+):
     """Load a CNV report into a case in the database
 
     If the report already exists the function will exit.

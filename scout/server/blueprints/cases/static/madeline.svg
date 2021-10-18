@@ -1,0 +1,252 @@
+<?xml version="1.0" standalone="no"?>
+ <svg version="1.1"  id="svgDC" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  width="279.72" height="266.884"  onload="init()" >
+ <defs>
+  <style type="text/css"><![CDATA[
+
+line{
+	stroke:#000;
+	stroke-width:0.5mm;
+	stroke-linejoin:miter;
+	stroke-linecap:square;
+}
+
+rect{
+	stroke:#000;
+	stroke-width:0.5mm;
+	stroke-linejoin:miter;
+	stroke-linecap:square;
+}
+
+ellipse{
+	stroke: #000;
+    fill: #fff;
+	stroke-width:0.25mm;
+}
+
+text{
+	font-family:"DejaVu Sans",sans-serif;
+	font-size:12px;
+}
+
+.smallText{
+	font-family:"DejaVu Sans",sans-serif;
+	font-size:9px;
+	fill:#444;
+}
+
+.layer text{
+	fill:#930;
+}
+
+.layer line{
+	stroke:#000;
+}
+
+.birthOrder,.unknownTwins{
+	font-size: 8px;
+}
+
+.header{
+	font-size:18px;
+	font-weight:bold;
+}
+
+.keyBox{
+	fill:#e5e5e5;
+	stroke:#000;
+	stroke-width:0.5mm;
+	stroke-linejoin:miter;
+	stroke-linecap:square;
+}
+
+.mating:hover{
+	stroke-width:1mm;
+	stroke:#d56300;
+}
+
+.selectedIndividual{
+	stroke-width:1mm;
+	stroke-linecap:square;
+	stroke-linejoin:miter;
+	stroke:#d00;
+    fill:none;
+}
+
+.selectedIndividual:hover{
+	stroke:#d00;
+	fill:#ffbbbb;
+	fill-opacity:0.70;
+}
+
+.solid{
+	stroke-width:0.5mm;
+	stroke-linecap:square;
+	stroke-linejoin:miter;
+	stroke:#000;
+	fill:none;
+}
+
+.dashed{
+	stroke-width:0.5mm;
+	stroke-linecap:square;
+	stroke-linejoin:miter;
+	stroke:#98afc7;
+	stroke-dasharray:2mm,1mm;
+	stroke-dashoffset:1.0mm;
+	fill:none;
+}
+
+.solid:hover{
+	fill:#ffb787;
+	fill-opacity:0.70;
+	stroke:#d56300;
+	stroke-width:1mm;
+}
+
+.dashed:hover{
+	fill:#ffb787;
+	fill-opacity:0.70;
+	stroke:#d56300;
+	stroke-width:1mm;
+}
+
+.filled{
+	stroke-width:0.5mm;
+	stroke-linecap:square;
+	stroke-linejoin:miter;
+	stroke:#000;
+	fill:#000;
+}
+
+.specialIcons{
+	stroke-width:0.25mm;
+	stroke-linecap:round;
+	stroke-linejoin:miter;
+	stroke:#000;
+	fill:#fff;
+}
+
+.specialLines{
+	stroke-linecap:square;
+	stroke-linejoin:miter;
+	stroke:#000;
+	stroke-width:0.5mm;
+	fill:none;
+}
+
+.thinLine{
+	fill:none;
+	stroke: #000;
+	stroke-width:0.25mm;
+}
+
+.curvedConnector{
+	stroke-linecap:square;
+	stroke-linejoin:miter;
+	stroke:#98afc7;
+	stroke-width:0.5mm;
+	stroke-dasharray:2mm,1mm;
+	stroke-dashoffset:1.0mm;
+	fill:none;
+}
+
+.curvedConnector:hover{
+	stroke:#d56300;
+}
+
+.whiteInkLetter_1{
+	font-size: 12px;
+	fill: #fff;
+}
+
+.whiteInkLetter_2{
+	font-size: 10px;
+	fill: #fff;
+}
+
+.whiteInkLetter_3{
+	font-size: 8px;
+	fill: #fff;
+}
+
+.whiteInkLetter{
+	font-size: 8px;
+	fill: #fff;
+}
+
+.blackInkLetter_1{
+	font-size: 12px;
+}
+
+.blackInkLetter_2{
+	font-size: 10px;
+}
+
+.blackInkLetter_3{
+	font-size: 8px;
+}
+
+.blackInkLetter{
+	font-size: 8px;
+	fill: #000;
+}
+
+]]></style>
+ <script type="text/javascript" xlink:href="javascript/madeline.js"></script>
+ <marker id="endArrow" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" orient="auto" markerWidth="5" markerHeight="4">  <polyline points="0,0 10,5 0,10 1,5" fill="#000" /> </marker>
+ </defs>
+ <g class="pedigree" transform="translate(-372.14)">
+
+ <g id="bottomLayer" class="layer" >
+
+ </g>
+ <g id="layer0" class="layer" >
+ </g>
+
+  <g class="drawing">
+  <text x="557.36" y="30" text-anchor="middle"  class="header" >643594</text>
+  <clipPath id="ADM1059A1_clipPath">
+   <rect x="500.66" y="38.66" width="22.68" height="22.68" />
+  </clipPath>
+<g clip-path="url(#ADM1059A1_clipPath)">
+<circle cx="512" cy="50" r="16.0372" style="fill:#ffd802;stroke:none;"/>
+  <text x="512" y="54.3588" text-anchor="middle"  class="blackInkLetter_1" >U</text>
+</g>
+  <rect x="500.66" y="38.66" width="22.68" height="22.68" id="ADM1059A1" class="solid">
+	<title>ADM1059A1</title>
+</rect>
+  <text x="512" y="92.5845" text-anchor="middle" >ADM1059A1</text>
+  <line x1="523.34" y1="50" x2="591.38" y2="50" />
+<g>
+<circle cx="602.72" cy="50" r="11.34" style="fill:#ffd802;stroke:none;"/>
+  <text x="602.72" y="54.3588" text-anchor="middle"  class="blackInkLetter_1" >U</text>
+</g>
+<circle cx="602.72" cy="50" r="11.34" id="ADM1059A3" class="solid">
+	<title>ADM1059A3</title>
+</circle>
+  <text x="602.72" y="92.5845" text-anchor="middle" >ADM1059A3</text>
+  <line class="mating" id="ADM1059A3:ADM1059A1" x1="557.36" y1="50" x2="557.36" y2="123.907" />
+  <line class="solid" x1="557.36" y1="123.907" x2="557.36" y2="152.257" />
+  <clipPath id="ADM1059A2_clipPath">
+   <rect x="546.02" y="152.257" width="22.68" height="22.68" />
+  </clipPath>
+<g clip-path="url(#ADM1059A2_clipPath)">
+<circle cx="557.36" cy="163.597" r="16.0372" style="fill:#0000a0;stroke:none;"/>
+  <text x="557.36" y="167.956" text-anchor="middle"  class="whiteInkLetter_1" >A</text>
+</g>
+  <rect x="546.02" y="152.257" width="22.68" height="22.68" id="ADM1059A2" class="solid">
+	<title>ADM1059A2</title>
+</rect>
+  <text x="557.36" y="206.181" text-anchor="middle" >ADM1059A2</text>
+  </g>
+  <g class="legend">
+  <text x="421.28" y="50" text-anchor="middle" >Affected</text>
+  <rect  x="379.7" y="53.78" width="83.16" height="18.3356" style="fill:#0000a0;"  />
+  <text x="421.28" y="67.5123" text-anchor="middle"  class="whiteInkLetter_1" >A</text>
+  <rect  x="379.7" y="72.1156" width="83.16" height="18.3356" style="fill:#ffd802;"  />
+  <text x="421.28" y="85.8479" text-anchor="middle"  class="blackInkLetter_1" >U</text>
+  </g>
+
+ </g>
+ </svg>
+

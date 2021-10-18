@@ -52,5 +52,7 @@ def api_hpo_term_search(search_string):
     """
     limit = request.args.get("limit", None)
     page = request.args.get("page", None)
-    data = controllers.hpo_terms(store=store, query=search_string, limit=limit, page=page)
+    data = controllers.hpo_terms(
+        store=store, query=search_string, limit=limit, page=page
+    )
     return jsonify(data)

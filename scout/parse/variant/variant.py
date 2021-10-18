@@ -230,7 +230,11 @@ def parse_variant(
     str_source_type = variant.INFO.get("Source")
     str_source_id = variant.INFO.get("SourceId")
     if str_source_display or str_source_type or str_source_id:
-        source = {"display": str_source_display, "type": str_source_type, "id": str_source_id}
+        source = {
+            "display": str_source_display,
+            "type": str_source_type,
+            "id": str_source_id,
+        }
         parsed_variant["str_source"] = source
 
     str_swegen_mean = variant.INFO.get("SweGenMean")
@@ -276,7 +280,9 @@ def parse_variant(
     parsed_transcripts = []
     dbsnp_ids = set()
     cosmic_ids = set()
-    for parsed_transcript in parse_transcripts(raw_transcripts, parsed_variant["alternative"]):
+    for parsed_transcript in parse_transcripts(
+        raw_transcripts, parsed_variant["alternative"]
+    ):
         parsed_transcripts.append(parsed_transcript)
         for dbsnp in parsed_transcript.get("dbsnp", []):
             dbsnp_ids.add(dbsnp)

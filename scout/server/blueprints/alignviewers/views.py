@@ -3,16 +3,8 @@ import logging
 import os.path
 
 import requests
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    current_app,
-    flash,
-    render_template,
-    request,
-    send_file,
-)
+from flask import (Blueprint, Response, abort, current_app, flash,
+                   render_template, request, send_file)
 
 from . import controllers
 from .partial import send_file_partial
@@ -48,7 +40,12 @@ def remote_cors(remote_url):
         allow_redirects=True,
     )
 
-    excluded_headers = ["content-encoding", "content-length", "transfer-encoding", "connection"]
+    excluded_headers = [
+        "content-encoding",
+        "content-length",
+        "transfer-encoding",
+        "connection",
+    ]
     headers = [
         (name, value)
         for (name, value) in resp.raw.headers.items()

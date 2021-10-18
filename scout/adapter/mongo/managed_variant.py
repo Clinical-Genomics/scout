@@ -51,7 +51,9 @@ class ManagedVariantHandler(object):
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
         if collision:
-            LOG.debug("Collision - new variant already exists! Leaving variant unmodified.")
+            LOG.debug(
+                "Collision - new variant already exists! Leaving variant unmodified."
+            )
             return
 
         if original_obj_id:
@@ -117,12 +119,17 @@ class ManagedVariantHandler(object):
         Returns:
             ManagedVariant
         """
-        managed_variant = self.managed_variant_collection.find_one({"variant_id": variant_id})
+        managed_variant = self.managed_variant_collection.find_one(
+            {"variant_id": variant_id}
+        )
 
         return managed_variant
 
     def managed_variants(
-        self, category=["snv", "sv", "cancer_snv", "cancer_sv"], query_options=None, build=None
+        self,
+        category=["snv", "sv", "cancer_snv", "cancer_sv"],
+        query_options=None,
+        build=None,
     ):
         """Return a cursor to all managed variants of a particular category and build.
 
@@ -141,7 +148,10 @@ class ManagedVariantHandler(object):
         return self.managed_variant_collection.find(query_with_options)
 
     def count_managed_variants(
-        self, category=["snv", "sv", "cancer_snv", "cancer_sv"], build="37", query_options=None
+        self,
+        category=["snv", "sv", "cancer_snv", "cancer_sv"],
+        build="37",
+        query_options=None,
     ):
         """Return count of documents to all managed variants of a particular category and build.
 
@@ -164,7 +174,9 @@ class ManagedVariantHandler(object):
 
         if query_options:
             if "description" in query_options:
-                query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
+                query["description"] = {
+                    "$regex": ".*" + query_options["description"] + ".*"
+                }
 
             if "position" in query_options:
                 query["end"] = {"$gte": int(query_options["position"])}
@@ -212,7 +224,8 @@ class ManagedVariantHandler(object):
 
         if not result:
             LOG.info(
-                "FAILED deleting managed variant: variant_id %s not found.", managed_variant_id
+                "FAILED deleting managed variant: variant_id %s not found.",
+                managed_variant_id,
             )
 
         return result

@@ -37,7 +37,9 @@ def panel_cmd(panel: str, build: str, bed: bool, version: float):
     if bed:
         if version:
             version = [version]
-        lines = export_panels(adapter=adapter, panels=panel, versions=version, build=build)
+        lines = export_panels(
+            adapter=adapter, panels=panel, versions=version, build=build
+        )
     else:
         lines = export_gene_panels(adapter=adapter, panels=panel, version=version)
     for line in lines:

@@ -20,7 +20,9 @@ LOG = logging.getLogger(__name__)
     type=click.Path(exists=True),
     help="Path to file with ensembl exons",
 )
-@click.option("-b", "--build", type=click.Choice(["37", "38"]), default="37", show_default=True)
+@click.option(
+    "-b", "--build", type=click.Choice(["37", "38"]), default="37", show_default=True
+)
 @with_appcontext
 def exons(build, exons_file):
     """Load exons into the scout database. If no file, fetch exons from ensembl biomart"""
@@ -51,7 +53,9 @@ def exons(build, exons_file):
     except Exception as err:
         LOG.warning("Something went wrong with ensembl biomart")
         # LOG.info("Try to fetch one chromosome at the time")
-        LOG.info("Please download a mart dump manually, see instructions in user guide for admins")
+        LOG.info(
+            "Please download a mart dump manually, see instructions in user guide for admins"
+        )
         return
 
     LOG.info("Time to load exons: {0}".format(datetime.now() - start))

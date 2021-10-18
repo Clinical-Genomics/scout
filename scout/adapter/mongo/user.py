@@ -45,7 +45,9 @@ class UserHandler(object):
             self.user_collection.insert_one(user_obj)
             LOG.debug("User inserted")
         except DuplicateKeyError as err:
-            raise IntegrityError("User {} already exists in database".format(user_obj["email"]))
+            raise IntegrityError(
+                "User {} already exists in database".format(user_obj["email"])
+            )
 
         return user_obj
 

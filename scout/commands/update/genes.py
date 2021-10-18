@@ -46,7 +46,9 @@ def download_resources(download_dir, api_key, builds):
     """
     ctx = click.get_current_context()
     if not api_key:
-        LOG.warning("No OMIM API key provided. Please note that some information will be missing.")
+        LOG.warning(
+            "No OMIM API key provided. Please note that some information will be missing."
+        )
     else:
         # Download OMIM files
         ctx.invoke(omim_cmd, out_dir=download_dir, api_key=api_key)
@@ -85,7 +87,9 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
                 resources[resname] = get_file_handle(resource_path).readlines()
 
         # If the resource is manadatory make sure it exists and contains data (OMIM data is NOT mandatory)
-        if resname in ["hpo_genes", "hgnc_lines", "exac_lines"] and not resources.get(resname):
+        if resname in ["hpo_genes", "hgnc_lines", "exac_lines"] and not resources.get(
+            resname
+        ):
             LOG.error(f"Missing resource {resname} in downloads path.")
             raise click.Abort()
 
@@ -100,7 +104,10 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
         # Check that resource lines contain actual data
         if resname not in resources:
             continue
-        if "<!DOCTYPE html>" in resources[resname][0] or "<!DOCTYPE html>" in resources[resname][1]:
+        if (
+            "<!DOCTYPE html>" in resources[resname][0]
+            or "<!DOCTYPE html>" in resources[resname][1]
+        ):
             LOG.error(f"Resource file '{resname}' doesn't contain valid data.")
             raise click.Abort()
 
@@ -118,7 +125,8 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
     help="specify path to folder where files necessary to update genes are pre-downloaded",
 )
 @click.option(
-    "--api-key", help="Specify the OMIM downloads api key. Only if downloads_folder is not provided"
+    "--api-key",
+    help="Specify the OMIM downloads api key. Only if downloads_folder is not provided",
 )
 @with_appcontext
 def genes(build, downloads_folder, api_key):
