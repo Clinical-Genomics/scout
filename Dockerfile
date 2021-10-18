@@ -1,7 +1,7 @@
 ###########
 # BUILDER #
 ###########
-FROM northwestwitch/python3.8-cyvcf2-venv AS python-builder
+FROM northwestwitch/python3.8-cyvcf2-venv:1.0 AS python-builder
 
 ENV PATH="/venv/bin:$PATH"
 
