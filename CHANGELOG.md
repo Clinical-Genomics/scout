@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- A faster-built and lighter Docker image
 
 ## [4.40.1]
 ### Added
