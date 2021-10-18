@@ -114,8 +114,8 @@ def test_parse_case_custom_images(scout_config):
     assert cnf_img.keys() == custom_images.keys()
     # THEN custom_images should have the same number of images
     assert all(
-        len(custom_images['case'][section]) == len(cnf_img['case'][section])
-        for section in custom_images['case']
+        len(custom_images["case"][section]) == len(cnf_img["case"][section])
+        for section in custom_images["case"]
     )
     # Given that some custom images are of not supported formats
     custom_images = parse_custom_images(
