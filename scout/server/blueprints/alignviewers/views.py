@@ -3,8 +3,16 @@ import logging
 import os.path
 
 import requests
-from flask import (Blueprint, Response, abort, current_app, flash, render_template, request,
-                   send_file)
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    current_app,
+    flash,
+    render_template,
+    request,
+    send_file,
+)
 
 from . import controllers
 from .partial import send_file_partial

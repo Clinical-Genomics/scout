@@ -4,8 +4,12 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.load.report import (load_cnv_report, load_coverage_qc_report, load_delivery_report,
-                               load_gene_fusion_report)
+from scout.load.report import (
+    load_cnv_report,
+    load_coverage_qc_report,
+    load_delivery_report,
+    load_gene_fusion_report,
+)
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

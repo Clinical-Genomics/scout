@@ -7,13 +7,17 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField
 
 from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
-from scout.server.blueprints.variants.controllers import (compounds_need_updating,
-                                                          gene_panel_choices,
-                                                          match_gene_txs_variant_txs,
-                                                          populate_chrom_choices, sv_variants,
-                                                          update_form_hgnc_symbols,
-                                                          variant_export_lines, variants,
-                                                          variants_export_header)
+from scout.server.blueprints.variants.controllers import (
+    compounds_need_updating,
+    gene_panel_choices,
+    match_gene_txs_variant_txs,
+    populate_chrom_choices,
+    sv_variants,
+    update_form_hgnc_symbols,
+    variant_export_lines,
+    variants,
+    variants_export_header,
+)
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

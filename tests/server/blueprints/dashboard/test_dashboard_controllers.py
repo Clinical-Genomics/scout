@@ -1,8 +1,11 @@
 from flask import url_for
 
-from scout.server.blueprints.dashboard.controllers import (compose_slice_query, dashboard_form,
-                                                           get_dashboard_info,
-                                                           institute_select_choices)
+from scout.server.blueprints.dashboard.controllers import (
+    compose_slice_query,
+    dashboard_form,
+    get_dashboard_info,
+    institute_select_choices,
+)
 from scout.server.blueprints.dashboard.forms import DashboardFilterForm
 from scout.server.extensions import store
 

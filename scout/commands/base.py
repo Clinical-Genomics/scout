@@ -14,6 +14,7 @@ from scout.commands.delete import delete
 from scout.commands.download import download as download_command
 from scout.commands.export import export
 from scout.commands.index_command import index as index_command
+
 # Commands
 from scout.commands.load import load as load_command
 from scout.commands.serve import serve

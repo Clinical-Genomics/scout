@@ -4,12 +4,29 @@ import logging
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import (BooleanField, DecimalField, Field, HiddenField, IntegerField, SelectField,
-                     SelectMultipleField, StringField, SubmitField, TextField, validators)
+from wtforms import (
+    BooleanField,
+    DecimalField,
+    Field,
+    HiddenField,
+    IntegerField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+    SubmitField,
+    TextField,
+    validators,
+)
 from wtforms.widgets import TextInput
 
-from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS, SO_TERMS, SPIDEX_LEVELS,
-                             SV_TYPES)
+from scout.constants import (
+    CLINSIG_MAP,
+    FEATURE_TYPES,
+    GENETIC_MODELS,
+    SO_TERMS,
+    SPIDEX_LEVELS,
+    SV_TYPES,
+)
 
 LOG = logging.getLogger(__name__)
 

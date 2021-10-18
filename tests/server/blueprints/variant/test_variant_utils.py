@@ -1,9 +1,17 @@
 from flask import get_template_attribute
 
-from scout.server.blueprints.variant.utils import (add_panel_specific_gene_info, clinsig_human,
-                                                   end_position, evaluation, frequencies, frequency,
-                                                   is_affected, predictions, transcript_str,
-                                                   update_transcripts_information)
+from scout.server.blueprints.variant.utils import (
+    add_panel_specific_gene_info,
+    clinsig_human,
+    end_position,
+    evaluation,
+    frequencies,
+    frequency,
+    is_affected,
+    predictions,
+    transcript_str,
+    update_transcripts_information,
+)
 
 
 def test_modal_causative(app, case_obj, institute_obj, variant_obj):

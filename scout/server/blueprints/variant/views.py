@@ -12,7 +12,9 @@ from scout.server.blueprints.variant.controllers import variant as variant_contr
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
 from scout.server.blueprints.variant.controllers import variant_acmg_post
 from scout.server.blueprints.variant.verification_controllers import (
-    MissingVerificationRecipientError, variant_verification)
+    MissingVerificationRecipientError,
+    variant_verification,
+)
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
 from scout.utils.acmg import get_acmg

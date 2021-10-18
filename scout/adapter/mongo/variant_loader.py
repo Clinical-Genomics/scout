@@ -19,6 +19,7 @@ from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
 from scout.parse.variant.coordinates import parse_coordinates
+
 # Local modules
 from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
 from scout.parse.variant.managed_variant import parse_managed_variant_id

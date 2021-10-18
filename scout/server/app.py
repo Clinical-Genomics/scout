@@ -10,8 +10,22 @@ from flask_login import current_user
 from flaskext.markdown import Markdown
 
 from . import extensions
-from .blueprints import (alignviewers, api, cases, dashboard, diagnoses, genes, institutes, login,
-                         managed_variants, panels, phenotypes, public, variant, variants)
+from .blueprints import (
+    alignviewers,
+    api,
+    cases,
+    dashboard,
+    diagnoses,
+    genes,
+    institutes,
+    login,
+    managed_variants,
+    panels,
+    phenotypes,
+    public,
+    variant,
+    variants,
+)
 
 try:
     from urllib.parse import unquote

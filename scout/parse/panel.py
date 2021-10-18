@@ -2,8 +2,12 @@
 import logging
 from datetime import datetime
 
-from scout.constants import (INCOMPLETE_PENETRANCE_MAP, MODELS_MAP, PANEL_GENE_INFO_MODELS,
-                             PANEL_GENE_INFO_TRANSCRIPTS)
+from scout.constants import (
+    INCOMPLETE_PENETRANCE_MAP,
+    MODELS_MAP,
+    PANEL_GENE_INFO_MODELS,
+    PANEL_GENE_INFO_TRANSCRIPTS,
+)
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
 from scout.utils.link import get_correct_ids
