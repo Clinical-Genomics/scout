@@ -6,13 +6,10 @@ from flask import current_app, url_for
 from flask_login import current_user
 
 from scout.constants import IGV_TRACKS
-from scout.server.blueprints.variant.controllers import (
-    get_igv_tracks,
-    has_rna_tracks,
-    observations,
-    tx_overview,
-    variant,
-)
+from scout.server.blueprints.variant.controllers import (get_igv_tracks,
+                                                         has_rna_tracks,
+                                                         observations,
+                                                         tx_overview, variant)
 from scout.server.extensions import cloud_tracks, loqusdb, store
 
 LOG = logging.getLogger(__name__)
@@ -54,7 +51,9 @@ def test_has_rna_tracks(case_obj):
 
     # GIVEN a case with an individual with RNA tracks:
     for ind in case_obj["individuals"]:
-        if ind["phenotype"] == 1:  # Lets's assume only the affected individuals has RNA data
+        if (
+            ind["phenotype"] == 1
+        ):  # Lets's assume only the affected individuals has RNA data
             continue
         ind["splice_junctions_bed"] = "test.bed"
         ind["rna_coverage_bigwig"] = "test.BigWig"

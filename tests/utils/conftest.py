@@ -98,7 +98,8 @@ def ensembl_gene_response():
     _response = [
         {
             "description": (
-                "alpha- and gamma-adaptin binding protein " "[Source:HGNC Symbol;Acc:25662]"
+                "alpha- and gamma-adaptin binding protein "
+                "[Source:HGNC Symbol;Acc:25662]"
             ),
             "logic_name": "ensembl_havana_gene",
             "version": 8,

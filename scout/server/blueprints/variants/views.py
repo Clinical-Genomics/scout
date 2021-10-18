@@ -6,21 +6,19 @@ import os.path
 import shutil
 
 import pymongo
-from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for
+from flask import (Blueprint, abort, current_app, flash, redirect, request,
+                   send_file, url_for)
 from flask_login import current_user
 
-from scout.constants import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    MANUAL_RANK_OPTIONS,
-    SEVERE_SO_TERMS,
-)
+from scout.constants import (CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                             CANCER_TIER_OPTIONS, DISMISS_VARIANT_OPTIONS,
+                             MANUAL_RANK_OPTIONS, SEVERE_SO_TERMS)
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
 
 from . import controllers
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
+from .forms import (CancerFiltersForm, FiltersForm, StrFiltersForm,
+                    SvFiltersForm)
 
 LOG = logging.getLogger(__name__)
 
@@ -49,7 +47,9 @@ def variants(institute_id, case_name):
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get("variant_type", "clinical")
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+    variants_stats = store.case_variants_count(
+        case_obj["_id"], institute_id, variant_type, False
+    )
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
@@ -107,7 +107,9 @@ def variants(institute_id, case_name):
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
         LOG.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
-        new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
+        new_hgnc_symbols = controllers.upload_panel(
+            store, institute_id, case_name, stream
+        )
         hgnc_symbols_set.update(new_hgnc_symbols)
         form.hgnc_symbols.data = hgnc_symbols_set
         # reset gene panels
@@ -123,7 +125,9 @@ def variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.variants(store, institute_obj, case_obj, variants_query, result_size, page)
+    data = controllers.variants(
+        store, institute_obj, case_obj, variants_query, result_size, page
+    )
     expand_search = request.method == "POST" and request.form.get("expand_search") in [
         "True",
         "",
@@ -155,7 +159,9 @@ def str_variants(institute_id, case_name):
     category = "str"
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+    variants_stats = store.case_variants_count(
+        case_obj["_id"], institute_id, variant_type, False
+    )
 
     user_obj = store.user(current_user.email)
 
@@ -193,7 +199,9 @@ def str_variants(institute_id, case_name):
     query = form.data
     query["variant_type"] = variant_type
 
-    variants_query = store.variants(case_obj["_id"], category=category, query=query).sort(
+    variants_query = store.variants(
+        case_obj["_id"], category=category, query=query
+    ).sort(
         [
             ("str_repid", pymongo.ASCENDING),
             ("chromosome", pymongo.ASCENDING),
@@ -236,7 +244,9 @@ def sv_variants(institute_id, case_name):
     category = "sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+    variants_stats = store.case_variants_count(
+        case_obj["_id"], institute_id, variant_type, False
+    )
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
@@ -254,7 +264,9 @@ def sv_variants(institute_id, case_name):
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
-    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+    form = controllers.populate_sv_filters_form(
+        store, institute_obj, case_obj, category, request
+    )
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_obj["_id"], category))
@@ -302,14 +314,18 @@ def sv_variants(institute_id, case_name):
     )
 
 
-@variants_bp.route("/<institute_id>/<case_name>/cancer/variants", methods=["GET", "POST"])
+@variants_bp.route(
+    "/<institute_id>/<case_name>/cancer/variants", methods=["GET", "POST"]
+)
 @templated("variants/cancer-variants.html")
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
     variant_type = request.args.get("variant_type", "clinical")
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+    variants_stats = store.case_variants_count(
+        case_obj["_id"], institute_id, variant_type, False
+    )
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
@@ -328,11 +344,16 @@ def cancer_variants(institute_id, case_name):
         )
 
         # if user is not loading an existing filter, check filter form
-        if request.form.get("load_filter") is None and form.validate_on_submit() is False:
+        if (
+            request.form.get("load_filter") is None
+            and form.validate_on_submit() is False
+        ):
             # Flash a message with errors
             for field, err_list in form.errors.items():
                 for err in err_list:
-                    flash(f"Content of field '{field}' has not a valid format", "warning")
+                    flash(
+                        f"Content of field '{field}' has not a valid format", "warning"
+                    )
             # And do not submit the form
             return redirect(
                 url_for(
@@ -404,7 +425,9 @@ def cancer_variants(institute_id, case_name):
     )
 
 
-@variants_bp.route("/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"])
+@variants_bp.route(
+    "/<institute_id>/<case_name>/cancer/sv-variants", methods=["GET", "POST"]
+)
 @templated("variants/cancer-sv-variants.html")
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
@@ -414,7 +437,9 @@ def cancer_sv_variants(institute_id, case_name):
     category = "cancer_sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+    variants_stats = store.case_variants_count(
+        case_obj["_id"], institute_id, variant_type, False
+    )
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
@@ -431,7 +456,9 @@ def cancer_sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+    form = controllers.populate_sv_filters_form(
+        store, institute_obj, case_obj, category, request
+    )
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_obj["_id"], category))
@@ -520,7 +547,9 @@ def upload_panel(institute_id, case_name):
             code=307,
         )
     return redirect(
-        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
+        url_for(
+            ".variants", institute_id=institute_id, case_name=case_name, **form.data
+        ),
         code=307,
     )
 
@@ -544,7 +573,8 @@ def download_verified():
             data,
             mimetype="application/zip",
             as_attachment=True,
-            attachment_filename="_".join(["scout", "verified_variants", today]) + ".zip",
+            attachment_filename="_".join(["scout", "verified_variants", today])
+            + ".zip",
             cache_timeout=0,
         )
 

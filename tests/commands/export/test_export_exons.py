@@ -40,7 +40,9 @@ def test_export_exons_one_gene(mock_app, gene_obj):
     assert store.exon_collection.insert_one(test_exon)
 
     # WHEN the command to export exons from test gene is invoked
-    result = runner.invoke(cli, ["export", "exons", "-b", "37", "-hgnc", gene_obj["hgnc_id"]])
+    result = runner.invoke(
+        cli, ["export", "exons", "-b", "37", "-hgnc", gene_obj["hgnc_id"]]
+    )
     # it should return the exon
     assert result.exit_code == 0
     assert test_exon["exon_id"] in result.output
@@ -80,7 +82,9 @@ def test_export_exons_gene_json(mock_app, gene_obj):
     assert store.exon_collection.insert_one(test_exon)
 
     # WHEN the command to json-export exons from test gene is invoked
-    result = runner.invoke(cli, ["export", "exons", "-hgnc", gene_obj["hgnc_id"], "--json"])
+    result = runner.invoke(
+        cli, ["export", "exons", "-hgnc", gene_obj["hgnc_id"], "--json"]
+    )
     assert result.exit_code == 0
     # THEN it should return a document
     assert "$oid" in result.output

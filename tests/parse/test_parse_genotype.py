@@ -1,6 +1,7 @@
 from cyvcf2 import VCF
 
-from scout.parse.variant.genotype import GENOTYPE_MAP, parse_genotype, parse_genotypes
+from scout.parse.variant.genotype import (GENOTYPE_MAP, parse_genotype,
+                                          parse_genotypes)
 
 one_cnvnator = "tests/parse/vcfs/one_cnvnator.vcf"
 
@@ -21,7 +22,9 @@ def test_parse_genotype(variants):
             genotype = parse_genotype(variant=variant, ind=individuals[ind_id], pos=pos)
             ## THEN assert genotypes are parsed correct
             vcf_genotype = variant.genotypes[pos]
-            gt_call = "{0}/{1}".format(GENOTYPE_MAP[vcf_genotype[0]], GENOTYPE_MAP[vcf_genotype[1]])
+            gt_call = "{0}/{1}".format(
+                GENOTYPE_MAP[vcf_genotype[0]], GENOTYPE_MAP[vcf_genotype[1]]
+            )
 
             vcf_read_depth = int(variant.gt_depths[pos])
             vcf_quality = float(variant.gt_quals[pos])

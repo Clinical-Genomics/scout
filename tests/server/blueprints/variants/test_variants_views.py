@@ -10,7 +10,9 @@ from scout.server.extensions import store
 
 def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
 
-    mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.variants.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN a variant without clinVar annotations
     test_var = store.variant_collection.find_one(
@@ -87,10 +89,14 @@ def test_variants(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj, mocker, mock_redirect):
+def test_bulk_reset_dismiss_variants(
+    app, institute_obj, case_obj, mocker, mock_redirect
+):
     """Test sending a GET request to reset all dismissed variants for a case"""
 
-    mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.variants.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -301,7 +307,9 @@ def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, variant_obj):
+def test_filter_cancer_variants_by_vaf(
+    app, institute_obj, cancer_case_obj, variant_obj
+):
     """Tests the cancer form filter by VAF"""
 
     # GIVEN a database containing a cancer case

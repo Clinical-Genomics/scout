@@ -37,7 +37,9 @@ def test_update_institute(mock_app):
     assert "INFO Institute updated" in result.output
 
     # Test CLI to update display_name
-    result = runner.invoke(cli, ["update", "institute", "cust000", "-d", updates["display_name"]])
+    result = runner.invoke(
+        cli, ["update", "institute", "cust000", "-d", updates["display_name"]]
+    )
     # it should return error message
     assert result.exit_code == 0
     assert "INFO Institute updated" in result.output
@@ -77,4 +79,7 @@ def test_update_institute(mock_app):
     updated_institute = store.institute_collection.find_one()
     # updated sanger recipients should be equal but in reversed order
     # to recipients in original institute object
-    assert updated_institute["sanger_recipients"] == institute_obj["sanger_recipients"][::-1]
+    assert (
+        updated_institute["sanger_recipients"]
+        == institute_obj["sanger_recipients"][::-1]
+    )

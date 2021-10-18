@@ -6,7 +6,8 @@ from cyvcf2 import VCF
 from scout.build import build_variant
 from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
-from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
+from scout.parse.variant.headers import (parse_rank_results_header,
+                                         parse_vep_header)
 from scout.parse.variant.rank_score import parse_rank_score
 from scout.server.blueprints.variants.controllers import variants
 

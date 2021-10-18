@@ -75,7 +75,9 @@ def update_representative_gene(variant_obj, variant_genes):
         variant_obj["first_rep_gene"] = None
 
 
-def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None):
+def update_transcripts_information(
+    variant_gene, hgnc_gene, variant_obj, genome_build=None
+):
     """Collect tx info from the hgnc gene and panels and update variant transcripts
 
     Since the hgnc information are continuously being updated we need to run this each time a
@@ -94,7 +96,9 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
 
     """
     genome_build = genome_build or "37"
-    disease_associated_no_version = variant_gene.get("disease_associated_no_version", set())
+    disease_associated_no_version = variant_gene.get(
+        "disease_associated_no_version", set()
+    )
     # Create a dictionary with transcripts information
     # Use ensembl transcript id as keys
     transcripts_dict = {}
@@ -198,7 +202,9 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
             panel_info = add_panel_specific_gene_info(extra_info.get(hgnc_id, []))
             variant_gene.update(panel_info)
 
-            update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
+            update_transcripts_information(
+                variant_gene, hgnc_gene, variant_obj, genome_build
+            )
 
             variant_gene["common"] = hgnc_gene
 
@@ -388,7 +394,8 @@ def is_affected(variant_obj, case_obj):
         variant_obj(scout.models.Variant)
     """
     individuals = {
-        individual["individual_id"]: individual for individual in case_obj["individuals"]
+        individual["individual_id"]: individual
+        for individual in case_obj["individuals"]
     }
     for sample_obj in variant_obj["samples"]:
         individual = individuals[sample_obj.get("sample_id")]
@@ -408,7 +415,9 @@ def evaluation(store, evaluation_obj):
     evaluation_obj["criteria"] = {
         criterion["term"]: criterion for criterion in evaluation_obj["criteria"]
     }
-    evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(evaluation_obj["classification"])
+    evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(
+        evaluation_obj["classification"]
+    )
     return evaluation_obj
 
 

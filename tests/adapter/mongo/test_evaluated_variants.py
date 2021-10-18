@@ -126,7 +126,9 @@ def test_get_ranked_and_comment_two(real_variant_database):
         adapter.event_collection.insert_one(comment)
 
         variant["manual_rank"] = 3
-        adapter.variant_collection.find_one_and_replace({"_id": variant["_id"]}, variant)
+        adapter.variant_collection.find_one_and_replace(
+            {"_id": variant["_id"]}, variant
+        )
 
     evaluated_variants = adapter.evaluated_variants(case_id)
 

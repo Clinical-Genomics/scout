@@ -161,7 +161,14 @@ def test_parse_complex_clnsig(cyvcf2_variant):
 def test_parse_clnsig_transcripts(cyvcf2_variant):
     ## GIVEN a variant with slash-separated values or values that start with underscore
     transcripts = [
-        {"clnsig": ["pathogenic/likely_pathogenic", "likely_pathogenic", "pathogenic", "_other"]}
+        {
+            "clnsig": [
+                "pathogenic/likely_pathogenic",
+                "likely_pathogenic",
+                "pathogenic",
+                "_other",
+            ]
+        }
     ]
 
     ## WHEN parsing the annotations
@@ -244,7 +251,9 @@ def test_is_pathogenic_VEP97_conflicting(one_vep97_annotated_variant):
     assert pathogenic is True
 
 
-def test_parse_clinsig_vep97(one_vep97_annotated_variant, real_populated_database, case_obj):
+def test_parse_clinsig_vep97(
+    one_vep97_annotated_variant, real_populated_database, case_obj
+):
     """Test Clinsig parsing in a VEP97 formatted VCF"""
 
     # GIVEN a variant annotated using the following CSQ entry fields

@@ -4,16 +4,20 @@ import logging
 
 import pymongo
 from bson import ObjectId
-from flask import Blueprint, Response, flash, jsonify, redirect, render_template, request, url_for
+from flask import (Blueprint, Response, flash, jsonify, redirect,
+                   render_template, request, url_for)
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER,
+                             CLINVAR_HEADER)
 from scout.server.extensions import loqusdb, store
-from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
+from scout.server.utils import (institute_and_case, jsonconverter, templated,
+                                user_institutes)
 
 from . import controllers
-from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
+from .forms import (GeneVariantFiltersForm, InstituteForm, PhenoModelForm,
+                    PhenoSubPanelForm)
 
 LOG = logging.getLogger(__name__)
 
@@ -68,7 +72,9 @@ def causatives(institute_id):
         except ValueError:
             flash("Provided gene info could not be parsed!", "warning")
 
-    variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
+    variants = list(
+        store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id)
+    )
     if variants:
         variants = sorted(
             variants,
@@ -192,7 +198,9 @@ def gene_variants(institute_id):
             category="snv",
             variant_type=variant_type,
         )
-        data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
+        data = controllers.gene_variants(
+            store, variants_query, result_size, institute_id, page
+        )
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
@@ -212,7 +220,9 @@ def institute_settings(institute_id):
 
     # if institute is to be updated
     if request.method == "POST" and form.validate_on_submit():
-        institute_obj = controllers.update_institute_settings(store, institute_obj, request.form)
+        institute_obj = controllers.update_institute_settings(
+            store, institute_obj, request.form
+        )
         if isinstance(institute_obj, dict):
             flash("institute was updated ", "success")
         else:  # an error message was retuned
@@ -260,7 +270,9 @@ def clinvar_rename_casedata(submission, case, old_name):
 def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
 
-    controllers.update_clinvar_submission_status(store, request, institute_id, submission)
+    controllers.update_clinvar_submission_status(
+        store, request, institute_id, submission
+    )
     return redirect(request.referrer)
 
 
@@ -286,7 +298,9 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
         for line in lines:
             yield line + "\n"
 
-    clinvar_file_data = controllers.clinvar_submission_file(store, submission, csv_type, clinvar_id)
+    clinvar_file_data = controllers.clinvar_submission_file(
+        store, submission, csv_type, clinvar_id
+    )
 
     if clinvar_file_data is None:
         return redirect(request.referrer)
@@ -373,17 +387,23 @@ def lock_phenomodel():
 def remove_phenomodel():
     """Remove an entire phenomodel using its id"""
     model_id = request.form.get("model_id")
-    model_obj = store.phenomodel_collection.find_one_and_delete({"_id": ObjectId(model_id)})
+    model_obj = store.phenomodel_collection.find_one_and_delete(
+        {"_id": ObjectId(model_id)}
+    )
     if model_obj is None:
         flash(f"An error occurred while deleting phenotype model", "warning")
     return redirect(request.referrer)
 
 
-@blueprint.route("/<institute_id>/phenomodel/<model_id>/edit_subpanel", methods=["POST"])
+@blueprint.route(
+    "/<institute_id>/phenomodel/<model_id>/edit_subpanel", methods=["POST"]
+)
 def checkbox_edit(institute_id, model_id):
     """Add or delete a single checkbox in a phenotyoe subpanel"""
     controllers.edit_subpanel_checkbox(model_id, request.form)
-    return redirect(url_for(".phenomodel", institute_id=institute_id, model_id=model_id))
+    return redirect(
+        url_for(".phenomodel", institute_id=institute_id, model_id=model_id)
+    )
 
 
 @blueprint.route("/<institute_id>/phenomodel/<model_id>", methods=["GET", "POST"])

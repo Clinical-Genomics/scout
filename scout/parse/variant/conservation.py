@@ -95,6 +95,8 @@ def parse_conservation_csq(transcript, field_key):
             else:
                 conservations.append("NotConserved")
     except ValueError:
-        LOG.warning("Error while parsing %s value:%s ", field_key, transcript.get(field_key))
+        LOG.warning(
+            "Error while parsing %s value:%s ", field_key, transcript.get(field_key)
+        )
 
     return conservations

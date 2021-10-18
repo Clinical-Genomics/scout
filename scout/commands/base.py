@@ -14,7 +14,6 @@ from scout.commands.delete import delete
 from scout.commands.download import download as download_command
 from scout.commands.export import export
 from scout.commands.index_command import index as index_command
-
 # Commands
 from scout.commands.load import load as load_command
 from scout.commands.serve import serve
@@ -69,9 +68,12 @@ def get_app(ctx=None):
                 or "scout",
                 MONGO_HOST=options.params.get("host") or cli_config.get("host"),
                 MONGO_PORT=options.params.get("port") or cli_config.get("port"),
-                MONGO_USERNAME=options.params.get("username") or cli_config.get("username"),
-                MONGO_PASSWORD=options.params.get("password") or cli_config.get("password"),
-                MONGO_URI=options.params.get("mongo_uri") or cli_config.get("mongo_uri"),
+                MONGO_USERNAME=options.params.get("username")
+                or cli_config.get("username"),
+                MONGO_PASSWORD=options.params.get("password")
+                or cli_config.get("password"),
+                MONGO_URI=options.params.get("mongo_uri")
+                or cli_config.get("mongo_uri"),
                 OMIM_API_KEY=cli_config.get("omim_api_key"),
             ),
             config_file=flask_conf,

@@ -5,43 +5,22 @@ from datetime import date
 from flask import url_for
 from flask_login import current_user
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_CRITERIA,
-    ACMG_MAP,
-    ACMG_OPTIONS,
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    CLINVAR_INHERITANCE_MODELS,
-    DISMISS_VARIANT_OPTIONS,
-    IGV_TRACKS,
-    MANUAL_RANK_OPTIONS,
-    MOSAICISM_OPTIONS,
-    VERBS_MAP,
-)
+from scout.constants import (ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP,
+                             ACMG_OPTIONS,
+                             CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                             CANCER_TIER_OPTIONS, CLINVAR_INHERITANCE_MODELS,
+                             DISMISS_VARIANT_OPTIONS, IGV_TRACKS,
+                             MANUAL_RANK_OPTIONS, MOSAICISM_OPTIONS, VERBS_MAP)
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-    user_institutes,
-    variant_case,
-)
+from scout.server.utils import (case_append_alignments, institute_and_case,
+                                user_institutes, variant_case)
 from scout.utils.scout_requests import fetch_refseq_version
 
-from .utils import (
-    add_gene_info,
-    callers,
-    clinsig_human,
-    default_panels,
-    end_position,
-    evaluation,
-    frequencies,
-    frequency,
-    is_affected,
-    predictions,
-)
+from .utils import (add_gene_info, callers, clinsig_human, default_panels,
+                    end_position, evaluation, frequencies, frequency,
+                    is_affected, predictions)
 
 LOG = logging.getLogger(__name__)
 
@@ -61,7 +40,10 @@ def tx_overview(variant_obj):
         for tx in gene.get("transcripts", []):
             ovw_tx = {}
 
-            if "refseq_identifiers" not in tx and tx.get("is_canonical", False) is False:
+            if (
+                "refseq_identifiers" not in tx
+                and tx.get("is_canonical", False) is False
+            ):
                 continue  # collect only RefSeq or canonical transcripts
 
             # ---- create content for the gene column -----#
@@ -96,7 +78,8 @@ def tx_overview(variant_obj):
             ovw_tx["transcript_id"] = tx.get("transcript_id")
             ovw_tx["is_primary"] = (
                 True
-                if tx.get("refseq_id") in gene.get("common", {}).get("primary_transcripts", [])
+                if tx.get("refseq_id")
+                in gene.get("common", {}).get("primary_transcripts", [])
                 else False
             )
             ovw_tx["is_canonical"] = tx.get("is_canonical")
@@ -304,7 +287,9 @@ def variant(
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    )
 
     variant_genes = variant_obj.get("genes", [])
     update_representative_gene(variant_obj, variant_genes)
@@ -316,9 +301,13 @@ def variant(
     is_affected(variant_obj, case_obj)
 
     if variant_obj.get("genetic_models"):
-        variant_models = set(model.split("_", 1)[0] for model in variant_obj["genetic_models"])
+        variant_models = set(
+            model.split("_", 1)[0] for model in variant_obj["genetic_models"]
+        )
         all_models = variant_obj.get("all_models", set())
-        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, all_models)
+        variant_obj["is_matching_inheritance"] = set.intersection(
+            variant_models, all_models
+        )
 
     # Prepare classification information for visualisation
     classification = variant_obj.get("acmg_classification")
@@ -433,10 +422,14 @@ def observations(store, loqusdb, case_obj, variant_obj):
     obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
 
     if not obs_data:
-        obs_data["total"] = loqusdb.case_count(variant_category=category, loqusdb_id=loqusdb_id)
+        obs_data["total"] = loqusdb.case_count(
+            variant_category=category, loqusdb_id=loqusdb_id
+        )
         return obs_data
 
-    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
+    user_institutes_ids = set(
+        [inst["_id"] for inst in user_institutes(store, current_user)]
+    )
 
     obs_data["cases"] = []
     for i, case_id in enumerate(obs_data.get("families", [])):
@@ -544,7 +537,8 @@ def clinvar_export(store, institute_id, case_name, variant_id):
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     pinned = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
+        store.variant(variant_id) or variant_id
+        for variant_id in case_obj.get("suspects", [])
     ]
     variant_obj = store.variant(variant_id)
 

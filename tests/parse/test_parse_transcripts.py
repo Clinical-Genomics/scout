@@ -7,11 +7,15 @@ def test_parse_cosmic_csq_cosmic():
     cosmic_id = "COSV99072206"
 
     # GIVEN a CSQ entry containing a specific 'COSMIC' key
-    csq_header = "Consequence|COSMIC|COSMIC_CDS|COSMIC_GENE|COSMIC_STRAND|COSMIC_CNT|COSMIC_AA"
+    csq_header = (
+        "Consequence|COSMIC|COSMIC_CDS|COSMIC_GENE|COSMIC_STRAND|COSMIC_CNT|COSMIC_AA"
+    )
     csq_entry = "missense_variant|{0}|c.913T>G|POLQ||2|p.S305A".format(cosmic_id)
 
     header = [word.upper() for word in csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
+    ]
 
     # WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -29,7 +33,9 @@ def test_parse_transcripts():
 
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
+    ]
     assert len(raw_transcripts) == 3
 
     ## WHEN parsing the transcript
@@ -49,7 +55,9 @@ def test_parse_functional_annotation(vep_csq_header, vep_csq):
     """Test parsing functional annotation"""
     ## GIVEN a transcript with the functional annotation in the CSQ
     header = [word.upper() for word in vep_csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")
+    ]
     transcripts = parse_transcripts(raw_transcripts)
 
     for transcript in transcripts:
@@ -60,7 +68,9 @@ def test_parse_optional_hgnc_annotation(vep_csq_header, vep_csq):
     """Test parsing the HGNC id from the CSQ field"""
     ## GIVEN a transcript with the optional hgnc annotation
     header = [word.upper() for word in vep_csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")
+    ]
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
 
@@ -78,7 +88,9 @@ def test_parse_vep_freq_thousand_g():
 
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
+    ]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -94,7 +106,9 @@ def test_parse_vep_freq_thousand_g_alt(vep_csq_header, vep_csq):
     freq = 0.9242
     header = [word.upper() for word in vep_csq_header.split("|")]
 
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")
+    ]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -109,7 +123,9 @@ def test_parse_vep_freq_gnomad(vep_csq_header, vep_csq):
     ## GIVEN a transcript with the gnomAD_AF key/value
 
     header = [word.upper() for word in vep_csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")
+    ]
 
     gnomad_maf = float(raw_transcripts[0]["GNOMAD_AF"])
 
@@ -127,7 +143,9 @@ def test_parse_vep_freq_mtgnomad(vep_csq_header, vep_csq):
     ## GIVEN a transcript with the gnomAD_AF key/value
 
     header = [word.upper() for word in vep_csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")
+    ]
 
     gnomad_mt_hom = float(raw_transcripts[0]["GNOMAD_MT_AF_HOM"])
     gnomad_mt_het = float(raw_transcripts[0]["GNOMAD_MT_AF_HET"])
@@ -149,7 +167,9 @@ def test_parse_vep_freq_exac():
     csq_entry = "C|missense_variant|{0}".format(freq)
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
+    ]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -168,7 +188,9 @@ def test_parse_vep_freq_thousand_g_max():
     csq_entry = "C|missense_variant|{0}|{1}".format(freqs[0], freqs[1])
     header = [word.upper() for word in csq_header.split("|")]
 
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
+    ]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)
@@ -187,7 +209,9 @@ def test_parse_superdups_fractmatch():
     csq_entry = "C|missense_variant|{0}&{1}".format(fract_match[0], fract_match[1])
 
     header = [word.upper() for word in csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in csq_entry.split(",")
+    ]
 
     assert raw_transcripts[0]["GENOMIC_SUPERDUPS_FRAC_MATCH"] == "0.992904&0.98967"
 
@@ -202,7 +226,9 @@ def test_parse_cadd(vep_csq_header, vep_csq):
 
     # GIVEN a transcript with the CADD score in th CSQ
     header = [word.upper() for word in vep_csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")
+    ]
 
     tx_cadd = float(raw_transcripts[0].get("CADD_PHRED"))
 
@@ -219,7 +245,9 @@ def test_parse_spliceai(vep_103_csq_header, vep_103_csq):
 
     # GIVEN a transcript with the CADD score in th CSQ
     header = [word.upper() for word in vep_103_csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_103_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_103_csq.split(",")
+    ]
 
     tx_spliceai_delta_position = 3
 
@@ -235,7 +263,9 @@ def test_parse_hg38_mane_transcripts(vep_csq_header, vep_csq):
     """Testing MANE trascripts parsing for genome build 38"""
     # GIVEN a transcript with the MANE trancript value in th CSQ
     header = [word.upper() for word in vep_csq_header.split("|")]
-    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")]
+    raw_transcripts = [
+        dict(zip(header, entry.split("|"))) for entry in vep_csq.split(",")
+    ]
 
     ## WHEN parsing the transcripts
     transcripts = parse_transcripts(raw_transcripts)

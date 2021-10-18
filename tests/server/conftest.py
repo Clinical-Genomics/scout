@@ -553,7 +553,9 @@ def sv_var_obj():
                         "sift_prediction": "unknown",
                         "region_annotations": ["ncRNA_exonic"],
                         "swiss_prot": "unknown",
-                        "functional_annotations": ["non_coding_transcript_exon_variant"],
+                        "functional_annotations": [
+                            "non_coding_transcript_exon_variant"
+                        ],
                         "is_canonical": false,
                         "biotype": "processed_transcript",
                         "strand": "-",

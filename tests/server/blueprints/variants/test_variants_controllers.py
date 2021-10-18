@@ -8,16 +8,9 @@ from wtforms import SelectField, StringField
 
 from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
-    compounds_need_updating,
-    gene_panel_choices,
-    match_gene_txs_variant_txs,
-    populate_chrom_choices,
-    sv_variants,
-    update_form_hgnc_symbols,
-    variant_export_lines,
-    variants,
-    variants_export_header,
-)
+    compounds_need_updating, gene_panel_choices, match_gene_txs_variant_txs,
+    populate_chrom_choices, sv_variants, update_form_hgnc_symbols,
+    variant_export_lines, variants, variants_export_header)
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -69,7 +62,9 @@ def test_populate_chrom_choices(app):
     populate_chrom_choices(form, case)
     choices = form.chrom.choices
 
-    for nr, choice in enumerate(choices[1:]):  # first choice is not a chromosome, but all chroms
+    for nr, choice in enumerate(
+        choices[1:]
+    ):  # first choice is not a chromosome, but all chroms
         assert choice[0] == CHROMOSOMES_38[nr]
 
 
@@ -86,7 +81,9 @@ def test_gene_panel_choices(institute_obj, case_obj):
     case_obj["panels"] = [case_panel]
 
     # AND an institute with a custom gene panel:
-    institute_obj["gene_panels"] = {"institute_panel_name": "Institute Panel display name"}
+    institute_obj["gene_panels"] = {
+        "institute_panel_name": "Institute Panel display name"
+    }
 
     # WHEN the functions creates the option for the filters select
     panel_options = gene_panel_choices(institute_obj, case_obj)
@@ -125,10 +122,14 @@ def test_variants_assessment_shared_with_group(
     adapter.case_collection.insert_one(other_case_obj)
 
     # WHEN setting the same group id for the original case
-    adapter.case_collection.find_one_and_update({"_id": case_id}, {"$set": {"group": [group_id]}})
+    adapter.case_collection.find_one_and_update(
+        {"_id": case_id}, {"$set": {"group": [group_id]}}
+    )
 
     # GIVEN a clinical variant from one case
-    variant = adapter.variant_collection.find_one({"case_id": case_id, "variant_type": "clinical"})
+    variant = adapter.variant_collection.find_one(
+        {"case_id": case_id, "variant_type": "clinical"}
+    )
 
     # GIVEN a copy of the variant for the other case
     other_variant_obj = copy.deepcopy(variant)
@@ -188,7 +189,9 @@ def test_variants_research_no_shadow_clinical_assessments(
     # called.
     number_variants = len(list(variants_query_res.clone()))
 
-    res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+    res = variants(
+        adapter, institute_obj, case_obj, variants_query_res, number_variants
+    )
     res_variants = res["variants"]
 
     LOG.debug("Variants: {}".format(res_variants))
@@ -243,7 +246,9 @@ def test_variants_research_shadow_clinical_assessments(
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
     number_variants = len(list(variants_query_res.clone()))
-    res = variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+    res = variants(
+        adapter, institute_obj, case_obj, variants_query_res, number_variants
+    )
     res_variants = res["variants"]
 
     # THEN it is returned
@@ -297,12 +302,16 @@ def test_sv_variants_research_shadow_clinical_assessments(
 
     # WHEN filtering for that variant in research
     variants_query = {"variant_type": "research"}
-    variants_query_res = adapter.variants(case_obj["_id"], query=variants_query, category="sv")
+    variants_query_res = adapter.variants(
+        case_obj["_id"], query=variants_query, category="sv"
+    )
     assert variants_query_res
     # NOTE in tests list length will be used, in live code count_documents{query} is
     # called.
     number_variants = len(list(variants_query_res.clone()))
-    res = sv_variants(adapter, institute_obj, case_obj, variants_query_res, number_variants)
+    res = sv_variants(
+        adapter, institute_obj, case_obj, variants_query_res, number_variants
+    )
     res_variants = res["variants"]
 
     LOG.debug("Variants: {}".format(res_variants))
@@ -361,7 +370,9 @@ def test_variant_csv_export(real_variant_database, case_obj):
     case_id = case_obj["_id"]
 
     # Given a database with variants from a case
-    snv_variants = adapter.variant_collection.find({"case_id": case_id, "category": "snv"})
+    snv_variants = adapter.variant_collection.find(
+        {"case_id": case_id, "category": "snv"}
+    )
 
     # Given 5 variants to be exported
     variants_to_export = []

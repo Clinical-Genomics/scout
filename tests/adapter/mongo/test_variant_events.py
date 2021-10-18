@@ -8,7 +8,9 @@ import pytest
 from scout.constants import VERBS_MAP
 
 
-def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj):
+def test_matching_tiered(
+    adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj
+):
     """Test retrieving matching tiered variants from other cancer cases"""
 
     # GIVEN a database containing a cancer variant in another case
@@ -112,7 +114,9 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
     assert sum(1 for i in adapter.event_collection.find()) == 4
 
 
-def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
+def test_mark_partial_causative(
+    adapter, institute_obj, case_obj, user_obj, variant_obj
+):
 
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
@@ -149,7 +153,9 @@ def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, vari
     assert sum(1 for i in adapter.event_collection.find()) == 2
 
 
-def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
+def test_unmark_partial_causative(
+    adapter, institute_obj, case_obj, user_obj, variant_obj
+):
 
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)

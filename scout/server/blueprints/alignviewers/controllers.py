@@ -80,7 +80,9 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
 
         coverage_wig = ind["rna_coverage_bigwig"]
         splicej_bed = ind["splice_junctions_bed"]
-        splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
+        splicej_bed_index = (
+            f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
+        )
         if splicej_bed_index is None:
             flash(f"Missing bed file index for individual {ind['display_name']}")
 
@@ -115,7 +117,9 @@ def set_common_tracks(display_obj, build):
     user_obj = store.user(email=current_user.email)
 
     # Set up IGV tracks that are common for all cases:
-    display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
+    display_obj["reference_track"] = HUMAN_REFERENCE[
+        build
+    ]  # Human reference is always present
 
     # if user settings for igv tracks exist -> use these settings, otherwise display all tracks
     custom_tracks_names = user_obj.get("igv_tracks") or CUSTOM_TRACK_NAMES

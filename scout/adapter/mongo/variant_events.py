@@ -27,7 +27,9 @@ class VariantEventHandler(object):
         Returns:
             updated_case
         """
-        LOG.info("Creating event for pinning variant {0}".format(variant["display_name"]))
+        LOG.info(
+            "Creating event for pinning variant {0}".format(variant["display_name"])
+        )
 
         # add variant to list of pinned references in the case model
         updated_case = self.case_collection.find_one_and_update(
@@ -63,7 +65,9 @@ class VariantEventHandler(object):
         Returns:
             updated_case(dict)
         """
-        LOG.info("Creating event for unpinning variant {0}".format(variant["display_name"]))
+        LOG.info(
+            "Creating event for unpinning variant {0}".format(variant["display_name"])
+        )
 
         LOG.info("Remove variant from list of references in the case" " model")
 
@@ -122,7 +126,10 @@ class VariantEventHandler(object):
             subject=variant["display_name"],
         )
 
-        LOG.info("Creating event for ordering sanger for case" " {0}".format(case["display_name"]))
+        LOG.info(
+            "Creating event for ordering sanger for case"
+            " {0}".format(case["display_name"])
+        )
 
         self.create_event(
             institute=institute,
@@ -282,7 +289,9 @@ class VariantEventHandler(object):
             else:
                 tiered[tier_id] = {
                     "links": {tiered_event["link"]},
-                    "label": CANCER_TIER_OPTIONS.get(tier_id, {}).get("label_class", "secondary"),
+                    "label": CANCER_TIER_OPTIONS.get(tier_id, {}).get(
+                        "label_class", "secondary"
+                    ),
                 }
         return tiered
 
@@ -306,7 +315,9 @@ class VariantEventHandler(object):
             LOG.info("Validation options: %s", ", ".join(SANGER_OPTIONS))
             return
 
-        LOG.info("Set validation status to %s for %s", validate_type, variant["display_name"])
+        LOG.info(
+            "Set validation status to %s for %s", validate_type, variant["display_name"]
+        )
         updated_variant = self.variant_collection.find_one_and_update(
             {"_id": variant["_id"]},
             {"$set": {"validation": validate_type}},
@@ -325,7 +336,9 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def mark_partial_causative(self, institute, case, user, link, variant, omim_terms, hpo_terms):
+    def mark_partial_causative(
+        self, institute, case, user, link, variant, omim_terms, hpo_terms
+    ):
         """Create an event for marking a variant as partial causative.
            When a variant is marked as partial causative the case will not be marked as solved.
            Partial causatives have associated phenotypes (OMIM and HPO terms)
@@ -407,7 +420,9 @@ class VariantEventHandler(object):
         )
         return updated_case
 
-    def mark_causative(self, institute, case, user, link, variant, partial_causative=False):
+    def mark_causative(
+        self, institute, case, user, link, variant, partial_causative=False
+    ):
         """Create an event for marking a variant causative.
 
         Arguments:
@@ -422,10 +437,14 @@ class VariantEventHandler(object):
         """
         display_name = variant["display_name"]
         LOG.info(
-            "Mark variant {0} as causative in case {1}".format(display_name, case["display_name"])
+            "Mark variant {0} as causative in case {1}".format(
+                display_name, case["display_name"]
+            )
         )
 
-        LOG.info("Adding variant to causatives in case {0}".format(case["display_name"]))
+        LOG.info(
+            "Adding variant to causatives in case {0}".format(case["display_name"])
+        )
 
         LOG.info("Marking case {0} as solved".format(case["display_name"]))
 
@@ -435,7 +454,10 @@ class VariantEventHandler(object):
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
-        LOG.info("Creating case event for marking {0}" " causative".format(variant["display_name"]))
+        LOG.info(
+            "Creating case event for marking {0}"
+            " causative".format(variant["display_name"])
+        )
 
         self.create_event(
             institute=institute,
@@ -448,7 +470,10 @@ class VariantEventHandler(object):
             subject=variant["display_name"],
         )
 
-        LOG.info("Creating variant event for marking {0}" " causative".format(case["display_name"]))
+        LOG.info(
+            "Creating variant event for marking {0}"
+            " causative".format(case["display_name"])
+        )
 
         self.create_event(
             institute=institute,
@@ -496,7 +521,8 @@ class VariantEventHandler(object):
         )
 
         LOG.info(
-            "Creating events for unmarking variant {0} as partial " "causative".format(display_name)
+            "Creating events for unmarking variant {0} as partial "
+            "causative".format(display_name)
         )
 
         self.create_event(
@@ -539,7 +565,9 @@ class VariantEventHandler(object):
         """
         display_name = variant["display_name"]
         LOG.info(
-            "Remove variant {0} as causative in case {1}".format(display_name, case["display_name"])
+            "Remove variant {0} as causative in case {1}".format(
+                display_name, case["display_name"]
+            )
         )
 
         updated_case = self.case_collection.find_one_and_update(
@@ -557,7 +585,10 @@ class VariantEventHandler(object):
                 return_document=pymongo.ReturnDocument.AFTER,
             )
 
-        LOG.info("Creating events for unmarking variant {0} " "causative".format(display_name))
+        LOG.info(
+            "Creating events for unmarking variant {0} "
+            "causative".format(display_name)
+        )
 
         self.create_event(
             institute=institute,
@@ -697,7 +728,9 @@ class VariantEventHandler(object):
         LOG.debug("Variant updated")
         return updated_variant
 
-    def update_dismiss_variant(self, institute, case, user, link, variant, dismiss_variant):
+    def update_dismiss_variant(
+        self, institute, case, user, link, variant, dismiss_variant
+    ):
         """Create an event for updating the manual dismiss variant entry
 
           This function will create a event and update the dismiss variant
@@ -812,7 +845,9 @@ class VariantEventHandler(object):
         LOG.debug("Variant updated")
         return updated_variant
 
-    def update_acmg(self, institute_obj, case_obj, user_obj, link, variant_obj, acmg_str):
+    def update_acmg(
+        self, institute_obj, case_obj, user_obj, link, variant_obj, acmg_str
+    ):
         """Create an event for updating the ACMG classification of a variant.
 
         Arguments:
@@ -836,7 +871,9 @@ class VariantEventHandler(object):
             variant=variant_obj,
             subject=variant_obj["display_name"],
         )
-        LOG.info("Setting ACMG to {} for: {}".format(acmg_str, variant_obj["display_name"]))
+        LOG.info(
+            "Setting ACMG to {} for: {}".format(acmg_str, variant_obj["display_name"])
+        )
 
         if acmg_str is None:
             updated_variant = self.variant_collection.find_one_and_update(

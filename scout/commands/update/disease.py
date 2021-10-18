@@ -19,11 +19,9 @@ from scout.constants import UPDATE_DISEASES_RESOURCES
 from scout.load.hpo import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
-from scout.utils.scout_requests import (
-    fetch_hpo_terms,
-    fetch_hpo_to_genes_to_disease,
-    fetch_mim_files,
-)
+from scout.utils.scout_requests import (fetch_hpo_terms,
+                                        fetch_hpo_to_genes_to_disease,
+                                        fetch_mim_files)
 
 LOG = logging.getLogger(__name__)
 
@@ -55,7 +53,9 @@ def _fetch_downloaded_resources(resources, downloads_folder):
             if resource_exists:
                 resources[resname] = get_file_handle(resource_path).readlines()
         if resname not in resources:
-            LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
+            LOG.error(
+                f"Resource file '{resname}' was not found in provided downloads folder."
+            )
             raise click.Abort()
 
 

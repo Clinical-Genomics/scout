@@ -93,7 +93,10 @@ def test_update_key_non_existent_path(mock_app, real_populated_database, case_ob
 
     # THEN the command should ask user to confirm save action
     assert result.exit_code == 1
-    assert "The provided path was not found on the server, update key anyway?" in result.output
+    assert (
+        "The provided path was not found on the server, update key anyway?"
+        in result.output
+    )
 
 
 def test_update_alignment_path(mock_app, real_populated_database, bam_path):

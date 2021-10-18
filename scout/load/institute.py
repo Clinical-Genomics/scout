@@ -5,7 +5,9 @@ from scout.build import build_institute
 LOG = logging.getLogger(__name__)
 
 
-def load_institute(adapter, internal_id, display_name, sanger_recipients=None, loqusdb_id=None):
+def load_institute(
+    adapter, internal_id, display_name, sanger_recipients=None, loqusdb_id=None
+):
     """Load a institute into the database
 
     Args:

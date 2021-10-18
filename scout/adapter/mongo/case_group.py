@@ -18,7 +18,9 @@ class CaseGroupHandler(object):
           owner(str): institute id
         """
 
-        result = self.case_group_collection.insert_one({"owner": owner, "label": "Group"})
+        result = self.case_group_collection.insert_one(
+            {"owner": owner, "label": "Group"}
+        )
 
         return result.inserted_id
 
@@ -38,7 +40,9 @@ class CaseGroupHandler(object):
         Args:
             case_group_id(ObjectId)
         """
-        result = self.case_group_collection.find_one({"_id": case_group_id}, {"label": 1})
+        result = self.case_group_collection.find_one(
+            {"_id": case_group_id}, {"label": 1}
+        )
         label = result.get("label", "unlabeled")
 
         return label

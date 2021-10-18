@@ -1,17 +1,19 @@
 import copy
 import datetime
 import logging
+import re
 from fractions import Fraction
+from glob import glob
 from pathlib import Path
 from pprint import pprint as pp
-import re
-from glob import glob
 
 from ped_parser import FamilyParser
 
-from scout.constants import PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP, SEX_MAP
+from scout.constants import (PHENOTYPE_MAP, REV_PHENOTYPE_MAP, REV_SEX_MAP,
+                             SEX_MAP)
 from scout.exceptions import ConfigError, PedigreeError
-from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
+from scout.parse.peddy import (parse_peddy_ped, parse_peddy_ped_check,
+                               parse_peddy_sex_check)
 from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
 
@@ -147,7 +149,9 @@ def parse_custom_images(config_data):
                 if len(parsed_images) > 0:
                     sections[section_name] = parsed_images
                 else:
-                    LOG.warning(f"Section: {section_name} had no valid images, skipping")
+                    LOG.warning(
+                        f"Section: {section_name} had no valid images, skipping"
+                    )
             images[page_name] = sections
         elif page_name == "str":
             parsed_images = _parse_images_cnf(img_cnf[page_name])
@@ -225,7 +229,9 @@ def parse_case_data(
 
     if "gene_panels" in config_data:
         # handle whitespace in gene panel names
-        config_data["gene_panels"] = [panel.strip() for panel in config_data["gene_panels"]]
+        config_data["gene_panels"] = [
+            panel.strip() for panel in config_data["gene_panels"]
+        ]
         config_data["default_gene_panels"] = [
             panel.strip() for panel in config_data["default_gene_panels"]
         ]
@@ -253,7 +259,9 @@ def parse_case_data(
         LOG.info("Adding SMN info from {}.".format(config_data["smn_tsv"]))
         add_smn_info(config_data)
 
-    config_data["vcf_cancer"] = vcf_cancer if vcf_cancer else config_data.get("vcf_cancer")
+    config_data["vcf_cancer"] = (
+        vcf_cancer if vcf_cancer else config_data.get("vcf_cancer")
+    )
     config_data["vcf_cancer_sv"] = (
         vcf_cancer_sv if vcf_cancer_sv else config_data.get("vcf_cancer_sv")
     )
@@ -262,12 +270,18 @@ def parse_case_data(
         delivery_report if delivery_report else config_data.get("delivery_report")
     )
 
-    config_data["cnv_report"] = cnv_report if cnv_report else config_data.get("cnv_report")
+    config_data["cnv_report"] = (
+        cnv_report if cnv_report else config_data.get("cnv_report")
+    )
     config_data["coverage_qc_report"] = (
-        coverage_qc_report if coverage_qc_report else config_data.get("coverage_qc_report")
+        coverage_qc_report
+        if coverage_qc_report
+        else config_data.get("coverage_qc_report")
     )
     config_data["gene_fusion_report"] = (
-        gene_fusion_report if gene_fusion_report else config_data.get("gene_fusion_report")
+        gene_fusion_report
+        if gene_fusion_report
+        else config_data.get("gene_fusion_report")
     )
     config_data["gene_fusion_report_research"] = (
         gene_fusion_report_research
@@ -278,7 +292,9 @@ def parse_case_data(
     config_data["rank_model_version"] = str(config_data.get("rank_model_version", ""))
     config_data["rank_score_threshold"] = config_data.get("rank_score_threshold", 0)
 
-    config_data["sv_rank_model_version"] = str(config_data.get("sv_rank_model_version", ""))
+    config_data["sv_rank_model_version"] = str(
+        config_data.get("sv_rank_model_version", "")
+    )
 
     config_data["track"] = config_data.get("track", "rare")
     if config_data["vcf_cancer"] or config_data["vcf_cancer_sv"]:
@@ -316,7 +332,9 @@ def add_smn_info(config_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
+            LOG.warning(
+                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
+            )
 
 
 def add_smn_info_case(case_data):
@@ -348,7 +366,9 @@ def add_smn_info_case(case_data):
             ]:
                 ind[key] = smn_info[ind_id][key]
         except KeyError as e:
-            LOG.warning("Individual {} has no SMN info to update: {}.".format(ind_id, e))
+            LOG.warning(
+                "Individual {} has no SMN info to update: {}.".format(ind_id, e)
+            )
 
 
 def add_peddy_information(config_data):
@@ -389,7 +409,9 @@ def add_peddy_information(config_data):
         ind = analysis_inds[ind_id]
         # Check if peddy has inferred the ancestry
         if ind_id in ped_info:
-            ind["predicted_ancestry"] = ped_info[ind_id].get("ancestry-prediction", "UNKNOWN")
+            ind["predicted_ancestry"] = ped_info[ind_id].get(
+                "ancestry-prediction", "UNKNOWN"
+            )
         # Check if peddy has inferred the sex
         if ind_id in sex_check:
             if sex_check[ind_id]["error"]:
@@ -518,7 +540,9 @@ def parse_individual(sample):
     ind_info["tiddit_coverage_wig"] = sample.get(
         "tiddit_coverage_wig", sample.get("tiddit_coverage_wig")
     )
-    ind_info["upd_regions_bed"] = sample.get("upd_regions_bed", sample.get("upd_regions_bed"))
+    ind_info["upd_regions_bed"] = sample.get(
+        "upd_regions_bed", sample.get("upd_regions_bed")
+    )
     ind_info["upd_sites_bed"] = sample.get("upd_sites_bed", sample.get("upd_sites_bed"))
     ind_info["mt_bam"] = sample.get("mt_bam")
     ind_info["analysis_type"] = sample.get("analysis_type")
@@ -538,7 +562,9 @@ def parse_individual(sample):
     ind_info["smn2delta78_cn"] = sample.get("smn2delta78_cn", None)
     ind_info["smn_27134_cn"] = sample.get("smn_27134_cn", None)
 
-    ind_info["capture_kits"] = [sample.get("capture_kit")] if "capture_kit" in sample else []
+    ind_info["capture_kits"] = (
+        [sample.get("capture_kit")] if "capture_kit" in sample else []
+    )
 
     # Cancer specific values
     ind_info["tumor_type"] = sample.get("tumor_type")

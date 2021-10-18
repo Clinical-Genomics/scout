@@ -44,7 +44,9 @@ VARIANT_CATEGORIES = ["snv", "sv", "cancer", "cancer_sv", "str"]
     default=["wgs"],
     help="Type of analysis",
 )
-@click.option("--rank-threshold", type=click.INT, default=5, help="With rank threshold lower than")
+@click.option(
+    "--rank-threshold", type=click.INT, default=5, help="With rank threshold lower than"
+)
 @click.option("--variants-threshold", type=click.INT, help="With more variants than")
 @click.option(
     "--keep-ctg",
@@ -83,7 +85,9 @@ def variants(
         click.echo("--------------- DRY RUN COMMAND ---------------")
         items_name = "estimated deleted variants"
     else:
-        click.confirm("Variants are going to be deleted from database. Continue?", abort=True)
+        click.confirm(
+            "Variants are going to be deleted from database. Continue?", abort=True
+        )
 
     case_query = store.build_case_query(case_id, status, older_than, analysis_type)
     # Estimate the average size of a variant document in database
@@ -92,9 +96,7 @@ def variants(
     # Get all cases where case_query applies
     n_cases = store.case_collection.count_documents(case_query)
     cases = store.cases(query=case_query)
-    filters = (
-        f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
-    )
+    filters = f"Rank-score threshold:{rank_threshold}, case n. variants threshold:{variants_threshold}."
     click.echo("\t".join(DELETE_VARIANTS_HEADER))
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
@@ -105,11 +107,16 @@ def variants(
         # Get evaluated variants for the case that haven't been dismissed
         case_evaluated = store.evaluated_variants(case_id=case_id)
         evaluated_not_dismissed = [
-            variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant
+            variant["_id"]
+            for variant in case_evaluated
+            if "dismiss_variant" not in variant
         ]
         # Do not remove variants that are either pinned, causative or evaluated not dismissed
         variants_to_keep = (
-            case.get("suspects", []) + case.get("causatives", []) + evaluated_not_dismissed or []
+            case.get("suspects", [])
+            + case.get("causatives", [])
+            + evaluated_not_dismissed
+            or []
         )
         variants_query = store.delete_variants_query(
             case_id, variants_to_keep, rank_threshold, keep_ctg
@@ -244,7 +251,9 @@ def user(mail):
             inactivate_case = case_obj.get("status", "active") == "active" and case_obj[
                 "assignees"
             ] == [mail]
-            if adapter.unassign(institute_obj, case_obj, user_obj, link, inactivate_case):
+            if adapter.unassign(
+                institute_obj, case_obj, user_obj, link, inactivate_case
+            ):
                 updated_cases += 1
     click.echo(f"User was removed as assignee from {updated_cases} case(s).")
 
@@ -301,7 +310,9 @@ def case(institute, case_id, display_name):
         case_obj = adapter.case(case_id=case_id)
 
     if not case_obj:
-        click.echo("Coudn't find any case in database matching the provided parameters.")
+        click.echo(
+            "Coudn't find any case in database matching the provided parameters."
+        )
         raise click.Abort()
 
     LOG.info("Running deleting case {0}".format(case_id))

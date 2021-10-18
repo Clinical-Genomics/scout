@@ -16,7 +16,9 @@ LOG = logging.getLogger(__name__)
 
 def jsonconverter(obj):
     """Converts non-serializable onjects into str"""
-    LOG.warning(f"An object of type {type(obj)} is not json-serializable: converting it.")
+    LOG.warning(
+        f"An object of type {type(obj)} is not json-serializable: converting it."
+    )
     if "Form" in str(type(obj)):
         return obj.__dict__
     if isinstance(obj, datetime.datetime):
@@ -71,7 +73,8 @@ def institute_and_case(store, institute_id, case_name=None):
     if not current_user.is_admin:
         if institute_id not in current_user.institutes:
             if not case_name or not any(
-                inst_id in case_obj["collaborators"] for inst_id in current_user.institutes
+                inst_id in case_obj["collaborators"]
+                for inst_id in current_user.institutes
             ):
                 # you don't have access!!
                 flash("You don't have acccess to: {}".format(institute_id), "danger")
@@ -121,7 +124,9 @@ def variant_case(store, case_obj, variant_obj):
         return
 
     try:
-        vcf_path = store.get_region_vcf(case_obj, chrom=chrom, start=min(starts), end=max(ends))
+        vcf_path = store.get_region_vcf(
+            case_obj, chrom=chrom, start=min(starts), end=max(ends)
+        )
 
         # Create a reduced VCF with variants in the region
         case_obj["region_vcf_file"] = vcf_path

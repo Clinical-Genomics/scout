@@ -17,7 +17,9 @@ LOG = logging.getLogger(__name__)
 
 
 @click.command("case", short_help="Load a case")
-@click.option("--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be loaded")
+@click.option(
+    "--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be loaded"
+)
 @click.option(
     "--vcf-sv",
     type=click.Path(exists=True),
@@ -48,9 +50,15 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("--no-variants", is_flag=False)
 @click.argument("config", type=click.File("r"), required=False)
-@click.option("--peddy-ped", type=click.Path(exists=True), help="path to a peddy.ped file")
-@click.option("--peddy-sex", type=click.Path(exists=True), help="path to a sex_check.csv file")
-@click.option("--peddy-check", type=click.Path(exists=True), help="path to a ped_check.csv file")
+@click.option(
+    "--peddy-ped", type=click.Path(exists=True), help="path to a peddy.ped file"
+)
+@click.option(
+    "--peddy-sex", type=click.Path(exists=True), help="path to a sex_check.csv file"
+)
+@click.option(
+    "--peddy-check", type=click.Path(exists=True), help="path to a ped_check.csv file"
+)
 @with_appcontext
 def case(
     vcf,
@@ -105,7 +113,9 @@ def case(
         raise click.Abort()
     except KeyError as err:
         LOG.error(
-            "KeyError {} when loading '{}' {}".format(err, config.name, traceback.format_exc())
+            "KeyError {} when loading '{}' {}".format(
+                err, config.name, traceback.format_exc()
+            )
         )
         raise click.Abort()
 
@@ -130,7 +140,9 @@ def case(
         raise click.Abort()
     except KeyError as err:
         LOG.error(
-            "KeyError {} when loading '{}' {}".format(err, config.name, traceback.format_exc())
+            "KeyError {} when loading '{}' {}".format(
+                err, config.name, traceback.format_exc()
+            )
         )
         raise click.Abort()
     except Exception as err:

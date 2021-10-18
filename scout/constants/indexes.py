@@ -83,7 +83,9 @@ INDEXES = {
             name="caseid_category_chromosome_start_end",
             background=True,
         ),
-        IndexModel([("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True),
+        IndexModel(
+            [("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True
+        ),
         IndexModel(
             [("variant_id", ASCENDING), ("institute", ASCENDING)],
             name="variant_id_institute",
@@ -92,11 +94,15 @@ INDEXES = {
     ],
     "hpo_term": [
         IndexModel([("description", ASCENDING)], name="description"),
-        IndexModel([("description", TEXT)], default_language="english", name="description_text"),
+        IndexModel(
+            [("description", TEXT)], default_language="english", name="description_text"
+        ),
         IndexModel([("hpo_number", ASCENDING)], name="number", background=True),
     ],
     "event": [
-        IndexModel([("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"),
+        IndexModel(
+            [("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"
+        ),
         IndexModel([("variant_id", ASCENDING)], name="variant_id"),
         IndexModel(
             [
@@ -124,7 +130,9 @@ INDEXES = {
         )
     ],
     "case": [
-        IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text"),
+        IndexModel(
+            [("synopsis", TEXT)], default_language="english", name="synopsis_text"
+        ),
         IndexModel([("causatives", ASCENDING)], name="causatives"),
         IndexModel(
             [("collaborators", ASCENDING), ("updated_at", ASCENDING)],

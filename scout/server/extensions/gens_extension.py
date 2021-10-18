@@ -32,7 +32,9 @@ class GensViewer:
         settings = {}
         if self.host:
             settings = {
-                "host": f"{self.host}:{self.port}" if self.host and self.port else self.host,
+                "host": f"{self.host}:{self.port}"
+                if self.host and self.port
+                else self.host,
                 "genome_build": genome_build,
             }
         return {"display": bool(settings), **settings}

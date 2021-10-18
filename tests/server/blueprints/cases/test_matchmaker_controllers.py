@@ -6,10 +6,14 @@ from scout.server.blueprints.cases.controllers import redirect
 from scout.server.extensions import matchmaker, store
 
 
-def test_matchmaker_check_requirements_wrong_settings(app, user_obj, mocker, mock_redirect):
+def test_matchmaker_check_requirements_wrong_settings(
+    app, user_obj, mocker, mock_redirect
+):
     """Test that the matchmaker_check_requirements redirects if app settings requirements are not met"""
 
-    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an app that is not properly configured and it's missing either
     # matchmaker.host, matchmaker.accept, matchmaker.token
@@ -24,10 +28,14 @@ def test_matchmaker_check_requirements_wrong_settings(app, user_obj, mocker, moc
         assert resp.status_code == 302
 
 
-def test_matchmaker_check_requirements_unauthorized_user(app, user_obj, mocker, mock_redirect):
+def test_matchmaker_check_requirements_unauthorized_user(
+    app, user_obj, mocker, mock_redirect
+):
     """Test redirect when a user is not authorized to access MatchMaker functionality"""
 
-    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
@@ -38,10 +46,14 @@ def test_matchmaker_check_requirements_unauthorized_user(app, user_obj, mocker, 
         assert resp.status_code == 302
 
 
-def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj, mocker, mock_redirect):
+def test_matchmaker_add_no_genes_no_features(
+    app, user_obj, case_obj, mocker, mock_redirect
+):
     """Testing adding a case to matchmaker when the case has no set phenotype or candidate gene/variant"""
 
-    mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect
+    )
 
     # GIVEN a case with no phenotype terms:
     store.case_collection.find_one_and_update(
@@ -86,7 +98,12 @@ def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
         test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
         updated_case = store.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
-            {"$set": {"suspects": [test_variant["_id"]], "phenotype_terms": test_hpo_terms}},
+            {
+                "$set": {
+                    "suspects": [test_variant["_id"]],
+                    "phenotype_terms": test_hpo_terms,
+                }
+            },
         )
 
         # WHEN user submits the case using the matchmaker_add controller
@@ -134,10 +151,12 @@ def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
     """testing controller function to match one patient against other patients from Scout"""
     # GIVEN mocked responses from MME server
     mocker.patch(
-        "scout.server.extensions.matchmaker.match_internal", return_value={"status_code": 200}
+        "scout.server.extensions.matchmaker.match_internal",
+        return_value={"status_code": 200},
     )
     mocker.patch(
-        "scout.server.extensions.matchmaker.match_external", return_value={"status_code": 200}
+        "scout.server.extensions.matchmaker.match_external",
+        return_value={"status_code": 200},
     )
 
     # GIVEN an app containing MatchMaker connection params
@@ -156,20 +175,28 @@ def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
 
         # WHEN user submits a patient for matching on the Scout node (internal matching)
         ok_responses = controllers.matchmaker_match(
-            request, "internal", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+            request,
+            "internal",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
         )
         # The expected response should be succcess
         assert ok_responses > 0
 
         # WHEN user submits a patient for matching on a connected node (external matching)
         ok_responses = controllers.matchmaker_match(
-            request, "external", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+            request,
+            "external",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
         )
         # The expected response should be not succcess since there are no connected nodes
         assert ok_responses == 0
 
 
-def test_matchmaker_matches(app, mme_submission, match_objs, user_obj, case_obj, mocker):
+def test_matchmaker_matches(
+    app, mme_submission, match_objs, user_obj, case_obj, mocker
+):
     """Test controller that retrieves past matching results from the database and returns it to the view"""
     # GIVEN a mocked response from MME server
     mocker.patch(

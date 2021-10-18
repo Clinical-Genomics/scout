@@ -75,7 +75,9 @@ def variant_verification(
     position = variant_obj["position"]
     end_chrom = variant_obj.get("end_chrom", chromosome)
     chr_position = (
-        ":".join([chromosome, str(variant_obj["position"])]) if category in ["snv"] else "-"
+        ":".join([chromosome, str(variant_obj["position"])])
+        if category in ["snv"]
+        else "-"
     )
     breakpoint_1 = (
         ":".join([chromosome, str(variant_obj["position"])])
@@ -90,7 +92,8 @@ def variant_verification(
     variant_size = variant_obj.get("length")
     panels = ", ".join(variant_obj.get("panels", []))
     gene_identifiers = [
-        str(ident) for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
+        str(ident)
+        for ident in variant_obj.get("hgnc_symbols", variant_obj.get("hgnc_ids", []))
     ]
     hgnc_symbol = ", ".join(gene_identifiers)
     email_subj_gene_symbol = None
@@ -100,7 +103,9 @@ def variant_verification(
         email_subj_gene_symbol = hgnc_symbol
 
     gtcalls = [
-        "<li>{}: {}</li>".format(sample_obj["display_name"], sample_obj["genotype_call"])
+        "<li>{}: {}</li>".format(
+            sample_obj["display_name"], sample_obj["genotype_call"]
+        )
         for sample_obj in variant_obj["samples"]
     ]
     tx_changes = []
@@ -110,7 +115,9 @@ def variant_verification(
         view_type = "variant.variant"
         tx_changes = []
 
-        external_primer_link = external_primer_order_link(variant_obj, case_obj["genome_build"])
+        external_primer_link = external_primer_order_link(
+            variant_obj, case_obj["genome_build"]
+        )
 
         for gene_obj in variant_obj.get("genes", []):
             for tx_obj in gene_obj["transcripts"]:
@@ -120,9 +127,13 @@ def variant_verification(
 
                 for refseq_id in tx_obj.get("refseq_identifiers"):
                     transcript_line = []
-                    transcript_line.append(gene_obj.get("hgnc_symbol", gene_obj["hgnc_id"]))
+                    transcript_line.append(
+                        gene_obj.get("hgnc_symbol", gene_obj["hgnc_id"])
+                    )
 
-                    transcript_line.append("-".join([refseq_id, tx_obj["transcript_id"]]))
+                    transcript_line.append(
+                        "-".join([refseq_id, tx_obj["transcript_id"]])
+                    )
                     if "exon" in tx_obj:
                         transcript_line.append("".join(["exon", tx_obj["exon"]]))
                     elif "intron" in tx_obj:
@@ -130,7 +141,9 @@ def variant_verification(
                     else:
                         transcript_line.append("intergenic")
                     if "coding_sequence_name" in tx_obj:
-                        transcript_line.append(urllib.parse.unquote(tx_obj["coding_sequence_name"]))
+                        transcript_line.append(
+                            urllib.parse.unquote(tx_obj["coding_sequence_name"])
+                        )
                     else:
                         transcript_line.append("")
                     if "protein_sequence_name" in tx_obj:
@@ -183,8 +196,13 @@ def variant_verification(
 
     if order == "True":  # variant verification should be ordered
         # pin variant if it's not already pinned
-        if case_obj.get("suspects") is None or variant_obj["_id"] not in case_obj["suspects"]:
-            store.pin_variant(institute_obj, case_obj, user_obj, local_link, variant_obj)
+        if (
+            case_obj.get("suspects") is None
+            or variant_obj["_id"] not in case_obj["suspects"]
+        ):
+            store.pin_variant(
+                institute_obj, case_obj, user_obj, local_link, variant_obj
+            )
 
         email_subject = "SCOUT: validation of {} variant {}, ({})".format(
             category.upper(), display_name, email_subj_gene_symbol
@@ -198,8 +216,10 @@ def variant_verification(
         )
 
     else:  # variant verification should be cancelled
-        email_subject = "SCOUT: validation of {} variant {}, ({}), was CANCELLED!".format(
-            category.upper(), display_name, email_subj_gene_symbol
+        email_subject = (
+            "SCOUT: validation of {} variant {}, ({}), was CANCELLED!".format(
+                category.upper(), display_name, email_subj_gene_symbol
+            )
         )
         store.cancel_verification(
             institute=institute_obj,
@@ -266,7 +286,9 @@ def verification_email_body(
     """
     external_primer_link_html = ""
     if external_primer_link:
-        external_primer_link_html = f'<li><a href="{external_primer_link}">Order primers</a>'
+        external_primer_link_html = (
+            f'<li><a href="{external_primer_link}">Order primers</a>'
+        )
 
     html = """
        <ul>

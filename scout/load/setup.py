@@ -12,28 +12,23 @@ import yaml
 from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 from scout.build import build_institute
-
 # Case files
 # Gene panel
 from scout.demo import load_path, panel_path
-
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.load import load_cytobands, load_hgnc_genes, load_hpo, load_transcripts
-
+from scout.load import (load_cytobands, load_hgnc_genes, load_hpo,
+                        load_transcripts)
 # Resources
 from scout.parse.case import parse_case_data
 from scout.parse.panel import parse_gene_panel
 from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
-from scout.utils.scout_requests import (
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-    fetch_exac_constraint,
-    fetch_genes_to_hpo_to_disease,
-    fetch_hgnc,
-    fetch_mim_files,
-)
+from scout.utils.scout_requests import (fetch_ensembl_genes,
+                                        fetch_ensembl_transcripts,
+                                        fetch_exac_constraint,
+                                        fetch_genes_to_hpo_to_disease,
+                                        fetch_hgnc, fetch_mim_files)
 
 LOG = logging.getLogger(__name__)
 
@@ -116,7 +111,9 @@ def setup_scout(
         genemap_lines = mim_files["genemap2"]
 
     if resource_files.get("hpogenes_path"):
-        hpo_gene_lines = [line for line in get_file_handle(resource_files.get("hpogenes_path"))]
+        hpo_gene_lines = [
+            line for line in get_file_handle(resource_files.get("hpogenes_path"))
+        ]
     else:
         hpo_gene_lines = fetch_genes_to_hpo_to_disease()
 
@@ -165,7 +162,9 @@ def setup_scout(
         else:
             ensembl_transcripts = fetch_ensembl_transcripts(build=build)
         # Load the transcripts for a certain build
-        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+        transcripts = load_transcripts(
+            adapter, ensembl_transcripts, build, ensembl_genes
+        )
 
     hpo_terms_handle = None
     if resource_files.get("hpoterms_path"):

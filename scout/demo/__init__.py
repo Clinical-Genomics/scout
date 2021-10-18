@@ -33,14 +33,20 @@ clinical_snv_path = pkg_resources.resource_filename("scout", clinical_snv_file)
 clinical_sv_path = pkg_resources.resource_filename("scout", clinical_sv_file)
 clinical_str_path = pkg_resources.resource_filename("scout", clinical_str_file)
 
-customannotation_snv_path = pkg_resources.resource_filename("scout", customannotation_snv_file)
-vep_97_annotated_path = pkg_resources.resource_filename("scout", vep_97_annotated_snv_file)
+customannotation_snv_path = pkg_resources.resource_filename(
+    "scout", customannotation_snv_file
+)
+vep_97_annotated_path = pkg_resources.resource_filename(
+    "scout", vep_97_annotated_snv_file
+)
 
 research_snv_path = pkg_resources.resource_filename("scout", research_snv_file)
 research_sv_path = pkg_resources.resource_filename("scout", research_sv_file)
 
 cancer_snv_path = pkg_resources.resource_filename("scout", cancer_snv_file)
-cancer_sv_path = pkg_resources.resource_filename("scout", manta_annotated_sv_cancer_file)
+cancer_sv_path = pkg_resources.resource_filename(
+    "scout", manta_annotated_sv_cancer_file
+)
 
 empty_sv_clinical_path = pkg_resources.resource_filename("scout", empty_sv_file)
 
@@ -50,6 +56,10 @@ delivery_report_path = pkg_resources.resource_filename("scout", delivery_report_
 cnv_report_file = "demo/cancer_cnv_report.pdf"
 cnv_report_path = pkg_resources.resource_filename("scout", cnv_report_file)
 coverage_qc_report_file = "demo/cancer_coverage_qc_report.html"
-coverage_qc_report_path = pkg_resources.resource_filename("scout", coverage_qc_report_file)
+coverage_qc_report_path = pkg_resources.resource_filename(
+    "scout", coverage_qc_report_file
+)
 gene_fusion_report_file = "demo/draw-fusions-example.pdf"
-gene_fusion_report_path = pkg_resources.resource_filename("scout", gene_fusion_report_file)
+gene_fusion_report_path = pkg_resources.resource_filename(
+    "scout", gene_fusion_report_file
+)

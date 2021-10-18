@@ -8,34 +8,19 @@ import shutil
 from operator import itemgetter
 
 import requests
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    send_from_directory,
-    url_for,
-)
+from flask import (Blueprint, Response, abort, current_app, flash, jsonify,
+                   redirect, render_template, request, send_file,
+                   send_from_directory, url_for)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from requests.exceptions import ReadTimeout
 from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
-from scout.server.utils import (
-    institute_and_case,
-    jsonconverter,
-    templated,
-    user_institutes,
-    zip_dir_to_obj,
-)
+from scout.server.extensions import (RerunnerError, gens, mail, matchmaker,
+                                     rerunner, store)
+from scout.server.utils import (institute_and_case, jsonconverter, templated,
+                                user_institutes, zip_dir_to_obj)
 
 from . import controllers
 
@@ -118,11 +103,15 @@ def matchmaker_matches(institute_id, case_name):
     return data
 
 
-@cases_bp.route("/<institute_id>/<case_name>/mme_match/<target>", methods=["GET", "POST"])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/mme_match/<target>", methods=["GET", "POST"]
+)
 def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    match_results = controllers.matchmaker_match(request, target, institute_id, case_name)
+    match_results = controllers.matchmaker_match(
+        request, target, institute_id, case_name
+    )
     return redirect(request.referrer)
 
 
@@ -229,7 +218,9 @@ def pdf_case_report(institute_id, case_name):
 
     # workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") is not None:
-        with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
+        with open(
+            os.path.join(cases_bp.static_folder, "madeline.svg"), "w"
+        ) as temp_madeline:
             temp_madeline.write(case_obj["madeline_info"])
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
@@ -247,7 +238,9 @@ def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # create a temp folder to write excel files into
-    temp_excel_dir = os.path.join(cases_bp.static_folder, "_".join([case_name, "mt_reports"]))
+    temp_excel_dir = os.path.join(
+        cases_bp.static_folder, "_".join([case_name, "mt_reports"])
+    )
     os.makedirs(temp_excel_dir, exist_ok=True)
 
     if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
@@ -260,7 +253,8 @@ def mt_report(institute_id, case_name):
             data,
             mimetype="application/zip",
             as_attachment=True,
-            attachment_filename="_".join(["scout", case_name, "MT_report", today]) + ".zip",
+            attachment_filename="_".join(["scout", case_name, "MT_report", today])
+            + ".zip",
             cache_timeout=0,
         )
 
@@ -304,7 +298,9 @@ def case_diagnosis(institute_id, case_name):
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
-@cases_bp.route("/<institute_id>/<case_name>/phenotypes/<phenotype_id>", methods=["POST"])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/phenotypes/<phenotype_id>", methods=["POST"]
+)
 def phenotypes(institute_id, case_name, phenotype_id=None):
     """Handle phenotypes."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -324,7 +320,9 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
             omim_term = None
 
             phenotype_term = request.form["hpo_term"]
-            phenotype_inds = request.form.getlist("phenotype_inds")  # Individual-level phenotypes
+            phenotype_inds = request.form.getlist(
+                "phenotype_inds"
+            )  # Individual-level phenotypes
 
             if phenotype_term.startswith("HP:") or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(" | ", 1)[0]
@@ -415,7 +413,9 @@ def phenotypes_actions(institute_id, case_name):
 
     if action == "PHENOMIZER":
         if len(hpo_ids) == 0:
-            hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
+            hpo_ids = [
+                term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])
+            ]
 
         username = current_app.config["PHENOMIZER_USERNAME"]
         password = current_app.config["PHENOMIZER_PASSWORD"]
@@ -442,12 +442,16 @@ def phenotypes_actions(institute_id, case_name):
 
     if action == "GENERATE":
         if len(hpo_ids) == 0:
-            hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
+            hpo_ids = [
+                term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])
+            ]
         results = store.generate_hpo_gene_list(*hpo_ids)
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get("min_match") or 1)
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
-        store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
+        store.update_dynamic_gene_list(
+            case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids
+        )
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
@@ -511,7 +515,9 @@ def status(institute_id, case_name):
 
 
 @cases_bp.route("/<institute_id>/<case_name>/assign", methods=["POST"])
-@cases_bp.route("/<institute_id>/<case_name>/<user_id>/<inactivate>/assign", methods=["POST"])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<user_id>/<inactivate>/assign", methods=["POST"]
+)
 def assign(institute_id, case_name, user_id=None, inactivate=False):
     """Assign and unassign a user from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -640,7 +646,9 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
     elif request.form["action"] == "DELETE":
         if partial_causative == "True":
-            store.unmark_partial_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+            store.unmark_partial_causative(
+                institute_obj, case_obj, user_obj, link, variant_obj
+            )
         else:
             store.unmark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
 
@@ -793,7 +801,9 @@ def rerun(institute_id, case_name):
     sender = current_app.config.get("MAIL_USERNAME")
     recipient = current_app.config.get("TICKET_SYSTEM_EMAIL")
 
-    controllers.rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
+    controllers.rerun(
+        store, mail, current_user, institute_id, case_name, sender, recipient
+    )
     return redirect(request.referrer)
 
 
@@ -841,11 +851,15 @@ def cohorts(institute_id, case_name):
 def default_panels(institute_id, case_name):
     """Update default panels for a case."""
     panel_ids = request.form.getlist("panel_ids")
-    controllers.update_default_panels(store, current_user, institute_id, case_name, panel_ids)
+    controllers.update_default_panels(
+        store, current_user, institute_id, case_name, panel_ids
+    )
     return redirect(request.referrer)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/update-clinical-filter-hpo", methods=["POST"])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/update-clinical-filter-hpo", methods=["POST"]
+)
 def update_clinical_filter_hpo(institute_id, case_name):
     """Update default panels for a case."""
     hpo_clinical_filter = request.form.get("hpo_clinical_filter")
@@ -871,10 +885,14 @@ def add_case_group(institute_id, case_name):
     return redirect(request.referrer + "#case_groups")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/<case_group>/remove_case_group", methods=["GET"])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<case_group>/remove_case_group", methods=["GET"]
+)
 def remove_case_group(institute_id, case_name, case_group):
     """Unbind a case group from a case. Remove the group if it is no longer in use."""
-    controllers.remove_case_group(store, current_user, institute_id, case_name, case_group)
+    controllers.remove_case_group(
+        store, current_user, institute_id, case_name, case_group
+    )
 
     return redirect(request.referrer + "#case_groups")
 
@@ -889,7 +907,9 @@ def case_group_update_label(case_group):
     return redirect(request.referrer + "#case_groups")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/download-hpo-genes/<category>", methods=["GET"])
+@cases_bp.route(
+    "/<institute_id>/<case_name>/download-hpo-genes/<category>", methods=["GET"]
+)
 def download_hpo_genes(institute_id, case_name, category):
     """Download the genes contained in a case dynamic gene list
 
@@ -904,7 +924,9 @@ def download_hpo_genes(institute_id, case_name, category):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Create export object consisting of dynamic phenotypes with associated genes as a dictionary
     is_clinical = category != "research"
-    phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
+    phenotype_terms_with_genes = controllers.phenotypes_genes(
+        store, case_obj, is_clinical
+    )
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
         html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
@@ -931,7 +953,9 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     attachment_filename = ".".join(
         [display_name, case_obj["display_name"], case_obj["_id"], "vcf2cytosure.cgh"]
     )
-    LOG.debug("Attempt to deliver file {0} from dir {1}".format(attachment_filename, outdir))
+    LOG.debug(
+        "Attempt to deliver file {0} from dir {1}".format(attachment_filename, outdir)
+    )
     return send_from_directory(
         outdir, filename, attachment_filename=attachment_filename, as_attachment=True
     )

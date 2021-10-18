@@ -33,7 +33,9 @@ def test_load_institute(empty_mock_app):
 
     ## THEN assert logging is correct
     assert (
-        "Adding institute with internal_id: {0} and display_name: {1}".format(ins_id, display_name)
+        "Adding institute with internal_id: {0} and display_name: {1}".format(
+            ins_id, display_name
+        )
         in result.output
     )
 
@@ -80,7 +82,11 @@ def test_load_institute_exception(empty_mock_app):
     display_name = "A special name"
 
     ## WHEN loading the same institute into the database twice an error code is returned
-    result_ok = runner.invoke(cli, ["load", "institute", "-i", ins_id, "-d", display_name])
-    result_error = runner.invoke(cli, ["load", "institute", "-i", ins_id, "-d", display_name])
+    result_ok = runner.invoke(
+        cli, ["load", "institute", "-i", ins_id, "-d", display_name]
+    )
+    result_error = runner.invoke(
+        cli, ["load", "institute", "-i", ins_id, "-d", display_name]
+    )
     ## THEN assert exitcode is non-zero
     assert result_error.exit_code == 1

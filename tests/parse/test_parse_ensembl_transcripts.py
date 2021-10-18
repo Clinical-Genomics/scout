@@ -1,4 +1,5 @@
-from scout.parse.ensembl import parse_ensembl_line, parse_ensembl_transcripts, parse_transcripts
+from scout.parse.ensembl import (parse_ensembl_line, parse_ensembl_transcripts,
+                                 parse_transcripts)
 
 
 def test_parse_ensembl_line(unparsed_transcript):
@@ -32,7 +33,10 @@ def test_parse_ensembl_line(unparsed_transcript):
     ## THEN assert the parsed transcript is as expected
     assert parsed_transcript["chrom"] == unparsed_transcript["chrom"]
     assert parsed_transcript["ensembl_gene_id"] == unparsed_transcript["ens_gene_id"]
-    assert parsed_transcript["ensembl_transcript_id"] == unparsed_transcript["ens_transcript_id"]
+    assert (
+        parsed_transcript["ensembl_transcript_id"]
+        == unparsed_transcript["ens_transcript_id"]
+    )
     assert parsed_transcript["transcript_start"] == unparsed_transcript["start"]
     assert parsed_transcript["transcript_end"] == unparsed_transcript["end"]
     assert parsed_transcript["refseq_mrna"] == unparsed_transcript["refseq_mrna"]
