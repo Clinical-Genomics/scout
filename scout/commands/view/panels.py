@@ -16,7 +16,9 @@ def panels(institute):
     LOG.info("Running scout view panels")
     adapter = store
 
-    panel_objs = [panel for panel in adapter.gene_panels(institute_id=institute, include_hidden=True)]
+    panel_objs = [
+        panel for panel in adapter.gene_panels(institute_id=institute, include_hidden=True)
+    ]
     if len(panel_objs) == 0:
         LOG.info("No panels found")
         raise click.Abort()
