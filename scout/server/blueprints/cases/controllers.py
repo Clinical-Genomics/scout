@@ -16,26 +16,13 @@ from flask_mail import Message
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
-from scout.constants import (
-    CANCER_PHENOTYPE_MAP,
-    CASE_REPORT_CASE_FEATURES,
-    CASE_REPORT_CASE_IND_FEATURES,
-    CASE_REPORT_VARIANT_TYPES,
-    MT_COV_STATS_HEADER,
-    MT_EXPORT_HEADER,
-    PHENOTYPE_GROUPS,
-    PHENOTYPE_MAP,
-    SEX_MAP,
-    VARIANT_REPORT_VARIANT_FEATURES,
-    VERBS_MAP,
-)
-from scout.constants.variant_tags import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    GENETIC_MODELS,
-    MANUAL_RANK_OPTIONS,
-)
+from scout.constants import (CANCER_PHENOTYPE_MAP, CASE_REPORT_CASE_FEATURES,
+                             CASE_REPORT_CASE_IND_FEATURES, CASE_REPORT_VARIANT_TYPES,
+                             MT_COV_STATS_HEADER, MT_EXPORT_HEADER, PHENOTYPE_GROUPS, PHENOTYPE_MAP,
+                             SEX_MAP, VARIANT_REPORT_VARIANT_FEATURES, VERBS_MAP)
+from scout.constants.variant_tags import (CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
+                                          CANCER_TIER_OPTIONS, DISMISS_VARIANT_OPTIONS,
+                                          GENETIC_MODELS, MANUAL_RANK_OPTIONS)
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator

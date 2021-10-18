@@ -1,8 +1,5 @@
-from scout.parse.variant.conservation import (
-    parse_conservation_csq,
-    parse_conservation_info,
-    parse_conservations,
-)
+from scout.parse.variant.conservation import (parse_conservation_csq, parse_conservation_info,
+                                              parse_conservations)
 
 
 def test_parse_conservation(cyvcf2_variant):

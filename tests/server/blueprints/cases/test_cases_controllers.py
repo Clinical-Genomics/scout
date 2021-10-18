@@ -2,12 +2,8 @@
 import requests  # import requests for the purposes of monkeypatching
 from flask import Blueprint, Flask, url_for
 
-from scout.server.blueprints.cases.controllers import (
-    case,
-    case_report_content,
-    mt_coverage_stats,
-    phenotypes_genes,
-)
+from scout.server.blueprints.cases.controllers import (case, case_report_content, mt_coverage_stats,
+                                                       phenotypes_genes)
 from scout.server.extensions import store
 
 

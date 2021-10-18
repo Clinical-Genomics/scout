@@ -9,13 +9,8 @@ from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 
-from .forms import (
-    CATEGORY_CHOICES,
-    SUBCATEGORY_CHOICES,
-    ManagedVariantAddForm,
-    ManagedVariantModifyForm,
-    ManagedVariantsFilterForm,
-)
+from .forms import (CATEGORY_CHOICES, SUBCATEGORY_CHOICES, ManagedVariantAddForm,
+                    ManagedVariantModifyForm, ManagedVariantsFilterForm)
 
 LOG = logging.getLogger(__name__)
 

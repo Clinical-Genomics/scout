@@ -1,16 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms import (
-    BooleanField,
-    DecimalField,
-    Field,
-    IntegerField,
-    SelectField,
-    SelectMultipleField,
-    SubmitField,
-    TextField,
-    validators,
-)
+from wtforms import (BooleanField, DecimalField, Field, IntegerField, SelectField,
+                     SelectMultipleField, SubmitField, TextField, validators)
 from wtforms.widgets import TextInput
 
 from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS

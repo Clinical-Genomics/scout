@@ -8,20 +8,8 @@ import shutil
 from operator import itemgetter
 
 import requests
-from flask import (
-    Blueprint,
-    Response,
-    abort,
-    current_app,
-    flash,
-    jsonify,
-    redirect,
-    render_template,
-    request,
-    send_file,
-    send_from_directory,
-    url_for,
-)
+from flask import (Blueprint, Response, abort, current_app, flash, jsonify, redirect,
+                   render_template, request, send_file, send_from_directory, url_for)
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 from requests.exceptions import ReadTimeout
@@ -29,13 +17,8 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
-from scout.server.utils import (
-    institute_and_case,
-    jsonconverter,
-    templated,
-    user_institutes,
-    zip_dir_to_obj,
-)
+from scout.server.utils import (institute_and_case, jsonconverter, templated, user_institutes,
+                                zip_dir_to_obj)
 
 from . import controllers
 

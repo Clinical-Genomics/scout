@@ -1,10 +1,5 @@
-from scout.utils.acmg import (
-    get_acmg,
-    is_benign,
-    is_likely_benign,
-    is_likely_pathogenic,
-    is_pathogenic,
-)
+from scout.utils.acmg import (get_acmg, is_benign, is_likely_benign, is_likely_pathogenic,
+                              is_pathogenic)
 
 
 def test_is_pathogenic_1():
