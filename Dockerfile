@@ -1,16 +1,42 @@
-FROM python:3.8-slim AS builder
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends gcc libc-dev libz-dev libpango-1.0-0 libpangocairo-1.0-0
+###########
+# BUILDER #
+###########
+FROM northwestwitch/python3.8-cyvcf2-venv AS python-builder
 
-COPY . .
-# Install scout app
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install  --user -r requirements.txt && \
-    pip install  --user --editable .[coverage]
+ENV PATH="/venv/bin:$PATH"
 
-FROM python:3.8-slim AS build-image
+WORKDIR /app
 
-COPY --from=builder /root/.local /root/.local
+# Install Scout dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# update PATH environment variable
-ENV PATH=/root/.local:$PATH
+
+#########
+# FINAL #
+#########
+FROM python:3.8-slim
+
+LABEL base_image="python:3.8.1-slim"
+LABEL about.home="https://github.com/Clinical-Genomics/scout"
+LABEL about.documentation="https://clinical-genomics.github.io/scout"
+LABEL about.tags="WGS,WES,Rare diseases,VCF,variants,SNP,Next generation sequencing"
+LABEL about.license="MIT License (MIT)"
+
+RUN apt-get update && \
+     apt-get -y upgrade && \
+     apt-get -y install -y --no-install-recommends libpango-1.0-0 libpangocairo-1.0-0
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV PATH="/venv/bin:$PATH"
+RUN echo export PATH="/venv/bin:\$PATH" > /etc/profile.d/venv.sh
+
+RUN groupadd --gid 10001 worker && useradd -g worker --uid 10001 --shell /usr/sbin/nologin --create-home worker
+
+COPY --chown=worker:worker --from=python-builder /venv /venv
+
+WORKDIR /worker/app
+COPY . /worker/app
+
+RUN pip install --no-cache-dir --editable .[coverage]
+USER worker
