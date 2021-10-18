@@ -68,7 +68,7 @@
     </div>
     {% endif %}
 
-    <div class="row">{{ matching_variants(managed_variant, causatives) }}</div>
+    <div class="row"><div class="col-12">{{ matching_variants(managed_variant, causatives) }}</div></div>
 
     <div class="row">
       <div class="col-sm-3">
@@ -90,39 +90,39 @@
     </div>
     <div class="row">
       <div class="col-sm-4">
-        {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+        <div class="card panel-default">
+          {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+        </div>
         {{ omim_phenotypes(variant) }}
+        {{ genemodels_panel(variant) }}
+        {{ inheritance_panel(variant) }}
+
       </div>
       <div class="col-sm-8">
         {% if variant.disease_associated_transcripts %}
-          <div class="col-sm-12">{{ disease_associated(variant) }}</div>
+          <div class="row"><div class="col-12">{{ disease_associated(variant) }}</div></div>
         {% endif %}
-        <div class="col-sm-12">{{ transcripts_overview(variant) }}</div>
-        <div class="row">
-          <div class="col-sm-6">
-            {{ genemodels_panel(variant) }}
-          </div>
-          <div class="col-sm-6">
-            {{ inheritance_panel(variant) }}
-            {% if variant.azlength %}
-              {{ autozygosity_panel(variant) }}
-            {% endif %}
+        <div class="row"><div class="col-12">{{ transcripts_overview(variant) }}</div></div>
+          <div class="row">
+            <div class="col-4">
+
+              {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+              {% if has_pedigree %}
+                {{ pedigree_panel(case) }}
+              {% endif %}
+              {{ conservations(variant) }}</div>
+            <div class="col-8">
+              {{ gtcall_panel(variant) }}
+              {{ mappability(variant) }}
+              {% if variant.azlength %}
+                {{ autozygosity_panel(variant) }}
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="row">
-      {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
-      {% if has_pedigree %}
-        <div class="col-sm-3">{{ pedigree_panel(case) }}</div>
-      {% endif %}
-      <div class="col-sm-5">{{ gtcall_panel(variant) }}</div>
-      <div class="col-sm">
-        {{ conservations(variant) }}
-        {{ mappability(variant) }}
-      </div>
-    </div>
     {% if variant.compounds %}
       <div class="row">
         <div class="col-12">{{ compounds_panel(institute, case, variant) }}</div>
@@ -446,7 +446,6 @@
     set_scrolly_table('transcript_overview_table')
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
-
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();

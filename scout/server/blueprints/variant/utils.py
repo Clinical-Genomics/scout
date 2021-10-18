@@ -180,49 +180,48 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
     variant_obj["has_refseq"] = False
     variant_obj["disease_associated_transcripts"] = []
     all_models = set()
-    for variant_gene in variant_obj.get("genes", []):
-        hgnc_id = variant_gene["hgnc_id"]
-        # Get the hgnc_gene
-        hgnc_gene = store.hgnc_gene(hgnc_id, build=genome_build)
+    if variant_obj.get("genes"):
+        for variant_gene in variant_obj["genes"]:
+            hgnc_id = variant_gene["hgnc_id"]
+            # Get the hgnc_gene
+            hgnc_gene = store.hgnc_gene(hgnc_id, build=genome_build)
 
-        if not hgnc_gene:
-            continue
-        hgnc_symbol = hgnc_gene["hgnc_symbol"]
-        # Add omim information if gene is annotated to have incomplete penetrance
-        if hgnc_gene.get("incomplete_penetrance"):
-            variant_gene["omim_penetrance"] = True
+            if not hgnc_gene:
+                continue
+            hgnc_symbol = hgnc_gene["hgnc_symbol"]
+            # Add omim information if gene is annotated to have incomplete penetrance
+            if hgnc_gene.get("incomplete_penetrance"):
+                variant_gene["omim_penetrance"] = True
 
-        ############# PANEL SPECIFIC INFORMATION #############
-        # Panels can have extra information about genes and transcripts
-        panel_info = add_panel_specific_gene_info(extra_info.get(hgnc_id, []))
-        variant_gene.update(panel_info)
+            ############# PANEL SPECIFIC INFORMATION #############
+            # Panels can have extra information about genes and transcripts
+            panel_info = add_panel_specific_gene_info(extra_info.get(hgnc_id, []))
+            variant_gene.update(panel_info)
 
-        update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
+            update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
 
-        variant_gene["common"] = hgnc_gene
+            variant_gene["common"] = hgnc_gene
 
-        add_gene_links(variant_gene, genome_build)
+            add_gene_links(variant_gene, genome_build)
 
-        # Add disease associated transcripts from panel to variant
-        for refseq_id in panel_info.get("disease_associated_transcripts", []):
-            transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
-            variant_obj["disease_associated_transcripts"].append(transcript_str)
+            # Add disease associated transcripts from panel to variant
+            for refseq_id in panel_info.get("disease_associated_transcripts", []):
+                transcript_str = "{}:{}".format(hgnc_symbol, refseq_id)
+                variant_obj["disease_associated_transcripts"].append(transcript_str)
 
-        # Add the associated disease terms
-        disease_terms = store.disease_terms(hgnc_id)
-        variant_gene["disease_terms"] = disease_terms
+            # Add the associated disease terms
+            disease_terms = store.disease_terms(hgnc_id)
+            variant_gene["disease_terms"] = disease_terms
 
-        all_models = all_models.union(set(variant_gene["manual_inheritance"]))
-        omim_models = set()
-        for disease_term in variant_gene.get("disease_terms", []):
-            omim_models.update(disease_term.get("inheritance", []))
-        variant_gene["omim_inheritance"] = list(omim_models)
+            all_models = all_models.union(set(variant_gene["manual_inheritance"]))
+            omim_models = set()
+            for disease_term in variant_gene.get("disease_terms", []):
+                omim_models.update(disease_term.get("inheritance", []))
+            variant_gene["omim_inheritance"] = list(omim_models)
 
-        all_models = all_models.union(omim_models)
+            all_models = all_models.union(omim_models)
 
     variant_obj["all_models"] = all_models
-
-    return variant_obj
 
 
 def predictions(genes):
@@ -243,7 +242,7 @@ def predictions(genes):
         "spliceai_positions": [],
         "spliceai_predictions": [],
     }
-    for gene_obj in genes:
+    for gene_obj in genes or []:
         for pred_key in data:
             gene_key = pred_key[:-1]
             if len(genes) == 1:

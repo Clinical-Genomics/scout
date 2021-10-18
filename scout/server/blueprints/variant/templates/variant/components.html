@@ -6,15 +6,13 @@
 
 {% macro clinsig_table(variant) %}
   {% if variant.clinsig_human %}
-    <table class="table table-bordered table-fixed table-sm">
+    <table id='clinsig_table' class="table table-bordered table-sm">
       <thead>
-        <thead>
-          <tr class="active">
-            <th>CLINSIG</th>
-            <th>Accession</th>
-            <th>Revstat</th>
-          </tr>
-        </thead>
+        <tr class="active">
+          <th>CLINSIG</th>
+          <th>Accession</th>
+          <th>Revstat</th>
+        </tr>
       </thead>
       <tbody>
         {% for clinsig in variant.clinsig_human %}
@@ -25,7 +23,7 @@
             {% else %}
               <td>n.a.</td>
             {% endif %}
-            <td>{{ clinsig.revstat or "n.a." }}</td>
+            <td><div class="text-break">{{ clinsig.revstat or "n.a." }}</div></td>
           </tr>
         {% else %}
           <i>No annotations</i>

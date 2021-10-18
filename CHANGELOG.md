@@ -7,6 +7,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Enabled inclusion of custom images to STR variant view
+### Fixed
+### Changed
+
+## [4.40.1]
+### Added
+### Fixed
+- Variants dismissed with inconsistent inheritance pattern can again be shown in general case report
+- General report page for variants with genes=None
+- General report crashing when variants have no panels
+- Added other missing keys to case and variant dictionaries passed to general report
+### Changed
+
+## [4.40]
+### Added
 - A .cff citation file
 - Phenotype search API endpoint
 - Added pagination to phenotype API
@@ -19,7 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed automatic spaces after punctuation in comments
 - Remove the hardcoded number of total individuals from the variant's old observations panel
 - Send delete requests to a connected Beacon using the DELETE method
-- Layout of the variant page
+- Layout of the SNV and SV variant page - move frequency up
 ### Changed
 - Stop updating database indexes after loading exons via command line
 - Display validation status badge also for not Sanger-sequenced variants
@@ -28,7 +42,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved the code preparing the transcripts overview to the backend
 - Refactored and filtered json data used in general case report
 - Changed the database used in docker-compose file to use the official MongoDB v4.4 image
-- Modified the Python (3.6, 3.8) and MongoDB (3.2, 4.4, 5.0) versions used in testing matrices (github actions)
+- Modified the Python (3.6, 3.8) and MongoDB (3.2, 4.4, 5.0) versions used in testing matrices (GitHub actions)
 - Capitalize case search terms on institute and dashboard pages
 
 
