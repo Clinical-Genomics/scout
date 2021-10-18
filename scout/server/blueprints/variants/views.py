@@ -181,7 +181,7 @@ def str_variants(institute_id, case_name):
     controllers.populate_chrom_choices(form, case_obj)
 
     # populate available panel choices
-    form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
+    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
 
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
@@ -358,7 +358,7 @@ def cancer_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    form.gene_panels.choices = controllers.gene_panel_choices(institute_obj, case_obj)
+    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
     genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
