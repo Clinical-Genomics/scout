@@ -116,9 +116,7 @@ class LoqusDB:
         if instance_settings["instance_type"] == "api":
             version = self.get_api_loqus_version(api_url=instance_settings.get(API_URL))
         else:
-            version = self.get_exec_loqus_version(
-                loqusdb_id=instance_settings.get("id")
-            )
+            version = self.get_exec_loqus_version(loqusdb_id=instance_settings.get("id"))
 
         return version
 
@@ -130,9 +128,7 @@ class LoqusDB:
         json_resp = api_get("".join([api_url, "/"]))
         version = json_resp.get("content", {}).get("loqusdb_version")
         if version is None:
-            raise ConfigError(
-                f"LoqusDB API url '{api_url}' did not return a valid response."
-            )
+            raise ConfigError(f"LoqusDB API url '{api_url}' did not return a valid response.")
 
         return version
 

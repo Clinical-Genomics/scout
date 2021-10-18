@@ -31,9 +31,7 @@ def individual(case_id, ind, key, value):
     if not case_obj:
         click.echo(f"Could not find case {case_id}")
         return
-    individuals = {
-        ind_info["display_name"]: ind_info for ind_info in case_obj["individuals"]
-    }
+    individuals = {ind_info["display_name"]: ind_info for ind_info in case_obj["individuals"]}
     # If ind name is empty, print available individual names for this case to help the user to build the command
     if ind is None:
         click.echo(

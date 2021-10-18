@@ -82,9 +82,7 @@ def parse_peddy_ped_check(lines):
             pair_info["rel"] = convert_number(pair_info["rel"])
 
             # the relatedness reported in the ped file.
-            pair_info["pedigree_relatedness"] = convert_number(
-                pair_info["pedigree_relatedness"]
-            )
+            pair_info["pedigree_relatedness"] = convert_number(pair_info["pedigree_relatedness"])
 
             # difference between the preceding 2 colummns.
             pair_info["rel_difference"] = convert_number(pair_info["rel_difference"])
@@ -98,9 +96,7 @@ def parse_peddy_ped_check(lines):
 
             # boolean indicating that this pair is expected to be a parent-child
             # pair according to the ibs0 (< 0.012) calculated from the genotypes.
-            pair_info["predicted_parents"] = make_bool(
-                pair_info.get("predicted_parents")
-            )
+            pair_info["predicted_parents"] = make_bool(pair_info.get("predicted_parents"))
 
             # boolean indicating that the preceding 2 columns do not match
             pair_info["parent_error"] = make_bool(pair_info.get("parent_error"))

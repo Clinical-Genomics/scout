@@ -58,15 +58,11 @@ class ClinVarHandler(object):
             submission_objects = submission_casedata
 
         # Delete all variants and casedata objects associated with this submission
-        result = self.clinvar_collection.delete_many(
-            {"_id": {"$in": submission_objects}}
-        )
+        result = self.clinvar_collection.delete_many({"_id": {"$in": submission_objects}})
         deleted_objects = result.deleted_count
 
         # Delete the submission itself
-        result = self.clinvar_submission_collection.delete_one(
-            {"_id": ObjectId(submission_id)}
-        )
+        result = self.clinvar_submission_collection.delete_one({"_id": ObjectId(submission_id)})
         deleted_submissions = result.deleted_count
 
         # return deleted_count, deleted_submissions
@@ -90,9 +86,7 @@ class ClinVarHandler(object):
         # If there is no open submission for this institute, create one
         if submission is None:
             submission_id = self.create_submission(institute_id)
-            submission = self.clinvar_submission_collection.find_one(
-                {"_id": submission_id}
-            )
+            submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
 
         return submission
 
@@ -159,9 +153,7 @@ class ClinVarHandler(object):
                     upsert=True,
                 )
             except pymongo.errors.DuplicateKeyError:
-                LOG.error(
-                    "Attepted to insert a clinvar variant which is already in DB!"
-                )
+                LOG.error("Attepted to insert a clinvar variant which is already in DB!")
 
         # Insert casedata submission_objects into clinvar collection
         if submission_objects[1]:
@@ -269,9 +261,9 @@ class ClinVarHandler(object):
             # If submission has variants registered
             if result.get("variant_data"):
                 submission["variant_data"] = list(
-                    self.clinvar_collection.find(
-                        {"_id": {"$in": result["variant_data"]}}
-                    ).sort("last_evaluated", pymongo.ASCENDING)
+                    self.clinvar_collection.find({"_id": {"$in": result["variant_data"]}}).sort(
+                        "last_evaluated", pymongo.ASCENDING
+                    )
                 )
 
                 # Loop over variants contained in a single ClinVar submission
@@ -309,16 +301,12 @@ class ClinVarHandler(object):
 
         """
         # Get a submission object
-        submission = self.clinvar_submission_collection.find_one(
-            {"_id": ObjectId(submission_id)}
-        )
+        submission = self.clinvar_submission_collection.find_one({"_id": ObjectId(submission_id)})
 
         # a list of clinvar object ids, they can be of csv_type 'variant' or 'casedata'
         if submission.get(key_id):
             clinvar_obj_ids = list(submission.get(key_id))
-            clinvar_objects = self.clinvar_collection.find(
-                {"_id": {"$in": clinvar_obj_ids}}
-            )
+            clinvar_objects = self.clinvar_collection.find({"_id": {"$in": clinvar_obj_ids}})
             return list(clinvar_objects)
 
         return None

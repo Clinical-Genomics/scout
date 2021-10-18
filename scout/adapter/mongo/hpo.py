@@ -24,9 +24,7 @@ class HpoHandler(object):
         try:
             self.hpo_term_collection.insert_one(hpo_obj)
         except DuplicateKeyError as err:
-            raise IntegrityError(
-                "Hpo term %s already exists in database".format(hpo_obj["_id"])
-            )
+            raise IntegrityError("Hpo term %s already exists in database".format(hpo_obj["_id"]))
         LOG.debug("Hpo term saved")
 
     def load_hpo_bulk(self, hpo_bulk):
@@ -179,17 +177,13 @@ class HpoHandler(object):
                 term_obj["children"] = children
                 all_terms[term_id] = term_obj
                 if term_id not in unique_terms:
-                    node = Node(
-                        term_id, parent=root, description=term_obj["description"]
-                    )
+                    node = Node(term_id, parent=root, description=term_obj["description"])
                     unique_terms.add(term_id)
                 # recursive loop to collect children, children of children and so on
                 _hpo_terms_list(term_obj["children"])
 
         # compile a list of all HPO term objects to include in the submodel
-        _hpo_terms_list(
-            [hpo_id]
-        )  # trigger the recursive loop to collect nested HPO terms
+        _hpo_terms_list([hpo_id])  # trigger the recursive loop to collect nested HPO terms
         # rearrange tree according to the HPO ontology
         root = self.organize_tree(all_terms, root)
         node_resolver = resolver.Resolver("name")

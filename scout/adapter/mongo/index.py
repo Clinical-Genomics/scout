@@ -81,11 +81,7 @@ class IndexHandler(object):
                             )
                         )
                     except Exception as ex:
-                        LOG.warning(
-                            "An error occurred while updating Scout indexes: {}".format(
-                                ex
-                            )
-                        )
+                        LOG.warning("An error occurred while updating Scout indexes: {}".format(ex))
 
         if nr_updated == 0:
             LOG.info("All indexes in place")

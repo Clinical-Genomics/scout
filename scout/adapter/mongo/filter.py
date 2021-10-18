@@ -108,9 +108,7 @@ class FilterHandler(object):
 
         return filter_id
 
-    def audit_filter(
-        self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None
-    ):
+    def audit_filter(self, filter_id, institute_obj, case_obj, user_obj, category="snv", link=None):
         """Mark audit of filter for case in events.
         Audit filter leaves a voluntary log trail to answer questions like "did I really check for recessive variants"
         or "did we do both the stringent and relaxed filter on this tumor". The operator loads a set filter, checks
@@ -139,9 +137,7 @@ class FilterHandler(object):
             target = VARIANTS_TARGET_FROM_CATEGORY.get(category)
 
             case_name = case_obj.get("display_name")
-            link = url_for(
-                target, case_name=case_name, institute_id=institute_obj.get("_id")
-            )
+            link = url_for(target, case_name=case_name, institute_id=institute_obj.get("_id"))
 
         subject = filter_obj["display_name"]
 

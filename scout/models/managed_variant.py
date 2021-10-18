@@ -76,10 +76,7 @@ class ManagedVariant(dict):
             [str(part) for part in (chromosome, position, reference, alternative)]
         )
         self["variant_id"] = generate_md5_key(
-            [
-                str(part)
-                for part in (chromosome, position, reference, alternative, "clinical")
-            ]
+            [str(part) for part in (chromosome, position, reference, alternative, "clinical")]
         )
         self["date"] = date or datetime.now()
 

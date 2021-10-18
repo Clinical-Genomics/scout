@@ -5,7 +5,6 @@ from scout.parse.panel import get_delimiter
 LOG = logging.getLogger(__name__)
 
 
-
 def parse_managed_variant_id(
     chromosome, position, reference, alternative, category, sub_category, build="37"
 ):

@@ -154,9 +154,7 @@ def parse_genemap2(lines):
         # the gene symbols
         gene_symbols = []
         if parsed_entry.get("Gene Symbols"):
-            gene_symbols = [
-                symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")
-            ]
+            gene_symbols = [symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")]
         parsed_entry["hgnc_symbols"] = gene_symbols
 
         if not hgnc_symbol and gene_symbols:
@@ -287,9 +285,7 @@ def parse_mim_titles(lines):
         if not line.startswith("#"):
             parsed_entry = parse_omim_line(line, header)
             parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
-            parsed_entry["preferred_title"] = parsed_entry["preferred_title"].split(
-                ";"
-            )[0]
+            parsed_entry["preferred_title"] = parsed_entry["preferred_title"].split(";")[0]
             yield parsed_entry
 
 

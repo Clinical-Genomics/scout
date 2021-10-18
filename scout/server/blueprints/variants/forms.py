@@ -4,13 +4,29 @@ import logging
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import (BooleanField, DecimalField, Field, HiddenField,
-                     IntegerField, SelectField, SelectMultipleField,
-                     StringField, SubmitField, TextField, validators)
+from wtforms import (
+    BooleanField,
+    DecimalField,
+    Field,
+    HiddenField,
+    IntegerField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+    SubmitField,
+    TextField,
+    validators,
+)
 from wtforms.widgets import TextInput
 
-from scout.constants import (CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS,
-                             SO_TERMS, SPIDEX_LEVELS, SV_TYPES)
+from scout.constants import (
+    CLINSIG_MAP,
+    FEATURE_TYPES,
+    GENETIC_MODELS,
+    SO_TERMS,
+    SPIDEX_LEVELS,
+    SV_TYPES,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -75,15 +91,11 @@ class VariantFiltersForm(FlaskForm):
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
-    cadd_score = BetterDecimalField(
-        "CADD", places=2, validators=[validators.Optional()]
-    )
+    cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
     cadd_inclusive = BooleanField("CADD inclusive")
     clinsig = NonValidatingSelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
 
-    gnomad_frequency = BetterDecimalField(
-        "gnomadAF", places=2, validators=[validators.Optional()]
-    )
+    gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 
     filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")

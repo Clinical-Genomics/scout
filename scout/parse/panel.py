@@ -2,9 +2,12 @@
 import logging
 from datetime import datetime
 
-from scout.constants import (INCOMPLETE_PENETRANCE_MAP, MODELS_MAP,
-                             PANEL_GENE_INFO_MODELS,
-                             PANEL_GENE_INFO_TRANSCRIPTS)
+from scout.constants import (
+    INCOMPLETE_PENETRANCE_MAP,
+    MODELS_MAP,
+    PANEL_GENE_INFO_MODELS,
+    PANEL_GENE_INFO_TRANSCRIPTS,
+)
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
 from scout.utils.link import get_correct_ids
@@ -230,12 +233,7 @@ def parse_genes(gene_lines):
 
 
 def parse_gene_panel(
-    path,
-    institute="cust000",
-    panel_id="test",
-    panel_type="clinical",
-    genes=None,
-    **kwargs
+    path, institute="cust000", panel_id="test", panel_type="clinical", genes=None, **kwargs
 ):
     """Parse the panel info and return a gene panel
 
@@ -300,9 +298,7 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     for hgnc_id in hgnc_ids:
         gene_info["hgnc_id"] = hgnc_id
 
-    gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(
-        app_gene["Penetrance"]
-    )
+    gene_info["reduced_penetrance"] = INCOMPLETE_PENETRANCE_MAP.get(app_gene["Penetrance"])
 
     inheritance_models = []
     for model in MODELS_MAP.get(app_gene["ModeOfInheritance"], []):
@@ -313,9 +309,7 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     return gene_info
 
 
-def parse_panel_app_panel(
-    panel_info, hgnc_map, institute="cust000", panel_type="clinical"
-):
+def parse_panel_app_panel(panel_info, hgnc_map, institute="cust000", panel_type="clinical"):
     """Parse a PanelApp panel
 
     Args:

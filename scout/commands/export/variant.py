@@ -8,8 +8,7 @@ from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
 from scout.constants import CALLERS
-from scout.constants.variants_export import (VCF_HEADER,
-                                             VERIFIED_VARIANTS_HEADER)
+from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_variants, export_verified_variants
 from scout.server.extensions import store
 
@@ -46,17 +45,11 @@ def verified(collaborator, test, outpath=None):
 
     adapter = store
     verified_vars = adapter.verified(institute_id=collaborator)
-    LOG.info(
-        "FOUND {} verified variants for institute {}".format(
-            len(verified_vars), collaborator
-        )
-    )
+    LOG.info("FOUND {} verified variants for institute {}".format(len(verified_vars), collaborator))
 
     if not verified_vars:
         LOG.warning(
-            "There are no verified variants for institute {} in database!".format(
-                collaborator
-            )
+            "There are no verified variants for institute {} in database!".format(collaborator)
         )
         return None
 
@@ -73,11 +66,7 @@ def verified(collaborator, test, outpath=None):
     # If this was a test and lines are created return success
     if test and document_lines:
         written_files += 1
-        LOG.info(
-            "Success. Verified variants file contains {} lines".format(
-                len(document_lines)
-            )
-        )
+        LOG.info("Success. Verified variants file contains {} lines".format(len(document_lines)))
         return written_files
     if test:
         LOG.info(
@@ -100,9 +89,7 @@ def verified(collaborator, test, outpath=None):
         Report_Sheet.write(row, col, field)
 
     # Write variant lines, after header (start at line 1)
-    for row, line in enumerate(
-        document_lines, 1
-    ):  # each line becomes a row in the document
+    for row, line in enumerate(document_lines, 1):  # each line becomes a row in the document
         for col, field in enumerate(line):  # each field in line becomes a cell
             Report_Sheet.write(row, col, field)
     workbook.close()
@@ -140,9 +127,7 @@ def variants(collaborator: str, document_id: str, case_id: str, json: bool):
             LOG.info("Case %s does not exist", case_id)
             raise click.Abort
 
-    variants = export_variants(
-        adapter, collaborator, document_id=document_id, case_id=case_id
-    )
+    variants = export_variants(adapter, collaborator, document_id=document_id, case_id=case_id)
 
     if json:
         click.echo(json_lib.dumps([var for var in variants], default=bson_handler))

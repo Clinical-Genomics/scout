@@ -73,9 +73,7 @@ class ACMGHandler(object):
             self._load_evaluation(evaluation_obj)
 
         # Update the acmg classification for the variant:
-        self.update_acmg(
-            institute_obj, case_obj, user_obj, link, variant_obj, classification
-        )
+        self.update_acmg(institute_obj, case_obj, user_obj, link, variant_obj, classification)
         return classification
 
     def _load_evaluation(self, evaluation_obj):
@@ -111,7 +109,5 @@ class ACMGHandler(object):
             pymongo.cursor: database cursor
         """
         query = dict(variant_id=variant_obj["variant_id"])
-        res = self.acmg_collection.find(query).sort(
-            [("created_at", pymongo.DESCENDING)]
-        )
+        res = self.acmg_collection.find(query).sort([("created_at", pymongo.DESCENDING)])
         return res

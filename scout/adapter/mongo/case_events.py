@@ -43,11 +43,7 @@ class CaseEventHandler(object):
             verb="assign",
             subject=case["display_name"],
         )
-        LOG.info(
-            "Updating {0} to be assigned with {1}".format(
-                case["display_name"], user["name"]
-            )
-        )
+        LOG.info("Updating {0} to be assigned with {1}".format(case["display_name"], user["name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -74,9 +70,7 @@ class CaseEventHandler(object):
             updated_case (dict): The updated case
         """
         LOG.info(
-            "Creating event for unassigning {0} from {1}".format(
-                user["name"], case["display_name"]
-            )
+            "Creating event for unassigning {0} from {1}".format(user["name"], case["display_name"])
         )
 
         self.create_event(
@@ -90,9 +84,7 @@ class CaseEventHandler(object):
         )
 
         LOG.info(
-            "Updating {0} to be unassigned with {1}".format(
-                case["display_name"], user["name"]
-            )
+            "Updating {0} to be unassigned with {1}".format(case["display_name"], user["name"])
         )
 
         # if case is not prioritized and user wishes to inactivate it:
@@ -132,9 +124,7 @@ class CaseEventHandler(object):
             return None
 
         LOG.info(
-            "Creating event for updating status of {0} to {1}".format(
-                case["display_name"], status
-            )
+            "Creating event for updating status of {0} to {1}".format(case["display_name"], status)
         )
 
         # assign case to user if user unarchives it
@@ -179,8 +169,7 @@ class CaseEventHandler(object):
             updated_case
         """
         LOG.info(
-            "Creating event for updating the synopsis for case"
-            " {0}".format(case["display_name"])
+            "Creating event for updating the synopsis for case" " {0}".format(case["display_name"])
         )
 
         self.create_event(
@@ -227,9 +216,7 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info(
-            "Change status for case {0} to 'archived'".format(case["display_name"])
-        )
+        LOG.info("Change status for case {0} to 'archived'".format(case["display_name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -273,10 +260,7 @@ class CaseEventHandler(object):
         Returns:
             updated_case(dict)
         """
-        LOG.info(
-            "Creating event for opening research for case"
-            " {0}".format(case["display_name"])
-        )
+        LOG.info("Creating event for opening research for case" " {0}".format(case["display_name"]))
 
         self.create_event(
             institute=institute,
@@ -288,9 +272,7 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info(
-            "Set research_requested for case {0} to True".format(case["display_name"])
-        )
+        LOG.info("Set research_requested for case {0} to True".format(case["display_name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -611,9 +593,7 @@ class CaseEventHandler(object):
             subject=status,
         )
 
-        LOG.info(
-            "Updating {0}'s checked status {1}".format(case["display_name"], status)
-        )
+        LOG.info("Updating {0}'s checked status {1}".format(case["display_name"], status))
         analysis_checked = False if unmark else True
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -647,9 +627,7 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        LOG.info(
-            "Update HPO clinical filter status for {}".format(case_obj["display_name"])
-        )
+        LOG.info("Update HPO clinical filter status for {}".format(case_obj["display_name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
@@ -688,9 +666,7 @@ class CaseEventHandler(object):
 
         return updated_case
 
-    def update_default_panels(
-        self, institute_obj, case_obj, user_obj, link, panel_objs
-    ):
+    def update_default_panels(self, institute_obj, case_obj, user_obj, link, panel_objs):
         """Update default panels for a case.
 
         Args:

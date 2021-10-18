@@ -19,9 +19,9 @@ from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
 from scout.parse.variant.coordinates import parse_coordinates
+
 # Local modules
-from scout.parse.variant.headers import (parse_rank_results_header,
-                                         parse_vep_header)
+from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
 
@@ -122,16 +122,12 @@ class VariantLoader(object):
             if variant_objs:
                 variant_obj = variant_objs.get(compound["variant"])
             else:
-                variant_obj = self.variant_collection.find_one(
-                    {"_id": compound["variant"]}
-                )
+                variant_obj = self.variant_collection.find_one({"_id": compound["variant"]})
             if variant_obj:
                 # If the variant exosts we try to collect as much info as possible
                 not_loaded = False
                 compound["rank_score"] = variant_obj["rank_score"]
-                compound["is_dismissed"] = (
-                    len(variant_obj.get("dismiss_variant", [])) > 0
-                )
+                compound["is_dismissed"] = len(variant_obj.get("dismiss_variant", [])) > 0
                 for gene in variant_obj.get("genes", []):
                     gene_obj = {
                         "hgnc_id": gene["hgnc_id"],
@@ -253,9 +249,9 @@ class VariantLoader(object):
                         new_region = None
 
                         # Check if the variant is in a coding region
-                        genomic_regions = coding_intervals.get(
-                            var_chrom, IntervalTree()
-                        ).overlap(var_start, var_end)
+                        genomic_regions = coding_intervals.get(var_chrom, IntervalTree()).overlap(
+                            var_start, var_end
+                        )
 
                         # If the variant is in a coding region
                         if genomic_regions:
@@ -300,9 +296,7 @@ class VariantLoader(object):
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
-            raise IntegrityError(
-                "Variant %s already exists in database", variant_obj["_id"]
-            )
+            raise IntegrityError("Variant %s already exists in database", variant_obj["_id"])
         return result
 
     def upsert_variant(self, variant_obj):
@@ -318,9 +312,7 @@ class VariantLoader(object):
         try:
             result = self.variant_collection.insert_one(variant_obj)
         except DuplicateKeyError as err:
-            LOG.warning(
-                "Variant %s already exists in database - modifying", variant_obj["_id"]
-            )
+            LOG.warning("Variant %s already exists in database - modifying", variant_obj["_id"])
             result = self.variant_collection.find_one_and_update(
                 {"_id": variant_obj["_id"]},
                 {"$set": {"compounds": variant_obj.get("compounds", [])}},
@@ -345,9 +337,7 @@ class VariantLoader(object):
         except (DuplicateKeyError, BulkWriteError) as err:
             # If the bulk write is wrong there are probably some variants already existing
             # In the database. So insert each variant
-            LOG.warning(
-                "Bulk insertion failed - attempting separate variant upsert for this bulk"
-            )
+            LOG.warning("Bulk insertion failed - attempting separate variant upsert for this bulk")
             for var_obj in variants:
                 try:
                     self.upsert_variant(var_obj)
@@ -399,11 +389,7 @@ class VariantLoader(object):
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
         genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
-        LOG.info(
-            "Start inserting {0} {1} variants into database".format(
-                variant_type, category
-            )
-        )
+        LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
         start_five_thousand = datetime.now()
         # These are the number of parsed varaints
@@ -422,9 +408,7 @@ class VariantLoader(object):
         for nr_variants, variant in enumerate(variants):
             # All MT variants are loaded
             mt_variant = "MT" in variant.CHROM
-            rank_score = parse_rank_score(
-                variant.INFO.get("RankScore"), case_obj["_id"]
-            )
+            rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
             managed = self._is_managed(variant, category)
 
@@ -494,9 +478,7 @@ class VariantLoader(object):
                 # Associate variant with image
                 if custom_images:
                     images = [
-                        img
-                        for img in custom_images
-                        if img["str_repid"] == variant_obj["str_repid"]
+                        img for img in custom_images if img["str_repid"] == variant_obj["str_repid"]
                     ]
                     if len(images) > 0:
                         variant_obj["custom_images"] = images
@@ -534,10 +516,7 @@ class VariantLoader(object):
                     )
                     start_five_thousand = datetime.now()
 
-                if (
-                    nr_inserted != 0
-                    and (nr_inserted * inserted) % (1000 * inserted) == 0
-                ):
+                if nr_inserted != 0 and (nr_inserted * inserted) % (1000 * inserted) == 0:
                     LOG.info("%s variants inserted", nr_inserted)
                     inserted += 1
         # If the variants are in a coding region we update the compounds

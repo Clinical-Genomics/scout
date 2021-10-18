@@ -41,9 +41,7 @@ def export_panels(adapter, panels, versions=None, build="37"):
 
         panel_obj = adapter.gene_panel(panel_id, version=version)
         if not panel_obj:
-            LOG.warning(
-                "Panel {0} version {1} could not be found".format(panel_id, version)
-            )
+            LOG.warning("Panel {0} version {1} could not be found".format(panel_id, version))
             continue
 
         headers.append(

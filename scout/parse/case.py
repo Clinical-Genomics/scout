@@ -101,9 +101,7 @@ def _read_image(image):
     VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
     path = image["path"]
     if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
-        raise ValueError(
-            f"Image: {path.name} is not recognized as an image, skipping"
-        )
+        raise ValueError(f"Image: {path.name} is not recognized as an image, skipping")
     # convert to image object
     with open(image["path"], "rb") as image_file:
         image_obj = {
@@ -122,7 +120,7 @@ def _glob_wildcard(path):
     """Search for multiple files using a path with wildcard."""
     wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
     # make proper wildcard path
-    glob_path = path[:wildcard.start()] + "*" + path[wildcard.end():]
+    glob_path = path[: wildcard.start()] + "*" + path[wildcard.end() :]
     wildcard_end = len(path) - wildcard.end()
     paths = tuple(
         {
