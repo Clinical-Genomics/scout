@@ -23,20 +23,29 @@ LABEL about.documentation="https://clinical-genomics.github.io/scout"
 LABEL about.tags="WGS,WES,Rare diseases,VCF,variants,SNP,Next generation sequencing"
 LABEL about.license="MIT License (MIT)"
 
+# Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends libpango-1.0-0 libpangocairo-1.0-0
+     apt-get -y install -y --no-install-recommends libpango-1.0-0 libpangocairo-1.0-0 && \
+     apt-get clean && \
+     rm -rf /var/lib/apt/lists/*
 
+# Do not upgrade to the latest pip version to ensure more reproducible builds
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PATH="/venv/bin:$PATH"
 RUN echo export PATH="/venv/bin:\$PATH" > /etc/profile.d/venv.sh
 
+# Create a non-root user to run commands
 RUN groupadd --gid 10001 worker && useradd -g worker --uid 10001 --shell /usr/sbin/nologin --create-home worker
 
+# Copy virtual environment from builder
 COPY --chown=worker:worker --from=python-builder /venv /venv
 
 WORKDIR /worker/app
 COPY . /worker/app
 
+# Install only Scout app
 RUN pip install --no-cache-dir --editable .[coverage]
+
+# Run the app as non-root user
 USER worker
