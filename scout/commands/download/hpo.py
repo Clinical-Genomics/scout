@@ -40,15 +40,9 @@ def print_hpo(out_dir, hpo_info):
 
 @click.command("hpo", help="Download hpo files")
 @click.option("-o", "--out-dir", default="./", show_default=True)
-@click.option(
-    "--terms", is_flag=True, help="If only terms should be fetched and printed"
-)
-@click.option(
-    "--genes", is_flag=True, help="If only genes should be fetched and printed"
-)
-@click.option(
-    "--disease", is_flag=True, help="If only disease should be fetched and printed"
-)
+@click.option("--terms", is_flag=True, help="If only terms should be fetched and printed")
+@click.option("--genes", is_flag=True, help="If only genes should be fetched and printed")
+@click.option("--disease", is_flag=True, help="If only disease should be fetched and printed")
 def hpo(out_dir, terms, genes, disease):
     """Download all files necessary for HPO
 

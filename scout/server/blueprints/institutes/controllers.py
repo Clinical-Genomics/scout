@@ -9,8 +9,7 @@ from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
 from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
-from scout.parse.clinvar import (clinvar_submission_header,
-                                 clinvar_submission_lines)
+from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
@@ -92,9 +91,7 @@ def populate_institute_form(form, institute_obj):
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
     # collect all available default HPO terms and populate the pheno_groups form select with these values
-    default_phenotypes = [
-        choice[0].split(" ")[0] for choice in form.pheno_groups.choices
-    ]
+    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
             if not key in default_phenotypes:
@@ -142,9 +139,7 @@ def update_institute_settings(store, institute_obj, form):
 
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
-        group_abbreviations.append(
-            pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")]
-        )
+        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
 
     if form.get("hpo_term") and form.get("pheno_abbrev"):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
@@ -226,15 +221,9 @@ def cases(store, request, institute_id):
     data["institute"] = institute_obj
     name_query = None
     if request.args.get("search_term"):
-        name_query = "".join(
-            [request.args.get("search_type"), request.args.get("search_term")]
-        )
+        name_query = "".join([request.args.get("search_type"), request.args.get("search_term")])
     data["name_query"] = name_query
-    limit = (
-        int(request.args.get("search_limit"))
-        if request.args.get("search_limit")
-        else 100
-    )
+    limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
     skip_assigned = request.args.get("skip_assigned")
     data["form"] = populate_case_filter_form(request.args)
     data["skip_assigned"] = skip_assigned
@@ -261,9 +250,7 @@ def cases(store, request, institute_id):
     # local function to add info to case obj
     def populate_case_obj(case_obj):
         analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        LOG.debug(
-            "Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types)
-        )
+        LOG.debug("Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types))
         if len(analysis_types) > 1:
             LOG.debug("Set analysis types to {'mixed'}")
             analysis_types = set(["mixed"])
@@ -322,9 +309,7 @@ def populate_case_filter_form(params):
     form.search_type.default = params.get("search_type")
     search_term = form.search_term.data
     if ":" in search_term:
-        form.search_term.data = search_term[
-            search_term.index(":") + 1 :
-        ]  # remove prefix
+        form.search_term.data = search_term[search_term.index(":") + 1 :]  # remove prefix
     return form
 
 
@@ -390,9 +375,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
     return unevaluated
 
 
-def gene_variants(
-    store, pymongo_cursor, variant_count, institute_id, page=1, per_page=50
-):
+def gene_variants(store, pymongo_cursor, variant_count, institute_id, page=1, per_page=50):
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
@@ -476,18 +459,14 @@ def update_clinvar_submission_status(store, request_obj, institute_id, submissio
     update_status = request_obj.form.get("update_submission")
 
     if update_status in ["open", "closed"]:  # open or close a submission
-        store.update_clinvar_submission_status(
-            institute_id, submission_id, update_status
-        )
+        store.update_clinvar_submission_status(institute_id, submission_id, update_status)
     if update_status == "register_id":  # register an official clinvar submission ID
         result = store.update_clinvar_id(
             clinvar_id=request_obj.form.get("clinvar_id"),
             submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission
-        deleted_objects, deleted_submissions = store.delete_submission(
-            submission_id=submission_id
-        )
+        deleted_objects, deleted_submissions = store.delete_submission(submission_id=submission_id)
         flash(
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
@@ -504,9 +483,7 @@ def update_clinvar_sample_names(store, submission_id, case_id, old_name, new_nam
         old_name(str): old name of an individual in case data
         new_name(str): new name of an individual in case data
     """
-    n_renamed = store.rename_casedata_samples(
-        submission_id, case_id, old_name, new_name
-    )
+    n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
     flash(
         f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
         "info",
@@ -603,10 +580,7 @@ def update_HGNC_symbols(store, variant_genes, genome_build):
             if not gene_obj["hgnc_id"]:
                 continue
             # Else we collect the gene object and check the id
-            if (
-                gene_obj.get("hgnc_symbol") is None
-                or gene_obj.get("description") is None
-            ):
+            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
                 hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
                 if not hgnc_gene:
                     continue
@@ -666,9 +640,7 @@ def _subpanel_omim_checkbox_add(model_dict, user_form):
         flash(f"Omim term '{omim_id}' already exists in this panel", "warning")
         return
 
-    checkbox_obj = dict(
-        name=omim_id, description=omim_obj.get("description"), checkbox_type="omim"
-    )
+    checkbox_obj = dict(name=omim_id, description=omim_obj.get("description"), checkbox_type="omim")
     if user_form.get("omimTermTitle"):
         checkbox_obj["term_title"] = user_form.get("omimTermTitle")
     if user_form.get("omim_custom_name"):
@@ -704,9 +676,7 @@ def _subpanel_hpo_checkgroup_add(model_dict, user_form):
     if user_form.get("includeChildren"):  # include HPO terms children in the checkboxes
         tree_dict = store.build_phenotype_tree(hpo_id)
         if tree_dict is None:
-            flash(
-                f"An error occurred while creating HPO tree from '{hpo_id}'", "danger"
-            )
+            flash(f"An error occurred while creating HPO tree from '{hpo_id}'", "danger")
             return
     else:  # include just HPO term as a standalone checkbox:
         tree_dict = dict(name=hpo_obj["_id"], description=hpo_obj["description"])
@@ -769,9 +739,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
             if child in checkboxes:
                 custom_name = checkboxes[child].get("custom_name")
                 term_title = checkboxes[child].get("term_title")
-            term_obj = store.hpo_term(
-                child
-            )  # else it's an HPO term, and might have nested term:
+            term_obj = store.hpo_term(child)  # else it's an HPO term, and might have nested term:
             node = None
             try:
                 node = Node(child, parent=root, description=term_obj["description"])
@@ -829,9 +797,7 @@ def phenomodel_checkgroups_filter(model_dict, user_form):
     # loop over the subpanels of the model, and check they need to be updated
     for key, subp in subpanels.items():
         if key in updates_dict:  # if subpanel requires changes
-            model_dict["subpanels"][key] = _update_subpanel(
-                subp, updates_dict[key]
-            )  # update it
+            model_dict["subpanels"][key] = _update_subpanel(subp, updates_dict[key])  # update it
 
     return model_dict
 
@@ -876,9 +842,7 @@ def edit_subpanel_checkbox(model_id, user_form):
         update_model = _subpanel_hpo_checkgroup_add(model_dict, user_form)
     if "add_omim" in user_form:  # add an OMIM checkbox to subpanel
         update_model = _subpanel_omim_checkbox_add(model_dict, user_form)
-    if user_form.get(
-        "checkgroup_remove"
-    ):  # remove a checkbox of any type from subpanel
+    if user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
         update_model = _subpanel_checkgroup_remove_one(model_dict, user_form)
 
     if update_model:
@@ -908,9 +872,7 @@ def update_phenomodel(model_id, user_form):
         update_model = True
     if user_form.get("add_subpanel"):  # Add a new phenotype submodel
         update_model = _add_subpanel(model_id, model_dict, user_form)
-    if user_form.get(
-        "model_save"
-    ):  # Save model according user preferences in the preview
+    if user_form.get("model_save"):  # Save model according user preferences in the preview
         update_model = phenomodel_checkgroups_filter(model_dict, user_form)
 
     if update_model:

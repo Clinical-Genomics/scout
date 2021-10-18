@@ -2,8 +2,7 @@
 import datetime
 import logging
 
-from flask import (Blueprint, abort, flash, redirect, render_template, request,
-                   url_for)
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 
@@ -33,9 +32,7 @@ def panels():
                 lines = content.decode("windows-1252").split("\r")
         except Exception as err:
             flash(
-                "Something went wrong while parsing the panel CSV file! ({})".format(
-                    err
-                ),
+                "Something went wrong while parsing the panel CSV file! ({})".format(err),
                 "danger",
             )
             return redirect(request.referrer)
@@ -46,8 +43,7 @@ def panels():
                 store=store,
                 institute_id=request.form["institute"],
                 panel_name=new_panel_name,
-                display_name=request.form["display_name"]
-                or new_panel_name.replace("_", " "),
+                display_name=request.form["display_name"] or new_panel_name.replace("_", " "),
                 csv_lines=lines,
                 maintainer=[current_user._id],
                 description=request.form["description"],
@@ -63,9 +59,7 @@ def panels():
 
         panel_obj = store.gene_panel(request.form["panel_name"])
         if panel_obj is None:
-            return abort(
-                404, "gene panel not found: {}".format(request.form["panel_name"])
-            )
+            return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
 
         if panel_write_granted(panel_obj, current_user):
             panel_obj = controllers.update_panel(
@@ -86,9 +80,7 @@ def panels():
     panel_names = [
         name
         for institute in institutes
-        for name in store.gene_panels(institute_id=institute["_id"]).distinct(
-            "panel_name"
-        )
+        for name in store.gene_panels(institute_id=institute["_id"]).distinct("panel_name")
     ]
 
     panel_versions = {}
@@ -110,9 +102,7 @@ def panels():
 
 def panel_write_granted(panel_obj, user):
     return (
-        not panel_obj.get("maintainer")
-        or user.is_admin
-        or user._id in panel_obj.get("maintainer")
+        not panel_obj.get("maintainer") or user.is_admin or user._id in panel_obj.get("maintainer")
     )
 
 
@@ -145,9 +135,9 @@ def panel(panel_id):
             flash("Provided HGNC is not valid : '{}'".format(raw_hgnc_id), "danger")
             return redirect(request.referrer)
         action = request.form["action"]
-        gene_obj = store.hgnc_gene(
-            hgnc_identifier=hgnc_id, build="37"
-        ) or store.hgnc_gene(hgnc_identifier=hgnc_id, build="38")
+        gene_obj = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
+            hgnc_identifier=hgnc_id, build="38"
+        )
         if gene_obj is None:
             flash("HGNC id not found: {}".format(hgnc_id), "warning")
             return redirect(request.referrer)
@@ -155,14 +145,10 @@ def panel(panel_id):
         if action == "add":
             panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
             if panel_gene:
-                flash(
-                    "gene already in panel: {}".format(panel_gene["symbol"]), "warning"
-                )
+                flash("gene already in panel: {}".format(panel_gene["symbol"]), "warning")
             else:
                 # ask user to fill-in more information about the gene
-                return redirect(
-                    url_for(".gene_edit", panel_id=panel_id, hgnc_id=hgnc_id)
-                )
+                return redirect(url_for(".gene_edit", panel_id=panel_id, hgnc_id=hgnc_id))
         elif action == "delete":
             LOG.debug("marking gene to be deleted: %s", hgnc_id)
             panel_obj = store.add_pending(panel_obj, gene_obj, action="delete")
@@ -251,9 +237,7 @@ def tx_choices(hgnc_id, panel_obj):
         if gene_obj:
             for transcript in gene_obj.get("disease_associated_transcripts", []):
                 if (transcript, transcript) not in transcript_choices:
-                    transcript_choices.append(
-                        (transcript, f"{transcript} (previous choice)")
-                    )
+                    transcript_choices.append((transcript, f"{transcript} (previous choice)"))
     return transcript_choices
 
 
@@ -277,9 +261,9 @@ def gene_edit(panel_id, hgnc_id):
         if "csrf_token" in info_data:
             del info_data["csrf_token"]
         if info_data["custom_inheritance_models"] != "":
-            info_data["custom_inheritance_models"] = info_data[
-                "custom_inheritance_models"
-            ].split(",")
+            info_data["custom_inheritance_models"] = info_data["custom_inheritance_models"].split(
+                ","
+            )
 
         store.add_pending(panel_obj, hgnc_gene, action=action, info=info_data)
         return redirect(url_for(".panel", panel_id=panel_id))

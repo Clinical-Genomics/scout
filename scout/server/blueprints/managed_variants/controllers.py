@@ -9,9 +9,13 @@ from scout.parse.variant.managed_variant import parse_managed_variant_lines
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 
-from .forms import (CATEGORY_CHOICES, SUBCATEGORY_CHOICES,
-                    ManagedVariantAddForm, ManagedVariantModifyForm,
-                    ManagedVariantsFilterForm)
+from .forms import (
+    CATEGORY_CHOICES,
+    SUBCATEGORY_CHOICES,
+    ManagedVariantAddForm,
+    ManagedVariantModifyForm,
+    ManagedVariantsFilterForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -54,9 +58,7 @@ def managed_variants(request):
     modify_form = ManagedVariantModifyForm()
 
     # Retrieve form data to compose variants query
-    categories = request.form.getlist("category") or [
-        cat[0] for cat in CATEGORY_CHOICES
-    ]
+    categories = request.form.getlist("category") or [cat[0] for cat in CATEGORY_CHOICES]
 
     query_options = {"sub_category": []}
     # Set variant sub-category in query_options
@@ -72,9 +74,7 @@ def managed_variants(request):
         category=categories, query_options=query_options
     )
 
-    variant_count = store.count_managed_variants(
-        category=categories, query_options=query_options
-    )
+    variant_count = store.count_managed_variants(category=categories, query_options=query_options)
     more_variants = True if variant_count > (skip_count + VARS_PER_PAGE) else False
     managed_variants_res = managed_variants_query.skip(skip_count).limit(VARS_PER_PAGE)
     managed_variants = [managed_variant for managed_variant in managed_variants_res]
@@ -90,9 +90,7 @@ def managed_variants(request):
         "cytobands_38": store.cytoband_by_chrom("38"),
         "chromosomes_37": CHROMOSOMES,
         "chromosomes_38": CHROMOSOMES_38,
-        "subcategory_choices": [
-            [choice[1], choice[0]] for choice in SUBCATEGORY_CHOICES
-        ],
+        "subcategory_choices": [[choice[1], choice[0]] for choice in SUBCATEGORY_CHOICES],
     }
 
 
@@ -134,9 +132,7 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
     for managed_variant_info in parse_managed_variant_lines(lines):
         total_variant_lines += 1
 
-        managed_variant_info.update(
-            {"maintainer": [current_user_id], "institutes": institutes}
-        )
+        managed_variant_info.update({"maintainer": [current_user_id], "institutes": institutes})
         managed_variant_obj = build_managed_variant(managed_variant_info)
 
         if store.upsert_managed_variant(managed_variant_obj):

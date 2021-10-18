@@ -9,9 +9,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 
-@click.command(
-    "intervals", short_help="Show how many intervals that exists for each chromosome"
-)
+@click.command("intervals", short_help="Show how many intervals that exists for each chromosome")
 @click.option("-b", "--build", default="37", type=click.Choice(BUILDS))
 @with_appcontext
 def intervals(build):

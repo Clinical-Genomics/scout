@@ -2,8 +2,14 @@
 import logging
 
 from flask_wtf import FlaskForm
-from wtforms import (IntegerField, SelectField, SelectMultipleField,
-                     SubmitField, TextField, validators)
+from wtforms import (
+    IntegerField,
+    SelectField,
+    SelectMultipleField,
+    SubmitField,
+    TextField,
+    validators,
+)
 
 from scout.constants import CHROMOSOMES, SV_TYPES
 
@@ -13,8 +19,7 @@ SUBCATEGORY_CHOICES = [("snv", "SNV"), ("indel", "INDEL")] + [
     (term, term.replace("_", " ").upper()) for term in SV_TYPES
 ]
 CATEGORY_CHOICES = [
-    (term, term.replace("_", " ").upper())
-    for term in ["snv", "sv", "cancer_snv", "cancer_sv"]
+    (term, term.replace("_", " ").upper()) for term in ["snv", "sv", "cancer_snv", "cancer_sv"]
 ]
 
 
@@ -40,9 +45,7 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 
 
 class ManagedVariantEditForm(ManagedVariantForm):
-    chromosome = SelectField(
-        "Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS
-    )
+    chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
 
     reference = TextField(label="Ref")
     alternative = TextField(label="Alt")

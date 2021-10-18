@@ -2,14 +2,11 @@ import copy
 
 from werkzeug.datastructures import MultiDict
 
-from scout.server.blueprints.institutes.controllers import (
-    cases, phenomodel_checkgroups_filter)
+from scout.server.blueprints.institutes.controllers import cases, phenomodel_checkgroups_filter
 from scout.server.extensions import store
 
 
-def test_phenomodel_checkgroups_filter(
-    app, institute_obj, hpo_checkboxes, omim_checkbox
-):
+def test_phenomodel_checkgroups_filter(app, institute_obj, hpo_checkboxes, omim_checkbox):
     """Test the controllers function that updates the phenotype model based on the model preview checkbox preferences"""
     # GIVEN a database with the required HPO terms (one parent term and one child term)
     store.hpo_term_collection.insert_many(hpo_checkboxes)
@@ -31,9 +28,7 @@ def test_phenomodel_checkgroups_filter(
     test_model = dict(
         institute=institute_obj["_id"],
         name="Test model",
-        subpanels=dict(
-            panel1=dict(checkboxes={hpo_id1: checkbox1, omim_id: checkbox3})
-        ),
+        subpanels=dict(panel1=dict(checkboxes={hpo_id1: checkbox1, omim_id: checkbox3})),
     )
     store.phenomodel_collection.insert_one(test_model)
     model_obj = store.phenomodel_collection.find_one()
@@ -44,9 +39,7 @@ def test_phenomodel_checkgroups_filter(
 
     with app.app_context():
         # WHEN phenotype checkboxes are updated to keep only the nested checkbox2
-        checked_terms = MultiDict(
-            {"cheked_terms": [".".join(["panel1", hpo_id1, hpo_id2])]}
-        )
+        checked_terms = MultiDict({"cheked_terms": [".".join(["panel1", hpo_id1, hpo_id2])]})
         updated_model = phenomodel_checkgroups_filter(model_obj, checked_terms)
         # THEN the right checkbox should be present in submodel checkboxes dictionary
         assert updated_model["subpanels"]["panel1"]["checkboxes"][hpo_id2]

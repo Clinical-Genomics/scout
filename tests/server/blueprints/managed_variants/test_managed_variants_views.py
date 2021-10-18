@@ -21,9 +21,7 @@ def test_managed_variants(app, user_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_add_and_remove_managed_variants(
-    app, user_obj, institute_obj, mocker, mock_redirect
-):
+def test_add_and_remove_managed_variants(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test first managed variants views:
     adding a managed variant,
     trying to add it again in duplicate and finally removing it.
@@ -65,9 +63,7 @@ def test_add_and_remove_managed_variants(
         assert test_managed_variant["chromosome"] == "14"
 
         # THEN attempting a duplicate insertion will return an error
-        resp = client.post(
-            url_for("managed_variants.add_managed_variant"), data=add_form_data
-        )
+        resp = client.post(url_for("managed_variants.add_managed_variant"), data=add_form_data)
         # THEN the status code should still be redirect
         assert resp.status_code == 302
         # THEN the database should still contatain only one variant

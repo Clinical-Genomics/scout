@@ -13,9 +13,7 @@ LOG = logging.getLogger(__name__)
 @click.option("-i", "--institute", help="Which institute to show cases from")
 @click.option("-d", "--display-name", help="Search with display name")
 @click.option("-c", "--case-id", help="Search for a specific case")
-@click.option(
-    "--nr-variants", is_flag=True, help="Show number of clinical and research variants"
-)
+@click.option("--nr-variants", is_flag=True, help="Show number of clinical and research variants")
 @click.option(
     "--similar",
     is_flag=True,
@@ -43,9 +41,7 @@ def cases(institute, display_name, case_id, nr_variants, variants_treshold, simi
             for term in case_obj.get("phenotype_terms", []):
                 hpo_terms.append(term.get("phenotype_id"))
 
-            similar = adapter.cases_by_phenotype(
-                hpo_terms, case_obj["owner"], case_obj["_id"]
-            )
+            similar = adapter.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"])
             if not similar:
                 LOG.info("No more cases with phenotypes found")
                 return

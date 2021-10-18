@@ -1,6 +1,8 @@
-from scout.parse.clinvar import (clinvar_submission_header,
-                                 get_submission_variants,
-                                 set_submission_objects)
+from scout.parse.clinvar import (
+    clinvar_submission_header,
+    get_submission_variants,
+    set_submission_objects,
+)
 
 
 def get_submission_dict():

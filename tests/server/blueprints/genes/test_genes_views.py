@@ -44,8 +44,6 @@ def test_api_genes(client):
     resp = client.get(url_for("genes.api_genes", query=query))
     # THEN it should JSON response with the target gene included
     assert len(resp.json) > 0
-    matching_genes = [
-        gene_info for gene_info in resp.json if gene_info["id"] == hgnc_id
-    ]
+    matching_genes = [gene_info for gene_info in resp.json if gene_info["id"] == hgnc_id]
     assert len(matching_genes) == 1
     assert "LYST" in matching_genes[0]["name"]

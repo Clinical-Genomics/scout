@@ -81,9 +81,7 @@ def test_get_gene(adapter):
     adapter.load_hgnc_gene(gene_obj)
 
     ##THEN assert that the correct gene was fetched
-    res = adapter.hgnc_gene(
-        hgnc_identifier=gene_obj["hgnc_id"], build=gene_obj["build"]
-    )
+    res = adapter.hgnc_gene(hgnc_identifier=gene_obj["hgnc_id"], build=gene_obj["build"])
 
     assert res["hgnc_id"] == gene_obj["hgnc_id"]
 

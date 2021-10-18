@@ -1,8 +1,7 @@
 import pytest
 
 from scout.exceptions import DataNotFoundError, IntegrityError
-from scout.load.report import (load_cnv_report, load_coverage_qc_report,
-                               load_delivery_report)
+from scout.load.report import load_cnv_report, load_coverage_qc_report, load_delivery_report
 
 
 def test_load_delivery_report_bad_case_id(adapter):
@@ -91,9 +90,7 @@ def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_
     assert updated_case_obj["cnv_report"] == report_path
 
 
-def test_load_coverage_qc_report_using_case_id_with_update_success(
-    adapter, cancer_case_obj
-):
+def test_load_coverage_qc_report_using_case_id_with_update_success(adapter, cancer_case_obj):
 
     adapter.case_collection.insert_one(cancer_case_obj)
     ## GIVEN a case exist, with a delivery report

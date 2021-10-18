@@ -28,21 +28,14 @@ def test_export_panel(mock_app):
     assert "WARNING Panel unknown_panel could not be found" in result.output
 
     # Try to pass a valid panel name, without a valid version
-    result = runner.invoke(
-        cli, ["export", "panel", panel_obj["panel_name"], "--version", 5.0]
-    )
+    result = runner.invoke(cli, ["export", "panel", panel_obj["panel_name"], "--version", 5.0])
 
     # The CLI command should not return abort code but error message
     assert result.exit_code == 0
-    assert (
-        "WARNING Panel {} could not be found".format(panel_obj["panel_name"])
-        in result.output
-    )
+    assert "WARNING Panel {} could not be found".format(panel_obj["panel_name"]) in result.output
 
     # Pass a valid panel name, valid version
-    result = runner.invoke(
-        cli, ["export", "panel", panel_obj["panel_name"], "--version", 1.0]
-    )
+    result = runner.invoke(cli, ["export", "panel", panel_obj["panel_name"], "--version", 1.0])
 
     # The CLI command shoud return gene panel
     assert result.exit_code == 0

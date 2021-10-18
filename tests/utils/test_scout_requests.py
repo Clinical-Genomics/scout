@@ -43,9 +43,7 @@ def test_post_request_json_error():
     data = {"param": "FOO"}
 
     resp_dict = scout_requests.post_request_json(url, data)
-    assert (
-        "An error occurred while sending a POST request to url" in resp_dict["message"]
-    )
+    assert "An error occurred while sending a POST request to url" in resp_dict["message"]
 
 
 @responses.activate
@@ -292,9 +290,7 @@ def test_fetch_hpo_files(phenotype_to_genes_file, hpo_genes_file):
     )
 
     # WHEN fetching all hpo files
-    res = scout_requests.fetch_hpo_files(
-        genes_to_phenotype=True, phenotype_to_genes=True
-    )
+    res = scout_requests.fetch_hpo_files(genes_to_phenotype=True, phenotype_to_genes=True)
 
     # THEN assert that the HPO header is there
     assert isinstance(res, dict)

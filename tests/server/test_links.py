@@ -2,8 +2,7 @@
 
 from flask import url_for
 
-from scout.server.links import (add_gene_links, alamut_link, cbioportal,
-                                mycancergenome, snp_links)
+from scout.server.links import add_gene_links, alamut_link, cbioportal, mycancergenome, snp_links
 
 
 def test_alamut_link(app, institute_obj, variant_obj):

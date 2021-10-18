@@ -20,9 +20,7 @@ def upload_research_variants(
     rank_treshold: int,
 ):
     """Delete existing variants and upload new variants"""
-    adapter.delete_variants(
-        case_id=case_obj["_id"], variant_type=variant_type, category=category
-    )
+    adapter.delete_variants(case_id=case_obj["_id"], variant_type=variant_type, category=category)
 
     LOG.info("Load %s %s for: %s", variant_type, category.upper(), case_obj["_id"])
     adapter.load_variants(

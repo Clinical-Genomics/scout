@@ -35,9 +35,7 @@ def test_make_sashimi_tracks_variant_38(app, case_obj):
         assert display_obj["tracks"][0]["splicej_bed"]
         assert display_obj["tracks"][0]["splicej_bed_index"]
         assert display_obj["reference_track"]  # Reference genome track
-        assert display_obj[
-            "custom_tracks"
-        ]  # Custom tracks include gene track in the right build
+        assert display_obj["custom_tracks"]  # Custom tracks include gene track in the right build
 
 
 @responses.activate
@@ -72,9 +70,7 @@ def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_response
         assert display_obj["tracks"][0]["splicej_bed"]
         assert display_obj["tracks"][0]["splicej_bed_index"]
         assert display_obj["reference_track"]  # Reference genome track
-        assert display_obj[
-            "custom_tracks"
-        ]  # Custom tracks include gene track in the right build
+        assert display_obj["custom_tracks"]  # Custom tracks include gene track in the right build
 
 
 def test_set_cloud_public_tracks(app):

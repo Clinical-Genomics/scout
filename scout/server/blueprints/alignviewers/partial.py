@@ -53,9 +53,7 @@ def send_file_partial(path):
     except IOError:
         return abort(404, "File not found")
 
-    resp = Response(
-        data, 206, mimetype=mimetypes.guess_type(path)[0], direct_passthrough=True
-    )
+    resp = Response(data, 206, mimetype=mimetypes.guess_type(path)[0], direct_passthrough=True)
 
     resp.headers.add("Content-type", "application/octet-stream")
     resp.headers.add("Accept-Ranges", "bytes")

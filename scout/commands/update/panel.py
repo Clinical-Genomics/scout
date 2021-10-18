@@ -37,9 +37,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("--update-version", type=float, help="Change the version of a panel")
 @with_appcontext
-def panel(
-    panel, version, update_date, update_version, add_maintainer, revoke_maintainer
-):
+def panel(panel, version, update_date, update_version, add_maintainer, revoke_maintainer):
     """
     Update a panel in the database
     """
@@ -67,9 +65,7 @@ def panel(
         user_obj = adapter.user(user_id=add_maintainer)
         if not user_obj:
             # Check if maintainers exist in the user database
-            LOG.warning(
-                "Maintainer user id %s does not exist in user database", add_maintainer
-            )
+            LOG.warning("Maintainer user id %s does not exist in user database", add_maintainer)
 
             raise click.Abort()
 

@@ -5,9 +5,7 @@ import pytest
 from scout.utils.date import get_date, match_date
 
 
-@pytest.mark.parametrize(
-    "date_str", ["2015.05.10", "2015-05-10", "2015 05 10", "2015/05/10"]
-)
+@pytest.mark.parametrize("date_str", ["2015.05.10", "2015-05-10", "2015 05 10", "2015/05/10"])
 def test_match_date(date_str):
     assert match_date(date_str)
 

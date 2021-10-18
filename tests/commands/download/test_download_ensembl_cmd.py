@@ -19,9 +19,7 @@ def test_download_ensembl_cmd(mocker, empty_mock_app):
     with tempfile.TemporaryDirectory() as dir_name:
         the_dir = pathlib.Path(dir_name)
         # WHEN running the command
-        result = runner.invoke(
-            ensembl_cmd, ["-o", the_dir, "--skip-tx", "--build", "37"]
-        )
+        result = runner.invoke(ensembl_cmd, ["-o", the_dir, "--skip-tx", "--build", "37"])
         # THEN check it exits without problems
         assert result.exit_code == 0
         assert "Download ensembl results" in result.output
@@ -33,9 +31,7 @@ def test_print_ensembl_genes(mocker, transcripts_handle):
     build = "37"
     tx_file_name = "ensembl_genes_{}.txt".format(build)
     tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch(
-        "scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines
-    )
+    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
     dir_name = tempfile.TemporaryDirectory()
     the_dir = pathlib.Path(dir_name.name)
     # WHEN fetching and printing the exac data
@@ -54,9 +50,7 @@ def test_print_ensembl_transcripts(mocker, transcripts_handle):
     build = "37"
     tx_file_name = "ensembl_transcripts_{}.txt".format(build)
     tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch(
-        "scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines
-    )
+    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
     dir_name = tempfile.TemporaryDirectory()
     the_dir = pathlib.Path(dir_name.name)
     # WHEN fetching and printing the exac data
@@ -75,9 +69,7 @@ def test_print_ensembl_exons(mocker, transcripts_handle):
     build = "37"
     tx_file_name = "ensembl_exons_{}.txt".format(build)
     tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch(
-        "scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines
-    )
+    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
     dir_name = tempfile.TemporaryDirectory()
     the_dir = pathlib.Path(dir_name.name)
     # WHEN fetching and printing the exac data
@@ -96,9 +88,7 @@ def test_print_ensembl_unknown_resource(mocker, transcripts_handle):
     build = "37"
     tx_file_name = "ensembl_exons_{}.txt".format(build)
     tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch(
-        "scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines
-    )
+    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
     dir_name = tempfile.TemporaryDirectory()
     the_dir = pathlib.Path(dir_name.name)
     # WHEN fetching and printing the exac data

@@ -305,9 +305,7 @@ def test_build_clinsig_filter(real_variant_database):
     assert a_variant["_id"]
 
     # there should be no variant with clnsig.value=='Pathogenic, Likely pathogenic'
-    res = adapter.variant_collection.find(
-        {"clnsig.value": "Pathogenic, Likely pathogenic"}
-    )
+    res = adapter.variant_collection.find({"clnsig.value": "Pathogenic, Likely pathogenic"})
     assert sum(1 for i in res) == 0
 
     # Modify clnsig value of this variant to 'Pathogenic, Likely pathogenic'
@@ -317,9 +315,7 @@ def test_build_clinsig_filter(real_variant_database):
     )
 
     # One variant has multiple clssig now:
-    res = adapter.variant_collection.find(
-        {"clnsig.value": "Pathogenic, Likely pathogenic"}
-    )
+    res = adapter.variant_collection.find({"clnsig.value": "Pathogenic, Likely pathogenic"})
     assert sum(1 for i in res) == 1
 
     # Update raw query to find this variant as well
@@ -415,9 +411,7 @@ def test_build_clinsig_always(real_variant_database):
     assert sum(1 for i in res)
 
     # filter variants using query:
-    filtered_variants = list(
-        adapter.variants(case_id=case_id, nr_of_variants=-1, query=query)
-    )
+    filtered_variants = list(adapter.variants(case_id=case_id, nr_of_variants=-1, query=query))
     assert len(filtered_variants) > 0
 
     # Make sure that variants are filtered as they should:

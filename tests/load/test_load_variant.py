@@ -37,9 +37,7 @@ def test_load_variant_twice(real_populated_database, variant_obj):
         adapter.load_variant(variant_obj=variant_obj)
 
 
-def test_load_vep97_parsed_variant(
-    one_vep97_annotated_variant, real_populated_database, case_obj
-):
+def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_database, case_obj):
     """test first parsing and then loading a vep v97 annotated variant"""
 
     # GIVEN a variant annotated using the following CSQ entry fields
@@ -144,9 +142,7 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
         assert variant["variant_rank"]
 
 
-def test_load_variants_includes_managed(
-    real_populated_database, case_obj, variant_clinical_file
-):
+def test_load_variants_includes_managed(real_populated_database, case_obj, variant_clinical_file):
     """Test that loading variants will include variants on the managed variants list"""
     adapter = real_populated_database
     # GIVEN a database without any variants

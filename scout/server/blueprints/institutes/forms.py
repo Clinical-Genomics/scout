@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms import (BooleanField, DecimalField, Field, IntegerField,
-                     SelectField, SelectMultipleField, SubmitField, TextField,
-                     validators)
+from wtforms import (
+    BooleanField,
+    DecimalField,
+    Field,
+    IntegerField,
+    SelectField,
+    SelectMultipleField,
+    SubmitField,
+    TextField,
+    validators,
+)
 from wtforms.widgets import TextInput
 
 from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS
 
-CASE_SEARCH_KEY = [
-    (value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()
-]
+CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
 class NonValidatingSelectField(SelectField):
@@ -69,15 +75,11 @@ class InstituteForm(FlaskForm):
         "Gene panels for variants filtering", validators=[validators.Optional()]
     )
 
-    pheno_groups = NonValidatingSelectMultipleField(
-        "Custom phenotype groups", choices=hpo_tuples
-    )
+    pheno_groups = NonValidatingSelectMultipleField("Custom phenotype groups", choices=hpo_tuples)
     cohorts = NonValidatingSelectMultipleField(
         "Available patient cohorts", validators=[validators.Optional()]
     )
-    institutes = NonValidatingSelectMultipleField(
-        "Institutes to share cases with", choices=[]
-    )
+    institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
 
     loqusdb_id = NonValidatingSelectField("LoqusDB id", choices=[])
 
@@ -106,9 +108,7 @@ class TagListField(Field):
 class GeneVariantFiltersForm(FlaskForm):
     """Base FiltersForm for SNVs"""
 
-    variant_type = SelectMultipleField(
-        choices=[("clinical", "clinical"), ("research", "research")]
-    )
+    variant_type = SelectMultipleField(choices=[("clinical", "clinical"), ("research", "research")])
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
     filter_variants = SubmitField(label="Filter variants")
     rank_score = IntegerField(default=15)
@@ -121,9 +121,7 @@ class GeneVariantFiltersForm(FlaskForm):
 class CaseFilterForm(FlaskForm):
     """Takes care of cases filtering in cases page"""
 
-    search_type = SelectField(
-        "Search by", [validators.Optional()], choices=CASE_SEARCH_KEY
-    )
+    search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
     search_term = TextField("Search cases")
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
     skip_assigned = BooleanField("Hide assigned")
@@ -134,9 +132,7 @@ class CaseFilterForm(FlaskForm):
 class PhenoModelForm(FlaskForm):
     """Base Phenopanel form, not including any subpanel"""
 
-    model_name = TextField(
-        "Phenotype panel name", validators=[validators.InputRequired()]
-    )
+    model_name = TextField("Phenotype panel name", validators=[validators.InputRequired()])
     model_desc = TextField("Description", validators=[validators.Optional()])
     create_model = SubmitField("Create")
 
@@ -144,10 +140,6 @@ class PhenoModelForm(FlaskForm):
 class PhenoSubPanelForm(FlaskForm):
     """A form corresponfing to a phenopanel sub-panel"""
 
-    title = TextField(
-        "Phenotype subpanel title", validators=[validators.InputRequired()]
-    )
-    subtitle = TextField(
-        "Phenotype subpanel subtitle", validators=[validators.Optional()]
-    )
+    title = TextField("Phenotype subpanel title", validators=[validators.InputRequired()])
+    subtitle = TextField("Phenotype subpanel subtitle", validators=[validators.Optional()])
     add_subpanel = SubmitField("Save phenotype subpanel")

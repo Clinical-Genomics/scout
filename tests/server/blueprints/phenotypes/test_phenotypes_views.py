@@ -40,9 +40,7 @@ def test_phenotypes_api(app, real_adapter, hpo_term):
 
     with app.test_client() as client:
         # WHEN retrieving json for all HPO terms
-        resp = client.get(
-            url_for("phenotypes.api_hpo_term_search", search_string="Leukemia")
-        )
+        resp = client.get(url_for("phenotypes.api_hpo_term_search", search_string="Leukemia"))
 
         # THEN the response should be JSON
         assert resp.content_type == "application/json"

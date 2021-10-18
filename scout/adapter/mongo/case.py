@@ -35,9 +35,7 @@ class CaseHandler(object):
         scores = {}
         set_1 = set()
         if len(phenotype_terms) == 0:
-            LOG.warning(
-                "No phenotype terms provided, please provide ar least one HPO term"
-            )
+            LOG.warning("No phenotype terms provided, please provide ar least one HPO term")
             return None
         # Add all ancestors of all terms
         for term in phenotype_terms:
@@ -64,9 +62,7 @@ class CaseHandler(object):
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-    def _set_similar_phenotype_query(
-        self, query, query_field, query_term, institute_id
-    ):
+    def _set_similar_phenotype_query(self, query, query_field, query_term, institute_id):
         """Adds query parameters when search is performed by case or phenotype similarity
 
         Args:
@@ -87,13 +83,9 @@ class CaseHandler(object):
 
             for term in case_obj.get("phenotype_terms", []):
                 hpo_terms.append(term.get("phenotype_id"))
-            similar_cases = self.cases_by_phenotype(
-                hpo_terms, institute_id, case_obj["_id"]
-            )
+            similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, case_obj["_id"])
         else:  # similar HPO terms
-            LOG.debug(
-                f"Search for cases with phenotype similar to HPO terms: {hpo_terms}"
-            )
+            LOG.debug(f"Search for cases with phenotype similar to HPO terms: {hpo_terms}")
             hpo_terms = query_term.split(",")
             hpo_terms = [term.strip() for term in hpo_terms]
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, None)
@@ -188,9 +180,7 @@ class CaseHandler(object):
                 query["synopsis"] = ""
 
         if query_field == "panel":
-            query["panels"] = {
-                "$elemMatch": {"panel_name": query_term, "is_default": True}
-            }
+            query["panels"] = {"$elemMatch": {"panel_name": query_term, "is_default": True}}
 
         if query_field == "status":
             query["status"] = query_term
@@ -209,9 +199,7 @@ class CaseHandler(object):
         if query_field == "cohort":
             query["cohorts"] = query_term
 
-        if query_term != "" and (
-            query_field == "similar_case" or query_field == "similar_pheno"
-        ):
+        if query_term != "" and (query_field == "similar_case" or query_field == "similar_pheno"):
             order = self._set_similar_phenotype_query(
                 query, query_field, query_term, owner or collaborator
             )
@@ -222,9 +210,7 @@ class CaseHandler(object):
         if query_field == "user":
             query_terms = query_term.split(" ")
             user_query = {
-                "$and": [
-                    {"name": {"$regex": term, "$options": "i"}} for term in query_terms
-                ]
+                "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
             }
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["email"] for user in users]}
@@ -354,9 +340,7 @@ class CaseHandler(object):
                 verbs.add("mark_causative")
             verbs = list(verbs)
 
-            days_datetime = datetime.datetime.now() - datetime.timedelta(
-                days=within_days
-            )
+            days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
             # Look up 'mark_causative' events added since specified number days ago
             event_query = {
                 "category": "case",
@@ -378,9 +362,7 @@ class CaseHandler(object):
         if order:
             return self.case_collection.find(query)
 
-        return self.case_collection.find(query, no_cursor_timeout=True).sort(
-            "updated_at", -1
-        )
+        return self.case_collection.find(query, no_cursor_timeout=True).sort("updated_at", -1)
 
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.
@@ -474,16 +456,12 @@ class CaseHandler(object):
                 ).get("dynamic_gene_list", [])
             )
 
-            LOG.debug(
-                "Add selected: current dynamic gene list: {}".format(dynamic_gene_list)
-            )
+            LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
 
         res = []
         if hgnc_ids:
             LOG.info("Fetching genes by hgnc id: {}".format(hgnc_ids))
-            res = self.hgnc_collection.find(
-                {"hgnc_id": {"$in": hgnc_ids}, "build": build}
-            )
+            res = self.hgnc_collection.find({"hgnc_id": {"$in": hgnc_ids}, "build": build})
         elif hgnc_symbols:
             LOG.info("Fetching genes by hgnc symbols")
             for symbol in hgnc_symbols:
@@ -594,9 +572,7 @@ class CaseHandler(object):
         # Check that the owner exists in the database
         institute_obj = self.institute(config_data["owner"])
         if not institute_obj:
-            raise IntegrityError(
-                "Institute '%s' does not exist in database" % config_data["owner"]
-            )
+            raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
         # Parse the case information
         parsed_case = parse_case(config=config_data)
         # Build the case object
@@ -691,14 +667,10 @@ class CaseHandler(object):
             self.update_case(case_obj)
 
             # update Sanger status for the new inserted variants
-            self.update_case_sanger_variants(
-                institute_obj, case_obj, old_sanger_variants
-            )
+            self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
 
             if keep_actions and old_evaluated_variants:
-                self.update_variant_actions(
-                    institute_obj, case_obj, old_evaluated_variants
-                )
+                self.update_variant_actions(institute_obj, case_obj, old_evaluated_variants)
 
         else:
             LOG.info("Loading case %s into database", case_obj["display_name"])
@@ -797,9 +769,7 @@ class CaseHandler(object):
                     "coverage_qc_report": case_obj.get("coverage_qc_report"),
                     "delivery_report": case_obj.get("delivery_report"),
                     "gene_fusion_report": case_obj.get("gene_fusion_report"),
-                    "gene_fusion_report_research": case_obj.get(
-                        "gene_fusion_report_research"
-                    ),
+                    "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
                     "genome_build": case_obj.get("genome_build", "37"),
                     "has_strvariants": case_obj.get("has_strvariants"),
                     "has_svvariants": case_obj.get("has_svvariants"),
@@ -1116,11 +1086,7 @@ class CaseHandler(object):
             }
 
         """
-        LOG.debug(
-            "Updating verification status for variants in case:{}".format(
-                case_obj["_id"]
-            )
-        )
+        LOG.debug("Updating verification status for variants in case:{}".format(case_obj["_id"]))
 
         updated_variants = {"updated_verified": [], "updated_ordered": []}
         # update verification status for verified variants of a case

@@ -104,9 +104,7 @@ def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     # BUT WHEN querying for inactive cases
     name_query = "status:inactive"
     # THEN no case should be returned.
-    inactive_cases = adapter.cases(
-        collaborator=case_obj["owner"], name_query=name_query
-    )
+    inactive_cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     assert sum(1 for i in inactive_cases) == 0
 
 
@@ -567,9 +565,7 @@ def test_cases_by_phenotype(hpo_database, test_hpo_terms, case_obj):
     assert sum(1 for i in adapter.case_collection.find()) == 3
 
     hpo_query_terms = [term["phenotype_id"] for term in test_hpo_terms]
-    similar_cases = adapter.cases_by_phenotype(
-        hpo_query_terms, case_obj["owner"], case_obj["_id"]
-    )
+    similar_cases = adapter.cases_by_phenotype(hpo_query_terms, case_obj["owner"], case_obj["_id"])
     # make sure that the function returns a list of tuples
     assert isinstance(similar_cases, list)
     assert isinstance(similar_cases[0], tuple)
@@ -629,9 +625,7 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     assert sum(1 for i in result) == 1
 
 
-def test_get_cases_solved_since(
-    real_adapter, case_obj, user_obj, institute_obj, variant_obj
-):
+def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
     adapter.case_collection.insert_one(case_obj)
@@ -740,9 +734,7 @@ def test_keep_dismiss_variant_tag_after_reupload(
     assert test_variant["dismiss_variant"] == [2, 11]
 
 
-def test_keep_mosaic_tags_after_reupload(
-    adapter, case_obj, variant_obj, user_obj, institute_obj
-):
+def test_keep_mosaic_tags_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
     """Test the code that updates custom tags (mosaic tags) of new variants according to the old."""
 
     old_variant = copy.deepcopy(variant_obj)
@@ -786,9 +778,7 @@ def test_keep_mosaic_tags_after_reupload(
     assert test_variant["mosaic_tags"] == [1, 3]
 
 
-def test_keep_cancer_tier_after_reupload(
-    adapter, case_obj, variant_obj, user_obj, institute_obj
-):
+def test_keep_cancer_tier_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
     """Test the code that updates cancer tier of new variants according to the old."""
 
     old_variant = copy.deepcopy(variant_obj)
@@ -832,9 +822,7 @@ def test_keep_cancer_tier_after_reupload(
     assert test_variant["cancer_tier"] == "2C"
 
 
-def test_keep_manual_acmg_after_reupload(
-    adapter, case_obj, variant_obj, user_obj, institute_obj
-):
+def test_keep_manual_acmg_after_reupload(adapter, case_obj, variant_obj, user_obj, institute_obj):
     """Test the code that updates acmg classification of new variants according to the old."""
 
     old_variant = copy.deepcopy(variant_obj)

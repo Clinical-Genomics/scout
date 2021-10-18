@@ -8,8 +8,7 @@ from flask_login import current_user
 
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
-from scout.server.blueprints.cases.views import (parse_raw_gene_ids,
-                                                 parse_raw_gene_symbols)
+from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
 from scout.server.extensions import mail, store
 
 TEST_TOKEN = "test_token"
@@ -71,9 +70,7 @@ def test_add_individual_phenotype(app, institute_obj):
 def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the call to the case reanalysis API"""
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # WHEN the rerun is triggered using the reanalysis endpoint
     with app.test_client() as client:
@@ -97,9 +94,7 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
 def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
     """test case rerun function"""
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user
@@ -167,9 +162,7 @@ def test_update_cancer_case_sample(
     app, user_obj, institute_obj, cancer_case_obj, mocker, mock_redirect
 ):
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -316,13 +309,9 @@ def test_case_sma(app, case_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_update_individual(
-    app, user_obj, institute_obj, case_obj, mocker, mock_redirect
-):
+def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_redirect):
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -372,9 +361,7 @@ def test_update_individual(
 
 def test_case_synopsis(app, institute_obj, case_obj, mocker, mock_redirect):
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -399,14 +386,10 @@ def test_case_synopsis(app, institute_obj, case_obj, mocker, mock_redirect):
         assert resp.status_code == 302
 
 
-def test_update_case_comment(
-    app, institute_obj, case_obj, user_obj, mocker, mock_redirect
-):
+def test_update_case_comment(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
     """Test the functionality that allows updating of case-specific comments"""
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -625,9 +608,7 @@ def test_case_report(app, institute_obj, case_obj):
 def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
     # Test the web page containing the general case report
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
@@ -719,9 +700,7 @@ def test_mt_report(app, institute_obj, case_obj):
 
 def test_status(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -778,9 +757,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        resp = _test_delivery_report(
-            client, institute_obj, case_obj, response_format="html"
-        )
+        resp = _test_delivery_report(client, institute_obj, case_obj, response_format="html")
         # THEN the endpoint should return the delivery report HTML page
         assert "Leveransrapport Clinical Genomics" in str(resp.data)
 
@@ -794,9 +771,7 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        resp = _test_delivery_report(
-            client, institute_obj, case_obj, response_format="pdf"
-        )
+        resp = _test_delivery_report(client, institute_obj, case_obj, response_format="pdf")
         # a successful response should be returned
         assert resp.status_code == 200
         # and it should contain a pdf file, not HTML code
@@ -852,14 +827,10 @@ def test_omimterms(app, test_omim_term):
         assert resp.mimetype == "application/json"
 
 
-def _test_beacon_submit(
-    client, institute_obj, case_obj, vcf_files, mocker, mock_redirect
-):
+def _test_beacon_submit(client, institute_obj, case_obj, vcf_files, mocker, mock_redirect):
     """Test beacon connection: given client, produce response"""
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     form_data = {
         "case": case_obj["_id"],
@@ -871,9 +842,7 @@ def _test_beacon_submit(
     return resp
 
 
-def test_beacon_submit_wrong_config(
-    app, institute_obj, case_obj, mocker, mock_redirect
-):
+def test_beacon_submit_wrong_config(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test saving variants to a Beacon server when Beacon connection parameters are not set"""
 
     # GIVEN an initialized app
@@ -940,9 +909,7 @@ def test_beacon_remove(
 ):
     """Test removing variants submitted to Beacon for test case"""
 
-    mocker.patch(
-        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN a mocked Beacon server
     def mock_response(*args, **kwargs):

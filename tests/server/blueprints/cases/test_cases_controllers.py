@@ -2,10 +2,12 @@
 import requests  # import requests for the purposes of monkeypatching
 from flask import Blueprint, Flask, url_for
 
-from scout.server.blueprints.cases.controllers import (case,
-                                                       case_report_content,
-                                                       mt_coverage_stats,
-                                                       phenotypes_genes)
+from scout.server.blueprints.cases.controllers import (
+    case,
+    case_report_content,
+    mt_coverage_stats,
+    phenotypes_genes,
+)
 from scout.server.extensions import store
 
 
@@ -31,9 +33,7 @@ def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list)
     assert len(pheno_dict["HP:0001250"]["genes"].split(", ")) == len(hpo_term["genes"])
 
 
-def test_phenotypes_genes_clinical(
-    gene_database, test_case, hpo_term, panel, gene_list
-):
+def test_phenotypes_genes_clinical(gene_database, test_case, hpo_term, panel, gene_list):
     """Test function that creates phenotype terms dictionaries with gene symbol info"""
     adapter = gene_database
     # Given a database with one phenotype term containing genes
@@ -64,9 +64,7 @@ def test_phenotypes_genes_clinical(
     assert len(pheno_dict["HP:0001250"]["genes"].split(", ")) == 1
 
 
-def test_phenotype_genes_matching_phenotypes(
-    gene_database, case_obj, hpo_term, gene_list
-):
+def test_phenotype_genes_matching_phenotypes(gene_database, case_obj, hpo_term, gene_list):
     """Test the function that creates the phenotype-genes terms dictionaries with genes matching more than 1 phenotype"""
 
     adapter = gene_database
@@ -196,9 +194,7 @@ def test_case_controller_with_panel(app, institute_obj, panel, test_case):
     assert len(fetched_case["panel_names"]) == 1
 
 
-def test_case_controller_panel_wrong_version(
-    adapter, app, institute_obj, panel, test_case
-):
+def test_case_controller_panel_wrong_version(adapter, app, institute_obj, panel, test_case):
     # GIVEN an adapter with a case with a gene panel with wrong version
     test_case["panels"] = [
         {
@@ -225,9 +221,7 @@ def test_case_controller_panel_wrong_version(
     assert str(panel["version"]) in fetched_case["panel_names"][0]
 
 
-def test_case_controller_non_existing_panel(
-    adapter, app, institute_obj, test_case, panel
-):
+def test_case_controller_non_existing_panel(adapter, app, institute_obj, test_case, panel):
     # GIVEN an adapter with a case with a gene panel but no panel objects
     test_case["panels"] = [
         {

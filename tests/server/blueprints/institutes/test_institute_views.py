@@ -42,14 +42,10 @@ def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
 def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
     """Testing the endpoint to remove an existing phenotype model for an institute"""
 
-    mocker.patch(
-        "scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model_obj = store.phenomodel_collection.find_one()
     assert model_obj
 
@@ -63,9 +59,7 @@ def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
 
         # WHEN the user removes the model via the remove_phenomodel endpoint
         resp = client.post(
-            url_for(
-                "overview.remove_phenomodel", institute_id=institute_obj["internal_id"]
-            ),
+            url_for("overview.remove_phenomodel", institute_id=institute_obj["internal_id"]),
             data=form_data,
         )
         # THEN the phenotype model should be deleted from the database
@@ -76,9 +70,7 @@ def test_phenomodel_GET(app, user_obj, institute_obj):
     """test the phenomodel page endpoint, GET request"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model_obj = store.phenomodel_collection.find_one()
 
     # GIVEN an initialized app
@@ -100,14 +92,10 @@ def test_phenomodel_GET(app, user_obj, institute_obj):
 def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to lock a phenomodel and make it editable only by admins"""
 
-    mocker.patch(
-        "scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model = store.phenomodel_collection.find_one()
     assert "admins" not in model
 
@@ -134,14 +122,10 @@ def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
 def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to unlock a phenomodel and make it editable only by all users"""
 
-    mocker.patch(
-        "scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an institute with phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model = store.phenomodel_collection.find_one()
 
     # GIVEN an initialized app
@@ -173,9 +157,7 @@ def test_phenomodel_POST_rename_model(app, user_obj, institute_obj):
     """Test the phenomodel endpoing, POST request for updating model info"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Old model", "Old description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Old model", "Old description")
     model_obj = store.phenomodel_collection.find_one()
 
     # GIVEN an initialized app
@@ -204,9 +186,7 @@ def test_phenomodel_POST_rename_model(app, user_obj, institute_obj):
 def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
     """Test the phenomodel endpoint, by sending requests for adding and deleting a subpanel"""
     # GIVEN an institute with a phenotype model having no subpanels
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model_obj = store.phenomodel_collection.find_one()
     assert model_obj["subpanels"] == {}
 
@@ -233,14 +213,8 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         # Then the subpanel dictionary should be added to model subpanels
         updated_model = store.phenomodel_collection.find_one()
         subpanel_id = list(updated_model["subpanels"].keys())[0]
-        assert (
-            updated_model["subpanels"][subpanel_id]["title"]
-            == "Phenotype subpanel title"
-        )
-        assert (
-            updated_model["subpanels"][subpanel_id]["subtitle"]
-            == "Phenotype subpanel subtitle"
-        )
+        assert updated_model["subpanels"][subpanel_id]["title"] == "Phenotype subpanel title"
+        assert updated_model["subpanels"][subpanel_id]["subtitle"] == "Phenotype subpanel subtitle"
 
         # WHEN the user sends a POST request to remove the subpanel
         form_data = dict(subpanel_delete=subpanel_id)
@@ -257,15 +231,11 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         assert updated_model["subpanels"] == {}
 
 
-def test_phenomodel_POST_add_omim_checkbox_to_subpanel(
-    app, user_obj, institute_obj, omim_checkbox
-):
+def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_obj, omim_checkbox):
     """Test adding an OMIM checkbox to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model_obj = store.phenomodel_collection.find_one()
     # containing a subpanel
     model_obj["subpanels"] = {"subpanel_x": TEST_SUBPANEL}
@@ -308,15 +278,11 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(
         assert checkbox["custom_name"] == form_data["omim_custom_name"]
 
 
-def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(
-    app, user_obj, institute_obj, hpo_checkboxes
-):
+def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_obj, hpo_checkboxes):
     """Test adding an HPO checkbox with its children to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model_obj = store.phenomodel_collection.find_one()
     # containing a subpanel
     model_obj["subpanels"] = {"subpanel_x": TEST_SUBPANEL}
@@ -335,9 +301,7 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(
             hpo_subpanel_id="subpanel_x",
             hpoHasTitle="on",
             hpoTermTitle="Title for term",
-            hpo_term=" | ".join(
-                [hpo_checkboxes[0]["_id"], hpo_checkboxes[0]["description"]]
-            ),
+            hpo_term=" | ".join([hpo_checkboxes[0]["_id"], hpo_checkboxes[0]["description"]]),
             hpo_custom_name="Alternative HPO name",
             add_hpo="",
             includeChildren="on",
@@ -355,10 +319,7 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(
         checkbox = updated_model["subpanels"]["subpanel_x"]["checkboxes"]["HP:0025190"]
         assert checkbox["name"] == "HP:0025190"
         assert checkbox["checkbox_type"] == "hpo"
-        assert (
-            checkbox["description"]
-            == "Bilateral tonic-clonic seizure with generalized onset"
-        )
+        assert checkbox["description"] == "Bilateral tonic-clonic seizure with generalized onset"
         assert checkbox["term_title"] == form_data["hpoTermTitle"]
         assert checkbox["custom_name"] == form_data["hpo_custom_name"]
         # Additionally, the HPO term checkbox should contain a nested HPO term:
@@ -373,9 +334,7 @@ def test_phenomodel_POST_remove_subpanel_checkbox(app, user_obj, institute_obj):
     """Test removing a single checkbox from a phenotype model subpanel"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(
-        institute_obj["internal_id"], "Test model", "Model description"
-    )
+    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
     model_obj = store.phenomodel_collection.find_one()
     # containing a subpanel with a checkbox
     TEST_SUBPANEL["checkboxes"] = {"HP:000001": {"name": "HP:000001"}}
@@ -442,9 +401,7 @@ def test_institute_settings(app, user_obj, institute_obj):
 
         # WHEN accessing the cases page (GET method)
         resp = client.get(
-            url_for(
-                "overview.institute_settings", institute_id=institute_obj["internal_id"]
-            )
+            url_for("overview.institute_settings", institute_id=institute_obj["internal_id"])
         )
 
         # THEN it should return a page
@@ -468,9 +425,7 @@ def test_institute_settings(app, user_obj, institute_obj):
 
         # via POST request
         resp = client.post(
-            url_for(
-                "overview.institute_settings", institute_id=institute_obj["internal_id"]
-            ),
+            url_for("overview.institute_settings", institute_id=institute_obj["internal_id"]),
             data=form_data,
         )
         assert resp.status_code == 200
@@ -480,9 +435,7 @@ def test_institute_settings(app, user_obj, institute_obj):
         assert updated_institute["display_name"] == form_data["display_name"]
         assert updated_institute["sanger_recipients"] == form_data["sanger_emails"]
         assert updated_institute["coverage_cutoff"] == int(form_data["coverage_cutoff"])
-        assert updated_institute["frequency_cutoff"] == float(
-            form_data["frequency_cutoff"]
-        )
+        assert updated_institute["frequency_cutoff"] == float(form_data["frequency_cutoff"])
         assert updated_institute["cohorts"] == form_data["cohorts"]
         assert updated_institute["collaborators"] == form_data["institutes"]
         assert len(updated_institute["phenotype_groups"]) == 2  # one for each HPO term
@@ -502,9 +455,7 @@ def test_cases(app, institute_obj):
         assert resp.status_code == 200
 
         # WHEN accessing the cases page
-        resp = client.get(
-            url_for("overview.cases", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("overview.cases", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200
@@ -594,9 +545,7 @@ def test_cases_by_pinned_gene_query(app, case_obj, institute_obj):
 
     # GIVEN a test variant hitting POT1 gene (hgnc_id:17284)
     suspects = []
-    test_variant = store.variant_collection.find_one(
-        {"genes.hgnc_id": {"$in": [17284]}}
-    )
+    test_variant = store.variant_collection.find_one({"genes.hgnc_id": {"$in": [17284]}})
     assert test_variant
 
     with app.test_client() as client:
@@ -616,9 +565,7 @@ def test_cases_by_pinned_gene_query(app, case_obj, institute_obj):
             ),
             data=form,
         )
-        updated_case = store.case_collection.find_one(
-            {"suspects": {"$in": [test_variant["_id"]]}}
-        )
+        updated_case = store.case_collection.find_one({"suspects": {"$in": [test_variant["_id"]]}})
         assert updated_case
 
         # WHEN the case search is performed using the POT1 gene
@@ -733,9 +680,7 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
         assert resp.status_code == 200
 
         # WHEN accessing the case page
-        resp = client.get(
-            url_for("overview.causatives", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("overview.causatives", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200
@@ -778,9 +723,7 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         }
 
         resp = client.post(
-            url_for(
-                "overview.gene_variants", institute_id=institute_obj["internal_id"]
-            ),
+            url_for("overview.gene_variants", institute_id=institute_obj["internal_id"]),
             data=filter_query,
         )
         # THEN it should return a page
@@ -790,14 +733,10 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         assert "POT1" in str(resp.data)
 
 
-def test_gene_variants_no_valid_gene(
-    app, institute_obj, case_obj, mocker, mock_redirect
-):
+def test_gene_variants_no_valid_gene(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the gene_variant endpoint with a gene symbol not in database"""
 
-    mocker.patch(
-        "scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect
-    )
+    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -814,9 +753,7 @@ def test_gene_variants_no_valid_gene(
         }
 
         resp = client.post(
-            url_for(
-                "overview.gene_variants", institute_id=institute_obj["internal_id"]
-            ),
+            url_for("overview.gene_variants", institute_id=institute_obj["internal_id"]),
             data=filter_query,
         )
         # THEN the page should redirect
@@ -833,9 +770,7 @@ def test_institute_users(app, institute_obj, user_obj):
 
         # WHEN accessing the cases page
         resp = client.get(
-            url_for(
-                "overview.institute_users", institute_id=institute_obj["internal_id"]
-            )
+            url_for("overview.institute_users", institute_id=institute_obj["internal_id"])
         )
 
         # THEN it should return a page
@@ -854,15 +789,11 @@ def test_filters(app, institute_obj, user_obj, case_obj, filter_obj):
         resp = client.get(url_for("auto_login"))
 
         category = "snv"
-        filter_id = store.stash_filter(
-            filter_obj, institute_obj, case_obj, user_obj, category
-        )
+        filter_id = store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
         store.lock_filter(filter_id, user_obj.get("email"))
 
         # WHEN accessing the cases page
-        resp = client.get(
-            url_for("overview.filters", institute_id=institute_obj["internal_id"])
-        )
+        resp = client.get(url_for("overview.filters", institute_id=institute_obj["internal_id"]))
 
         # THEN it should return a page
         assert resp.status_code == 200
@@ -924,9 +855,7 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
             new_name="new_sample_name",
         )
 
-        referer = url_for(
-            "overview.clinvar_submissions", institute_id=institute_obj["internal_id"]
-        )
+        referer = url_for("overview.clinvar_submissions", institute_id=institute_obj["internal_id"])
 
         # WHEN the sample name is edited from the submission page (POST request)
         resp = client.post(
@@ -943,7 +872,5 @@ def test_rename_clinvar_samples(app, institute_obj, clinvar_variant, clinvar_cas
         assert resp.status_code == 302
 
         # And the sample name should have been updated in the database
-        updated_casedata = store.clinvar_collection.find_one(
-            {"_id": clinvar_casedata["_id"]}
-        )
+        updated_casedata = store.clinvar_collection.find_one({"_id": clinvar_casedata["_id"]})
         assert updated_casedata["individual_id"] != clinvar_casedata["individual_id"]

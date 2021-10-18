@@ -2,14 +2,22 @@
 import logging
 from datetime import datetime
 
-from flask import (Blueprint, abort, current_app, flash, redirect,
-                   render_template, request, session, url_for)
+from flask import (
+    Blueprint,
+    abort,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 from flask_ldap3_login import AuthenticationResponseStatus
 from flask_ldap3_login.forms import LDAPLoginForm
 from flask_login import login_user, logout_user
 
-from scout.server.extensions import (ldap_manager, login_manager, oauth_client,
-                                     store)
+from scout.server.extensions import ldap_manager, login_manager, oauth_client, store
 from scout.server.utils import public_endpoint
 
 from . import controllers
@@ -53,9 +61,7 @@ def login():
         form = LDAPLoginForm()
         LOG.info("Validating LDAP user")
         if not form.validate_on_submit():
-            flash(
-                "username-password combination is not valid, plase try again", "warning"
-            )
+            flash("username-password combination is not valid, plase try again", "warning")
             return redirect(url_for("public.index"))
         user_id = form.username.data
 
@@ -73,9 +79,7 @@ def login():
 
     if request.args.get("email"):  # log in against Scout database
         user_mail = request.args.get("email")
-        LOG.info(
-            "Validating user %s email %s against Scout database", user_id, user_mail
-        )
+        LOG.info("Validating user %s email %s against Scout database", user_id, user_mail)
 
     user_obj = store.user(email=user_mail, user_id=user_id)
     if user_obj is None:

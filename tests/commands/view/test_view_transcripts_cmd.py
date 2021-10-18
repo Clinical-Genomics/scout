@@ -14,10 +14,7 @@ def test_view_transcripts(mock_app):
     result = runner.invoke(cli, ["view", "transcripts"])
     assert result.exit_code == 0
     # cli should return just header, since there are no transcripts in database
-    assert (
-        "Chromosome\tstart\tend\ttranscript_id\thgnc_id\trefseq\tis_primary"
-        in result.output
-    )
+    assert "Chromosome\tstart\tend\ttranscript_id\thgnc_id\trefseq\tis_primary" in result.output
 
     # insert one transcript into database
     transcript_obj = {

@@ -31,10 +31,7 @@ def test_update_omim_existing_institute_no_omim_key(mock_app):
         ["update", "omim", "--institute", "cust000"],
     )
     assert result.exit_code != 0
-    assert (
-        "WARNING Please provide a omim api key to load the omim gene panel"
-        in result.output
-    )
+    assert "WARNING Please provide a omim api key to load the omim gene panel" in result.output
 
 
 def test_update_omim_wrong_omim_key(mock_app):

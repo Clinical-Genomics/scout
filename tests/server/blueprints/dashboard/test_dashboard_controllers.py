@@ -1,8 +1,11 @@
 from flask import url_for
 
 from scout.server.blueprints.dashboard.controllers import (
-    compose_slice_query, dashboard_form, get_dashboard_info,
-    institute_select_choices)
+    compose_slice_query,
+    dashboard_form,
+    get_dashboard_info,
+    institute_select_choices,
+)
 from scout.server.blueprints.dashboard.forms import DashboardFilterForm
 from scout.server.extensions import store
 
@@ -103,9 +106,7 @@ def test_with_slice_query(real_adapter, case_obj):
     institute_id = case_obj["owner"]
 
     slice_query = f"case:{case_display_id}"
-    data = get_dashboard_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
-    )
+    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
 
     ## THEN assert there is one case in the data
     for group in data["cases"]:
@@ -130,9 +131,7 @@ def test_with_hpo_query(real_adapter, case_obj):
     institute_id = case_obj["owner"]
     slice_query = f"exact_pheno:{phenotype['phenotype_id']}"
 
-    data = get_dashboard_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
-    )
+    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
     ## THEN assert there is one case in the data
     for group in data["cases"]:
         if group["status"] == "all":
@@ -156,9 +155,7 @@ def test_with_phenotype_group_query(real_adapter, case_obj):
     institute_id = case_obj["owner"]
     slice_query = "pheno_group:HP:0000001"
 
-    data = get_dashboard_info(
-        adapter, institute_id=institute_id, slice_query=slice_query
-    )
+    data = get_dashboard_info(adapter, institute_id=institute_id, slice_query=slice_query)
     ## THEN assert there is one case in the data
     for group in data["cases"]:
         if group["status"] == "all":

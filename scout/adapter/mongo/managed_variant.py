@@ -51,9 +51,7 @@ class ManagedVariantHandler(object):
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
         if collision:
-            LOG.debug(
-                "Collision - new variant already exists! Leaving variant unmodified."
-            )
+            LOG.debug("Collision - new variant already exists! Leaving variant unmodified.")
             return
 
         if original_obj_id:
@@ -119,9 +117,7 @@ class ManagedVariantHandler(object):
         Returns:
             ManagedVariant
         """
-        managed_variant = self.managed_variant_collection.find_one(
-            {"variant_id": variant_id}
-        )
+        managed_variant = self.managed_variant_collection.find_one({"variant_id": variant_id})
 
         return managed_variant
 
@@ -174,9 +170,7 @@ class ManagedVariantHandler(object):
 
         if query_options:
             if "description" in query_options:
-                query["description"] = {
-                    "$regex": ".*" + query_options["description"] + ".*"
-                }
+                query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
 
             if "position" in query_options:
                 query["end"] = {"$gte": int(query_options["position"])}
