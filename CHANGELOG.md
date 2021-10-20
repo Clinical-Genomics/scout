@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Fixed
 ### Changed
+- Rearrange variant page again, moving severity predictions down.
+- More reactive layout width steps on variant page
 
 ## [4.40.1]
 ### Added
