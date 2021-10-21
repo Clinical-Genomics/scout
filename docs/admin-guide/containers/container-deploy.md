@@ -47,7 +47,7 @@ Note that in the above command we are mapping a specific custom config file pres
 Make sure that the custom config file contains the correct settings to connect to your local database, for instance on a Mac machine, it should contain the following lines:
 
 ```
-MONGO_HOST = "docker.for.mac.localhost"
+MONGO_HOST = "docker.for.mac.localhost" #127.0.0.1 for non-mac machines
 MONGO_DBNAME = "scout-demo"
 ```
 
