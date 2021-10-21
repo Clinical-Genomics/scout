@@ -2,7 +2,7 @@ __Status:__ Experimental. (Don't use for production).
 
 # Deploy Scout using containers
 
-* [ Scout Dockerfile ](#docker)
+* [ Running Scout using the Dockerfile image ](#docker)
 * [ Deploying using Systemd services ](./systemd.md)
 * [ Deploying using Kubernetes ](./kubernetes.md)
 
@@ -10,13 +10,54 @@ __Status:__ Experimental. (Don't use for production).
 <a name="docker"></a>
 ## Scout Dockerfile
 
-A Docker image for creating both backend and frontend containers is available on [Docker Hub](https://hub.docker.com/repository/docker/clinicalgenomics/scout). Alternatively the Dockerfile used for creating the image is available in this repository.
+A Docker image for creating both backend and frontend containers is available on [Docker Hub](https://hub.docker.com/repository/docker/clinicalgenomics/scout). Alternatively it is possible to build an image starting from the Dockerfile present in this repository.
+To build a Scout image on your local computer you need [Docker](https://www.docker.com) installed on your computer.
 
-A local image of the repository can be created by moving the Dockerfile in the root folder of the app and from the same location, in a terminal, running the following command:
+To build Scout locally type the following command:
 
+```
 docker build -t scout .
+```
 
-The container with the docker image contains only the app installation files and its required libraries. In order to work, the container must be connected with at least one other container hosting a running mongodb instance or a database running on the local machine.
+The container with the docker image contains only the app installation files and its required libraries. In order to work, the container must interact with a MongoDB database. This database could be either be launched as another Docker image or it could be a MongoDB instance installed and running on your computer or on an external server.
+
+
+## Running a Scout web app using a Docker image
+
+Given a MongoDB instance running on localhost, port 27017, a Scout web app could be launched by directly pulling the image from Docker Hub. To launch the demo server run the following command:
+
+```
+docker run --net=host --rm --expose 5000 -p 5000:5000 clinicalgenomics/scout scout --host 127.0.0.1 -db scout-demo  serve --host 0.0.0.0
+```
+
+From a mac machine the same command would be slightly different (the reason is described [here](https://docs.docker.com/desktop/mac/networking/)):
+```
+docker run --rm --expose 5000 -p 5000:5000 clinicalgenomics/scout scout --host docker.for.mac.localhost -db scout-demo  serve --host 0.0.0.0
+```
+
+## Running command line instructions on the fly by running the Docker container
+
+Given a MongoDB instance running on localhost, port 27017, a Scout command line command could be launched in this way:
+```
+docker run (--net=host) --volume="path_to_config.py_on_your_machine":/home/worker/configs/config.py --rm clinicalgenomics/scout scout --flask-config /home/worker/configs/config.py view cases
+```
+
+Note that in the above command we are mapping a specific custom config file present on machine to a file `/home/worker/configs/config.py` created in the Docker container.
+
+Make sure that the config file in use contains the correct settings to connect to your local database, for instance on a Mac machine, it should contain the following lines:
+
+```
+MONGO_HOST = "docker.for.mac.localhost"
+MONGO_DBNAME = "scout-demo"
+```
+
+## Opening an interactive terminal to execute command line instructions
+
+To run an interactive terminal to execute the commandd line, type the following:
+
+```
+docker run -it --volume="path_to_config.py_on_your_machine":/home/worker/configs/config.py --rm --entrypoint /bin/sh clinicalgenomics/scout
+```
 
 
 ## Docker tips and tricks
