@@ -95,50 +95,62 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
     else:
         build = "GRCh" + build
 
-    individual_pinned_snvs = list(
+    # Share only variants actually called for the affected individual(s) of this case
+    individual_pinned_vars = list(
         store.sample_variants(
-            [var for var in candidate_vars if not "|" in var], sample_name=sample_name
+            [var.split("|")[0] for var in candidate_vars], sample_name=sample_name
         )
     )
 
-    # if genes_only is True don't add duplicated genes
     gene_set = set()
-    for var in individual_pinned_snvs:
-        # a variant could hit one or several genes so create a genomic feature for each of these genes
-        hgnc_genes = var.get("hgnc_ids")
-        # Looks like MatchMaker Exchange API accepts only variants that hit genes :(
-        if not hgnc_genes:
-            continue
-        for hgnc_id in hgnc_genes:
-            gene_obj = store.hgnc_gene(hgnc_id, case_obj["genome_build"])
-            if not gene_obj:
-                continue
-            g_feature = {"gene": {"id": gene_obj.get("hgnc_symbol")}}
-            if genes_only and not hgnc_id in gene_set:  # if only gene names should be shared
-                gene_set.add(hgnc_id)
-                g_features.append(g_feature)
+    for var in individual_pinned_vars:  # Both SNVs and SVs
+        var_id = var["_id"]
+        for pinned in candidate_vars:
+            if pinned.startswith(var_id) is False:
                 continue
 
-            # if also variants should be shared:
-            g_feature["variant"] = {
-                "referenceName": var["chromosome"],
-                "start": var["position"],
-                "end": var["end"],
-                "assembly": build,
-                "referenceBases": var["reference"],
-                "alternateBases": var["alternative"],
-                "shareVariantLevelData": True,
-            }
-            zygosity = None
-            # collect zygosity for the given sample
-            zygosities = var[
-                "samples"
-            ]  # it's a list with zygosity situation for each sample of the case
-            for zyg in zygosities:
-                if zyg.get("display_name") == sample_name:  # sample of interest
-                    zygosity = zyg["genotype_call"].count("1") + zyg["genotype_call"].count("2")
-            g_feature["zygosity"] = zygosity
-            g_features.append(g_feature)
+            if (
+                "|" in pinned
+            ):  # SV variant (example: 77d69d4d78a8e272365bdabe4f607327|TIPIN), collect only gene name
+                gene_name = pinned.split("|")[1]
+                g_features.append({"gene": {"id": gene_name}})
+                continue
+
+            else:  # SNV variants
+                hgnc_genes = var.get("hgnc_ids")
+
+                if not hgnc_genes:
+                    continue
+                for hgnc_id in hgnc_genes:
+                    gene_obj = store.hgnc_gene(hgnc_id, case_obj["genome_build"])
+                    if not gene_obj:
+                        continue
+                    g_feature = {"gene": {"id": gene_obj.get("hgnc_symbol")}}
+                    if genes_only:  # if only gene names should be shared
+                        gene_set.add(hgnc_id)
+                        g_features.append(g_feature)
+                        continue
+
+                # if also variants should be shared:
+                g_feature["variant"] = {
+                    "referenceName": var["chromosome"],
+                    "start": var["position"],
+                    "end": var["end"],
+                    "assembly": build,
+                    "referenceBases": var["reference"],
+                    "alternateBases": var["alternative"],
+                    "shareVariantLevelData": True,
+                }
+                zygosity = None
+                # collect zygosity for the given sample
+                zygosities = var[
+                    "samples"
+                ]  # it's a list with zygosity situation for each sample of the case
+                for zyg in zygosities:
+                    if zyg.get("display_name") == sample_name:  # sample of interest
+                        zygosity = zyg["genotype_call"].count("1") + zyg["genotype_call"].count("2")
+                g_feature["zygosity"] = zygosity
+                g_features.append(g_feature)
 
     return g_features
 

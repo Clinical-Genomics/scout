@@ -31,9 +31,9 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # MatchMaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
-# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
-# MME_URL = "http://localhost:9020"
-# MME_TOKEN = "matchmaker_token"
+MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+MME_URL = "http://localhost:9020"
+MME_TOKEN = "DEMO"
 
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API

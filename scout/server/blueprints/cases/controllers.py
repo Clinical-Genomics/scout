@@ -1116,6 +1116,7 @@ def matchmaker_add(request, institute_id, case_name):
     matchmaker_check_requirements(request)
     _, case_obj = institute_and_case(store, institute_id, case_name)
     candidate_vars = request.form.getlist("selected_var")
+    flash(candidate_vars)
 
     if len(candidate_vars) > 3:
         flash(
@@ -1196,9 +1197,7 @@ def matchmaker_add(request, institute_id, case_name):
         )
         if resp.get("status_code") != 200:
             flash(
-                "an error occurred while adding patient to matchmaker: {}".format(
-                    resp.get("message")
-                ),
+                "an error occurred while adding patient to matchmaker: {}".format(resp),
                 "warning",
             )
             continue
