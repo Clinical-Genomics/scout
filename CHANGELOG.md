@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+- Do not crash but redirect to variants page with error when a variant is not found for a case
 ### Changed
 
 ## [4.40.1]
