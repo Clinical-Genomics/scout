@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Choose custom pinned vatiants to submit to MatchMaker Exchange
+- Submit structural variant as genes to the MatchMaker Exchange
 ### Fixed
 ### Changed
 
