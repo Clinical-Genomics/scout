@@ -8,7 +8,6 @@ class MongoDB:
     @staticmethod
     def init_app(app):
         """Initialize from flask"""
-        uri = app.config.get("MONGO_URI", None)
 
         db_name = app.config.get("MONGO_DBNAME", "scout")
 
@@ -17,7 +16,7 @@ class MongoDB:
             port=app.config.get("MONGO_PORT", 27017),
             username=app.config.get("MONGO_USERNAME", None),
             password=app.config.get("MONGO_PASSWORD", None),
-            uri=uri,
+            uri=app.config.get("MONGO_URI", None),
             mongodb=db_name,
         )
 
