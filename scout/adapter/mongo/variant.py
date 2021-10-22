@@ -923,11 +923,11 @@ class VariantHandler(VariantLoader):
 
         return variants_by_type
 
-    def sample_variants(self, variants, sample_name):
-        """Given a list of variants get variant objects found in a specific patient
+    def sample_variant(self, variant_id, sample_name):
+        """Given a variant_id, get the variant document found in a specific patient
 
         Args:
-            variants(list): a list of variant ids
+            variant_id(string): a variant _id
             sample_name(str): a sample display name
 
         Returns:
@@ -940,7 +940,7 @@ class VariantHandler(VariantLoader):
 
         query = {
             "$and": [
-                {"_id": {"$in": variants}},
+                {"_id": variant_id},
                 {"category": {"$in": ["snv", "sv"]}},
                 {
                     "samples": {
@@ -953,5 +953,5 @@ class VariantHandler(VariantLoader):
             ]
         }
 
-        result = self.variant_collection.find(query)
+        result = self.variant_collection.find_one(query)
         return result

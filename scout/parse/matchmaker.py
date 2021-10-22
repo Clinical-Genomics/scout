@@ -63,7 +63,7 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
         store(MongoAdapter) : connection to the database
         case_obj(dict): a scout case object
         sample_name(str): sample display name
-        candidate_vars(list): a list of variants/genes chosen from the user
+        candidate_vars(list): a list of variants/genes chosen from the user. Example: ["4c7d5c70d955875504db72ef8e1abe77", "77d69d4d78a8e272365bdabe4f607327|TIPIN"]
         genes_only(bool): if True only gene names will be included in genomic features
 
     Returns:
@@ -88,69 +88,52 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
 
     """
     g_features = []
-    # genome build is required
-    build = case_obj["genome_build"]
-    if not build in ["37", "38"]:
-        build = "GRCh37"
-    else:
-        build = "GRCh" + build
 
-    # Share only variants actually called for the affected individual(s) of this case
-    individual_pinned_vars = list(
-        store.sample_variants(
-            [var.split("|")[0] for var in candidate_vars], sample_name=sample_name
-        )
-    )
+    for var in candidate_vars:
+        vari_id = var.split("|")[0]
+        gene_symbol = None
+        var_obj = store.sample_variant(vari_id, sample_name)
+        if var_obj is None:
+            continue
+        if "|" in var:  # Share a gene symbol from a SV
+            gene_symbol = var.split("|")[1]
+            g_feature = {"gene": {"id": gene_symbol}}
+            g_features.append(g_feature)
+            continue
 
-    gene_set = set()
-    for var in individual_pinned_vars:  # Both SNVs and SVs
-        var_id = var["_id"]
-        for pinned in candidate_vars:
-            if pinned.startswith(var_id) is False:
+        # SNV variant
+        hgnc_genes = var_obj.get("hgnc_ids")
+        if not hgnc_genes:
+            continue
+        for hgnc_id in hgnc_genes:
+            gene_obj = store.hgnc_gene(hgnc_id, case_obj["genome_build"])
+            if not gene_obj:
                 continue
-
-            if (
-                "|" in pinned
-            ):  # SV variant (example: 77d69d4d78a8e272365bdabe4f607327|TIPIN), collect only gene name
-                gene_name = pinned.split("|")[1]
-                g_features.append({"gene": {"id": gene_name}})
-                continue
-
-            else:  # SNV variants
-                hgnc_genes = var.get("hgnc_ids")
-
-                if not hgnc_genes:
-                    continue
-                for hgnc_id in hgnc_genes:
-                    gene_obj = store.hgnc_gene(hgnc_id, case_obj["genome_build"])
-                    if not gene_obj:
-                        continue
-                    g_feature = {"gene": {"id": gene_obj.get("hgnc_symbol")}}
-                    if genes_only:  # if only gene names should be shared
-                        gene_set.add(hgnc_id)
-                        g_features.append(g_feature)
-                        continue
-
-                # if also variants should be shared:
-                g_feature["variant"] = {
-                    "referenceName": var["chromosome"],
-                    "start": var["position"],
-                    "end": var["end"],
-                    "assembly": build,
-                    "referenceBases": var["reference"],
-                    "alternateBases": var["alternative"],
-                    "shareVariantLevelData": True,
-                }
-                zygosity = None
-                # collect zygosity for the given sample
-                zygosities = var[
-                    "samples"
-                ]  # it's a list with zygosity situation for each sample of the case
-                for zyg in zygosities:
-                    if zyg.get("display_name") == sample_name:  # sample of interest
-                        zygosity = zyg["genotype_call"].count("1") + zyg["genotype_call"].count("2")
-                g_feature["zygosity"] = zygosity
+            g_feature = {"gene": {"id": gene_obj.get("hgnc_symbol")}}
+            if genes_only is True:  # Disclose only gene info
                 g_features.append(g_feature)
+                continue
+
+            # share Variant-level information
+            g_feature["variant"] = {
+                "referenceName": var_obj["chromosome"],
+                "start": var_obj["position"],
+                "end": var_obj["end"],
+                "assembly": "GRCh38" if "38" in str(case_obj.get("genome_build", "")) else "GRCh37",
+                "referenceBases": var_obj["reference"],
+                "alternateBases": var_obj["alternative"],
+                "shareVariantLevelData": True,
+            }
+            zygosity = None
+            # collect zygosity for the given sample
+            zygosities = var_obj[
+                "samples"
+            ]  # it's a list with zygosity situation for each sample of the case
+            for zyg in zygosities:
+                if zyg.get("display_name") == sample_name:  # sample of interest
+                    zygosity = zyg["genotype_call"].count("1") + zyg["genotype_call"].count("2")
+            g_feature["zygosity"] = zygosity
+            g_features.append(g_feature)
 
     return g_features
 

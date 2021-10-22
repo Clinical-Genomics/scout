@@ -13,7 +13,7 @@
       <div class="modal-body">
         {% if case.mme_submission %} <!-- case was already submitted to MatchMaker -->
           <div class="row d-flex justify-content-around">
-            <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Past Matches <span class="fas fa-people-arrows"></span></a>
+            <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Submission details <span class="fas fa-people-arrows"></span></a>
             <select class="custom-select" onchange="window.open(this.value,'_self');" style="width:auto;">
                  <option selected>Match against</option>
                  <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
