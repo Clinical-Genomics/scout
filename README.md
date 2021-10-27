@@ -42,6 +42,8 @@ Once the server has started you and open the app in the web browser at the follo
 
 The command to stop the demo are either `docker-compose down` or `make down`.
 
+Instructions on how to run a Scout image connected to your local database or a custom database are present [on this page](docs/admin-guide/containers/container-deploy.md).
+
 ## Installation
 
 <!-- You can install the latest release of Scout using `pip`:
@@ -84,7 +86,7 @@ This will setup an instance of scout with a database called `scout-demo`. Now ru
 ```bash
 scout --demo serve
 ```
-And play around with the interface. A user has been created with email clark.kent@mail.com so use that adress to get access
+And play around with the interface. A user has been created with email clark.kent@mail.com so use that address to get access
 
 ### Initialize scout
 

@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Extended the instructions for running the Scout Docker image (web app and cli).
 ### Fixed
 ### Changed
 - A faster-built and lighter Docker image
