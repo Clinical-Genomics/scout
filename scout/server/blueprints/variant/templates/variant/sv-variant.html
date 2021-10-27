@@ -87,7 +87,9 @@
 
   <div class="row">
     <div class="col-md-6">
-      {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+       <div class="card panel-default">
+        {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+       </div>
     </div>
     <div class="col-md-6">
       {{ omim_phenotypes(variant) }}
