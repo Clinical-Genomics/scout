@@ -53,6 +53,9 @@ def tx_overview(variant_obj):
         variant_obj(dict)
     """
     overview_txs = []  # transcripts to be shown in transcripts overview
+    if variant_obj.get("genes") is None:
+        variant_obj["overview_transcripts"] = []
+        return
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
             ovw_tx = {}
@@ -233,7 +236,7 @@ def variant(
 
     # add default panels extra gene information
     panels = default_panels(store, case_obj)
-    variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
+    add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
 
     # Add information about bam files and create a region vcf
     if add_case:
