@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extended the instructions for running the Scout Docker image (web app and cli).
 - Enabled inclusion of custom images to STR variant view
 ### Fixed
+- General case report sorting comments for variants with None genetic models
+- Do not crash but redirect to variants page with error when a variant is not found for a case
 ### Changed
 
 ## [4.40.1]
