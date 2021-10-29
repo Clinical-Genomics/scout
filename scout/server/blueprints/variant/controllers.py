@@ -211,7 +211,7 @@ def variant(
         # NOTE this will query with variant_id == document_id, not the variant_id.
         variant_obj = store.variant(variant_id)
 
-    if variant_obj is None:
+    if variant_obj is None or variant_obj.get("case_id") != case_obj["_id"]:
         return None
 
     variant_type = variant_type or variant_obj.get("variant_type", "clinical")
