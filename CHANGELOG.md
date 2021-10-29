@@ -6,9 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
-- Choose custom pinned vatiants to submit to MatchMaker Exchange
+- Extended the instructions for running the Scout Docker image (web app and cli).
+- Choose custom pinned variants to submit to MatchMaker Exchange
 - Submit structural variant as genes to the MatchMaker Exchange
 ### Fixed
+- General case report sorting comments for variants with None genetic models
+- Do not crash but redirect to variants page with error when a variant is not found for a case
 ### Changed
 
 ## [4.40.1]
