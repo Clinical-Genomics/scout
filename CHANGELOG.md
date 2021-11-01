@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Fixed
+- Human readable variants name in case page for variants having start chromosome different from end chromosome
 ### Changed
 
 ## [4.40.1]

@@ -274,7 +274,6 @@
 {% macro pretty_link_variant(variant, case) %}
 {# Returns human readable links to the corresponding variant page #}
 
-
   {% if variant.category in ("str", "snv", "cancer") %}
     {% if variant.category == "cancer" %}
     <a href="{{ url_for('variant.cancer_variant',
@@ -312,7 +311,7 @@
                               institute_id=variant.institute,
                               case_name=case.display_name,
                               variant_id=variant._id) }}">
-    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
   {% endif %}
   </a>
 {% endmacro %}
