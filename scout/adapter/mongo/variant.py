@@ -749,7 +749,12 @@ class VariantHandler(VariantLoader):
             evaluation_event["variant_id"] for evaluation_event in evaluation_events
         ]
 
-        LOG.debug("Found evaluated variant ids for case %s institute %s: %s ", case_id, institute_id, evaluated_variant_ids)
+        LOG.debug(
+            "Found evaluated variant ids for case %s institute %s: %s ",
+            case_id,
+            institute_id,
+            evaluated_variant_ids,
+        )
         return evaluated_variant_ids
 
     def evaluated_variants(self, case_id, institute_id):
