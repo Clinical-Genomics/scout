@@ -317,7 +317,8 @@ def test_hgnc_gene_caption(adapter):
     adapter.load_hgnc_gene(gene_obj2)
 
     caption = adapter.hgnc_gene_caption(2, "37")
-
+    ## THEN a proper caption is returned, but not including
+    ## fields that were missing
     assert caption
     assert caption["hgnc_symbol"] == gene_obj2["hgnc_symbol"]
     assert caption.get("chromosome") == None
