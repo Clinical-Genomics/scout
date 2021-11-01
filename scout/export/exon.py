@@ -29,7 +29,7 @@ def export_gene_exons(adapter, hgnc_id, build="37"):
 
     """
     gene_caption = adapter.hgnc_gene_caption(hgnc_id, build)
-    if gene_obj is None:
+    if gene_caption is None:
         LOG.warning(f"Could't find a gene with HGNC id '{hgnc_id}' in Scout database.")
         return
     query = {"hgnc_id": hgnc_id, "build": build}
