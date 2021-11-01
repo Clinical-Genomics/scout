@@ -231,7 +231,6 @@ def test_get_genes_per_build(real_adapter):
         "hgnc_symbol": "AB",
         "build": "38",
         "aliases": ["C", "AC"],
-    }
 
     adapter.load_hgnc_gene(gene_obj3)
 

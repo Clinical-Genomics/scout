@@ -7,7 +7,10 @@ def test_get_cancer_tier(real_variant_database):
     adapter = real_variant_database
 
     ## GIVEN a database with information
-    case_id = adapter.case_collection.find_one()["_id"]
+    case = adapter.case_collection.find_one()
+    case_id = case["_id"]
+    institute_id = case["owner"]
+
     variant = adapter.variant_collection.find_one()
 
     ## WHEN updating variant information for a variant
@@ -15,7 +18,7 @@ def test_get_cancer_tier(real_variant_database):
     variant["cancer_tier"] = "1A"
     adapter.variant_collection.find_one_and_replace({"_id": var_id}, variant)
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
     ## THEN assert the variant is returned by the function evaluated variants
     assert len(evaluated_variants) == 1
@@ -25,7 +28,10 @@ def test_get_manual_rank(real_variant_database):
     adapter = real_variant_database
 
     ## GIVEN a database with information
-    case_id = adapter.case_collection.find_one()["_id"]
+    case = adapter.case_collection.find_one()
+    case_id = case["_id"]
+    institute_id = case["owner"]
+
     variant = adapter.variant_collection.find_one()
 
     ## WHEN updating variant information for a variant
@@ -33,7 +39,7 @@ def test_get_manual_rank(real_variant_database):
     variant["manual_rank"] = 3
     adapter.variant_collection.find_one_and_replace({"_id": var_id}, variant)
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
     ## THEN assert the variant is returned by the function evaluated variants
     assert len(evaluated_variants) == 1
@@ -43,16 +49,19 @@ def test_get_commented(real_variant_database):
     adapter = real_variant_database
 
     ## GIVEN a database with information
-    case_id = adapter.case_collection.find_one()["_id"]
+    case = adapter.case_collection.find_one()
+    case_id = case["_id"]
+    institute_id = case["owner"]
+
     variant = adapter.variant_collection.find_one()
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
     assert len(evaluated_variants) == 0
     ## WHEN adding the comment for a variant
     var_id = variant["variant_id"]
 
     comment = dict(
-        institute="cust000",
+        institute=institute_id,
         case=case_id,
         link="a link",
         category="variant",
@@ -62,7 +71,7 @@ def test_get_commented(real_variant_database):
 
     adapter.event_collection.insert_one(comment)
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
     ## THEN assert the variant is returned by the function evaluated variants
     assert len(evaluated_variants) == 1
@@ -72,16 +81,18 @@ def test_get_ranked_and_commented(real_variant_database):
     adapter = real_variant_database
 
     ## GIVEN a database with information
-    case_id = adapter.case_collection.find_one()["_id"]
+    case = adapter.case_collection.find_one()
+    case_id = case["_id"]
+    institute_id = case["owner"]
     variant = adapter.variant_collection.find_one()
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
     assert len(evaluated_variants) == 0
     ## WHEN adding a comment for a variant and updating manual rank
     var_id = variant["variant_id"]
 
     comment = dict(
-        institute="cust000",
+        institute=institute_id,
         case=case_id,
         link="a link",
         category="variant",
@@ -93,7 +104,7 @@ def test_get_ranked_and_commented(real_variant_database):
     variant["manual_rank"] = 3
     adapter.variant_collection.find_one_and_replace({"_id": variant["_id"]}, variant)
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
     ## THEN assert the only variant is returned
     assert len(evaluated_variants) == 1
@@ -103,10 +114,13 @@ def test_get_ranked_and_comment_two(real_variant_database):
     adapter = real_variant_database
 
     ## GIVEN a database with information
-    case_id = adapter.case_collection.find_one()["_id"]
+    case = adapter.case_collection.find_one()
+    case_id = case["_id"]
+    institute_id = case["owner"]
+
     variants = adapter.variant_collection.find()
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
     assert len(evaluated_variants) == 0
     ## WHEN adding a comment for a variant and updating manual rank
     for i, variant in enumerate(variants):
@@ -116,7 +130,7 @@ def test_get_ranked_and_comment_two(real_variant_database):
         var_id = variant["variant_id"]
 
         comment = dict(
-            institute="cust000",
+            institute=institute_id,
             case=case_id,
             link="a link",
             category="variant",
@@ -128,7 +142,7 @@ def test_get_ranked_and_comment_two(real_variant_database):
         variant["manual_rank"] = 3
         adapter.variant_collection.find_one_and_replace({"_id": variant["_id"]}, variant)
 
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
     ## THEN assert the only variant is returned
     assert len(evaluated_variants) == 2
@@ -194,5 +208,5 @@ def test_evaluated_variants(
     )
 
     # Check that four variants (one ACMG-classified, one manual-ranked, one dismissed and one with comment) are retrieved from the database:
-    evaluated_variants = adapter.evaluated_variants(case_id)
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_obj["_id"])
     assert len(evaluated_variants) == 4

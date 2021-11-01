@@ -713,7 +713,36 @@ class VariantHandler(VariantLoader):
 
         return variants
 
-    def evaluated_variants(self, case_id):
+    def evaluated_variant_ids_from_events(self, case_id, institute_id):
+        """Returns variant ids for variants that have been evaluated
+           Return all variants, snvs/indels and svs from case case_id
+            which have an event entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+            'cancer_tier', 'mosaic_tags'or if they are commented.
+
+        Args:
+            case_id(str)
+
+        Returns:
+            variants(iterable(Variant))
+        """
+
+        evaluation_verbs = ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags", "comment"]
+
+        query = {
+            "category": "variant",
+            "institute": institute_id,
+            "case": case_id,
+            "verb": {"$in": evaluation_verbs},
+        }
+        evaluation_events = self.event_collection.find(query)
+        if evaluation_events is None:
+            return []
+
+        evaluated_variant_ids = [evaluation_event["variant_id"] for evaluation_event in evaluation_events]
+
+        return evaluated_variant_ids
+
+    def evaluated_variants(self, case_id, institute_id):
         """Returns variants that have been evaluated
 
         Return all variants, snvs/indels and svs from case case_id
@@ -722,25 +751,19 @@ class VariantHandler(VariantLoader):
 
         Args:
             case_id(str)
+            institute_id(str)
 
         Returns:
             variants(iterable(Variant))
         """
         # Get all variants that have been evaluated in some way for a case
-        query = {
-            "$and": [
-                {"case_id": case_id},
-                {
-                    "$or": [
-                        {"acmg_classification": {"$exists": True}},
-                        {"manual_rank": {"$exists": True}},
-                        {"cancer_tier": {"$exists": True}},
-                        {"dismiss_variant": {"$exists": True}},
-                        {"mosaic_tags": {"$exists": True}},
+        variant_ids = self.evaluated_variant_ids_from_events(case_id, institute_id)
+
+        query = { "$and": [
+                        {"variant_id": {"$in": variant_ids}},
+                        {"institute": case_id},
                     ]
-                },
-            ]
-        }
+                }
 
         # Collect the result in a dictionary
         variants = {}
