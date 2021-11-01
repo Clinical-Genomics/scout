@@ -749,6 +749,7 @@ class VariantHandler(VariantLoader):
             evaluation_event["variant_id"] for evaluation_event in evaluation_events
         ]
 
+        LOG.debug("Found evaluated variant ids for case %s institute %s: %s ", case_id, institute_id, evaluated_variant_ids)
         return evaluated_variant_ids
 
     def evaluated_variants(self, case_id, institute_id):
@@ -771,7 +772,7 @@ class VariantHandler(VariantLoader):
         query = {
             "$and": [
                 {"variant_id": {"$in": variant_ids}},
-                {"institute": case_id},
+                {"institute": institute_id},
             ]
         }
 

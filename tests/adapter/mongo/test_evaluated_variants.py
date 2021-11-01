@@ -15,8 +15,19 @@ def test_get_cancer_tier(real_variant_database):
 
     ## WHEN updating variant information for a variant
     var_id = variant["_id"]
+    variant_id = variant["variant_id"]
     variant["cancer_tier"] = "1A"
     adapter.variant_collection.find_one_and_replace({"_id": var_id}, variant)
+
+    evaluation = dict(
+        institute=institute_id,
+        case=case_id,
+        link="a link",
+        category="variant",
+        verb="cancer_tier",
+        variant_id=variant_id,
+    )
+    adapter.event_collection.insert_one(evaluation)
 
     evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
@@ -38,6 +49,17 @@ def test_get_manual_rank(real_variant_database):
     var_id = variant["_id"]
     variant["manual_rank"] = 3
     adapter.variant_collection.find_one_and_replace({"_id": var_id}, variant)
+
+    variant_id = variant["variant_id"]
+    evaluation = dict(
+        institute=institute_id,
+        case=case_id,
+        link="a link",
+        category="variant",
+        verb="manual_rank",
+        variant_id=variant_id,
+    )
+    adapter.event_collection.insert_one(evaluation)
 
     evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
@@ -142,6 +164,16 @@ def test_get_ranked_and_comment_two(real_variant_database):
         variant["manual_rank"] = 3
         adapter.variant_collection.find_one_and_replace({"_id": variant["_id"]}, variant)
 
+        evaluation = dict(
+            institute=institute_id,
+            case=case_id,
+            link="a link",
+            category="variant",
+            verb="manual_rank",
+            variant_id=var_id,
+        )
+        adapter.event_collection.insert_one(evaluation)
+
     evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
 
     ## THEN assert the only variant is returned
@@ -154,6 +186,7 @@ def test_evaluated_variants(
 
     adapter = real_populated_database
     case_id = case_obj["_id"]
+    institute_id = case_obj["owner"]
 
     # Assert that the database contains no variant yet
     res = adapter.variants(case_id=case_id, nr_of_variants=-1)
@@ -170,7 +203,7 @@ def test_evaluated_variants(
     ## I want to test for the existence of variants with the following keys:
     ## acmg_classification, manual_rank, dismiss_variant so I need to add these keys with values to variants in the database:
 
-    # Collect four variants from tyhe database
+    # Collect four variants from the database
     test_variants = list(adapter.variant_collection.find().limit(4))
 
     # Add the 'acmg_classification' key with a value to one variant:
@@ -179,17 +212,48 @@ def test_evaluated_variants(
         {"_id": acmg_variant["_id"]}, {"$set": {"acmg_classification": 4}}
     )
 
+    evaluation = dict(
+        institute=institute_id,
+        case=case_id,
+        link="a link",
+        category="variant",
+        verb="acmg",
+        variant_id=acmg_variant["variant_id"],
+    )
+    adapter.event_collection.insert_one(evaluation)
+
     # Add the 'manual_rank' key with a value to another variant:
     manual_ranked_variant = test_variants[1]
     adapter.variant_collection.find_one_and_update(
         {"_id": manual_ranked_variant["_id"]}, {"$set": {"manual_rank": 1}}
     )
 
+    evaluation = dict(
+        institute=institute_id,
+        case=case_id,
+        link="a link",
+        category="variant",
+        verb="manual_rank",
+        variant_id=manual_ranked_variant["variant_id"],
+    )
+    adapter.event_collection.insert_one(evaluation)
+
     # Add the 'dismiss_variant' key with a value to another variant:
     dismissed_variant = test_variants[2]
     adapter.variant_collection.find_one_and_update(
         {"_id": dismissed_variant["_id"]}, {"$set": {"dismiss_variant": 22}}
     )
+
+    evaluation = dict(
+        institute=institute_id,
+        case=case_id,
+        link="a link",
+        category="variant",
+        verb="dismiss_variant",
+        variant_id=dismissed_variant["variant_id"],
+    )
+    adapter.event_collection.insert_one(evaluation)
+
 
     # Add a comment event to the events collection for a variant:
     commented_variant = test_variants[3]
