@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - UCSC links coordinates for SV variants with start chromosome different than end chromosome
 - Human readable variants name in case page for variants having start chromosome different from end chromosome
 ### Changed
+- Rearrange variant page again, moving severity predictions down.
+- More reactive layout width steps on variant page
 
 ## [4.40.1]
 ### Added
