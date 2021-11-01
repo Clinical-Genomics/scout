@@ -31,7 +31,7 @@ def hgnc(hgnc_symbol, hgnc_id, build):
         raise click.Abort()
 
     if hgnc_id:
-        result = adapter.hgnc_gene(hgnc_id, build=build)
+        result = adapter.hgnc_gene_caption(hgnc_id, build=build)
         if not result:
             LOG.warning("Gene with id %s could not be found", hgnc_id)
             return

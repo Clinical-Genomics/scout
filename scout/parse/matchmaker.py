@@ -102,15 +102,15 @@ def genomic_features(store, case_obj, sample_name, genes_only):
     gene_set = set()
     for var in individual_pinned_snvs:
         # a variant could hit one or several genes so create a genomic feature for each of these genes
-        hgnc_genes = var.get("hgnc_ids")
+        hgnc_gene_ids = var.get("hgnc_ids")
         # Looks like MatchMaker Exchange API accepts only variants that hit genes :(
-        if not hgnc_genes:
+        if not hgnc_gene_ids:
             continue
-        for hgnc_id in hgnc_genes:
-            gene_obj = store.hgnc_gene(hgnc_id, case_obj["genome_build"])
-            if not gene_obj:
+        for hgnc_id in hgnc_gene_ids:
+            gene_caption = store.hgnc_gene_caption(hgnc_id, case_obj["genome_build"])
+            if not gene_caption:
                 continue
-            g_feature = {"gene": {"id": gene_obj.get("hgnc_symbol")}}
+            g_feature = {"gene": {"id": gene_caption.get("hgnc_symbol")}}
             if genes_only and not hgnc_id in gene_set:  # if only gene names should be shared
                 gene_set.add(hgnc_id)
                 g_features.append(g_feature)

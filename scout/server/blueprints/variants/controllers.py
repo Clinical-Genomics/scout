@@ -1126,11 +1126,11 @@ def update_form_hgnc_symbols(store, case_obj, form):
         # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene_symbol = store.hgnc_gene_symbol(int(hgnc_symbol), genome_build)
-                if hgnc_gene_symbol is None:
+                hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), genome_build)
+                if hgnc_gene_caption is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
-                    hgnc_symbols.append(hgnc_gene_symbol)
+                    hgnc_symbols.append(hgnc_gene_caption.get("hgnc_symbol", hgnc_symbol))
             else:
                 hgnc_symbols.append(hgnc_symbol)
 

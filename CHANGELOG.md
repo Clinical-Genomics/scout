@@ -11,7 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - General case report sorting comments for variants with None genetic models
 - Do not crash but redirect to variants page with error when a variant is not found for a case
 - UCSC links coordinates for SV variants with start chromosome different than end chromosome
-- Human readable variants name in case page for variants having start chromosome different from end chromosome
+- Human readable variants name in case page for variants having start chromosome different from end chromosom
+- Avoid always loading all transcripts when checking gene symbol: introduce gene captions
 ### Changed
 
 ## [4.40.1]
@@ -61,7 +62,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Selectable IGV tracks on variant page
 - Missing splice junctions button on variant page
 - Refactor variantS representative gene selection, and use it also for cancer variant summary
-- Avoid loading all transcripts when checking gene symbol
 ### Changed
 - Improve Javascript performance for displaying Chromograph images
 - Make ClinVar classification more evident in cancer variant page

@@ -28,7 +28,7 @@ def export_gene_exons(adapter, hgnc_id, build="37"):
         printlines(str): formatted like this: Chrom\tStart\tEnd\tExonId\tTranscripts\tHgncIDs\tHgncSymbols
 
     """
-    gene_obj = adapter.hgnc_gene(hgnc_id, build)
+    gene_caption = adapter.hgnc_gene_caption(hgnc_id, build)
     if gene_obj is None:
         LOG.warning(f"Could't find a gene with HGNC id '{hgnc_id}' in Scout database.")
         return
@@ -44,7 +44,7 @@ def export_gene_exons(adapter, hgnc_id, build="37"):
             exon["exon_id"],
             exon["transcript"],
             hgnc_id,
-            gene_obj["hgnc_symbol"],
+            gene_caption["hgnc_symbol"],
         )
 
 

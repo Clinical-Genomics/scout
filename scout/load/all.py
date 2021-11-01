@@ -46,12 +46,12 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         raise ValueError("Case {} does not exist in database".format(case_id))
 
     if hgnc_id:
-        gene_obj = adapter.hgnc_gene(hgnc_id, case_obj["genome_build"])
-        if not gene_obj:
+        gene_caption = adapter.hgnc_gene_caption(hgnc_id, case_obj["genome_build"])
+        if not gene_caption:
             ValueError("Gene {} does not exist in database".format(hgnc_id))
-        chrom = gene_obj["chromosome"]
-        start = gene_obj["start"]
-        end = gene_obj["end"]
+        chrom = gene_caption["chromosome"]
+        start = gene_caption["start"]
+        end = gene_caption["end"]
 
     LOG.info(
         "Load clinical SNV variants for case: {0} region: chr {1}, start"
