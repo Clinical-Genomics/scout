@@ -311,7 +311,9 @@ def case_report_variants(store, case_obj, institute_obj, data):
             evaluated_variants[vt].append(variant_obj)
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
-    for var_obj in store.evaluated_variants(case_id=case_obj["_id"], institute_id=institute_obj["_id"]):
+    for var_obj in store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=institute_obj["_id"]
+    ):
         # Check which category it belongs to
         for vt in CASE_REPORT_VARIANT_TYPES:
             keyword = CASE_REPORT_VARIANT_TYPES[vt]

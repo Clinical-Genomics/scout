@@ -726,7 +726,14 @@ class VariantHandler(VariantLoader):
             variants(iterable(Variant))
         """
 
-        evaluation_verbs = ["acmg", "manual_rank", "cancer_tier", "dismiss_variant", "mosaic_tags", "comment"]
+        evaluation_verbs = [
+            "acmg",
+            "manual_rank",
+            "cancer_tier",
+            "dismiss_variant",
+            "mosaic_tags",
+            "comment",
+        ]
 
         query = {
             "category": "variant",
@@ -738,7 +745,9 @@ class VariantHandler(VariantLoader):
         if evaluation_events is None:
             return []
 
-        evaluated_variant_ids = [evaluation_event["variant_id"] for evaluation_event in evaluation_events]
+        evaluated_variant_ids = [
+            evaluation_event["variant_id"] for evaluation_event in evaluation_events
+        ]
 
         return evaluated_variant_ids
 
@@ -759,11 +768,12 @@ class VariantHandler(VariantLoader):
         # Get all variants that have been evaluated in some way for a case
         variant_ids = self.evaluated_variant_ids_from_events(case_id, institute_id)
 
-        query = { "$and": [
-                        {"variant_id": {"$in": variant_ids}},
-                        {"institute": case_id},
-                    ]
-                }
+        query = {
+            "$and": [
+                {"variant_id": {"$in": variant_ids}},
+                {"institute": case_id},
+            ]
+        }
 
         # Collect the result in a dictionary
         variants = {}

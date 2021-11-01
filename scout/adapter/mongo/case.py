@@ -604,7 +604,9 @@ class CaseHandler(object):
         )
         if existing_case and keep_actions:
             # collect all variants with user actions for this case
-            old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"], case_obj["owner"]))
+            old_evaluated_variants = list(
+                self.evaluated_variants(case_obj["_id"], case_obj["owner"])
+            )
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
