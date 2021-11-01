@@ -311,7 +311,7 @@
                               institute_id=variant.institute,
                               case_name=case.display_name,
                               variant_id=variant._id) }}">
-    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
+    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}::{{ variant.end_chrom }}{{ variant.cytoband_end }})
   {% endif %}
   </a>
 {% endmacro %}
