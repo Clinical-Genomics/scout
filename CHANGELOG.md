@@ -14,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Human readable variants name in case page for variants having start chromosome different from end chromosome
 - Avoid always loading all transcripts when checking gene symbol: introduce gene captions
 ### Changed
+- Rearrange variant page again, moving severity predictions down.
+- More reactive layout width steps on variant page
 
 ## [4.40.1]
 ### Added
