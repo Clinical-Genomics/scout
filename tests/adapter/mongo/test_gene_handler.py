@@ -88,7 +88,6 @@ def test_get_gene(adapter):
     ##THEN assert that there are no genes in the 38 build
     res = adapter.hgnc_gene(hgnc_identifier=gene_obj["hgnc_id"], build="38")
 
-
     assert res is None
 
 
@@ -284,6 +283,7 @@ def test_get_all_genes(adapter):
     ##THEN assert that the correct number of genes where fetched
     assert sum(1 for i in res) == 2
 
+
 def test_hgnc_gene_caption(adapter):
     ##GIVEN a empty adapter
     assert sum(1 for i in adapter.all_genes()) == 0
@@ -297,7 +297,7 @@ def test_hgnc_gene_caption(adapter):
         "start": 1,
         "end": 100,
         "chromosome": "X",
-        "description": "An A-rich gene"
+        "description": "An A-rich gene",
     }
     adapter.load_hgnc_gene(gene_obj)
 
@@ -321,6 +321,7 @@ def test_hgnc_gene_caption(adapter):
     assert caption
     assert caption["hgnc_symbol"] == gene_obj2["hgnc_symbol"]
     assert caption.get("chromosome") == None
+
 
 def test_drop_genes(adapter):
     ##GIVEN a empty adapter

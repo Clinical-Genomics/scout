@@ -44,7 +44,7 @@ class GeneHandler(object):
         return result
 
     def hgnc_gene_caption(self, hgnc_identifier, build="37"):
-        """ Fetch the current hgnc gene symbol and similar caption info for a gene in a lightweight dict
+        """Fetch the current hgnc gene symbol and similar caption info for a gene in a lightweight dict
         Avoid populating transcripts, exons etc that would be added on a full gene object. Use hgnc_gene() if
         you need to use those.
 
