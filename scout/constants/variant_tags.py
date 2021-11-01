@@ -2,6 +2,7 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "_id",
     "variant_id",
     "display_name",
+    "case_id",
     "sanger_ordered",
     "validation",
     "phenotypes",
