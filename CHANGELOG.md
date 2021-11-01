@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Extended the instructions for running the Scout Docker image (web app and cli).
 ### Fixed
+- General case report sorting comments for variants with None genetic models
+- Do not crash but redirect to variants page with error when a variant is not found for a case
+- UCSC links coordinates for SV variants with start chromosome different than end chromosome
 ### Changed
 
 ## [4.40.1]
