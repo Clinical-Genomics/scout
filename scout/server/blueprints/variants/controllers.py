@@ -1230,7 +1230,9 @@ def reset_all_dimissed(store, institute_obj, case_obj):
         institute_obj(dict): an institute dictionary
         case_obj(dict): a case dictionary
     """
-    evaluated_vars = store.evaluated_variants(case_id=case_obj["_id"])
+    evaluated_vars = store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=case_obj["owner"]
+    )
     user_obj = store.user(current_user.email)
     # Create an associated case-level event
     link = url_for(

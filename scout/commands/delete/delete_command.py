@@ -98,12 +98,13 @@ def variants(
     click.echo("\t".join(DELETE_VARIANTS_HEADER))
     for nr, case in enumerate(cases, 1):
         case_id = case["_id"]
+        institute_id = case["owner"]
         case_n_variants = store.variant_collection.count_documents({"case_id": case_id})
         # Skip case if user provided a number of variants to keep and this number is less than total number of case variants
         if variants_threshold and case_n_variants < variants_threshold:
             continue
         # Get evaluated variants for the case that haven't been dismissed
-        case_evaluated = store.evaluated_variants(case_id=case_id)
+        case_evaluated = store.evaluated_variants(case_id=case_id, institute_id=institute_id)
         evaluated_not_dismissed = [
             variant["_id"] for variant in case_evaluated if "dismiss_variant" not in variant
         ]
@@ -337,7 +338,6 @@ def delete():
     """
     Delete objects from the database.
     """
-    pass
 
 
 delete.add_command(panel)
