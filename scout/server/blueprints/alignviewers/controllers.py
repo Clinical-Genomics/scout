@@ -58,11 +58,11 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
     # Collect locus coordinates. Take into account that variant can hit multiple genes
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
     for gene_id in variant_genes_ids:
-        gene_obj = store.hgnc_gene(hgnc_identifier=gene_id, build=build)
-        if gene_obj is None:
+        gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene_id, build=build)
+        if gene_caption is None:
             continue
-        locus_start_coords.append(gene_obj["start"])
-        locus_end_coords.append(gene_obj["end"])
+        locus_start_coords.append(gene_caption["start"])
+        locus_end_coords.append(gene_caption["end"])
 
     locus_start = min(locus_start_coords)
     locus_end = max(locus_end_coords)

@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not crash but redirect to variants page with error when a variant is not found for a case
 - UCSC links coordinates for SV variants with start chromosome different than end chromosome
 - Human readable variants name in case page for variants having start chromosome different from end chromosome
+- Avoid always loading all transcripts when checking gene symbol: introduce gene captions
 ### Changed
 - Rearrange variant page again, moving severity predictions down.
 - More reactive layout width steps on variant page
