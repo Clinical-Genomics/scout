@@ -285,6 +285,7 @@
 {% endmacro %}
 
 {% macro pretty_variant(variant) %}
+
   {% if variant.category in "str" %}
         {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
 
@@ -306,7 +307,7 @@
 
     {{ display_genes|join(", ") }}
   {% else %} <!-- structural variants -->
-    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
   {% endif %}
 {% endmacro %}
 
@@ -319,23 +320,21 @@
                    institute_id=variant.institute,
                    case_name=case.display_name,
                    variant_id=variant._id) }}">
-  {% elif variant.category == "cancer" %}
-    <a href="{{ url_for('variant.cancer_variant',
+    {% else %}
+    <a href="{{ url_for('variant.variant',
                    institute_id=variant.institute,
                    case_name=case.display_name,
                    variant_id=variant._id) }}">
-
-  {% else %} <!--SVs-->
+    {% endif %}
+  {% else %} <!-- structural variants -->
     <a href="{{ url_for('variant.sv_variant',
                               institute_id=variant.institute,
                               case_name=case.display_name,
                               variant_id=variant._id) }}">
-    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}::{{ variant.end_chrom }}{{ variant.cytoband_end }})
   {% endif %}
-  {{ pretty_variant(variant) }}
+    {{ pretty_variant(variant) }}
   </a>
 {% endmacro %}
-
 
 {% macro variant_validation_badge(variant) %}
   {% if variant.validation in ['True positive','False positive'] %}
