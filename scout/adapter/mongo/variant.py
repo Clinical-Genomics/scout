@@ -779,7 +779,7 @@ class VariantHandler(VariantLoader):
         query = {
             "$and": [
                 {"variant_id": {"$in": variant_ids}},
-                {"institute": institute_id,
+                {"institute": institute_id},
                 {
                     "$or": [
                         {"acmg_classification": {"$exists": True}},
@@ -788,7 +788,7 @@ class VariantHandler(VariantLoader):
                         {"dismiss_variant": {"$exists": True}},
                         {"mosaic_tags": {"$exists": True}},
                     ]
-                },
+                }
             ]
         }
 
