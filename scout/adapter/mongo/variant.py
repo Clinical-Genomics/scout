@@ -788,7 +788,7 @@ class VariantHandler(VariantLoader):
                         {"dismiss_variant": {"$exists": True}},
                         {"mosaic_tags": {"$exists": True}},
                     ]
-                }
+                },
             ]
         }
 
