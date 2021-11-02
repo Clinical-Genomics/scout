@@ -338,7 +338,6 @@ def delete():
     """
     Delete objects from the database.
     """
-    pass
 
 
 delete.add_command(panel)
