@@ -68,12 +68,13 @@ def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj, mocker, mo
         assert "mme_submission" not in updated_case
 
 
-def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
+def test_matchmaker_add_snv(app, user_obj, case_obj, test_hpo_terms, mocker):
     # GIVEN a mocked response from MME server
     mocker.patch(
         "scout.server.extensions.matchmaker.patient_submit",
         return_value={"message": "ok", "status_code": 200},
     )
+
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
         # GIVEN a user which is registered as a MatchMaker submitter
@@ -84,10 +85,13 @@ def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
 
         # submitting a case with HPO terms and a pinned variant
         test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+
         updated_case = store.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"suspects": [test_variant["_id"]], "phenotype_terms": test_hpo_terms}},
         )
+        # GIVEN a patched request to the matchmaker_add endpoint
+        mocker.patch("flask.request.form.getlist", return_value=[test_variant["_id"]])
 
         # WHEN user submits the case using the matchmaker_add controller
         saved_results = controllers.matchmaker_add(
@@ -97,7 +101,11 @@ def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
 
         # THEN ine case should be uodated and a submission object correctly saved to database
         updated_case = store.case_collection.find_one()
-        assert len(updated_case["mme_submission"]["patients"]) == 1
+        submission = updated_case["mme_submission"]
+        assert (
+            submission["patients"][0]["genomicFeatures"][0]["variant"]["start"]
+            == test_variant["position"]
+        )
 
 
 def test_matchmaker_delete(app, mme_submission, user_obj, case_obj, mocker):
