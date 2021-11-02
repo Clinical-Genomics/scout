@@ -254,7 +254,6 @@ def test_evaluated_variants(
     )
     adapter.event_collection.insert_one(evaluation)
 
-
     # Add a comment event to the events collection for a variant:
     commented_variant = test_variants[3]
 
