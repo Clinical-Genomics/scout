@@ -1,6 +1,8 @@
-from pprint import pprint as pp
+import logging
 
 import pytest
+
+LOG = logging.getLogger(__name__)
 
 
 def test_get_cancer_tier(real_variant_database):
@@ -180,23 +182,16 @@ def test_get_ranked_and_comment_two(real_variant_database):
     assert len(evaluated_variants) == 2
 
 
+
 def test_evaluated_variants(
-    case_obj, institute_obj, user_obj, real_populated_database, variant_objs
+    case_obj, institute_obj, user_obj, real_variant_database
 ):
 
-    adapter = real_populated_database
+    adapter = real_variant_database
     case_id = case_obj["_id"]
     institute_id = case_obj["owner"]
 
-    # Assert that the database contains no variant yet
-    res = adapter.variants(case_id=case_id, nr_of_variants=-1)
-    assert sum(1 for i in res) == 0
-
-    # Add to the empty database all variants from variant_objs
-    for index, variant_obj in enumerate(variant_objs):
-        adapter.load_variant(variant_obj)
-
-    # Assert that the database contains variants now
+    # Assert that the database contains variants
     n_documents = sum(1 for i in adapter.variant_collection.find())
     assert n_documents > 0
 
@@ -212,7 +207,7 @@ def test_evaluated_variants(
         {"_id": acmg_variant["_id"]}, {"$set": {"acmg_classification": 4}}
     )
 
-    evaluation = dict(
+    acmg_evaluation = dict(
         institute=institute_id,
         case=case_id,
         link="a link",
@@ -220,7 +215,7 @@ def test_evaluated_variants(
         verb="acmg",
         variant_id=acmg_variant["variant_id"],
     )
-    adapter.event_collection.insert_one(evaluation)
+    adapter.event_collection.insert_one(acmg_evaluation)
 
     # Add the 'manual_rank' key with a value to another variant:
     manual_ranked_variant = test_variants[1]
@@ -228,7 +223,7 @@ def test_evaluated_variants(
         {"_id": manual_ranked_variant["_id"]}, {"$set": {"manual_rank": 1}}
     )
 
-    evaluation = dict(
+    manual_rank_eval = dict(
         institute=institute_id,
         case=case_id,
         link="a link",
@@ -236,7 +231,7 @@ def test_evaluated_variants(
         verb="manual_rank",
         variant_id=manual_ranked_variant["variant_id"],
     )
-    adapter.event_collection.insert_one(evaluation)
+    adapter.event_collection.insert_one(manual_rank_eval)
 
     # Add the 'dismiss_variant' key with a value to another variant:
     dismissed_variant = test_variants[2]
@@ -244,7 +239,7 @@ def test_evaluated_variants(
         {"_id": dismissed_variant["_id"]}, {"$set": {"dismiss_variant": 22}}
     )
 
-    evaluation = dict(
+    dismiss_eval = dict(
         institute=institute_id,
         case=case_id,
         link="a link",
@@ -252,7 +247,7 @@ def test_evaluated_variants(
         verb="dismiss_variant",
         variant_id=dismissed_variant["variant_id"],
     )
-    adapter.event_collection.insert_one(evaluation)
+    adapter.event_collection.insert_one(dismiss_eval)
 
     # Add a comment event to the events collection for a variant:
     commented_variant = test_variants[3]
@@ -271,5 +266,5 @@ def test_evaluated_variants(
     )
 
     # Check that four variants (one ACMG-classified, one manual-ranked, one dismissed and one with comment) are retrieved from the database:
-    evaluated_variants = adapter.evaluated_variants(case_id, institute_obj["_id"])
+    evaluated_variants = adapter.evaluated_variants(case_id, institute_id)
     assert len(evaluated_variants) == 4

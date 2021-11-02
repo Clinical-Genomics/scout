@@ -772,13 +772,14 @@ class VariantHandler(VariantLoader):
         Returns:
             variants(iterable(Variant))
         """
+
         # Get all variants that have been evaluated in some way for a case
         variant_ids = self.evaluated_variant_ids_from_events(case_id, institute_id)
 
         query = {
             "$and": [
                 {"variant_id": {"$in": variant_ids}},
-                {"institute": institute_id},
+                {"institute": institute_id,
                 {
                     "$or": [
                         {"acmg_classification": {"$exists": True}},
@@ -793,7 +794,8 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
-        case_obj = self.case(case_id=case_id)  # case exists since it's used in the query above
+        case_obj = self.case(case_id=case_id)
+
         for var in self.variant_collection.find(query):
             variants[var["variant_id"]] = self.add_gene_info(
                 variant_obj=var, build=case_obj["genome_build"]
