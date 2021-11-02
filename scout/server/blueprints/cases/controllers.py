@@ -317,8 +317,8 @@ def case_report_variants(store, case_obj, institute_obj, data):
         # Check which category it belongs to
         for vt in CASE_REPORT_VARIANT_TYPES:
             keyword = CASE_REPORT_VARIANT_TYPES[vt]
-            # When found we add it to the categpry
-            # Eac variant can belong to multiple categories
+            # When found we add it to the category
+            # Each variant can belong to multiple categories
             if keyword not in var_obj:
                 continue
             evaluated_variants[vt].append(var_obj)
