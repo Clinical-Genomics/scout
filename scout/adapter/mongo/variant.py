@@ -758,7 +758,7 @@ class VariantHandler(VariantLoader):
     def evaluated_variants(self, case_id, institute_id):
         """Returns variants that have been evaluated
 
-        Return all variants, snvs/indels and svs from case case_id
+        Return all variants, snvs/indels and svs from case case_id and institute_id
         which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
         'cancer_tier' or if they are commented.
 
