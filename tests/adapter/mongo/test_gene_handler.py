@@ -283,6 +283,46 @@ def test_get_all_genes(adapter):
     assert sum(1 for i in res) == 2
 
 
+def test_hgnc_gene_caption(adapter):
+    ##GIVEN a empty adapter
+    assert sum(1 for i in adapter.all_genes()) == 0
+
+    ## WHEN inserting a gene with all caption keys
+    gene_obj = {
+        "hgnc_id": 1,
+        "hgnc_symbol": "AAA",
+        "build": "37",
+        "aliases": ["AAA", "AAB"],
+        "start": 1,
+        "end": 100,
+        "chromosome": "X",
+        "description": "An A-rich gene",
+    }
+    adapter.load_hgnc_gene(gene_obj)
+
+    ## THEN a proper caption is returned
+    caption = adapter.hgnc_gene_caption(1, "37")
+    assert caption
+    assert caption["hgnc_symbol"] == gene_obj["hgnc_symbol"]
+    assert caption["chromosome"] == gene_obj["chromosome"]
+
+    ### WHEN inserting a gene witout certain caption fields
+    gene_obj2 = {
+        "hgnc_id": 2,
+        "hgnc_symbol": "AA",
+        "build": "37",
+        "aliases": ["AA", "AB"],
+    }
+    adapter.load_hgnc_gene(gene_obj2)
+
+    caption = adapter.hgnc_gene_caption(2, "37")
+    ## THEN a proper caption is returned, but not including
+    ## fields that were missing
+    assert caption
+    assert caption["hgnc_symbol"] == gene_obj2["hgnc_symbol"]
+    assert caption.get("chromosome") == None
+
+
 def test_drop_genes(adapter):
     ##GIVEN a empty adapter
     assert sum(1 for i in adapter.all_genes()) == 0
