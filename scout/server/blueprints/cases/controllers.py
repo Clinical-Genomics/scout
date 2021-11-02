@@ -101,7 +101,7 @@ def case(store, institute_obj, case_obj):
     _populate_assessments(causatives)
 
     # get evaluated variants
-    evaluated_variants = store.evaluated_variants(case_obj["_id"])
+    evaluated_variants = store.evaluated_variants(case_obj["_id"], case_obj["owner"])
     _populate_assessments(evaluated_variants)
 
     # check for partial causatives and associated phenotypes
@@ -311,12 +311,14 @@ def case_report_variants(store, case_obj, institute_obj, data):
             evaluated_variants[vt].append(variant_obj)
 
     ## get variants for this case that are either classified, commented, tagged or dismissed.
-    for var_obj in store.evaluated_variants(case_id=case_obj["_id"]):
+    for var_obj in store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=institute_obj["_id"]
+    ):
         # Check which category it belongs to
         for vt in CASE_REPORT_VARIANT_TYPES:
             keyword = CASE_REPORT_VARIANT_TYPES[vt]
-            # When found we add it to the categpry
-            # Eac variant can belong to multiple categories
+            # When found we add it to the category
+            # Each variant can belong to multiple categories
             if keyword not in var_obj:
                 continue
             evaluated_variants[vt].append(var_obj)
@@ -691,14 +693,14 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
         # Create a list with all gene symbols (or HGNC ID if symbol is missing) associated with the phenotype
         gene_list = []
         for gene_id in hpo_term.get("genes", []):
-            gene_obj = store.hgnc_gene(gene_id, build)
-            if gene_obj is None:
+            gene_caption = store.hgnc_gene_caption(gene_id, build)
+            if gene_caption is None:
                 continue
             if gene_id not in dynamic_gene_list:
                 # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
                 by_phenotype = False  # do not display genes by phenotype
                 continue
-            add_symbol = gene_obj.get("hgnc_symbol", f"hgnc:{gene_id}")
+            add_symbol = gene_caption.get("hgnc_symbol", f"hgnc:{gene_id}")
             if is_clinical and (add_symbol not in clinical_symbols):
                 continue
             gene_list.append(add_symbol)
