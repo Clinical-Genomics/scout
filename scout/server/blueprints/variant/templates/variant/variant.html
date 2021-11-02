@@ -71,25 +71,22 @@
     <div class="row"><div class="col-12">{{ matching_variants(managed_variant, causatives) }}</div></div>
 
     <div class="row">
-      <div class="col-sm-3">
+      <div class="col-lg-3 col-md-6">
         {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) }}
       </div>
-      <div class="col-sm-4">
+      <div class="col-lg-5 col-md-6">
         {{ panel_summary() }}
       </div>
-      <div class="col-sm-3">
+      <div class="col-lg-4">
         {{ frequencies(variant) }}
         {% if config['LOQUSDB_SETTINGS'] %}
           {{ observations_panel(variant, observations, case) }}
         {% endif %}
         {{  old_observations(variant) }}
       </div>
-      <div class="col-sm-2">
-        {{ severity_list(variant) }}
-      </div>
     </div>
     <div class="row">
-      <div class="col-sm-4">
+      <div class="col-lg-4 col-md-12">
         <div class="card panel-default">
           {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
         </div>
@@ -98,25 +95,34 @@
         {{ inheritance_panel(variant) }}
 
       </div>
-      <div class="col-sm-8">
+      <div class="col-lg-8 col-md-12">
         {% if variant.disease_associated_transcripts %}
           <div class="row"><div class="col-12">{{ disease_associated(variant) }}</div></div>
         {% endif %}
         <div class="row"><div class="col-12">{{ transcripts_overview(variant) }}</div></div>
           <div class="row">
-            <div class="col-4">
-
-              {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
-              {% if has_pedigree %}
+            {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+            {% if has_pedigree %}
+              <div class="col-lg-4">
                 {{ pedigree_panel(case) }}
-              {% endif %}
-              {{ conservations(variant) }}</div>
-            <div class="col-8">
+              </div>
+            {% endif %}
+            <div class="col-lg-8">
               {{ gtcall_panel(variant) }}
-              {{ mappability(variant) }}
-              {% if variant.azlength %}
+            </div>
+            <div class="col-lg-4">
+              {{ severity_list(variant) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+              {{ conservations(variant) }}
+            </div>
+            {% if variant.azlength %}
+              <div class="col-lg-4 col-md-6">
                 {{ autozygosity_panel(variant) }}
-              {% endif %}
+              </div>
+            {% endif %}
+            <div class="col-lg-4 col-md-6">
+              {{ mappability(variant) }}
             </div>
           </div>
         </div>

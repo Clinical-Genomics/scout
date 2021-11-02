@@ -153,11 +153,15 @@ def gene_variants(institute_id):
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
-                if hgnc_gene is None:
+                hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="37")
+
+                if hgnc_gene_caption is None:
+                    hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="38")
+
+                if hgnc_gene_caption is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
+                    hgnc_symbols.append(hgnc_gene_caption["hgnc_symbol"])
 
             elif store.hgnc_genes_find_one(hgnc_symbol) is None:
                 not_found_symbols.append(hgnc_symbol)
