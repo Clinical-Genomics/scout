@@ -47,7 +47,10 @@ from scout.utils.scout_requests import delete_request_json, post_request_json
 LOG = logging.getLogger(__name__)
 
 STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
-JSON_HEADERS = {"Content-type": "application/json; charset=utf-8", "Accept": "text/json"}
+JSON_HEADERS = {
+    "Content-type": "application/json; charset=utf-8",
+    "Accept": "text/json",
+}
 
 
 def case(store, institute_obj, case_obj):
@@ -214,8 +217,10 @@ def case(store, institute_obj, case_obj):
 
     if case_obj.get("custom_images"):
         # re-encode images as base64
-        for img_section in case_obj["custom_images"].values():
-            for img in img_section:
+        if "case" in case_obj.get("custom_images"):
+            case_obj["custom_images"] = case_obj["custom_images"]["case"]
+        for img_section in case_obj["custom_images"].keys():
+            for img in case_obj["custom_images"][img_section]:
                 img["data"] = b64encode(img["data"]).decode("utf-8")
 
     data = {
@@ -1235,7 +1240,10 @@ def matchmaker_delete(request, institute_id, case_name):
             user_obj = store.user(current_user.email)
             store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
 
-            flash(f"Deleted patient '{patient_id}', case '{case_name}' from MatchMaker", "success")
+            flash(
+                f"Deleted patient '{patient_id}', case '{case_name}' from MatchMaker",
+                "success",
+            )
             continue
 
         flash(f"An error occurred while deleting patient from MatchMaker", "danger")
@@ -1256,14 +1264,22 @@ def matchmaker_matches(request, institute_id, case_name):
     matchmaker_check_requirements(request)
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {"institute": institute_obj, "case": case_obj, "server_errors": [], "panel": 1}
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "server_errors": [],
+        "panel": 1,
+    }
     matches = {}
     for patient in case_obj.get("mme_submission", {}).get("patients", []):
         patient_id = patient["id"]
         matches[patient_id] = None
         server_resp = matchmaker.patient_matches(patient_id)
         if server_resp.get("status_code") != 200:  # server returned error
-            flash("MatchMaker server returned error:{}".format(data["server_errors"]), "danger")
+            flash(
+                "MatchMaker server returned error:{}".format(data["server_errors"]),
+                "danger",
+            )
             return redirect(request.referrer)
         # server returned a valid response
         pat_matches = []

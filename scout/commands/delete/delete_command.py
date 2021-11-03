@@ -164,10 +164,16 @@ def variants(
         institute_obj = store.institute(case["owner"])
         with current_app.test_request_context("/cases"):
             url = url_for(
-                "cases.case", institute_id=institute_obj["_id"], case_name=case["display_name"]
+                "cases.case",
+                institute_id=institute_obj["_id"],
+                case_name=case["display_name"],
             )
             store.remove_variants_event(
-                institute=institute_obj, case=case, user=user_obj, link=url, content=filters
+                institute=institute_obj,
+                case=case,
+                user=user_obj,
+                link=url,
+                content=filters,
             )
 
         # Update case variants count
@@ -232,7 +238,9 @@ def user(mail):
         for case_obj in assigned_cases:
             institute_obj = adapter.institute(case_obj["owner"])
             link = url_for(
-                "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+                "cases.case",
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
             )
             inactivate_case = case_obj.get("status", "active") == "active" and case_obj[
                 "assignees"
