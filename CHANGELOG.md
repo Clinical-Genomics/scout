@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.41]
 ### Added
 - Extended the instructions for running the Scout Docker image (web app and cli).
 - Added function for maintainers and admins to remove gene panels
@@ -12,7 +12,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - General case report sorting comments for variants with None genetic models
 - Do not crash but redirect to variants page with error when a variant is not found for a case
+- UCSC links coordinates for SV variants with start chromosome different than end chromosome
+- Human readable variants name in case page for variants having start chromosome different from end chromosome
+- Avoid always loading all transcripts when checking gene symbol: introduce gene captions
+- Slow queries for evaluated variants on e.g. case page - use events instead
 ### Changed
+- Rearrange variant page again, moving severity predictions down.
+- More reactive layout width steps on variant page
 
 ## [4.40.1]
 ### Added
