@@ -83,20 +83,27 @@ def panels():
         name
         for institute in institutes
         for name in store.gene_panels(
-            institute_id=institute["_id"], include_hidden=current_user.is_admin
+            institute_id=institute["_id"], include_hidden=True
         ).distinct("panel_name")
     ]
 
     panel_versions = {}
     for name in panel_names:
-        panel_versions[name] = store.gene_panels(
-            panel_id=name, include_hidden=current_user.is_admin
+        panels = store.gene_panels(
+            panel_id=name, include_hidden=True
         )
+        panel_versions[name] = [
+            panel_obj for panel_obj in panels
+            if shall_display_panel(panel_obj, current_user)
+        ]
 
     panel_groups = []
     for institute_obj in institutes:
-        institute_panels = store.latest_panels(
-            institute_obj["_id"], include_hidden=current_user.is_admin
+        institute_panels = (
+            panel_obj
+            for panel_obj
+            in store.latest_panels(institute_obj["_id"], include_hidden=True)
+            if shall_display_panel(panel_obj, current_user)
         )
         panel_groups.append((institute_obj, institute_panels))
 
@@ -107,11 +114,13 @@ def panels():
         institutes=institutes,
     )
 
+def shall_display_panel(panel_obj, user):
+    """Check if panel shall be displayed based on display status and user previleges."""
+    is_visable = not panel_obj.get('hidden', False)
+    return is_visable or panel_write_granted(panel_obj, user)
 
 def panel_write_granted(panel_obj, user):
-    return (
-        not panel_obj.get("maintainer") or user.is_admin or user._id in panel_obj.get("maintainer")
-    )
+    return any(["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer")])
 
 
 @panels_bp.route("/panels/<panel_id>", methods=["GET", "POST"])
@@ -220,7 +229,7 @@ def panel_restore(panel_id):
     """Remove an existing panel."""
     panel_obj = store.panel(panel_id)
     # abort when trying to hide an already hidden panel
-    if current_user.is_admin:
+    if panel_write_granted(panel_obj, current_user):
         panel_obj["hidden"] = False
         store.update_panel(panel_obj=panel_obj)
         flash("Restored gene panel: %s" % panel_obj["display_name"], "success")
