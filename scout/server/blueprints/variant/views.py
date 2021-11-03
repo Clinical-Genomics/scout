@@ -65,7 +65,11 @@ def cancer_variant(institute_id, case_name, variant_id):
     if data is None:
         flash("An error occurred while retrieving variant object", "danger")
         return redirect(
-            url_for("variants.cancer_variants", institute_id=institute_id, case_name=case_name)
+            url_for(
+                "variants.cancer_variants",
+                institute_id=institute_id,
+                case_name=case_name,
+            )
         )
 
     if current_app.config.get("LOQUSDB_SETTINGS"):

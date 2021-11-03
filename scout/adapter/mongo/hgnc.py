@@ -159,7 +159,10 @@ class GeneHandler(object):
 
         if search:
             # first search for a full match
-            query_full_match = {**self.get_query_alias_or_id(hgnc_symbol, build), **build_query}
+            query_full_match = {
+                **self.get_query_alias_or_id(hgnc_symbol, build),
+                **build_query,
+            }
             nr_genes = self.nr_genes(query=query_full_match)
             if nr_genes != 0:
                 return self.hgnc_collection.find(query_full_match)

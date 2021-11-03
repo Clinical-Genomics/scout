@@ -456,6 +456,7 @@ def case_obj(request, parsed_case):
     case["synopsis"] = ""
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
+    case["custom_images"] = parsed_case["custom_images"]["case"]
     case["assignees"] = []
     case["phenotype_terms"] = []  # do not assign any phenotype
     case["cohorts"] = []  # do not assign any cohort
@@ -820,8 +821,7 @@ def real_populated_database(real_panel_database, parsed_case):
 
     LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
-    # adapt custom images
-    case_obj["custom_images"] = parse_custom_images(case_obj)
+
     adapter._add_case(case_obj)
 
     return adapter
