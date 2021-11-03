@@ -609,8 +609,9 @@ class VariantLoader(object):
         Returns:
             nr_inserted(int)
         """
-        # We need the institute object
-        institute_id = self.institute(institute_id=case_obj["owner"])["_id"]
+
+        institute_id = case_obj["owner"]
+
         nr_inserted = 0
 
         variant_file = None
