@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.41.1]
+### Fixed
+- General reports crash for variant annotations with same variant on other cases
+
 ## [4.41]
 ### Added
 - Extended the instructions for running the Scout Docker image (web app and cli).
