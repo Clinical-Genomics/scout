@@ -54,13 +54,16 @@ def _replace_wildcard_with_match(match, image):
     str_repid = match["match"]
     title_expanded = image.title.replace("{%s}" % match["variable_name"], match["match"])
 
-    return Image(path=Path(path_expanded),
-                 description=image.description,
-                 height=image.height,
-                 format=image.format,
-                 width=image.width,
-                 title=title_expanded,
-                 str_repid=str_repid)
+    return Image(
+        path=Path(path_expanded),
+        description=image.description,
+        height=image.height,
+        format=image.format,
+        width=image.width,
+        title=title_expanded,
+        str_repid=str_repid,
+    )
+
 
 def is_wildcard(string_path):
     """Return true if string_path contains { and }, used to contruct wildcard matching"""
@@ -80,7 +83,6 @@ class Image(BaseModel):
     def __eq__(self, other):
         return self.title == other.title
 
-
     @root_validator
     def valid_image_suffix(cls, values):
         path = values.get("path")
@@ -90,11 +92,8 @@ class Image(BaseModel):
         if not path.suffix[1:] in ["gif", "svg", "png", "jpg", "jpeg"]:
             LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
             values["path"] = None
-            return values       
+            return values
         return values
-
-
-
 
 
 class ScoutIndividual(BaseModel):
@@ -189,22 +188,21 @@ class VcfFiles(BaseModel):
     vcf_sv_research: Optional[str] = None
 
 
-
 def update_image_list_on_wildcard(image_list):
     """Traverse a list of Image() objects and expand on wildcards.
     Returns a list of Images."""
-    LOG.debug('INPUt: {}'.format(image_list))
+    LOG.debug("INPUt: {}".format(image_list))
     updated_image_list = []
     for image in image_list:
         LOG.debug("IMAGE:{}".format(image.path))
         if is_wildcard(image.path):
             for match in _glob_wildcard(image.path):
-                LOG.debug('A')
+                LOG.debug("A")
                 replaced = _replace_wildcard_with_match(match, image)
-                LOG.debug('B')
+                LOG.debug("B")
                 updated_image_list.append(replaced)
-                LOG.debug('C')
-                LOG.debug('updated_image_list: {}'.format(updated_image_list))
+                LOG.debug("C")
+                LOG.debug("updated_image_list: {}".format(updated_image_list))
         else:
             updated_image_list.append(image)
     LOG.debug("IMAGELIST: {}".format(updated_image_list))
@@ -220,29 +218,28 @@ def read_filestream(image_list):
             bytestream = bytes(file_handle.read())
             image.data = bytestream
             image.format = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
-            
+
 
 class CustomImage(BaseModel):
-    case:  Dict[str, List[Image]] = []
-    str:  List[Image] = []
-
+    case: Dict[str, List[Image]] = []
+    str: List[Image] = []
 
     @root_validator
     def expand_wildcards(cls, values):
         # 1. Travers variant lists and expand wildcards
         LOG.debug("EXPAND HERE? {}".format(values))
-        variant_list = values['str']
+        variant_list = values["str"]
         values["str"] = update_image_list_on_wildcard(variant_list)
-        
+
         # 2. Travers case dict and expand wildcards
-        cases = values['case']
+        cases = values["case"]
         cases_updated = {}
         LOG.debug("CASES: {} ".format(cases))
         for entry in cases:
             image_list = cases[entry]
             cases_updated[entry] = update_image_list_on_wildcard(image_list)
-            
-        values['case'] = cases_updated
+
+        values["case"] = cases_updated
         LOG.debug("EXPANDED? {}".format(values))
         return values
 
@@ -256,16 +253,15 @@ class CustomImage(BaseModel):
     #     with open(path, "rb") as file_handle:
     # FileNotFoundError: [Errno 2] No such file or directory: 'scout/demo/images/custom_images/640x480_{REPID}.svg'
 
-
     @root_validator
     def read_binaries(cls, values):
         """Read image binaries for all Image entries to store in db"""
         LOG.debug("READ ALL BINARIES!!!")
-        variant_list = values['str']
+        variant_list = values["str"]
         LOG.debug("BINARIES:{}".format(variant_list))
         read_filestream(variant_list)
 
-        cases = values['case']
+        cases = values["case"]
         for entry in cases:
             image_list = cases[entry]
             read_filestream(image_list)
