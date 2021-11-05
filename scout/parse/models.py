@@ -2,15 +2,17 @@
 
 import datetime
 import logging
+import re
 from fractions import Fraction
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, ByteString
 
 from pydantic import BaseModel, Field, root_validator, validator
 from typing_extensions import Literal
 
 from scout.exceptions import ConfigError, PedigreeError
 from scout.utils.date import get_date
+from glob import glob
 
 LOG = logging.getLogger(__name__)
 
@@ -25,33 +27,74 @@ class ChromographImages(BaseModel):
     upd_sites: Optional[str] = None
 
 
+def _glob_wildcard(path):
+    """Search for multiple files using a path with wildcard."""
+    wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
+    # make proper wildcard path
+    glob_path = path[: wildcard.start()] + "*" + path[wildcard.end() :]
+    wildcard_end = len(path) - wildcard.end()
+    LOG.debug("GLOBPATH! {}".format(glob_path))
+    paths = tuple(
+        {
+            "match": match[wildcard.start() : -wildcard_end],
+            "variable_name": wildcard.group(1),
+            "path": Path(match),
+        }
+        for match in glob(glob_path)
+    )
+    LOG.debug("RETURNPATHS! {}".format(paths))
+    return paths
+
+
+def _replace_wildcard_with_match(match, image):
+    LOG.debug("Match: {},".format(match))
+    LOG.debug("Image: {}".format(image))
+
+    path_expanded = image.path.replace("{%s}" % match["variable_name"], match["match"])
+    str_repid = match["match"]
+    title_expanded = image.title.replace("{%s}" % match["variable_name"], match["match"])
+
+    return Image(path=Path(path_expanded),
+                 description=image.description,
+                 height=image.height,
+                 format=image.format,
+                 width=image.width,
+                 title=title_expanded,
+                 str_repid=str_repid)
+
+def is_wildcard(string_path):
+    """Return true if string_path contains { and }, used to contruct wildcard matching"""
+    return "{" in string_path and "}" in string_path
+
+
 class Image(BaseModel):
+    data: Optional[str] = None
     description: Optional[str] = None
     height: Optional[int] = None
     format: Optional[str] = None
     path: str = None
+    str_repid: Optional[str] = None
     title: str = None
     width: Optional[int] = None
 
     def __eq__(self, other):
         return self.title == other.title
 
+
     @root_validator
     def valid_image_suffix(cls, values):
-        path = Path(values["path"])
+        path = values.get("path")
+        path = Path(path)
 
         # Skip configured image if path suffix is not an image file type
         if not path.suffix[1:] in ["gif", "svg", "png", "jpg", "jpeg"]:
             LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
             values["path"] = None
-            return values
-
-        # Read byte stream and to save to database
-        with open(values["path"], "rb") as file_handle:
-            bytestream = bytes(file_handle.read())
-            values["data"] = bytestream
-            values["format"] = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
+            return values       
         return values
+
+
+
 
 
 class ScoutIndividual(BaseModel):
@@ -146,6 +189,89 @@ class VcfFiles(BaseModel):
     vcf_sv_research: Optional[str] = None
 
 
+
+def update_image_list_on_wildcard(image_list):
+    """Traverse a list of Image() objects and expand on wildcards.
+    Returns a list of Images."""
+    LOG.debug('INPUt: {}'.format(image_list))
+    updated_image_list = []
+    for image in image_list:
+        LOG.debug("IMAGE:{}".format(image.path))
+        if is_wildcard(image.path):
+            for match in _glob_wildcard(image.path):
+                LOG.debug('A')
+                replaced = _replace_wildcard_with_match(match, image)
+                LOG.debug('B')
+                updated_image_list.append(replaced)
+                LOG.debug('C')
+                LOG.debug('updated_image_list: {}'.format(updated_image_list))
+        else:
+            updated_image_list.append(image)
+    LOG.debug("IMAGELIST: {}".format(updated_image_list))
+    return updated_image_list
+
+
+def read_filestream(image_list):
+    """"""
+    for image in image_list:
+        path = Path(image.path)
+        LOG.debug("path: {}".format(path))
+        with open(path, "rb") as file_handle:
+            bytestream = bytes(file_handle.read())
+            image.data = bytestream
+            image.format = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
+            
+
+class CustomImage(BaseModel):
+    case:  Dict[str, List[Image]] = []
+    str:  List[Image] = []
+
+
+    @root_validator
+    def expand_wildcards(cls, values):
+        # 1. Travers variant lists and expand wildcards
+        LOG.debug("EXPAND HERE? {}".format(values))
+        variant_list = values['str']
+        values["str"] = update_image_list_on_wildcard(variant_list)
+        
+        # 2. Travers case dict and expand wildcards
+        cases = values['case']
+        cases_updated = {}
+        LOG.debug("CASES: {} ".format(cases))
+        for entry in cases:
+            image_list = cases[entry]
+            cases_updated[entry] = update_image_list_on_wildcard(image_list)
+            
+        values['case'] = cases_updated
+        LOG.debug("EXPANDED? {}".format(values))
+        return values
+
+    # XXX: reading config file crashes when reading binaries,
+    # I suspect createing a new Image() will call these functions again,
+    # causing the crash
+    #       File "pydantic/main.py", line 1066, in pydantic.main.validate_model
+    #   File "/Users/Mikael/Work/anaconda3/envs/py3.8/lib/python3.8/site-packages/scout_browser-4.40.1-py3.8.egg/scout/parse/models.py", line 256, in read_binaries
+    #     read_filestream(variant_list)
+    #   File "/Users/Mikael/Work/anaconda3/envs/py3.8/lib/python3.8/site-packages/scout_browser-4.40.1-py3.8.egg/scout/parse/models.py", line 219, in read_filestream
+    #     with open(path, "rb") as file_handle:
+    # FileNotFoundError: [Errno 2] No such file or directory: 'scout/demo/images/custom_images/640x480_{REPID}.svg'
+
+
+    @root_validator
+    def read_binaries(cls, values):
+        """Read image binaries for all Image entries to store in db"""
+        LOG.debug("READ ALL BINARIES!!!")
+        variant_list = values['str']
+        LOG.debug("BINARIES:{}".format(variant_list))
+        read_filestream(variant_list)
+
+        cases = values['case']
+        for entry in cases:
+            image_list = cases[entry]
+            read_filestream(image_list)
+        return values
+
+
 class ScoutLoadConfig(BaseModel):
     analysis_date: Any = datetime.datetime.now()
     assignee: Optional[str] = None
@@ -154,7 +280,10 @@ class ScoutLoadConfig(BaseModel):
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
     coverage_qc_report: Optional[str] = None
-    custom_images: Dict[str, List[Image]] = None
+    custom_images: CustomImage = []
+
+    # -  custom_images: Dict[str, List[Image]] = None
+    # custom_images: Dict[str, Dict[str, List[Image]]] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(alias="family_name")
@@ -185,6 +314,7 @@ class ScoutLoadConfig(BaseModel):
         Use try/except to handle TypeError if `vcf_files`is already set in
         previous call `parse_case_data()` or `parse_case()`."""
         vcfs = VcfFiles(**data)
+        LOG.debug("INIT!!!")
         try:
             super().__init__(vcf_files=vcfs, **data)
         except TypeError as err:
@@ -203,15 +333,16 @@ class ScoutLoadConfig(BaseModel):
             LOG.warning("Setting analysis date to todays date")
             return datetime.datetime.now()
 
-    @validator("custom_images")
-    def remove_empty_images(cls, custom_images):
-        for section in custom_images:
-            images = custom_images[section]
-            for i in images:
-                if i.path is None:
-                    images.remove(i)
+    # TODO: make this work with nested dicts
+    # @validator("custom_images")
+    # def remove_empty_images(cls, custom_images):
+    #     for section in custom_images:
+    #         images = custom_images[section]
+    #         for i in images:
+    #             if i.path is None:
+    #                 images.remove(i)
 
-        return custom_images
+    #     return custom_images
 
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
