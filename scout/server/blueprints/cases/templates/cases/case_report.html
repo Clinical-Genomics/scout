@@ -666,7 +666,7 @@
               <span class="float-left">
                 <strong>
                   {% if variant.cadd_score %}
-                    {{ variant.cadd_score|round(1) }}
+                    {{ variant.cadd_score|round(1) }}
                   {% else %}
                     -
                   {% endif %}
@@ -676,11 +676,13 @@
             {% if not cancer %}
               <td>
                 <span class="float-left">
-                  {% for model in variant.genetic_models|sort %}
-                    <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                  {% if variant.genetic_models %}
+                    {% for model in variant.genetic_models|sort %}
+                      <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                    {% endfor %}
                   {% else %}
                     <span class="badge badge-warning">No models followed</span>
-                  {% endfor %}
+                  {% endif %}
                 </span>
               </td>
             {% endif %}

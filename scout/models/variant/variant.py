@@ -56,6 +56,7 @@ variant = dict(
     str_pathologic_min=int,
     str_swegen_mean=float,
     str_swegen_std=float,
+    custom_images=list,  # list of custom image dictionaries
     # mitochondrial variants
     mitomap_associated_diseases=str,
     # Gene ids:

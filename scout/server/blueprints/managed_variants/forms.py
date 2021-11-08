@@ -6,8 +6,8 @@ from wtforms import (
     IntegerField,
     SelectField,
     SelectMultipleField,
+    StringField,
     SubmitField,
-    TextField,
     validators,
 )
 
@@ -28,7 +28,7 @@ class ManagedVariantForm(FlaskForm):
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
-    description = TextField(label="Description")
+    description = StringField(label="Description")
     build = SelectField(
         "Genome build", [validators.Optional()], choices=[("37", "37"), ("38", "38")]
     )
@@ -47,8 +47,8 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 class ManagedVariantEditForm(ManagedVariantForm):
     chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
 
-    reference = TextField(label="Ref")
-    alternative = TextField(label="Alt")
+    reference = StringField(label="Ref")
+    alternative = StringField(label="Alt")
 
     category = SelectField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectField("Kind", choices=SUBCATEGORY_CHOICES)

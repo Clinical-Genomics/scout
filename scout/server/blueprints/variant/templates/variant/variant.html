@@ -71,25 +71,22 @@
     <div class="row"><div class="col-12">{{ matching_variants(managed_variant, causatives) }}</div></div>
 
     <div class="row">
-      <div class="col-sm-3">
+      <div class="col-lg-3 col-md-6">
         {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) }}
       </div>
-      <div class="col-sm-4">
+      <div class="col-lg-5 col-md-6">
         {{ panel_summary() }}
       </div>
-      <div class="col-sm-3">
+      <div class="col-lg-4">
         {{ frequencies(variant) }}
         {% if config['LOQUSDB_SETTINGS'] %}
           {{ observations_panel(variant, observations, case) }}
         {% endif %}
         {{  old_observations(variant) }}
       </div>
-      <div class="col-sm-2">
-        {{ severity_list(variant) }}
-      </div>
     </div>
     <div class="row">
-      <div class="col-sm-4">
+      <div class="col-lg-4 col-md-12">
         <div class="card panel-default">
           {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
         </div>
@@ -98,25 +95,34 @@
         {{ inheritance_panel(variant) }}
 
       </div>
-      <div class="col-sm-8">
+      <div class="col-lg-8 col-md-12">
         {% if variant.disease_associated_transcripts %}
           <div class="row"><div class="col-12">{{ disease_associated(variant) }}</div></div>
         {% endif %}
         <div class="row"><div class="col-12">{{ transcripts_overview(variant) }}</div></div>
           <div class="row">
-            <div class="col-4">
-
-              {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
-              {% if has_pedigree %}
+            {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+            {% if has_pedigree %}
+              <div class="col-lg-4">
                 {{ pedigree_panel(case) }}
-              {% endif %}
-              {{ conservations(variant) }}</div>
-            <div class="col-8">
+              </div>
+            {% endif %}
+            <div class="col-lg-8">
               {{ gtcall_panel(variant) }}
-              {{ mappability(variant) }}
-              {% if variant.azlength %}
+            </div>
+            <div class="col-lg-4">
+              {{ severity_list(variant) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+              {{ conservations(variant) }}
+            </div>
+            {% if variant.azlength %}
+              <div class="col-lg-4 col-md-6">
                 {{ autozygosity_panel(variant) }}
-              {% endif %}
+              </div>
+            {% endif %}
+            <div class="col-lg-4 col-md-6">
+              {{ mappability(variant) }}
             </div>
           </div>
         </div>
@@ -156,6 +162,13 @@
     <div class="row">
       <div class="col-12">{{ external_links(case, variant) }}</div>
     </div>
+
+    {% if variant.custom_images %}
+      <div class="row">
+        <div class="col-12">{{ panel_custom_images(variant.custom_images) }}</div>
+      </div>
+    {% endif %}
+
     <div class="row">
       <div class="col-12">{{ activity_panel(events|reverse) }}</div>
     </div>
@@ -171,6 +184,35 @@
 </div>
 {{ modal_causative(case, institute, variant) }}
 {% endblock %}
+
+
+{% macro panel_custom_images(images) %}
+  <div id="attached-img-panel" class="card mt-3 panel-default">
+    <div class="panel-heading">
+      <div
+          class="panel-heading collapsed"
+          data-toggle="collapse"
+          data-parent="#attached-img-panel"
+          data-target="#attached-images"
+          onclick="flipArrowIcon(this)"
+      ><span class="fa fa-angle-down rotate-icon"></span>
+          &nbsp;Attached images
+      </div>
+    </div>
+    <div id="attached-images" class="card-body collapse" data-parent="#attached-img-panel">
+     {% for image in images %}
+       <h6 class="font-weight-bold">{{ image.title }}</h6>
+       <img src="data:image/{{image.format}};base64,{{image.data|safe}}"
+         class="pb-3"
+         alt="{{ image.description }}"
+         title="{{ image.description }}"
+         {% if image.width %} width="{{image.width}}"{% endif %}
+         {% if image.height %} height="{{image.height}}"{% endif %}
+       />
+     {% endfor %}
+    </div>
+  </div>
+{% endmacro  %}
 
 
 {% macro panel_summary() %}
@@ -380,6 +422,15 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
   <script>
+    const flipArrowIcon = (element) => {
+      const icon = element.firstChild
+      if (element.classList.contains('collapsed')) {
+        icon.classList.replace('fa-angle-down', 'fa-angle-up')
+      } else {
+        icon.classList.replace('fa-angle-up', 'fa-angle-down')
+      }
+    }
+
     function set_scrolly_table(table_id) {
     if (document.getElementById(table_id).rows.length > 5) {
       $('#' + table_id).DataTable({

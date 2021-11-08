@@ -143,7 +143,10 @@ def set_case_specific_tracks():
     (rhocall files, tiddit coverage files, upd regions and sites files)
     """
     # GIVEN a case with a rhocall bed file and a TIDDIT wig file
-    form_data = {"rhocall_bed": "rhocall.bed", "tiddit_coverage_wig": "tiddit_coverage.wig"}
+    form_data = {
+        "rhocall_bed": "rhocall.bed",
+        "tiddit_coverage_wig": "tiddit_coverage.wig",
+    }
     # THE case_specific_tracks function should return the expected tracks
     display_obj = {}
     controllers.set_case_specific_tracks(display_obj, form_data)

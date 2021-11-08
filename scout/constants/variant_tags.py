@@ -2,6 +2,7 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "_id",
     "variant_id",
     "display_name",
+    "case_id",
     "sanger_ordered",
     "validation",
     "phenotypes",
@@ -94,15 +95,31 @@ VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")
 
 # Formatting for different filters in the vcf file
 VARIANT_FILTERS = {
-    "pass": {"label": "PASS", "description": "Passed filtering", "label_class": "success"},
-    "germline": {"label": "GERM", "description": "Germline variant", "label_class": "warning"},
-    "germline_risk": {"label": "GERM", "description": "Germline risk", "label_class": "warning"},
+    "pass": {
+        "label": "PASS",
+        "description": "Passed filtering",
+        "label_class": "success",
+    },
+    "germline": {
+        "label": "GERM",
+        "description": "Germline variant",
+        "label_class": "warning",
+    },
+    "germline_risk": {
+        "label": "GERM",
+        "description": "Germline risk",
+        "label_class": "warning",
+    },
     "fail_nvaf": {
         "label": "N",
         "description": "Too high VAF in normal sample",
         "label_class": "danger",
     },
-    "fail_pvalue": {"label": "P", "description": "Too low P-value", "label_class": "danger"},
+    "fail_pvalue": {
+        "label": "P",
+        "description": "Too low P-value",
+        "label_class": "danger",
+    },
     "fail_homopolymer_indel": {
         "label": "HP",
         "Variant in homopolymer region": "Passed filtering",
@@ -113,7 +130,11 @@ VARIANT_FILTERS = {
         "description": "Long DEL from vardict",
         "label_class": "danger",
     },
-    "fail_no_tvar": {"label": "NO", "description": "No tumor variant", "label_class": "danger"},
+    "fail_no_tvar": {
+        "label": "NO",
+        "description": "No tumor variant",
+        "label_class": "danger",
+    },
     "fail_pon_freebayes": {
         "label": "PON",
         "description": "Variant in panel of normals",
@@ -129,7 +150,11 @@ VARIANT_FILTERS = {
         "description": "Variant in panel of normals",
         "label_class": "danger",
     },
-    "fail_strandbias": {"label": "SB", "description": "Strand bias", "label_class": "danger"},
+    "fail_strandbias": {
+        "label": "SB",
+        "description": "Strand bias",
+        "label_class": "danger",
+    },
     "warn_homopolymer_indel": {
         "label": "HP",
         "Variant in homopolymer region": "Passed filtering",
@@ -140,7 +165,11 @@ VARIANT_FILTERS = {
         "description": "Low tumor coverage",
         "label_class": "warning",
     },
-    "warn_novar": {"label": "NO", "description": "No tumor variant", "label_class": "warning"},
+    "warn_novar": {
+        "label": "NO",
+        "description": "No tumor variant",
+        "label_class": "warning",
+    },
     "warn_pon_freebayes": {
         "label": "PON",
         "description": "Passed filtering",
@@ -156,8 +185,16 @@ VARIANT_FILTERS = {
         "description": "Passed filtering",
         "label_class": "warning",
     },
-    "warn_strandbias": {"label": "SB", "description": "Strand bias", "label_class": "warning"},
-    "warn_low_tvaf": {"label": "LO", "description": "Low tumor VAF", "label_class": "warning"},
+    "warn_strandbias": {
+        "label": "SB",
+        "description": "Strand bias",
+        "label_class": "warning",
+    },
+    "warn_low_tvaf": {
+        "label": "LO",
+        "description": "Low tumor VAF",
+        "label_class": "warning",
+    },
     "warn_verylow_tvaf": {
         "label": "XLO",
         "description": "Very low tumor WAF",
