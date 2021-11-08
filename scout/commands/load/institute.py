@@ -3,10 +3,10 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-LOG = logging.getLogger(__name__)
-
 from scout.load import load_institute
 from scout.server.extensions import store
+
+LOG = logging.getLogger(__name__)
 
 
 @click.command("institute", short_help="Load a institute")

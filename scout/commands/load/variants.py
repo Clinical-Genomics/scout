@@ -81,9 +81,10 @@ def variants(
         LOG.info("No matching case found")
         raise click.Abort()
 
-    institute_obj = adapter.institute(case_obj["owner"])
+    institute_id = case_obj["owner"]
+    institute_obj = adapter.institute(institute_id)
     if not institute_obj:
-        LOG.info("Institute %s does not exist", case_obj["owner"])
+        LOG.info("Institute %s does not exist", institute_id)
         raise click.Abort()
 
     files = [
@@ -117,7 +118,7 @@ def variants(
     old_evaluated_variants = None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
 
     if keep_actions:  # collect all variants with user actions for this case
-        old_evaluated_variants = list(adapter.evaluated_variants(case_id))
+        old_evaluated_variants = list(adapter.evaluated_variants(case_id, institute_id))
 
     i = 0
     for file_type in files:
@@ -154,7 +155,7 @@ def variants(
                 build=case_obj["genome_build"],
             )
             # Update case variants count
-            adapter.case_variants_count(case_obj["_id"], case_obj["owner"], force_update_case=True)
+            adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)
 
         except Exception as e:
             LOG.warning(e)

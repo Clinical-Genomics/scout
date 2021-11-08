@@ -171,7 +171,8 @@ class HpoHandler(object):
                     continue
                 # sort term children by ascending HPO number
                 children = sorted(
-                    term_obj["children"], key=lambda x: int("".join([i for i in x if i.isdigit()]))
+                    term_obj["children"],
+                    key=lambda x: int("".join([i for i in x if i.isdigit()])),
                 )
                 term_obj["children"] = children
                 all_terms[term_id] = term_obj

@@ -161,7 +161,14 @@ def test_parse_complex_clnsig(cyvcf2_variant):
 def test_parse_clnsig_transcripts(cyvcf2_variant):
     ## GIVEN a variant with slash-separated values or values that start with underscore
     transcripts = [
-        {"clnsig": ["pathogenic/likely_pathogenic", "likely_pathogenic", "pathogenic", "_other"]}
+        {
+            "clnsig": [
+                "pathogenic/likely_pathogenic",
+                "likely_pathogenic",
+                "pathogenic",
+                "_other",
+            ]
+        }
     ]
 
     ## WHEN parsing the annotations

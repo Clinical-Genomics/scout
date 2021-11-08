@@ -23,7 +23,13 @@ def test_load_gene_fusion_report_research(mock_app):
         research_gene_fusion_report_path = os.path.dirname(tf.name)
         result = runner.invoke(
             cli,
-            ["load", "gene-fusion-report", case_id, research_gene_fusion_report_path, "--research"],
+            [
+                "load",
+                "gene-fusion-report",
+                case_id,
+                research_gene_fusion_report_path,
+                "--research",
+            ],
         )
 
         # THEN the command should be succesful
