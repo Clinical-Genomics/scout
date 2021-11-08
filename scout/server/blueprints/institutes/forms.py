@@ -7,8 +7,8 @@ from wtforms import (
     IntegerField,
     SelectField,
     SelectMultipleField,
+    StringField,
     SubmitField,
-    TextField,
     validators,
 )
 from wtforms.widgets import TextInput
@@ -49,7 +49,7 @@ class InstituteForm(FlaskForm):
         )
         hpo_tuples.append((option_name, option_name))
 
-    display_name = TextField(
+    display_name = StringField(
         "Institute display name",
         validators=[validators.InputRequired(), validators.Length(min=2, max=100)],
     )
@@ -68,8 +68,8 @@ class InstituteForm(FlaskForm):
         ],
     )
 
-    pheno_group = TextField("New phenotype group", validators=[validators.Optional()])
-    pheno_abbrev = TextField("Abbreviation", validators=[validators.Optional()])
+    pheno_group = StringField("New phenotype group", validators=[validators.Optional()])
+    pheno_abbrev = StringField("Abbreviation", validators=[validators.Optional()])
 
     gene_panels = NonValidatingSelectMultipleField(
         "Gene panels for variants filtering", validators=[validators.Optional()]
@@ -83,7 +83,7 @@ class InstituteForm(FlaskForm):
 
     loqusdb_id = NonValidatingSelectField("LoqusDB id", choices=[])
 
-    alamut_key = TextField("Alamut API key", validators=[validators.Optional()])
+    alamut_key = StringField("Alamut API key", validators=[validators.Optional()])
 
     submit_btn = SubmitField("Save settings")
 
@@ -122,7 +122,7 @@ class CaseFilterForm(FlaskForm):
     """Takes care of cases filtering in cases page"""
 
     search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
-    search_term = TextField("Search cases")
+    search_term = StringField("Search cases")
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
@@ -132,14 +132,14 @@ class CaseFilterForm(FlaskForm):
 class PhenoModelForm(FlaskForm):
     """Base Phenopanel form, not including any subpanel"""
 
-    model_name = TextField("Phenotype panel name", validators=[validators.InputRequired()])
-    model_desc = TextField("Description", validators=[validators.Optional()])
+    model_name = StringField("Phenotype panel name", validators=[validators.InputRequired()])
+    model_desc = StringField("Description", validators=[validators.Optional()])
     create_model = SubmitField("Create")
 
 
 class PhenoSubPanelForm(FlaskForm):
     """A form corresponfing to a phenopanel sub-panel"""
 
-    title = TextField("Phenotype subpanel title", validators=[validators.InputRequired()])
-    subtitle = TextField("Phenotype subpanel subtitle", validators=[validators.Optional()])
+    title = StringField("Phenotype subpanel title", validators=[validators.InputRequired()])
+    subtitle = StringField("Phenotype subpanel subtitle", validators=[validators.Optional()])
     add_subpanel = SubmitField("Save phenotype subpanel")
