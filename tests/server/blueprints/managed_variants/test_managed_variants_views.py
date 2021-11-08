@@ -27,7 +27,8 @@ def test_add_and_remove_managed_variants(app, user_obj, institute_obj, mocker, m
     trying to add it again in duplicate and finally removing it.
     """
     mocker.patch(
-        "scout.server.blueprints.managed_variants.views.redirect", return_value=mock_redirect
+        "scout.server.blueprints.managed_variants.views.redirect",
+        return_value=mock_redirect,
     )
     # GIVEN an initialized app
     # GIVEN a user and institute

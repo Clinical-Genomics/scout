@@ -1,7 +1,9 @@
 import copy
 import datetime
 import logging
+import re
 from fractions import Fraction
+from glob import glob
 from pathlib import Path
 from pprint import pprint as pp
 
@@ -41,39 +43,119 @@ def get_correct_date(date_info):
     return datetime.datetime.now()
 
 
+def _parse_images_cnf(images):
+    """
+    Parse image info from configuration file and process wildcard searches.
+
+    Args:
+        images: array with image configuration
+
+    Returns:
+        parsed_images: array with image binary blob
+    """
+    parsed_images = []
+    for image in images:
+        img = image["path"]
+        if "{" in img and "}" in img:
+            for match in _glob_wildcard(image["path"]):
+                # replace wildcard variable name with match
+                replaced_info = {
+                    key: val.replace("{%s}" % match["variable_name"], match["match"])
+                    for key, val in image.items()
+                }
+                # read image data
+                try:
+                    parsed_images.append(
+                        _read_image(
+                            {
+                                **replaced_info,
+                                **{"str_repid": match["match"], "path": match["path"]},
+                            }
+                        )
+                    )
+                except ValueError as err:
+                    LOG.warning(str(err))
+        else:
+            image["path"] = Path(img)
+            # skip entries that are not recognized as image on suffix
+            try:
+                parsed_images.append(_read_image(image))
+            except ValueError as err:
+                LOG.warning(str(err))
+    return parsed_images
+
+
+def _read_image(image):
+    """Read image configuration and store as image object.
+
+    Image are read and stored with additional metadata according to
+    its format.
+
+    Args:
+        image: image configuration
+
+    Returns:
+        image_obj: stored image information
+    """
+    # load image file to memory
+    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
+    path = image["path"]
+    if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
+        raise ValueError(f"Image: {path.name} is not recognized as an image, skipping")
+    # convert to image object
+    with open(image["path"], "rb") as image_file:
+        image_obj = {
+            "title": image["title"],
+            "description": image["description"],
+            "data": bytes(image_file.read()),
+            "width": image.get("width"),
+            "height": image.get("height"),
+            "str_repid": image.get("str_repid"),
+            "format": "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:],
+        }
+    return image_obj
+
+
+def _glob_wildcard(path):
+    """Search for multiple files using a path with wildcard."""
+    wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
+    # make proper wildcard path
+    glob_path = path[: wildcard.start()] + "*" + path[wildcard.end() :]
+    wildcard_end = len(path) - wildcard.end()
+    paths = tuple(
+        {
+            "match": match[wildcard.start() : -wildcard_end],
+            "variable_name": wildcard.group(1),
+            "path": Path(match),
+        }
+        for match in glob(glob_path)
+    )
+    return paths
+
+
 def parse_custom_images(config_data):
     """Parse information on custom images assigned to the case."""
-    VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
-    LOG.debug("Parse custom images")
 
     # sort custom image sections
-    parsed_sections = {}
-    for section_name, images in config_data.get("custom_images", {}).items():
-        parsed_images = []
-        for image in images:
-            # skip entries that are not recognized as image on suffix
-            path = Path(image["path"])
-            if not path.suffix[1:] in VALID_IMAGE_SUFFIXES:
-                LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
-                continue
-            # load image file to memory
-            with open(image["path"], "rb") as image_file:
-                parsed_images.append(
-                    {
-                        "title": image["title"],
-                        "description": image["description"],
-                        "data": bytes(image_file.read()),
-                        "width": image.get("width"),
-                        "height": image.get("height"),
-                        "format": "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:],
-                    }
-                )
-        # store parsed section
-        if len(parsed_images) > 0:
-            parsed_sections[section_name] = parsed_images
-        else:
-            LOG.warning(f"Section: {section_name} had no valid images, skipping")
-    return parsed_sections
+    images = {}
+    img_cnf = config_data.get("custom_images", {})
+    for page_name in img_cnf:
+        if page_name == "case":
+            sections = {}
+            for section_name, imgs in img_cnf[page_name].items():
+                parsed_images = _parse_images_cnf(imgs)
+                if len(parsed_images) > 0:
+                    sections[section_name] = parsed_images
+                else:
+                    LOG.warning(f"Section: {section_name} had no valid images, skipping")
+            images[page_name] = sections
+        elif page_name == "str":
+            parsed_images = _parse_images_cnf(img_cnf[page_name])
+            if len(parsed_images) > 0:
+                images[page_name] = parsed_images
+            else:
+                LOG.warning(f"Variant {page_name}: had no valid images, skipping")
+    return images
 
 
 def parse_case_data(
@@ -149,7 +231,6 @@ def parse_case_data(
         ]
 
     # handle scout/commands/load/case.py
-    config_data["custom_images"] = parse_custom_images(config_data)
 
     ##################### Add information from peddy if existing #####################
     config_data["peddy_ped"] = peddy_ped or config_data.get("peddy_ped")
@@ -577,7 +658,6 @@ def parse_case(config):
         "gene_fusion_report_research": config.get("gene_fusion_report_research"),
         "multiqc": config.get("multiqc"),
         "track": config.get("track", "rare"),
-        "custom_images": config.get("custom_images", {}),
     }
 
     # add SMN info
@@ -585,6 +665,9 @@ def parse_case(config):
     if case_data["smn_tsv"]:
         LOG.info("Adding SMN info from {}.".format(case_data["smn_tsv"]))
         add_smn_info_case(case_data)
+
+    if config.get("custom_images"):
+        case_data["custom_images"] = parse_custom_images(config)
 
     # add the pedigree figure, this is a xml file which is dumped in the db
     if "madeline" in config:

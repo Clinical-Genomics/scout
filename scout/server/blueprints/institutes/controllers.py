@@ -2,14 +2,11 @@
 import datetime
 import logging
 
-from pymongo import ASCENDING, DESCENDING
-
-LOG = logging.getLogger(__name__)
-
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
 from flask import flash
 from flask_login import current_user
+from pymongo import ASCENDING, DESCENDING
 
 from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
@@ -20,6 +17,9 @@ from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
 
 from .forms import CaseFilterForm
+
+LOG = logging.getLogger(__name__)
+
 
 # Do not assume all cases have a valid track set
 TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}

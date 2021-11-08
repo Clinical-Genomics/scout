@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.41]
 ### Added
 - Extended the instructions for running the Scout Docker image (web app and cli).
+- Enabled inclusion of custom images to STR variant view
 ### Fixed
 - General case report sorting comments for variants with None genetic models
 - Do not crash but redirect to variants page with error when a variant is not found for a case
@@ -60,6 +61,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed the database used in docker-compose file to use the official MongoDB v4.4 image
 - Modified the Python (3.6, 3.8) and MongoDB (3.2, 4.4, 5.0) versions used in testing matrices (GitHub actions)
 - Capitalize case search terms on institute and dashboard pages
+
 
 ## [4.39]
 ### Added

@@ -63,20 +63,36 @@ samples:
     vcf2cytosure: scout/demo/ADM1059A3.test.cgh
 
 custom_images:
-  section_one:
+  str:
     - title: A png image
+      str_repid: AFF2
       description: A very good description
       width: 500
       height: 100
       path: scout/demo/images/custom_images/640x480_one.png
-    - title: A jpg image
-      description: A very good description
-      width: 500
-      path: scout/demo/images/custom_images/640x480_two.jpg
-  section_two:
     - title: A SVG image
+      str_repid: AFF2
       description: Another very good description
       path: scout/demo/images/custom_images/640x480_three.svg
+    - title: Image for replicon {REPID}
+      str_repid: '{REPID}'
+      description: Usage of substitution
+      path: scout/demo/images/custom_images/640x480_{REPID}.svg
+  case:
+    section_one:
+      - title: A png image
+        description: A very good description
+        width: 500
+        height: 100
+        path: scout/demo/images/custom_images/640x480_one.png
+      - title: A jpg image
+        description: A very good description
+        width: 500
+        path: scout/demo/images/custom_images/640x480_two.jpg
+    section_two:
+      - title: A SVG image
+        description: Another very good description
+        path: scout/demo/images/custom_images/640x480_three.svg
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz
 vcf_sv: scout/demo/643594.clinical.SV.vcf.gz
