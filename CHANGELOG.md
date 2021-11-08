@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.41.1]
 ### Fixed
 - General reports crash for variant annotations with same variant on other cases
+- Use of Deprecated objects after the upgrade of WTF to v3.0
 
 ## [4.41]
 ### Added
