@@ -86,7 +86,9 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
             variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
 
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
+                case_id=case_obj["_id"],
+                simple_id=variant_obj["simple_id"],
+                variant_type="clinical",
             )
 
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
@@ -155,7 +157,9 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
+                case_id=case_obj["_id"],
+                simple_id=variant_obj["simple_id"],
+                variant_type="clinical",
             )
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
@@ -285,7 +289,8 @@ def get_manual_assessments(variant_obj):
                     if not isinstance(reason, int):
                         reason = int(reason)
                     assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        MOSAICISM_OPTIONS[reason]["label"], MOSAICISM_OPTIONS[reason]["description"]
+                        MOSAICISM_OPTIONS[reason]["label"],
+                        MOSAICISM_OPTIONS[reason]["description"],
                     )
                 assessment["display_class"] = "secondary"
 
@@ -385,7 +390,10 @@ def parse_variant(
             )
 
     variant_obj["comments"] = store.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
     )
 
     variant_obj["matching_tiered"] = store.matching_tiered(
@@ -490,7 +498,9 @@ def download_str_variants(case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(DOCUMENT_HEADER), export_lines), mimetype="text/csv", headers=headers
+        generate(",".join(DOCUMENT_HEADER), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
@@ -523,7 +533,9 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers
+        generate(",".join(document_header), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
@@ -891,7 +903,13 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         form = FiltersFormClass(clinical_filter)
     else:
         form = persistent_filter_actions(
-            store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+            store,
+            institute_obj,
+            case_obj,
+            user_obj,
+            category,
+            request_form,
+            FiltersFormClass,
         )
 
     return form
@@ -1126,11 +1144,11 @@ def update_form_hgnc_symbols(store, case_obj, form):
         # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), genome_build)
-                if hgnc_gene is None:
+                hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), genome_build)
+                if hgnc_gene_caption is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
+                    hgnc_symbols.append(hgnc_gene_caption.get("hgnc_symbol", hgnc_symbol))
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
@@ -1217,7 +1235,9 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 
@@ -1230,11 +1250,15 @@ def reset_all_dimissed(store, institute_obj, case_obj):
         institute_obj(dict): an institute dictionary
         case_obj(dict): a case dictionary
     """
-    evaluated_vars = store.evaluated_variants(case_id=case_obj["_id"])
+    evaluated_vars = store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=case_obj["owner"]
+    )
     user_obj = store.user(current_user.email)
     # Create an associated case-level event
     link = url_for(
-        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
     )
     store.order_dismissed_variants_reset(institute_obj, case_obj, user_obj, link)
 

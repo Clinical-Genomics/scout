@@ -299,7 +299,14 @@ def parse_transcripts_spliceai(transcript, entry):
             spliceai_delta_positions,
         ):
             spliceai_prediction.append(
-                " ".join([score_label, str(score or "-"), position_label, str(position or "-")])
+                " ".join(
+                    [
+                        score_label,
+                        str(score or "-"),
+                        position_label,
+                        str(position or "-"),
+                    ]
+                )
             )
 
     transcript["spliceai_delta_score"] = spliceai_delta_score

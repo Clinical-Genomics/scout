@@ -116,7 +116,13 @@ def configure_extensions(app):
         LOG.info("Gens enabled")
         extensions.gens.init_app(app)
 
-    if all([app.config.get("MME_URL"), app.config.get("MME_ACCEPTS"), app.config.get("MME_TOKEN")]):
+    if all(
+        [
+            app.config.get("MME_URL"),
+            app.config.get("MME_ACCEPTS"),
+            app.config.get("MME_TOKEN"),
+        ]
+    ):
         LOG.info("MatchMaker Exchange enabled")
         extensions.matchmaker.init_app(app)
 

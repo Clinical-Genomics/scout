@@ -111,7 +111,10 @@ def lock_filter(institute_id, filter_id):
 
     filter_lock = request.form.get("filter_lock", "False")
     LOG.debug(
-        "Attempting to toggle lock %s for %s with status %s", filter_id, institute_id, filter_lock
+        "Attempting to toggle lock %s for %s with status %s",
+        filter_id,
+        institute_id,
+        filter_lock,
     )
 
     if filter_lock == "True":
@@ -150,11 +153,15 @@ def gene_variants(institute_id):
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
-                if hgnc_gene is None:
+                hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="37")
+
+                if hgnc_gene_caption is None:
+                    hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="38")
+
+                if hgnc_gene_caption is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
+                    hgnc_symbols.append(hgnc_gene_caption["hgnc_symbol"])
 
             elif store.hgnc_genes_find_one(hgnc_symbol) is None:
                 not_found_symbols.append(hgnc_symbol)
@@ -164,7 +171,10 @@ def gene_variants(institute_id):
         if not_found_ids:
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
-            flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
+            flash(
+                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
+                "warning",
+            )
 
         if hgnc_symbols == []:
             # If there are not genes to search, return to previous page with a warning
@@ -174,11 +184,17 @@ def gene_variants(institute_id):
         form.hgnc_symbols.data = hgnc_symbols
 
         variants_query = store.gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
         )
 
         result_size = store.count_gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
         )
         data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
     return dict(institute=institute_obj, form=form, page=page, **data)
@@ -189,7 +205,10 @@ def institute_settings(institute_id):
     """Show institute settings page"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash("Current user doesn't have the permission to modify this institute", "warning")
+        flash(
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
+        )
         return redirect(request.referrer)
 
     institute_obj = store.institute(institute_id)
@@ -223,7 +242,10 @@ def institute_users(institute_id):
     """Should institute users list"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash("Current user doesn't have the permission to modify this institute", "warning")
+        flash(
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
+        )
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
     return render_template("/overview/users.html", panel=2, **data)
@@ -385,7 +407,8 @@ def phenomodel(institute_id, model_id):
     phenomodel_obj = store.phenomodel(model_id)
     if phenomodel_obj is None:
         flash(
-            f"Could not retrieve given phenotype model using the given key '{model_id}'", "warning"
+            f"Could not retrieve given phenotype model using the given key '{model_id}'",
+            "warning",
         )
         return redirect(request.referrer)
 
