@@ -892,7 +892,7 @@ def download_hpo_genes(institute_id, case_name, category):
     phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
-        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><i>{term.get('genes')}</i><br>"
     return render_pdf(
         HTML(string=html_content),
         download_filename=case_obj["display_name"]
