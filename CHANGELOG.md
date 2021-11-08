@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Upgraded igv.js to version 2.10 (exon number support)
 - GenCode v.38 comprehensive gene track (selectable from igv settings)
+- Display and download HPO gene panels' gene in italics
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
 - Freeze to WTForms to version < 3
