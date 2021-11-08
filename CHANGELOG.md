@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added function for maintainers and admins to remove gene panels
 - Admins can restore deleted gene panels
+### Changed
+- Display and download HPO gene panels' gene in italics
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
 - Freeze to WTForms to version < 3
