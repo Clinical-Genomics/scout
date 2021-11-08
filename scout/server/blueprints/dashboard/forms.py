@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import FlaskForm
-from wtforms import SelectField, SubmitField, TextField, validators
+from wtforms import SelectField, StringField, SubmitField, validators
 
 from scout.constants import CASE_SEARCH_TERMS
 
@@ -23,5 +23,5 @@ class DashboardFilterForm(FlaskForm):
         "Search by", [validators.Optional()], choices=CASE_SEARCH_KEY
     )
     search_institute = NonValidatingSelectField("Institute", choices=[])
-    search_term = TextField("Search term")
+    search_term = StringField("Search term")
     search = SubmitField(label="Search")

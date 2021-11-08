@@ -231,7 +231,7 @@ def test_institutes(app):
 
 
 def test_case_custom_images(app, institute_obj, case_obj):
-    """ "Test that custom images are beign displayed"""
+    """Test that custom images are being displayed"""
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in

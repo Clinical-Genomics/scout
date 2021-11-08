@@ -40,6 +40,12 @@ def test_exception_load_delivery_report(mock_app, case_obj):
     with pytest.raises(Exception) as raised_exception:
         result = runner.invoke(
             cli,
-            ["load", "delivery-report", test_case_obj["_id"], coverage_qc_report_path, "-u"],
+            [
+                "load",
+                "delivery-report",
+                test_case_obj["_id"],
+                coverage_qc_report_path,
+                "-u",
+            ],
         )
         assert result.exit_code == 2

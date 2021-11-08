@@ -230,7 +230,11 @@ def parse_variant(
     str_source_type = variant.INFO.get("Source")
     str_source_id = variant.INFO.get("SourceId")
     if str_source_display or str_source_type or str_source_id:
-        source = {"display": str_source_display, "type": str_source_type, "id": str_source_id}
+        source = {
+            "display": str_source_display,
+            "type": str_source_type,
+            "id": str_source_id,
+        }
         parsed_variant["str_source"] = source
 
     str_swegen_mean = variant.INFO.get("SweGenMean")

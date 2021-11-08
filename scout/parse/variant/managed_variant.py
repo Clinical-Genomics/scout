@@ -1,8 +1,8 @@
 import logging
 
-LOG = logging.getLogger(__name__)
-
 from scout.parse.panel import get_delimiter
+
+LOG = logging.getLogger(__name__)
 
 
 def parse_managed_variant_id(

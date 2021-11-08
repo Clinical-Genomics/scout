@@ -327,7 +327,10 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
                 phenotype_inds=phenotype_inds,
             )
         except ValueError:
-            flash(f"Unable to add phenotype for the given terms:{phenotype_term}", "warning")
+            flash(
+                f"Unable to add phenotype for the given terms:{phenotype_term}",
+                "warning",
+            )
             return redirect(case_url)
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
@@ -403,7 +406,10 @@ def phenotypes_actions(institute_id, case_name):
         password = current_app.config["PHENOMIZER_PASSWORD"]
         diseases = controllers.hpo_diseases(username, password, hpo_ids)
         return render_template(
-            "cases/diseases.html", diseases=diseases, institute=institute_obj, case=case_obj
+            "cases/diseases.html",
+            diseases=diseases,
+            institute=institute_obj,
+            case=case_obj,
         )
 
     if action == "DELETE":
@@ -558,7 +564,10 @@ def pin_variant(institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -575,14 +584,18 @@ def mark_validation(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     validate_type = request.form["type"] or None
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
     return redirect(request.referrer or link)
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative", methods=["POST"]
+    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative",
+    methods=["POST"],
 )
 def mark_causative(institute_id, case_name, variant_id, partial_causative=False):
     """Mark a variant as confirmed causative."""
@@ -590,14 +603,23 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         if "partial_causative" in request.form:
             omim_terms = request.form.getlist("omim_select")
             hpo_terms = request.form.getlist("hpo_select")
             store.mark_partial_causative(
-                institute_obj, case_obj, user_obj, link, variant_obj, omim_terms, hpo_terms
+                institute_obj,
+                case_obj,
+                user_obj,
+                link,
+                variant_obj,
+                omim_terms,
+                hpo_terms,
             )
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -912,7 +934,8 @@ def multiqc(institute_id, case_name):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_upd_regions_image(institute_id, case_name, individual, image):
     """Generate UPD REGIONS image file paths"""
@@ -920,7 +943,8 @@ def host_upd_regions_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/upd_sites_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/upd_sites_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
@@ -928,7 +952,8 @@ def host_upd_sites_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/coverage_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/coverage_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_coverage_image(institute_id, case_name, individual, image):
     """Generate Coverage image file paths"""
@@ -936,7 +961,8 @@ def host_coverage_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/autozygous_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/autozygous_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_autozygous_image(institute_id, case_name, individual, image):
     """Generate Coverage image file paths"""
@@ -944,7 +970,8 @@ def host_autozygous_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/ideograms/<image>",
+    methods=["GET", "POST"],
 )
 def host_chr_image(institute_id, case_name, individual, image):
     """Generate CHR image file paths. Points to servers 'public/static'"""

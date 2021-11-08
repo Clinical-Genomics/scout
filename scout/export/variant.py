@@ -2,9 +2,9 @@
 import logging
 import urllib.parse
 
-LOG = logging.getLogger(__name__)
-
 from scout.constants import CALLERS, CHROMOSOME_INTEGERS, CHROMOSOMES
+
+LOG = logging.getLogger(__name__)
 
 
 def export_variants(adapter, collaborator, document_id=None, case_id=None):

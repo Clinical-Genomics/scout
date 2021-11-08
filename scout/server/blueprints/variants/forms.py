@@ -14,7 +14,6 @@ from wtforms import (
     SelectMultipleField,
     StringField,
     SubmitField,
-    TextField,
     validators,
 )
 from wtforms.widgets import TextInput
@@ -158,7 +157,7 @@ class StrFiltersForm(VariantFiltersForm):
 class SvFiltersForm(VariantFiltersForm):
     """Extends FiltersForm for structural variants"""
 
-    size = TextField("Length")
+    size = StringField("Length")
     size_shorter = BooleanField("Length shorter than")
     svtype = SelectMultipleField("SVType", choices=SV_TYPE_CHOICES)
     decipher = BooleanField("Decipher")

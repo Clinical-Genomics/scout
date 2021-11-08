@@ -45,7 +45,8 @@ def upload_managed_variants():
     LOG.debug("Loading lines %s", lines)
     result = controllers.upload_managed_variants(store, lines, institutes, current_user._id)
     flash(
-        "In total {} new variants out of {} in file added".format(result[0], result[1]), "success"
+        "In total {} new variants out of {} in file added".format(result[0], result[1]),
+        "success",
     )
 
     return redirect(request.referrer)
@@ -57,7 +58,10 @@ def modify_managed_variant(variant_id):
     edit_form = ManagedVariantModifyForm(request.form)
 
     if not controllers.modify_managed_variant(store, variant_id, edit_form):
-        flash("Could not modify variant - does the new variant perhaps already exist?", "warning")
+        flash(
+            "Could not modify variant - does the new variant perhaps already exist?",
+            "warning",
+        )
 
     return redirect(request.referrer)
 

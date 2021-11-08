@@ -5,12 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
+- Use of deprecated TextField after the upgrade of WTF to v3.0
+- Freeze to WTForms to version < 3
+- Remove the extra files (bed files and madeline.svg) introduced by mistake
+
+## [4.41.1]
+### Fixed
+- General reports crash for variant annotations with same variant on other cases
+
+## [4.41]
 ### Added
 - Extended the instructions for running the Scout Docker image (web app and cli).
+- Enabled inclusion of custom images to STR variant view
 ### Fixed
 - General case report sorting comments for variants with None genetic models
 - Do not crash but redirect to variants page with error when a variant is not found for a case
+- UCSC links coordinates for SV variants with start chromosome different than end chromosome
+- Human readable variants name in case page for variants having start chromosome different from end chromosome
+- Avoid always loading all transcripts when checking gene symbol: introduce gene captions
+- Slow queries for evaluated variants on e.g. case page - use events instead
 ### Changed
+- Rearrange variant page again, moving severity predictions down.
+- More reactive layout width steps on variant page
 
 ## [4.40.1]
 ### Added
@@ -48,6 +64,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed the database used in docker-compose file to use the official MongoDB v4.4 image
 - Modified the Python (3.6, 3.8) and MongoDB (3.2, 4.4, 5.0) versions used in testing matrices (GitHub actions)
 - Capitalize case search terms on institute and dashboard pages
+
 
 ## [4.39]
 ### Added
