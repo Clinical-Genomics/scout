@@ -91,7 +91,12 @@ def test_matchmaker_add_snv(app, user_obj, case_obj, test_hpo_terms, mocker):
 
         updated_case = store.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
-            {"$set": {"suspects": [test_variant["_id"]], "phenotype_terms": test_hpo_terms}},
+            {
+                "$set": {
+                    "suspects": [test_variant["_id"]],
+                    "phenotype_terms": test_hpo_terms,
+                }
+            },
         )
         # GIVEN a patched request to the matchmaker_add endpoint
         mocker.patch("flask.request.form.getlist", return_value=[test_variant["_id"]])
@@ -195,10 +200,12 @@ def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
     """testing controller function to match one patient against other patients from Scout"""
     # GIVEN mocked responses from MME server
     mocker.patch(
-        "scout.server.extensions.matchmaker.match_internal", return_value={"status_code": 200}
+        "scout.server.extensions.matchmaker.match_internal",
+        return_value={"status_code": 200},
     )
     mocker.patch(
-        "scout.server.extensions.matchmaker.match_external", return_value={"status_code": 200}
+        "scout.server.extensions.matchmaker.match_external",
+        return_value={"status_code": 200},
     )
 
     # GIVEN an app containing MatchMaker connection params
@@ -217,14 +224,20 @@ def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
 
         # WHEN user submits a patient for matching on the Scout node (internal matching)
         ok_responses = controllers.matchmaker_match(
-            request, "internal", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+            request,
+            "internal",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
         )
         # The expected response should be succcess
         assert ok_responses > 0
 
         # WHEN user submits a patient for matching on a connected node (external matching)
         ok_responses = controllers.matchmaker_match(
-            request, "external", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+            request,
+            "external",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
         )
         # The expected response should be not succcess since there are no connected nodes
         assert ok_responses == 0

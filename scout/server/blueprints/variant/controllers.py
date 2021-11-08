@@ -1,4 +1,5 @@
 import logging
+from base64 import b64encode
 from datetime import date
 
 from flask import url_for
@@ -348,6 +349,11 @@ def variant(
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
+
+    # re-encode images as base64
+    if variant_obj.get("custom_images"):
+        for img in variant_obj["custom_images"]:
+            img["data"] = b64encode(img["data"]).decode("utf-8")
 
     tx_overview(variant_obj)
 
