@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Changed
+- Display and download HPO gene panels' gene in italics
 - A faster-built and lighter Docker image
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
