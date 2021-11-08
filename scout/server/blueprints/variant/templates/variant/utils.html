@@ -192,10 +192,10 @@
   <div class="card panel-default">
     <table class="table table-bordered table-sm">
       <thead>
-        <tr>
-          <th>Gene</th>
-          <th>Ensembl ID</th>
-          <th>Description</th>
+        <tr style="cursor: pointer; white-space: nowrap">
+          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
+          <th>Ensembl ID <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ensembl ID'"></i></th>
+          <th>Description <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'description'"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -225,17 +225,17 @@
   <div class="card panel-default table-responsive fixed-panel">
     <table id="transcripts_panel_table" class="table table-bordered card-sm">
       <thead>
-        <tr>
-          <th>Gene</th>
-          <th>Transcript</th>
-          <th>RefSeq</th>
-          <th>Biotype</th>
-          <th>Mutation type</th>
-          <th>Strand</th>
-          <th>Exon</th>
-          <th>Intron</th>
-          <th>cDNA</th>
-          <th>Amino acid</th>
+        <tr style="cursor: pointer; white-space: nowrap">
+          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
+          <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
+          <th>RefSeq <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'refSeq'"></i></th>
+          <th>Biotype <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'biotype'"></i></th>
+          <th>Mutation type <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'mutation type'"></i></th>
+          <th>Strand <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'strand'"></i></th>
+          <th>Exon <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'exon'"></i></th>
+          <th>Intron <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'intron'"></i></th>
+          <th>cDNA <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'cDNA'"></i></th>
+          <th>Amino acid <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'amino acid'"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -281,16 +281,16 @@
   <div class="panel panel-default table-responsive">
     <table id="proteins_panel_table" class="table table-bordered">
       <thead>
-        <tr>
-          <th>Gene</th>
-          <th>Transcript</th>
-          <th>Protein</th>
-          <th>SWISS PROT</th>
-          <th>Sift</th>
-          <th>Polyphen</th>
-          <th>Pfam</th>
-          <th>ProSite</th>
-          <th>Smart</th>
+        <tr style="cursor: pointer; white-space: nowrap">
+          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
+          <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
+          <th>Protein <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'protein'"></i></th>
+          <th>SWISS PROT <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'SWISS PROT'"></i></th>
+          <th>Sift <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Sift'"></i></th>
+          <th>Polyphen <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Polyphen'"></i></th>
+          <th>Pfam <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Pfam'"></i></th>
+          <th>ProSite <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ProSite'"></i></th>
+          <th>Smart <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Smart'"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -377,7 +377,7 @@
           <input type="hidden" name="stop" value="{{ initial_view.end }}">
         {% endif %}
 
-        {% if variant.chromosome == "MT" and case.mt_bams %}
+        {% if variant.is_mitochondrial and case.mt_bams %}
           <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
           <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
           - Alignment:
@@ -419,7 +419,7 @@
         {% elif zoom == "start" %}
           - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
         {% elif zoom == "end" %}
-          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
         {% endif %}
       </form>
 

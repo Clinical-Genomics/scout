@@ -29,7 +29,13 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
-from scout.server.utils import institute_and_case, templated, user_institutes, zip_dir_to_obj
+from scout.server.utils import (
+    institute_and_case,
+    jsonconverter,
+    templated,
+    user_institutes,
+    zip_dir_to_obj,
+)
 
 from . import controllers
 
@@ -116,7 +122,6 @@ def matchmaker_matches(institute_id, case_name):
 def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
     match_results = controllers.matchmaker_match(request, target, institute_id, case_name)
     return redirect(request.referrer)
 
@@ -193,13 +198,20 @@ def case_synopsis(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/api/v1/<institute_id>/<case_name>/case_report", methods=["GET"])
+def api_case_report(institute_id, case_name):
+    """API endpoint that returns case report json data"""
+    data = controllers.case_report_content(store, institute_id, case_name)
+    json_data = json.dumps({"data": data}, default=jsonconverter)
+    return json_data
+
+
 @cases_bp.route("/<institute_id>/<case_name>/case_report", methods=["GET"])
 @templated("cases/case_report.html")
 def case_report(institute_id, case_name):
     """Visualize case report"""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, format="html", **data)
+    data = controllers.case_report_content(store, institute_id, case_name)
+    return dict(format="html", **data)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/pdf_report", methods=["GET"])
@@ -207,7 +219,7 @@ def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_obj, case_obj)
+    data = controllers.case_report_content(store, institute_id, case_name)
 
     # add coverage report on the bottom of this report
     if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
@@ -220,9 +232,7 @@ def pdf_case_report(institute_id, case_name):
         with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
             temp_madeline.write(case_obj["madeline_info"])
 
-    html_report = render_template(
-        "cases/case_report.html", institute=institute_obj, case=case_obj, format="pdf", **data
-    )
+    html_report = render_template("cases/case_report.html", format="pdf", **data)
     return render_pdf(
         HTML(string=html_report),
         download_filename=case_obj["display_name"]
@@ -282,7 +292,13 @@ def case_diagnosis(institute_id, case_name):
 
     remove = True if request.args.get("remove") == "yes" else False
     store.diagnose(
-        institute_obj, case_obj, user_obj, link, level=level, omim_id=omim_id, remove=remove
+        institute_obj,
+        case_obj,
+        user_obj,
+        link,
+        level=level,
+        omim_id=omim_id,
+        remove=remove,
     )
     return redirect(request.referrer)
 
@@ -304,25 +320,35 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
     else:
         try:
             # add a new phenotype item/group to the case
+            hpo_term = None
+            omim_term = None
+
             phenotype_term = request.form["hpo_term"]
+            phenotype_inds = request.form.getlist("phenotype_inds")  # Individual-level phenotypes
+
             if phenotype_term.startswith("HP:") or len(phenotype_term) == 7:
                 hpo_term = phenotype_term.split(" | ", 1)[0]
-                store.add_phenotype(
-                    institute_obj,
-                    case_obj,
-                    user_obj,
-                    case_url,
-                    hpo_term=hpo_term,
-                    is_group=is_group,
-                )
             else:
-                # assume omim id
-                store.add_phenotype(
-                    institute_obj, case_obj, user_obj, case_url, omim_term=phenotype_term
-                )
+                omim_term = phenotype_term
+
+            store.add_phenotype(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=case_url,
+                hpo_term=hpo_term,
+                omim_term=omim_term,
+                is_group=is_group,
+                phenotype_inds=phenotype_inds,
+            )
         except ValueError:
-            return abort(400, ("unable to add phenotype: {}".format(phenotype_term)))
-    return redirect(case_url)
+            flash(
+                f"Unable to add phenotype for the given terms:{phenotype_term}",
+                "warning",
+            )
+            return redirect(case_url)
+
+    return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
 def parse_raw_gene_ids(raw_symbols):
@@ -395,7 +421,10 @@ def phenotypes_actions(institute_id, case_name):
         password = current_app.config["PHENOMIZER_PASSWORD"]
         diseases = controllers.hpo_diseases(username, password, hpo_ids)
         return render_template(
-            "cases/diseases.html", diseases=diseases, institute=institute_obj, case=case_obj
+            "cases/diseases.html",
+            diseases=diseases,
+            institute=institute_obj,
+            case=case_obj,
         )
 
     if action == "DELETE":
@@ -420,7 +449,7 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
-    return redirect(case_url)
+    return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/events", methods=["POST"])
@@ -550,7 +579,10 @@ def pin_variant(institute_id, case_name, variant_id):
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         store.pin_variant(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -567,14 +599,18 @@ def mark_validation(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     validate_type = request.form["type"] or None
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
     return redirect(request.referrer or link)
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative", methods=["POST"]
+    "/<institute_id>/<case_name>/<variant_id>/<partial_causative>/causative",
+    methods=["POST"],
 )
 def mark_causative(institute_id, case_name, variant_id, partial_causative=False):
     """Mark a variant as confirmed causative."""
@@ -582,14 +618,23 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
     variant_obj = store.variant(variant_id)
     user_obj = store.user(current_user.email)
     link = url_for(
-        "variant.variant", institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        "variant.variant",
+        institute_id=institute_id,
+        case_name=case_name,
+        variant_id=variant_id,
     )
     if request.form["action"] == "ADD":
         if "partial_causative" in request.form:
             omim_terms = request.form.getlist("omim_select")
             hpo_terms = request.form.getlist("hpo_select")
             store.mark_partial_causative(
-                institute_obj, case_obj, user_obj, link, variant_obj, omim_terms, hpo_terms
+                institute_obj,
+                case_obj,
+                user_obj,
+                link,
+                variant_obj,
+                omim_terms,
+                hpo_terms,
             )
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
@@ -789,7 +834,7 @@ def cohorts(institute_id, case_name):
         store.remove_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
     else:
         store.add_cohort(institute_obj, case_obj, user_obj, link, cohort_tag)
-    return redirect(request.referrer)
+    return redirect("#".join([request.referrer, "cohorts"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/default-panels", methods=["POST"])
@@ -862,7 +907,7 @@ def download_hpo_genes(institute_id, case_name, category):
     phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
-        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br>{term.get('genes')}<br>"
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><i>{term.get('genes')}</i><br>"
     return render_pdf(
         HTML(string=html_content),
         download_filename=case_obj["display_name"]
@@ -904,7 +949,8 @@ def multiqc(institute_id, case_name):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/upd_regions_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_upd_regions_image(institute_id, case_name, individual, image):
     """Generate UPD REGIONS image file paths"""
@@ -912,7 +958,8 @@ def host_upd_regions_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/upd_sites_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/upd_sites_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_upd_sites_image(institute_id, case_name, individual, image):
     """Generate UPD image file paths"""
@@ -920,7 +967,8 @@ def host_upd_sites_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/coverage_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/coverage_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_coverage_image(institute_id, case_name, individual, image):
     """Generate Coverage image file paths"""
@@ -928,7 +976,8 @@ def host_coverage_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/autozygous_images/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/autozygous_images/<image>",
+    methods=["GET", "POST"],
 )
 def host_autozygous_image(institute_id, case_name, individual, image):
     """Generate Coverage image file paths"""
@@ -936,7 +985,8 @@ def host_autozygous_image(institute_id, case_name, individual, image):
 
 
 @cases_bp.route(
-    "/<institute_id>/<case_name>/<individual>/ideograms/<image>", methods=["GET", "POST"]
+    "/<institute_id>/<case_name>/<individual>/ideograms/<image>",
+    methods=["GET", "POST"],
 )
 def host_chr_image(institute_id, case_name, individual, image):
     """Generate CHR image file paths. Points to servers 'public/static'"""

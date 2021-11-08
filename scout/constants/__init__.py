@@ -11,6 +11,9 @@ from .acmg import ACMG_COMPLETE_MAP, ACMG_CRITERIA, ACMG_MAP, ACMG_OPTIONS, REV_
 from .case_tags import (
     ANALYSIS_TYPES,
     CANCER_PHENOTYPE_MAP,
+    CASE_REPORT_CASE_FEATURES,
+    CASE_REPORT_CASE_IND_FEATURES,
+    CASE_REPORT_VARIANT_TYPES,
     CASE_SEARCH_TERMS,
     CASE_STATUSES,
     CUSTOM_CASE_REPORTS,
@@ -31,11 +34,12 @@ from .gene_tags import (
     MODELS_MAP,
     PANEL_GENE_INFO_MODELS,
     PANEL_GENE_INFO_TRANSCRIPTS,
+    UPDATE_GENES_RESOURCES,
     VALID_MODELS,
 )
 from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
 from .indexes import INDEXES
-from .phenotype import COHORT_TAGS, PHENOTYPE_GROUPS
+from .phenotype import COHORT_TAGS, PHENOTYPE_GROUPS, UPDATE_DISEASES_RESOURCES
 from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
 from .so_terms import SEVERE_SO_TERMS, SO_TERM_KEYS, SO_TERMS
 from .variant_tags import (
@@ -52,6 +56,8 @@ from .variant_tags import (
     SPIDEX_LEVELS,
     SV_TYPES,
     VARIANT_CALL,
+    VARIANT_FILTERS,
+    VARIANT_REPORT_VARIANT_FEATURES,
 )
 from .variants_export import (
     EXPORT_HEADER,
@@ -116,6 +122,7 @@ CALLERS = {
         {"id": "freebayes", "name": "Freebayes"},
         {"id": "samtools", "name": "SAMtools"},
         {"id": "bcftools", "name": "Bcftools"},
+        {"id": "deepvariant", "name": "DeepVariant"},
     ],
     "cancer": [
         {"id": "mutect", "name": "MuTect"},

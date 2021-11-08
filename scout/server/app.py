@@ -5,6 +5,7 @@ import re
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
+from flask_cors import CORS
 from flask_login import current_user
 from flaskext.markdown import Markdown
 
@@ -48,11 +49,15 @@ except ImportError:
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
     app = Flask(__name__)
-    app.config.from_pyfile("config.py")
+    CORS(app)
     app.jinja_env.add_extension("jinja2.ext.do")
-    if config:
-        app.config.update(config)
-    if config_file:
+
+    app.config.from_pyfile("config.py")  # Load default config file
+    if (
+        config
+    ):  # Params from an optional .yaml config file provided by the user or created by the app cli
+        app.config.update((k, v) for k, v in config.items() if v is not None)
+    if config_file:  # Params from an optional .py config file provided by the user
         app.config.from_pyfile(config_file)
 
     app.config["JSON_SORT_KEYS"] = False
@@ -88,6 +93,7 @@ def create_app(config_file=None, config=None):
 
 def configure_extensions(app):
     """Configure Flask extensions."""
+
     extensions.toolbar.init_app(app)
     extensions.bootstrap.init_app(app)
     extensions.mongo.init_app(app)
@@ -110,7 +116,13 @@ def configure_extensions(app):
         LOG.info("Gens enabled")
         extensions.gens.init_app(app)
 
-    if all([app.config.get("MME_URL"), app.config.get("MME_ACCEPTS"), app.config.get("MME_TOKEN")]):
+    if all(
+        [
+            app.config.get("MME_URL"),
+            app.config.get("MME_ACCEPTS"),
+            app.config.get("MME_TOKEN"),
+        ]
+    ):
         LOG.info("MatchMaker Exchange enabled")
         extensions.matchmaker.init_app(app)
 
@@ -192,11 +204,6 @@ def register_filters(app):
         if isinstance(cosmicId, int):
             return "COSM" + str(cosmicId)
         return cosmicId
-
-    @app.template_filter()
-    def fix_punctuation(text):
-        """Adds a white space after puntuation"""
-        return re.sub(r"(?<=[.,:;?!])(?=[^\s])", r" ", text)
 
     @app.template_filter()
     def count_cursor(pymongo_cursor):

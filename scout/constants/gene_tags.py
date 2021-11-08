@@ -45,3 +45,25 @@ PANEL_GENE_INFO_MODELS = [
     "inheritance_models",
     "genetic_inheritance_models",
 ]
+
+# Values can be the real resource or the Scout demo one
+UPDATE_GENES_RESOURCES = {
+    "mim2genes": ["mim2genes.txt", "mim2gene_reduced.txt"],
+    "genemap2": ["genemap2.txt", "genemap2_reduced.txt"],
+    "hpo_genes": ["genes_to_phenotype.txt", "genes_to_phenotype_reduced.txt"],
+    "hgnc_lines": ["hgnc.txt", "hgnc_reduced_set.txt"],
+    "exac_lines": [
+        "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt",
+        "forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt",
+    ],
+    "ensembl_genes_37": ["ensembl_genes_37.txt", "ensembl_genes_37_reduced.txt"],
+    "ensembl_genes_38": ["ensembl_genes_38.txt", "ensembl_genes_38_reduced.txt"],
+    "ensembl_transcripts_37": [
+        "ensembl_transcripts_37.txt",
+        "ensembl_transcripts_37_reduced.txt",
+    ],
+    "ensembl_transcripts_38": [
+        "ensembl_transcripts_38.txt",
+        "ensembl_transcripts_38_reduced.txt",
+    ],
+}

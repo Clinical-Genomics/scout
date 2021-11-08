@@ -162,6 +162,7 @@ class CaseHandler(object):
             query["$or"] = [
                 {"display_name": {"$regex": query_term}},
                 {"individuals.display_name": {"$regex": query_term}},
+                {"_id": {"$regex": query_term}},
             ]
 
         if query_field == "exact_pheno":
@@ -423,7 +424,6 @@ class CaseHandler(object):
         hgnc_symbols=None,
         hgnc_ids=None,
         phenotype_ids=None,
-        build="37",
         add_only=False,
     ):
         """Update the dynamic gene list for a case
@@ -446,6 +446,8 @@ class CaseHandler(object):
         Returns:
             updated_case(dict)
         """
+        case_build = str(case.get("genome_build", "37"))
+        build = case_build if case_build in ["37", "38"] else "37"
         dynamic_gene_list = []
         if add_only:
             dynamic_gene_list = list(
@@ -558,6 +560,7 @@ class CaseHandler(object):
         """Load a case into the database
 
         Check if the owner and the institute exists.
+        If update is True, old case variants will be removed.
 
         Args:
             config_data(dict): A dictionary with all the necessary information
@@ -602,7 +605,9 @@ class CaseHandler(object):
         )
         if existing_case and keep_actions:
             # collect all variants with user actions for this case
-            old_evaluated_variants = list(self.evaluated_variants(case_obj["_id"]))
+            old_evaluated_variants = list(
+                self.evaluated_variants(case_obj["_id"], case_obj["owner"])
+            )
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
@@ -636,12 +641,21 @@ class CaseHandler(object):
                         variant_type=variant_type,
                         category=category,
                     )
+
+                # get custom images from config file
+                custom_images = (
+                    case_obj["custom_images"][category]
+                    if category in case_obj.get("custom_images", {})
+                    else None
+                )
+                # add variants
                 self.load_variants(
                     case_obj=case_obj,
                     variant_type=variant_type,
                     category=category,
                     build=genome_build,
                     rank_threshold=case_obj.get("rank_score_threshold", 5),
+                    custom_images=custom_images,
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
@@ -752,6 +766,7 @@ class CaseHandler(object):
                     "analysis_date": case_obj["analysis_date"],
                     "chromograph_image_files": case_obj.get("chromograph_image_files"),
                     "chromograph_prefixes": case_obj.get("chromograph_prefixes"),
+                    "custom_images": case_obj.get("custom_images"),
                     "cnv_report": case_obj.get("cnv_report"),
                     "coverage_qc_report": case_obj.get("coverage_qc_report"),
                     "delivery_report": case_obj.get("delivery_report"),

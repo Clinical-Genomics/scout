@@ -75,7 +75,7 @@
                 <i class="fa fa-link"></i></a>
         </div>
         <div>
-          <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}">
+          <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}" download>
                 <i class="fa fa-file-pdf-o"></i></a>
         </div>
       </div>
@@ -516,7 +516,7 @@
     </div>
     <div>
       <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                        case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+                        case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
     </div>
   </div>
 </div>
@@ -567,7 +567,7 @@
     </div>
     <div>
       <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                        case_name=case.display_name, date=date, format='pdf') }}"><i class="fa fa-file-pdf-o"></i></a>
+                        case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
     </div>
   </div>
 </div>

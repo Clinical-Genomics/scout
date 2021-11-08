@@ -181,10 +181,10 @@ def parse_ensembl_transcripts(lines):
     Args:
         lines(iterable(str)): An iterable with ensembl formated genes
     Yields:
-        ensembl_gene(dict): A dictionary with the relevant information
+        ensembl_transcript(dict): A dictionary with the relevant information
     """
     header = []
-    LOG.info("Parsing ensembl genes from file")
+    LOG.info("Parsing ensembl transcripts from file")
     for index, line in enumerate(lines):
 
         # File allways start with a header line

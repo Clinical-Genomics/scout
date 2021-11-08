@@ -58,7 +58,7 @@ class HpoHandler(object):
 
         return self.hpo_term_collection.find_one({"_id": hpo_id})
 
-    def hpo_terms(self, query=None, hpo_term=None, text=None, limit=None):
+    def hpo_terms(self, query=None, hpo_term=None, text=None, limit=None, skip=None):
         """Return all HPO terms
 
         If a query is sent hpo_terms will try to match with regex on term or
@@ -68,6 +68,7 @@ class HpoHandler(object):
             query(str): Part of a hpoterm or description
             hpo_term(str): Search for a specific hpo term
             limit(int): the number of desired results
+            skip(int): the number of results to skip
 
         Returns:
             result(pymongo.Cursor): A cursor with hpo terms
@@ -97,8 +98,10 @@ class HpoHandler(object):
             search_term = hpo_term
 
         limit = limit or 0
+        skip = skip or 0
         res = (
             self.hpo_term_collection.find(query_dict)
+            .skip(skip)
             .limit(limit)
             .sort("hpo_number", pymongo.ASCENDING)
         )
@@ -168,7 +171,8 @@ class HpoHandler(object):
                     continue
                 # sort term children by ascending HPO number
                 children = sorted(
-                    term_obj["children"], key=lambda x: int("".join([i for i in x if i.isdigit()]))
+                    term_obj["children"],
+                    key=lambda x: int("".join([i for i in x if i.isdigit()])),
                 )
                 term_obj["children"] = children
                 all_terms[term_id] = term_obj

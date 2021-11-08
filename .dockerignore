@@ -17,6 +17,6 @@ tests
 scripts
 
 # Docker
-Dockerfile
-docker-compose.yml
+Dockerfile*
+docker-compose.*yml
 volumes

@@ -87,7 +87,54 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
 
     # THEN it should trigger KeyError
     assert result.exit_code == 1
-    assert "KEYERROR" in result.output
+    assert "KeyError" in result.output
+
+
+def test_load_case_KeyError2(mock_app, institute_obj, case_obj, monkeypatch):
+    """Test loading a case with a config file that will trigger KeyError"""
+    runner = mock_app.test_cli_runner()
+
+    # GIVEN a patched `parse_case` function that will raise KeyError
+    def mock_parse_case(*args):
+        raise KeyError
+
+    monkeypatch.setattr(case, "parse_individuals", mock_parse_case)
+
+    # WHEN calling scout load config
+    result = clear_db_and_load(case_obj, mock_app)
+
+    # THEN call will fail with KeyError
+    assert result.exit_code == 1
+    assert "KeyError" in result.output
+
+
+def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
+    """Test loading a case with a config file that will trigger KeyError"""
+    runner = mock_app.test_cli_runner()
+
+    # GIVEN a patched `parse_case` function that will raise KeyError
+    def mock_parse_case(*args):
+        raise SyntaxError
+
+    monkeypatch.setattr(case, "parse_individuals", mock_parse_case)
+
+    # WHEN calling scout load config
+    result = clear_db_and_load(case_obj, mock_app)
+
+    # THEN call will fail with KeyError
+    assert result.exit_code == 1
+    assert "SyntaxError" in result.output
+
+
+def clear_db_and_load(case_obj, mock_app):
+    """Clear and database and call cli load `scout load case scout`. Returns result of call"""
+    # GIVEN a database with no cases
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+
+    # WHEN case is loaded using a a yaml file
+    runner = mock_app.test_cli_runner()
+    return runner.invoke(cli, ["load", "case", load_path])
 
 
 def test_load_case_KeyMissing(mock_app, institute_obj, case_obj):
@@ -138,3 +185,36 @@ def test_load_case_NoConf(mock_app, institute_obj, case_obj):
 
     # THEN error in exit status
     assert result.exit_code != 0
+
+
+def test_load_case_BadPath(mock_app, institute_obj, case_obj):
+    # GIVEN a config setup with an incorrect path configured
+    runner = mock_app.test_cli_runner()
+    assert runner
+
+    # remove case from real populated database using adapter
+    store.delete_case(case_id=case_obj["_id"])
+    assert store.case_collection.find_one() is None
+    res = store.institute_collection.find({"_id": "cust000"})
+    assert sum(1 for i in res) == 1
+
+    # Make sure the scout config file is available
+    assert os.path.exists(load_path)
+    temp_conf = os.path.join(tempfile.gettempdir(), "temp.conf")
+
+    content = []
+    with open(load_path) as f:
+        content = f.readlines()
+
+    # Remove a mandatory key value from config value content
+    content.remove("vcf_snv: scout/demo/643594.clinical.vcf.gz\n")
+    content.append("vcf_snv: scout/demo/incorrect_path/643594.clinical.vcf.gz\n")
+
+    with open(temp_conf, mode="wt") as f:
+        f.write("".join(content))
+
+    # WHEN: config is loaded
+    result = runner.invoke(cli, ["load", "case", temp_conf])
+    # THEN KeyError is caught and exit value is non-zero
+    assert result.exit_code == 1
+    assert "Exception: bad path" in result.output

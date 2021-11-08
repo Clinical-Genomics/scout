@@ -1,0 +1,264 @@
+{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
+{% from "variants/utils.html" import compounds_table %}
+{% from "variant/variant_details.html" import severity_list %}
+{% from "variant/buttons.html" import igv_button, splice_junctions_button %}
+{% from "variant/utils.html" import igv_track_selection  %}
+
+{% macro clinsig_table(variant) %}
+  {% if variant.clinsig_human %}
+    <table id='clinsig_table' class="table table-bordered table-sm">
+      <thead>
+        <tr class="active">
+          <th>CLINSIG</th>
+          <th>Accession</th>
+          <th>Revstat</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for clinsig in variant.clinsig_human %}
+          <tr>
+            <td>{{ clinsig.human }}</td>
+            {% if clinsig.accession %}
+              <td><a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a></td>
+            {% else %}
+              <td>n.a.</td>
+            {% endif %}
+            <td><div class="text-break">{{ clinsig.revstat or "n.a." }}</div></td>
+          </tr>
+        {% else %}
+          <i>No annotations</i>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+{% endmacro %}
+
+{% macro acmg_classification_item(variant, data) %}
+  {% set current_variant = (data.variant_specific == variant._id) %}
+  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
+    <div class="d-flex">
+      <span>
+        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
+          {{ data.classification.label }}
+        </a>
+        <span class="badge badge-info">{{ data.classification.short }}</span>
+      </span>
+      <span>
+        {% if not current_variant %}
+          <small>{{ data.case.display_name }}</small>
+        {% endif %}
+      </span>
+    </div>
+    <small class="text-muted">
+      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
+      {{ data.user_name }} on {{ data.created_at.date() }}
+      {% if current_variant %}
+        <button class="btn btn-xs btn-link">Delete</button>
+      {% endif %}
+      </form>
+    </small>
+  </li>
+{% endmacro %}
+
+{% macro alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks=False) %}
+   <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between">
+          <div>
+            {{ igv_button(case, variant, case_groups) }}
+          </div>
+          {% if splice_junctions_tracks %}
+            <div>
+              {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
+            </div>
+          {% endif %}
+          {% if variant.alamut_link %}
+            <div>
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
+            </div>
+          {% endif %}
+          {% if config.SQLALCHEMY_DATABASE_URI %}
+            <div class="d-flex flex-wrap">
+              {% for gene in variant.genes %}
+                <span class="ml-5">
+                  <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                </span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </li>
+        <li class="list-group-item">
+          <div>
+            {{ igv_track_selection(igv_tracks, current_user) }}
+          </div>
+        </li>
+      </ul>
+{% endmacro %}
+
+{% macro acmg_form(institute, case, variant, ACMG_OPTIONS, selected=None) %}
+  <label class="mt-3">ACMG classification</label>
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <div class="d-flex justify-content-between">
+      {% for option in ACMG_OPTIONS %}
+        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
+          {{ option.short }}
+        </button>
+      {% endfor %}
+    </div>
+  </form>
+{% endmacro %}
+
+
+{% macro panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Classify</div>
+    <div class="card-body">
+      {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
+      {% if case.track == "cancer" %}
+       {{ variant_tier_button(variant, institute, case, cancer_tier_options) }}
+      {% endif %}
+        {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
+      {% if case.track != "cancer" %}
+        {{ mosaic_variant_button(variant, institute, case, mosaic_variant_options) }}
+      {% endif %}
+      {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
+      <div class="mt-3">
+        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
+        {% if case.suspects and variant._id in case.suspects and not variant.clinvar_clinsig %}
+          <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
+            class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
+        {% endif %}
+        {% if variant.clinvar_clinsig %}
+          <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
+        {% endif %}
+      </div>
+      {% if evaluations %} <!-- scrollable previous ACMG evaluations div-->
+        <div class="list-group mt-3" style="max-height:200px;overflow-y: scroll;">
+          {% for evaluation in evaluations %}
+            {{ acmg_classification_item(variant, evaluation) }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% macro matching_variants(managed_variant, causatives, matching_tiered=None) %}
+  {% if causatives %}
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-3 mb-1" style="padding: 0;">
+        Matching causatives from other cases:&nbsp;
+        {% for other_variant in causatives %}
+          <a href="{{ url_for('variant.variant',
+                              institute_id=other_variant.institute_id,
+                              case_name=other_variant.case_display_name,
+                              variant_id=other_variant._id) }}">
+            {{ other_variant.case_display_name }}
+          </a>&nbsp;
+        {% endfor %}
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if managed_variant %}
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-3 mb-1">
+        Matching managed variant:
+        <div class="row">
+          <div class="col-2">
+            {{ managed_variant.display_id }}
+          </div>
+          <div class="col-10">
+            {{ managed_variant.description }}
+          </div>
+        </div>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif %}
+  {% if not managed_variant and not causatives %}
+    <div class="card mt-3">
+      <div class="card-body mt-1 ml-1" style="padding: 0;">
+        <h6>No matching causative or managed variants</h6>
+      </div> <!--end of card body-->
+    </div><!--end of card-->
+  {% endif%}
+
+  {% if matching_tiered %}
+    <div class="card">
+      <div class="card-body mt-1 ml-3 mb-1 d-flex align-items-center" style="padding: 0;">
+        Matching tiered:&nbsp;
+        {% for tier, tiered_info in matching_tiered.items() %}
+          <a class="btn btn-{{tiered_info.label}} btn-xs" data-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+            {{tier}} ({{tiered_info.links|length}}x)
+          </a>
+          <div class="collapse" id="collapse_{{tier}}">
+            <div>
+              {{tier}}:
+              {% for link in tiered_info["links"] %}
+                {% set match_case = link.split('/') %}
+                  <a href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro compounds_panel(institute, case, variant) %}
+  <div class="card panel-default">
+    <div class="panel-heading">Compounds (top 20)</div>
+    <div class="card-body">
+      {{ compounds_table(institute, case, variant.compounds[:20]) }}
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% macro external_links(case, variant) %}
+  <div class="panel panel-default">
+    {% for gene in variant.genes %}
+      <div class="panel-heading">
+        External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+      </div>
+      <div class="panel-body">
+          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
+          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
+          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
+          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
+          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
+          {% if gene.entrez_link %}
+            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
+          {% endif %}
+          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
+          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
+          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
+          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
+          {% if variant.alamut_link %}
+            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+          {% endif %}
+          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
+          {% if variant.is_mitochondrial %}
+            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
+          {% endif %}
+          {% if variant.hmtvar_variant_id %}
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
+          {% endif %}
+          {% if gene.tp53_link %}
+            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
+          {% endif %}
+          {% if gene.iarctp53_link %}
+            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
+          {% endif %}
+          {% if cancer %}
+            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
+            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
+            <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
+          {% endif %}
+            <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
+      </div>
+    {% endfor %}
+  </div>
+{% endmacro %}

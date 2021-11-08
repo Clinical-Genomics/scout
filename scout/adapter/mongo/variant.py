@@ -652,6 +652,7 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case_causatives:
                 other_causative = {
                     "_id": other_causative_id,
+                    "institute_id": other_case["owner"],
                     "case_id": other_case["_id"],
                     "case_display_name": other_case["display_name"],
                 }
@@ -712,22 +713,73 @@ class VariantHandler(VariantLoader):
 
         return variants
 
-    def evaluated_variants(self, case_id):
-        """Returns variants that have been evaluated
-
-        Return all variants, snvs/indels and svs from case case_id
-        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
-        'cancer_tier' or if they are commented.
-
+    def evaluated_variant_ids_from_events(self, case_id, institute_id):
+        """Returns variant ids for variants that have been evaluated
+           Return all variants, snvs/indels and svs from case case_id
+            which have an event entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+            'cancer_tier', 'mosaic_tags'.
         Args:
             case_id(str)
 
         Returns:
             variants(iterable(Variant))
         """
+
+        evaluation_verbs = [
+            "acmg",
+            "manual_rank",
+            "cancer_tier",
+            "dismiss_variant",
+            "mosaic_tags",
+        ]
+
+        query = {
+            "category": "variant",
+            "institute": institute_id,
+            "case": case_id,
+            "verb": {"$in": evaluation_verbs},
+        }
+        evaluation_events = self.event_collection.find(query)
+        if evaluation_events is None:
+            return []
+
+        evaluated_variant_ids = [
+            evaluation_event["variant_id"] for evaluation_event in evaluation_events
+        ]
+
+        LOG.debug(
+            "Found evaluated variant ids for case %s institute %s: %s ",
+            case_id,
+            institute_id,
+            evaluated_variant_ids,
+        )
+        return evaluated_variant_ids
+
+    def evaluated_variants(self, case_id, institute_id):
+        """Returns variants that have been evaluated
+
+        Return all variants, snvs/indels and svs from case case_id and institute_id
+        which have a entry for 'acmg_classification', 'manual_rank', 'dismiss_variant',
+        'cancer_tier' or if they are commented.
+
+        Return only if the variants still exist and still have the assessment.
+        Variants can be removed on reanalyis, and assessments can be cleared.
+
+        Args:
+            case_id(str)
+            institute_id(str)
+
+        Returns:
+            variants(iterable(Variant))
+        """
+
         # Get all variants that have been evaluated in some way for a case
+        variant_ids = self.evaluated_variant_ids_from_events(case_id, institute_id)
+
         query = {
             "$and": [
+                {"variant_id": {"$in": variant_ids}},
+                {"institute": institute_id},
                 {"case_id": case_id},
                 {
                     "$or": [
@@ -743,7 +795,8 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
-        case_obj = self.case(case_id=case_id)  # case exists since it's used in the query above
+        case_obj = self.case(case_id=case_id)
+
         for var in self.variant_collection.find(query):
             variants[var["variant_id"]] = self.add_gene_info(
                 variant_obj=var, build=case_obj["genome_build"]

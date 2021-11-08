@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+import sys
 
 import click
 from flask.cli import current_app, with_appcontext
 from livereload import Server
+from pymongo.errors import ConnectionFailure, OperationFailure, ServerSelectionTimeoutError
 from werkzeug.serving import run_simple
-
-from scout.adapter.utils import check_connection
 
 LOG = logging.getLogger(__name__)
 
@@ -21,31 +21,16 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def serve(host, port, debug, livereload, test):
     """Start the web server."""
-    pymongo_config = dict(
-        MONGO_HOST=current_app.config.get("MONGO_HOST", "localhost"),
-        MONGO_PORT=current_app.config.get("MONGO_PORT", 27017),
-        MONGO_DBNAME=current_app.config.get("MONGO_DBNAME", "scout"),
-        MONGO_USERNAME=current_app.config.get("MONGO_USERNAME", None),
-        MONGO_PASSWORD=current_app.config.get("MONGO_PASSWORD", None),
-    )
 
-    valid_connection = check_connection(
-        host=pymongo_config["MONGO_HOST"],
-        port=pymongo_config["MONGO_PORT"],
-        username=pymongo_config["MONGO_USERNAME"],
-        password=pymongo_config["MONGO_PASSWORD"],
-        authdb=current_app.config.get("MONGO_DBNAME", "scout"),
-    )
-
-    LOG.info("Test if mongod is running")
-    if not valid_connection:
-        LOG.warning("Connection could not be established")
-        LOG.info("Is mongod running?")
-        raise click.Abort()
-
-    if test:
-        LOG.info("Connection could be established")
-        return
+    # Verify the database connectivity before launching the app
+    mongo_client = current_app.config.get("MONGO_DATABASE")._Database__client
+    try:
+        mongo_client.server_info()
+        if test:
+            LOG.info("Connection could be established")
+            return
+    except (ServerSelectionTimeoutError, OperationFailure, ConnectionFailure) as err:
+        sys.exit("No database connection available")
 
     if livereload:
         server = Server(current_app.wsgi_app)

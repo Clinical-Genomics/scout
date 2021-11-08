@@ -1,4 +1,5 @@
 """Common utilities for the server code"""
+import datetime
 import io
 import logging
 import os
@@ -6,10 +7,22 @@ import pathlib
 import zipfile
 from functools import wraps
 
+from bson.objectid import ObjectId
 from flask import abort, flash, render_template, request
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
+
+
+def jsonconverter(obj):
+    """Converts non-serializable onjects into str"""
+    LOG.warning(f"An object of type {type(obj)} is not json-serializable: converting it.")
+    if "Form" in str(type(obj)):
+        return obj.__dict__
+    if isinstance(obj, datetime.datetime):
+        return obj.isoformat()
+    if isinstance(obj, ObjectId):
+        return obj.__str__()
 
 
 def templated(template=None):

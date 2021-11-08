@@ -8,6 +8,7 @@ from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.case import (
     parse_case,
     parse_case_data,
+    parse_custom_images,
     parse_individual,
     parse_individuals,
     parse_ped,
@@ -54,30 +55,45 @@ def test_parse_case_date(scout_config):
     assert isinstance(case_data["analysis_date"], datetime)
 
 
-def test_parse_case_owner(scout_config):
+@pytest.mark.parametrize(
+    "param_name",
+    [
+        "analysis_date",
+        "cohorts",
+        "delivery_report",
+        "gene_panels",
+        "gene_fusion_report",
+        "lims_id",
+        "owner",
+        "peddy_check",
+        "peddy_ped",
+        "peddy_sex",
+        "phenotype_terms",
+        "rank_model_version",
+        "rank_score_threshold",
+        "smn_tsv",
+        "sv_rank_model_version",
+    ],
+)
+def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
-    # THEN the case should have a owner
-    assert case_data["owner"] == scout_config["owner"]
+    # THEN the case should have a the parameter
+    assert case_data[param_name] == scout_config[param_name]
 
 
-def test_parse_case_limsid(scout_config):
-    """Test parsing a case with lims_id"""
-
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the lims ID should be the same as in config
-    assert case_data["lims_id"] == scout_config["lims_id"]
-
-
-def test_parse_case(scout_config):
+@pytest.mark.parametrize(
+    ("param_name", "alias_name"),
+    ([("case_id", "family"), ("default_panels", "default_gene_panels")]),
+)
+def test_parse_case_aliases(scout_config, param_name, alias_name):
+    """Certain configuration parameters have an alias externally"""
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case a correct case id
-    assert case_data["case_id"] == scout_config["family"]
+    assert case_data[param_name] == scout_config[alias_name]
 
 
 def test_parse_case_madeline(scout_config):
@@ -88,6 +104,52 @@ def test_parse_case_madeline(scout_config):
     assert case_data["madeline_info"]
 
 
+def test_parse_case_custom_images(scout_config):
+    """Test parsing of case"""
+    # Given you load custom images info from scout config
+    custom_images = parse_custom_images(scout_config)
+    # WHEN images is parsed
+    # THEN custom_images should have the same sections
+    cnf_img = scout_config["custom_images"]
+    assert cnf_img.keys() == custom_images.keys()
+    # THEN custom_images should have the same number of images
+    assert all(
+        len(custom_images["case"][section]) == len(cnf_img["case"][section])
+        for section in custom_images["case"]
+    )
+    # Given that some custom images are of not supported formats
+    custom_images = parse_custom_images(
+        {
+            "custom_images": {
+                "case": {
+                    "section_one": [
+                        {
+                            "title": "A png image",
+                            "description": "desc",
+                            "path": "scout/demo/images/custom_images/640x480_one.png",
+                        },
+                        {
+                            "title": "A bitmap image",
+                            "description": "desc",
+                            "path": "scout/demo/images/custom_images/640x480_one.bnp",
+                        },
+                    ],
+                    "section_two": [
+                        {
+                            "title": "A pdf image",
+                            "description": "desc",
+                            "path": "scout/demo/images/custom_images/640x480_one.pdf",
+                        },
+                    ],
+                }
+            }
+        }
+    )
+    # THEN check that non valid image formats are being rejected
+    assert len(custom_images["case"]["section_one"]) == 1
+    assert "section_two" not in custom_images
+
+
 def test_parse_case_collaborators(scout_config):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
@@ -96,90 +158,23 @@ def test_parse_case_collaborators(scout_config):
     assert case_data["collaborators"] == [scout_config["owner"]]
 
 
-def test_parse_case_gene_panels(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["gene_panels"] == scout_config["gene_panels"]
-
-
-def test_parse_case_default_panels(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["default_panels"] == scout_config["default_gene_panels"]
-
-
-def test_parse_case_rank_threshold(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same panels like the config
-    assert case_data["rank_score_threshold"] == scout_config["rank_score_threshold"]
-
-
-def test_parse_case_rank_model_version(scout_config):
-    # GIVEN you load sample information from a scout config
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-    # THEN the case should have the same rank model version like the config
-    assert case_data["rank_model_version"] == scout_config["rank_model_version"]
-
-
-def test_parse_case_vcf_files(scout_config):
+@pytest.mark.parametrize(
+    "vcf_file", ["vcf_snv", "vcf_sv", "vcf_str", "vcf_snv_research", "vcf_sv_research"]
+)
+def test_parse_case_vcf_files(scout_config, vcf_file):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case(scout_config)
     # THEN the case should the same vcf files as specified in the
-    assert case_data["vcf_files"]["vcf_snv"] == scout_config["vcf_snv"]
-    assert case_data["vcf_files"]["vcf_sv"] == scout_config["vcf_sv"]
-    assert case_data["vcf_files"]["vcf_snv_research"] == scout_config["vcf_snv_research"]
-    assert case_data["vcf_files"]["vcf_sv_research"] == scout_config["vcf_sv_research"]
+    assert case_data["vcf_files"][vcf_file] == scout_config[vcf_file]
 
 
-def test_parse_case_delivery_report(scout_config):
-    # GIVEN you load sample information from a scout config
-
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-
-    # then we should find the delivery report in the parsed data
-    assert case_data["delivery_report"] == scout_config["delivery_report"]
-
-
-def test_parse_case_bam_path(scout_config):
+@pytest.mark.parametrize("bam_name", ["alignment_path", "bam_file", "bam_path"])
+def test_parse_case_bams(scout_config, bam_name):
     # GIVEN a load config with bam_path as key to bam/cram files
     bam_path = "a bam"
     for sample in scout_config["samples"]:
-        sample["bam_path"] = bam_path
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-
-    # THEN assert that bam files are added correct
-    for ind in case_data["individuals"]:
-        assert ind["bam_file"] == bam_path
-
-
-def test_parse_case_bam_file(scout_config):
-    # GIVEN a load config with bam_file as key to bam/cram files
-    bam_path = "a bam"
-    for sample in scout_config["samples"]:
-        sample["bam_file"] = bam_path
-    # WHEN case is parsed
-    case_data = parse_case(scout_config)
-
-    # THEN assert that bam files are added correct
-    for ind in case_data["individuals"]:
-        assert ind["bam_file"] == bam_path
-
-
-def test_parse_case_alignment_path(scout_config):
-    # GIVEN a load config with bam_file as key to bam/cram files
-    bam_path = "a bam"
-    for sample in scout_config["samples"]:
-        sample["alignment_path"] = bam_path
+        sample[bam_name] = bam_path
     # WHEN case is parsed
     case_data = parse_case(scout_config)
 
@@ -328,43 +323,29 @@ def test_parse_wrong_sex():
         parse_individual(sample_info)
 
 
-def test_wrong_relations():
-    """docstring for test_wrong_relations"""
+def test_wrong_relations(scout_config):
     # GIVEN a individual with correct family info
-    sample_info = {
-        "sample_id": "1",
-        "sex": "male",
-        "phenotype": "affected",
-        "mother": "3",
-        "father": "2",
-    }
-    mother_info = {
-        "sample_id": "3",
-        "sex": "female",
-        "phenotype": "unaffected",
-        "mother": "0",
-        "father": "0",
-    }
-    father_info = {
-        "sample_id": "2",
-        "sex": "male",
-        "phenotype": "unaffected",
-        "mother": "0",
-        "father": "0",
-    }
-    samples = [sample_info, mother_info, father_info]
-    # Nothong should happend here
-    assert parse_individuals(samples)
+    # Nothing should happend here
+    assert parse_case(scout_config)
 
-    # WHEN changing mother id in proband
-    sample_info["mother"] = "5"
+    # WHEN changing mother id in proband to non-existing id
+    samples_list = scout_config["samples"]
+    erronous_config = []
+    for sample in samples_list:
+        if sample["sample_id"] == "ADM1059A2":
+            sample["mother"] = "ID_miss"
+            erronous_config.append(sample)
+        else:
+            erronous_config.append(sample)
+    scout_config["samples"] = erronous_config
+
     # THEN a PedigreeError should be raised
     with pytest.raises(PedigreeError):
-        parse_individuals(samples)
+        parse_case(scout_config)
 
 
 def test_removeNoneValues():
-    # WHEN a dict *not* containing a value which is None
+    # WHEN a dict *not* containing a None value
     d = {"a": "1", "b": 2, "c": 3}
 
     # THEN calling removeNoneValues(dict) will not change dict
@@ -449,13 +430,3 @@ def test_missing_mandatory_config_key(scout_config, key):
     ## THEN calling parse_case() will raise ConfigError
     with pytest.raises(ConfigError):
         parse_case(scout_config)
-
-
-@pytest.mark.parametrize("key", ["smn_tsv"])
-def test_missing_config_key(scout_config, key):
-    ## GIVEN a scout_config (dict) containing user case information
-
-    ## WHEN deleting key
-    scout_config.pop(key)
-    ## THEN calling parse_case() will log and continue
-    parse_case(scout_config)

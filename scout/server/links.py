@@ -347,10 +347,11 @@ def iarctp53(hgnc_symbol):
 ############# Variant links ####################
 
 
-def get_variant_links(variant_obj, build=None):
+def get_variant_links(institute_obj, variant_obj, build=None):
     """Update a variant object with links
 
     Args:
+        institute_obj(scout.models.Institute)
         variant_obj(scout.models.Variant)
         build(int)
 
@@ -366,12 +367,12 @@ def get_variant_links(variant_obj, build=None):
         exac_link=exac_link(variant_obj),
         gnomad_link=gnomad_link(variant_obj, build),
         swegen_link=swegen_link(variant_obj),
-        cosmic_link=cosmic_link(variant_obj),
+        cosmic_links=cosmic_links(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
         ucsc_link=ucsc_link(variant_obj, build),
         decipher_link=decipher_link(variant_obj, build),
         ensembl_link=ensembl_link(variant_obj, build),
-        alamut_link=alamut_link(variant_obj, build),
+        alamut_link=alamut_link(institute_obj, variant_obj, build),
         mitomap_link=mitomap_link(variant_obj),
         hmtvar_link=hmtvar_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
@@ -480,29 +481,30 @@ def swegen_link(variant_obj):
     return url_template.format(this=variant_obj)
 
 
-def cosmic_link(variant_obj):
+def cosmic_links(variant_obj):
     """Compose link to COSMIC Database.
 
     Args:
         variant_obj(scout.models.Variant)
 
     Returns:
-        url_template(str): Link to COSMIC database if cosmic id is present
+        cosmic_links(list): a list of tuples : [(id1, link1), (id2, link2), ..]
     """
-
     cosmic_ids = variant_obj.get("cosmic_ids")
-
     if not cosmic_ids:
         return None
 
-    cosmic_id = str(cosmic_ids[0])
+    cosmic_links = []
 
-    if cosmic_id.startswith("COS"):
-        url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
-    else:
-        url_template = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}"
+    for c_id in cosmic_ids:
+        cosmic_id = str(c_id)
+        if cosmic_id.startswith("COS"):
+            url_template = "https://cancer.sanger.ac.uk/cosmic/search?q={}"
+        else:
+            url_template = "https://cancer.sanger.ac.uk/cosmic/mutation/overview?id={}"
+        cosmic_links.append((cosmic_id, url_template.format(cosmic_id)))
 
-    return url_template.format(cosmic_id)
+    return cosmic_links
 
 
 def beacon_link(variant_obj, build=None):
@@ -604,20 +606,44 @@ def mutantp53(hgnc_id, protein_variant):
     return url_template.format(protein_variant)
 
 
-def alamut_link(variant_obj, build=None):
-    """Compose a link which open up variants in the Alamut software"""
-    build = build or 37
+def alamut_link(
+    institute_obj,
+    variant_obj,
+    build=None,
+):
+    """Compose a link which open up variants in the Alamut software
 
+    Args:
+        institute_obj(scout.models.Institute)
+        variant_obj(scout.models.Variant):
+        build(str): "37" or "38"
+
+    Returns:
+        url_template(str): link to Alamut browser
+    """
+    build = build or 37
     build_str = ""
     if build == 38:
         build_str = "(GRCh38)"
 
+    if current_app.config.get("HIDE_ALAMUT_LINK"):
+        return False
+
     url_template = (
-        "http://localhost:10000/show?request={this[chromosome]}{build_str}:"
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}request={this[chromosome]}{build_str}:"
         "{this[position]}{this[reference]}>{this[alternative]}"
     )
+    alamut_key = institute_obj.get("alamut_key")
+    # Alamut Visual Plus API has a different search verb
+    search_verb = "search" if alamut_key else "show"
+    alamut_key_arg = f"apikey={alamut_key}&" if alamut_key else ""
 
-    return url_template.format(this=variant_obj, build_str=build_str)
+    return url_template.format(
+        search_verb=search_verb,
+        alamut_key_arg=alamut_key_arg,
+        this=variant_obj,
+        build_str=build_str,
+    )
 
 
 def mitomap_link(variant_obj):

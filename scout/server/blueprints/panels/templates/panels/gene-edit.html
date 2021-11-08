@@ -22,7 +22,11 @@
             <div class="row">
               <div class="col-md-4">
                 {{ form.disease_associated_transcripts.label(class="control-label") }}<br>
-                {{ form.disease_associated_transcripts(class="selectpicker") }}
+                <select name="disease_associated_transcripts" multiple class="selectpicker">
+                  {% for opt in form.disease_associated_transcripts.choices %}
+                    <option value="{{opt[0]}}" {{ "selected" if 'previous' in opt[1] }}>{{opt[1]}}</option>
+                  {% endfor %}
+                </select>
               </div>
               <div class="col-md-4">
                 {{ form.reduced_penetrance.label(class="control-label") }}
@@ -77,11 +81,4 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-  <script>
-    $(function () {
-      $('select[multiple]').multiselect({
-        buttonWidth: '100%'
-      });
-    })
-  </script>
 {% endblock %}

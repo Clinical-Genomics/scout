@@ -34,15 +34,15 @@
 {% endmacro %}
 
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
-<div class="mt-3">
+<div class="card">
   {% set comments = comments|list %}
-  <h6 class="comments-title"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
+  <h6 class="comments-title ml-3 mt-2"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
   <div class="list-group" style="max-height:200px; overflow-y: scroll;">
     <style>.even { background-color: #f6f6f6 }</style>
     <style>.odd { background-color: #d5e8f0 }</style>
     {% for comment in comments %}
       <div class="row ml-1 alert {% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
-          <div class="col-7 text-break">{{ comment.content|fix_punctuation }}</div>
+          <div class="col-7 text-break">{{ comment.content }}</div>
           <div class="col-5 text-right">
             <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id,_anchor='comments') }}">
               <small>
@@ -86,7 +86,7 @@
             </div>
           {% endif %}
           <div class="col-sm-{{ 6 if variant_id else 12 }}">
-            <button class="btn btn-outline-secondary form-control" type="submit">Comment</button>
+            <button class="btn btn-secondary form-control" type="submit">Comment</button>
           </div>
         </div>
       </form>
@@ -145,6 +145,10 @@
           <strong>{{ event.user_name }}</strong>
           {{ event.verb }}
           <a href="{{ event.link }}">{{ event.subject[0:30] }}</a>
+          {% if event.hpo_term %}
+            ({{ event.hpo_term }})
+          {%- endif %}
+          {%-if event.individuals %}, individuals: {{event.individuals|join(', ')}}{% endif %}
           at <span class="timestamp">{{ event.created_at.date() }}</span>
         </li>
       {% else %}
@@ -156,8 +160,7 @@
 
 {% macro pedigree_panel(case) %}
   <div class="card panel-default">
-    <div class="panel-heading"><span class="fa fa-sitemap">&nbsp;Pedigree</div>
-    <div class="card-body">
+    <div>
       <div class="table-responsive">
       {% if case.individuals|length == 1 %}
         <p>Single sample case: {{ case.individuals.0.display_name }}</p>

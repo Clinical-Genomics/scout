@@ -8,6 +8,39 @@ CUSTOM_CASE_REPORTS = [
     "gene_fusion_report_research",
 ]
 
+CASE_REPORT_CASE_FEATURES = [
+    "display_name",
+    "created_at",
+    "updated_at",
+    "status",
+    "madeline_info",
+    "synopsis",
+    "phenotype_terms",
+    "panels",
+]
+
+CASE_REPORT_CASE_IND_FEATURES = [
+    "display_name",
+    "sex",
+    "confirmed_sex",
+    "phenotype",
+    "phenotype_human",
+    "analysis_type",
+    "predicted_ancestry",
+    "confirmed_parent",
+]
+
+CASE_REPORT_VARIANT_TYPES = {
+    "causatives_detailed": "causatives",
+    "partial_causatives_detailed": "partial_causatives",
+    "suspects_detailed": "suspects",
+    "classified_detailed": "acmg_classification",
+    "tagged_detailed": "manual_rank",
+    "tier_detailed": "cancer_tier",
+    "dismissed_detailed": "dismiss_variant",
+    "commented_detailed": "is_commented",
+}
+
 SEX_MAP = {
     1: "male",
     2: "female",
@@ -99,32 +132,32 @@ SOURCES = [
 SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))
 
 CASE_SEARCH_TERMS = {
-    "case": {"label": "Case or individual name", "prefix": "case:"},
+    "case": {"label": "Case or Individual Name", "prefix": "case:"},
     "exact_pheno": {
-        "label": "HPO term",
+        "label": "HPO Term",
         "prefix": "exact_pheno:",
     },
     "synopsis": {
-        "label": "Search synopsis",
+        "label": "Search Synopsis",
         "prefix": "synopsis:",
     },
-    "panel": {"label": "Gene panel", "prefix": "panel:"},
-    "status": {"label": "Case status", "prefix": "status:"},
-    "track": {"label": "Analysis track", "prefix": "track:"},
+    "panel": {"label": "Gene Panel", "prefix": "panel:"},
+    "status": {"label": "Case Status", "prefix": "status:"},
+    "track": {"label": "Analysis Track", "prefix": "track:"},
     "pheno_group": {
-        "label": "Phenotype group",
+        "label": "Phenotype Group",
         "prefix": "pheno_group:",
     },
-    "cohort": {"label": "Patient cohort", "prefix": "cohort:"},
+    "cohort": {"label": "Patient Cohort", "prefix": "cohort:"},
     "Similar case": {
-        "label": "Similar case",
+        "label": "Similar Case",
         "prefix": "similar_case:",
     },
     "similar_pheno": {
-        "label": "Similar phenotype",
+        "label": "Similar Phenotype",
         "prefix": "similar_pheno:",
     },
-    "pinned": {"label": "Pinned gene", "prefix": "pinned:"},
-    "causative": {"label": "Causative gene", "prefix": "causative:"},
-    "user": {"label": "Assigned user", "prefix": "user:"},
+    "pinned": {"label": "Pinned Gene", "prefix": "pinned:"},
+    "causative": {"label": "Causative Gene", "prefix": "causative:"},
+    "user": {"label": "Assigned User", "prefix": "user:"},
 }

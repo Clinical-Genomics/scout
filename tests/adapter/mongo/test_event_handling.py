@@ -295,21 +295,17 @@ def test_add_non_existing_mim(adapter, institute_obj, case_obj, user_obj):
     adapter.user_collection.insert_one(user_obj)
     # Non existing mim phenotype
     mim_term = "MIM:0000002"
-    # GIVEN a populated database
 
-    # WHEN adding a non existing phenotype term
-    updated_case = adapter.add_phenotype(
-        institute=institute_obj,
-        case=case_obj,
-        user=user_obj,
-        link="mimlink",
-        omim_term=mim_term,
-    )
-    # THEN the case should not have any phenotypes
-    assert len(updated_case.get("phenotype_terms", [])) == 0
-
-    # THEN there should not exist any events
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    # WHEN adding a non-existing OMIM term to a case
+    # Then the function should raise ValueError
+    with pytest.raises(ValueError):
+        updated_case = adapter.add_phenotype(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link="mimlink",
+            omim_term=mim_term,
+        )
 
 
 def test_add_mim(adapter, institute_obj, case_obj, user_obj):

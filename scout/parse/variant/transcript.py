@@ -229,12 +229,18 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["dbsnp"] = []
         transcript["cosmic"] = []
         variant_ids = entry.get("EXISTING_VARIATION")
+
         if variant_ids:
             for variant_id in variant_ids.split("&"):
                 if variant_id.startswith("rs"):
                     transcript["dbsnp"].append(variant_id)
                 elif variant_id.startswith("COSM") or variant_id.startswith("COSV"):
                     transcript["cosmic"].append(variant_id)
+
+        cosmic_ids = entry.get("COSMIC")
+        if cosmic_ids:
+            for cosmic_id in cosmic_ids.split("&"):
+                transcript["cosmic"].append(cosmic_id)
 
         yield transcript
 
@@ -293,7 +299,14 @@ def parse_transcripts_spliceai(transcript, entry):
             spliceai_delta_positions,
         ):
             spliceai_prediction.append(
-                " ".join([score_label, str(score or "-"), position_label, str(position or "-")])
+                " ".join(
+                    [
+                        score_label,
+                        str(score or "-"),
+                        position_label,
+                        str(position or "-"),
+                    ]
+                )
             )
 
     transcript["spliceai_delta_score"] = spliceai_delta_score

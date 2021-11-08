@@ -91,7 +91,7 @@
 	          <table class="table table-sm">
 	            <tr>
 	              <td>Case created: <strong>{{case.created_at.strftime('%Y-%m-%d')}}</strong></td>
-	              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d')}}</strong></td>
+	              <td>Last updated: <strong>{{case.updated_at.strftime('%Y-%m-%d') if case.updated_at else "n.a." }}</strong></td>
 	            </tr>
 	          </table>
 	          <br>
@@ -113,9 +113,9 @@
 	                <tr {% if ind.phenotype == 2 %} class="table-danger" {% endif %}>
 	                  <td>{{ ind.display_name }}</td>
 	                  <td>
-                      {% if ind.sex_human == 'female' %}
+                      {% if ind.sex == '2' %}
                         F
-                      {% elif ind.sex_human == 'male' %}
+                      {% elif ind.sex == '1' %}
                         M
                       {% else %}
                         n.a.
@@ -199,7 +199,7 @@
 	                    {% for comment in comments %}
 	                      <tr>
 	                        <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-	                        <td class="text-break"><strong>{{ comment.content | fix_punctuation }}</strong></td>
+	                        <td class="text-break"><strong>{{ comment.content }}</strong></td>
 	                      </tr>
 	                    {% endfor %}
 	                    </table>
@@ -290,8 +290,8 @@
     <a name="causative_variants"><strong>Causative Variants</strong></a>
   </div>
   <div class="card-body">
-    {% if causatives_detailed or partial_causatives_detailed %}
-      {% for causative in causatives_detailed|sort(attribute='variant_rank') + partial_causatives_detailed|sort(attribute='variant_rank') %}
+    {% if variants.causatives_detailed or variants.partial_causatives_detailed %}
+      {% for causative in variants.causatives_detailed|sort(attribute='variant_rank') + variants.partial_causatives_detailed|sort(attribute='variant_rank') %}
         {% do printed_vars.append(causative['_id']) %}
         {{ variant_content(causative, loop.index) }}
         <br>
@@ -310,8 +310,8 @@
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
-    {% if suspects_detailed %}
-      {% for pinned in suspects_detailed|sort(attribute='variant_rank') %}
+    {% if variants.suspects_detailed %}
+      {% for pinned in variants.suspects_detailed|sort(attribute='variant_rank') %}
         {% if pinned['_id'] not in printed_vars %}
           {% do printed_vars.append(pinned['_id']) %}
           {{ variant_content(pinned, loop.index) }}
@@ -323,7 +323,7 @@
     {% else %}
       No pinned variants available for this case
     {% endif %}
-    {% if suspects_detailed and duplicated_variants|length == suspects_detailed|length %}
+    {% if variants.suspects_detailed and duplicated_variants|length == variants.suspects_detailed.suspects_detailed|length %}
       All pinned variants are described among the causative variants
     {% endif %}
   </div>
@@ -337,8 +337,8 @@
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
-    {% if classified_detailed %}
-      {% for variant in classified_detailed|sort(attribute='variant_rank') %}
+    {% if variants.classified_detailed %}
+      {% for variant in variants.classified_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
@@ -350,7 +350,7 @@
     {% else %}
       No ACMG-classified variants available for this case
     {% endif %}
-    {% if classified_detailed and duplicated_variants|length == classified_detailed|length %}
+    {% if variants.classified_detailed and duplicated_variants|length == variants.classified_detailed|length %}
       All ACMG-classified variants are already described in the previous views
     {% endif %}
   </div>
@@ -364,8 +364,8 @@
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
-    {% if tagged_detailed %}
-      {% for variant in tagged_detailed|sort(attribute='variant_rank') %}
+    {% if variants.tagged_detailed %}
+      {% for variant in variants.tagged_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
@@ -375,8 +375,8 @@
         <br>
       {% endfor %}
     {% endif %}
-    {% if tier_detailed %}
-      {% for variant in tier_detailed|sort(attribute='variant_rank') %}
+    {% if variants.tier_detailed %}
+      {% for variant in variants.tier_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
@@ -386,10 +386,10 @@
         <br>
       {% endfor %}
     {% endif %}
-    {% if not (tagged_detailed or tier_detailed) %}
+    {% if not (variants.tagged_detailed or variants.tier_detailed) %}
       No tagged variants for this case
     {% endif %}
-    {% if (tagged_detailed or tier_detailed) and duplicated_variants|length == (tagged_detailed|length+tier_detailed|length) %}
+    {% if (variants.tagged_detailed or variants.tier_detailed) and duplicated_variants|length == (variants.tagged_detailed|length+variants.tier_detailed|length) %}
       All tagged variants are already described in the previous views
     {% endif %}
   </div>
@@ -415,8 +415,8 @@
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
-    {% if commented_detailed %}
-      {% for variant in commented_detailed|sort(attribute='variant_rank') %}
+    {% if variants.commented_detailed %}
+      {% for variant in variants.commented_detailed|sort(attribute='variant_rank') %}
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {% if variant.category == 'snv' %}
@@ -436,7 +436,7 @@
     {% else %}
       No commented variants for this case
     {% endif %}
-    {% if commented_detailed and duplicated_variants|length == commented_detailed|length %}
+    {% if variants.commented_detailed and duplicated_variants|length == variants.commented_detailed|length %}
       All commented variants are already described in the previous views
     {% endif %}
   </div>
@@ -507,9 +507,11 @@
               {% endif %}
             </td>
             <td>
-              {% for panel_id in variant.panels %}
-                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a>
-              {% endfor %}
+              {% if variant.panels%}
+                {% for panel_id in variant.panels %}
+                  <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a>
+                {% endfor %}
+              {% endif %}
             </td>
           </tr>
         </tbody>
@@ -664,7 +666,7 @@
               <span class="float-left">
                 <strong>
                   {% if variant.cadd_score %}
-                    {{ variant.cadd_score|round(1) }}
+                    {{ variant.cadd_score|round(1) }}
                   {% else %}
                     -
                   {% endif %}
@@ -674,11 +676,13 @@
             {% if not cancer %}
               <td>
                 <span class="float-left">
-                  {% for model in variant.genetic_models|sort %}
-                    <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                  {% if variant.genetic_models %}
+                    {% for model in variant.genetic_models|sort %}
+                      <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                    {% endfor %}
                   {% else %}
                     <span class="badge badge-warning">No models followed</span>
-                  {% endfor %}
+                  {% endif %}
                 </span>
               </td>
             {% endif %}
@@ -703,27 +707,29 @@
           </tr>
         </thead>
         <tbody>
-          {% for gene in variant.genes %}
-            <tr>
-              <td>
-                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                </a>
-              </td>
-              <td>{{gene.description|title}}</td>
-              <td>{{gene.region_annotation}}</td>
-              <td>
-                {{ variant_transcripts(gene) }}
-              </td>
-              <td>
-                <ul>
-                {% for disease_term in gene.disease_terms %}
-                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
-                {% endfor %}
-              </ul>
-              </td>
-            </tr>
-          {% endfor %}
+          {% if variant.genes %}
+            {% for gene in variant.genes %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                  </a>
+                </td>
+                <td>{{gene.description|title}}</td>
+                <td>{{gene.region_annotation}}</td>
+                <td>
+                  {{ variant_transcripts(gene) }}
+                </td>
+                <td>
+                  <ul>
+                  {% for disease_term in gene.disease_terms %}
+                    <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                  {% endfor %}
+                </ul>
+                </td>
+              </tr>
+            {% endfor %}
+          {% endif %}
         </tbody>
       </table>
       {% if variant.comments | count_cursor > 0  %}
@@ -740,7 +746,7 @@
                 {% for comment in variant.comments %}
                   <tr>
                     <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-                    <td class="text-break"><strong>{{ comment.content | fix_punctuation }}</strong></td>
+                    <td class="text-break"><strong>{{ comment.content }}</strong></td>
                   </tr>
                 {% endfor %}
                 </table>
@@ -754,14 +760,16 @@
   {% endmacro %}
 
 {% macro dismissed_gene_list(variant) %}
-  {% if variant.genes|length > 3%}
-    {{ variant.genes|length }}&nbsp;genes
-  {% else %}
-    {% for gene in variant.genes %}
-     <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}&nbsp;<span class="badge badge-secondary">{{gene.region_annotation}}</span></a><br>
-    {% else %} <!-- 0 genes. strs for instance -->
-      <span class="badge badge-secondary">-</span>
-    {% endfor %}
+  {% if variant.genes %}
+    {% if variant.genes|length > 3%}
+      {{ variant.genes|length }}&nbsp;genes
+    {% else %}
+      {% for gene in variant.genes %}
+       <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}&nbsp;<span class="badge badge-secondary">{{gene.region_annotation}}</span></a><br>
+      {% endfor %}
+    {% endif %}
+  {% else %} <!-- 0 genes. strs for instance -->
+    <span class="badge badge-secondary">-</span>
   {% endif %}
 {% endmacro %}
 
@@ -771,7 +779,7 @@
       <a name="dismissed_variants"><strong>Dismissed Variants</strong></a>
     </div>
     <div class="card-body">
-      {% if dismissed_detailed %}
+      {% if variants.dismissed_detailed %}
         <table class="table table-striped table-sm" style="background-color: transparent">
           <thead>
             <tr>
@@ -782,12 +790,14 @@
                 <td width="45%"><strong>Dismissed description</strong></td>
             </tr>
           </thead>
-          {% for variant in dismissed_detailed|sort(attribute='variant_rank') %}
+          {% for variant in variants.dismissed_detailed|sort(attribute='variant_rank') %}
             <tr>
               <td width="5%">#{{loop.index}}</td>
               <td width="25%">
                 {% if variant.category == 'snv' %}
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>
+                {% elif variant.category == 'cancer' %}
+                  <a href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>
                 {% elif variant.category == 'sv' %}
                   <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
                 {% else %} <!--strs -->
@@ -871,11 +881,14 @@
                         </table>
                       {% elif reason == '7' %} <!-- Inheritance pattern not relevant -->
                       <br>
-                        ({% for model in variant.genetic_models|sort %}
-                          <span class="badge badge-info" title="{{genetic_models[model]}}">{{model}}</span>
+
+                        ({% if variant.genetic_models %}
+                          {% for model in variant.genetic_models|sort %}
+                            <span class="badge badge-info" title="{{genetic_models[model]}}">{{model}}</span>
+                          {% endfor %}
                         {% else %}
                           No models followed
-                        {% endfor %})
+                        {% endif %})
                         <br>
                       {% elif reason== '23' %} <!-- inherited from unaffected -->
                         <table id="panel-table" class="table-borderless table-sm" >
@@ -975,9 +988,11 @@
             <td>-</td>
           {% endif %}
           <td>
-            {% for panel_id in variant.panels %}
-              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
-            {% endfor %}
+            {% if variant.panels %}
+              {% for panel_id in variant.panels %}
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+              {% endfor %}
+            {% endif %}
           </td>
           <td>
             {% if variant.callers %}
@@ -1092,11 +1107,13 @@
           </td>
           <td>
             <span class="float-left">
-              {% for model in variant.genetic_models|sort %}
-                <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+              {% if variant.genetic_models %}
+                {% for model in variant.genetic_models|sort %}
+                  <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                {% endfor %}
               {% else %}
                 <span class="badge badge-warning">No models followed</span>
-              {% endfor %}
+              {% endif %}
             </span>
           </td>
           <td>
@@ -1120,27 +1137,29 @@
         </tr>
       </thead>
       <tbody>
-        {% for gene in variant.genes %}
-          <tr>
-            <td>
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-              </a>
-            </td>
-            <td>{{gene.description|title}}</td>
-            <td>{{gene.region_annotation}}</td>
-            <td>
-              {{ variant_transcripts(gene) }}
-            </td>
-            <td>
-              <ul>
-              {% for disease_term in gene.disease_terms %}
-                <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
-              {% endfor %}
-              </ul>
-            </td>
-          </tr>
-        {% endfor %}
+        {% if variant.genes %}
+          {% for gene in variant.genes %}
+            <tr>
+              <td>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </td>
+              <td>{{gene.description|title}}</td>
+              <td>{{gene.region_annotation}}</td>
+              <td>
+                {{ variant_transcripts(gene) }}
+              </td>
+              <td>
+                <ul>
+                {% for disease_term in gene.disease_terms %}
+                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                {% endfor %}
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+        {% endif %}
       </tbody>
     </table>
 
@@ -1157,7 +1176,7 @@
           {% for comment in variant.comments %}
             <tr>
               <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-              <td class="text-break"><strong>{{ comment.content | fix_punctuation}}</strong></td>
+              <td class="text-break"><strong>{{ comment.content }}</strong></td>
             </tr>
           {% endfor %}
         </tbody>
@@ -1168,7 +1187,7 @@
 {% endmacro %}
 
 <!-- STR -->
-{% macro str_variant_content(variant,index) %} 
+{% macro str_variant_content(variant,index) %}
 <div class="card" style="border-width: 5px;">
   <div class="card-header">
     <div class="row d-flex align-items-center">
@@ -1215,9 +1234,11 @@
             <td>-</td>
           {% endif %}
           <td>
-            {% for panel_id in variant.panels %}
-              <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
-            {% endfor %}
+            {% if variant.panels %}
+              {% for panel_id in variant.panels %}
+                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+              {% endfor %}
+            {% endif %}
           </td>
         </tr>
       </tbody>
@@ -1325,7 +1346,7 @@
           {% for comment in variant.comments %}
             <tr>
               <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-              <td class="text-break"><strong>{{ comment.content | fix_punctuation}}</strong></td>
+              <td class="text-break"><strong>{{ comment.content }}</strong></td>
             </tr>
           {% endfor %}
         </tbody>

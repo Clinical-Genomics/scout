@@ -105,7 +105,7 @@ def test_get_exec_loqus_version_CalledProcessError(loqus_exe_app, monkeypatch):
     # When the get_exec_loqus_version function is invoked
     with loqus_exe_app.app_context():
         # It will trigger the same error and return -1
-        assert loqusdb.get_exec_loqus_version("default") == -1
+        assert loqusdb.get_exec_loqus_version("default") == "-1.0"
 
 
 def test_loqusdb_exe_variant(loqus_exe_app, monkeypatch, loqus_exe_variant):
@@ -134,9 +134,8 @@ def test_loqusdb_exe_variant_CalledProcessError(loqus_exe_app, monkeypatch):
     monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
 
     with loqus_exe_app.app_context():
-        with pytest.raises(subprocess.CalledProcessError):
-            # THEN CalledProcessError is raised and thrown
-            var_info = loqusdb.get_variant({"_id": "a variant"})
+        # THEN raised exception is caught and an empty dict is returned
+        assert {} == loqusdb.get_variant({"_id": "a variant"})
 
 
 def test_loqusdb_exe_cases(loqus_exe_app, monkeypatch):
@@ -197,7 +196,12 @@ def test_loqusdb_exe_wrong_version(monkeypatch, loqus_exe, loqus_config):
     with pytest.raises(EnvironmentError):
         # Then the app should not be created because of EnvironmentError
         app = create_app(
-            config=dict(LOQUSDB_SETTINGS={"binary_path": loqus_exe, "loqusdb_config": loqus_config})
+            config=dict(
+                LOQUSDB_SETTINGS={
+                    "binary_path": loqus_exe,
+                    "loqusdb_config": loqus_config,
+                }
+            )
         )
 
 

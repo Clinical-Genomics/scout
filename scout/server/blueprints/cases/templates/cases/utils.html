@@ -1,4 +1,3 @@
-{% from "variants/utils.html" import tier_cell %}
 {% from "variants/indicators.html" import clinical_assessments_badge, research_assessments_badge %}
 
 {% macro matchmaker_modal(institute, case, mme_nodes) %}
@@ -19,7 +18,6 @@
                  <option selected>Match against</option>
                  <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
                  {% if mme_nodes %}
-                    <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='external') }}">All external nodes</option>
                     {% for node in mme_nodes %}
                       <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
                     {% endfor %}
@@ -276,12 +274,18 @@
 {% macro pretty_link_variant(variant, case) %}
 {# Returns human readable links to the corresponding variant page #}
 
-
   {% if variant.category in ("str", "snv", "cancer") %}
+    {% if variant.category == "cancer" %}
+    <a href="{{ url_for('variant.cancer_variant',
+                   institute_id=variant.institute,
+                   case_name=case.display_name,
+                   variant_id=variant._id) }}">
+    {% else %}
     <a href="{{ url_for('variant.variant',
                    institute_id=variant.institute,
                    case_name=case.display_name,
                    variant_id=variant._id) }}">
+    {% endif %}
     {% if variant.category in "str" %}
           {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
     {% elif variant.category in ("snv", "cancer") %}
@@ -307,17 +311,17 @@
                               institute_id=variant.institute,
                               case_name=case.display_name,
                               variant_id=variant._id) }}">
-    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}::{{ variant.end_chrom }}{{ variant.cytoband_end }})
   {% endif %}
   </a>
 {% endmacro %}
 
 
 {% macro variant_validation_badge(variant) %}
-  {% if variant.sanger_ordered and not variant.validation in ['True positive','False positive'] %}
-    <span class="badge badge-default">Verification ordered</span>
-  {% elif variant.sanger_ordered %}
+  {% if variant.validation in ['True positive','False positive'] %}
     <span class="badge badge-success">Validated</span>
+  {% elif variant.sanger_ordered %}
+    <span class="badge badge-default">Verification ordered</span>
   {% endif %}
 {% endmacro %}
 
@@ -333,161 +337,154 @@
 
 {% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) %}
   {% set already_displayed_variant_ids = [] %}
-  <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all variants that have been marked causative for this case">
-      <span class="fa fa-medkit"></span>&nbsp;
-      {% if case.track == 'cancer' %}
-        Clinically significant
-      {% else %}
-        Causative variants
-      {% endif %}
+  <div class="card mt-3">
+    <div data-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
+      <div class="d-flex justify-content-between">
+        <h6><span class="fa fa-medkit ml-3 mt-2"></span>
+        {% if case.track == 'cancer' %}
+          Clinically significant
+        {% else %}
+          Causative variants ({{causatives|length + partial_causatives|length}})
+        {% endif %}
+        </h6>
+        {% if not case.causatives|length and not case.partial_causatives|length %}
+          <span class="text-muted mr-3 mt-2">No variants marked causative</span>
+        {% endif %}
+      </div>
     </div>
-    <div class="card-body">
-    <ul class="list-group">
-      {% for variant in causatives %}
-        <li class="list-group-item list-group-item-action">
-          {% if variant._id %}
-            {% do already_displayed_variant_ids.append( variant._id ) %}
-            <div class="row align-items-between align-items-center">
-              <div class="col">
-                <i class="fa fa-check-circle-o"></i>
-                {{ pretty_link_variant(variant, case) }}
-                {{ variant_validation_badge(variant) }}
+    <div style="max-height:300px; overflow-y: scroll;">
+      <ul class="list-group">
+        {% for variant in causatives %}
+          <li class="list-group-item list-group-item-action">
+            {% if variant._id %}
+              {% do already_displayed_variant_ids.append( variant._id ) %}
+              <div class="row">
+                <div class="col">
+                  {{ pretty_link_variant(variant, case) }}
+                  {{ variant_validation_badge(variant) }}
+                  {{ clinical_assessments_badge(variant) }}
+                  {{ tumor_allele_freq(variant) }}
+                </div>
+                <div class="col-1">
+                  {{ remove_form(url_for('cases.mark_causative',
+                                         institute_id=institute._id,
+                                         case_name=case.display_name,
+                                         variant_id=variant._id,
+                                         partial_causative=False),
+                                 button_name='action', button_value='DELETE') }}
+                </div>
               </div>
-              {{ clinical_assessments_badge(variant) }}
-              {{ tumor_allele_freq(variant) }}
-              <div class="col-2">
-                  {% if case.track == 'cancer' %}
-                    {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-                  {% endif %}
-              </div>
-              <div class="col-1">
-                {{ remove_form(url_for('cases.mark_causative',
-                                       institute_id=institute._id,
-                                       case_name=case.display_name,
-                                       variant_id=variant._id,
-                                       partial_causative=False),
-                               button_name='action', button_value='DELETE') }}
-              </div>
-            </div>
-          {% else %} <!-- no variant._id -->
-            {{ variant }} <small class="text-muted">(not loaded)</small>
-          {% endif %}
-        </li>
-      {% endfor %}
-      <!-- End of causative variants -->
-      <!-- Partial causative variants -->
-      {% for variant_phenotypes in partial_causatives %}
-        {% set variant = variant_phenotypes.variant %}
-        <div class="list-group-item list-group-item-action">
-          {% if variant._id %}
-            {% do already_displayed_variant_ids.append(variant._id) %}
-            <div class="row align-items-between align-items-center">
-              <div class="col">
-                <i class="fa fa-check-circle-o"></i>
-                {% if variant.category == "snv" %}
-                  <a href="{{ url_for('variant.variant',
-                                      institute_id=variant.institute,
-                                      case_name=case.display_name,
-                                      variant_id=variant._id) }}">
-                        {{ variant.hgnc_symbols|join(', ') }} (partial causative)
-		             {% else %}
-        		      <a href="{{ url_for('variant.sv_variant',
-                                            institute_id=variant.institute,
-                                            case_name=case.display_name,
-                                            variant_id=variant._id) }}">
-		              {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
-                  (partial causative)
-		             {% endif %}
-                 </a>
-              </div>
-              <div class="col-2">
-                {{ remove_form(url_for('cases.mark_causative',
-                                       institute_id=institute._id,
-                                       case_name=case.display_name,
-                                       variant_id=variant._id,
-                                       partial_causative=True),
-                               button_name='action', button_value='DELETE') }}
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-4">
-                OMIM diagnoses
-              </div>
-              <div class="col-8">
-                {% for omim in variant_phenotypes.omim_terms %}
-                  <span class="badge badge-sm badge-secondary">
-                    <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim}}">
-                      {{omim}}
-                    </a>
-                  </span>
-                {% endfor %}
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-4">
-                HPO terms
-              </div>
-              <div class="col-8">
-                {% for hpo in variant_phenotypes.hpo_terms %}
-                  <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
-                    <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
-                  </a>
-                {% endfor %}
-              </div>
-            </div>
-
-          {% else %}
-            {{ variant }} <small class="text-muted">(not loaded)</small>
-          {% endif %}
-        </div>
-      {% endfor %}
-      <!-- end of partial causative variants -->
-      {% if not case.causatives|length and not case.partial_causatives|length %}
-        No variants marked causative
-      {% endif %}
-
-      <!-- variants with cancer tier I or II -->
-      {% if case.track == 'cancer' %}
-        {% set exp_tiers =  ['1A', '1B', '2C', '2D'] %}
-        {% set exp_acmg =  ['pathogenic', 'likely_pathogenic'] %}
-        {% for variant in evaluated_variants %}
-          {% if variant._id %}
-            <!-- set acmg classification -->
-            {% if variant.cancer_tier in exp_tiers or (variant.acmg_classification and variant.acmg_classification.code in exp_acmg) %}
-              {% if variant._id not in already_displayed_variant_ids %}
-                {% do already_displayed_variant_ids.append(variant._id) %}
-                <li class="list-group-item list-group-item-action">
-                  <div class="row align-items-between align-items-center">
-                    <div class="col">
-                      {{ pretty_link_variant(variant, case) }}
-                      {{ variant_validation_badge(variant) }}
-                    </div>
-                      {{ clinical_assessments_badge(variant) }}
-                      {{ tumor_allele_freq(variant) }}
-                    <div class="col-2">
-                      {% if case.track == 'cancer' %}
-                        {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-                      {% endif %}
-                    </div>
-                    <div class="col-1">
-                      <!-- remove classification placeholder -->
-                    </div>
-                  </div>
-                </li>
-
-              {% endif %}
+            {% else %} <!-- no variant._id -->
+              {{ variant }} <small class="text-muted">(not loaded)</small>
             {% endif %}
-          {% else %} <!-- no variant._id -->
-            {{ variant }} <small class="text-muted">(not loaded)</small>
-          {% endif %}
-
+          </li>
         {% endfor %}
-      {% endif %}
-      <!-- end of cancer tier variants -->
-    </ul>
-    </div>
-  </div>
+        <!-- End of causative variants -->
+
+        <!-- Partial causative variants -->
+        {% for variant_phenotypes in partial_causatives %}
+          {% set variant = variant_phenotypes.variant %}
+          <div class="list-group-item list-group-item-action">
+            {% if variant._id %}
+              {% do already_displayed_variant_ids.append(variant._id) %}
+              <div class="row align-items-between align-items-center">
+                <div class="col">
+                  <i class="fa fa-check-circle-o"></i>
+                  {% if variant.category == "snv" %}
+                    <a href="{{ url_for('variant.variant',
+                                        institute_id=variant.institute,
+                                        case_name=case.display_name,
+                                        variant_id=variant._id) }}">
+                          {{ variant.hgnc_symbols|join(', ') }} (partial causative)
+  		             {% else %}
+          		      <a href="{{ url_for('variant.sv_variant',
+                                              institute_id=variant.institute,
+                                              case_name=case.display_name,
+                                              variant_id=variant._id) }}">
+  		              {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.chromosome }}{{ variant.cytoband_end }})
+                    (partial causative)
+  		             {% endif %}
+                   </a>
+                </div>
+                <div class="col-2">
+                  {{ remove_form(url_for('cases.mark_causative',
+                                         institute_id=institute._id,
+                                         case_name=case.display_name,
+                                         variant_id=variant._id,
+                                         partial_causative=True),
+                                 button_name='action', button_value='DELETE') }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  OMIM diagnoses
+                </div>
+                <div class="col-8">
+                  {% for omim in variant_phenotypes.omim_terms %}
+                    <span class="badge badge-sm badge-secondary">
+                      <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim}}">
+                        {{omim}}
+                      </a>
+                    </span>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  HPO terms
+                </div>
+                <div class="col-8">
+                  {% for hpo in variant_phenotypes.hpo_terms %}
+                    <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
+                      <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
+                    </a>
+                  {% endfor %}
+                </div>
+              </div>
+
+            {% else %}
+              {{ variant }} <small class="text-muted">(not loaded)</small>
+            {% endif %}
+          </div>
+        {% endfor %}
+        <!-- end of partial causative variants -->
+
+        <!-- variants with cancer tier I or II -->
+        {% if case.track == 'cancer' %}
+          {% set exp_tiers =  ['1A', '1B', '2C', '2D'] %}
+          {% set exp_acmg =  ['pathogenic', 'likely_pathogenic'] %}
+          {% for variant in evaluated_variants %}
+            {% if variant._id %}
+              <!-- set acmg classification -->
+              {% if variant.cancer_tier in exp_tiers or (variant.acmg_classification and variant.acmg_classification.code in exp_acmg) %}
+                {% if variant._id not in already_displayed_variant_ids %}
+                  {% do already_displayed_variant_ids.append(variant._id) %}
+                  <li class="list-group-item list-group-item-action">
+                    <div class="row align-items-between align-items-center">
+                      <div class="col">
+                        {{ pretty_link_variant(variant, case) }}
+                        {{ variant_validation_badge(variant) }}
+                      </div>
+                        {{ clinical_assessments_badge(variant) }}
+                        {{ tumor_allele_freq(variant) }}
+                      <div class="col-1">
+                        <!-- remove classification placeholder -->
+                      </div>
+                    </div>
+                  </li>
+
+                {% endif %}
+              {% endif %}
+            {% else %} <!-- no variant._id -->
+              {{ variant }} <small class="text-muted">(not loaded)</small>
+            {% endif %}
+
+          {% endfor %}
+        {% endif %}
+        <!-- end of cancer tier variants -->
+      </ul>
+    </div> <!--end of card body div-->
+  </div> <!--end of card div--->
 {% endmacro %}
 
 {% macro allele_div(allele, type) %}
@@ -499,38 +496,34 @@
 {% endmacro %}
 
 {% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
-  <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading panel-heading-secondary"
-         title="Displays all variants that has been pinned for this case">
-      <span class="fa fa-map-pin"></span>&nbsp;Pinned variants
+  <div class="card mt-3">
+    <div class="d-flex justify-content-between" data-toggle='tooltip' title="Displays all variants that has been pinned for this case">
+      <h6><span class="fa fa-map-pin ml-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
+      </h6>
+      {% if not suspects|length %}
+        <span class="text-muted mr-3 mt-2">No pinned variants</span>
+      {% endif %}
     </div>
-    <div class="card-body">
+    <div style="max-height:300px; overflow-y: scroll;">
     <ul class="list-group">
       {% for variant in suspects %}
         <li class="list-group-item">
           {% if variant._id %}
             <div class="row">
               <div class="col">
-                <div class="form-group row align-items-center">
-                  <div class="ml-3">
-                    <i class="fa fa-bookmark"></i>
-                      {{ pretty_link_variant(variant, case) }}
-                  </div>
-                  <div style="padding: 0 10px 3px">
-                    {% if case.track == 'cancer' %}
-                      {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
-                    {% else %}
-                      {{ clinical_assessments_badge(variant) }}
-                    {% endif %}
+                <div class="row align-items-between">
+                  <div class="col">
+                    {{ pretty_link_variant(variant, case)}}
+                    {{ clinical_assessments_badge(variant) }}
                     {{ variant_validation_badge(variant) }}
+                    {{ tumor_allele_freq(variant) }}
                     {% if variant.mosaic_tags %}
                       <span class="badge badge-info">mosaic</span>
                     {% endif %}
                   </div>
                 </div>
               </div>
-              {{ tumor_allele_freq(variant) }}
-              <div class="col-3.5">
+              <div class="col-5">
               <form action="{{ url_for('cases.mark_validation',
                                          institute_id=variant.institute,
                                          case_name=case.display_name,
@@ -543,7 +536,7 @@
                   </select>
                 </form>
               </div>
-            <div class="col-1">
+            <div class="col-2">
               {{ remove_form(url_for('cases.pin_variant',
                                      institute_id=institute._id,
                                      case_name=case.display_name,
@@ -556,9 +549,6 @@
           {% endif %}
         </li>
       {% endfor %}
-      {% if not suspects|length %}
-        No pinned variants
-      {% endif %}
     </ul>
     </div>
   </div>
@@ -582,6 +572,32 @@
         <li class="list-group-item">No matching causative variants.</li>
       {% endfor %}
     </ul>
+  </div>
+{% endmacro %}
+
+{% macro clinvar_panel(institute, case) %}
+  <div class="card panel-default">
+    <div class="d-flex justify-content-between" data-toggle='tooltip' title="Variants included in a ClinVar submission object in Scout">
+      <h6><span class="fa fa-map-pin ml-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }})
+      </h6>
+      {% if not case.clinvar_variants %}
+        <span class="text-muted mr-3 mt-2">No variants in ClinVar submissions </span>
+      {% endif %}
+    </div>
+    <div class="card">
+      <ul class="list-group" style="max-height:300px; overflow-y: scroll;">
+        {% for var_id, submission_data in case.clinvar_variants.items() %}
+          <li class="list-group-item">
+            {% if submission_data.category == 'snv' %}
+              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a>
+            {% else %}
+              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a>
+            {% endif %}
+              <span class="badge badge-dark">{{submission_data.clinsig}}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div> <!--end of <div class="panel-body">-->
   </div>
 {% endmacro %}
 

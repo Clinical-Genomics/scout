@@ -54,6 +54,4 @@ def exons(build, exons_file):
         LOG.info("Please download a mart dump manually, see instructions in user guide for admins")
         return
 
-    adapter.update_indexes()
-
     LOG.info("Time to load exons: {0}".format(datetime.now() - start))

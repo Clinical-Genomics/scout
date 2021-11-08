@@ -101,7 +101,7 @@ def test_bulk_reset_dismiss_variants(app, institute_obj, case_obj, mocker, mock_
         variant = store.variant_collection.find_one()
 
         # WHEN dismissing a variant using a POST request
-        dismiss_reasons = [3, 5, 7]
+        dismiss_reasons = ["3", "5", "7"]
         form_data = {
             "dismiss": variant["_id"],
             "dismiss_choices": dismiss_reasons,
@@ -380,7 +380,7 @@ def test_sv_cancer_variants(app, institute_obj, case_obj):
 
 
 def test_filter_export_cancer_variants(app, institute_obj, case_obj):
-    """Test the variant export functionaliy in  cancer_variants page"""
+    """Test the variant export functionaliy in cancer_variants page"""
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -396,6 +396,34 @@ def test_filter_export_cancer_variants(app, institute_obj, case_obj):
         resp = client.post(
             url_for(
                 "variants.cancer_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a valid response
+        assert resp.status_code == 200
+        # containing a text file
+        assert resp.mimetype == "text/csv"
+
+
+def test_filter_export_str_variants(app, institute_obj, case_obj):
+    """Test the variant export functionaliy in str_variants page"""
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        form_data = {
+            "export": "test",
+        }
+
+        # WHEN clicking on "Filter and export" button
+        resp = client.post(
+            url_for(
+                "variants.str_variants",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),

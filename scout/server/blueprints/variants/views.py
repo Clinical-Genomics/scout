@@ -125,7 +125,10 @@ def variants(institute_id, case_name):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.variants(store, institute_obj, case_obj, variants_query, result_size, page)
-    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+    expand_search = request.method == "POST" and request.form.get("expand_search") in [
+        "True",
+        "",
+    ]
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -228,6 +231,9 @@ def str_variants(institute_id, case_name):
 
     result_size = store.count_variants(case_obj["_id"], query, None, category)
 
+    if request.form.get("export"):
+        return controllers.download_str_variants(case_obj, variants_query)
+
     data = controllers.str_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
@@ -305,7 +311,10 @@ def sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+    expand_search = request.method == "POST" and request.form.get("expand_search") in [
+        "True",
+        "",
+    ]
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -476,7 +485,10 @@ def cancer_sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in ["True", ""]
+    expand_search = request.method == "POST" and request.form.get("expand_search") in [
+        "True",
+        "",
+    ]
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -530,11 +542,17 @@ def upload_panel(institute_id, case_name):
     # HTTP redirect code 307 asks that the browser preserves the method of request (POST).
     if category == "sv":
         return redirect(
-            url_for(".sv_variants", institute_id=institute_id, case_name=case_name, **form.data),
+            url_for(
+                ".sv_variants",
+                institute_id=institute_id,
+                case_name=case_name,
+                **form.data,
+            ),
             code=307,
         )
     return redirect(
-        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data), code=307
+        url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
+        code=307,
     )
 
 

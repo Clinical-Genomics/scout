@@ -3,7 +3,7 @@ import datetime
 
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, url_for
+from flask import current_app, json, url_for
 from flask_login import current_user
 
 from scout.demo import delivery_report_path
@@ -12,6 +12,59 @@ from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_ge
 from scout.server.extensions import mail, store
 
 TEST_TOKEN = "test_token"
+
+
+def test_add_individual_phenotype(app, institute_obj):
+    """Test adding a phenotype term (HPO) for a case"""
+
+    # GIVEN a database with an HPO term
+    phenotype_term = {
+        "_id": "HP:666",
+        "phenotype_id": "HP:666",
+        "description": "A very bad phenotype",
+    }
+    store.hpo_term_collection.insert_one(phenotype_term)
+
+    # GIVEN a case with no phenotypes
+    case_obj = store.case_collection.find_one()
+    assert case_obj.get("phenotype_terms") is None
+
+    # GIVEN an individual of a case
+    ind = case_obj["individuals"][0]
+    ind_id = ind["individual_id"]
+    ind_name = ind["display_name"]
+    data = {
+        "hpo_term": phenotype_term["phenotype_id"],
+        "phenotype_inds": [f"{ind_id}|{ind_name}"],
+    }
+
+    # WHEN a phenotype term is added for the case individual via POST request
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        resp = client.post(
+            url_for(
+                "cases.phenotypes",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+
+    # THEN the case phenotypes should be updated accordingly
+    updated_case = store.case_collection.find_one({"_id": case_obj["_id"]})
+    assert updated_case["phenotype_terms"] == [
+        {
+            "phenotype_id": phenotype_term["phenotype_id"],
+            "feature": phenotype_term["description"],
+            "individuals": [{"individual_id": ind_id, "individual_name": ind_name}],
+        }
+    ]
+
+    # AND a relatove event with specific HPO term and affected individual should be created in database
+    update_event = store.event_collection.find_one()
+    assert update_event["hpo_term"] == phenotype_term["phenotype_id"]
+    assert update_event["individuals"] == [ind_name]
 
 
 def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
@@ -175,6 +228,27 @@ def test_institutes(app):
 
         # THEN it should return a page
         assert resp.status_code == 200
+
+
+def test_case_custom_images(app, institute_obj, case_obj):
+    """Test that custom images are being displayed"""
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN case page is loaded
+        resp = client.get(
+            url_for(
+                "cases.case",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN it should display the two custom images section
+        dta = resp.get_data()
+        for section_name in case_obj["custom_images"]:
+            assert bytes(f"{section_name}-accordion", "utf-8") in dta
 
 
 def test_case_outdated_panel(app, institute_obj, case_obj):
@@ -464,6 +538,50 @@ def test_download_hpo_genes(app, case_obj, institute_obj):
         assert resp.status_code == 200
         # And should download a PDF file
         assert resp.mimetype == "application/pdf"
+
+
+def test_api_case_report(app, institute_obj, case_obj):
+    """Test the API returning report case data in json format"""
+
+    # GIVEN a case with a causative variant
+    test_variant = store.variant_collection.find_one()
+    store.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]}, {"$set": {"causatives": [test_variant["_id"]]}}
+    )
+
+    # GIVEN an initialized app and a valid user and institute
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+        # THE api_case_report should return valid json data
+        resp = client.get(
+            url_for(
+                "cases.api_case_report",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        assert resp.status_code == 200
+        json_data = json.loads(resp.data)
+        data = json_data["data"]
+        # case info should be present in the data
+        assert data["case"]
+        # institute info should be present in the data
+        assert data["institute"]
+        variant_types = {
+            "causatives_detailed": "causatives",
+            "suspects_detailed": "suspects",
+            "classified_detailed": "acmg_classification",
+            "tagged_detailed": "manual_rank",
+            "tier_detailed": "cancer_tier",
+            "dismissed_detailed": "dismiss_variant",
+            "commented_detailed": "is_commented",
+        }
+        for var_type in variant_types:
+            assert var_type in data["variants"]
+            # causative variant info should be present in the data
+            if var_type == "causatives_detailed":
+                assert data["variants"][var_type][0]["_id"] == test_variant["_id"]
 
 
 def test_case_report(app, institute_obj, case_obj):
@@ -797,7 +915,7 @@ def test_beacon_remove(
     def mock_response(*args, **kwargs):
         return mocked_beacon
 
-    monkeypatch.setattr(requests, "post", mock_response)
+    monkeypatch.setattr(requests, "delete", mock_response)
 
     # GIVEN a case with variants saved to Beacon
     store.case_collection.find_one_and_update(

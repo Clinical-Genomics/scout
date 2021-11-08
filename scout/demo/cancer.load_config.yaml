@@ -43,6 +43,7 @@ delivery_report: scout/demo/delivery_report.html
 cnv_report: scout/demo/cancer_cnv_report.pdf
 coverage_qc_report: scout/demo/cancer_coverage_qc_report.html
 
+
 # meta data
 rank_model_version: '1.1'
 rank_score_threshold: -100

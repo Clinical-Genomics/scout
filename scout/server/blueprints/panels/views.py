@@ -135,7 +135,9 @@ def panel(panel_id):
             flash("Provided HGNC is not valid : '{}'".format(raw_hgnc_id), "danger")
             return redirect(request.referrer)
         action = request.form["action"]
-        gene_obj = store.hgnc_gene(hgnc_id)
+        gene_obj = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
+            hgnc_identifier=hgnc_id, build="38"
+        )
         if gene_obj is None:
             flash("HGNC id not found: {}".format(hgnc_id), "warning")
             return redirect(request.referrer)
@@ -202,22 +204,31 @@ def panel_export(panel_id):
     )
 
 
-@panels_bp.route("/panels/<panel_id>/update/<int:hgnc_id>", methods=["GET", "POST"])
-@templated("panels/gene-edit.html")
-def gene_edit(panel_id, hgnc_id):
-    """Edit additional information about a panel gene."""
+def tx_choices(hgnc_id, panel_obj):
+    """Collect transcripts from a gene both in build 37 and 38
 
-    panel_obj = store.panel(panel_id)
-    hgnc_gene = store.hgnc_gene(hgnc_id)
-    panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
+    Args:
+        hgnc_id(int): a gene HGNC ID
+        panel_obj(dict): a gene panel dictionary representation
 
-    form = PanelGeneForm()
+    Returns:
+        transcript_choices(list) a list with the options for a form select field
+    """
+
     transcript_choices = []
+    hgnc_gene = None
 
-    for transcript in hgnc_gene["transcripts"]:
-        if transcript.get("refseq_id"):
-            refseq_id = transcript.get("refseq_id")
-            transcript_choices.append((refseq_id, refseq_id))
+    for build in ["37", "38"]:
+        build_specific_hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build=build)
+        if build_specific_hgnc_gene is None:
+            continue
+
+        hgnc_gene = build_specific_hgnc_gene
+
+        for transcript in build_specific_hgnc_gene["transcripts"]:
+            if transcript.get("refseq_id"):
+                refseq_id = transcript.get("refseq_id")
+                transcript_choices.append((refseq_id, f"{refseq_id} (build {build})"))
 
     # collect even refseq version provided by user for this transcript (might have a version)
     if panel_obj.get("genes"):
@@ -226,9 +237,24 @@ def gene_edit(panel_id, hgnc_id):
         if gene_obj:
             for transcript in gene_obj.get("disease_associated_transcripts", []):
                 if (transcript, transcript) not in transcript_choices:
-                    transcript_choices.append((transcript, transcript))
+                    transcript_choices.append((transcript, f"{transcript} (previous choice)"))
+    return transcript_choices
 
-    form.disease_associated_transcripts.choices = transcript_choices
+
+@panels_bp.route("/panels/<panel_id>/update/<int:hgnc_id>", methods=["GET", "POST"])
+@templated("panels/gene-edit.html")
+def gene_edit(panel_id, hgnc_id):
+    """Edit additional information about a panel gene."""
+
+    panel_obj = store.panel(panel_id)
+    hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
+        hgnc_identifier=hgnc_id, build="38"
+    )
+    panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
+
+    form = PanelGeneForm()
+
+    form.disease_associated_transcripts.choices = tx_choices(hgnc_id, panel_obj)
     if form.validate_on_submit():
         action = "edit" if panel_gene else "add"
         info_data = form.data.copy()

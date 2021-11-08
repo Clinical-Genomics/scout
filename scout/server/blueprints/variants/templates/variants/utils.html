@@ -652,25 +652,6 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro tier_cell(variant, manual_rank_options, cancer_tier_options) %}
-  {% if variant.cancer_tier %}
-    <span class="badge badge-{{ cancer_tier_options[variant.cancer_tier].label_class }}" data-toggle="tooltip" data-placement="right"
-      title="Tier: {{ cancer_tier_options[variant.cancer_tier].description }}">
-      {{ cancer_tier_options[variant.cancer_tier].label }}</span>
-  {% endif %}
-  {% if variant.manual_rank %}
-    <span class="badge badge-{{ manual_rank_options[variant.manual_rank].label_class }}" data-toggle="tooltip" data-placement="right"
-      title="Manual rank: {{ manual_rank_options[variant.manual_rank].description }}">
-      {{ manual_rank_options[variant.manual_rank].label }}</span>
-  {% endif %}
-  {% if variant.acmg_classification %}
-    <span class="badge badge-pill badge-{{ variant.acmg_classification.color }}" title="ACMG classification: {{ variant.acmg_classification.label }}" data-toggle="tooltip">
-      ACMG&nbsp;{{ variant.acmg_classification.short }}
-    </span>
-  {% endif %}
-{% endmacro %}
-
-
 {% macro cell_rank(variant, institute, case, form, manual_rank_options) %}
   {% if variant.category in ("sv", "cancer_sv") %}
     <a class="variants-row-item flex-small layout"
@@ -713,24 +694,24 @@
       </div>
     {% endif %}
     <div class="row justify-content-center">
-        <div class="btn-group" role="group">
+        <div class="btn-group mt-1" role="group">
           {% if page > 1 %}
              <div>
-               <label for="paginate-first" class="btn btn-outline-secondary" tabindex="0">
+               <label for="paginate-first" class="btn btn-secondary mx-1" tabindex="0">
                  First&nbsp;page
                </label>
              </div>
           {% endif %}
           {% if page > 2 %}
             <div>
-              <label for="paginate-previous" class="btn btn-outline-secondary" tabindex="0">
+              <label for="paginate-previous" class="btn btn-secondary mx-1" tabindex="0">
                 Previous&nbsp;page
               </label>
             </div>
           {% endif %}
           {% if more_variants %}
             <div>
-              <label for="paginate-next" class="btn btn-outline-secondary" tabindex="0">
+              <label for="paginate-next" class="btn btn-secondary mx-1" tabindex="0">
                 Next&nbsp;page
               </label>
             </div>

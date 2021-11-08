@@ -1,4 +1,5 @@
 import logging
+from base64 import b64encode
 from datetime import date
 
 from flask import url_for
@@ -9,7 +10,6 @@ from scout.constants import (
     ACMG_CRITERIA,
     ACMG_MAP,
     ACMG_OPTIONS,
-    CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
@@ -19,6 +19,7 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
+from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import ensembl, get_variant_links
 from scout.server.utils import (
@@ -43,6 +44,79 @@ from .utils import (
 )
 
 LOG = logging.getLogger(__name__)
+
+
+def tx_overview(variant_obj):
+    """Prepares the content of the transcript overview to be shown on variant and general report pages.
+       Basically show transcripts that contain RefSeq or are canonical.
+
+    Args:
+        variant_obj(dict)
+    """
+    overview_txs = []  # transcripts to be shown in transcripts overview
+    if variant_obj.get("genes") is None:
+        variant_obj["overview_transcripts"] = []
+        return
+    for gene in variant_obj.get("genes", []):
+        for tx in gene.get("transcripts", []):
+            ovw_tx = {}
+
+            if "refseq_identifiers" not in tx and tx.get("is_canonical", False) is False:
+                continue  # collect only RefSeq or canonical transcripts
+
+            # ---- create content for the gene column -----#
+            ovw_tx["hgnc_symbol"] = (
+                gene["common"].get("hgnc_symbol", gene.get("hgnc_id"))
+                if gene.get("common")
+                else gene.get("hgnc_id")
+            )
+            ovw_tx["hgnc_id"] = gene.get("hgnc_id")
+
+            # ---- create content for the Refseq IDs column -----#
+            ovw_tx["mane"] = tx.get("mane_select_transcript", "")
+            ovw_tx["mane_plus"] = tx.get("mane_plus_clinical_transcript", "")
+
+            ovw_tx["decorated_refseq_ids"] = []
+            ovw_tx["muted_refseq_ids"] = []
+
+            for refseq_id in tx.get("refseq_identifiers", []):
+                decorated_tx = None
+                if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
+                    decorated_tx = ovw_tx["mane"]
+                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].starstwith(refseq_id):
+                    decorated_tx = ovw_tx["mane_plus"]
+                elif refseq_id.startswith("XM"):
+                    ovw_tx["muted_refseq_ids"].append(refseq_id)
+                    continue
+                else:
+                    decorated_tx = refseq_id
+                ovw_tx["decorated_refseq_ids"].append(decorated_tx)
+
+            # ---- create content for ID column -----#
+            ovw_tx["transcript_id"] = tx.get("transcript_id")
+            ovw_tx["is_primary"] = (
+                True
+                if tx.get("refseq_id") in gene.get("common", {}).get("primary_transcripts", [])
+                else False
+            )
+            ovw_tx["is_canonical"] = tx.get("is_canonical")
+
+            # ---- create content for HGVS description column -----#
+            ovw_tx["coding_sequence_name"] = tx.get("coding_sequence_name")
+            ovw_tx["protein_sequence_name"] = tx.get("protein_sequence_name")
+
+            # ---- create content for links column -----#
+            ovw_tx["varsome_link"] = tx.get("varsome_link")
+            ovw_tx["tp53_link"] = tx.get("tp53_link")
+            ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
+            ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
+
+            overview_txs.append(ovw_tx)
+
+    # sort txs for the presence of "mane_select_transcript" and "mane_plus_clinical_transcript"
+    variant_obj["overview_transcripts"] = sorted(
+        overview_txs, key=lambda tx: (tx["mane"], tx["mane_plus"]), reverse=True
+    )
 
 
 def has_rna_tracks(case_obj):
@@ -138,7 +212,7 @@ def variant(
         # NOTE this will query with variant_id == document_id, not the variant_id.
         variant_obj = store.variant(variant_id)
 
-    if variant_obj is None:
+    if variant_obj is None or variant_obj.get("case_id") != case_obj["_id"]:
         return None
 
     variant_type = variant_type or variant_obj.get("variant_type", "clinical")
@@ -153,9 +227,17 @@ def variant(
     if genome_build not in ["37", "38"]:
         genome_build = "37"
 
+    # is variant located on the mitochondria
+    variant_obj["is_mitochondrial"] = any(
+        [
+            (genome_build == "38" and variant_obj["chromosome"] == "M"),
+            (genome_build == "37" and variant_obj["chromosome"] == "MT"),
+        ]
+    )
+
     # add default panels extra gene information
     panels = default_panels(store, case_obj)
-    variant_obj = add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
+    add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
 
     # Add information about bam files and create a region vcf
     if add_case:
@@ -188,6 +270,11 @@ def variant(
 
     managed_variant = store.find_managed_variant_id(variant_obj["variant_id"])
 
+    if variant_obj.get("category") == "cancer":
+        variant_obj["matching_tiered"] = store.matching_tiered(
+            variant_obj, user_institutes(store, current_user)
+        )
+
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get("genes", [])))
 
@@ -211,13 +298,16 @@ def variant(
     variant_obj["end_position"] = end_position(variant_obj)
 
     # Add general variant links
-    variant_obj.update(get_variant_links(variant_obj, int(genome_build)))
+    variant_obj.update(get_variant_links(institute_obj, variant_obj, int(genome_build)))
     variant_obj["frequencies"] = frequencies(variant_obj)
     if variant_category in ["snv", "cancer"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+
+    variant_genes = variant_obj.get("genes", [])
+    update_representative_gene(variant_obj, variant_genes)
 
     # Add display information about callers
     variant_obj["callers"] = callers(variant_obj, category=variant_category)
@@ -259,6 +349,13 @@ def variant(
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
+
+    # re-encode images as base64
+    if variant_obj.get("custom_images"):
+        for img in variant_obj["custom_images"]:
+            img["data"] = b64encode(img["data"]).decode("utf-8")
+
+    tx_overview(variant_obj)
 
     return {
         "institute": institute_obj,

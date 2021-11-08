@@ -4,6 +4,7 @@ import itertools
 import json
 import logging
 import os
+from base64 import b64encode
 
 import query_phenomizer
 import requests
@@ -16,14 +17,16 @@ from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
 from scout.constants import (
-    ACMG_MAP,
-    ACMG_OPTIONS,
     CANCER_PHENOTYPE_MAP,
+    CASE_REPORT_CASE_FEATURES,
+    CASE_REPORT_CASE_IND_FEATURES,
+    CASE_REPORT_VARIANT_TYPES,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
     SEX_MAP,
+    VARIANT_REPORT_VARIANT_FEATURES,
     VERBS_MAP,
 )
 from scout.constants.variant_tags import (
@@ -36,14 +39,18 @@ from scout.constants.variant_tags import (
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case
-from scout.utils.scout_requests import post_request_json
+from scout.utils.scout_requests import delete_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
 
 STATUS_MAP = {"solved": "bg-success", "archived": "bg-warning"}
-JSON_HEADERS = {"Content-type": "application/json; charset=utf-8", "Accept": "text/json"}
+JSON_HEADERS = {
+    "Content-type": "application/json; charset=utf-8",
+    "Accept": "text/json",
+}
 
 
 def case(store, institute_obj, case_obj):
@@ -90,11 +97,15 @@ def case(store, institute_obj, case_obj):
     suspects = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]
-    _populate_acmg(suspects)
+    _populate_assessments(suspects)
     causatives = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
     ]
-    _populate_acmg(causatives)
+    _populate_assessments(causatives)
+
+    # get evaluated variants
+    evaluated_variants = store.evaluated_variants(case_obj["_id"], case_obj["owner"])
+    _populate_assessments(evaluated_variants)
 
     # check for partial causatives and associated phenotypes
     partial_causatives = []
@@ -106,6 +117,7 @@ def case(store, institute_obj, case_obj):
                 "hpo_terms": values.get("phenotype_terms"),
             }
             partial_causatives.append(causative_obj)
+    _populate_assessments(partial_causatives)
 
     # Set of all unique genes in the default gene panels
     distinct_genes = set()
@@ -203,10 +215,13 @@ def case(store, institute_obj, case_obj):
     # complete OMIM diagnoses specific for this case
     omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
 
-    # get evaluated variants
-    evaluated_variants = store.evaluated_variants(case_obj["_id"])
-
-    _populate_acmg(evaluated_variants)
+    if case_obj.get("custom_images"):
+        # re-encode images as base64
+        if "case" in case_obj.get("custom_images"):
+            case_obj["custom_images"] = case_obj["custom_images"]["case"]
+        for img_section in case_obj["custom_images"].keys():
+            for img in case_obj["custom_images"][img_section]:
+                img["data"] = b64encode(img["data"]).decode("utf-8")
 
     data = {
         "status_class": STATUS_MAP.get(case_obj["status"]),
@@ -231,26 +246,22 @@ def case(store, institute_obj, case_obj):
     return data
 
 
-def _populate_acmg(evaluated_variants):
+def _populate_assessments(variants_list):
     """
-    Add ACMG classification options for display of ACMG badges to variants.
+    Add ACMG classification, manual_rank, cancer_tier, dismiss_variant and mosaic_tags assessment options to a variant object.
     The list of variant objects can contain plain variant_id strings for deleted / no longer loaded variants.
     These should not be populated.
 
     Args:
-        evaluated_variants: list(variant_obj or str)
+        variants_list: list(variant_obj or str)
 
     Returns:
 
     """
-
-    for variant in evaluated_variants:
-
-        if not isinstance(variant, str) and isinstance(variant.get("acmg_classification"), int):
-            classification = ACMG_MAP.get(variant["acmg_classification"])
-            for option in ACMG_OPTIONS:
-                if option["code"] == classification:
-                    variant["acmg_classification"] = option
+    for variant in variants_list:
+        if isinstance(variant, str):
+            continue
+        variant["clinical_assessments"] = get_manual_assessments(variant)
 
 
 def _check_outdated_gene_panel(panel_obj, latest_panel):
@@ -280,42 +291,107 @@ def _check_outdated_gene_panel(panel_obj, latest_panel):
     return extra_genes, missing_genes
 
 
-def case_report_content(store, institute_obj, case_obj):
+def case_report_variants(store, case_obj, institute_obj, data):
+    """Gather evaluated variants info to include in case report
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict): case dictionary
+        data(dict): data dictionary containing case report information
+    """
+    evaluated_variants = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
+    # We collect all causatives (including the partial ones) and suspected variants
+    # These are handeled in separate since they are on case level
+    for var_type in ["causatives", "suspects", "partial_causatives"]:
+        # These include references to variants
+        vt = "_".join([var_type, "detailed"])
+        for var_id in case_obj.get(var_type, []):
+            variant_obj = store.variant(var_id)
+            if not variant_obj:
+                continue
+            if var_type == "partial_causatives":  # Collect associated phenotypes
+                variant_obj["phenotypes"] = [
+                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
+                ][0]
+            evaluated_variants[vt].append(variant_obj)
+
+    ## get variants for this case that are either classified, commented, tagged or dismissed.
+    for var_obj in store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=institute_obj["_id"]
+    ):
+        # Check which category it belongs to
+        for vt in CASE_REPORT_VARIANT_TYPES:
+            keyword = CASE_REPORT_VARIANT_TYPES[vt]
+            # When found we add it to the category
+            # Each variant can belong to multiple categories
+            if keyword not in var_obj:
+                continue
+            evaluated_variants[vt].append(var_obj)
+
+    data["variants"] = {}
+
+    for var_type in evaluated_variants:
+        decorated_variants = []
+        for var_obj in evaluated_variants[var_type]:
+            # We decorate the variant with some extra information
+            filtered_var_obj = {}
+            for feat in VARIANT_REPORT_VARIANT_FEATURES:
+                filtered_var_obj[feat] = var_obj.get(feat)
+
+            decorated_info = variant_decorator(
+                store=store,
+                institute_id=institute_obj["_id"],
+                case_name=case_obj["display_name"],
+                variant_id=None,
+                variant_obj=filtered_var_obj,
+                add_case=False,
+                add_other=False,
+                get_overlapping=False,
+                add_compounds=False,
+                variant_type=var_obj["category"],
+                institute_obj=institute_obj,
+                case_obj=case_obj,
+            )
+            decorated_variants.append(decorated_info["variant"])
+        # Add the decorated variants to the case
+        data["variants"][var_type] = decorated_variants
+
+
+def case_report_content(store, institute_id, case_name):
     """Gather contents to be visualized in a case report
 
     Args:
         store(adapter.MongoAdapter)
-        institute_obj(models.Institute)
-        case_obj(models.Case)
+        institute_id(str): _id of an institute
+        case_name(str): case display name
 
     Returns:
         data(dict)
 
     """
-    variant_types = {
-        "causatives_detailed": "causatives",
-        "partial_causatives_detailed": "partial_causatives",
-        "suspects_detailed": "suspects",
-        "classified_detailed": "acmg_classification",
-        "tagged_detailed": "manual_rank",
-        "tier_detailed": "cancer_tier",
-        "dismissed_detailed": "dismiss_variant",
-        "commented_detailed": "is_commented",
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = {}
+    # Populate data with required institute _id
+    data["institute"] = {
+        "_id": institute_obj["_id"],
     }
-    data = case_obj
+    # Populate case individuals with required information
+    case_individuals = []
+    for ind in case_obj.get("individuals"):
+        ind_feat = {}
+        for feat in CASE_REPORT_CASE_IND_FEATURES:
+            ind_feat[feat] = ind.get(feat)
+            pheno_map = PHENOTYPE_MAP
+            if case_obj.get("track", "rare") == "cancer":
+                pheno_map = CANCER_PHENOTYPE_MAP
+            ind_feat["phenotype_human"] = pheno_map.get(ind["phenotype"])
+        case_individuals.append(ind_feat)
 
-    for individual in data["individuals"]:
-        try:
-            sex = int(individual.get("sex", 0))
-        except ValueError as err:
-            sex = 0
-        individual["sex_human"] = SEX_MAP[sex]
+    case_info = {"individuals": case_individuals}
+    for feat in CASE_REPORT_CASE_FEATURES:
+        case_info[feat] = case_obj.get(feat)
 
-        pheno_map = PHENOTYPE_MAP
-        if case_obj.get("track", "rare") == "cancer":
-            pheno_map = CANCER_PHENOTYPE_MAP
-
-        individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
+    data["case"] = case_info
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
     data["cancer"] = case_obj.get("track") == "cancer"
@@ -336,54 +412,7 @@ def case_report_content(store, institute_obj, case_obj):
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    evaluated_variants = {vt: [] for vt in variant_types}
-    # We collect all causatives (including the partial ones) and suspected variants
-    # These are handeled in separate since they are on case level
-    for var_type in ["causatives", "suspects", "partial_causatives"]:
-        # These include references to variants
-        vt = "_".join([var_type, "detailed"])
-        for var_id in case_obj.get(var_type, []):
-            variant_obj = store.variant(var_id)
-            if not variant_obj:
-                continue
-            if var_type == "partial_causatives":  # Collect associated phenotypes
-                variant_obj["phenotypes"] = [
-                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
-                ][0]
-            evaluated_variants[vt].append(variant_obj)
-
-    ## get variants for this case that are either classified, commented, tagged or dismissed.
-    for var_obj in store.evaluated_variants(case_id=case_obj["_id"]):
-        # Check which category it belongs to
-        for vt in variant_types:
-            keyword = variant_types[vt]
-            # When found we add it to the categpry
-            # Eac variant can belong to multiple categories
-            if keyword not in var_obj:
-                continue
-            evaluated_variants[vt].append(var_obj)
-
-    for var_type in evaluated_variants:
-        decorated_variants = []
-        for var_obj in evaluated_variants[var_type]:
-            # We decorate the variant with some extra information
-            decorated_info = variant_decorator(
-                store=store,
-                institute_id=institute_obj["_id"],
-                case_name=case_obj["display_name"],
-                variant_id=None,
-                variant_obj=var_obj,
-                add_case=False,
-                add_other=False,
-                get_overlapping=False,
-                add_compounds=False,
-                variant_type=var_obj["category"],
-                institute_obj=institute_obj,
-                case_obj=case_obj,
-            )
-            decorated_variants.append(decorated_info["variant"])
-        # Add the decorated variants to the case
-        data[var_type] = decorated_variants
+    case_report_variants(store, case_obj, institute_obj, data)
 
     return data
 
@@ -669,14 +698,14 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
         # Create a list with all gene symbols (or HGNC ID if symbol is missing) associated with the phenotype
         gene_list = []
         for gene_id in hpo_term.get("genes", []):
-            gene_obj = store.hgnc_gene(gene_id, build)
-            if gene_obj is None:
+            gene_caption = store.hgnc_gene_caption(gene_id, build)
+            if gene_caption is None:
                 continue
             if gene_id not in dynamic_gene_list:
                 # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
                 by_phenotype = False  # do not display genes by phenotype
                 continue
-            add_symbol = gene_obj.get("hgnc_symbol", f"hgnc:{gene_id}")
+            add_symbol = gene_caption.get("hgnc_symbol", f"hgnc:{gene_id}")
             if is_clinical and (add_symbol not in clinical_symbols):
                 continue
             gene_list.append(add_symbol)
@@ -964,14 +993,12 @@ def beacon_remove(case_id):
     dataset_id = "_".join([case_obj["owner"], assembly])
     samples = [sample for sample in beacon_submission.get("samples", [])]
     data = {"dataset_id": dataset_id, "samples": samples}
-    resp = post_request_json("/".join([request_url, "delete"]), data, req_headers)
+    resp = delete_request_json("/".join([request_url, "delete"]), req_headers, data)
     flash_color = "success"
-    message = None
+    message = resp.get("content", {}).get("message")
     if resp.get("status_code") == 200:
-        message = resp.get("content", {}).get("message")
         store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
     else:
-        message = resp.get("message")
         flash_color = "warning"
     flash(f"Beacon responded:{message}", flash_color)
 
@@ -1035,7 +1062,7 @@ def beacon_add(form):
         data["vcf_path"] = case_obj["vcf_files"].get(vcf_key)
         resp = post_request_json("/".join([request_url, "add"]), data, req_headers)
         if resp.get("status_code") != 200:
-            flash(f"Beacon responded:{resp['message']}", "warning")
+            flash(f"Beacon responded:{resp.get('content',{}).get('message')}", "warning")
             continue
         submission["vcf_files"].append(vcf_key)
 
@@ -1213,7 +1240,10 @@ def matchmaker_delete(request, institute_id, case_name):
             user_obj = store.user(current_user.email)
             store.case_mme_delete(case_obj=case_obj, user_obj=user_obj)
 
-            flash(f"Deleted patient '{patient_id}', case '{case_name}' from MatchMaker", "success")
+            flash(
+                f"Deleted patient '{patient_id}', case '{case_name}' from MatchMaker",
+                "success",
+            )
             continue
 
         flash(f"An error occurred while deleting patient from MatchMaker", "danger")
@@ -1234,14 +1264,22 @@ def matchmaker_matches(request, institute_id, case_name):
     matchmaker_check_requirements(request)
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {"institute": institute_obj, "case": case_obj, "server_errors": [], "panel": 1}
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "server_errors": [],
+        "panel": 1,
+    }
     matches = {}
     for patient in case_obj.get("mme_submission", {}).get("patients", []):
         patient_id = patient["id"]
         matches[patient_id] = None
         server_resp = matchmaker.patient_matches(patient_id)
         if server_resp.get("status_code") != 200:  # server returned error
-            flash("MatchMaker server returned error:{}".format(data["server_errors"]), "danger")
+            flash(
+                "MatchMaker server returned error:{}".format(data["server_errors"]),
+                "danger",
+            )
             return redirect(request.referrer)
         # server returned a valid response
         pat_matches = []
@@ -1253,12 +1291,12 @@ def matchmaker_matches(request, institute_id, case_name):
     return data
 
 
-def matchmaker_match(request, match_type, institute_id, case_name):
+def matchmaker_match(request, target, institute_id, case_name):
     """Initiate a MatchMaker match against either other Scout patients or external nodes
 
     Args:
         request(werkzeug.local.LocalProxy)
-        match_type(str): 'internal' or 'external'
+        target(str): 'internal' for matches against internal patients, or id of a specific node
         institute_id(str): _id of an institute
         case_name(str): display name of a case
     """
@@ -1270,7 +1308,7 @@ def matchmaker_match(request, match_type, institute_id, case_name):
     ok_responses = 0
     for patient in query_patients:
         json_resp = None
-        if match_type == "internal":  # Interal match against other patients on the MME server
+        if target == "internal":  # Interal match against other patients on the MME server
             json_resp = matchmaker.match_internal(patient)
             if json_resp.get("status_code") != 200:
                 flash(
@@ -1285,6 +1323,8 @@ def matchmaker_match(request, match_type, institute_id, case_name):
             # Against every node
             nodes = [node["id"] for node in matchmaker.connected_nodes]
             for node in nodes:
+                if node != target:
+                    continue
                 json_resp = matchmaker.match_external(patient_id, node)
                 if json_resp.get("status_code") != 200:
                     flash(
@@ -1294,6 +1334,9 @@ def matchmaker_match(request, match_type, institute_id, case_name):
                     continue
                 ok_responses += 1
     if ok_responses > 0:
-        flash("Matching request sent. Look for eventual matches in 'Matches' page.", "info")
+        flash(
+            "Matching request sent. Click on 'Past Matches' to review eventual matching results.'",
+            "info",
+        )
 
     return ok_responses

@@ -86,6 +86,77 @@ human_genome_build: 37
 
 ```
 
+#### Adding custom images to a case
+
+Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a seperate pipeline. The custom images are defined in the case config file and stored in the database. Scout currently supports     `gif`, `jpeg`, `png` and `svg` images.
+
+The syntax for loading an image differed depending on where they are going to be displayed. Images on the caes view can be grouped into different groups that are displayed as accordion-type UI elemment named after the group. Images can be associated with stru    ctural variants with a given hgnc symbol.
+
+The fields `title`, `description` and `path` are mandatory regarless of location. The image size can be defined with the optional parameters `width` and `height`. If you dont specify a unit its going to default to use pixels as unit. *Note*: adding images lar    ger than 16mb are not reccomended as it might degrade the performance.
+
+``` yaml
+
+custom_images:
+  case:
+    group_one:
+      - title: <string> title of image [mandatory]
+        description: <string> replacement description of image [mandatory]
+        width: <string> 500px
+        height: <string> 100px
+        path: <string> scout/demo/images/custom_images/640x480_one.png [mandatory]
+      - title: <string> A jpg image [mandatory]
+        description: <string> A very good description [mandatory]
+        width: <string> 500px
+        path: <string> scout/demo/images/custom_images/640x480_two.jpg [mandatory]
+    group_two:
+      - title: <string> A SVG image [mandatory]
+        description: <string> Another very good description
+        path: <string> scout/demo/images/custom_images/640x480_three.svg [mandatory]
+  str:
+    - title: <string> title of image [mandatory]
+      str_repid: AFF2 [mandatory]
+      description: <string> replacement description of image [mandatory]
+      width: <string> 500px
+      height: <string> 100px
+      path: <string> scout/demo/images/custom_images/640x480_one.png [mandatory]
+    - title: <string> A jpg image [mandatory]
+      str_repid: AFF2 [mandatory]
+      description: <string> A very good description [mandatory]
+      width: <string> 500px
+      path: <string> scout/demo/images/custom_images/640x480_two.jpg [mandatory]
+
+```
+
+##### Loading multiple images with wildcards
+
+If you have multiple images you would like to associate with a different variants you can use wildcards to reduce the number of lines in the load config file. For example, you have two images `640x480_AR.svg` and `640x480_ATN1.svg` that should be attaced to variants in replicions AR and ATN1. Instead of writing a long list with one entry per image you could use wildcards to flag which parts of the path name that corresponds to the repid. Wildcards are a variable name surrounded by curly brackets, `{VARIALBE_NAME}`. The varible name can contain letters, numbers and underscore and score.
+
+When the images are loaded into the database the algorithm finds files matching the pattern and substitutes the wildcard with the sting. In other words will this enable the user to extract information encoded in the path and populate the configuration with it.
+
+Given the two files above will this configuration
+
+``` yaml
+custom_images:
+  str:
+    - title: <string> A jpg image {REPID} [mandatory]
+      str_repid: {REPID} [mandatory]
+      path: <string> scout/demo/images/custom_images/640x480_{REPID}.jpg [mandatory]
+```
+
+be equivalent to
+
+``` yaml
+custom_images:
+  str:
+    - title: <string> An image of AR
+      str_repid: AR
+      path: <string> scout/demo/images/custom_images/640x480_AR.jpg
+    - title: <string> An image of ATN1
+      str_repid: ATN1
+      path: <string> scout/demo/images/custom_images/640x480_ATN1.jpg
+```
+
+
 ### Load case from CLI without config
 
 Cases can be loaded without config file, in that case the user needs to specify a ped file and optionally one or several VCF files. An example could look like

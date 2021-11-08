@@ -1,8 +1,8 @@
 {% extends "layout_bs4.html" %}
 
 {% from "variants/components.html" import gene_cell, frequency_cell_general, observed_cell_general %}
-{% from "variants/utils.html" import cancer_filters, tier_cell, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status %}
-{% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge %}
+{% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status %}
+{% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge, other_tiered_variants %}
 
 {% block title %}
   {{ variant_type|capitalize }} cancer variants
@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block content_main %}
-  <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}">
+  <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}" onsubmit="return validateForm()">
   <div class="container-float">
     {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
@@ -56,7 +56,7 @@
               <th title="Gene">Gene</th>
               <th title="Variant" style="width:12%">HGVS[c/p]</th>
               <th title="Assessments including variant tier">Assessment</th>
-              <th title="Rank score">Score</th>
+              <th title="Rank score and quality markers">Quality</th>
               <th title="Genomic coordinate" style="width:10%">Chr pos</th>
               <th title="Population frequency">Pop Freq</th>
               <th title="Observed" style="width:7%">Observed</th>
@@ -81,7 +81,7 @@
             </td>
             <td>{{ gene_cell(variant) }}</td>
             <td>
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name,
+              <a target="_blank" href="{{ url_for('variant.cancer_variant', institute_id=institute._id, case_name=case.display_name,
                                   variant_id=variant._id, cancer='yes') }}">
                 {% if variant.first_rep_gene.hgvs_identifier %}
                   <div>{{ variant.first_rep_gene.hgvs_identifier }}</div>
@@ -98,14 +98,13 @@
               </a>
             </td>
             <td>
-              {{ tier_cell(variant, manual_rank_options, cancer_tier_options) }}
               {{ evaluations_badge(variant) }}
               {{ research_assessments_badge(variant) }}
               {{ clinical_assessments_badge(variant) }}
               {{ group_assessments_badge(variant) }}
-
               {{ comments_badge(case, institute, variant) }}
               {{ causative_badge(variant, case) }}
+              {{ other_tiered_variants(variant) }}
             </td>
             <td>{{ score_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
@@ -159,7 +158,10 @@
       {% set label_class = 'danger' %}
     {% endif %}
   {% endif %}
-  <div class="badge badge-{{ label_class }}">{{ variant.rank_score }} </div>
+  <div class="badge badge-{{ label_class }}">{{ variant.rank_score }}</div>
+  {% for filter in variant.filters %}
+    <div data-toggle="tooltip" data-placement="top" title="{{ filter.description }}" class="badge badge-{{ filter.label_class }}">{{ filter.label }}</div>
+  {% endfor %}
 {% endmacro %}
 
 

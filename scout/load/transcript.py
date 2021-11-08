@@ -33,6 +33,7 @@ def load_transcripts(adapter, transcripts_lines=None, build="37", ensembl_genes=
 
     # Map with all transcripts enstid -> parsed transcript
     transcripts_dict = parse_transcripts(transcripts_lines)
+    missing_in_build = 0
     for ens_tx_id in list(transcripts_dict):
         parsed_tx = transcripts_dict[ens_tx_id]
         # Get the ens gene id
@@ -43,13 +44,15 @@ def load_transcripts(adapter, transcripts_lines=None, build="37", ensembl_genes=
         # If the gene is non existing in scout we skip the transcript
         if not gene_obj:
             transcripts_dict.pop(ens_tx_id)
-            LOG.debug("Gene %s does not exist in build %s", ens_gene_id, build)
+            missing_in_build += 1
             continue
 
         # Add the correct hgnc id
         parsed_tx["hgnc_id"] = gene_obj["hgnc_id"]
         # Primary transcript information is collected from HGNC
         parsed_tx["primary_transcripts"] = set(gene_obj.get("primary_transcripts", []))
+
+    LOG.warning(f"{missing_in_build} genes not existing in build {build}")
 
     ref_seq_transcripts = 0
     nr_primary_transcripts = 0

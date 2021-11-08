@@ -69,7 +69,12 @@ setup(
     zip_safe=False,
     install_requires=REQUIRED,
     include_package_data=True,
-    extras_require=dict(coverage=["chanjo-report"]),
+    extras_require={
+        "coverage": [
+            "chanjo-report",
+            "pymysql",
+        ],
+    },
     entry_points=dict(console_scripts=["scout = scout.commands:cli"]),
     test_suite="tests",
     classifiers=[

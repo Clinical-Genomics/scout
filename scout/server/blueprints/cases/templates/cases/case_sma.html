@@ -2,7 +2,6 @@
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal %}
 {% from "utils.html" import comments_panel, activity_panel %}
 {% from "cases/utils.html" import individuals_table %}
-{% from "variants/utils.html" import tier_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -113,12 +112,16 @@
                   class="bg-warning"
                 {% endif %}>
               <td>{{ ind.display_name }}</td>
-              <td>
+              <td style="font-weight: bold;">
                 {% if ind.sex_human in ['female','male'] %}
-                  <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
-                {% else %}
-                  {{ind.sex_human}}
-                {% endif %}
+                    {% if ind.sex_human == 'female' %}
+                      F
+                    {% elif ind.sex_human == 'male' %}
+                      M
+                    {% else %}
+                      {{ind.sex_human}}
+                    {% endif %}
+                  {% endif %}
                 {% if ind.confirmed_sex %}
                   <i class="fa fa-check"></i>
                 {% endif %}

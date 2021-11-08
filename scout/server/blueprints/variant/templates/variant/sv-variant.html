@@ -59,13 +59,22 @@
     <div class="alert alert-warning">Showing only first 30 genes!</div>
   {% endif %}
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
       {{ panel_basics() }}
     </div> <!-- end of col -->
 
-    <div class="col-md-6">
+    <div class="col-md-4">
       {{ panel_summary() }}
     </div> <!-- end of col -->
+
+    <div class="col-md-4">
+      {{ frequencies(variant) }}
+      {% if config['LOQUSDB_SETTINGS'] %}
+        {{ observations_panel(variant, observations, case) }}
+        {{ old_observations(variant) }}
+      {% endif %}
+
+    </div>
   </div> <!-- end of row -->
 
   <div class="row">
@@ -78,20 +87,13 @@
 
   <div class="row">
     <div class="col-md-6">
-      {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+       <div class="card panel-default">
+        {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+       </div>
     </div>
     <div class="col-md-6">
       {{ omim_phenotypes(variant) }}
     </div>
-  </div>
-
-  <div class="row">
-    <div class="col-4">{{ frequencies(variant) }}</div>
-    {% if config['LOQUSDB_SETTINGS'] %}
-      <div class="col-4">{{ observations_panel(variant, observations, case) }}</div>
-      <div class="col-4">{{ old_observations(variant) }}</div>
-    {% endif %}
-
   </div>
 
   <div class="row">
@@ -196,7 +198,7 @@
           Copy number profile
           <div class="float-right">
             {% for sample in variant.samples %}
-              <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position-2000}}-{{variant.end+2000}}&variant={{variant._id}}&hg_type={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
+              <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position-2000}}-{{variant.end+2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
             {% endfor %}
           </div>
         </li>

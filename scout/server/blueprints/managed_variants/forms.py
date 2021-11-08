@@ -6,21 +6,20 @@ from wtforms import (
     IntegerField,
     SelectField,
     SelectMultipleField,
+    StringField,
     SubmitField,
-    TextField,
     validators,
 )
 
 from scout.constants import CHROMOSOMES, SV_TYPES
 
 LOG = logging.getLogger(__name__)
-CHROMOSOME_FILTER_OPTIONS = [("", "All")] + [(chrom, chrom) for chrom in CHROMOSOMES]
 CHROMOSOME_EDIT_OPTIONS = [(chrom, chrom) for chrom in CHROMOSOMES]
 SUBCATEGORY_CHOICES = [("snv", "SNV"), ("indel", "INDEL")] + [
     (term, term.replace("_", " ").upper()) for term in SV_TYPES
 ]
 CATEGORY_CHOICES = [
-    (term, term.replace("_", " ").upper()) for term in ["snv", "sv", "cancer", "cancer_sv"]
+    (term, term.replace("_", " ").upper()) for term in ["snv", "sv", "cancer_snv", "cancer_sv"]
 ]
 
 
@@ -29,14 +28,14 @@ class ManagedVariantForm(FlaskForm):
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
-
-    description = TextField(label="Description")
+    description = StringField(label="Description")
+    build = SelectField(
+        "Genome build", [validators.Optional()], choices=[("37", "37"), ("38", "38")]
+    )
 
 
 class ManagedVariantsFilterForm(ManagedVariantForm):
-    chromosome = SelectField(
-        "Chromosome", [validators.Optional()], choices=CHROMOSOME_FILTER_OPTIONS
-    )
+    chromosome = SelectField("Chromosome", [validators.Optional()], choices=[])
 
     category = SelectMultipleField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectMultipleField("Kind", choices=SUBCATEGORY_CHOICES)
@@ -48,8 +47,8 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 class ManagedVariantEditForm(ManagedVariantForm):
     chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
 
-    reference = TextField(label="Ref")
-    alternative = TextField(label="Alt")
+    reference = StringField(label="Ref")
+    alternative = StringField(label="Alt")
 
     category = SelectField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectField("Kind", choices=SUBCATEGORY_CHOICES)

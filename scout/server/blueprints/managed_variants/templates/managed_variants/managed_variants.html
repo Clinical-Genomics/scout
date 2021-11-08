@@ -8,6 +8,11 @@
   {{ super() }} - Managed variants
 {% endblock %}
 
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+{% endblock %}
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -20,7 +25,7 @@
 {% block content_main %}
 
 
-<form method="POST" id="add_form" action="{{url_for('managed_variants.add_managed_variant')}}" enctype="multipart/form-data">
+<form method="POST" id="add_form" name="add_variant" action="{{url_for('managed_variants.add_managed_variant')}}" enctype="multipart/form-data">
   <div class="container-float">
     <div id="accordion_add" >
        <div class="card mt-3">
@@ -32,7 +37,7 @@
           </h5>
         </div>
         <div id="collapseAdd" class="panel-collapse collapse">
-          <div class="card-body">{{ add_variant_form() }}</div>
+          <div class="card-body" id="add_variant_category">{{ add_variant_form() }}</div>
         </div>
        </div>
     </div>
@@ -58,7 +63,6 @@
   </div>
 </form>
 
-
 <form method="POST" id="filters_form" action="{{url_for('managed_variants.managed_variants')}}" enctype="multipart/form-data">
   <div class="container-float">
     {{ pagination_hidden_div(page) }}
@@ -80,7 +84,6 @@
 </form>
 
 
-
 <div class="table-responsive" style="padding-top: 25px;">
   <table class="table table-bordered table-hover">
     <thead>
@@ -90,8 +93,8 @@
         <th style="width:10%">End</th>
         <th style="width:10%">Ref</th>
         <th style="width:10%">Alt</th>
-        <th style="width:10%">Kind</th>
         <th style="width:10%">Category</th>
+        <th style="width:10%">Kind</th>
         <th style="width:30%">Description</th>
       </tr>
     </thead>
@@ -103,8 +106,8 @@
           <td>{{ variant.end }}</td>
           <td>{{ variant.reference }}</td>
           <td>{{ variant.alternative }}</td>
-          <td>{{ variant.sub_category }}</td>
           <td>{{ variant.category }}</td>
+          <td>{{ variant.sub_category }}</td>
           <td>
             {{ variant.description }}
             <div class="float-right">
@@ -138,7 +141,7 @@
 {% endmacro %}
 
 {% macro modify_variant_form(variant) %}
-  <form method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
+  <form id="modify_variant" method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
       <td>{{ modify_form.chromosome(class_="form-control") }}</td>
@@ -146,8 +149,8 @@
       <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
       <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}"></td>
       <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}"></td>
+      <td>{{ modify_form.category(class_="form-control", onchange="populateSubTypeSelect('modify_variant')") }}</td>
       <td>{{ modify_form.sub_category(class_="form-control") }}</td>
-      <td>{{ modify_form.category(class_="form-control") }}</td>
       <td>
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
@@ -199,7 +202,7 @@
       <td><input type="number" name="end" id="end" class="form-control"></td>
       <td><input type="text" name="reference" id="reference" class="form-control"></td>
       <td><input type="text" name="alternative" id="alternative" class="form-control"></td>
-      <td>{{ add_form.category(class_="form-control") }}</td>
+      <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
       <td>{{ add_form.sub_category(class_="form-control") }}</td>
       <td>
         <input type="text" name="description" id="description" class="form-control">
@@ -220,10 +223,10 @@
     {{ filters_form.csrf_token }}
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(filters_form.category)}}
+        {{ wtf.form_field(filters_form.category, class="selectpicker")}}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.sub_category)}}
+        {{ wtf.form_field(filters_form.sub_category, class="selectpicker")}}
       </div>
       <div class="col-4">
         {{ wtf.form_field(filters_form.description) }}
@@ -231,19 +234,22 @@
     </div>
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(filters_form.chromosome) }}
+        {{ wtf.form_field(filters_form.build, onchange="setChromosomes()") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.position, type="number") }}
+        {{ wtf.form_field(filters_form.chromosome, onchange="setCytobands();set_coords_fields()") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.end, type="number") }}
+        {{ wtf.form_field(filters_form.position, type="number", disabled=True) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.cytoband_start) }}
+        {{ wtf.form_field(filters_form.end, type="number", disabled=True) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.cytoband_end) }}
+        {{ wtf.form_field(filters_form.cytoband_start, onchange="setElemCoordinate('cytoband_start', 'position')") }}
+      </div>
+      <div class="col-2">
+        {{ wtf.form_field(filters_form.cytoband_end, onchange="setElemCoordinate('cytoband_end', 'end')") }}
       </div>
     </div>
     <div class="row justify-content-center mt-3">
@@ -261,8 +267,15 @@
 {{ super() }}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
 <script>
+
+  $(document).ready(function(){
+    setChromosomes();
+    populateSubTypeSelect('add_variant');
+    populateSubTypeSelect('modify_variant')
+  })
+
   $(function () {
     $('[data-toggle="tooltip"]').tooltip();
     $('[data-toggle="popover"]').popover({
@@ -272,11 +285,120 @@
     $('table').stickyTableHeaders({
       fixedOffset: $(".navbar-fixed-top")
     });
-
-    $('select[multiple]').multiselect({
-      buttonWidth: '100%'
-    });
   })
+
+  var subcategoryOptions = {{ subcategory_choices|safe }}; // add form
+
+  var cytoStart = document.forms["filters_form"].elements["cytoband_start"]; // filter form
+  var cytoEnd = document.forms["filters_form"].elements["cytoband_end"]; // filter form
+  var chromSelect = document.forms["filters_form"].elements["chromosome"]; // filter form chromosome
+  var start_coord_field = document.forms["filters_form"].elements["position"]; // filter form start coord
+  var end_coord_field = document.forms["filters_form"].elements["end"]; // filter form end coord
+
+
+  // clear option elements from any given select
+  function clearSelect(selectElem){
+    Array.from(selectElem).forEach(function(option){
+      selectElem.removeChild(option)
+    })
+  }
+
+  // populates a given select element with a given list of options
+  function populateSelect(selectElem, optionsList){
+    for (opt of optionsList){
+      selectElem.add(new Option(opt[0], opt[1]));
+    }
+  }
+
+  // populate variant subtype select in add_variant form according to pre-selected variant category
+  function populateSubTypeSelect(formId){
+    selectedCategory = document.forms[formId].elements["category"].value; // can be add_variant or modify_variant
+    subCategorySelect = document.forms[formId].elements["sub_category"];
+
+    clearSelect(subCategorySelect) // Reset subcategory select options
+
+    if (selectedCategory.includes("snv")){
+      populateSelect(subCategorySelect, subcategoryOptions.slice(0,2))
+    }
+    else{
+      populateSelect(subCategorySelect, subcategoryOptions.slice(2,))
+    }
+  }
+
+  // Set chromosomes according to selected genome build
+  function setChromosomes(){
+    clearSelect(chromSelect); // Remove existing chrom options from chromSelect
+    let build = document.forms["filters_form"].elements["build"].value;
+
+    chroms = {{chromosomes_37|safe}}; // populate chromosome options list
+    if (build === "38"){
+      chroms = {{chromosomes_38|safe}};
+    }
+    let chrom_options = [["", "All"]]
+    chroms.forEach(function(chrom){ // append all chroms as options
+      chrom_options.push([chrom, chrom])
+    })
+    populateSelect(chromSelect, chrom_options); // populate chromosome select with chromosome options
+    setCytobands(); // Reset cytobands select elements
+  }
+
+  function set_coords_fields(){
+    //Make chromosome coordinates editable if a valid chromsome is selected
+    selectedChrom = chromSelect.value;
+    if (selectedChrom !== 'undefined' && selectedChrom !== "All" ){
+      start_coord_field.disabled = false;
+      end_coord_field.disabled = false;
+    }
+    else {
+      start_coord_field.disabled = true;
+      end_coord_field.disabled = true;
+    }
+
+  }
+
+  // Set cytobands select options according to selected chrom
+  function setCytobands(){
+    clearSelect(cytoStart)
+    clearSelect(cytoEnd)
+    // set cytoband selects options only if a chromosome is selected
+    selectedChrom = chromSelect.value;
+    let build = document.forms["filters_form"].elements["build"].value;
+    if (selectedChrom !== 'undefined' && selectedChrom !== "All" ){
+      cytoband_options = {{ cytobands_37|safe }};
+      if (build === "38"){
+        cytoband_options = {{ cytobands_38|safe }};
+      }
+      chrom_cytobands = cytoband_options[selectedChrom]["cytobands"]; //list of cytoband objects
+
+      // Add each cytoband as an select to the 2 cytoband selects
+      cytoStartOptions = [["",""]]
+      cytoStopOptions = [["",""]]
+      chrom_cytobands.forEach(function (opt) {
+        // create option label for cytoband start option
+        let interval = ["(start:",opt["start"], ")"].join("");
+        let optionText = [ opt["chrom"], opt["band"], interval ].join(" ");
+        cytoStartOptions.push([optionText, opt["start"]])
+
+        // create option label for cytoband end option
+        interval = ["(end:",opt["stop"], ")"].join("")
+        optionText = [ opt["chrom"], opt["band"], interval ].join(" ");
+        cytoStopOptions.push([optionText,opt["stop"]])
+      });
+      populateSelect(cytoStart, cytoStartOptions)
+      populateSelect(cytoEnd, cytoStopOptions)
+    }
+    // Reset start and stop positions in filter form
+    document.forms["filters_form"].elements["position"].value=""
+    document.forms["filters_form"].elements["end"].value=""
+  }
+
+  // set start and stop coordinates when selecting cytoband start ot cytoband stop
+  function setElemCoordinate(cytobandElem, elem){
+    modifyElem = document.forms["filters_form"].elements[elem]
+    value = document.forms["filters_form"].elements[cytobandElem].value
+    modifyElem.value = value
+  }
+
 
 </script>
 {% endblock %}

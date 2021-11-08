@@ -3,10 +3,10 @@
 * Requires loqusdb version 2.5 or greater.
 * If multiple instances are configured, version will be default's.
 """
-import copy
 import json
 import logging
 import subprocess
+import traceback
 from subprocess import CalledProcessError
 
 from scout.exceptions.config import ConfigError
@@ -36,7 +36,8 @@ def execute_command(cmd):
     try:
         output = subprocess.check_output(cmd, shell=False)
     except CalledProcessError as err:
-        LOG.warning("Something went wrong with loqusdb")
+        # traceback contains subprocess' error code and command that failed
+        LOG.error("Error calling Loqusdb - {} ".format(traceback.format_exc()))
         raise err
     return output.decode("utf-8")
 
@@ -89,7 +90,7 @@ class LoqusDB:
             setting["instance_type"] = "api" if setting.get(API_URL) else "exec"
             setting["id"] = key
             if app.config["TESTING"] is True:
-                setting["version"] = 2.5
+                setting["version"] = "2.5"
             else:
                 setting["version"] = self.get_instance_version(setting)
             self.version_check(setting)
@@ -99,7 +100,7 @@ class LoqusDB:
 
     def version_check(self, loqusdb_settings):
         """Check if a compatible version is used otherwise raise an error"""
-        if not loqusdb_settings["version"] >= 2.5:
+        if not loqusdb_settings["version"] >= "2.5":
             LOG.info("Please update your loqusdb version to >=2.5")
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
 
@@ -109,7 +110,7 @@ class LoqusDB:
             instance_settings(dict) : The settings of a specific loqusdb instance
 
         Returns:
-            version (float)
+            version (string)
         """
         version = None
         if instance_settings["instance_type"] == "api":
@@ -129,22 +130,21 @@ class LoqusDB:
         if version is None:
             raise ConfigError(f"LoqusDB API url '{api_url}' did not return a valid response.")
 
-        return float(version)
+        return version
 
     def get_exec_loqus_version(self, loqusdb_id=None):
-        """Get LoqusDB version as float"""
+        """Get LoqusDB version as string"""
         call_str = self.get_command(loqusdb_id)
         call_str.extend(["--version"])
         LOG.debug("call_str: {}".format(call_str))
         try:
             output = execute_command(call_str)
         except CalledProcessError:
-            LOG.warning("Something went wrong with loqus")
-            return -1.0
+            return "-1.0"
 
         version = output.rstrip().split(" ")[-1]
         LOG.debug("version: {}".format(version))
-        return float(version)
+        return version
 
     def case_count(self, variant_category, loqusdb_id="default"):
         """Returns number of cases in loqus instance
@@ -169,7 +169,7 @@ class LoqusDB:
             try:
                 output = execute_command(case_call)
             except CalledProcessError:
-                LOG.warning("Something went wrong with loqus")
+                # is returning 0 appropriate after catching a crash?
                 return nr_cases
             try:
                 nr_cases = int(output.strip())
@@ -229,7 +229,6 @@ class LoqusDB:
         if category == "variants":  # SNVs
             search_url = f"{search_url}/{variant_info['_id']}"
         else:  # SVs
-            search_data = {}
             chrom = variant_info["chrom"]
             end_chrom = variant_info["end_chrom"]
             pos = variant_info["pos"]
@@ -279,18 +278,13 @@ class LoqusDB:
                     variant_info["variant_type"],
                 ]
             )
-        output = ""
         try:
             output = execute_command(cmd)
-        except CalledProcessError as err:
-            LOG.warning("Something went wrong with loqus")
-            raise err
-
-        res = {}
-        if output:
-            res = json.loads(output)
-
-        return res
+            if output is not None:
+                return json.loads(output)
+        except CalledProcessError:
+            pass
+        return {}
 
     @staticmethod
     def set_coordinates(variant_info):

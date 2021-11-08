@@ -56,6 +56,7 @@ variant = dict(
     str_pathologic_min=int,
     str_swegen_mean=float,
     str_swegen_std=float,
+    custom_images=list,  # list of custom image dictionaries
     # mitochondrial variants
     mitomap_associated_diseases=str,
     # Gene ids:
@@ -72,7 +73,7 @@ variant = dict(
     local_frequency=float,
     local_obs_old=int,
     local_obs_hom_old=int,
-    local_obs_total_old=int,  # default=638
+    local_obs_total_old=int,
     # Predicted deleteriousness:
     cadd_score=float,
     clnsig=list,  # list of <clinsig>

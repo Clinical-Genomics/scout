@@ -18,3 +18,9 @@ PHENOTYPE_GROUPS = {
 }
 
 COHORT_TAGS = ["endo", "mito", "ketogenic diet", "pedhep", "other"]
+
+# Downloaded resources can be real downloaded files or demo files (located in scout/scout/demo/resources)
+UPDATE_DISEASES_RESOURCES = {
+    "genemap_lines": ["genemap2.txt", "genemap2_reduced.txt"],
+    "hpo_gene_lines": ["phenotype_to_genes.txt", "phenotype_to_genes_reduced.txt"],
+}

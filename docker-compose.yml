@@ -5,31 +5,30 @@ version: '3'
 services:
 
   mongodb:
-    image: mvertes/alpine-mongo
+    image: mongo:4.4.9
     container_name: mongodb
-    ports:
-      - '27017:27017'
-    expose:
-      - '27017'
     networks:
       - scout-net
+    ports:
+      - '27013:27017'
+    expose:
+      - '27017'
 
   scout-cli:
-    image: clinicalgenomics/scout
+    build: .
     container_name: scout-cli
     command: bash -c "
       scout --host mongodb setup demo
       && scout --host mongodb --demo load case scout/demo/cancer.load_config.yaml"
     volumes:
       - ./scout:/home/worker/app/scout
-      - ./volumes/scout/data:/home/worker/data
     networks:
       - scout-net
     depends_on:
       - mongodb
 
   scout-web:
-    image: clinicalgenomics/scout
+    build: .
     container_name: scout-web
     expose:
       - '5000'
@@ -38,7 +37,6 @@ services:
     command: scout --host mongodb --demo serve --host 0.0.0.0
     volumes:
       - ./scout:/home/worker/app/scout
-      - ./volumes/scout/data:/home/worker/data
     networks:
       - scout-net
     depends_on:
@@ -47,7 +45,3 @@ services:
 networks:
   scout-net:
     driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.21.0.0/24

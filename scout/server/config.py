@@ -2,6 +2,7 @@
 SECRET_KEY = "this is not secret..."
 REMEMBER_COOKIE_NAME = "scout_remember_me"
 
+# MONGO_URI = "mongodb://127.0.0.1:27011,127.0.0.1:27012,127.0.0.1:27013/?replicaSet=rs0&readPreference=primary"
 MONGO_DBNAME = "scout"
 
 BOOTSTRAP_SERVE_LOCAL = True
@@ -15,6 +16,10 @@ MAIL_SERVER = "smtp.gmail.com"
 MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
+
+# Filename of accrediation bagde image in server/bluprints/public/static
+# If null no badge is displayed in scout
+ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
@@ -30,6 +35,11 @@ MAIL_USE_SSL = False
 # MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
 # MME_URL = "http://localhost:9020"
 # MME_TOKEN = "matchmaker_token"
+
+# Beacon connection settings
+# - Tested with cgbeacon2 (https://github.com/Clinical-Genomics/cgbeacon2) -
+# BEACON_URL = "http://localhost:6000/apiv1.0"
+# BEACON_TOKEN = "DEMO"
 
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
@@ -63,6 +73,8 @@ ACCEPT_LANGUAGES = ["en", "sv"]
 
 # FEATURE FLAGS
 SHOW_CAUSATIVES = True
+SHOW_OBSERVED_VARIANT_ARCHIVE = True
+HIDE_ALAMUT_LINK = False
 
 # OMIM API KEY: Required for downloading definitions from OMIM (https://www.omim.org/api)
 # OMIM_API_KEY = 'valid_omim_api_key'

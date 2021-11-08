@@ -2,7 +2,6 @@
 {% macro cancer_individuals_table(case, institute, tissues) %}
 <form method="POST" action="{{ url_for('cases.update_cancer_sample', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading">Samples</div>
     <div class="table-responsive">
       <table class="table table-sm">
         <thead>
@@ -67,12 +66,12 @@
 </form>
 {% endmacro %}
 
-{% macro individuals_table(case, institute, tissues, display_rerunner) %}
+{% macro individuals_table(case, institute, tissues, display_rerunner, gens_info=None) %}
 <form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
-  <div class="card panel-default">
-    <div class="panel-heading">
-      <span>Individuals</span>
-      {% if display_rerunner %}
+  <div class="card">
+
+    {% if display_rerunner %}
+      <div class="panel-heading">
       <button id="edit-case-metadata" class="btn btn-sm btn-dark btn-header" value="toggle_reanalysis" name="update_ind_tbl" type="button" onclick="toggleEditMetadata()"><i class="fa fa-edit fa-fw mr-2"></i>Correct metadata</button>
       <button id="toggle-case-rerun" class="btn btn-sm btn-success btn-header" value="toggle_reanalysis" data-toggle="modal" data-target="#reanalysis-modal" name="update_ind_tbl" type="button" onclick="forwardPedigreeData()" hidden><i class='fa fa-retweet fa-fw mr-2'></i>Toggle reanalysis</button>
       <button id="edit-case-metadata-reset" class="btn btn-sm btn-danger btn-header" onclick="toggleEditMetadata()" type="button" hidden><span class="fa fa-times fa-fw mr-2"></span>Clear changes</button>
@@ -80,8 +79,9 @@
           <div class="loader"></div>
           <p>Processing rerun</p>
       </div>
-      {% endif %}
-    </div>
+      </div>
+    {% endif %}
+
     <div class="panel-body">
     <div class="table-responsive">
       <table id="individuals-table" class="table table-sm">
@@ -93,7 +93,7 @@
             <th data-toggle='tooltip' style="width: 10%" title="Phenotype of sample">Phenotype</th>
             <th data-toggle='tooltip' data-container='body' title="Type of sequencing (e.g wes, wgs)" style="width: 10%">Sequencing</th>
             <th data-toggle='tooltip' data-container='body' title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
-            <th data-toggle='tooltip' data-container='body' title="If parenthood is confirmed by peddy" style="width: 10%">Parenthood</th>
+            <th data-toggle='tooltip' data-container='body' title="If parenthood is confirmed by peddy" style="width: 10%">Kinship</th>
             <th data-toggle='tooltip' data-container='body' title="Downloadable CytoSure file" style="width: 5%">CGH</th>
             <th data-toggle='tooltip' data-container='body' title="Tissue origin for the sample" style="width: 13%">Tissue</th>
             <th style="width: 5%"></th>
@@ -109,18 +109,25 @@
                     {{ ind.display_name }}
                   </div>
                 </label>
-              </td>
+                {% if gens_info.display %}
+                  <a style="font-size: .8rem;" class="btn btn-outline-dark btn-sm" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}">CN profile</a>
+                {% endif %}
+                </td>
               <td>
                 <select class="sex-selector form-control-sm" name="sex-selector" hidden>
                   <option {% if ind.sex_human == "male" %} selected {% endif %} value="male">Male</option>
                   <option {% if ind.sex_human == "female" %} selected {% endif %} value="female">Female</option>
                   <option {% if not ind.sex_human in ["female", "male"] %} selected= {% endif %} value="unknown">Unknown</option>
                 </select>
-                <div class="sex-display">
+                <div class="sex-display" style="font-weight: bold;">
                   {% if ind.sex_human in ['female','male'] %}
-                    <i class="fa fa-{{ind.sex_human}}" aria-hidden="true"></i>
-                  {% else %}
-                    {{ind.sex_human}}
+                    {% if ind.sex_human == 'female' %}
+                      F
+                    {% elif ind.sex_human == 'male' %}
+                      M
+                    {% else %}
+                      {{ind.sex_human}}
+                    {% endif %}
                   {% endif %}
                   {% if ind.confirmed_sex %}
                     <i class="fa fa-check"></i>
@@ -150,7 +157,7 @@
               <td>
                 {% if ind.vcf2cytosure %}
                 <a href="{{ url_for('cases.vcf2cytosure', institute_id=institute._id,
-                      case_name=case.display_name, individual_id=ind.individual_id) }}" class="btn">
+                      case_name=case.display_name, individual_id=ind.individual_id) }}" download class="btn">
                   <i class="fa fa-download"></i>
                 </a>
                 {% else %}

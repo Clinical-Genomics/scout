@@ -4,18 +4,168 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [x.x.x]
+## []
+### Changed
+- Display and download HPO gene panels' gene in italics
+### Fixed
+- Use of deprecated TextField after the upgrade of WTF to v3.0
+- Freeze to WTForms to version < 3
+- Remove the extra files (bed files and madeline.svg) introduced by mistake
+
+## [4.41.1]
+### Fixed
+- General reports crash for variant annotations with same variant on other cases
+
+## [4.41]
+### Added
+- Extended the instructions for running the Scout Docker image (web app and cli).
+- Enabled inclusion of custom images to STR variant view
+### Fixed
+- General case report sorting comments for variants with None genetic models
+- Do not crash but redirect to variants page with error when a variant is not found for a case
+- UCSC links coordinates for SV variants with start chromosome different than end chromosome
+- Human readable variants name in case page for variants having start chromosome different from end chromosome
+- Avoid always loading all transcripts when checking gene symbol: introduce gene captions
+- Slow queries for evaluated variants on e.g. case page - use events instead
+### Changed
+- Rearrange variant page again, moving severity predictions down.
+- More reactive layout width steps on variant page
+
+## [4.40.1]
+### Added
+### Fixed
+- Variants dismissed with inconsistent inheritance pattern can again be shown in general case report
+- General report page for variants with genes=None
+- General report crashing when variants have no panels
+- Added other missing keys to case and variant dictionaries passed to general report
+### Changed
+
+## [4.40]
+### Added
+- A .cff citation file
+- Phenotype search API endpoint
+- Added pagination to phenotype API
+- Extend case search to include internal MongoDB id
+- Support for connecting to a MongoDB replica set (.py config files)
+- Support for connecting to a MongoDB replica set (.yaml config files)
+### Fixed
+- Command to load the OMIM gene panel (`scout load panel --omim`)
+- Unify style of pinned and causative variants' badges on case page
+- Removed automatic spaces after punctuation in comments
+- Remove the hardcoded number of total individuals from the variant's old observations panel
+- Send delete requests to a connected Beacon using the DELETE method
+- Layout of the SNV and SV variant page - move frequency up
+### Changed
+- Stop updating database indexes after loading exons via command line
+- Display validation status badge also for not Sanger-sequenced variants
+- Moved Frequencies, Severity and Local observations panels up in RD variants page
+- Enabled Flask CORS to communicate CORS status to js apps
+- Moved the code preparing the transcripts overview to the backend
+- Refactored and filtered json data used in general case report
+- Changed the database used in docker-compose file to use the official MongoDB v4.4 image
+- Modified the Python (3.6, 3.8) and MongoDB (3.2, 4.4, 5.0) versions used in testing matrices (GitHub actions)
+- Capitalize case search terms on institute and dashboard pages
+
+
+## [4.39]
+### Added
+- COSMIC IDs collected from CSQ field named `COSMIC`
+### Fixed
+- Link to other causative variants on variant page
+- Allow multiple COSMIC links for a cancer variant
+- Fix floating text in severity box #2808
+- Fixed MitoMap and HmtVar links for hg38 cases
+- Do not open new browser tabs when downloading files
+- Selectable IGV tracks on variant page
+- Missing splice junctions button on variant page
+- Refactor variantS representative gene selection, and use it also for cancer variant summary
+### Changed
+- Improve Javascript performance for displaying Chromograph images
+- Make ClinVar classification more evident in cancer variant page
+
+## [4.38]
+### Added
+- Option to hide Alamut button in the app config file
+### Fixed
+- Library deprecation warning fixed (insert is deprecated. Use insert_one or insert_many instead)
+- Update genes command will not trigger an update of database indices any more
+- Missing resources in temporary downloading directory when updating genes using the command line
+- Restore previous variant ACMG classification in a scrollable div
+- Loading spinner not stopping after downloading PDF case reports and variant list export
+- Add extra Alamut links higher up on variant pages
+- Improve UX for phenotypes in case page
+- Filter and export of STR variants
+- Update look of variants page navigation buttons
+### Changed
+
+## [4.37]
 ### Added
 - Highlight and show version number for RefSeq MANE transcripts.
 - Added integration to a rerunner service for toggling reanalysis with updated pedigree information
 - SpliceAI display and parsing from VEP CSQ
+- Display matching tiered variants for cancer variants
+- Display a loading icon (spinner) until the page loads completely
+- Display filter badges in cancer variants list
+- Update genes from pre-downloaded file resources
+- On login, OS, browser version and screen size are saved anonymously to understand how users are using Scout
+- API returning institutes data for a given user: `/api/v1/institutes`
+- API returning case data for a given institute: `/api/v1/institutes/<institute_id>/cases`
+- Added GMS and Lund university hospital logos to login page
+- Made display of Swedac logo configurable
+- Support for displaying custom images in case view
+- Individual-specific HPO terms
+- Optional alamut_key in institute settings for Alamut Plus software
+- Case report API endpoint
+- Tooltip in case explaining that genes with genome build different than case genome build will not be added to dynamic HPO panel.
+- Add DeepVariant as a caller
 ### Fixed
 - Updated IGV to v2.8.5 to solve missing gene labels on some zoom levels
 - Demo cancer case config file to load somatic SNVs and SVs only.
+- Expand list of refseq trancripts in ClinVar submission form
+- Renamed `All SNVs and INDELs` institute sidebar element to `Search SNVs and INDELs` and fixed its style.
+- Add missing parameters to case load-config documentation
+- Allow creating/editing gene panels and dynamic gene panels with genes present in genome build 38
+- Bugfix broken Pytests
+- Bulk dismissing variants error due to key conversion from string to integer
+- Fix typo in index documentation
+- Fixed crash in institute settings page if "collaborators" key is not set in database
+- Don't stop Scout execution if LoqusDB call fails and print stacktrace to log
+- Bug when case contains custom images with value `None`
+- Bug introduced when fixing another bug in Scout-LoqusDB interaction
+- Loading of OMIM diagnoses in Scout demo instance
+- Remove the docker-compose with chanjo integration because it doesn't work yet.
+- Fixed standard docker-compose with scout demo data and database
+- Clinical variant assessments not present for pinned and causative variants on case page.
+- MatchMaker matching one node at the time only
+- Remove link from previously tiered variants badge in cancer variants page
+- Typo in gene cell on cancer variants page
+- Managed variants filter form
 ### Changed
 - Better naming for variants buttons on cancer track (somatic, germline). Also show cancer research button if available.
 - Load case with missing panels in config files, but show warning.
-
+- Changing the (Female, Male) symbols to (F/M) letters in individuals_table and case-sma.
+- Print stacktrace if case load command fails
+- Added sort icon and a pointer to the cursor to all tables with sortable fields
+- Moved variant, gene and panel info from the basic pane to summary panel for all variants.
+- Renamed `Basics` panel to `Classify` on variant page.
+- Revamped `Basics` panel to a panel dedicated to classify variants
+- Revamped the summary panel to be more compact.
+- Added dedicated template for cancer variants
+- Removed Gene models, Gene annotations and Conservation panels for cancer variants
+- Reorganized the orders of panels for variant and cancer variant views
+- Added dedicated variant quality panel and removed relevant panes
+- A more compact case page
+- Removed OMIM genes panel
+- Make genes panel, pinned variants panel, causative variants panel and ClinVar panel scrollable on case page
+- Update to Scilifelab's 2020 logo
+- Update Gens URL to support Gens v2.0 format
+- Refactor tests for parsing case configurations
+- Updated links to HPO downloadable resources
+- Managed variants filtering defaults to all variant categories
+- Changing the (Kind) drop-down according to (Category) drop-down in Managed variant add variant
+- Moved Gens button to individuals table
+- Check resource files availability before starting updating OMIM diagnoses
+- Fix typo in `SHOW_OBSERVED_VARIANT_ARCHIVE` config param
 
 ## [4.36]
 ### Added
@@ -159,7 +309,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display only number of affected genes for dismissed SVs in general report
 - Chromosome build check when populating the variants filter chromosome selection
 - Display mitochondrial and rare diseases coverage report in cases with missing 'rare' track
-
 
 ## [4.31.1]
 ### Added

@@ -39,6 +39,19 @@
 {% endmacro %}
 
 
+{% macro other_tiered_variants(variant) %}
+  {% if variant.matching_tiered %}
+    <span class="popovers badge badge-dark" data-toggle="popover" data-html="true" title=""
+        data-content="
+          {% for tier, tiered_info in variant.matching_tiered.items() %}
+            <span class='badge badge-{{tiered_info.label}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
+          {% endfor %}
+        "
+       data-original-title="Previously tiered as">T</span>
+  {% endif %} <!-- end of if variant.matching_tiered -->
+{% endmacro %}
+
+
 {% macro evaluations_badge(variant) %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}

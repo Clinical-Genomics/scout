@@ -13,8 +13,10 @@ from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 
-HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
-HPOTERMS_URL = "http://purl.obolibrary.org/obo/hp.obo"
+HPO_URL = "https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/{}"
+HPOTERMS_URL = (
+    "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo"
+)
 TIMEOUT = 20
 
 
@@ -71,11 +73,12 @@ def get_request_json(url, headers=None):
     return json_response
 
 
-def delete_request_json(url, headers=None):
+def delete_request_json(url, headers=None, data=None):
     """Send a DELETE request to a remote API and return its response
     Args:
         url(str): url to send request to
         headers(dict): eventual request HEADERS to use in request
+        data(dict): eventual request data to ba passed as a json object
     Returns:
         json_response(dict)
     """
@@ -83,7 +86,9 @@ def delete_request_json(url, headers=None):
     json_response = {}
     try:
         LOG.debug(f"Sending DELETE request to {url}")
-        if headers:
+        if headers and data:
+            resp = requests.delete(url, headers=headers, json=data)
+        elif headers:
             resp = requests.delete(url, headers=headers)
         else:
             resp = requests.delete(url)
@@ -167,7 +172,7 @@ def fetch_hpo_terms():
     Returns:
         res(list(str)): A list with the lines
     """
-    url = "http://purl.obolibrary.org/obo/hp.obo"
+    url = HPOTERMS_URL
 
     return fetch_resource(url)
 

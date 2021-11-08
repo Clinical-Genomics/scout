@@ -1,11 +1,13 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
-{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, igv_track_selection %}
+{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
-{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, severity_list, conservations, mappability %}
-{% from "variant/buttons.html" import igv_button, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table %}
+{% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
+
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -51,7 +53,7 @@
 {% block top_nav_right %}
   {% if config['MAIL_USERNAME'] %}
     {# Email setting must be setup #}
-    <li class="nav-item text-nowrap">{{ sanger_button() }}</li>
+    <li class="nav-item text-nowrap">{{ sanger_button(variant) }}</li>
   {% endif %}
   <li class="nav-item">{{ pin_button(variant, case, institute) }}</li>
   <li class="nav-item text-nowrap">{{ causative_button(variant, case, institute) }}</li>
@@ -66,48 +68,70 @@
     </div>
     {% endif %}
 
+    <div class="row"><div class="col-12">{{ matching_variants(managed_variant, causatives) }}</div></div>
+
     <div class="row">
-      <div class="col-sm-12">{{ matching_variants() }}</div>
-      <div class="col-sm-4">{{ panel_basics() }}</div>
-      <div class="col-sm-8">
-        <div class="col-sm-12">{{ panel_summary() }}</div>
+      <div class="col-lg-3 col-md-6">
+        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) }}
+      </div>
+      <div class="col-lg-5 col-md-6">
+        {{ panel_summary() }}
+      </div>
+      <div class="col-lg-4">
+        {{ frequencies(variant) }}
+        {% if config['LOQUSDB_SETTINGS'] %}
+          {{ observations_panel(variant, observations, case) }}
+        {% endif %}
+        {{  old_observations(variant) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-12">
+        <div class="card panel-default">
+          {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+        </div>
+        {{ omim_phenotypes(variant) }}
+        {{ genemodels_panel(variant) }}
+        {{ inheritance_panel(variant) }}
+
+      </div>
+      <div class="col-lg-8 col-md-12">
         {% if variant.disease_associated_transcripts %}
-          <div class="col-sm-12">{{ disease_associated(variant) }}</div>
+          <div class="row"><div class="col-12">{{ disease_associated(variant) }}</div></div>
         {% endif %}
-        <div class="col-sm-12">{{ transcripts_overview(variant) }}</div>
+        <div class="row"><div class="col-12">{{ transcripts_overview(variant) }}</div></div>
+          <div class="row">
+            {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+            {% if has_pedigree %}
+              <div class="col-lg-4">
+                {{ pedigree_panel(case) }}
+              </div>
+            {% endif %}
+            <div class="col-lg-8">
+              {{ gtcall_panel(variant) }}
+            </div>
+            <div class="col-lg-4">
+              {{ severity_list(variant) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+              {{ conservations(variant) }}
+            </div>
+            {% if variant.azlength %}
+              <div class="col-lg-4 col-md-6">
+                {{ autozygosity_panel(variant) }}
+              </div>
+            {% endif %}
+            <div class="col-lg-4 col-md-6">
+              {{ mappability(variant) }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="card-columns">
-      {{ omim_phenotypes(variant) }}
-      {{ genemodels_panel(variant) }}
-      {{ inheritance_panel(variant) }}
-        {% if variant.azlength %}
-          {{ autozygosity_panel(variant) }}
-        {% endif %}
-      {{ frequencies(variant) }}
-      {% if config['LOQUSDB_SETTINGS'] %}
-        {{ observations_panel(variant, observations, case) }}
-      {% endif %}
-      {{ old_observations(variant) }}
-      {{ severity_list(variant) }}
-      {{ conservations(variant) }}
-      {{ mappability(variant) }}
-    </div>
-
-    <div class="row">
-      <div class="col-sm-4">
-        {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
-      </div>
-      <div class="col-sm-5">{{ gtcall_panel(variant) }}</div>
-      {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
-      {% if has_pedigree %}
-        <div class="col-sm-3">{{ pedigree_panel(case) }}</div>
-      {% endif %}
-    </div>
     {% if variant.compounds %}
       <div class="row">
-        <div class="col-12">{{ compounds_panel() }}</div>
+        <div class="col-12">{{ compounds_panel(institute, case, variant) }}</div>
       </div>
     {% endif %}
     <div class="row">
@@ -136,240 +160,60 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-12">{{ external_links() }}</div>
+      <div class="col-12">{{ external_links(case, variant) }}</div>
     </div>
+
+    {% if variant.custom_images %}
+      <div class="row">
+        <div class="col-12">{{ panel_custom_images(variant.custom_images) }}</div>
+      </div>
+    {% endif %}
+
     <div class="row">
       <div class="col-12">{{ activity_panel(events|reverse) }}</div>
     </div>
     {% if config['MAIL_USERNAME'] %}
       {# Email setting must be setup #}
-      {{ modal_sanger() }}
+      {{ modal_sanger(institute, case, variant, current_user) }}
     {% endif %}
 
     {% if config['MAIL_USERNAME'] %}
       {# Email setting must be setup #}
-      {{ modal_cancel_sanger() }}
+      {{ modal_cancel_sanger(institute, case, variant, current_user) }}
     {% endif %}
 </div>
 {{ modal_causative(case, institute, variant) }}
 {% endblock %}
 
-{% macro sanger_button() %}
-  {% if variant.sanger_ordered %}
-    {% if variant.validation in ['True positive', 'False positive']%}
-      <p class="navbar-text">Sanger: {{ variant.validation }}</p>
-    {% else %}
-      <button class="btn btn-light" data-toggle="modal" data-target="#cancelSangerModal">
-        Sanger pending...
-      </button>
-    {% endif %}
-  {% else %}
-    <button class="btn btn-light" data-toggle="modal" data-target="#sangerModal">
-      Sanger
-    </button>
-  {% endif %}
-{% endmacro %}
 
-{% macro sanger_form() %}
-  <ul class="list-group">
-    <div class="list-group-item">
-      <strong>Case {{ case.display_name }}</strong><br>
-      <a href="{{ url_for('variant.variant', institute_id=institute._id,
-                          case_name=case.display_name, variant_id=variant._id) }}">
-        {{ variant.display_name }}
-      </a>
-    </div>
-    <div class="list-group-item">
-      <strong>HGNC symbols</strong>:
-      {{ variant.hgnc_symbols|join(', ') }}
-    </div>
-    <div class="list-group-item">
-      <strong>Gene panels</strong>:
-      {{ variant.panels|join(', ') }}
-    </div>
-    <div class="list-group-item disabled"><strong>Amino acid changes</strong></div>
-    {% for gene in variant.genes %}
-        {% for transcript in gene.transcripts %}
-          {% if "refseq_identifiers" in transcript or transcript.is_canonical %}
-              {% if transcript.protein_sequence_name%}
-                <div class="list-group-item">
-                  [{{ transcript.refseq_identifiers|join(", ") }}]<span class="text-muted"> ({{ transcript.transcript_id }})</span>:
-                  {{ (transcript.protein_sequence_name or '')|url_decode }}
-                </div>
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-    {% endfor %}
-    <div class="list-group-item disabled"><strong>GT call</strong></div>
-    {% for individual in variant.samples %}
-      <div class="list-group-item">
-        {{ individual.display_name }}: {{ individual.genotype_call }}
+{% macro panel_custom_images(images) %}
+  <div id="attached-img-panel" class="card mt-3 panel-default">
+    <div class="panel-heading">
+      <div
+          class="panel-heading collapsed"
+          data-toggle="collapse"
+          data-parent="#attached-img-panel"
+          data-target="#attached-images"
+          onclick="flipArrowIcon(this)"
+      ><span class="fa fa-angle-down rotate-icon"></span>
+          &nbsp;Attached images
       </div>
-    {% endfor %}
-    <div class="list-group-item">
-      <strong>Ordered by</strong>:
-      {{ current_user.name }}
     </div>
-    <div class="list-group-item">Comment: <input type="text" size=45 name="verification_comment"></div>
-  </ul>
-{% endmacro %}
-
-{% macro matching_variants() %}
-  {% if causatives %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching causatives from other cases</div>
-      <div class="card-body">
-        <ul class="list-group list-group-flush">
-          {% for other_variant in causatives %}
-            <li class="list-group-item" style="padding: 0;">
-              <a href="{{ url_for('variant.variant',
-                                  institute_id=institute._id,
-                                  case_name=other_variant.case_display_name,
-                                  variant_id=other_variant._id) }}">
-                {{ other_variant.case_display_name }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif %}
-  {% if managed_variant %}
-    <div class="card panel-default">
-      <div class="panel-heading">Matching managed variant</div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-2">
-            {{ managed_variant.display_id }}
-          </div>
-          <div class="col-10">
-            {{ managed_variant.description }}
-          </div>
-        </div>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif %}
-  {% if not managed_variant and not causatives %}
-    <div class="card mt-3">
-      <div class="card-body mt-1 ml-1" style="padding: 0;">
-        <h6>No matching causative or managed variants</h6>
-      </div> <!--end of card body-->
-    </div><!--end of card-->
-  {% endif%}
-{% endmacro %}
-
-{% macro panel_basics() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Basics</div>
-    <div class="card-body">
-      <table class="table table-sm">
-        <tbody>
-          <tr>
-            <td>
-              Position
-              <span>
-                <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
-                {% if variant.is_par %}
-                  <span class="badge badge-info">PAR</span>
-                {% endif %}
-              </span>
-            </td>
-            <td>
-              {% if not variant.category == "str" %}
-              Change
-              <span>
-                  {%- if variant.reference|length > 8 -%}
-                    <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                      style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
-                    </button>
-                  {%- else -%}
-                    <strong>{{ variant.reference }}</strong>
-                  {%- endif -%}
-                    →
-                  {%- if variant.alternative|length > 8 -%}
-                    <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
-                      style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
-                    </button>
-                  {%- else -%}
-                    <strong>{{ variant.alternative }}</strong>
-                  {%- endif -%}
-                {%- else -%}
-                  <strong>{{ variant.alternative | replace("<", " ") | replace(">", "")}}</strong>
-                {%- endif -%}
-              </span>
-            </td>
-          </tr>
-          {% if variant.str_repid %}
-          <tr>
-            <td colspan="2">
-              Repeat locus
-              <span><strong>{{variant.str_repid}}</strong></span>
-            </td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
-      <div class="table-responsive">
-        <table class="table table-sm"">
-          <thead class="border-top">
-            <tr class="active">
-              <th>Gene</th>
-              <th>Region</th>
-              <th>Function</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for gene in variant.genes %}
-              <tr>
-                <th>
-                  <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                    {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                  </a>
-                </th>
-                <td>{{ gene.region_annotation }}</td>
-                <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <ul class="list-group">
-        <div class="list-group-item">
-          <strong>Gene panels:</strong><br>
-          {% for panel_id in variant.panels %}
-            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
-          {% endfor %}
-        </div>
-      </ul>
-      {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
-      {% if cancer %}
-       {{ variant_tier_button(variant, institute, case, cancer_tier_options) }}
-      {% endif %}
-        {{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}
-      {% if not cancer %}
-        {{ mosaic_variant_button(variant, institute, case, mosaic_variant_options) }}
-      {% endif %}
-      {{ acmg_form(variant.acmg_classification.code if variant.acmg_classification) }}
-      <div class="mt-3">
-        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
-        {% if 'suspects' in case and variant._id in case.suspects and not variant.clinvar_clinsig %}
-          <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
-            class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
-        {% endif %}
-        {% if variant.clinvar_clinsig %}
-          <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
-        {% endif %}
-      </div>
-      {% if evaluations %}
-        <div class="list-group mt-3">
-          {% for evaluation in evaluations %}
-            {{ acmg_classification_item(evaluation) }}
-          {% endfor %}
-        </div>
-      {% endif %}
+    <div id="attached-images" class="card-body collapse" data-parent="#attached-img-panel">
+     {% for image in images %}
+       <h6 class="font-weight-bold">{{ image.title }}</h6>
+       <img src="data:image/{{image.format}};base64,{{image.data|safe}}"
+         class="pb-3"
+         alt="{{ image.description }}"
+         title="{{ image.description }}"
+         {% if image.width %} width="{{image.width}}"{% endif %}
+         {% if image.height %} height="{{image.height}}"{% endif %}
+       />
+     {% endfor %}
     </div>
   </div>
-{% endmacro %}
+{% endmacro  %}
+
 
 {% macro panel_summary() %}
   <div class="card mt-3 panel-default">
@@ -377,6 +221,26 @@
     <div class="card-body">
       <table class="table table-bordered table-fixed table-sm">
         <tbody>
+          <tr>
+            <td>
+              Position:
+	      <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+            </td>
+            <td colspan=3>
+              Change:
+              {% if variant.reference|length > 8 %}
+                <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong>
+              {% else %}
+                <strong>{{ variant.reference }}</strong>
+              {% endif %}
+              →
+              {%- if variant.alternative|length > 8 -%}
+                <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong>
+              {% else %}
+                <strong>{{ variant.alternative }}</strong>
+              {% endif %}
+	    </td>
+          </tr>
           <tr>
             <td>
               Rank
@@ -429,32 +293,7 @@
           </tr>
         </tbody>
       </table>
-      {% if variant.clinsig_human %}
-        <table class="table table-bordered table-fixed table-sm">
-          <thead>
-            <thead>
-              <tr class="active">
-                <th>CLINSIG</th>
-                <th>Accession</th>
-                <th>Revstat</th>
-              </tr>
-            </thead>
-          </thead>
-          <tbody>
-            {% for clinsig in variant.clinsig_human %}
-              <tr>
-                <td>{{ clinsig.human }}</td>
-                <td>
-                  <a href="{{ clinsig.link }}" target="_blank">{{ clinsig.accession }}</a>
-                </td>
-                <td>{{ clinsig.revstat }}</td>
-              </tr>
-            {% else %}
-              <i>No annotations</i>
-            {% endfor %}
-          </tbody>
-        </table>
-      {% endif %}
+      {{ clinsig_table(variant) }}
       {% if variant.mitomap_associated_diseases %}
         <table class="table table-bordered table-fixed table-sm">
           <tbody>
@@ -479,35 +318,37 @@
           </li>
         {% endif %}
       </ul>
-      <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between">
-          <div>
-            {{ igv_button(case, variant, case_groups) }}
-          </div>
-
-          {% if config.SQLALCHEMY_DATABASE_URI %}
-          <div class="d-flex flex-wrap">
-            {% for gene in variant.genes %}
-              <span class="ml-5">
-                <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+      <table class="table table-bordered table-fixed table-sm">
+        <thead class="border-top">
+          <tr class="active">
+            <th>Gene</th>
+            <th>Region</th>
+            <th>Function</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <th>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
                   {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
-              </span>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </li>
-        <li class="list-group-item">
-          <div>
-            {{ igv_track_selection(igv_tracks, current_user) }}
-          </div>
-        </li>
-        {% if splice_junctions_tracks %}
-          <li class="list-group-item">
-            <div>{{ splice_junctions_button(institute._id, case.display_name, variant._id) }}</div>
-          </li>
-        {% endif %}
+              </th>
+              <td>{{ gene.region_annotation }}</td>
+              <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <ul class="list-group">
+        <div class="list-group-item">
+          <strong>Gene panels:</strong><br>
+          {% for panel_id in variant.panels %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+          {% endfor %}
+        </div>
       </ul>
+      {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
 	<thead>
@@ -531,113 +372,6 @@
 
     </div> <!-- end of card body -->
   </div> <!--  end of card div -->
-{% endmacro %}
-
-
-{% macro compounds_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Compounds (top 20)</div>
-    <div class="card-body">
-      {{ compounds_table(institute, case, variant.compounds[:20]) }}
-    </div>
-  </div>
-{% endmacro %}
-
-
-{% macro modal_sanger() %}
-  <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
-        method="POST">
-    <div class="modal fade" id="sangerModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Order Sanger sequencing</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            {{ sanger_form() }}
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-danger" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Send sanger order request</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro modal_cancel_sanger() %}
-  <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
-        method="POST">
-    <div class="modal fade" id="cancelSangerModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">Cancel Sanger sequencing</h4>
-          </div>
-          <div class="modal-body">
-            {{ sanger_form() }}
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Send sanger cancellation request</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro external_links() %}
-  <div class="panel panel-default">
-    {% for gene in variant.genes %}
-      <div class="panel-heading">
-        External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-      </div>
-      <div class="panel-body">
-          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
-          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
-          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
-          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
-          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
-          {% if gene.entrez_link %}
-            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
-          {% endif %}
-          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
-          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
-          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
-          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
-          {% if case.mt_bams or case.bam_files %}
-            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
-          {% endif %}
-          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
-          {% if variant.chromosome in ['MT','M'] %}
-            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
-          {% endif %}
-          {% if variant.hmtvar_variant_id %}
-            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
-          {% endif %}
-          {% if gene.tp53_link %}
-            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
-          {% endif %}
-          {% if gene.iarctp53_link %}
-            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">IARC TP53</a>
-          {% endif %}
-          {% if cancer %}
-            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
-            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
-            <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
-          {% endif %}
-            <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
-      </div>
-    {% endfor %}
-  </div>
 {% endmacro %}
 
 {% macro acmg_form(selected=None) %}
@@ -680,6 +414,7 @@
   </li>
 {% endmacro %}
 
+
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
@@ -687,6 +422,15 @@
   <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
   <script>
+    const flipArrowIcon = (element) => {
+      const icon = element.firstChild
+      if (element.classList.contains('collapsed')) {
+        icon.classList.replace('fa-angle-down', 'fa-angle-up')
+      } else {
+        icon.classList.replace('fa-angle-up', 'fa-angle-down')
+      }
+    }
+
     function set_scrolly_table(table_id) {
     if (document.getElementById(table_id).rows.length > 5) {
       $('#' + table_id).DataTable({
@@ -708,7 +452,6 @@
     set_scrolly_table('transcript_overview_table')
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
-
 
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();

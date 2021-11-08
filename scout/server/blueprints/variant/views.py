@@ -55,6 +55,30 @@ def variant(institute_id, case_name, variant_id):
     return data
 
 
+@variant_bp.route("/<institute_id>/<case_name>/cancer/<variant_id>")
+@templated("variant/cancer-variant.html")
+def cancer_variant(institute_id, case_name, variant_id):
+    """Display a specific SNV variant."""
+    LOG.debug("Variants view requesting data for variant %s", variant_id)
+
+    data = variant_controller(store, institute_id, case_name, variant_id=variant_id)
+    if data is None:
+        flash("An error occurred while retrieving variant object", "danger")
+        return redirect(
+            url_for(
+                "variants.cancer_variants",
+                institute_id=institute_id,
+                case_name=case_name,
+            )
+        )
+
+    if current_app.config.get("LOQUSDB_SETTINGS"):
+        LOG.debug("Fetching loqusdb information for %s", variant_id)
+        data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
+
+    return data
+
+
 @variant_bp.route("/<institute_id>/<case_name>/sv/variants/<variant_id>")
 @templated("variant/sv-variant.html")
 def sv_variant(institute_id, case_name, variant_id):

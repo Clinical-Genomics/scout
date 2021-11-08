@@ -1,12 +1,11 @@
-import requests
-
 import datetime
 import logging
 import os.path
 from datetime import date
 
 import bson
-from flask import Response, flash, url_for, Markup
+import requests
+from flask import Markup, Response, flash, url_for
 from flask_login import current_user
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
@@ -26,14 +25,17 @@ from scout.constants import (
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
-    SO_TERMS,
+    VARIANT_FILTERS,
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_verified_variants
-from scout.server.blueprints.variant.utils import clinsig_human, predictions
-from scout.server.links import cosmic_link, str_source_link
-from scout.server.utils import case_append_alignments, institute_and_case
-from scout.utils.scout_requests import post_request_json
+from scout.server.blueprints.variant.utils import (
+    clinsig_human,
+    predictions,
+    update_representative_gene,
+)
+from scout.server.links import cosmic_links, str_source_link
+from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
 
@@ -85,7 +87,9 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
             variant_obj["research_assessments"] = get_manual_assessments(variant_obj)
 
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
+                case_id=case_obj["_id"],
+                simple_id=variant_obj["simple_id"],
+                variant_type="clinical",
             )
 
         variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
@@ -154,7 +158,9 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
         clinical_var_obj = variant_obj
         if variant_obj["variant_type"] == "research":
             clinical_var_obj = store.variant(
-                case_id=case_obj["_id"], simple_id=variant_obj["simple_id"], variant_type="clinical"
+                case_id=case_obj["_id"],
+                simple_id=variant_obj["simple_id"],
+                variant_type="clinical",
             )
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
@@ -289,12 +295,11 @@ def get_manual_assessments(variant_obj):
                 assessment["label"] = "Dismissed"
                 assessment["title"] = "dismiss:<br>"
                 for reason in variant_obj[assessment_type]:
-                    if not isinstance(reason, int):
-                        reason = int(reason)
-                        assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                            dismiss_variant_options[reason]["label"],
-                            dismiss_variant_options[reason]["description"],
-                        )
+                    reason = int(reason)
+                    assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
+                        dismiss_variant_options[reason]["label"],
+                        dismiss_variant_options[reason]["description"],
+                    )
                 assessment["display_class"] = "secondary"
 
             if assessment_type == "mosaic_tags":
@@ -304,7 +309,8 @@ def get_manual_assessments(variant_obj):
                     if not isinstance(reason, int):
                         reason = int(reason)
                     assessment["title"] += "<strong>{}</strong> - {}<br><br>".format(
-                        MOSAICISM_OPTIONS[reason]["label"], MOSAICISM_OPTIONS[reason]["description"]
+                        MOSAICISM_OPTIONS[reason]["label"],
+                        MOSAICISM_OPTIONS[reason]["description"],
                     )
                 assessment["display_class"] = "secondary"
 
@@ -404,7 +410,14 @@ def parse_variant(
             )
 
     variant_obj["comments"] = store.events(
-        institute_obj, case=case_obj, variant_id=variant_obj["variant_id"], comments=True
+        institute_obj,
+        case=case_obj,
+        variant_id=variant_obj["variant_id"],
+        comments=True,
+    )
+
+    variant_obj["matching_tiered"] = store.matching_tiered(
+        variant_obj, user_institutes(store, current_user)
     )
 
     if variant_genes:
@@ -427,27 +440,88 @@ def parse_variant(
         variant_obj["end_chrom"] = variant_obj["chromosome"]
 
     # variant level links shown on variants page
-    variant_obj["cosmic_link"] = cosmic_link(variant_obj)
+    variant_obj["cosmic_links"] = cosmic_links(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
-    # Set the gene with most severe consequence as being representative
-    # used for display purposes
-    if variant_genes:
-        first_rep_gene = min(
-            variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
-        )
-        # get HGVNp identifier from the canonical transcript
-        hgvsp_identifier = None
-        for tc in first_rep_gene["transcripts"]:
-            if tc["is_canonical"]:
-                hgvsp_identifier = tc.get("protein_sequence_name")
-        first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
-        variant_obj["first_rep_gene"] = first_rep_gene
-    else:
-        variant_obj["first_rep_gene"] = None
+
+    update_representative_gene(variant_obj, variant_genes)
+
+    # annotate filters
+    variant_obj["filters"] = [
+        VARIANT_FILTERS[f]
+        for f in map(lambda x: x.lower(), variant_obj["filters"])
+        if f in VARIANT_FILTERS
+    ]
 
     return variant_obj
+
+
+def download_str_variants(case_obj, variant_objs):
+    """Download filtered STR variants for a case to an excel file
+
+    Args:
+        case_obj(dict)
+        variant_objs(PyMongo cursor)
+
+    Returns:
+        an HTTP response containing a csv file
+    """
+
+    def generate(header, lines):
+        yield header + "\n"
+        for line in lines:
+            yield line + "\n"
+
+    DOCUMENT_HEADER = [
+        "Index",
+        "Repeat locus",
+        "Repeat unit",
+        "Estimated size",
+        "Reference size",
+        "Status",
+        "Genotype",
+        "Chromosome",
+        "Position",
+    ]
+
+    export_lines = []
+    for variant in variant_objs:
+        variant_line = []
+        variant_line.append(str(variant.get("variant_rank", "")))  # index
+        variant_line.append(variant.get("str_repid"))  # Repeat locus
+        variant_line.append(
+            variant.get("str_display_ru", variant.get("str_ru", ""))
+        )  # Reference repeat unit
+        variant_line.append(
+            variant.get("alternative", "").replace("STR", "").replace("<", "").replace(">", "")
+        )  # Estimated size
+        variant_line.append(str(variant.get("str_ref", "")))  # Reference size
+        variant_line.append(str(variant.get("str_status", "")))  # Status
+        gt_cell = ""
+        for sample in variant["samples"]:
+            if sample["genotype_call"] == "./.":
+                continue
+            gt_cell += f"{sample['display_name']}:{sample['genotype_call']} "
+
+        variant_line.append(gt_cell)  # Genotype
+        variant_line.append(variant["chromosome"])  # Chromosome
+        variant_line.append(str(variant["position"]))  # Position
+
+        export_lines.append(",".join(variant_line))
+
+    headers = Headers()
+    headers.add(
+        "Content-Disposition",
+        "attachment",
+        filename=str(case_obj["display_name"]) + "-filtered-str_variants.csv",
+    )
+    # return a csv with the exported variants
+    return Response(
+        generate(",".join(DOCUMENT_HEADER), export_lines),
+        mimetype="text/csv",
+        headers=headers,
+    )
 
 
 def download_variants(store, case_obj, variant_objs):
@@ -479,7 +553,9 @@ def download_variants(store, case_obj, variant_objs):
     )
     # return a csv with the exported variants
     return Response(
-        generate(",".join(document_header), export_lines), mimetype="text/csv", headers=headers
+        generate(",".join(document_header), export_lines),
+        mimetype="text/csv",
+        headers=headers,
     )
 
 
@@ -694,6 +770,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
                 if len(in_panels & set(form.gene_panels.data)) > 0:
                     secondary_gene = gene
         variant_obj["second_rep_gene"] = secondary_gene
+        variant_obj["clinical_assessments"] = get_manual_assessments(variant_obj)
         variants_list.append(variant_obj)
 
     data = dict(
@@ -846,7 +923,13 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         form = FiltersFormClass(clinical_filter)
     else:
         form = persistent_filter_actions(
-            store, institute_obj, case_obj, user_obj, category, request_form, FiltersFormClass
+            store,
+            institute_obj,
+            case_obj,
+            user_obj,
+            category,
+            request_form,
+            FiltersFormClass,
         )
 
     return form
@@ -1081,11 +1164,11 @@ def update_form_hgnc_symbols(store, case_obj, form):
         # if symbols are numeric HGNC id, translate to current symbols
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol), genome_build)
-                if hgnc_gene is None:
+                hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), genome_build)
+                if hgnc_gene_caption is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
+                    hgnc_symbols.append(hgnc_gene_caption.get("hgnc_symbol", hgnc_symbol))
             else:
                 hgnc_symbols.append(hgnc_symbol)
 
@@ -1172,7 +1255,9 @@ def activate_case(store, institute_obj, case_obj, current_user):
 
         user_obj = store.user(current_user.email)
         case_link = url_for(
-            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+            "cases.case",
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
         )
         store.update_status(institute_obj, case_obj, user_obj, "active", case_link)
 
@@ -1185,11 +1270,15 @@ def reset_all_dimissed(store, institute_obj, case_obj):
         institute_obj(dict): an institute dictionary
         case_obj(dict): a case dictionary
     """
-    evaluated_vars = store.evaluated_variants(case_id=case_obj["_id"])
+    evaluated_vars = store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=case_obj["owner"]
+    )
     user_obj = store.user(current_user.email)
     # Create an associated case-level event
     link = url_for(
-        "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+        "cases.case",
+        institute_id=institute_obj["_id"],
+        case_name=case_obj["display_name"],
     )
     store.order_dismissed_variants_reset(institute_obj, case_obj, user_obj, link)
 
@@ -1219,7 +1308,6 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         dismiss_reasons(list): list of dismiss options.
     """
     user_obj = store.user(current_user.email)
-    dismiss_reasons = [int(reason) for reason in dismiss_reasons]
     for variant_id in variants_list:
         variant_obj = store.variant(variant_id)
         if variant_obj is None:

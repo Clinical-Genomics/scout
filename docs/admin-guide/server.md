@@ -18,6 +18,10 @@ MONGO_PORT = 27017
 MONGO_USERNAME = 'mongoUser'
 MONGO_PASSWORD = 'mongoUserPassword'
 
+# Filename of accrediation bagde image in server/bluprints/public/static
+# If not set no badge is displayed in scout
+ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
+
 # connection string for Chanjo coverage database
 SQLALCHEMY_DATABASE_URI = 'mysql://chanjo:CHANJO_PASSWORD@localhost:3306/chanjo'
 
@@ -36,6 +40,15 @@ MAIL_USERNAME = 'paul.anderson@gmail.com'
 MAIL_PASSWORD = 'mySecretPassw0rd'
 
 TICKET_SYSTEM_EMAIL = 'support@sekvens.nu'
+
+## FEATURE FLAGS
+# Allow users to browse variants marked causative from among all their institutes cases
+SHOW_CAUSATIVES = True
+# Optionally show cards with legacy observed variant frequencies on variant pages
+SHOW_OBSERVED_VARIANT_ARCHIVE = True
+# Optionally hide API link to Alamut Visual. If False or non-existing Scout will show Alamut links.
+HIDE_ALAMUT_LINK = False
+
 
 # emails to send error log message to
 ADMINS = ['robin.andeer@scilifelab.se']

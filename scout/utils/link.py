@@ -61,13 +61,10 @@ def add_ensembl_info(genes, ensembl_lines):
     LOG.info("Adding ensembl coordinates")
     # Parse and add the ensembl gene info
     ensembl_genes = parse_ensembl_genes(ensembl_lines)
-
+    missing_hgnc_id = 0
     for ensembl_gene in ensembl_genes:
         if not "hgnc_id" in ensembl_gene:
-            LOG.debug(
-                "Ensembl gene %s is missing hgnc id. Skipping",
-                ensembl_gene.get("ensembl_gene_id"),
-            )
+            missing_hgnc_id += 1
             continue
         gene_obj = genes.get(ensembl_gene["hgnc_id"])
         if not gene_obj:
@@ -78,6 +75,8 @@ def add_ensembl_info(genes, ensembl_lines):
         # ensembl ids can differ between builds. The ensembl gene ids from HGNC are only
         # true for build 38. So we add correct information from ensembl
         gene_obj["ensembl_gene_id"] = ensembl_gene["ensembl_gene_id"]
+
+    LOG.debug(f"Skipped {missing_hgnc_id} genes that were missing HGNC ID")
 
 
 def add_exac_info(genes, alias_genes, exac_lines):

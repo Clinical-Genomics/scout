@@ -45,7 +45,7 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help=(
         "Load the OMIM-AUTO panel into scout."
-        " AN OMIM api key is required to do this(https://omim.org/api)."
+        "An OMIM api key is required to do this(https://omim.org/api)."
     ),
 )
 @click.option("--api-key", help="A OMIM api key, see https://omim.org/api.")
@@ -72,7 +72,7 @@ def panel(
     institute = institute or "cust000"
 
     if omim:
-        _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer)
+        _panel_omim(adapter, genemap2, mim2genes, api_key, institute)
         return
 
     if panel_app:
@@ -105,8 +105,15 @@ def panel(
     return
 
 
-def _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer):
-    """Add OMIM panel to the database."""
+def _panel_omim(adapter, genemap2, mim2genes, api_key, institute):
+    """Add OMIM panel to the database.
+    Args:
+        adapter(scout.adapter.MongoAdapter)
+        genemap2(str): Path to file in omim genemap2 format
+        mim2genes(str): Path to file in omim mim2genes format
+        api_key(str): OMIM API key
+        institute(str): institute _id
+    """
 
     mim_files = None
     if genemap2 and mim2genes:
@@ -117,12 +124,15 @@ def _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer):
 
     api_key = api_key or current_app.config.get("OMIM_API_KEY")
     if not api_key and mim_files is None:
-        LOG.warning("Please provide a omim api key to load the omim gene panel")
+        LOG.warning(
+            "Please provide either an OMIM api key or the path to genemap2 and mim2genesto to load the omim gene panel"
+        )
         raise click.Abort()
     # Check if OMIM-AUTO exists
     if adapter.gene_panel(panel_id="OMIM-AUTO"):
-        LOG.warning("OMIM-AUTO already exists in database")
-        LOG.info("To create a new version use scout update omim")
+        LOG.warning(
+            "OMIM-AUTO already exists in database. Use the command 'scout update omim' to create a new OMIM panel version"
+        )
         return
 
     if not mim_files:
@@ -137,7 +147,6 @@ def _panel_omim(adapter, genemap2, mim2genes, api_key, institute, maintainer):
             genemap2_lines=mim_files["genemap2"],
             mim2gene_lines=mim_files["mim2genes"],
             institute=institute,
-            maintainer=maintainer,
         )
     except Exception as err:
         LOG.error(err)

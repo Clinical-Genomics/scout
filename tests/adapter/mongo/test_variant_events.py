@@ -1,10 +1,43 @@
 import datetime
 import logging
+from copy import deepcopy
 
 import pymongo
 import pytest
 
 from scout.constants import VERBS_MAP
+
+
+def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj):
+    """Test retrieving matching tiered variants from other cancer cases"""
+
+    # GIVEN a database containing a cancer variant in another case
+    other_var = deepcopy(cancer_variant_obj)
+    other_var["_id"] = "another_id"
+    other_var["case"] = cancer_case_obj["_id"]
+    other_var["cancer_tier"] = "1A"
+    other_var["owner"] = institute_obj["_id"]
+    adapter.variant_collection.insert_one(other_var)
+
+    cancer_tier = "1A"
+
+    # GIVEN that the other variant is tiared
+    adapter.update_cancer_tier(
+        institute=institute_obj,
+        case=cancer_case_obj,
+        user=user_obj,
+        link="link",
+        variant=other_var,
+        cancer_tier=cancer_tier,
+    )
+
+    # WHEN retrieving other tiered variants matching the query variant
+    matching_tiered = adapter.matching_tiered(
+        query_variant=cancer_variant_obj, user_institutes=[{"_id": "cust000"}]
+    )
+
+    # THEN it should return a set with the other variant tier info
+    assert matching_tiered == {"1A": {"label": "danger", "links": {"link"}}}
 
 
 def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):

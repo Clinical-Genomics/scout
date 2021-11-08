@@ -199,7 +199,7 @@ def test_fetch_hpo(hpo_terms_file):
     """Test fetch resource"""
 
     # GIVEN an URL
-    url = "http://purl.obolibrary.org/obo/hp.obo"
+    url = "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo"
     with open(hpo_terms_file, "r") as hpo_file:
         content = hpo_file.read()
     responses.add(

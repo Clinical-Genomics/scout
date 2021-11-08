@@ -1,0 +1,403 @@
+{% extends "layout_bs4.html" %}
+{% from "utils.html" import comments_panel, activity_panel %}
+{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, modal_causative %}
+{% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
+{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table  %}
+{% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
+{% from "variant/gene_disease_relations.html" import omim_phenotypes %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    {% if cancer %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} cancer variants
+      </a>
+    {% elif str %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+        {{ variant.variant_type|capitalize }} STR variants
+      </a>
+    {% else %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} SNV and INDELs
+      </a>
+    {% endif %}
+  </li>
+  <li class="nav-item active">
+    <p class="navbar-text text-nowrap">{{ variant.display_name|truncate(20, True) }}</p>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    <li class="nav-item text-nowrap">{{ sanger_button(variant) }}</li>
+  {% endif %}
+  <li class="nav-item">{{ pin_button(variant, case, institute) }}</li>
+  <li class="nav-item text-nowrap">{{ causative_button(variant, case, institute) }}</li>
+  {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+  <div class="container-float">
+    {% if variant.missing_data %}
+    <div class="row">
+      <div class="alert alert-warning">Showing only first 30 genes!</div>
+    </div>
+    {% endif %}
+
+    {{ matching_variants(managed_variant, causatives, variant.matching_tiered) }}
+    <div class="row">
+      <div class="col-sm-3">
+        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) }}
+      </div>
+      <div class="col-sm-4">{{ panel_summary() }}</div>
+      <div class="col-sm-3">
+
+        {{ frequencies(variant) }}
+        {% if config['LOQUSDB_SETTINGS'] %}
+          {{ observations_panel(variant, observations, case) }}
+        {% endif %}
+        {{  old_observations(variant) }}
+
+      </div>
+      <div class="col-sm-2">
+        {{ severity_list(variant) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">
+        {{ panel_comment() }}
+      </div>
+      <div class="col-3">{{ panel_quality() }}</div>
+      <div class="col-5">{{ gtcall_panel(variant) }}</div>
+    </div>
+
+    <div class="row">
+      <div class="col-3">{{ omim_phenotypes(variant) }}</div>
+      <div class="col-9">{{ transcripts_overview(variant) }}</div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
+      {% if variant.rank_score_results %}
+        <div class="col-12">{{ rankscore_panel(variant) }}</div>
+      {% endif %}
+    </div>
+
+    {% if variant.compounds %}
+      <div class="row">
+        <div class="col-12">{{ compounds_panel(institute, case, variant) }}</div>
+      </div>
+    {% endif %}
+    <div class="row">
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="card ">
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-item nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
+            </div>
+
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
+            <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel(variant) }}</div>
+            <div class="tab-pane fade" id="nav-proteins" role="tabpanel" aria-labelledby="nav-proteins-tab">{{ proteins_panel(variant) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ external_links(case, variant) }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ activity_panel(events|reverse) }}</div>
+    </div>
+    {% if config['MAIL_USERNAME'] %}
+      {# Email setting must be setup #}
+      {{ modal_sanger(institute, case, variant, current_user) }}
+    {% endif %}
+
+    {% if config['MAIL_USERNAME'] %}
+      {# Email setting must be setup #}
+      {{ modal_cancel_sanger(institute, case, variant, current_user) }}
+    {% endif %}
+</div>
+{{ modal_causative(case, institute, variant) }}
+{% endblock %}
+
+{% macro panel_quality() %}
+  <div class="card panel-default">
+    <div class="panel-heading">Quality</div>
+    <!-- General quality metrics -->
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">QUAL:
+        <span class="font-weight-bold">
+          {% if variant.quality %}
+            {{ variant.quality|int }}
+          {% else %}
+            -
+          {% endif %}
+        </span>
+    </ul>
+    <!-- Mappability -->
+    <h6 class="card-header">
+      Mappability (<a class="text" target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups">fracMatch</a>)
+    </h6>
+    <ul class="list-group">
+      {{ mappability_list(variant) }}
+    </ul>
+    <!-- Variant callers -->
+    {% if variant.callers and variant.callers|length > 0%}
+      <h6 class="card-header">Variant callers</h6>
+      <ul class="list-group">
+          {% for caller, call in variant.callers|sort %}
+            <li class="list-group-item">{{ caller }} - {{ call }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+
+{% macro panel_comment() %}
+  <div class="card panel-default">
+    {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+  </div>
+{% endmacro %}
+
+
+{% macro panel_summary() %}
+  <div class="card panel-default">
+    <div class="panel-heading">Summary</div>
+    <div class="card-body">
+
+    {% set tmp_gene_info = [] %}
+      {% if variant.first_rep_gene %}
+        {% for transcript in variant.first_rep_gene.transcripts %}
+          {% if transcript.is_primary %}
+            {% do tmp_gene_info.append(variant.first_rep_gene) %}
+            {% do tmp_gene_info.append(transcript) %}
+          {% endif %}
+        {% endfor %}
+        {% if tmp_gene_info | length  == 0 %}
+          {% for transcript in variant.first_rep_gene.transcripts %}
+            {% if transcript.refseq_id and transcript.refseq_id.startswith('NM_') %}
+              {% do tmp_gene_info.append(variant.first_rep_gene) %}
+              {% do tmp_gene_info.append(transcript) %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+
+      {% set primary_gene = tmp_gene_info[0] %}
+      {% if tmp_gene_info %}
+        {% set primary_transcript = tmp_gene_info[1] %}
+        {% set nr_genes = variant.genes | length %}
+        <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details."><h5 class="card-title">
+          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }} {% if nr_genes > 1 %} <span class="badge badge-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
+        </h5></a>
+      {% endif %}
+      <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
+        {% if primary_transcript %}
+          <li class="list-group-item" data-toggle="tooltip" title="HGNC primary transcript (or a selected RefSeq NM_ if no designated primary)">{{ primary_transcript.refseq_id }}
+        {% endif %}
+        {% if primary_gene and primary_gene.exon %}
+          <span class="text-muted">exon </span><strong>{{ primary_gene.exon }}</strong>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.coding_sequence_name %}
+              {{ primary_transcript.coding_sequence_name | url_decode }}
+        {% endif %}
+        {% if primary_transcript and primary_transcript.protein_sequence_name %}
+          <strong>{{ primary_transcript.protein_sequence_name | url_decode }}</strong>
+        {% endif %}
+        {% if primary_gene and primary_gene.region_annotation %}
+          <div>(<span class="font-weight-bold">{{ primary_gene.functional_annotation|truncate(20, True) }}</span> in <span class="font-weight-bold">{{ primary_gene.region_annotation }} region</span>)</div>
+        {% endif %}
+        {% if primary_transcript %}
+          </li>
+        {% else %}
+          <span data-toggle="tooltip" title="No HGNC primary or RefSeq NM_ transcript found"><i>Check complete list of transcripts</i></span>
+        {% endif %}
+       <li class="list-group-item">
+          <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
+          {%- if variant.reference|length > 8 -%}
+             <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+              style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
+            </button>
+          {%- else -%}
+            <strong>{{ variant.reference }}</strong>
+          {%- endif -%}
+            →
+          {%- if variant.alternative|length > 8 -%}
+            <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+              style="background-color: Transparent;outline:none; border: none;" data-toggle="tooltip" data-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
+              </button>
+          {%- else -%}
+            <strong>{{ variant.alternative }}</strong>
+          {%- endif -%}
+        </li>
+        <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
+        </li>
+      </ul>
+      <div class="h6 mt-1">
+        {{ clinsig_table(variant) }}
+      </div>
+    <!--LINK out resources-->
+      <div class="h6 mt-1">Databases</div>
+      <div>
+        <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+        <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
+        {% if variant.cosmic_links %} <!-- This is a list of tuples : [(id1, link1), (id2, link2), ..] -->
+          {% for cosmic_link in variant.cosmic_links %}
+            <a data-toggle="tooltip" title="COSMIC" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{cosmic_link[1]}}" target="_blank">{{cosmic_link[0]}}</a>
+          {% endfor %}
+        {% endif %}
+        {% if variant.dbsnp_id %}
+          {% for snp in variant.dbsnp_id.split(';') %}
+            <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="btn-group">
+        {% if primary_transcript and primary_transcript.varsome_link %}
+        <a href="{{ primary_transcript.varsome_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
+          data-toggle="tooltip" title="Varsome">V</a>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.tp53_link %}
+          <a href="{{ primary_transcript.tp53_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
+            data-toggle="tooltip" title="MutanTP53">TP53</a>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.cbioportal_link %}
+          <a href="{{ primary_transcript.cbioportal_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
+            data-toggle="tooltip" title="cBioPortal">CBP</a>
+        {% endif %}
+        {% if primary_transcript and primary_transcript.mycancergenome_link %}
+          <a href="{{ primary_transcript.mycancergenome_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
+            data-toggle="tooltip" title="MyCancerGenome">MCG</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!--IGV URLS-->
+    <div class="h6 ml-4">Alignment</div>
+    {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
+
+    </div>
+{% endmacro %}
+
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+  <script>
+    function set_scrolly_table(table_id) {
+    if (document.getElementById(table_id).rows.length > 5) {
+      $('#' + table_id).DataTable({
+        scrollY: 350,
+        stripeClasses: [],
+        scrollCollapse: true,
+        paging: false,
+        searching: false,
+        ordering: true,
+        info: false})
+      }
+    }
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+      $($.fn.dataTable.tables(true)).DataTable()
+      .columns.adjust()
+    });
+
+    set_scrolly_table('transcript_overview_table')
+    set_scrolly_table('proteins_panel_table')
+    set_scrolly_table('transcripts_panel_table')
+
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip({
+        container: 'body'
+      });
+
+    $('select[multiple]').selectpicker({
+        width: '100%'
+      });
+    });
+
+    function validate_causative_form(){
+      var partial_checkbox = document.getElementById("partial_causative");
+      if (partial_checkbox.checked == true){
+        var nOmimTerms = $('#omim_select option:selected').length;
+        var nHpoTerms = $('#hpo_select option:selected').length;
+        if ( nOmimTerms== 0 & nHpoTerms==0){
+          alert('Select at least a phenotype term or diagnosis')
+          return false
+        }
+      }
+    }
+
+    $('.js-copy').click(function() {
+      var text = $(this).attr('data-copy');
+      var el = $(this);
+      copyToClipboard(text, el);
+    });
+
+    // Code from https://codepen.io/nathanlong/pen/ZpAmjv
+    function copyToClipboard(text, el) {
+    var copyTest = document.queryCommandSupported('copy');
+    var elOriginalText = el.attr('data-original-title');
+
+    if (copyTest === true) {
+      var copyTextArea = document.createElement("textarea");
+      copyTextArea.value = text;
+      document.body.appendChild(copyTextArea);
+      copyTextArea.select();
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'Copied!' : 'Whoops, not copied!';
+        el.attr('data-original-title', msg).tooltip('show');
+      } catch (err) {
+        console.log('Oops, unable to copy');
+      }
+      document.body.removeChild(copyTextArea);
+      el.attr('data-original-title', elOriginalText);
+    } else {
+      // Fallback if browser doesn't support .execCommand('copy')
+      window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
+    }
+  }
+
+  </script>
+{% endblock %}

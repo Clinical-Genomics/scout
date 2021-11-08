@@ -14,5 +14,6 @@ def test_update_individuals_table(app, case_obj, institute_obj):
         # and passing to it the required parameters
         html = macro(case_obj, institute_obj, SAMPLE_SOURCE)
 
-        # THEN the macro should contain the expected html code
-        assert "<span>Individuals</span>" in html
+        for ind in case_obj["individuals"]:
+            # THEN the macro should contain the expected html code
+            assert ind["display_name"] in html

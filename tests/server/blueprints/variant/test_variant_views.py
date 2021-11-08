@@ -40,6 +40,31 @@ def test_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
+def test_cancer_variant(app, cancer_case_obj, cancer_variant_obj):
+
+    # GIVEN a cancer case object with a variant saved in database
+    assert store.case_collection.insert_one(cancer_case_obj)
+    assert store.variant_collection.insert_one(cancer_variant_obj)
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN sending a request (GET) to the cancer variant page
+        resp = client.get(
+            url_for(
+                "variant.cancer_variant",
+                institute_id=cancer_case_obj["owner"],
+                case_name=cancer_case_obj["display_name"],
+                variant_id=cancer_variant_obj["_id"],
+            )
+        )
+        # THEN it should return a successful response
+        assert resp.status_code == 200
+
+
 def test_sv_variant(app, institute_obj, case_obj, variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute

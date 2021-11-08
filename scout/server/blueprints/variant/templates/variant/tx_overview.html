@@ -33,100 +33,81 @@
     <div class=card-body>
       <table id="transcript_overview_table" class="table table-bordered table-hover table-sm">
         <thead class="thead-light">
-          <tr>
-            <th>Gene</th>
-            <th>Refseq IDs</th>
-            <th>ID</th>
-            <th>HGVS Description</th>
-            <th>Links</th>
+          <tr style="cursor: pointer; white-space: nowrap">
+            <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by gene name"></i></th>
+            <th>Refseq IDs <i class="fas fa-sort" data-toggle="tooltip" title="Sort by Refseq ID"></i></th>
+            <th>ID <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ID'"></i></th>
+            <th>HGVS Description <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'HGVS Description'"></i></th>
+            <th>Links <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'links'"></i></th>
           </tr>
         </thead>
         <tbody>
-          {% for gene in variant.genes %}
-            {% for transcript in gene.transcripts %}
-              {% if "refseq_identifiers" in transcript or transcript.is_canonical %}
-                <tr {% if transcript.is_primary %} class="bg-info-light" {% endif %}>
-                  <td class="d-flex justify-content-between align-items-center"> <!-- gene symbol col-->
-                    <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-                      {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
-                    </a>
-                  </td> <!-- end of gene symbol col-->
-                  <td>
-		    {% set mane_select = transcript.get("mane_select_transcript","") %}
-		    {% set mane_plus_clinical = transcript.get("mane_plus_clinical_transcript","") %}
-		    {% if mane_select %}
-		      {{mane_select}} <a href="#" data-toggle="tooltip" title="MANE Select"><span class="badge badge-success" title="MANE Select">M</span></a>
-		    {% endif %}
-		    {% if mane_plus_clinical %}
-		      {{mane_plus_clincal}} <a href="#" data-toggle="tooltip" title="MANE Plus Clinical"><span class="badge badge-success" title="MANE Plus Clinical">M+</span></a>
-		    {% endif %}
-                    {% set decorated_txs = [] %}
-                    {% for tx_id in transcript.refseq_identifiers %}
-                      {% if not (mane_select.startswith(tx_id) or mane_plus_clinical.startswith(tx_id)) %}
-                        {% if tx_id.startswith('XM') and transcript.refseq_id != tx_id %} <!-- tx of minor importance -->
-                          {% set decorated_tx = '<font class="text-muted font-italic">' + tx_id + '</font>' %}
-                        {% else %}
-                          {% set decorated_tx = tx_id %} <!-- tx with refseq ID -->
-                        {% endif %}
-                        {{ decorated_txs.append(decorated_tx)|default("", true) }}
-                      {% endif %}
-                    {% endfor %}
-                    {% if transcript.transcript_id.startswith('NM') and not decorated_txs %} <!-- VEP RefSeq annotation, use tx id as refseq ID -->
-                      {{ decorated_txs.append(transcript.transcript_id)|default("", true) }}
-                    {% endif %}
-                    {{ decorated_txs|join(", ")|safe or '<font class="text-muted font-italic">Check complete list of transcripts</font>'|safe }}
-                  </td> <!-- Refseq IDs -->
-                  <td class="d-flex align-items-center">
-                    <div> <!-- ID col-->
-                      <span class="text"> {{ transcript.transcript_id }}</span>
-                      {% if gene.common and 'primary_transcripts' in gene.common and transcript.refseq_id in gene.common.primary_transcripts %}
-                        <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary" title="hgnc primary">P</span></a>
-                      {% endif %}
-                      {% if transcript.mane_select_transcript %}
-                          <a href="#" data-toggle="tooltip" title="MANE Select"><span class="badge badge-success" title="MANE Select">M</span></a>
-                      {% endif %}
-                      {% if transcript.mane_plus_clinical_transcript %}
-                          <a href="#" data-toggle="tooltip" title="MANE Plus Clinical"><span class="badge badge-success" title="MANE Plus Clinical">M+</span></a>
-                      {% endif %}
-                      {% if transcript.is_canonical %}
-                        <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info" title="vep canonical">C</span></a>
-                      {% endif %}
-                    </div>
-                  </td> <!-- end of ID col-->
-                  <td title="{{ transcript.coding_sequence_name or '' }}"> <!-- >HGVS Description col -->
-                    {% set hgvs_c = (transcript.coding_sequence_name or '')|truncate(20, True) %}
-                    {% if variant.chromosome in ["MT","M"] %}
-                      {% set mt_notation = "m." ~ variant.position ~ variant.reference ~ ">" ~ variant.alternative %}
-                      {{ mt_notation|truncate(20,True) }} <span class="text-muted">({{ hgvs_c }})</span>
-                    {% else %}
-                      {{ hgvs_c }}
-                    {% endif %}
-                    <span class="text-muted float-right">
-                      {{ (transcript.protein_sequence_name or '')|url_decode }}
-                    </span>
-                  </td>  <!-- end of HGVS Description col -->
-                  <td class="text-center"> <!-- Links col -->
-                    {% if transcript.varsome_link %}
-                      <a href="{{ transcript.varsome_link }}" class="badge badge-secondary text-white" target="_blank"
-                        data-toggle="tooltip" title="Varsome">V</a>
-                    {% endif %}
-                    {% if transcript.tp53_link %}
-                      <a href="{{ transcript.tp53_link }}" class="badge badge-secondary text-white" target="_blank"
-                        data-toggle="tooltip" title="MutanTP53">TP53</a>
-                    {% endif %}
-                    {% if transcript.cbioportal_link %}
-                      <a href="{{ transcript.cbioportal_link }}" class="badge badge-secondary text-white" target="_blank"
-                        data-toggle="tooltip" title="cBioPortal">CBP</a>
-                    {% endif %}
-                    {% if transcript.mycancergenome_link %}
-                      <a href="{{ transcript.mycancergenome_link }}" class="badge badge-secondary text-white" target="_blank"
-                        data-toggle="tooltip" title="MyCancerGenome">MCG</a>
-                    {% endif %}
-                  </td> <!-- end of Links col -->
-                </tr>
-              {% endif %} <!-- end of { if "refseq_identifiers" in  transcript } -->
-            {% endfor %} <!-- end of { for transcript in gene.transcripts } loop -->
-          {% endfor %} <!--end of { for gene in variant.genes } loop -->
+          {% for tx in variant.overview_transcripts %}
+            <tr {% if tx.is_primary %} class="bg-info-light" {% endif %}>
+              <td class="d-flex justify-content-between align-items-center"> <!-- gene col-->
+                <a href="{{ url_for('genes.gene', hgnc_id=tx.hgnc_id) }}" target="_blank">
+                  {{ tx.hgnc_symbol if tx.hgnc_symbol else tx.hgnc_id }}
+                </a>
+              </td> <!-- end of gene symbol col-->
+
+              <td> <!-- Refseq IDs col -->
+                {% if tx.decorated_refseq_ids or tx.muted_refseq_ids %}
+                  {{tx.decorated_refseq_ids|join(", ")}}
+                  <font class="text-muted font-italic">{{tx.muted_refseq_ids|join(", ")}}</font>
+                {% else %}
+                  <font class="text-muted font-italic">Check complete list of transcripts
+                {% endif %}
+              </td> <!-- end of Refseq IDs col-->
+
+              <td class="d-flex align-items-center"> <!-- ID col-->
+                <span class="text"> {{ tx.transcript_id }}</span>
+                {% if tx.is_primary %}
+                  <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary ml-1" title="hgnc primary">P</span></a>
+                {% endif %}
+                {% if tx.mane %}
+                    <a href="#" data-toggle="tooltip" title="MANE Select - {{tx.mane}}"><span class="badge badge-success ml-1" title="MANE Select">M</span></a>
+                {% endif %}
+                {% if tx.mane_plus %}
+                    <a href="#" data-toggle="tooltip" title="MANE Plus Clinical - {{tx.mane_plus}}"><span class="badge badge-success ml-1" title="MANE Plus Clinical">M+</span></a>
+                {% endif %}
+                {% if tx.is_canonical %}
+                  <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info ml-1" title="vep canonical">C</span></a>
+                {% endif %}
+              </td> <!-- end of ID col-->
+
+              <td> <!-- HGVS Description col -->
+                {% set hgvs_c = (tx.coding_sequence_name or '')|truncate(20, True) %}
+                {% if variant.chromosome in ["MT","M"] %}
+                  {% set mt_notation = "m." ~ variant.position ~ variant.reference ~ ">" ~ variant.alternative %}
+                  {{ mt_notation|truncate(20,True) }} <span class="text-muted">({{ hgvs_c }})</span>
+                {% else %}
+                  {{ hgvs_c }}
+                {% endif %}
+                <span class="text-muted float-right">
+                  {{ (tx.protein_sequence_name or '')|url_decode }}
+                </span>
+              </td> <!-- end of HGVS Description col -->
+
+              <td class="text-center"> <!-- links col -->
+                {% if tx.varsome_link %}
+                  <a href="{{ tx.varsome_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="Varsome">V</a>
+                {% endif %}
+                {% if tx.tp53_link %}
+                  <a href="{{ tx.tp53_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="MutanTP53">TP53</a>
+                {% endif %}
+                {% if tx.cbioportal_link %}
+                  <a href="{{ tx.cbioportal_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="cBioPortal">CBP</a>
+                {% endif %}
+                {% if tx.mycancergenome_link %}
+                  <a href="{{ tx.mycancergenome_link }}" class="badge badge-secondary text-white" target="_blank"
+                    data-toggle="tooltip" title="MyCancerGenome">MCG</a>
+                {% endif %}
+              </td> <!-- end of links col -->
+            </tr>
+          {% endfor %} <!-- end of for tx in variant.overview_transcripts -->
         </tbody>
       </table>
     </div> <!-- end of card-body -->

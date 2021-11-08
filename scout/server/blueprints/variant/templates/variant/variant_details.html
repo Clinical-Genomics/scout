@@ -138,15 +138,17 @@
         </tbody>
       </table>
     </div>
-    <div class="card-footer">
-      <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
-      <a href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
-      {% if variant.cosmic_link %}
-        <a href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
-      {% else %}
-        COSMIC
-      {% endif %}
-    </div>
+    {% if variant.track == "rd" %}
+      <div class="card-footer">
+        <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
+        <a href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
+        {% if variant.cosmic_link %}
+          <a href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
+        {% else %}
+          COSMIC
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 {% endmacro %}
 
@@ -195,6 +197,7 @@
 {% endmacro %}
 
 {% macro old_observations(variant, obs_date) %}
+{% if "SHOW_OBSERVED_VARIANT_ARCHIVE" in config and config["SHOW_OBSERVED_VARIANT_ARCHIVE"] == true %}
   <div class="card panel-default">
     <div class="panel-heading">
       <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations (archive {{obs_date or '2017-05-31'}})</a>
@@ -212,12 +215,13 @@
           <tr>
             <td>{{ variant.local_obs_old or 'N/A' }}</td>
             <td>{{ variant.local_obs_hom_old or 'N/A' }}</td>
-            <td>{{ variant.local_obs_total_old or 638 }}</td>
+            <td>{{ variant.local_obs_total_old or 'N/A' }}</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+{% endif %}
 {% endmacro %}
 
 {% macro severity_list(variant) %}
@@ -227,15 +231,33 @@
       <ul class="list-group">
         <li class="list-group-item">
           <a href="https://sift.bii.a-star.edu.sg/www/SIFT_help.html" target="_blank">SIFT</a>
-          <span class="float-right">{{ variant.sift_predictions|join(', ') }}</span>
+          <span class="float-right">
+            {% if variant.sift_predictions  %}
+              {{ variant.sift_predictions|join(', ') }}</span>
+            {% else %}
+               {{ "-" }}
+            {% endif %}
+          </span>
         </li>
         <li class="list-group-item">
           <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
-          <span class="float-right">{{ variant.revel_score or "-" }}</span>
+          <span class="float-right">
+          {% if variant.revel_score  %}
+             {{ variant.revel_score }}
+          {% else %}
+             {{ "-" }}
+          {% endif %}
+          </span>
         </li>
         <li class="list-group-item">
           <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
-          <span class="float-right">{{ variant.polyphen_predictions|join(', ') }}</span>
+          <span class="float-right">
+          {% if variant.polyphen_predictions %}
+            {{ variant.polyphen_predictions|join(', ') }}
+          {% else %}
+             {{ "-" }}
+          {% endif %}
+          </span>
         </li>
         <li class="list-group-item">
           SPIDEX
@@ -285,31 +307,35 @@
 {% endmacro %}
 
 
+{% macro mappability_list(variant) %}
+  {% set superdups_fracmatches = [] %}
+  {% for gene in variant.genes %}
+    {% for transcript in gene.transcripts %}
+      {% if transcript.superdups_fracmatch %}
+        {% for superdup in transcript.superdups_fracmatch %}
+          {% do superdups_fracmatches.append(superdup) %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  {% set superdups_fracmatches = superdups_fracmatches|sort %}
+  {% if superdups_fracmatches %}
+    <li class="list-group-item">
+      <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
+    </li>
+  {% else %}
+    <li class="list-group-item">
+      <p class="card-text">-</p>
+    </li>
+  {% endif %}
+{% endmacro %}
+
 {% macro mappability(variant) %}
   <div class="card panel-default">
     <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
-    {% set superdups_fracmatches = [] %}
-    {% for gene in variant.genes %}
-      {% for transcript in gene.transcripts %}
-        {% if transcript.superdups_fracmatch %}
-          {% for superdup in transcript.superdups_fracmatch %}
-            {% do superdups_fracmatches.append(superdup) %}
-          {% endfor %}
-        {% endif %}
-      {% endfor %}
-    {% endfor %}
-    {% set superdups_fracmatches = superdups_fracmatches|sort %}
     <div class="panel-body">
       <ul class="list-group">
-        {% if superdups_fracmatches %}
-          <li class="list-group-item">
-            <span>mapping to {{superdups_fracmatches|length}} segm. dups. (min matching:{{ superdups_fracmatches|first|float|round(3) }}, max matching:{{ superdups_fracmatches|last|float|round(3) }})</span>
-          </li>
-        {% else %}
-          <li class="list-group-item">
-            <p class="card-text">-</p>
-          </li>
-        {% endif %}
+        {{ mappability_list(variant) }}
       </ul>
     </div>
   </div>

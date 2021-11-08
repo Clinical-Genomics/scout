@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 
 import pymongo
 from bson import ObjectId
-from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CASE_SEARCH_TERMS,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
-    PHENOTYPE_GROUPS,
-)
+from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.extensions import loqusdb, store
-from scout.server.utils import institute_and_case, templated, user_institutes
+from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
@@ -32,94 +26,33 @@ blueprint = Blueprint(
 )
 
 
+@blueprint.route("/api/v1/institutes", methods=["GET"])
+def api_institutes():
+    """API endpoint that returns institutes data"""
+    data = dict(institutes=controllers.institutes())
+    return jsonify(data)
+
+
 @blueprint.route("/overview")
 def institutes():
     """Display a list of all user institutes."""
-    institute_objs = user_institutes(store, current_user)
-    institutes = []
-    for ins_obj in institute_objs:
-        sanger_recipients = []
-        for user_mail in ins_obj.get("sanger_recipients", []):
-            user_obj = store.user(user_mail)
-            if not user_obj:
-                continue
-            sanger_recipients.append(user_obj["name"])
-        institutes.append(
-            {
-                "display_name": ins_obj["display_name"],
-                "internal_id": ins_obj["_id"],
-                "coverage_cutoff": ins_obj.get("coverage_cutoff", "None"),
-                "sanger_recipients": sanger_recipients,
-                "frequency_cutoff": ins_obj.get("frequency_cutoff", "None"),
-                "phenotype_groups": ins_obj.get("phenotype_groups", PHENOTYPE_GROUPS),
-                "case_count": sum(1 for i in store.cases(collaborator=ins_obj["_id"])),
-            }
-        )
-
-    data = dict(institutes=institutes)
+    data = dict(institutes=controllers.institutes())
     return render_template("overview/institutes.html", **data)
 
 
-@blueprint.route("/<institute_id>/cases")
+@blueprint.route("/api/v1/institutes/<institute_id>/cases", methods=["GET", "POST"])
+def api_cases(institute_id):
+    """API endpoint that returns all cases for a given institute"""
+    case_data = controllers.cases(store, request, institute_id)
+    json_cases = json.dumps({"cases": case_data}, default=jsonconverter)
+    return json_cases
+
+
+@blueprint.route("/<institute_id>/cases", methods=["GET", "POST"])
 @templated("overview/cases.html")
 def cases(institute_id):
     """Display a list of cases for an institute."""
-
-    institute_obj = institute_and_case(store, institute_id)
-
-    name_query = None
-    if request.args.get("search_term"):
-        name_query = "".join([request.args.get("search_type"), request.args.get("search_term")])
-
-    limit = 100
-    if request.args.get("search_limit"):
-        limit = int(request.args.get("search_limit"))
-
-    skip_assigned = request.args.get("skip_assigned")
-    is_research = request.args.get("is_research")
-    all_cases = store.cases(
-        collaborator=institute_id,
-        name_query=name_query,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-    )
-    form = controllers.populate_case_filter_form(request.args)
-
-    sort_by = request.args.get("sort")
-    sort_order = request.args.get("order") or "asc"
-    if sort_by:
-        pymongo_sort = pymongo.ASCENDING
-        if sort_order == "desc":
-            pymongo_sort = pymongo.DESCENDING
-        if sort_by == "analysis_date":
-            all_cases.sort("analysis_date", pymongo_sort)
-        elif sort_by == "track":
-            all_cases.sort("track", pymongo_sort)
-        elif sort_by == "status":
-            all_cases.sort("status", pymongo_sort)
-
-    LOG.debug("Prepare all cases")
-
-    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
-
-    data = controllers.cases(store, all_cases, prioritized_cases, limit)
-    data["sort_order"] = sort_order
-    data["sort_by"] = sort_by
-    data["nr_cases"] = store.nr_cases(institute_id=institute_id)
-
-    sanger_unevaluated = controllers.get_sanger_unevaluated(store, institute_id, current_user.email)
-    if len(sanger_unevaluated) > 0:
-        data["sanger_unevaluated"] = sanger_unevaluated
-
-    return dict(
-        institute=institute_obj,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-        query=name_query,
-        search_terms=CASE_SEARCH_TERMS,
-        form=form,
-        **data,
-    )
+    return controllers.cases(store, request, institute_id)
 
 
 @blueprint.route("/<institute_id>/causatives")
@@ -178,7 +111,10 @@ def lock_filter(institute_id, filter_id):
 
     filter_lock = request.form.get("filter_lock", "False")
     LOG.debug(
-        "Attempting to toggle lock %s for %s with status %s", filter_id, institute_id, filter_lock
+        "Attempting to toggle lock %s for %s with status %s",
+        filter_id,
+        institute_id,
+        filter_lock,
     )
 
     if filter_lock == "True":
@@ -217,11 +153,15 @@ def gene_variants(institute_id):
     if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
         for hgnc_symbol in form.hgnc_symbols.data:
             if hgnc_symbol.isdigit():
-                hgnc_gene = store.hgnc_gene(int(hgnc_symbol))
-                if hgnc_gene is None:
+                hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="37")
+
+                if hgnc_gene_caption is None:
+                    hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="38")
+
+                if hgnc_gene_caption is None:
                     not_found_ids.append(hgnc_symbol)
                 else:
-                    hgnc_symbols.append(hgnc_gene["hgnc_symbol"])
+                    hgnc_symbols.append(hgnc_gene_caption["hgnc_symbol"])
 
             elif store.hgnc_genes_find_one(hgnc_symbol) is None:
                 not_found_symbols.append(hgnc_symbol)
@@ -231,7 +171,10 @@ def gene_variants(institute_id):
         if not_found_ids:
             flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
         if not_found_symbols:
-            flash("HGNC symbol not found: {}".format(", ".join(not_found_symbols)), "warning")
+            flash(
+                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
+                "warning",
+            )
 
         if hgnc_symbols == []:
             # If there are not genes to search, return to previous page with a warning
@@ -241,11 +184,17 @@ def gene_variants(institute_id):
         form.hgnc_symbols.data = hgnc_symbols
 
         variants_query = store.gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
         )
 
         result_size = store.count_gene_variants(
-            query=form.data, institute_id=institute_id, category="snv", variant_type=variant_type
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
         )
         data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
     return dict(institute=institute_obj, form=form, page=page, **data)
@@ -256,7 +205,10 @@ def institute_settings(institute_id):
     """Show institute settings page"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash("Current user doesn't have the permission to modify this institute", "warning")
+        flash(
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
+        )
         return redirect(request.referrer)
 
     institute_obj = store.institute(institute_id)
@@ -290,7 +242,10 @@ def institute_users(institute_id):
     """Should institute users list"""
 
     if institute_id not in current_user.institutes and current_user.is_admin is False:
-        flash("Current user doesn't have the permission to modify this institute", "warning")
+        flash(
+            "Current user doesn't have the permission to modify this institute",
+            "warning",
+        )
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
     return render_template("/overview/users.html", panel=2, **data)
@@ -452,7 +407,8 @@ def phenomodel(institute_id, model_id):
     phenomodel_obj = store.phenomodel(model_id)
     if phenomodel_obj is None:
         flash(
-            f"Could not retrieve given phenotype model using the given key '{model_id}'", "warning"
+            f"Could not retrieve given phenotype model using the given key '{model_id}'",
+            "warning",
         )
         return redirect(request.referrer)
 

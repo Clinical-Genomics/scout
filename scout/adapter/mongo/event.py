@@ -6,12 +6,12 @@ from bson import ObjectId
 
 from scout.constants import CASE_STATUSES, REV_ACMG_MAP
 
+from .case_events import CaseEventHandler
+from .variant_events import VariantEventHandler
+
 COMMENT_LEVELS = ["global", "specific"]
 
 LOG = logging.getLogger(__name__)
-
-from .case_events import CaseEventHandler
-from .variant_events import VariantEventHandler
 
 
 class EventHandler(CaseEventHandler, VariantEventHandler):
@@ -42,6 +42,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         variant=None,
         content=None,
         panel=None,
+        individuals=[],
+        hpo_term=None,
     ):
         """Create a Event with the parameters given.
 
@@ -56,6 +58,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             level (str): 'specific' or 'global'. Default is 'specific'
             variant (dict): A variant
             content (str): The content of the comment
+            panel(str): gene panel name
+            individuals(list): list of case individuals updated with a feature
+            hpo_term(str): an HPO term
 
         Returns:
             event(dict): The inserted event
@@ -77,6 +82,10 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
+        if individuals:
+            event["individuals"] = individuals
+        if hpo_term:
+            event["hpo_term"] = hpo_term
 
         LOG.debug("Saving Event")
         self.event_collection.insert_one(event)
@@ -181,7 +190,15 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return self.event_collection.find(query)
 
     def add_phenotype(
-        self, institute, case, user, link, hpo_term=None, omim_term=None, is_group=False
+        self,
+        institute,
+        case,
+        user,
+        link,
+        hpo_term=None,
+        omim_term=None,
+        is_group=False,
+        phenotype_inds=[],
     ):
         """Add a new phenotype term to a case
 
@@ -195,22 +212,23 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             hpo_term (str): A hpo id
             omim_term (str): A omim id
             is_group (bool): is phenotype term a group?
+            phenotype_inds(list): list of case individuals showing a phenotype
 
         """
         hpo_results = []
-        try:
-            if hpo_term:
-                hpo_results = [hpo_term]
-            elif omim_term:
-                LOG.debug("Fetching info for mim term {0}".format(omim_term))
-                disease_obj = self.disease_term(omim_term)
-                if disease_obj:
-                    for term in disease_obj.get("hpo_terms", []):
-                        hpo_results.append(term)
-            else:
-                raise ValueError("Must supply either hpo or omim term")
-        except ValueError as ex:
-            raise ex
+
+        if hpo_term:  # User specified an HPO term
+            hpo_results = [hpo_term]
+        elif omim_term:  # User specified an OMIM diagnosys, collect its associated HPO terms
+            disease_obj = self.disease_term(omim_term)
+            if disease_obj:
+                for term in disease_obj.get("hpo_terms", []):
+                    hpo_results.append(term)
+
+        if not hpo_results:
+            raise ValueError(
+                "Must supply either an HPO term or an OMIM diagnosis with associated HPO terms"
+            )
 
         existing_terms = set(term["phenotype_id"] for term in case.get("phenotype_terms", []))
 
@@ -223,25 +241,40 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
             phenotype_id = hpo_obj["_id"]
             description = hpo_obj["description"]
-            if phenotype_id not in existing_terms:
-                phenotype_term = dict(phenotype_id=phenotype_id, feature=description)
-                phenotype_terms.append(phenotype_term)
+            if phenotype_id in existing_terms:
+                continue
 
-                LOG.info(
-                    "Creating event for adding phenotype term for case"
-                    " {0}".format(case["display_name"])
-                )
+            phenotype_term = dict(phenotype_id=phenotype_id, feature=description)
+            if phenotype_inds:
+                phenotype_term["individuals"] = [
+                    {
+                        "individual_id": ind.split("|")[0],
+                        "individual_name": ind.split("|")[1],
+                    }
+                    for ind in phenotype_inds
+                ]
+            phenotype_terms.append(phenotype_term)
 
-                self.create_event(
-                    institute=institute,
-                    case=case,
-                    user=user,
-                    link=link,
-                    category="case",
-                    verb="add_phenotype",
-                    subject=case["display_name"],
-                    content=phenotype_id,
-                )
+            LOG.info(
+                "Creating event for adding phenotype term for case"
+                " {0}".format(case["display_name"])
+            )
+
+            self.create_event(
+                institute=institute,
+                case=case,
+                user=user,
+                link=link,
+                category="case",
+                verb="add_phenotype",
+                subject=case["display_name"],
+                content=phenotype_id,
+                hpo_term=phenotype_id,
+                individuals=[
+                    pheno_ind["individual_name"]
+                    for pheno_ind in phenotype_term.get("individuals", [])
+                ],
+            )
 
             if is_group:
                 updated_case = self.case_collection.find_one_and_update(
@@ -257,7 +290,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             else:
                 updated_case = self.case_collection.find_one_and_update(
                     {"_id": case["_id"]},
-                    {"$addToSet": {"phenotype_terms": {"$each": phenotype_terms}}},
+                    {
+                        "$addToSet": {"phenotype_terms": {"$each": phenotype_terms}},
+                    },
                     return_document=pymongo.ReturnDocument.AFTER,
                 )
 

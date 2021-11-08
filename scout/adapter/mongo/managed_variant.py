@@ -94,7 +94,7 @@ class ManagedVariantHandler(object):
 
         Arguments:
             display_id(str): chrom_pos_ref_alt_category_build
-                category: "snv", "cancer" - "sv", "cancer_sv" possible but not expected
+                category: "snv", "cancer_snv" - "sv", "cancer_sv" possible but not expected
                 build: "37" or "38"
 
         Returns:
@@ -111,7 +111,7 @@ class ManagedVariantHandler(object):
 
         Arguments:
             display_id(str): chrom_pos_ref_alt_category_build
-                category: "snv", "cancer" - "sv", "cancer_sv" possible but not expected
+                category: "snv", "cancer_snv" - "sv", "cancer_sv" possible but not expected
                 build: "37" or "38"
 
         Returns:
@@ -121,12 +121,17 @@ class ManagedVariantHandler(object):
 
         return managed_variant
 
-    def managed_variants(self, category="snv", build="37", query_options=None):
+    def managed_variants(
+        self,
+        category=["snv", "sv", "cancer_snv", "cancer_sv"],
+        query_options=None,
+        build=None,
+    ):
         """Return a cursor to all managed variants of a particular category and build.
 
         Arguments:
             category(str):
-            sub_category(str):
+            query_options(str):
             build(str):
 
         Returns:
@@ -134,12 +139,16 @@ class ManagedVariantHandler(object):
 
         """
 
-        query = {"category": category, "build": build}
+        query = {"category": {"$in": category}}
         query_with_options = self.add_options(query, query_options)
-
         return self.managed_variant_collection.find(query_with_options)
 
-    def count_managed_variants(self, category="snv", build="37", query_options=None):
+    def count_managed_variants(
+        self,
+        category=["snv", "sv", "cancer_snv", "cancer_sv"],
+        build="37",
+        query_options=None,
+    ):
         """Return count of documents to all managed variants of a particular category and build.
 
         Arguments:
@@ -151,35 +160,40 @@ class ManagedVariantHandler(object):
             integer
 
         """
-        query = {"category": category, "build": build}
+        query = {"category": {"$in": category}, "build": build}
         query_with_options = self.add_options(query, query_options)
 
         return self.managed_variant_collection.count_documents(query_with_options)
 
     def add_options(self, query, query_options):
         """Update query with `query_options`"""
-        # TODO: why is `query_options` both popped and then updated?
+
         if query_options:
             if "description" in query_options:
                 query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
-                query_options.pop("description")
 
             if "position" in query_options:
                 query["end"] = {"$gte": int(query_options["position"])}
-                query_options.pop("position")
 
             if "end" in query_options:
                 query["position"] = {"$lte": int(query_options["end"])}
-                query_options.pop("end")
-            return query.update(query_options)
+
+            if "sub_category" in query_options:
+                query["sub_category"] = {"$in": query_options["sub_category"]}
+
+            if "chromosome" in query_options:
+                query["chromosome"] = query_options["chromosome"]
+
         return query
 
-    def get_managed_variants(self, institute_id=None, category="snv", build="37"):
+    def get_managed_variants(self, institute_id=None, category=["snv"], build="37"):
         """Return managed variant_ids. Limit by institute, category and build.
 
         Returns:
             managed_variant_ids(iterable(variant_id: String))
         """
+        if not isinstance(category, list):
+            category = [category]
 
         return [
             managed_variant["variant_id"]
@@ -204,7 +218,8 @@ class ManagedVariantHandler(object):
 
         if not result:
             LOG.info(
-                "FAILED deleting managed variant: variant_id %s not found.", managed_variant_id
+                "FAILED deleting managed variant: variant_id %s not found.",
+                managed_variant_id,
             )
 
         return result

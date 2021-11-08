@@ -1,9 +1,9 @@
 {% extends "layout_bs4.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal, reanalysis_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
+{% from "cases/utils.html" import clinvar_panel, causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
-{% from "cases/phenotype.html" import cohort_panel, diagnosis_phenotypes, diagnosis_genes, phenotype_groups_panel, phenotype_terms_panel, phenotypes_panel %}
+{% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
 
 
@@ -15,6 +15,15 @@
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="{{ url_for('cases.static', filename='case_styles.css') }}"></link>
+<style>
+  [data-toggle="collapse"] .fa:before {
+    content: "\f139";
+  }
+
+  [data-toggle="collapse"].collapsed .fa:before {
+    content: "\f13a";
+  }
+</style>
 {% endblock %}
 
 {% block top_nav %}
@@ -42,176 +51,195 @@
 {% endblock %}
 
 {% macro case_page() %}
-<div class="col {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}"> <!-- This is the main container -->
-<div class="container_spaced">
-  <div class="card">
-    <h4 class="card-header">Case: {{case.display_name}}</h4>
-    <p class="card-title {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">Status: <strong>{{case.status}}</strong>
-      <br>
-      Internal ID: <strong>{{case._id}}</strong></p>
-    <div class="card-body">
-
-      <div class="row text-center"> <!-- variants buttons -->
-        <div class="col-sm-12">{{ variants_buttons() }}</div>
-      </div>
+<div class="col ml-3"> <!-- This is the main container -->
+  <div class="container_spaced">
+      <div class="card-body {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">
+        <div class="row">
+            <div class="col-sm-4">
+              <h4 class="">
+                  Case: {{case.display_name}}<br>
+                  Status: {{case.status}}<br>
+                  <p class="text-muted">Internal ID: {{case._id}}</p>
+              </h4>
+            </div>
+            <div class="col-sm-8">
+              {{ variants_buttons() }}
+            </div>
+        </div>
+    </div> <!--end of div class="row" -->
 
       {% if other_causatives|length > 0%}
-        <div class="row">
+        <div class="row mt-0">
           <div class="col-xs-12 col-md-12">{{ matching_causatives(other_causatives, institute, case) }}</div>
         </div>
       {% endif %}
 
       {% if managed_variants|length > 0%}
         <div class="row">
-          <div class="col-xs-12 col-md-12">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
+          <div class="col-sm-12 col-md-12">{{ matching_managed_variants(managed_variants, institute, case) }}</div>
         </div>
       {% endif %}
 
-      <div class="row ">
-        <div class="col-xs-12 col-md-6">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
-        <div class="col-xs-12 col-md-6">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+      <div class="row">
+        <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+        <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
+        {% if case.clinvar_variants %}
+          <div class="col">{{ clinvar_panel(institute, case) }}</div>
+        {% endif %}
+        <!-- end of data sharing panels -->
       </div>
 
       <div class="row">
         {% if case.track == 'cancer' %}
-          <div class="col-xs-12 col-md-12">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
+          <div class="col-sm-12 col-md-12 mt-3">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
         {% else %}
-          <div class="col-xs-12 col-md-12">{{ individuals_table(case, institute, tissue_types, display_rerunner) }}</div>
-        {% endif %}
-      </div>
-
-      {{ insert_multi_image_panel() }}
-
-      <div class="row">
-        <div class="col-md-4">
-        {% if case.track != 'cancer' %}
+          <div class="mt-3 col-sm-8 col-md-{{"8" if case.madeline_info and case.individuals|length > 1 else "12"}}">{{ individuals_table(case, institute, tissue_types, display_rerunner, gens_info) }}</div>
           {% if case.madeline_info and case.individuals|length > 1 %}
-            {{ pedigree_panel(case) }}
-          {% else %}
-            <p>No pedigree picture available.</p>
+            <div class="col-sm-4">
+              {{ pedigree_panel(case) }}
+            </div>
           {% endif %}
         {% endif %}
-          {{ group_panel() }}
-        </div>
+      </div>
 
-        <div class="col-8">
-          {{ synopsis_panel() }}
-          {{ comments_panel(institute, case, current_user, comments) }}
+      <div class="row mt-3">
+        <div class="col-6">{{ synopsis_panel() }}</div>
+        <div class="col-6">{{ comments_panel(institute, case, current_user, comments) }}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          {{ insert_multi_image_panel() }}
         </div>
       </div>
 
+      <div class="row">
+        <div class="col-sm-12">
+          {{ custom_image_panels() }}
+        </div>
+      </div>
+
+      <!-- CASE DIAGNOSES AND PHENOTYPES -->
+      <div class="panel-default">
+        <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Phenotypes & diagnoses</div>
+        <div class="ml-3 mr-3">
+          <div class="row">
+            <div class="col-sm-6 card">
+            {{ hpo_panel(case, institute, config) }}
+            </div>
+            <div class="col-sm-6 card">
+              {{ hpo_genelist_panel(case, institute, config) }}
+            </div>
+          </div>
+        </div> <!--end of <div class="row">-->
         <!-- OMIM diagnoses-related code-->
         {% if not case.track == 'cancer' %}
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="card panel-default ">
-                  <div class="panel-heading"><i class="fa fa-user-md"></i>&nbsp;Diagnoses</div>
-                  <div class="card-body d-flex flex-row">
-                    <div class="col-sm-6">
-                      {{ diagnosis_phenotypes(case, institute, omim_terms) }}
-                    </div>
-                    <div class="col-sm-6">
-                      {{ diagnosis_genes(case, institute) }}
-                    </div>
-                  </div><!--end of card body-->
-              </div><!--end of card-->
+          <div class="card">
+            <div class="row">
+                 <div class="col-sm-12 ml-3 mt-3">
+                    <div class="panel-heading">
+                      <h6><i class="fa fa-user-md "></i>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank">OMIM</a>)</h6>
+                     </div>
+                 </div>
+            </div>
+            <div class="row mt-3">
+              <div class="col-sm-6">
+                {{ diagnosis_phenotypes(case, institute, omim_terms) }}
+               </div>
             </div>
           </div>
         {% endif %}
         <!-- end of OMIM diagnoses-related code-->
-        <div class="row">
-          <div class="col-md-6">{{ cohort_panel(case, institute, cohort_tags) }}</div>
-          <div class="col-md-6">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">{{ phenotype_terms_panel(case, institute) }}</div>
-          <div class="col-md-6">{{ phenotypes_panel(case, institute, config) }}</div>
-        </div>
+      </div>
 
-        <div class="row">
-          <div class="col-md-6">{{ genepanels_table(case, institute) }}</div>
-          <div class="col-md-6">{{ hpo_genelist_panel(case, institute, config) }}</div>
-        </div>
 
-        <!-- data sharing panels -->
+      <div class="panel-default">
+        <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Groups & cohorts</div>
         <div class="row">
-          {% if case.clinvar_variants %}
-            <div class="col-md-6">{{ clinvar_panel() }}</div>
-          {% endif %}
+          <div class="col-sm-4">{{ group_panel() }}</div>
+          <div class="col-sm-4">{{ cohort_panel(case, institute, cohort_tags) }}</div>
+          <div class="col-sm-4">{{ phenotype_groups_panel(case, institute, hpo_groups) }}</div>
         </div>
-        <!-- end of data sharing panels -->
-        <div class="row">
+      </div>
 
-          <div class="col-sm-12">{{activity_panel(events)}}</div>
-        </div>
+      <div class="row">
+        <div class="col-md-6">{{ genepanels_table(case, institute) }}</div>
+        <div class="col-sm-6">{{activity_panel(events)}}</div>
+      </div>
 
-        {{ modal_synopsis() }}
-        {{ rerun_modal(institute, case) }}
-        {{ research_modal(institute, case) }}
-        {{ reanalysis_modal(institute, case) }}
-        {{ beacon_modal(case) }}
-        {{ matchmaker_modal(institute, case, mme_nodes) }}
+      {{ modal_synopsis() }}
+      {{ rerun_modal(institute, case) }}
+      {{ research_modal(institute, case) }}
+      {{ reanalysis_modal(institute, case) }}
+      {{ beacon_modal(case) }}
+      {{ matchmaker_modal(institute, case, mme_nodes) }}
     </div> <!-- end of card body -->
   </div> <!-- end of card div-->
+</div><!-- end of <div class="col"> -->
 </div>
-</div> <!-- end of <div class="col"> -->
 {% endmacro %}
 
-
 {% macro variants_buttons() %}
-  <div class="form-group">
-    {% if case.vcf_files.vcf_snv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_sv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_str %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
-    {% endif %}
-    {% if case.smn_tsv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_cancer %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}SNV and INDELs</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_cancer_sv %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}structural variants</a>
-    {% endif %}
-    {% if gens_info.display %}
-      <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{case.display_name}}?&hg_type={{case.genome_build}}">View CN profile</a>
-    {% endif %}
+<div>
+  <!-- Clinical variants buttons -->
+  <div class="row">
+    <div class="col-12 d-flex justify-content-center">
+      <div class="btn-group" role="group">
+        {% if case.vcf_files.vcf_snv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_sv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_str %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
+        {% endif %}
+        {% if case.smn_tsv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer_sv %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}structural variants</a>
+        {% endif %}
+      </div>
+    </div>
   </div>
-  {% if case.is_research%}
-  <div class="form-group">
-    <div class="btn-group">
-    {% if case.vcf_files.vcf_snv_research %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_sv_research %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_cancer_research %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic SNV and INDELs</a>
-    {% endif %}
-    {% if case.vcf_files.vcf_cancer_sv_research %}
-      <a class="btn btn-outline-dark" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic structural variants</a>
-    {% endif %}
+  <!-- Research variants buttons -->
+  {% if case.is_research %}
+  <div class="row mt-3">
+    <div class="col-12 d-flex justify-content-center">
+      <div class="btn-group" role="group">
+        {% if case.vcf_files.vcf_snv_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_sv_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic SNV and INDELs</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_cancer_sv_research %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic structural variants</a>
+        {% endif %}
+      </div>
     </div>
   </div>
   {% endif %}
+</div>
 {% endmacro %}
 
 {% macro synopsis_panel() %}
-  <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about the case! Markdown format"><i class="fa fa-id-card-o"></i>&nbsp;Synopsis</div>
+  <div class="card">
+    <h6 data-toggle='tooltip' class="panel-heading ml-3 mt-2" title="Free text field. Write a summary about the case! Markdown format"><i class="fa fa-id-card-o"></i>&nbsp;Synopsis</h6>
       <div class="card-body">
         <div class="row">
           <div class="col-10">
            {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
           </div>
           <div class="col-2">
-            <button type="button" class="btn btn-outline-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
+            <button type="button" class="btn btn-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
               Edit
             </button>
           </div>
@@ -221,12 +249,14 @@
 {% endmacro %}
 
 {% macro group_panel() %}
-  <div class="card panel-default" id="case_groups">
+  <div class="card" id="case_groups">
     <div class="panel-heading" data-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups.">
-      <span>
-        <i class="fa fa-users mr-1"></i>Group connected cases ({{case_groups|length}} groups)
-      </span>
-      <span class="float-sm-right" data-toggle='tooltip' data-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}" class="text-white"><span class="fas fa-plus text-white mr-1"></span>New group</a></span>
+      <h6 class="mt-3 ml-3">
+        <span>
+          <i class="fa fa-users mr-1"></i>Connected cases ({{case_groups|length}} groups)
+        </span>
+        <span class="float-sm-right mr-3" data-toggle='tooltip' data-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}"><span class="fas fa-plus mr-1"></span>New group</a></span>
+      </h6>
     </div>
     <div class="card-body">
       <div class="list-group" style="max-height:200px; overflow-y: scroll;">
@@ -237,6 +267,7 @@
           {% endif %}
 
           {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
+
           <form class="form-inline" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
             <div class="input-group mb-2 mr-sm-2">
               <div class="input-group-prepend">
@@ -302,38 +333,73 @@
 
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
+<div class="panel-group" id="accordion">
   {% for i in case.individuals %}
-  {% if i.chromograph_images %}
-  {% if i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites %}
-     {{ add_collapsable_panel(i.individual_id, i.display_name) }}
-  {% endif  %}
-  {% endif %}
-  {% endfor %}
-{% endmacro %}
-
-
-<!-- Create a collapsing panel. Used for -->
-
-{% macro add_collapsable_panel(id_tag, display_name) %}
-  <div class="row">
-    <div class="col-12">
-      <div id={{"collapse_" + id_tag}}>
-	<div class="card panel-default">
-	  <div class="panel-heading" >
-      <div class="panel-heading" href={{"#collapsing_" + id_tag}} data-toggle="collapse" datatarget={{"#collapsing_" + id_tag}} aria-expanded="true" aria-controls={{"collapsing_" + id_tag}} data-parent={{"#collapse_" + id_tag}}>Images {{display_name}} &gt	<span class="pull-right clickable"><span class="glyphicon glyphicon-chevron-up"></span></span></div>
-          </div>
-          <div id={{"collapsing_" + id_tag}} style="width:100%" class="collapse" data-parent={{"#collapse_" + id_tag}}>
-            <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
-              <svg id={{"svg_"+id_tag}} class="img-fluid" width="1200" height="1700"></svg>
-	          </div>
+    {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
+            <i class="fa"></i>
+            Images {{i.display_name}}
+          </a>
+        </h5>
+      </div>
+      <div id="collapse_{{i.individual_id}}" style="width:100%" class="panel-collapse collapse in">
+        <div class="panel-body">
+          <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
+            <svg id={{"svg_"+i.individual_id}} class="img-fluid" width="1200" height="1700"></svg>
           </div>
         </div>
       </div>
+    {% endif %}
+  {% endfor %}
+</div>
+{% endmacro %}
+
+<!-- Create one expandable panel per custom image section -->
+{% macro custom_image_panels() %}
+  {% if case.custom_images %}
+    {% for section_name in case.custom_images %}
+      <div id="{{section_name}}-accordion" class="accordion">
+        <div class="panel-heading">
+          <h5 class="panel-title">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
+              <i class="fa"></i>{{ section_name }} images
+            </a>
+          </h5>
+        <div>
+        <div id="collapse_{{ section_name }}" class="panel-collapse collapse pl-3">
+          <div class="panel-body">
+            {% for image in case.custom_images[section_name] %}
+              <div class="pt-3">
+                <h6 class="font-weight-bold">{{ image.title }}</h6>
+                <img src="data:image/{{image.format}};base64,{{image.data|safe}}" alt="{{ image.description }}" title="{{ image.description }}"
+                                                                                                                {% if image.width %}width="{{image.width}}"{% endif %}
+                                                                                                                {% if image.height %}height="{{image.height}}"{% endif %}
+                />
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+<!-- Create a collapsing panel. Used for -->
+{% macro add_modal_panel(id_tag, display_name) %}
+  <div class="modal fade" id="modal_{{id_tag}}" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <svg class="mt-3 mb-3 ml-3 mr-3" id={{"svg_"+id_tag}} class="img-fluid" width="1200" height="1200"></svg>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+      </div>
+
     </div>
   </div>
 {% endmacro %}
-
-
 
 {% macro modal_synopsis() %}
   <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
@@ -359,24 +425,6 @@
   </form>
 {% endmacro %}
 
-{% macro clinvar_panel() %}
-  <div class="card panel-default">
-    <div class="panel-heading">Variants in ClinVar submissions</div>
-    <div class="card-body">
-      <ul>
-        {% for var_id, submission_data in case.clinvar_variants.items() %}
-          <li>
-            {% if submission_data.category == 'snv' %}
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a> ({{submission_data.clinsig}})
-            {% else %}
-              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a> ({{submission_data.clinsig}})
-            {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
-    </div> <!--end of <div class="panel-body">-->
-  </div>
-{% endmacro %}
 {% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
   <form action="{{ url }}" method="POST">
     {% if hidden_input %}
@@ -514,8 +562,31 @@ function SidebarCollapse () {
     $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
 }
 
+
+function toggleClickableButtons(button, select_field) {
+    const selection = document.getElementById(select_field)
+
+    if (selection.value.length > 0) {
+       document.getElementById(button).classList.remove('btn-outline-secondary');
+       document.getElementById(button).classList.remove('no-hover');
+       document.getElementById(button).classList.add('btn-secondary');
+    }
+    else {
+       document.getElementById(button).classList.remove('btn-secondary');
+       document.getElementById(button).classList.add('no-hover');
+       document.getElementById(button).classList.add('btn-outline-secondary');
+    }
+  }
+
+
 // Hide submenus
 $('#body-row .collapse').collapse('hide');
+
+$('.collapse').on('shown.bs.collapse', function(){
+  $(this).parent().find(".fa fa-plus").removeClass("fa fa-plus").addClass("fa fa-minus");
+  }).on('hidden.bs.collapse', function(){
+  $(this).parent().find(".fa fa-minus").removeClass("fa fa-minus").addClass("fa fa-plus");
+});
 
 // Collapse/Expand icon
 $('#collapse-icon').addClass('fa-angle-double-left');

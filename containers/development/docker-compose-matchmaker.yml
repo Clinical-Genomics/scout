@@ -1,3 +1,14 @@
+# HOWTO:
+# In: scout/server/config.py
+# ADD:
+# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+# MME_URL = "http://pmatcher-web:9020"
+# MME_TOKEN = "custom_token"
+
+# Move this file under the main scout folder (at the same level of Dockerfile)
+# THEN run this container with the command:
+# docker-compose -f docker-compose-matchmaker.yml
+
 version: '3'
 # usage:
 # sudo docker-compose up
@@ -90,13 +101,3 @@ networks:
       driver: default
       config:
         - subnet: 172.21.0.0/24
-
-
-
-# MatchMaker
-# In: scout/server/config.py
-
-# ADD:
-# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
-# MME_URL = "http://pmatcher-web:9020"
-# MME_TOKEN = "custom_token"

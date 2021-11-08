@@ -1,6 +1,6 @@
 """
 Methods for parsing HPO terms extracted from the following file:
-http://purl.obolibrary.org/obo/hp.obo
+https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo
 """
 
 import logging

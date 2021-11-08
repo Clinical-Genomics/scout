@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
+from scout.demo.resources import reduced_resources_path
 
 
 def test_update_diseases(mock_app):
@@ -10,7 +11,9 @@ def test_update_diseases(mock_app):
     assert runner
 
     # Test CLI base, no arguments provided
-    result = runner.invoke(cli, ["update", "diseases"])
-    assert "WARNING Please provide a omim api key to load the omim gene panel" in result.output
-    # command raises error because no valid key is provided
-    assert result.exit_code != 0
+    result = runner.invoke(
+        cli,
+        ["update", "diseases", "--downloads-folder", reduced_resources_path],
+    )
+    # command should run without errors
+    assert result.exit_code == 0

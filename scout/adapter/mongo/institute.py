@@ -30,7 +30,7 @@ class InstituteHandler(object):
         )
 
         insert_info = self.institute_collection.insert_one(institute_obj)
-        ##TODO check if insert info was ok
+
         LOG.info("Institute saved")
 
     def update_institute(
@@ -49,6 +49,7 @@ class InstituteHandler(object):
         add_groups=None,
         sharing_institutes=None,
         cohorts=None,
+        alamut_key=None,
     ):
         """Update the information for an institute
 
@@ -67,11 +68,13 @@ class InstituteHandler(object):
             add_groups(bool): If groups should be added. If False replace groups
             sharing_institutes(list(str)): Other institutes to share cases with
             cohorts(list(str)): patient cohorts
+            alamut_key(str): optional, Alamut Plus API key -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
 
         Returns:
             updated_institute(dict)
 
         """
+
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
@@ -155,6 +158,11 @@ class InstituteHandler(object):
         if loqusdb_id is not None:
             LOG.info("Updating loqusdb id for institute: %s to %s", internal_id, loqusdb_id)
             updates["$set"]["loqusdb_id"] = loqusdb_id
+
+        if alamut_key is not None:
+            updates["$set"]["alamut_key"] = (
+                alamut_key if alamut_key != "" else None
+            )  # allows to reset Alamut key to None
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
