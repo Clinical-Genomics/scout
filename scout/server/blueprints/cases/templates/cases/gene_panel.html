@@ -96,13 +96,15 @@
 
     <!-- scrollable div containing dynamic gene list -->
     <div class="mt-3 ml-3" style="max-height:200px; overflow-y: scroll; min-height: 100px;">
-      <i>
-      {% for hpo_gene in case.dynamic_gene_list %}
-        {{ hpo_gene.hgnc_symbol }}&nbsp;&nbsp;
+      {% if case.dynamic_gene_list %}
+        <i>
+        {% for hpo_gene in case.dynamic_gene_list %}
+          {{ hpo_gene.hgnc_symbol }}&nbsp;&nbsp;
+        {% endfor %}
+        </i>
       {% else %}
         <span class="text-muted">No gene list generated</span>
-      {% endfor %}
-      </i>
+      {% endif %}
     </div>
 
     {% if case.dynamic_gene_list %}
