@@ -48,7 +48,12 @@ def remote_cors(remote_url):
         allow_redirects=True,
     )
 
-    excluded_headers = ["content-encoding", "content-length", "transfer-encoding", "connection"]
+    excluded_headers = [
+        "content-encoding",
+        "content-length",
+        "transfer-encoding",
+        "connection",
+    ]
     headers = [
         (name, value)
         for (name, value) in resp.raw.headers.items()
