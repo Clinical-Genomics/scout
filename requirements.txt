@@ -8,6 +8,7 @@ Flask-Bootstrap
 Flask-CORS
 path.py
 Flask-Markdown
+WTForms<3
 Flask-WTF
 Flask-Mail
 Flask-WeasyPrint
