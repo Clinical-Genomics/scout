@@ -619,6 +619,7 @@ class CaseHandler(object):
         """Load a case into the database
 
         Check if the owner and the institute exists.
+        If update is True, old case variants will be removed.
 
         Args:
             config_data(dict): A dictionary with all the necessary information
@@ -662,6 +663,12 @@ class CaseHandler(object):
             case_obj, existing_case, institute_obj, update, keep_actions
         )
 
+        if existing_case and keep_actions:
+            # collect all variants with user actions for this case
+            old_evaluated_variants = list(
+                self.evaluated_variants(case_obj["_id"], case_obj["owner"])
+            )
+
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
             {"file_name": "vcf_sv", "variant_type": "clinical", "category": "sv"},
@@ -694,12 +701,21 @@ class CaseHandler(object):
                         variant_type=variant_type,
                         category=category,
                     )
+
+                # get custom images from config file
+                custom_images = (
+                    case_obj["custom_images"][category]
+                    if category in case_obj.get("custom_images", {})
+                    else None
+                )
+                # add variants
                 self.load_variants(
                     case_obj=case_obj,
                     variant_type=variant_type,
                     category=category,
                     build=genome_build,
                     rank_threshold=case_obj.get("rank_score_threshold", 5),
+                    custom_images=custom_images,
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:

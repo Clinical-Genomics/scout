@@ -2,14 +2,11 @@
 import datetime
 import logging
 
-from pymongo import ASCENDING, DESCENDING
-
-LOG = logging.getLogger(__name__)
-
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
 from flask import flash
 from flask_login import current_user
+from pymongo import ASCENDING, DESCENDING
 
 from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
@@ -20,6 +17,9 @@ from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
 
 from .forms import CaseFilterForm
+
+LOG = logging.getLogger(__name__)
+
 
 # Do not assume all cases have a valid track set
 TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
@@ -307,7 +307,7 @@ def populate_case_filter_form(params):
     """
     form = CaseFilterForm(params)
     form.search_type.default = params.get("search_type")
-    search_term = form.search_term.data
+    search_term = form.search_term.data or ""
     if ":" in search_term:
         form.search_term.data = search_term[search_term.index(":") + 1 :]  # remove prefix
     return form
@@ -402,7 +402,7 @@ def gene_variants(store, pymongo_cursor, variant_count, institute_id, page=1, pe
 
         genome_build = get_genome_build(variant_case_obj)
         variant_genes = variant_obj.get("genes")
-        gene_object = update_HGNC_symbols(store, variant_genes, genome_build)
+        update_HGNC_symbols(store, variant_genes, genome_build)
 
         # Populate variant HGVS and predictions
         variant_genes = variant_obj.get("genes")
@@ -581,11 +581,11 @@ def update_HGNC_symbols(store, variant_genes, genome_build):
                 continue
             # Else we collect the gene object and check the id
             if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
-                hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                if not hgnc_gene:
+                hgnc_gene_caption = store.hgnc_gene_caption(gene_obj["hgnc_id"], build=genome_build)
+                if not hgnc_gene_caption:
                     continue
-                gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                gene_obj["description"] = hgnc_gene["description"]
+                gene_obj["hgnc_symbol"] = hgnc_gene_caption["hgnc_symbol"]
+                gene_obj["description"] = hgnc_gene_caption["description"]
 
 
 def get_genome_build(variant_case_obj):

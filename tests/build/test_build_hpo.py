@@ -1,6 +1,7 @@
 from scout.build.hpo import build_hpo_term
 import pytest
 
+
 def test_build_hpo_term(adapter, test_hpo_info):
     ## GIVEN a hpo term
     ## WHEN building the hpo term
@@ -11,7 +12,7 @@ def test_build_hpo_term(adapter, test_hpo_info):
     assert len(hpo_obj["genes"]) == 2
 
 
-@pytest.mark.parametrize("key", ['hpo_id', 'description'])    
+@pytest.mark.parametrize("key", ["hpo_id", "description"])
 def test_build_hpo_term_missing_key(adapter, test_hpo_info, key):
     ## GIVEN a dictionary with hpo information
 

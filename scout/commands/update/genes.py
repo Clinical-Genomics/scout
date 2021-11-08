@@ -118,7 +118,8 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
     help="specify path to folder where files necessary to update genes are pre-downloaded",
 )
 @click.option(
-    "--api-key", help="Specify the OMIM downloads api key. Only if downloads_folder is not provided"
+    "--api-key",
+    help="Specify the OMIM downloads api key. Only if downloads_folder is not provided",
 )
 @with_appcontext
 def genes(build, downloads_folder, api_key):

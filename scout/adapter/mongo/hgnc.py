@@ -43,6 +43,43 @@ class GeneHandler(object):
 
         return result
 
+    def hgnc_gene_caption(self, hgnc_identifier, build="37"):
+        """Fetch the current hgnc gene symbol and similar caption info for a gene in a lightweight dict
+        Avoid populating transcripts, exons etc that would be added on a full gene object. Use hgnc_gene() if
+        you need to use those.
+
+        Args:
+            hgnc_identifier(int)
+            build(str)
+
+        Returns:
+            gene_caption(dict): light pymongo document with keys "hgnc_symbol", "description", "chromosome", "start", "end".
+        """
+
+        if build:
+            build = str(build)
+        if not build in ["37", "38"]:
+            build = "37"
+        query = {}
+        projection = {}
+
+        hgnc_identifier = int(hgnc_identifier)
+        query["hgnc_id"] = hgnc_identifier
+        query["build"] = build
+
+        projection["hgnc_symbol"] = 1
+        projection["description"] = 1
+        projection["chromosome"] = 1
+        projection["start"] = 1
+        projection["end"] = 1
+
+        LOG.debug("Fetching gene %s" % hgnc_identifier)
+        gene_symbol_obj = self.hgnc_collection.find_one(query, projection)
+        if not gene_symbol_obj:
+            return None
+
+        return gene_symbol_obj
+
     def hgnc_gene(self, hgnc_identifier, build="37"):
         """Fetch a hgnc gene
 
@@ -122,7 +159,10 @@ class GeneHandler(object):
 
         if search:
             # first search for a full match
-            query_full_match = {**self.get_query_alias_or_id(hgnc_symbol, build), **build_query}
+            query_full_match = {
+                **self.get_query_alias_or_id(hgnc_symbol, build),
+                **build_query,
+            }
             nr_genes = self.nr_genes(query=query_full_match)
             if nr_genes != 0:
                 return self.hgnc_collection.find(query_full_match)
