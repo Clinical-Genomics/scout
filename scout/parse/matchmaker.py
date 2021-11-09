@@ -56,13 +56,14 @@ def omim_terms(case_obj):
     return disorders
 
 
-def genomic_features(store, case_obj, sample_name, genes_only):
+def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
     """Extract and parse matchmaker-like genomic features from pinned variants
         of a patient
     Args:
         store(MongoAdapter) : connection to the database
         case_obj(dict): a scout case object
         sample_name(str): sample display name
+        candidate_vars(list): a list of variants/genes chosen from the user. Example: ["4c7d5c70d955875504db72ef8e1abe77", "77d69d4d78a8e272365bdabe4f607327|TIPIN"]
         genes_only(bool): if True only gene names will be included in genomic features
 
     Returns:
@@ -87,48 +88,45 @@ def genomic_features(store, case_obj, sample_name, genes_only):
 
     """
     g_features = []
-    # genome build is required
-    build = case_obj["genome_build"]
-    if not build in ["37", "38"]:
-        build = "GRCh37"
-    else:
-        build = "GRCh" + build
 
-    individual_pinned_snvs = list(
-        store.sample_variants(variants=case_obj.get("suspects"), sample_name=sample_name)
-    )
-
-    # if genes_only is True don't add duplicated genes
-    gene_set = set()
-    for var in individual_pinned_snvs:
-        # a variant could hit one or several genes so create a genomic feature for each of these genes
-        hgnc_gene_ids = var.get("hgnc_ids")
-        # Looks like MatchMaker Exchange API accepts only variants that hit genes :(
-        if not hgnc_gene_ids:
+    for var in candidate_vars:
+        vari_id = var.split("|")[0]
+        gene_symbol = None
+        var_obj = store.sample_variant(vari_id, sample_name)
+        if var_obj is None:
             continue
-        for hgnc_id in hgnc_gene_ids:
+        if "|" in var:  # Share a gene symbol from a SV
+            gene_symbol = var.split("|")[1]
+            g_feature = {"gene": {"id": gene_symbol}}
+            g_features.append(g_feature)
+            continue
+
+        # SNV variant
+        hgnc_genes = var_obj.get("hgnc_ids")
+        if not hgnc_genes:
+            continue
+        for hgnc_id in hgnc_genes:
             gene_caption = store.hgnc_gene_caption(hgnc_id, case_obj["genome_build"])
             if not gene_caption:
                 continue
             g_feature = {"gene": {"id": gene_caption.get("hgnc_symbol")}}
-            if genes_only and not hgnc_id in gene_set:  # if only gene names should be shared
-                gene_set.add(hgnc_id)
+            if genes_only is True:  # Disclose only gene info
                 g_features.append(g_feature)
                 continue
 
-            # if also variants should be shared:
+            # share Variant-level information
             g_feature["variant"] = {
-                "referenceName": var["chromosome"],
-                "start": var["position"],
-                "end": var["end"],
-                "assembly": build,
-                "referenceBases": var["reference"],
-                "alternateBases": var["alternative"],
+                "referenceName": var_obj["chromosome"],
+                "start": var_obj["position"],
+                "end": var_obj["end"],
+                "assembly": "GRCh38" if "38" in str(case_obj.get("genome_build", "")) else "GRCh37",
+                "referenceBases": var_obj["reference"],
+                "alternateBases": var_obj["alternative"],
                 "shareVariantLevelData": True,
             }
             zygosity = None
             # collect zygosity for the given sample
-            zygosities = var[
+            zygosities = var_obj[
                 "samples"
             ]  # it's a list with zygosity situation for each sample of the case
             for zyg in zygosities:
