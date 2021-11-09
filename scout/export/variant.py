@@ -28,9 +28,9 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
 
     variant_ids = adapter.get_causatives(institute_id=collaborator, case_id=case_id)
     ##TODO add check so that same variant is not included more than once
-    for document_id in variant_ids:
+    for doc_id in variant_ids:
 
-        variant_obj = adapter.variant(document_id)
+        variant_obj = adapter.variant(doc_id)
         chrom = variant_obj["chromosome"]
         # Convert chromosome to integer for sorting
         chrom_int = CHROMOSOME_INTEGERS.get(chrom)
@@ -164,6 +164,6 @@ def export_mt_variants(variants, sample_id):
                 alt_ad = sample["allele_depths"][1]
         line.append(ref_ad)
         line.append(alt_ad)
-        if not alt_ad == 0:
+        if alt_ad != 0:
             document_lines.append(line)
     return document_lines
