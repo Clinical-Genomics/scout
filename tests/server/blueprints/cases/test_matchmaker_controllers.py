@@ -123,6 +123,8 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
         return_value={"message": "ok", "status_code": 200},
     )
 
+    TEST_GENE = "TRAPPC9"
+
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
 
@@ -130,7 +132,7 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
         sv_variant_obj["samples"] = [
             {"sample_id": "ADM1059A2", "display_name": "NA12882", "genotype_call": "0/1"}
         ]
-        sv_variant_obj["genes"] = [{"hgnc_id": 30832, "hgnc_symbol": "TRAPPC9"}]
+        sv_variant_obj["genes"] = [{"hgnc_id": 30832, "hgnc_symbol": TEST_GENE}]
         store.variant_collection.insert_one(sv_variant_obj)
 
         # GIVEN a user which is registered as a MatchMaker submitter
@@ -151,7 +153,7 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
         )
         # GIVEN a patched request to the matchmaker_add endpoint to insert the variant at the gene level
         mocker.patch(
-            "flask.request.form.getlist", return_value=[f'{sv_variant_obj["_id"]}|TRAPPC9']
+            "flask.request.form.getlist", return_value=[f'{sv_variant_obj["_id"]}|{TEST_GENE}']
         )
 
         # WHEN user submits the case using the matchmaker_add controller
@@ -163,7 +165,7 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
         # THEN ine case should be uodated and a submission object correctly saved to database
         updated_case = store.case_collection.find_one()
         submission = updated_case["mme_submission"]
-        assert submission["patients"][0]["genomicFeatures"][0]["gene"]["id"] == "TRAPPC9"
+        assert submission["patients"][0]["genomicFeatures"][0]["gene"]["id"] == TEST_GENE
 
 
 def test_matchmaker_delete(app, mme_submission, user_obj, case_obj, mocker):
