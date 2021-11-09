@@ -27,7 +27,7 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
         return
 
     variant_ids = adapter.get_causatives(institute_id=collaborator, case_id=case_id)
-    ##TODO add check so that same variant is not included more than once
+
     for doc_id in variant_ids:
 
         variant_obj = adapter.variant(doc_id)
