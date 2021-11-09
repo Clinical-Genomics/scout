@@ -42,7 +42,11 @@ def test_genomic_features(real_variant_database, case_obj):
 
     # WHEN the parse genomic_features is used to parse genotype features of this case
     g_features = genomic_features(
-        store=adapter, case_obj=case_obj, sample_name=sample_name, genes_only=False
+        store=adapter,
+        case_obj=case_obj,
+        sample_name=sample_name,
+        candidate_vars=case_obj["suspects"],
+        genes_only=False,
     )
     # THEN it should return the expected data
     assert isinstance(g_features, list)
