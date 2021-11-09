@@ -1120,10 +1120,11 @@ def matchmaker_add(request, institute_id, case_name):
     # Check that general MME request requirements are fulfilled
     matchmaker_check_requirements(request)
     _, case_obj = institute_and_case(store, institute_id, case_name)
-    candidate_vars = case_obj.get("suspects") or []
+    candidate_vars = request.form.getlist("selected_var")
+
     if len(candidate_vars) > 3:
         flash(
-            "At the moment it is not possible to save to MatchMaker more than 3 pinned variants",
+            "At the moment it is not possible to save to MatchMaker more than 3 candidate variants / genes",
             "warning",
         )
         return redirect(request.referrer)
@@ -1187,7 +1188,7 @@ def matchmaker_add(request, institute_id, case_name):
 
         if candidate_vars:
             g_features = genomic_features(
-                store, case_obj, individual.get("display_name"), genes_only
+                store, case_obj, individual.get("display_name"), candidate_vars, genes_only
             )
             patient["genomicFeatures"] = g_features
         resp = matchmaker.patient_submit(patient)
@@ -1200,9 +1201,7 @@ def matchmaker_add(request, institute_id, case_name):
         )
         if resp.get("status_code") != 200:
             flash(
-                "an error occurred while adding patient to matchmaker: {}".format(
-                    resp.get("message")
-                ),
+                "an error occurred while adding patient to matchmaker: {}".format(resp),
                 "warning",
             )
             continue
