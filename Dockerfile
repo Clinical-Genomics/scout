@@ -35,7 +35,6 @@ RUN pip install --no-cache-dir --upgrade pip &&           \
 
 FROM python:3.8.1-slim
 
-LABEL base_image="python:3.8.1-slim"
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
 LABEL about.tags="WGS,WES,Rare diseases,VCF,variants,SNP,Next generation sequencing"
@@ -48,7 +47,7 @@ WORKDIR /home/worker/app
 # Copy pyhon wheels and install scout
 COPY --from=builder /usr/src/app/wheels /wheels
 RUN apt-get update &&                                     \
-    apt-get install -y libgdk-pixbuf2.0-0 libpango-1.0-0  \
+    apt-get install -y --no-install-recommends libgdk-pixbuf2.0-0 libpango-1.0-0  \
 	libcairo2 libpangocairo-1.0-0 ssh sshfs &&            \
     pip install --no-cache-dir --upgrade pip &&           \
     pip install --no-cache-dir /wheels/* &&               \
