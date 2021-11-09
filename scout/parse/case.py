@@ -56,7 +56,7 @@ def _parse_images_cnf(images):
     parsed_images = []
     for image in images:
         img = image["path"]
-        if "{" in img and "}" in img:
+        if "{" in str(img) and "}" in str(img):
             for match in _glob_wildcard(image["path"]):
                 # replace wildcard variable name with match
                 replaced_info = {

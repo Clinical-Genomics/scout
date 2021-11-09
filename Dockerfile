@@ -17,7 +17,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 #########
 FROM python:3.8-slim
 
-LABEL base_image="python:3.8.1-slim"
 LABEL about.home="https://github.com/Clinical-Genomics/scout"
 LABEL about.documentation="https://clinical-genomics.github.io/scout"
 LABEL about.tags="WGS,WES,Rare diseases,VCF,variants,SNP,Next generation sequencing"
