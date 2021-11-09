@@ -91,7 +91,7 @@ def case(
     if not case_id:
         if not (case_name and institute):
             LOG.info(
-                "Please specify either a case ID or case name and institute for the case that should be updated."
+                "Please specify either a case ID or both case name and institute ID for the case that should be updated."
             )
             raise click.Abort()
 
