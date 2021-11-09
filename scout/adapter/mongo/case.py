@@ -613,7 +613,7 @@ class CaseHandler(object):
 
         if keep_actions:
             # collect all variants with user actions for this case
-            return list(self.evaluated_variants(case_obj["_id"]))
+            return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
 
     def load_case(self, config_data, update=False, keep_actions=True):
         """Load a case into the database
