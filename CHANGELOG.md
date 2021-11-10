@@ -6,11 +6,35 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Choose custom pinned variants to submit to MatchMaker Exchange
+- Submit structural variant as genes to the MatchMaker Exchange
+### Changed
+- Enforce same case _id and display_name when updating a case
+- Enforce same individual ids, display names and affected status when updating a case
+- Display and download HPO gene panels' gene in italics
+### Fixed
+- Use of deprecated TextField after the upgrade of WTF to v3.0
+- Freeze to WTForms to version < 3
+- Remove the extra files (bed files and madeline.svg) introduced by mistake
+
+## [4.41.1]
+### Fixed
+- General reports crash for variant annotations with same variant on other cases
+
+## [4.41]
+### Added
 - Extended the instructions for running the Scout Docker image (web app and cli).
+- Enabled inclusion of custom images to STR variant view
 ### Fixed
 - General case report sorting comments for variants with None genetic models
 - Do not crash but redirect to variants page with error when a variant is not found for a case
+- UCSC links coordinates for SV variants with start chromosome different than end chromosome
+- Human readable variants name in case page for variants having start chromosome different from end chromosome
+- Avoid always loading all transcripts when checking gene symbol: introduce gene captions
+- Slow queries for evaluated variants on e.g. case page - use events instead
 ### Changed
+- Rearrange variant page again, moving severity predictions down.
+- More reactive layout width steps on variant page
 
 ## [4.40.1]
 ### Added
@@ -48,6 +72,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Capitalize case search terms on institute and dashboard pages
 - Moved the code preparing the transcripts overview to the backend 
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
+
 
 ## [4.39]
 ### Added

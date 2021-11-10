@@ -456,6 +456,7 @@ def case_obj(request, parsed_case):
     case["synopsis"] = ""
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
+    case["custom_images"] = parsed_case["custom_images"]["case"]
     case["assignees"] = []
     case["phenotype_terms"] = []  # do not assign any phenotype
     case["cohorts"] = []  # do not assign any cohort
@@ -746,7 +747,6 @@ def gene_database(request, institute_database, genes):
 
 @pytest.fixture(scope="function")
 def real_gene_database(
-    request,
     real_institute_database,
     genes37_handle,
     hgnc_handle,
@@ -815,13 +815,12 @@ def populated_database(request, panel_database, parsed_case):
 
 
 @pytest.fixture(scope="function")
-def real_populated_database(request, real_panel_database, parsed_case):
+def real_populated_database(real_panel_database, parsed_case):
     "Returns an adapter to a database populated with user, institute case, genes, panels"
     adapter = real_panel_database
 
     LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
-    # adapt custom images
     adapter._add_case(case_obj)
 
     return adapter

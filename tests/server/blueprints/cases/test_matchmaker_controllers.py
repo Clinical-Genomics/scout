@@ -41,6 +41,7 @@ def test_matchmaker_check_requirements_unauthorized_user(app, user_obj, mocker, 
 def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj, mocker, mock_redirect):
     """Testing adding a case to matchmaker when the case has no set phenotype or candidate gene/variant"""
 
+    # GIVEN patched responses from the MME server
     mocker.patch("scout.server.blueprints.cases.controllers.redirect", return_value=mock_redirect)
 
     # GIVEN a case with no phenotype terms:
@@ -68,12 +69,15 @@ def test_matchmaker_add_no_genes_no_features(app, user_obj, case_obj, mocker, mo
         assert "mme_submission" not in updated_case
 
 
-def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
-    # GIVEN a mocked response from MME server
+def test_matchmaker_add_snv(app, user_obj, case_obj, test_hpo_terms, mocker):
+    """Test adding a patient with a SNV to MatchMaker Exchange"""
+
+    # GIVEN patched responses from the MME server
     mocker.patch(
         "scout.server.extensions.matchmaker.patient_submit",
         return_value={"message": "ok", "status_code": 200},
     )
+
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
         # GIVEN a user which is registered as a MatchMaker submitter
@@ -83,10 +87,73 @@ def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
         client.get(url_for("auto_login"))
 
         # submitting a case with HPO terms and a pinned variant
-        test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
+        test_variant = store.variant_collection.find_one({"genes.hgnc_symbol": "POT1"})
+
         updated_case = store.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
-            {"$set": {"suspects": [test_variant["_id"]], "phenotype_terms": test_hpo_terms}},
+            {
+                "$set": {
+                    "suspects": [test_variant["_id"]],
+                    "phenotype_terms": test_hpo_terms,
+                }
+            },
+        )
+        # GIVEN a patched request to the matchmaker_add endpoint
+        mocker.patch("flask.request.form.getlist", return_value=[test_variant["_id"]])
+
+        # WHEN user submits the case using the matchmaker_add controller
+        saved_results = controllers.matchmaker_add(
+            request, institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+        )
+        assert saved_results == 1
+
+        # THEN ine case should be uodated and a submission object correctly saved to database
+        updated_case = store.case_collection.find_one()
+        submission = updated_case["mme_submission"]
+        assert (
+            submission["patients"][0]["genomicFeatures"][0]["variant"]["start"]
+            == test_variant["position"]
+        )
+
+
+def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
+    """Test adding a patient with a SV to MatchMaker Exchange"""
+    mocker.patch(
+        "scout.server.extensions.matchmaker.patient_submit",
+        return_value={"message": "ok", "status_code": 200},
+    )
+
+    TEST_GENE = "TRAPPC9"
+
+    # GIVEN an app containing MatchMaker connection params
+    with app.test_client() as client:
+
+        # GIVEN a SV variant with genes
+        sv_variant_obj["samples"] = [
+            {"sample_id": "ADM1059A2", "display_name": "NA12882", "genotype_call": "0/1"}
+        ]
+        sv_variant_obj["genes"] = [{"hgnc_id": 30832, "hgnc_symbol": TEST_GENE}]
+        store.variant_collection.insert_one(sv_variant_obj)
+
+        # GIVEN a user which is registered as a MatchMaker submitter
+        store.user_collection.find_one_and_update(
+            {"email": user_obj["email"]}, {"$set": {"roles": ["mme_submitter"]}}
+        )
+
+        client.get(url_for("auto_login"))
+
+        # submitting a case with HPO terms and a pinned variant
+        test_variant = store.variant_collection.find_one({"category": "sv"})
+
+        assert test_variant
+
+        updated_case = store.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"suspects": [test_variant["_id"]]}},
+        )
+        # GIVEN a patched request to the matchmaker_add endpoint to insert the variant at the gene level
+        mocker.patch(
+            "flask.request.form.getlist", return_value=[f'{sv_variant_obj["_id"]}|{TEST_GENE}']
         )
 
         # WHEN user submits the case using the matchmaker_add controller
@@ -97,7 +164,8 @@ def test_matchmaker_add(app, user_obj, case_obj, test_hpo_terms, mocker):
 
         # THEN ine case should be uodated and a submission object correctly saved to database
         updated_case = store.case_collection.find_one()
-        assert len(updated_case["mme_submission"]["patients"]) == 1
+        submission = updated_case["mme_submission"]
+        assert submission["patients"][0]["genomicFeatures"][0]["gene"]["id"] == TEST_GENE
 
 
 def test_matchmaker_delete(app, mme_submission, user_obj, case_obj, mocker):
@@ -134,10 +202,12 @@ def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
     """testing controller function to match one patient against other patients from Scout"""
     # GIVEN mocked responses from MME server
     mocker.patch(
-        "scout.server.extensions.matchmaker.match_internal", return_value={"status_code": 200}
+        "scout.server.extensions.matchmaker.match_internal",
+        return_value={"status_code": 200},
     )
     mocker.patch(
-        "scout.server.extensions.matchmaker.match_external", return_value={"status_code": 200}
+        "scout.server.extensions.matchmaker.match_external",
+        return_value={"status_code": 200},
     )
 
     # GIVEN an app containing MatchMaker connection params
@@ -156,14 +226,20 @@ def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
 
         # WHEN user submits a patient for matching on the Scout node (internal matching)
         ok_responses = controllers.matchmaker_match(
-            request, "internal", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+            request,
+            "internal",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
         )
         # The expected response should be succcess
         assert ok_responses > 0
 
         # WHEN user submits a patient for matching on a connected node (external matching)
         ok_responses = controllers.matchmaker_match(
-            request, "external", institute_id=case_obj["owner"], case_name=case_obj["display_name"]
+            request,
+            "external",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
         )
         # The expected response should be not succcess since there are no connected nodes
         assert ok_responses == 0

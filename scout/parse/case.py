@@ -1,6 +1,8 @@
 import datetime
 import logging
+import re
 from fractions import Fraction
+from glob import glob
 from pathlib import Path
 from pprint import pprint as pp
 
@@ -14,6 +16,7 @@ from scout.parse.smn import parse_smn_file
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
+
 
 
 def parse_case_data(**kwargs):
@@ -74,6 +77,7 @@ def parse_case_data(**kwargs):
         config_dict["default_gene_panels"] = [
             panel.strip() for panel in config_dict["default_gene_panels"]
         ]
+
     except KeyError:
         pass
 

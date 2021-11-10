@@ -8,6 +8,7 @@ Flask-Bootstrap
 Flask-CORS
 path.py
 Flask-Markdown
+WTForms<3 # Remove this dependency after flask_ldap3_login issue #75 is fixed
 Flask-WTF
 Flask-Mail
 Flask-WeasyPrint

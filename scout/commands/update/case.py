@@ -12,8 +12,12 @@ LOG = logging.getLogger(__name__)
 
 @click.command("case", short_help="Update a case")
 @click.argument("case_id", required=False)
-@click.option("--case-name", "-n", help="Add/update the display name of case")
-@click.option("--institute", "-i", help="Update what institutes that has access to case")
+@click.option(
+    "--case-name", "-n", help="Search case by display name (institute ID should also be provided)"
+)
+@click.option(
+    "--institute", "-i", help="Case institute ID (case display name should also be provided)"
+)
 @click.option("--collaborator", "-c", help="Add a collaborator to the case")
 @click.option("--vcf", type=click.Path(exists=True), help="path to clinical VCF file to be added")
 @click.option(
@@ -83,13 +87,16 @@ def case(
     Update a case in the database
     """
     adapter = store
+
     if not case_id:
         if not (case_name and institute):
-            LOG.info("Please specify which case to update.")
+            LOG.info(
+                "Please specify either a case ID or both case name and institute ID for the case that should be updated."
+            )
             raise click.Abort()
-        case_id = "{0}-{1}".format(institute, case_name)
+
     # Check if the case exists
-    case_obj = adapter.case(case_id)
+    case_obj = adapter.case(case_id=case_id, institute_id=institute, display_name=case_name)
 
     if not case_obj:
         LOG.warning("Case %s could not be found", case_id)

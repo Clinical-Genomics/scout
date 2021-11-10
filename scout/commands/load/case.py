@@ -112,7 +112,8 @@ def case(
     if config_data.get("genome_build") not in [37, 38, "37", "38"]:
         config_data["genome_build"] = int(
             click.prompt(
-                f"Please enter a valid genome build for this case", type=click.Choice(["37", "38"])
+                f"Please enter a valid genome build for this case",
+                type=click.Choice(["37", "38"]),
             )
         )
 

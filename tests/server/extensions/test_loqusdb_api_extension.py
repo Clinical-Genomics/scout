@@ -29,7 +29,10 @@ def test_get_api_loqus_version(loqus_api_app, monkeypatch):
     # GIVEN a mocked loqus API
     def mockapi(*args):
         return {
-            "content": {"message": "Welcome to the loqusdbapi", "loqusdb_version": "2.5"},
+            "content": {
+                "message": "Welcome to the loqusdbapi",
+                "loqusdb_version": "2.5",
+            },
             "status_code": 200,
         }
 
@@ -131,7 +134,10 @@ def test_loqusdb_api_cases(loqus_api_app, monkeypatch):
     nr_svs = 12
     # GIVEN a mocked loqus API
     def mockapi(*args):
-        return {"content": {"nr_cases_snvs": nr_snvs, "nr_cases_svs": nr_svs}, "status_code": 200}
+        return {
+            "content": {"nr_cases_snvs": nr_snvs, "nr_cases_svs": nr_svs},
+            "status_code": 200,
+        }
 
     monkeypatch.setattr(loqus_extension, "api_get", mockapi)
 
