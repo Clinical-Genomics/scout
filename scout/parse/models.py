@@ -49,13 +49,16 @@ def _replace_wildcard_with_match(match, image):
     str_repid = match["match"]
     title_expanded = image.title.replace("{%s}" % match["variable_name"], match["match"])
 
-    return Image(path=path_expanded,
-                 description=image.description,
-                 height=image.height,
-                 format=image.format,
-                 width=image.width,
-                 title=title_expanded,
-                 str_repid=str_repid)
+    return Image(
+        path=path_expanded,
+        description=image.description,
+        height=image.height,
+        format=image.format,
+        width=image.width,
+        title=title_expanded,
+        str_repid=str_repid,
+    )
+
 
 def is_wildcard(string_path):
     """Return true if string_path contains { and }, used to contruct wildcard matching"""
@@ -211,7 +214,7 @@ class CustomImage(BaseModel):
     def expand_wildcards(cls, values):
         """Traverse every Image object and exand wildcards."""
         # 1. Travers variant lists and expand wildcards
-        variant_list = values['str']
+        variant_list = values["str"]
         values["str"] = update_image_list_on_wildcard(variant_list)
 
         # 2. Travers case dict and expand wildcards
@@ -220,14 +223,13 @@ class CustomImage(BaseModel):
         for entry in cases:
             image_list = cases[entry]
             cases_updated[entry] = update_image_list_on_wildcard(image_list)
-        values['case'] = cases_updated
+        values["case"] = cases_updated
         return values
-
 
     @root_validator
     def read_binaries(cls, values):
         """Read image binaries for all Image entries to store in db"""
-        variant_list = values['str']
+        variant_list = values["str"]
         read_filestream(variant_list)
 
         cases = values["case"]
