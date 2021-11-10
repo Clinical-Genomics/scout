@@ -33,7 +33,6 @@ def _glob_wildcard(path):
     # make proper wildcard path
     glob_path = path[: wildcard.start()] + "*" + path[wildcard.end() :]
     wildcard_end = len(path) - wildcard.end()
-    LOG.debug("GLOBPATH! {}".format(glob_path))
     paths = tuple(
         {
             "match": match[wildcard.start() : -wildcard_end],
@@ -42,19 +41,16 @@ def _glob_wildcard(path):
         }
         for match in glob(glob_path)
     )
-    LOG.debug("RETURNPATHS! {}".format(paths))
     return paths
 
 
 def _replace_wildcard_with_match(match, image):
-    LOG.debug("Match: {},".format(match))
-    LOG.debug("Image: {}".format(image))
-
     path_expanded = image.path.replace("{%s}" % match["variable_name"], match["match"])
     str_repid = match["match"]
     title_expanded = image.title.replace("{%s}" % match["variable_name"], match["match"])
 
-    return Image(path=Path(path_expanded),
+    # call to Image makes run "goto" read_binaries(...) -why?
+    return Image(path=path_expanded,
                  description=image.description,
                  height=image.height,
                  format=image.format,
@@ -88,7 +84,6 @@ class Image(BaseModel):
 
         # Skip configured image if path suffix is not an image file type
         if not path.suffix[1:] in ["gif", "svg", "png", "jpg", "jpeg"]:
-            LOG.warning(f"Image: {path.name} is not recognized as an image, skipping")
             values["path"] = None
             return values       
         return values
@@ -193,21 +188,14 @@ class VcfFiles(BaseModel):
 def update_image_list_on_wildcard(image_list):
     """Traverse a list of Image() objects and expand on wildcards.
     Returns a list of Images."""
-    LOG.debug('INPUt: {}'.format(image_list))
     updated_image_list = []
     for image in image_list:
-        LOG.debug("IMAGE:{}".format(image.path))
         if is_wildcard(image.path):
             for match in _glob_wildcard(image.path):
-                LOG.debug('A')
                 replaced = _replace_wildcard_with_match(match, image)
-                LOG.debug('B')
                 updated_image_list.append(replaced)
-                LOG.debug('C')
-                LOG.debug('updated_image_list: {}'.format(updated_image_list))
         else:
             updated_image_list.append(image)
-    LOG.debug("IMAGELIST: {}".format(updated_image_list))
     return updated_image_list
 
 
@@ -215,7 +203,6 @@ def read_filestream(image_list):
     """"""
     for image in image_list:
         path = Path(image.path)
-        LOG.debug("path: {}".format(path))
         with open(path, "rb") as file_handle:
             bytestream = bytes(file_handle.read())
             image.data = bytestream
@@ -226,43 +213,27 @@ class CustomImage(BaseModel):
     case:  Dict[str, List[Image]] = []
     str:  List[Image] = []
 
-
     @root_validator
     def expand_wildcards(cls, values):
+        """Traverse every Image object and exand wildcards."""
         # 1. Travers variant lists and expand wildcards
-        LOG.debug("EXPAND HERE? {}".format(values))
         variant_list = values['str']
         values["str"] = update_image_list_on_wildcard(variant_list)
         
         # 2. Travers case dict and expand wildcards
         cases = values['case']
         cases_updated = {}
-        LOG.debug("CASES: {} ".format(cases))
         for entry in cases:
             image_list = cases[entry]
             cases_updated[entry] = update_image_list_on_wildcard(image_list)
-            
         values['case'] = cases_updated
-        LOG.debug("EXPANDED? {}".format(values))
         return values
-
-    # XXX: reading config file crashes when reading binaries,
-    # I suspect createing a new Image() will call these functions again,
-    # causing the crash
-    #       File "pydantic/main.py", line 1066, in pydantic.main.validate_model
-    #   File "/Users/Mikael/Work/anaconda3/envs/py3.8/lib/python3.8/site-packages/scout_browser-4.40.1-py3.8.egg/scout/parse/models.py", line 256, in read_binaries
-    #     read_filestream(variant_list)
-    #   File "/Users/Mikael/Work/anaconda3/envs/py3.8/lib/python3.8/site-packages/scout_browser-4.40.1-py3.8.egg/scout/parse/models.py", line 219, in read_filestream
-    #     with open(path, "rb") as file_handle:
-    # FileNotFoundError: [Errno 2] No such file or directory: 'scout/demo/images/custom_images/640x480_{REPID}.svg'
 
 
     @root_validator
     def read_binaries(cls, values):
         """Read image binaries for all Image entries to store in db"""
-        LOG.debug("READ ALL BINARIES!!!")
         variant_list = values['str']
-        LOG.debug("BINARIES:{}".format(variant_list))
         read_filestream(variant_list)
 
         cases = values['case']
@@ -314,7 +285,6 @@ class ScoutLoadConfig(BaseModel):
         Use try/except to handle TypeError if `vcf_files`is already set in
         previous call `parse_case_data()` or `parse_case()`."""
         vcfs = VcfFiles(**data)
-        LOG.debug("INIT!!!")
         try:
             super().__init__(vcf_files=vcfs, **data)
         except TypeError as err:
