@@ -7,11 +7,12 @@
 
 # Move this file under the main scout folder (at the same level of Dockerfile)
 # THEN run this container with the command:
-# docker-compose -f docker-compose-matchmaker.yml
+# docker-compose -f docker-compose-matchmaker.yml up
+
+# docker-compose down
 
 version: '3'
-# usage:
-# sudo docker-compose up
+
 services:
   mongodb:
     # Lightweight Docker image for MongoDB which makes it easy to create:

@@ -21,6 +21,16 @@ MAIL_USE_SSL = False
 # If null no badge is displayed in scout
 ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
+
+# LDAP login Settings
+# Complete list of accepted parameters available here: https://flask-ldap3-login.readthedocs.io/en/latest/configuration.html#core)
+# LDAP_HOST = 'ad.mydomain.com'
+# LDAP_PORT = 389
+# LDAP_BASE_DN = 'dc=mydomain,dc=com'
+# LDAP_USER_DN = 'ou=users'
+# LDAP_USER_LOGIN_ATTR = "mail"
+
+
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
