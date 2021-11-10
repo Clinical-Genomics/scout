@@ -1,6 +1,6 @@
 {% from "variants/indicators.html" import clinical_assessments_badge, research_assessments_badge %}
 
-{% macro matchmaker_modal(institute, case, mme_nodes) %}
+{% macro matchmaker_modal(institute, case, suspects, mme_nodes ) %}
 <div class="modal fade" id="matchmaker_modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -13,7 +13,7 @@
       <div class="modal-body">
         {% if case.mme_submission %} <!-- case was already submitted to MatchMaker -->
           <div class="row d-flex justify-content-around">
-            <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Past Matches <span class="fas fa-people-arrows"></span></a>
+            <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Submission details <span class="fas fa-people-arrows"></span></a>
             <select class="custom-select" onchange="window.open(this.value,'_self');" style="width:auto;">
                  <option selected>Match against</option>
                  <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
@@ -67,24 +67,38 @@
                     </div>
                   </li>
                   <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="genomicfeatures">
-                        Share pinned variants details
-                      </div>
-                      <div>
-                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="variants" checked>
-                        <label for="genomicfeatures"></label>
-                      </div>
+                    Select <u><b>max 3</b></u> variants/genes from the pinned variants list (only gene names can be shared for SVs)<br>
+                    <div style="max-height:200px; overflow-y: scroll;"">
+                      {% for var in suspects %}
+                        {% if var.category == "snv" %} <!-- Share either gene names or variant details for SNVs -->
+                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge badge-success">SNV</span><br>
+                        {% elif var.category == "sv" %} <!-- Share only gene names from SVs -->
+                          {% for gene in var.genes %}
+                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge badge-warning">SV</span><br>
+                          {% endfor %}
+                        {% endif %}
+                      {% endfor %}
                     </div>
                   </li>
                   <li class="list-group-item">
-                    <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="genomicfeatures">
-                        Share only gene names from pinned variants
+                    <div class="row">
+                      <div class="col-6">
+                        <div data-placement="top" id="share_variants">
+                          Share variant details for SNVs and gene names for SVs
+                        </div>
+                        <div>
+                          <input type="radio" id="genomicfeatures" name="genomicfeatures" value="variants" checked>
+                          <label for="share_variants"></label>
+                        </div>
                       </div>
-                      <div>
-                        <input type="radio" class="ios8-switch" id="genomicfeatures" name="genomicfeatures" value="genes" {% if case.mme_submission and case.mme_submission.genes_only %}checked{% endif %}>
-                        <label for="genomicfeatures"></label>
+                      <div class="col-6">
+                        <div data-placement="top" id="share_genes">
+                          Share only gene names from all selected variants
+                        </div>
+                        <div>
+                          <input type="radio" id="genomicfeatures" name="genomicfeatures" value="genes" {% if case.mme_submission and case.mme_submission.genes_only %}checked{% endif %}>
+                          <label for="share_genes"></label>
+                        </div>
                       </div>
                     </div>
                   </li>
@@ -268,7 +282,33 @@
   {% if n_primary_txs.count > 5 %}
   .. other transcripts available for this variant are not shown.<br><br>
   {% endif %}
+{% endmacro %}
 
+{% macro pretty_variant(variant) %}
+
+  {% if variant.category in "str" %}
+        {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
+
+  {% elif variant.category in ("snv", "cancer") %}
+    {% set display_genes = [] %}
+    {% for gene in variant.genes %}
+      {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
+        {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
+      {% elif gene.hgnc_symbol %}
+          {{ "" if display_genes.append(gene.hgnc_symbol) }}
+      {% elif gene.hgvs_identifier and gene.hgnc_id %}
+          {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier) }}
+      {% endif %}
+    {% endfor %}
+
+    {% if not display_genes %}
+        {{ "" if display_genes.append( variant.simple_id|truncate(40,True) ) }}
+    {% endif %}
+
+    {{ display_genes|join(", ") }}
+  {% else %} <!-- structural variants -->
+    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}-{{ variant.end_chrom }}{{ variant.cytoband_end }})
+  {% endif %}
 {% endmacro %}
 
 {% macro pretty_link_variant(variant, case) %}
@@ -286,36 +326,15 @@
                    case_name=case.display_name,
                    variant_id=variant._id) }}">
     {% endif %}
-    {% if variant.category in "str" %}
-          {{ variant.str_repid }} {{ variant.alternative | replace("<", " ") | replace(">", "")}}
-    {% elif variant.category in ("snv", "cancer") %}
-      {% set display_genes = [] %}
-      {% for gene in variant.genes %}
-        {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
-          {{ "" if display_genes.append(gene.hgnc_symbol + ' ' + gene.hgvs_identifier) }}
-        {% elif gene.hgnc_symbol %}
-            {{ "" if display_genes.append(gene.hgnc_symbol) }}
-        {% elif gene.hgvs_identifier and gene.hgnc_id %}
-            {{ "" if display_genes.append( gene.hgnc_id|string + ' ' + gene.hgvs_identifier) }}
-        {% endif %}
-      {% endfor %}
-
-      {% if not display_genes %}
-          {{ "" if display_genes.append( variant.simple_id|truncate(40,True) ) }}
-      {% endif %}
-
-      {{ display_genes|join(", ") }}
-    {% endif %}
-  {% else %}
+  {% else %} <!-- structural variants -->
     <a href="{{ url_for('variant.sv_variant',
                               institute_id=variant.institute,
                               case_name=case.display_name,
                               variant_id=variant._id) }}">
-    {{ variant.sub_category|upper }}({{ variant.chromosome }}{{ variant.cytoband_start }}::{{ variant.end_chrom }}{{ variant.cytoband_end }})
   {% endif %}
+    {{ pretty_variant(variant) }}
   </a>
 {% endmacro %}
-
 
 {% macro variant_validation_badge(variant) %}
   {% if variant.validation in ['True positive','False positive'] %}

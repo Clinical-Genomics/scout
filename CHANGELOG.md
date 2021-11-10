@@ -4,6 +4,19 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Added
+- Choose custom pinned variants to submit to MatchMaker Exchange
+- Submit structural variant as genes to the MatchMaker Exchange
+### Changed
+- Enforce same case _id and display_name when updating a case
+- Enforce same individual ids, display names and affected status when updating a case
+- Display and download HPO gene panels' gene in italics
+### Fixed
+- Use of deprecated TextField after the upgrade of WTF to v3.0
+- Freeze to WTForms to version < 3
+- Remove the extra files (bed files and madeline.svg) introduced by mistake
+
 ## [4.41.1]
 ### Fixed
 - General reports crash for variant annotations with same variant on other cases

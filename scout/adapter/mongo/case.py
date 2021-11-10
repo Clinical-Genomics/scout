@@ -55,9 +55,11 @@ class CaseHandler(object):
                 if not hpo_term:
                     continue
                 set_2 = set_2.union(set(hpo_term.get("all_ancestors", [])))
+
             LOG.debug(
                 f"Check phenotypic similarity between terms:{phenotype_terms} and case {case['_id']}"
             )
+
             scores[case["_id"]] = ui_score(set_1, set_2)
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
@@ -513,7 +515,9 @@ class CaseHandler(object):
             LOG.info("Fetching case %s", case_id)
         else:
             if not (institute_id and display_name):
-                raise ValueError("Have to provide both institute_id and display_name")
+                raise ValueError(
+                    "Please provide either case ID or both institute_id and display_name."
+                )
             LOG.info("Fetching case %s institute %s", display_name, institute_id)
             query["owner"] = institute_id
             query["display_name"] = display_name
@@ -556,6 +560,61 @@ class CaseHandler(object):
         result = self.case_collection.delete_one(query)
         return result
 
+    def check_existing_data(self, case_obj, existing_case, institute_obj, update, keep_actions):
+        """Make sure data from case to be loaded/reuploaded conforms to case data already saved in database.
+           Return eventual evaluated variants to be propagated to the updated case if keep_actions is True
+
+        Args:
+            case_obj(dict): case dictionary to be loaded/reuploaded
+            existing_case(dict): a case with same _id or same display_name and institute_id as case_obj
+            institute_obj(dict): institute dictionary
+            update(bool): If existing case should be updated
+            keep_actions(bool): If old evaluated variants should be kept when case is updated
+
+        Returns:
+            previous_evaluated_variants(list): list of variants evaluated in previous case
+                or None if case is not already present in the database.
+        """
+
+        if existing_case is None:
+            return
+
+        if (
+            existing_case["_id"] != case_obj["_id"]
+        ):  # This happens whenever institute and case display name coincide
+            raise IntegrityError(
+                f"A case with different _id ({existing_case['_id']} vs {case_obj['_id']}) and same display name ({case_obj['display_name']}) already exists for this institute."
+            )
+
+        if existing_case and not update:
+            raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
+
+        # Enforce same display name for updated case as existing case
+        if case_obj["display_name"] != existing_case["display_name"]:
+            raise IntegrityError("Updated case name doesn't match existing case name.")
+
+        # Check that individuals from updated case match individuals from existing case in ID, name and affected status
+        existing_case_inds = set(
+            [
+                (ind["individual_id"], ind["display_name"], ind["phenotype"])
+                for ind in existing_case.get("individuals")
+            ]
+        )
+        case_inds = set(
+            [
+                (ind["individual_id"], ind["display_name"], ind["phenotype"])
+                for ind in case_obj.get("individuals")
+            ]
+        )
+        if existing_case_inds != case_inds:
+            raise IntegrityError(
+                f"Updated case individuals ({case_inds}) don't match individuals from existing case ({existing_case_inds}). Please either delete old case or modify updated case individuals."
+            )
+
+        if keep_actions:
+            # collect all variants with user actions for this case
+            return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
+
     def load_case(self, config_data, update=False, keep_actions=True):
         """Load a case into the database
 
@@ -580,8 +639,8 @@ class CaseHandler(object):
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
-        # This is to keep sanger order and validation status
 
+        # This is to keep sanger order and validation status
         old_sanger_variants = self.case_sanger_variants(case_obj["_id"])
 
         genome_build = str(parsed_case.get("genome_build", 37))
@@ -595,14 +654,15 @@ class CaseHandler(object):
             self.update_caseid(old_case, case_obj["_id"])
             update = True
 
-        # Check if case exists in database
-        existing_case = self.case(case_obj["_id"])
-        if existing_case and not update:
-            raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
-
-        old_evaluated_variants = (
-            None  # acmg, manual rank, cancer tier, dismissed, mosaic, commented
+        # Retrieve info to be propagated to eventual updated case
+        # previously evaluated variants (acmg, manual rank, cancer tier, dismissed, mosaic, commented)
+        existing_case = self.case(case_id=case_obj["_id"]) or self.case(
+            institute_id=institute_obj["_id"], display_name=case_obj["display_name"]
         )
+        old_evaluated_variants = self.check_existing_data(
+            case_obj, existing_case, institute_obj, update, keep_actions
+        )
+
         if existing_case and keep_actions:
             # collect all variants with user actions for this case
             old_evaluated_variants = list(
