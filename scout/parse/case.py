@@ -18,7 +18,6 @@ from scout.utils.date import get_date
 LOG = logging.getLogger(__name__)
 
 
-
 def parse_case_data(**kwargs):
     """Parse all data necessary for loading a case into scout
 
