@@ -702,7 +702,7 @@ class CaseHandler(object):
                 # get custom images from config file
                 custom_images = (
                     case_obj["custom_images"][category]
-                    if category in case_obj.get("custom_images", {})
+                    if case_obj.get("custom_images") and category in case_obj.get("custom_images")
                     else None
                 )
                 # add variants
