@@ -299,17 +299,6 @@ class ScoutLoadConfig(BaseModel):
             LOG.warning("Setting analysis date to todays date")
             return datetime.datetime.now()
 
-    # TODO: make this work with nested dicts
-    # @validator("custom_images")
-    # def remove_empty_images(cls, custom_images):
-    #     for section in custom_images:
-    #         images = custom_images[section]
-    #         for i in images:
-    #             if i.path is None:
-    #                 images.remove(i)
-
-    #     return custom_images
-
     @validator("owner", pre=True, always=True)
     def mandatory_check_owner(cls, value):
         """`owner` is mandatory in a case configuration. If not
