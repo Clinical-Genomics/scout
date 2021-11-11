@@ -1,7 +1,7 @@
 # HOWTO:
 # In: scout/server/config.py
 # ADD:
-# LDAP_HOST = "localhost"
+# LDAP_HOST = "openldap"
 # LDAP_PORT = 10389
 # LDAP_BASE_DN = "dc=planetexpress,dc=com"
 # LDAP_USER_DN = "ou=people"
@@ -9,6 +9,8 @@
 
 # Move this file under the main scout folder (at the same level of Dockerfile)
 # docker-compose -f docker-compose-LDAP.yml up
+
+# Login into Scout using LDAP as Leela (username:leela@planetexpress.com, password:leela)
 
 # docker-compose down
 
