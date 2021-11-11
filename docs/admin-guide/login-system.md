@@ -54,9 +54,14 @@ LDAP authentication in Scout is acheved by using the [lask-ldap3-login](https://
 Pre-requisites in order to authenticate users using LDAP:
 
 - **An existing LDAP authentication server (external from Scout)**
-- **All users that should be logged in Scout using the LDAP should be also saved in the scout database.**
+- **All users that should be logged in Scout using the LDAP should be previously saved into the scout database with an ID corresponding to a valid LDAP user.**
 
-LDAP server instances are different from case to case. Some basic config files to be provided in the Scout config file are the following:
+The following command can be used to add a create a new user into the database:
+`scout load user -id ldap_id (could be an email address) -i cust000 -u "User Name" -m useremail@email.com`
+
+Please **note that the while the `-id ldap_id` option is not a mandatory parameter in the command used for adding users to the database, it is necessary for the LDAP login to successfully recognize the user in the system**.
+
+LDAP server instances are different from case to case. Some basic LDAP config options (with example values) that can be used on the in the Scout config file are the following:
 
 ```
 # LDAP login Settings
@@ -66,85 +71,46 @@ LDAP server instances are different from case to case. Some basic config files t
 # LDAP_USER_DN = 'ou=users'
 # LDAP_USER_LOGIN_ATTR = "mail"
 ```
-A complete list of accepted parameters is available here in the  https://flask-ldap3-login.readthedocs.io/en/latest/configuration.html#core)
+A complete list of accepted parameters that can be used to reflect your LDAP server configuration is available in the [flask-ldap3-login configuration docs](https://flask-ldap3-login.readthedocs.io/en/latest/configuration.html#core).
 
-- Make sure that all users that should be allowed to log in in the app are already present in the Scout database with an ID corresponding to a valid LDAP user.
+### Considerations regarding the LDAP login in Scout.
 
-The following command can be used to add a create a new user into the database:
-`scout load user -id ldap_id (could be an email address) -i cust000 -u "User Name" -m useremail@email.com`
+Since Scout software needs to define internal user objects for functioning properly, the LDAP login check against the server is only the first step of the login process. The second step would be making sure that a user authenticated by a certain password exists also in the `user` collection of the Scout database. Because of this latter authentication step, it is not strictly necessary to define a stringent set of rules (for instance which groups the user must belong to) for the LDAP login system, because a user from any group will be logged into Scout, as long as it's previously saved in the Scout database.
 
-Please note that the while the `-id ldap_id` option is not a mandatory parameter in the command used for adding users to the database, it is necessary for the LDAP login to successfully recognize the user in the system.
+This entails that if a user should be removed from the system, it is enough just to remove it from the Scout database.
 
-An docker-compose file containing an example of a scout instance with a simple LDAP authentication system can be used for testing this type of login.
+### Example of LDAP login setup using Docker
 
-The LDAP server used in the following example is based on the test server [docker-test-openldap](https://github.com/rroemhild/docker-test-openldap). This test contains data from the [Futurama Wiki](https://futurama.fandom.com/wiki/Futurama_Wiki).
+In order to understand how the LDAP authentication works, we are providing a docker-based example of a setup with a demo LDAP server containing pre-defined users. The LDAP auth server used here is based on the test server [docker-test-openldap](https://github.com/rroemhild/docker-test-openldap), that contains a number of pre-defined users and organizational user roles from the [Futurama Wiki](https://futurama.fandom.com/wiki/Futurama_Wiki) that are also described in the main page of the repository.
 
-In order to run this example:
-- Save the following line in a file named `docker-compose-LDAP.yml` (this file should be saved under the main scout folder, at the same level of the Dockefile).
-
-- Add the following line to the Scout config file (scout/server/config.py):
+1) You could start the data-populated LDAP server running the Docker command:
 ```
-# LDAP_HOST = "openldap"
-# LDAP_PORT = 10389
-# LDAP_BASE_DN = "dc=planetexpress,dc=com"
-# LDAP_USER_DN = "ou=people"
-# LDAP_USER_LOGIN_ATTR = "mail"
-```
-- Run the containers with the command
-```
-docker-compose -f docker-compose-LDAP.yml up
-```
-- Log in in scout as Leela Turanga, using the same email and password specified in the [documentation](https://github.com/rroemhild/docker-test-openldap#cnturanga-leelaoupeopledcplanetexpressdccom)  (Username=leela@planetexpress.com,
-Password=leela)
-
-``` yaml
-version: '3'
-
-services:
-
-  mongodb:
-    image: mongo:4.4.9
-    container_name: mongodb
-    networks:
-      - scout-net
-    ports:
-      - '27013:27017'
-    expose:
-      - '27017'
-
-  openldap:
-    image: rroemhild/test-openldap # https://github.com/rroemhild/docker-test-openldap
-    ports:
-      - '10389:10389'
-      - '10636:10636'
-    networks:
-      - scout-net
-
-  scout-web:
-    build: .
-    container_name: scout-web
-    expose:
-      - '5000'
-    ports:
-      - '5000:5000'
-    command: bash -c '
-      scout --host mongodb setup demo
-      && scout --host mongodb --demo load user -i cust000 -u "Leela Turanga" -m leela@planetexpress.com -id leela@planetexpress.com
-      && scout --host mongodb --demo serve --host 0.0.0.0'
-    volumes:
-      - ./scout:/home/worker/app/scout
-      - ./volumes/scout/data:/home/worker/data
-    depends_on:
-      - mongodb
-      - openldap
-    networks:
-      - scout-net
-
-networks:
-  scout-net:
-    driver: bridge
+docker run --rm -p 10389:10389 -p 10636:10636 rroemhild/test-openldap
 ```
 
+2) From the LDAP server, let's choose one character from Futurama that we would like to add as a user in a local instance of Scout, for instance [Dr. Zoidberg](https://github.com/rroemhild/docker-test-openldap#cnjohn-a-zoidbergoupeopledcplanetexpressdccom)
+
+![Dr. Zoidberg](https://static.wikia.nocookie.net/characterprofile/images/1/17/Zoidberg.png/revision/latest/scale-to-width-down/250?cb=20180603192711)
+
+Let's start adding the user to Scout with the command:
+```
+scout --demo load user -i cust000 -u "Dr. Zoidberg" -m zoidberg@planetexpress.com -id zoidberg@planetexpress.com
+```
+Note that the created ID is an email address that is defined for the user in the demo LDAP server: https://github.com/rroemhild/docker-test-openldap#cnjohn-a-zoidbergoupeopledcplanetexpressdccom. Note also that the password for this user is `zoidberg`.
+
+3) Finally, let's modify the Scout demo config file by adding the following lines:
+```
+LDAP_HOST = "localhost"
+LDAP_PORT = 10389
+LDAP_BASE_DN = "dc=planetexpress,dc=com"
+LDAP_USER_DN = "ou=people"
+LDAP_USER_LOGIN_ATTR = "mail"
+```
+Let's start the demo server with the command `scout --demo serve`.
+
+4) It should be now possible to login the new user into Scout using email and password defined in the LDAP server!
+
+This very example (with another user) is also provided in this repository, under [container/development/docker-compose-LDAP.yml](https://github.com/Clinical-Genomics/scout/tree/master/containers/development/docker-compose-LDAP.yml).
 
 ## Simple login with userid
 
