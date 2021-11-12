@@ -202,10 +202,9 @@ def remove_none_images(image_list):
     for image in image_list:
         path = image["path"]
         if path.suffix[1:] in VALID_IMAGE_SUFFIXES:
-            updated_image_list.append(image)            
+            updated_image_list.append(image)
     return updated_image_list
 
-        
 
 def read_filestream(image_list):
     """"""
@@ -240,11 +239,11 @@ class CustomImage(BaseModel):
     @root_validator
     def remove_invalid_files(cls, values):
         """Traverse every Image object and remove non-image files"""
-        # 1. Travers variant lists and 
+        # 1. Travers variant lists and
         variant_list = values["str"]
         values["str"] = remove_none_images(variant_list)
 
-        # 2. Travers case dict and 
+        # 2. Travers case dict and
         cases = values["case"]
         cases_updated = {}
         for entry in cases:
@@ -252,7 +251,6 @@ class CustomImage(BaseModel):
             cases_updated[entry] = remove_none_images(image_list)
         values["case"] = cases_updated
         return values
-
 
     @root_validator
     def read_binaries(cls, values):
