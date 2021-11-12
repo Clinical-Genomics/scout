@@ -87,9 +87,7 @@ def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj
         adapter.load_case(config_data=config2, update=True)
 
 
-def test_load_case_existing_case_different_individuals(
-    adapter, institute_obj, case_obj
-):
+def test_load_case_existing_case_different_individuals(adapter, institute_obj, case_obj):
     """testing updating a case when the new config file contains different individuals information"""
 
     ## GIVEN an empty database with an isntitute
