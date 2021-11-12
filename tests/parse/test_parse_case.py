@@ -9,7 +9,9 @@ from scout.exceptions import ConfigError, PedigreeError
 from scout.parse.case import parse_case_config, parse_case_data, parse_ped, remove_none_values
 
 import logging
+
 LOG = logging.getLogger(__name__)
+
 
 def test_parse_case_no_date(scout_config):
     # GIVEN a load config without a date
@@ -112,56 +114,53 @@ def test_parse_custom_images(scout_config):
     original_custom_images = scout_config["custom_images"]
     # WHEN images is parsed
     parsed_custom_images = case_data["custom_images"]
-    
+
     # THEN custom_images should have the same sections
     assert original_custom_images.keys() == parsed_custom_images.keys()
-  
+
     assert all(
         len(parsed_custom_images["case"][section]) == len(original_custom_images["case"][section])
         for section in parsed_custom_images["case"]
     )
-  
-  
+
+
 def test_parse_incorrect_custom_images(scout_config):
     """Test parsing of case"""
 
     # GIVEN two images (correct) and one pdf (incorrect)
     scout_config["custom_images"] = {
-            "custom_images": {
-                "case": {
-                    "section_one": [
-                        {
-                            "title": "A png image",
-                            "description": "desc",
-                            "path": "scout/demo/images/custom_images/640x480_one.png",
-                        },
-                        {
-                            "title": "An incorrect bitmap image",
-                            "description": "desc",
-                            "path": "scout/demo/images/custom_images/640x480_one.bnp",
-                        },
-                    ],
-                    "section_two": [
-                        {
-                            "title": "A pdf image, not allowed",
-                            "description": "desc",
-                            "path": "scout/demo/images/custom_images/640x480_one.pdf",
-                        },
-                    ],
-                }
+        "custom_images": {
+            "case": {
+                "section_one": [
+                    {
+                        "title": "A png image",
+                        "description": "desc",
+                        "path": "scout/demo/images/custom_images/640x480_one.png",
+                    },
+                    {
+                        "title": "An incorrect bitmap image",
+                        "description": "desc",
+                        "path": "scout/demo/images/custom_images/640x480_one.bnp",
+                    },
+                ],
+                "section_two": [
+                    {
+                        "title": "A pdf image, not allowed",
+                        "description": "desc",
+                        "path": "scout/demo/images/custom_images/640x480_one.pdf",
+                    },
+                ],
             }
         }
-
+    }
 
     # WHEN images is parsed
-    
 
     parsed_data = parse_case_config(scout_config)
-    LOG.debug("PDF: {}".format(scout_config))    
+    LOG.debug("PDF: {}".format(scout_config))
     # THEN check that non valid image formats are being rejected
     assert len(parsed_data["custom_images"]["case"]["section_one"]) == 1
     assert "section_two" not in parsed_data["custom_images"]
-
 
 
 def test_parse_case_collaborators(scout_config):
