@@ -200,7 +200,8 @@ def remove_none_images(image_list):
     VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
     updated_image_list = []
     for image in image_list:
-        path = image["path"]
+        LOG.debug('IMAGE:{}'.format(image))
+        path = Path(image.path)
         if path.suffix[1:] in VALID_IMAGE_SUFFIXES:
             updated_image_list.append(image)            
     return updated_image_list
