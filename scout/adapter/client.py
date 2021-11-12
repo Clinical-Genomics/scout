@@ -26,7 +26,7 @@ def get_connection(
     uri=None,
     mongodb=None,
     authdb=None,
-    timeout=30000,  # default in MongoDB documentation
+    timeout=30000,  # default according MongoDB documentation
     *args,
     **kwargs,
 ):
