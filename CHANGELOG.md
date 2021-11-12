@@ -18,6 +18,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Freeze to WTForms to version < 3
 - Remove the extra files (bed files and madeline.svg) introduced by mistake
 - Cli command loading demo data in docker-compose when case custom images exist and is None
+- Better differentiate old obs counts 0 vs N/A
+- Admin access allows seeing loqus case ids for non-collaborators
 
 ## [4.41.1]
 ### Fixed
