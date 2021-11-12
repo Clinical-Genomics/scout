@@ -1,6 +1,7 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/utils.html" import sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, update_stash_filter_button_status, dismiss_variants_block %}
 
+
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
 {% endblock %}
@@ -56,7 +57,6 @@
         <tr>
           <th style="width:3%"></th>
           <th>Index</th>
-          <th>Score</th>
           <th>Type</th>
           <th>Chr</th>
           <th>Start loc</th>
@@ -65,6 +65,8 @@
           <th>Region</th>
           <th>Function</th>
           <th>Frequency</th>
+          <th data-toggle="tooltip" data-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
+          <th data-toggle="tooltip" data-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
           <th>Gene(s)</th>
         </tr>
       </thead>
@@ -195,7 +197,6 @@
     <td>
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td>{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
@@ -220,6 +221,9 @@
         {{ variant.gnomad_frequency|human_decimal }}
       {% endif %}
     </td>
+    <td>{{ allele_cell(variant.tumor or {}) }}</td>
+    <td>{{ allele_cell(variant.normal or {}) }}</td>
+
     <td>
       <div class="d-flex justify-content-between align-items-center">
         <div>
@@ -238,6 +242,17 @@
     </td>
   </tr>
 {% endmacro %}
+
+{% macro allele_cell(allele) %}
+  {% if 'alt_freq' in allele %}
+    {{ allele.alt_freq|round(4)  }}
+    <br>
+    <small class="text-muted">{{ allele.alt_depth }} | {{ allele.ref_depth }}</small>
+  {% else %}
+    <span class="text-muted">N/A</span>
+  {% endif %}
+{% endmacro %}
+
 
 {% block scripts %}
   {{ super() }}
