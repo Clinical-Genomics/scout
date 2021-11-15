@@ -113,7 +113,7 @@ def panels():
 
 def shall_display_panel(panel_obj, user):
     """Check if panel shall be displayed based on display status and user previleges."""
-    is_visable = not panel_obj.get("hidden", False)
+    is_visible = not panel_obj.get("hidden", False)
     return is_visable or panel_write_granted(panel_obj, user)
 
 
