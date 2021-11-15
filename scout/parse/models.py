@@ -4,15 +4,15 @@ import datetime
 import logging
 import re
 from fractions import Fraction
+from glob import glob
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union, ByteString
+from typing import Any, ByteString, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, root_validator, validator
 from typing_extensions import Literal
 
 from scout.exceptions import ConfigError, PedigreeError
 from scout.utils.date import get_date
-from glob import glob
 
 LOG = logging.getLogger(__name__)
 
