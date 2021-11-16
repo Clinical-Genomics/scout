@@ -8,10 +8,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Choose custom pinned variants to submit to MatchMaker Exchange
 - Submit structural variant as genes to the MatchMaker Exchange
+- Added function for maintainers and admins to remove gene panels
+- Admins can restore deleted gene panels
 ### Changed
 - Display and download HPO gene panels' gene in italics
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
+- Display and download HPO gene panels' gene in italics
+- Improved documentation for connecting to loqusdb instances (including loqusdbapi)
 - Upgraded igv.js to version 2.10 (exon number support)
 - GenCode v.38 comprehensive gene track (selectable from igv settings)
 ### Fixed
@@ -19,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Freeze to WTForms to version < 3
 - Remove the extra files (bed files and madeline.svg) introduced by mistake
 - Cli command loading demo data in docker-compose when case custom images exist and is None
+- Increased MongoDB connection serverSelectionTimeoutMS parameter to 30K (default value according to MongoDB documentation)
 
 ## [4.41.1]
 ### Fixed

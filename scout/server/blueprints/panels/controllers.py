@@ -52,6 +52,10 @@ def update_panel(store, panel_name, csv_lines, option):
     panel_obj = store.gene_panel(panel_name)
     if panel_obj is None:
         return None
+
+    # retroactively add hidden field
+    if not "hidden" in panel_obj:
+        panel_obj["hidden"] = False
     try:
         new_genes = parse_genes(csv_lines)  # a list of gene dictionaries containing gene info
     except SyntaxError as error:
@@ -164,6 +168,7 @@ def new_panel(
                 display_name=display_name,
                 description=description,
                 genes=new_genes,
+                hidden=False,
             ),
             store,
         )
