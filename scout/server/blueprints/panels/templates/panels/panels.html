@@ -7,7 +7,7 @@
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+   <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item active">
     <span class="navbar-text">Gene Panels</span>
@@ -112,7 +112,7 @@
                   <button id="{{panel._id}}" type="submit" title="Restore panel" class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
                 </form>
               {% else %}
-                <button id="{{panel._id}}" type="button" data-toggle="modal" data-target="#removeGenePanelModal" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
+              <button id="{{panel._id}}" type="button" data-toggle="modal" data-target="#remove-gene-panel-modal-{{ panel._id }}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
               {% endif %}
             </td>
           </tr>
@@ -128,7 +128,7 @@
 {% macro remove_gene_panel_modal(institute, panel) %}
   <form action="{{ url_for('panels.panel_delete', panel_id=panel._id) }}"
         method="POST">
-    <div class="modal fade" id="removeGenePanelModal">
+    <div class="modal fade" id="remove-gene-panel-modal-{{ panel._id }}">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">

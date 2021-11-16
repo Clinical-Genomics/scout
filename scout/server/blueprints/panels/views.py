@@ -114,7 +114,7 @@ def panels():
 def shall_display_panel(panel_obj, user):
     """Check if panel shall be displayed based on display status and user previleges."""
     is_visible = not panel_obj.get("hidden", False)
-    return is_visable or panel_write_granted(panel_obj, user)
+    return is_visible or panel_write_granted(panel_obj, user)
 
 
 def panel_write_granted(panel_obj, user):
@@ -206,7 +206,7 @@ def panel_update(panel_id):
 @panels_bp.route("/panels/<panel_id>/delete", methods=["POST"])
 def panel_delete(panel_id):
     """Remove an existing panel."""
-    panel_obj = store.panel(panel_id)
+    panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
     # abort when trying to hide an already hidden panel
     if panel_obj.get("hidden", False):
         abort(404)
