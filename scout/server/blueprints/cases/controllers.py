@@ -131,6 +131,7 @@ def case(store, institute_obj, case_obj):
         panel_version = panel_info.get("version")
         panel_obj = store.gene_panel(panel_name, version=panel_version)
         latest_panel = store.gene_panel(panel_name)
+        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
