@@ -111,8 +111,8 @@ def test_delete_panel(app, real_panel_database):
         # THEN it should display the panel with all the genes
         assert resp.status_code == 302
         # assert panel is hidden in database
-        panel_obj = adapter.panel_collection.find_one({'_id': panel_obj["_id"]})
-        assert panel_obj.get('hidden')
+        panel_obj = adapter.panel_collection.find_one({"_id": panel_obj["_id"]})
+        assert panel_obj.get("hidden")
 
 
 def test_panels(app, institute_obj):
