@@ -17,6 +17,9 @@
               <td>
                 <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
                   {{ panel.display_name|truncate(30, True) }}
+                  {% if panel.removed %}
+                    <span class="badge badge-danger">Removed</span>
+                  {% endif %}
                 </a>
                 {% if panel.is_default %}
                   <span class="badge badge-default pull-right">Default</span>

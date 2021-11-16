@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Choose custom pinned variants to submit to MatchMaker Exchange
 - Submit structural variant as genes to the MatchMaker Exchange
+- Added function for maintainers and admins to remove gene panels
+- Admins can restore deleted gene panels
 - Docker-compose example illustrating the LDAP login system setup
 ### Changed
 - Enforce same case _id and display_name when updating a case

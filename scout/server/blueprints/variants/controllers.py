@@ -811,7 +811,7 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
-def gene_panel_choices(institute_obj, case_obj):
+def gene_panel_choices(store, institute_obj, case_obj):
     """Populates the multiselect containing all the gene panels to be used in variants filtering
     Args:
         institute_obj(dict): an institute dictionary
@@ -823,8 +823,10 @@ def gene_panel_choices(institute_obj, case_obj):
     panel_list = []
     # Add case default panels and the institute-specific panels to the panel select options
     for panel in case_obj.get("panels", []):
-        panel_option = (panel["panel_name"], panel["display_name"])
-        panel_list.append(panel_option)
+        latest_panel = store.gene_panel(panel["panel_name"])
+        if latest_panel is None or not latest_panel.get("hidden", False):
+            panel_option = (panel["panel_name"], panel["display_name"])
+            panel_list.append(panel_option)
 
     institute_choices = institute_obj.get("gene_panels", {})
 
@@ -1043,7 +1045,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         )
 
     # populate available panel choices
-    form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
+    form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
     return form
 
