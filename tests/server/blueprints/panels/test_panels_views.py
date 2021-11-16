@@ -96,6 +96,25 @@ def test_panel_modify_genes(app, real_panel_database):
         assert resp.status_code == 302
 
 
+# This test is slow since pdf rendering is slow
+def test_delete_panel(app, real_panel_database):
+    adapter = real_panel_database
+    # GIVEN a panel in the database
+    panel_obj = adapter.panel_collection.find_one()
+    assert True
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        # WHEN accessing the panel view
+        resp = client.post(url_for("panels.panel_delete", panel_id=panel_obj["_id"]))
+        # THEN it should display the panel with all the genes
+        assert resp.status_code == 302
+        # assert panel is hidden in database
+        panel_obj = adapter.panel_collection.find_one({'_id': panel_obj["_id"]})
+        assert panel_obj.get('hidden')
+
+
 def test_panels(app, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
