@@ -19,8 +19,10 @@ panels_bp = Blueprint("panels", __name__, template_folder="templates")
 @panels_bp.route("/panels", methods=["GET", "POST"])
 @templated("panels/panels.html")
 def panels():
-    """Show all panels for a case."""
+    """Show all panels for a user"""
     if request.method == "POST":
+        controllers.panel_create_or_update(store, request)
+        """
         # update an existing panel
         csv_file = request.files["csv_file"]
         content = csv_file.stream.read()
@@ -54,6 +56,7 @@ def panels():
             flash("new gene panel added, {}!".format(new_panel_name), "success")
             return redirect(url_for("panels.panel", panel_id=new_panel_id))
 
+
         # modify an existing panel
         update_option = request.form["modify_option"]
 
@@ -77,6 +80,8 @@ def panels():
             )
 
         return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
+
+        """
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [
