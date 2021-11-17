@@ -31,14 +31,12 @@ def panels():
             "panel_name"
         )
     ]
-
     panel_versions = {}
     for name in panel_names:
         panels = store.gene_panels(panel_id=name, include_hidden=True)
         panel_versions[name] = [
             panel_obj for panel_obj in panels if shall_display_panel(panel_obj, current_user)
         ]
-
     panel_groups = []
     for institute_obj in institutes:
         institute_panels = (
@@ -47,7 +45,6 @@ def panels():
             if shall_display_panel(panel_obj, current_user)
         )
         panel_groups.append((institute_obj, institute_panels))
-
     return dict(
         panel_groups=panel_groups,
         panel_names=panel_names,
