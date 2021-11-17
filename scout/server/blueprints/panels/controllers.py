@@ -34,7 +34,7 @@ def panel_create_or_update(store, request):
         request(flask.request) request sent by browser form to the /panels endpoint
 
     """
-    # Try to read the csv file containing genes info
+    # Try to read the csv or txt file containing genes info
     csv_file = request.files["csv_file"]
     content = csv_file.stream.read()
     lines = None
