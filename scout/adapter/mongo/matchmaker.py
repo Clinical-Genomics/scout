@@ -9,22 +9,25 @@ class MMEHandler(object):
     """Class to handle case submissions to MatchMaker Exchange"""
 
     def user_mme_submissions(self, user_obj):
-        """Return a list of all case _ids submitted bu a user to the Matchmaker Exchange.
+        """Return a list of all case _ids submitted to the Matchmaker Exchange by a user.
 
         Args:
             user_obj(dict): a scout user object
         Returns:
             submitted_cases(list); a list of case _ids
         """
-        submitted_cases = [
+        submitted_cases_events = [
             event.get("case")
             for event in self.user_events(user_obj)
             if event.get("verb") == "mme_add"
         ]
-        return submitted_cases
+        # Check that the cases submission above are stll actual
+        submitted_cases = [self.case(case_id=case_id) for case_id in submitted_cases_events]
+        return [case_obj["_id"] for case_obj in submitted_cases if case_obj is not None]
 
-    # def reassign_mme_submissions(old_user, new_user):
-    #    """Reassign MatchMaker Exchange submissions from one user to another"""
+    def reassign_mme_submissions(cases_list, new_user):
+        #    """Reassign MatchMaker Exchange submissions from one user to another"""
+        pass
 
     def case_mme_update(self, case_obj, user_obj, mme_subm_obj):
         """Updates a case after a submission to MatchMaker Exchange
