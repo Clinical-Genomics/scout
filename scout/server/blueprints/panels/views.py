@@ -22,66 +22,6 @@ def panels():
     """Show all panels for a user"""
     if request.method == "POST":
         controllers.panel_create_or_update(store, request)
-        """
-        # update an existing panel
-        csv_file = request.files["csv_file"]
-        content = csv_file.stream.read()
-        lines = None
-        try:
-            if b"\n" in content:
-                lines = content.decode("utf-8-sig", "ignore").split("\n")
-            else:
-                lines = content.decode("windows-1252").split("\r")
-        except Exception as err:
-            flash(
-                "Something went wrong while parsing the panel CSV file! ({})".format(err),
-                "danger",
-            )
-            return redirect(request.referrer)
-
-        new_panel_name = request.form.get("new_panel_name")
-        if new_panel_name:  # create a new panel
-            new_panel_id = controllers.new_panel(
-                store=store,
-                institute_id=request.form["institute"],
-                panel_name=new_panel_name,
-                display_name=request.form["display_name"] or new_panel_name.replace("_", " "),
-                csv_lines=lines,
-                maintainer=[current_user._id],
-                description=request.form["description"],
-            )
-            if new_panel_id is None:
-                return redirect(request.referrer)
-
-            flash("new gene panel added, {}!".format(new_panel_name), "success")
-            return redirect(url_for("panels.panel", panel_id=new_panel_id))
-
-
-        # modify an existing panel
-        update_option = request.form["modify_option"]
-
-        panel_obj = store.gene_panel(
-            request.form["panel_name"], include_hidden=current_user.is_admin
-        )
-        if panel_obj is None:
-            return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
-
-        if panel_write_granted(panel_obj, current_user):
-            panel_obj = controllers.update_panel(
-                store=store,
-                panel_name=request.form["panel_name"],
-                csv_lines=lines,
-                option=update_option,
-            )
-        else:
-            flash(
-                "Permission denied: please ask a panel maintainer or admin for help.",
-                "danger",
-            )
-
-        return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
-
-        """
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [

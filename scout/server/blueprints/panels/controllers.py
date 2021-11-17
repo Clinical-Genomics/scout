@@ -3,7 +3,8 @@ import datetime as dt
 import logging
 import operator
 
-from flask import flash
+from flask import flash, redirect, url_for
+from flask_login import current_user
 
 from scout.build.panel import build_panel
 from scout.parse.panel import parse_genes
@@ -20,7 +21,6 @@ def panel_create_or_update(store, request):
         store(scout.adapter.MongoAdapter)
         request(flask.request) request sent by browser form to the /panels endpoint
 
-    Returns:
     """
     # Try to read the csv file containing genes info
     csv_file = request.files["csv_file"]
@@ -33,7 +33,7 @@ def panel_create_or_update(store, request):
             lines = content.decode("windows-1252").split("\r")
     except Exception as err:
         flash(
-            "Something went wrong while parsing the panel CSV file! ({})".format(err),
+            "Something went wrong while parsing the panel gene panel file! ({})".format(err),
             "danger",
         )
         return redirect(request.referrer)
@@ -41,7 +41,7 @@ def panel_create_or_update(store, request):
     # check if a new panel should be created or the user is modifying an existing one
     new_panel_name = request.form.get("new_panel_name")
     if new_panel_name:  # create a new panel
-        new_panel_id = controllers.new_panel(
+        new_panel_id = new_panel(
             store=store,
             institute_id=request.form["institute"],
             panel_name=new_panel_name,
@@ -64,7 +64,7 @@ def panel_create_or_update(store, request):
         return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
 
     if panel_write_granted(panel_obj, current_user):
-        panel_obj = controllers.update_panel(
+        panel_obj = update_panel(
             store=store,
             panel_name=request.form["panel_name"],
             csv_lines=lines,
