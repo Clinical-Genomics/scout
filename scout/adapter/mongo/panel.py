@@ -297,6 +297,7 @@ class PanelHandler:
                         panel_name, panel_version
                     )
                 )
+                continue
 
             for gene in panel_obj["genes"]:
                 hgnc_id = gene["hgnc_id"]
@@ -306,8 +307,6 @@ class PanelHandler:
                     continue
 
                 gene_dict[hgnc_id].add(panel_name)
-
-        LOG.info("Gene to panels done")
 
         return gene_dict
 
