@@ -227,6 +227,19 @@ def user(mail):
         LOG.warning("User {0} could not be found in database".format(mail))
         return
 
+    # Check if user has associated MatchMaker Exchange submissions
+    mme_submitted_cases = adapter.user_mme_submissions(user_obj)
+    if mme_submitted_cases:
+        click.confirm(
+            f"MatchMaker Exchange submissions (n. cases={len(mme_submitted_cases)}) are associated to this user. Reassign patients to another user?",
+            abort=True,
+        )
+        other_user_email = click.prompt(
+            "Assign patients to the scout user with the following email:",
+            type=str,
+        )
+
+    """
     result = adapter.delete_user(mail)
     if result.deleted_count == 0:
         return
@@ -248,6 +261,7 @@ def user(mail):
             if adapter.unassign(institute_obj, case_obj, user_obj, link, inactivate_case):
                 updated_cases += 1
     click.echo(f"User was removed as assignee from {updated_cases} case(s).")
+    """
 
 
 @click.command("genes", short_help="Delete genes")

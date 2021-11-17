@@ -8,6 +8,24 @@ LOG = logging.getLogger(__name__)
 class MMEHandler(object):
     """Class to handle case submissions to MatchMaker Exchange"""
 
+    def user_mme_submissions(self, user_obj):
+        """Return a list of all users' emails that have associated MatchMaker Exchange submissions in Scout
+
+        Args:
+            user_obj(dict): a scout user object
+        Returns:
+            submitted_cases(list); a list of case _ids
+        """
+        submitted_cases = [
+            event.get("case")
+            for event in self.user_events(user_obj)
+            if event.get("verb") == "mme_add"
+        ]
+        return submitted_cases
+
+    # def reassign_mme_submissions(old_user, new_user):
+    #    """Reassign MatchMaker Exchange submissions from one user to another"""
+
     def case_mme_update(self, case_obj, user_obj, mme_subm_obj):
         """Updates a case after a submission to MatchMaker Exchange
         Args:
