@@ -35,14 +35,16 @@ def panels():
     for name in panel_names:
         panels = store.gene_panels(panel_id=name, include_hidden=True)
         panel_versions[name] = [
-            panel_obj for panel_obj in panels if shall_display_panel(panel_obj, current_user)
+            panel_obj
+            for panel_obj in panels
+            if controllers.shall_display_panel(panel_obj, current_user)
         ]
     panel_groups = []
     for institute_obj in institutes:
         institute_panels = (
             panel_obj
             for panel_obj in store.latest_panels(institute_obj["_id"], include_hidden=True)
-            if shall_display_panel(panel_obj, current_user)
+            if controllers.shall_display_panel(panel_obj, current_user)
         )
         panel_groups.append((institute_obj, institute_panels))
     return dict(
@@ -50,18 +52,6 @@ def panels():
         panel_names=panel_names,
         panel_versions=panel_versions,
         institutes=institutes,
-    )
-
-
-def shall_display_panel(panel_obj, user):
-    """Check if panel shall be displayed based on display status and user previleges."""
-    is_visible = not panel_obj.get("hidden", False)
-    return is_visible or panel_write_granted(panel_obj, user)
-
-
-def panel_write_granted(panel_obj, user):
-    return any(
-        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer")]
     )
 
 
@@ -75,7 +65,7 @@ def panel(panel_id):
         if request.form.get("update_description"):
             panel_obj["description"] = request.form["panel_description"]
 
-            if panel_write_granted(panel_obj, current_user):
+            if controllers.panel_write_granted(panel_obj, current_user):
                 store.update_panel(panel_obj=panel_obj)
             else:
                 flash(
@@ -132,7 +122,7 @@ def panel_update(panel_id):
 
         return redirect(request.referrer)
 
-    if panel_write_granted(panel_obj, current_user):
+    if controllers.panel_write_granted(panel_obj, current_user):
         update_version = request.form.get("version", None)
         new_panel_id = store.apply_pending(panel_obj, update_version)
         panel_id = new_panel_id
@@ -153,7 +143,7 @@ def panel_delete(panel_id):
     if panel_obj.get("hidden", False):
         abort(404)
 
-    if panel_write_granted(panel_obj, current_user):
+    if controllers.panel_write_granted(panel_obj, current_user):
         LOG.info("Mark gene panel: %s as deleted (hidden)" % panel_obj["display_name"])
         panel_obj["hidden"] = True
         store.update_panel(panel_obj=panel_obj)
@@ -171,7 +161,7 @@ def panel_restore(panel_id):
     """Remove an existing panel."""
     panel_obj = store.panel(panel_id)
     # abort when trying to hide an already hidden panel
-    if panel_write_granted(panel_obj, current_user):
+    if controllers.panel_write_granted(panel_obj, current_user):
         panel_obj["hidden"] = False
         store.update_panel(panel_obj=panel_obj)
         flash("Restored gene panel: %s" % panel_obj["display_name"], "success")

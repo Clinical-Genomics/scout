@@ -3,7 +3,7 @@ import datetime as dt
 import logging
 import operator
 
-from flask import flash, redirect, url_for
+from flask import abort, flash, redirect, url_for
 from flask_login import current_user
 
 from scout.build.panel import build_panel
@@ -12,6 +12,18 @@ from scout.parse.panel import parse_genes
 log = logging.getLogger(__name__)
 
 INHERITANCE_MODELS = ["ar", "ad", "mt", "xr", "xd", "x", "y"]
+
+
+def shall_display_panel(panel_obj, user):
+    """Check if panel shall be displayed based on display status and user previleges."""
+    is_visible = not panel_obj.get("hidden", False)
+    return is_visible or panel_write_granted(panel_obj, user)
+
+
+def panel_write_granted(panel_obj, user):
+    return any(
+        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer")]
+    )
 
 
 def panel_create_or_update(store, request):
