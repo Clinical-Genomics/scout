@@ -16,14 +16,18 @@ class MMEHandler(object):
         Returns:
             submitted_cases(list); a list of case _ids
         """
-        submitted_cases_events = [
-            event.get("case")
-            for event in self.user_events(user_obj)
-            if event.get("verb") == "mme_add"
-        ]
-        # Check that the cases submission above are stll actual
-        submitted_cases = [self.case(case_id=case_id) for case_id in submitted_cases_events]
-        return [case_obj["_id"] for case_obj in submitted_cases if case_obj is not None]
+        # All events associated to the provided user
+        user_events = self.user_events(user_obj)
+        submitted_cases = set()
+
+        for event in user_events:
+            if event.get("verb") != "mme_add":
+                continue
+            # Check that the cases patient's submission are stll actual
+            case_obj = self.case(case_id=event.get("case"))
+            if case_obj is None:
+                continue
+            # Check that the case as an associated MME submission and that the user is the actual patients' contact
 
     def reassign_mme_submissions(cases_list, new_user):
         #    """Reassign MatchMaker Exchange submissions from one user to another"""
