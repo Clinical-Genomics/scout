@@ -9,7 +9,7 @@ class MMEHandler(object):
     """Class to handle case submissions to MatchMaker Exchange"""
 
     def user_mme_submissions(self, user_obj):
-        """Return a list of all case _ids submitted to the Matchmaker Exchange by a user.
+        """Return a set of all case _ids submitted to the Matchmaker Exchange by a user.
 
         Args:
             user_obj(dict): a scout user object
