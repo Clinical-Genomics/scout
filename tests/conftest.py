@@ -1581,6 +1581,7 @@ def mme_patient():
         "id": "internal_id.ADM1059A2",
         "label": "A patient for testing",
     }
+    return json_patient
 
 
 @pytest.fixture(scope="function")
