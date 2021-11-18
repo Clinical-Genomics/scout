@@ -291,12 +291,12 @@ class PanelHandler:
             panel_version = panel_info["version"]
             panel_obj = self.gene_panel(panel_name, version=panel_version)
             if not panel_obj:
-                ## Raise exception here???
                 LOG.warning(
                     "Panel: {0}, version {1} does not exist in database".format(
                         panel_name, panel_version
                     )
                 )
+                continue
 
             for gene in panel_obj["genes"]:
                 hgnc_id = gene["hgnc_id"]
@@ -306,8 +306,6 @@ class PanelHandler:
                     continue
 
                 gene_dict[hgnc_id].add(panel_name)
-
-        LOG.info("Gene to panels done")
 
         return gene_dict
 
