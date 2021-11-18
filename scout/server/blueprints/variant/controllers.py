@@ -454,7 +454,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         other_institutes.update(set(other_case.get("collaborators", [])))
 
         if user_institutes_ids.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
+            # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
             continue
 
         other_variant = store.variant(
