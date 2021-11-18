@@ -234,12 +234,16 @@ def user(mail):
             f"MatchMaker Exchange submissions (n. cases={len(mme_submitted_cases)}) are associated to this user. Reassign patients to another user?",
             abort=True,
         )
-        other_user_email = click.prompt(
-            "Assign patients to the scout user with the following email:",
+        new_contact_email = click.prompt(
+            "Assign patients to user with email",
             type=str,
         )
+        try:
+            adapter.mme_reassign(mme_submitted_cases, user_obj, new_contact_email)
+        except Exception as ex:
+            LOG.error(ex)
+            return
 
-    """
     result = adapter.delete_user(mail)
     if result.deleted_count == 0:
         return
@@ -261,7 +265,6 @@ def user(mail):
             if adapter.unassign(institute_obj, case_obj, user_obj, link, inactivate_case):
                 updated_cases += 1
     click.echo(f"User was removed as assignee from {updated_cases} case(s).")
-    """
 
 
 @click.command("genes", short_help="Delete genes")
