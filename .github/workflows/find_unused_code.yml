@@ -8,10 +8,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install Vulture dependency
-        run: |
-            pip install vulture
       - name: Scavenge
-        run: |
-            vulture . --min-confidence 100
-        fail-on-error: false
+        uses: anaynayak/python-vulture-action@v2
+        id: vulture
+        with:
+          vulture-args: . --min-confidence 90
