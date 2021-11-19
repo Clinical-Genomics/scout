@@ -135,7 +135,7 @@ def perform_login(user_dict):
 
 
 @ldap_manager.save_user
-def save_user(dn, username, data):
+def save_user(dn, username, data, memberships):
     user = LdapUser(dn, username, data)
     ldap_users[dn] = user
     return user

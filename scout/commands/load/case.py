@@ -45,6 +45,7 @@ LOG = logging.getLogger(__name__)
     default=True,
     help="Transfer user actions from old variants when updating.",
 )
+@click.option("--no-variants", is_flag=False)
 @click.argument("config", type=click.File("r"), required=False)
 @click.option("--peddy-ped", type=click.Path(exists=True), help="path to a peddy.ped file")
 @click.option("--peddy-sex", type=click.Path(exists=True), help="path to a sex_check.csv file")
@@ -60,6 +61,7 @@ def case(
     ped,
     update,
     config,
+    no_variants,
     peddy_ped,
     peddy_sex,
     peddy_check,
