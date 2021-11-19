@@ -1,17 +1,15 @@
-name: vulture
-on:
-  - pull_request
+on: [push]
+
 jobs:
-  vulture:
+  build:
     runs-on: ubuntu-latest
     name: vulture
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        
       - name: Scavenge
         uses: anaynayak/python-vulture-action@v1
         id: vulture
         with:
-          vulture-args: example --min-confidence 90
+          vulture-args: example --min-confidence 100
           fail-on-error: false
