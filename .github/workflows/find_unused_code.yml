@@ -7,7 +7,7 @@ jobs:
     name: vulture
     steps:
       - name: Checkout
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
       - name: Scavenge
         uses: actions/python-vulture-action@v1
         id: vulture
