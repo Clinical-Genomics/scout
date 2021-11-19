@@ -12,5 +12,5 @@ jobs:
         uses: anaynayak/python-vulture-action@v1.0
         id: vulture
         with:
-          vulture-args: . --min-confidence 100
+          vulture-args: . --min-confidence 90
         continue-on-error: true
