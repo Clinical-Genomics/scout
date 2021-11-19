@@ -30,8 +30,6 @@ from scout.demo import (
     load_path,
     panel_path,
     ped_path,
-    research_snv_path,
-    research_sv_path,
     vep_97_annotated_path,
 )
 
@@ -54,7 +52,6 @@ from scout.demo.resources import (
 from scout.load import load_hgnc_genes
 from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
-from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case, parse_custom_images
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts

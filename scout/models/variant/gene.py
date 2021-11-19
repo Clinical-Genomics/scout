@@ -2,8 +2,6 @@ from __future__ import absolute_import, division
 
 from scout.constants import CONSEQUENCE, FEATURE_TYPES, SO_TERM_KEYS
 
-from .transcript import Transcript
-
 gene = dict(
     # The hgnc gene id
     hgnc_id=int,  # required

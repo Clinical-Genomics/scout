@@ -46,7 +46,7 @@ def test_get_genes(cyvcf2_variant):
         dict(zip(header, csq_entry.split("|"))) for transcript_info in csq_entry.split(",")
     )
     parsed_transcripts = []
-    for parsed_transcript in parse_transcripts(raw_transcripts, allele="C"):
+    for parsed_transcript in parse_transcripts(raw_transcripts):
         parsed_transcripts.append(parsed_transcript)
 
     # variant = cyvcf2_variant

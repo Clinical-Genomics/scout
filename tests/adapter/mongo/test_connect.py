@@ -1,5 +1,3 @@
-import unittest
-
 import mongomock
 import pytest
 from pymongo.errors import ConnectionFailure

@@ -13,7 +13,6 @@ from flask import (
     session,
     url_for,
 )
-from flask_ldap3_login import AuthenticationResponseStatus
 from flask_ldap3_login.forms import LDAPLoginForm
 from flask_login import login_user, logout_user
 
@@ -136,7 +135,7 @@ def perform_login(user_dict):
 
 
 @ldap_manager.save_user
-def save_user(dn, username, data, memberships):
+def save_user(dn, username, data):
     user = LdapUser(dn, username, data)
     ldap_users[dn] = user
     return user
