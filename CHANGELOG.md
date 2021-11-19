@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Submit structural variant as genes to the MatchMaker Exchange
 - Added function for maintainers and admins to remove gene panels
 - Admins can restore deleted gene panels
+- Vulture GitHub action that scans for usused code
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
