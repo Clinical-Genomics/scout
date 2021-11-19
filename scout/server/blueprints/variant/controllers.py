@@ -83,7 +83,7 @@ def tx_overview(variant_obj):
                 decorated_tx = None
                 if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane"]
-                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].starstwith(refseq_id):
+                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
                     ovw_tx["muted_refseq_ids"].append(refseq_id)
