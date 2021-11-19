@@ -1,5 +1,5 @@
+name: "Vulture - Find unused code"
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
