@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better differentiate old obs counts 0 vs N/A
 - Broken cancer variants page when default gene panel was deleted
 - Typo in tx_overview function in variant controllers file
+- Fixed loqusdbapi SV search URL
 
 ## [4.41.1]
 ### Fixed
