@@ -235,7 +235,7 @@ class PanelHandler:
 
         return None
 
-    def gene_panels(self, panel_id=None, institute_id=None, version=None):
+    def gene_panels(self, panel_id=None, institute_id=None, version=None, include_hidden=False):
         """Return all gene panels
 
         If panel_id return all versions of panels by that panel name
@@ -253,6 +253,12 @@ class PanelHandler:
                 query["version"] = version
         if institute_id:
             query["institute"] = institute_id
+        # include documents where field hidden is undefined or false
+        if not include_hidden:
+            query["$or"] = [
+                {"hidden": {"$exists": False}},
+                {"hidden": False},
+            ]
 
         return self.panel_collection.find(query)
 
@@ -285,12 +291,12 @@ class PanelHandler:
             panel_version = panel_info["version"]
             panel_obj = self.gene_panel(panel_name, version=panel_version)
             if not panel_obj:
-                ## Raise exception here???
                 LOG.warning(
                     "Panel: {0}, version {1} does not exist in database".format(
                         panel_name, panel_version
                     )
                 )
+                continue
 
             for gene in panel_obj["genes"]:
                 hgnc_id = gene["hgnc_id"]
@@ -300,8 +306,6 @@ class PanelHandler:
                     continue
 
                 gene_dict[hgnc_id].add(panel_name)
-
-        LOG.info("Gene to panels done")
 
         return gene_dict
 
@@ -514,9 +518,11 @@ class PanelHandler:
 
         return inserted_id
 
-    def latest_panels(self, institute_id):
+    def latest_panels(self, institute_id, include_hidden=False):
         """Return the latest version of each panel."""
-        panel_names = self.gene_panels(institute_id=institute_id).distinct("panel_name")
+        panel_names = self.gene_panels(
+            institute_id=institute_id, include_hidden=include_hidden
+        ).distinct("panel_name")
         for panel_name in panel_names:
             panel_obj = self.gene_panel(panel_name)
             yield panel_obj

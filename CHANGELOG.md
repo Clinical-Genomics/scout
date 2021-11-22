@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Choose custom pinned variants to submit to MatchMaker Exchange
 - Submit structural variant as genes to the MatchMaker Exchange
+- Added function for maintainers and admins to remove gene panels
+- Admins can restore deleted gene panels
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
@@ -19,6 +21,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove the extra files (bed files and madeline.svg) introduced by mistake
 - Cli command loading demo data in docker-compose when case custom images exist and is None
 - Increased MongoDB connection serverSelectionTimeoutMS parameter to 30K (default value according to MongoDB documentation)
+- Better differentiate old obs counts 0 vs N/A
+- Broken cancer variants page when default gene panel was deleted
+- Typo in tx_overview function in variant controllers file
 
 ## [4.41.1]
 ### Fixed
