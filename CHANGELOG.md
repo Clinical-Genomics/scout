@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enforce same individual ids, display names and affected status when updating a case
 - Display and download HPO gene panels' gene in italics
 - Improved documentation for connecting to loqusdb instances (including loqusdbapi)
+- A faster-built and lighter Docker image
 - Upgraded igv.js to version 2.10 (exon number support)
 - GenCode v.38 comprehensive gene track (selectable from igv settings)
 ### Fixed
@@ -27,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better differentiate old obs counts 0 vs N/A
 - Broken cancer variants page when default gene panel was deleted
 - Typo in tx_overview function in variant controllers file
+- Fixed loqusdbapi SV search URL
 
 ## [4.41.1]
 ### Fixed
