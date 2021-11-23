@@ -235,7 +235,7 @@ class LoqusDB:
             end = variant_info["end"]
 
             sv_type = variant_info["variant_type"]
-            search_url = f"{search_url}/svs/?chrom={chrom}&end_chrom={end_chrom}&pos={pos}&end={end}&sv_type={sv_type}"
+            search_url = f"{search_url}/?chrom={chrom}&end_chrom={end_chrom}&pos={pos}&end={end}&sv_type={sv_type}"
 
         search_resp = api_get(search_url)
         if search_resp.get("status_code") != 200:
