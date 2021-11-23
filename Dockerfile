@@ -1,7 +1,7 @@
 ###########
 # BUILDER #
 ###########
-FROM northwestwitch/python3.8-cyvcf2-venv:1.0 AS python-builder
+FROM clinicalgenomics/python3.8-cyvcf2-venv:1.0 AS python-builder
 
 ENV PATH="/venv/bin:$PATH"
 
@@ -40,8 +40,8 @@ RUN groupadd --gid 10001 worker && useradd -g worker --uid 10001 --shell /usr/sb
 # Copy virtual environment from builder
 COPY --chown=worker:worker --from=python-builder /venv /venv
 
-WORKDIR /worker/app
-COPY . /worker/app
+WORKDIR /home/worker/app
+COPY . /home/worker/app
 
 # Install only Scout app
 RUN pip install --no-cache-dir --editable .[coverage]
