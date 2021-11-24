@@ -1,0 +1,92 @@
+# HOWTO:
+# In: scout/server/config.py
+# ADD this line:
+# SQLALCHEMY_DATABASE_URI = "mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test"
+
+# Move this file under the main scout folder (at the same level of Dockerfile)
+# THEN run this container with the command:
+# docker-compose -f docker-compose-chanjo_report.yml up
+
+version: '3'
+
+services:
+
+    # start MYSQL-based chanjo database
+    mariadb:
+      container_name: mariadb
+      image: mariadb:latest
+      restart: 'always'
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=chanjo4_test
+        - MYSQL_USER=chanjoUser
+        - MYSQL_PASSWORD=chanjoPassword
+      healthcheck: # Wait for the service to be ready before accepting incoming connections
+        test: "mysql --user=chanjoUser --password=chanjoPassword --execute \"SHOW DATABASES;\""
+        timeout: 10s
+        retries: 20
+      networks:
+        - chanjo-net
+
+    mongodb:
+      image: mvertes/alpine-mongo
+      container_name: mongodb
+      ports:
+        - '27017:27017'
+      expose:
+        - '27017'
+      networks:
+        - chanjo-net
+
+    # Set up chanjo database and load some demo data
+    chanjo-cli:
+      container_name: chanjo-cli
+      image: clinicalgenomics/chanjo
+      depends_on:
+        mariadb:
+          condition: service_healthy
+      networks:
+        - chanjo-net
+      command: bash -c "
+        chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test db setup --reset
+        && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test init --auto demodata
+        && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test --config demodata/chanjo.yaml link demodata/hgnc.grch37p13.exons.bed
+        && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample1 --group-name test_group -g test_group chanjo/init/demo-files/sample1.coverage.bed
+        && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample2 --group-name test_group -g test_group chanjo/init/demo-files/sample2.coverage.bed
+        && chanjo -d mysql+pymysql://chanjoUser:chanjoPassword@mariadb/chanjo4_test load -n sample3 --group-name test_group -g test_group chanjo/init/demo-files/sample3.coverage.bed"
+
+    scout-cli:
+      build: .
+      container_name: scout-cli
+      command: scout --host mongodb setup demo
+      volumes:
+        - ./scout:/home/worker/app/scout
+        - ./volumes/scout/data:/home/worker/data
+      depends_on:
+        - mongodb
+      networks:
+        - chanjo-net
+
+    scout-web:
+      build: .
+      container_name: scout-web
+      expose:
+        - '5000'
+      ports:
+        - '5000:5000'
+      command: scout --host mongodb --demo serve --host 0.0.0.0
+      volumes:
+        - ./scout:/home/worker/app/scout
+        - ./volumes/scout/data:/home/worker/data
+      depends_on:
+        - mongodb
+      networks:
+        - chanjo-net
+
+networks:
+  chanjo-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/24
