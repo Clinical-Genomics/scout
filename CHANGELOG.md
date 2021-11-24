@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Submit structural variant as genes to the MatchMaker Exchange
 - Added function for maintainers and admins to remove gene panels
 - Admins can restore deleted gene panels
+- A development docker-compose file illustrating the scout/chanjo-report integration
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
@@ -69,7 +70,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extend case search to include internal MongoDB id
 - Support for connecting to a MongoDB replica set (.py config files)
 - Support for connecting to a MongoDB replica set (.yaml config files)
-- A development docker-compose file illustrating the scout/chanjo-report integration
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 - Unify style of pinned and causative variants' badges on case page
