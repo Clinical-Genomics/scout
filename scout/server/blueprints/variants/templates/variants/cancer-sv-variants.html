@@ -245,9 +245,13 @@
 
 {% macro allele_cell(allele) %}
   {% if 'alt_freq' in allele %}
-    {{ allele.alt_freq|round(4)  }}
+    {% if allele.alt_freq == -1 %}
+      <span class="text-muted">.</span>
+    {% else %}
+      {{ allele.alt_freq|round(4) }}
+    {% endif %}
     <br>
-    <small class="text-muted">{{ allele.alt_depth }} | {{ allele.ref_depth }}</small>
+    <small class="text-muted">{% if allele.alt_depth >= 0 %}{{ allele.alt_depth }}{% else %}.{% endif %}|{% if allele.ref_depth >= 0 %}{{ allele.ref_depth }}{% else %}.{% endif %}</small>
   {% else %}
     <span class="text-muted">N/A</span>
   {% endif %}
