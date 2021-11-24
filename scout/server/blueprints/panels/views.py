@@ -57,7 +57,9 @@ def panels():
         # modify an existing panel
         update_option = request.form["modify_option"]
 
-        panel_obj = store.gene_panel(request.form["panel_name"])
+        panel_obj = store.gene_panel(
+            request.form["panel_name"], include_hidden=current_user.is_admin
+        )
         if panel_obj is None:
             return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
 
@@ -80,16 +82,25 @@ def panels():
     panel_names = [
         name
         for institute in institutes
-        for name in store.gene_panels(institute_id=institute["_id"]).distinct("panel_name")
+        for name in store.gene_panels(institute_id=institute["_id"], include_hidden=True).distinct(
+            "panel_name"
+        )
     ]
 
     panel_versions = {}
     for name in panel_names:
-        panel_versions[name] = store.gene_panels(panel_id=name)
+        panels = store.gene_panels(panel_id=name, include_hidden=True)
+        panel_versions[name] = [
+            panel_obj for panel_obj in panels if shall_display_panel(panel_obj, current_user)
+        ]
 
     panel_groups = []
     for institute_obj in institutes:
-        institute_panels = store.latest_panels(institute_obj["_id"])
+        institute_panels = (
+            panel_obj
+            for panel_obj in store.latest_panels(institute_obj["_id"], include_hidden=True)
+            if shall_display_panel(panel_obj, current_user)
+        )
         panel_groups.append((institute_obj, institute_panels))
 
     return dict(
@@ -100,9 +111,15 @@ def panels():
     )
 
 
+def shall_display_panel(panel_obj, user):
+    """Check if panel shall be displayed based on display status and user previleges."""
+    is_visible = not panel_obj.get("hidden", False)
+    return is_visible or panel_write_granted(panel_obj, user)
+
+
 def panel_write_granted(panel_obj, user):
-    return (
-        not panel_obj.get("maintainer") or user.is_admin or user._id in panel_obj.get("maintainer")
+    return any(
+        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer")]
     )
 
 
@@ -184,6 +201,44 @@ def panel_update(panel_id):
         )
 
     return redirect(url_for("panels.panel", panel_id=panel_id))
+
+
+@panels_bp.route("/panels/<panel_id>/delete", methods=["POST"])
+def panel_delete(panel_id):
+    """Remove an existing panel."""
+    panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
+    # abort when trying to hide an already hidden panel
+    if panel_obj.get("hidden", False):
+        abort(404)
+
+    if panel_write_granted(panel_obj, current_user):
+        LOG.info("Mark gene panel: %s as deleted (hidden)" % panel_obj["display_name"])
+        panel_obj["hidden"] = True
+        store.update_panel(panel_obj=panel_obj)
+        flash("Removed gene panel: %s" % panel_obj["display_name"], "success")
+    else:
+        flash(
+            "Permission denied: please ask a panel maintainer or admin for help.",
+            "danger",
+        )
+    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
+
+
+@panels_bp.route("/panels/<panel_id>/restore", methods=["POST"])
+def panel_restore(panel_id):
+    """Remove an existing panel."""
+    panel_obj = store.panel(panel_id)
+    # abort when trying to hide an already hidden panel
+    if panel_write_granted(panel_obj, current_user):
+        panel_obj["hidden"] = False
+        store.update_panel(panel_obj=panel_obj)
+        flash("Restored gene panel: %s" % panel_obj["display_name"], "success")
+    else:
+        flash(
+            "Permission denied: please ask a panel maintainer or admin for help.",
+            "danger",
+        )
+    return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
 
 
 @panels_bp.route("/panels/export-panel/<panel_id>", methods=["GET", "POST"])

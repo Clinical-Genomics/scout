@@ -83,7 +83,7 @@ def tx_overview(variant_obj):
                 decorated_tx = None
                 if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane"]
-                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].starstwith(refseq_id):
+                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
                     ovw_tx["muted_refseq_ids"].append(refseq_id)
@@ -454,7 +454,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         other_institutes.update(set(other_case.get("collaborators", [])))
 
         if user_institutes_ids.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
+            # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
             continue
 
         other_variant = store.variant(
