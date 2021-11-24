@@ -164,3 +164,16 @@ class SvFiltersForm(VariantFiltersForm):
     clingen_ngi = IntegerField("ClinGen NGI obs")
     swegen = IntegerField("SweGen obs")
     clinical_filter = SubmitField(label="Clinical filter")
+
+
+class CancerSvFiltersForm(SvFiltersForm):
+    """Extends SvFiltersForm for cancer structural variants"""
+
+    depth = IntegerField("Depth >", validators=[validators.Optional()])
+    alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
+    control_frequency = BetterDecimalField(
+        "Normal alt AF <", places=2, validators=[validators.Optional()]
+    )
+    tumor_frequency = BetterDecimalField(
+        "Tumor alt AF >", places=2, validators=[validators.Optional()]
+    )

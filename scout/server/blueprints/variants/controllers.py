@@ -36,7 +36,14 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
+from .forms import (
+    CancerFiltersForm,
+    CancerSvFiltersForm,
+    FiltersForm,
+    StrFiltersForm,
+    SvFiltersForm,
+    VariantFiltersForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -879,8 +886,17 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             }
         )
         clinical_filter = MultiDict(clinical_filter_dict)
-    elif category in ("sv", "cancer_sv"):
+    elif category == "sv":
         FiltersFormClass = SvFiltersForm
+        clinical_filter_dict = CLINICAL_FILTER_BASE_SV
+        clinical_filter_dict.update(
+            {
+                "gene_panels": clinical_filter_panels,
+            }
+        )
+        clinical_filter = MultiDict(clinical_filter_dict)
+    elif category == "cancer_sv":
+        FiltersFormClass = CancerSvFiltersForm
         clinical_filter_dict = CLINICAL_FILTER_BASE_SV
         clinical_filter_dict.update(
             {
@@ -897,7 +913,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             }
         )
         clinical_filter = MultiDict(clinical_filter_dict)
-
     elif category == "str":
         FiltersFormClass = StrFiltersForm
 
@@ -1031,7 +1046,10 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     user_obj = store.user(current_user.email)
 
     if request_obj.method == "GET":
-        form = SvFiltersForm(request_obj.args)
+        if category == "sv":
+            form = SvFiltersForm(request_obj.args)
+        elif category == "cancer_sv":
+            form = CancerSvFiltersForm(request_obj.args)
         variant_type = request_obj.args.get("variant_type", "clinical")
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
@@ -1268,7 +1286,11 @@ def reset_all_dimissed(store, institute_obj, case_obj):
     for variant in evaluated_vars:
         if not variant.get("dismiss_variant"):  # not a dismissed variant
             continue
-        link_page = "variant.sv_variant" if variant.get("category") == "sv" else "variant.variant"
+        link_page = (
+            "variant.sv_variant"
+            if variant.get("category") in ("sv", "cancer_sv")
+            else "variant.variant"
+        )
         link = url_for(
             link_page,
             institute_id=institute_obj["_id"],

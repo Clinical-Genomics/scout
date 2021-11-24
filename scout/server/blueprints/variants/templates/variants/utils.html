@@ -456,7 +456,7 @@
 </div>
 {% endmacro %}
 
-{% macro cancer_filters(form, institute, case, filters) %}
+{% macro cancer_filters(form, institute, case) %}
     {{ form.csrf_token }}
     {{ form.variant_type() }}
     <div class="form-group">
@@ -581,7 +581,7 @@
     </div>
 {% endmacro %}
 
-{% macro cancer_sv_filters(form, institute, case, filters) %}
+{% macro cancer_sv_filters(form, institute, case) %}
     {{ form.csrf_token }}
     {{ form.variant_type() }}
     <div class="form-group">
@@ -589,6 +589,10 @@
         <div class="col-2">
           {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
           {{ form.gene_panels(class="selectpicker") }}
+        </div>
+        <div class="col-2">
+          {{ form.svtype.label(class="control-label") }}
+          {{ form.svtype(class="form-control selectpicker") }}
         </div>
         <div class="col-2">
           {{ form.region_annotations.label(class="control-label") }}
@@ -606,20 +610,6 @@
           {{ form.clinsig.label(class="control-label") }}
           {{ form.clinsig(class="selectpicker") }}
         </div>
-        <div class="col-2">
-          <div class="row form-inline">
-            {{ form.mvl_tag() }}
-            {{ form.mvl_tag.label(class="ml-2") }}
-          </div>
-          <div class="row form-inline">
-            {{ form.clinvar_tag() }}
-            {{ form.clinvar_tag.label(class="ml-2") }}
-          </div>
-          <div class="row form-inline">
-            {{ form.cosmic_tag() }}
-            {{ form.cosmic_tag.label(class="ml-2") }}
-          </div>
-        </div>
       </div>
     </div>
     <div class="form-group">
@@ -628,14 +618,15 @@
           {{ form.hgnc_symbols.label(class="control-label") }}
           {{ form.hgnc_symbols(class="form-control") }}
         </div>
-        <div class="col-1">
-          {{ form.cadd_score.label(class="control-label") }}
-          {{ form.cadd_score(class="form-control") }}
+        <div class="col-2">
+          {{ form.size.label(class="control-label") }}
+          {{ form.size(class="form-control", type="number") }}
         </div>
-        <div class="col-1">
-          {{ form.cadd_inclusive.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Include empty CADD") }}
-          <div>{{ form.cadd_inclusive() }}</div>
+        <div class="col-2">
+          {{ form.size_shorter.label(class="control-label") }}
+          <div>{{ form.size_shorter() }}</div>
         </div>
+
         <div class="col-1">
           {{ form.gnomad_frequency.label(class="control-label") }}
           {{ form.gnomad_frequency(class="form-control") }}
@@ -648,11 +639,11 @@
           {{ form.alt_count.label(class="control-label") }}
           {{ form.alt_count(class="form-control") }}
         </div>
-        <div class="col-2">
+        <div class="col-1">
           {{ form.tumor_frequency.label(class="control-label") }}
           {{ form.tumor_frequency(class="form-control") }}
         </div>
-        <div class="col-2">
+        <div class="col-1">
           {{ form.control_frequency.label(class="control-label") }}
           {{ form.control_frequency(class="form-control") }}
         </div>
