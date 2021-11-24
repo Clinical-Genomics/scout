@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enforce same individual ids, display names and affected status when updating a case
 - Display and download HPO gene panels' gene in italics
 - Improved documentation for connecting to loqusdb instances (including loqusdbapi)
+- A faster-built and lighter Docker image
 - Improved LDAP login system documentation
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
