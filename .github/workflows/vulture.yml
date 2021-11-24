@@ -8,9 +8,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
+      - name: Find changed Python files
+        id: files
+        uses: Ana06/get-changed-files@v2.0.0
+        with:
+          filter: "*.py"
+
       - name: Scavenge
         uses: anaynayak/python-vulture-action@v1.0
         id: vulture
         with:
-          vulture-args: . --min-confidence 90
+          vulture-args: --min-confidence 80 ${{steps.files.outputs.all}}
         continue-on-error: true
