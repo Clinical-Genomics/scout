@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Enforce same individual ids, display names and affected status when updating a case
 - Display and download HPO gene panels' gene in italics
 - Improved documentation for connecting to loqusdb instances (including loqusdbapi)
+- A faster-built and lighter Docker image
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
 - Freeze to WTForms to version < 3
@@ -24,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better differentiate old obs counts 0 vs N/A
 - Broken cancer variants page when default gene panel was deleted
 - Typo in tx_overview function in variant controllers file
+- Fixed loqusdbapi SV search URL
 
 ## [4.41.1]
 ### Fixed
@@ -61,6 +63,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extend case search to include internal MongoDB id
 - Support for connecting to a MongoDB replica set (.py config files)
 - Support for connecting to a MongoDB replica set (.yaml config files)
+- A development docker-compose file illustrating the scout/chanjo-report integration
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 - Unify style of pinned and causative variants' badges on case page
