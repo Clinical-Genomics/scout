@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved documentation for connecting to loqusdb instances (including loqusdbapi)
 - A faster-built and lighter Docker image
 - Reduce complexity of `panels` endpoint moving some code to the panels controllers
+- Update requirements to use flask-ldap3-login>=0.9.17 instead of freezing WTForm
 - Upgraded igv.js to version 2.10 (exon number support)
 - GenCode v.38 comprehensive gene track (selectable from igv settings)
 ### Fixed
