@@ -18,9 +18,6 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
-    CLINICAL_FILTER_BASE,
-    CLINICAL_FILTER_BASE_CANCER,
-    CLINICAL_FILTER_BASE_SV,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
@@ -37,6 +34,7 @@ from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
 from .forms import (
+    FILTERSFORMCLASS,
     CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
@@ -875,10 +873,10 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     else:
         clinical_filter_panels = default_panels
 
-    FiltersFormClass = VariantFiltersForm
+    FiltersFormClass = FILTERSFORMCLASS[category]
+    clinical_filter_dict = FiltersFormClass.clinical_filter_base
+
     if category == "snv":
-        FiltersFormClass = FiltersForm
-        clinical_filter_dict = CLINICAL_FILTER_BASE
         clinical_filter_dict.update(
             {
                 "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
@@ -886,35 +884,13 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             }
         )
         clinical_filter = MultiDict(clinical_filter_dict)
-    elif category == "sv":
-        FiltersFormClass = SvFiltersForm
-        clinical_filter_dict = CLINICAL_FILTER_BASE_SV
+    elif category in ("sv", "cancer", "cancer_sv"):
         clinical_filter_dict.update(
             {
                 "gene_panels": clinical_filter_panels,
             }
         )
         clinical_filter = MultiDict(clinical_filter_dict)
-    elif category == "cancer_sv":
-        FiltersFormClass = CancerSvFiltersForm
-        clinical_filter_dict = CLINICAL_FILTER_BASE_SV
-        clinical_filter_dict.update(
-            {
-                "gene_panels": clinical_filter_panels,
-            }
-        )
-        clinical_filter = MultiDict(clinical_filter_dict)
-    elif category == "cancer":
-        FiltersFormClass = CancerFiltersForm
-        clinical_filter_dict = CLINICAL_FILTER_BASE_CANCER
-        clinical_filter_dict.update(
-            {
-                "gene_panels": clinical_filter_panels,
-            }
-        )
-        clinical_filter = MultiDict(clinical_filter_dict)
-    elif category == "str":
-        FiltersFormClass = StrFiltersForm
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)

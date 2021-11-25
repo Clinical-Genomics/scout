@@ -19,6 +19,9 @@ from wtforms import (
 from wtforms.widgets import TextInput
 
 from scout.constants import (
+    CLINICAL_FILTER_BASE,
+    CLINICAL_FILTER_BASE_CANCER,
+    CLINICAL_FILTER_BASE_SV,
     CLINSIG_MAP,
     FEATURE_TYPES,
     GENETIC_MODELS,
@@ -133,6 +136,9 @@ class FiltersForm(VariantFiltersForm):
     clinical_filter = SubmitField(label="Clinical filter")
     clinvar_tag = BooleanField("ClinVar hits")
 
+    # polymorphic constant base for clinical filter
+    clinical_filter_base = CLINICAL_FILTER_BASE
+
 
 class CancerFiltersForm(VariantFiltersForm):
     """Base filters for CancerFiltersForm - extends VariantsFiltersForm"""
@@ -148,6 +154,9 @@ class CancerFiltersForm(VariantFiltersForm):
     clinvar_tag = BooleanField("ClinVar hits")
     cosmic_tag = BooleanField("Cosmic hits")
     mvl_tag = BooleanField("Managed Variants hits")
+
+    # polymorphic constant base for clinical filter
+    clinical_filter_base = CLINICAL_FILTER_BASE_CANCER
 
 
 class StrFiltersForm(VariantFiltersForm):
@@ -165,6 +174,9 @@ class SvFiltersForm(VariantFiltersForm):
     swegen = IntegerField("SweGen obs")
     clinical_filter = SubmitField(label="Clinical filter")
 
+    # polymorphic constant base for clinical filter
+    clinical_filter_base = CLINICAL_FILTER_BASE_SV
+
 
 class CancerSvFiltersForm(SvFiltersForm):
     """Extends SvFiltersForm for cancer structural variants"""
@@ -177,3 +189,12 @@ class CancerSvFiltersForm(SvFiltersForm):
     tumor_frequency = BetterDecimalField(
         "Tumor alt AF >", places=2, validators=[validators.Optional()]
     )
+
+
+FILTERSFORMCLASS = {
+    "snv": FiltersForm,
+    "str": StrFiltersForm,
+    "sv": SvFiltersForm,
+    "cancer_sv": CancerSvFiltersForm,
+    "cancer": CancerFiltersForm,
+}
