@@ -305,7 +305,6 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, vari
     """Tests the cancer form filter by VAF"""
 
     # GIVEN a database containing a cancer case
-    cancer_case_obj["status"] = "inactive"
     assert store.case_collection.insert_one(cancer_case_obj)
 
     variant_obj["tumor"] = {"alt_freq": 0.49}
@@ -358,10 +357,14 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, vari
         assert variant_obj["_id"] not in str(resp.data)
 
 
-def test_sv_cancer_variants(app, institute_obj, case_obj):
+def test_sv_cancer_variants(app, institute_obj, cancer_case_obj):
+    """Test the SVs page for a cancer case"""
+
+    # GIVEN a database containing a cancer case
+    assert store.case_collection.insert_one(cancer_case_obj)
+
     # GIVEN an initialized app
     # GIVEN a valid user and institute
-
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
@@ -372,7 +375,7 @@ def test_sv_cancer_variants(app, institute_obj, case_obj):
             url_for(
                 "variants.cancer_sv_variants",
                 institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
+                case_name=cancer_case_obj["display_name"],
             )
         )
         # THEN it should return a page
