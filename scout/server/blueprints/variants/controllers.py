@@ -874,9 +874,9 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         clinical_filter_panels = default_panels
 
     FiltersFormClass = FILTERSFORMCLASS[category]
-    clinical_filter_dict = FiltersFormClass.clinical_filter_base
 
     if category == "snv":
+        clinical_filter_dict = FiltersFormClass.clinical_filter_base
         clinical_filter_dict.update(
             {
                 "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
@@ -885,6 +885,7 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
         )
         clinical_filter = MultiDict(clinical_filter_dict)
     elif category in ("sv", "cancer", "cancer_sv"):
+        clinical_filter_dict = FiltersFormClass.clinical_filter_base
         clinical_filter_dict.update(
             {
                 "gene_panels": clinical_filter_panels,
