@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved documentation for connecting to loqusdb instances (including loqusdbapi)
 - Display and download HPO gene panels' gene symbols in italics
 - A faster-built and lighter Docker image
+- Reduce complexity of `panels` endpoint moving some code to the panels controllers
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
 - Freeze to WTForms to version < 3
