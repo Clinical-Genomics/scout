@@ -410,6 +410,7 @@ def cancer_case_obj(request, cancer_parsed_case):
     case["_id"] = cancer_parsed_case["case_id"]
     case["owner"] = cancer_parsed_case["owner"]
     case["has_svvariants"] = True
+    case["status"] = "inactive"
 
     case["individuals"][0]["sex"] = "1"
     case["individuals"][1]["sex"] = "1"

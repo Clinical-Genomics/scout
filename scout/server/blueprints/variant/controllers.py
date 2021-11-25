@@ -433,6 +433,8 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
     if not obs_data:
         obs_data["total"] = loqusdb.case_count(variant_category=category, loqusdb_id=loqusdb_id)
+        if obs_data["total"]:
+            obs_data["observations"] = 0
         return obs_data
 
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
