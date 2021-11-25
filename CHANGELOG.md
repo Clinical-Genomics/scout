@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display and download HPO gene panels' gene symbols in italics
 - A faster-built and lighter Docker image
 - Reduce complexity of `panels` endpoint moving some code to the panels controllers
+- Update requirements to use flask-ldap3-login>=0.9.17 instead of freezing WTForm
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
 - Freeze to WTForms to version < 3
