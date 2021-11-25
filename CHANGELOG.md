@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken cancer variants page when default gene panel was deleted
 - Typo in tx_overview function in variant controllers file
 - Fixed loqusdbapi SV search URL
+- SV variants filtering using Decipher criterion
 
 ## [4.41.1]
 ### Fixed
