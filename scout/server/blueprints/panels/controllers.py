@@ -3,7 +3,8 @@ import datetime as dt
 import logging
 import operator
 
-from flask import flash
+from flask import abort, flash, redirect, url_for
+from flask_login import current_user
 
 from scout.build.panel import build_panel
 from scout.parse.panel import parse_genes
@@ -11,6 +12,83 @@ from scout.parse.panel import parse_genes
 log = logging.getLogger(__name__)
 
 INHERITANCE_MODELS = ["ar", "ad", "mt", "xr", "xd", "x", "y"]
+
+
+def shall_display_panel(panel_obj, user):
+    """Check if panel shall be displayed based on display status and user previleges."""
+    is_visible = not panel_obj.get("hidden", False)
+    return is_visible or panel_write_granted(panel_obj, user)
+
+
+def panel_write_granted(panel_obj, user):
+    return any(
+        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer")]
+    )
+
+
+def panel_create_or_update(store, request):
+    """Process a user request to create a new gene panel
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        request(flask.request) request sent by browser form to the /panels endpoint
+
+    """
+    # Try to read the csv or txt file containing genes info
+    csv_file = request.files["csv_file"]
+    content = csv_file.stream.read()
+    lines = None
+    try:
+        if b"\n" in content:
+            lines = content.decode("utf-8-sig", "ignore").split("\n")
+        else:
+            lines = content.decode("windows-1252").split("\r")
+    except Exception as err:
+        flash(
+            "Something went wrong while parsing the panel gene panel file! ({})".format(err),
+            "danger",
+        )
+        return redirect(request.referrer)
+
+    # check if a new panel should be created or the user is modifying an existing one
+    new_panel_name = request.form.get("new_panel_name")
+    if new_panel_name:  # create a new panel
+        new_panel_id = new_panel(
+            store=store,
+            institute_id=request.form["institute"],
+            panel_name=new_panel_name,
+            display_name=request.form["display_name"] or new_panel_name.replace("_", " "),
+            csv_lines=lines,
+            maintainer=[current_user._id],
+            description=request.form["description"],
+        )
+        if new_panel_id is None:
+            return redirect(request.referrer)
+
+        flash("new gene panel added, {}!".format(new_panel_name), "success")
+        return redirect(url_for("panels.panel", panel_id=new_panel_id))
+
+    # modify an existing panel
+    update_option = request.form["modify_option"]
+
+    panel_obj = store.gene_panel(request.form["panel_name"], include_hidden=current_user.is_admin)
+    if panel_obj is None:
+        return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
+
+    if panel_write_granted(panel_obj, current_user):
+        panel_obj = update_panel(
+            store=store,
+            panel_name=request.form["panel_name"],
+            csv_lines=lines,
+            option=update_option,
+        )
+    else:
+        flash(
+            "Permission denied: please ask a panel maintainer or admin for help.",
+            "danger",
+        )
+
+    return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
 
 
 def panel(store, panel_obj):
