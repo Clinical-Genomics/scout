@@ -10,11 +10,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Submit structural variant as genes to the MatchMaker Exchange
 - Added function for maintainers and admins to remove gene panels
 - Admins can restore deleted gene panels
+- Show AD on variants view for cancer SV (tumor and normal)
+- Cancer SV variants filter AD, AF (tumor and normal)
+- Hiding the variants score column also from cancer SVs, as for the SNVs
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
-- Display and download HPO gene panels' gene in italics
 - Improved documentation for connecting to loqusdb instances (including loqusdbapi)
+- Display and download HPO gene panels' gene symbols in italics
 - A faster-built and lighter Docker image
 - Reduce complexity of `panels` endpoint moving some code to the panels controllers
 - Update requirements to use flask-ldap3-login>=0.9.17 instead of freezing WTForm
