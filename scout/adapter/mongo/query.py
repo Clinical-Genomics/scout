@@ -168,7 +168,6 @@ class QueryHandler(object):
 
         These are the different query options:
             {
-                'genetic_models': list,
                 'chrom': str,
                 'thousand_genomes_frequency': float,
                 'exac_frequency': float,
@@ -296,7 +295,7 @@ class QueryHandler(object):
             secondary_filter = self.secondary_query(query, mongo_query)
             # If there are no primary criteria given, all secondary criteria are added as a
             # top level '$and' to the query.
-            if primary_terms is False:
+            if secondary_filter and primary_terms is False:
                 mongo_query["$and"] = secondary_filter
 
             # If there is only one primary criterion given without any secondary, it will also be
