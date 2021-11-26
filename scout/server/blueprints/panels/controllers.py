@@ -22,7 +22,7 @@ def shall_display_panel(panel_obj, user):
 
 def panel_write_granted(panel_obj, user):
     return any(
-        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer")]
+        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer",[])]
     )
 
 
@@ -73,7 +73,7 @@ def panel_create_or_update(store, request):
 
     panel_obj = store.gene_panel(request.form["panel_name"], include_hidden=current_user.is_admin)
     if panel_obj is None:
-        return abort(404, "gene panel not found: {}".format(request.form["panel_name"]))
+        return redirect(request.referrer)
 
     if panel_write_granted(panel_obj, current_user):
         panel_obj = update_panel(
