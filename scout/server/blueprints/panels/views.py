@@ -141,7 +141,7 @@ def panel_delete(panel_id):
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
     if panel_obj is None:
         flash(
-            f"Panel object with id '{panel_obj}' was not found.",
+            f"Panel object with id '{panel_id}' was not found.",
             "danger",
         )
         return redirect(request.referrer)
