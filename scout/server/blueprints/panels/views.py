@@ -139,9 +139,12 @@ def panel_update(panel_id):
 def panel_delete(panel_id):
     """Remove an existing panel."""
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
-    # abort when trying to hide an already hidden panel
-    if panel_obj.get("hidden", False):
-        abort(404)
+    if panel_obj is None:
+        flash(
+            f"Panel object with id '{panel_id}' was not found.",
+            "danger",
+        )
+        return redirect(request.referrer)
 
     if controllers.panel_write_granted(panel_obj, current_user):
         LOG.info("Mark gene panel: %s as deleted (hidden)" % panel_obj["display_name"])
