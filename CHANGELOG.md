@@ -6,10 +6,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+### Changed
+### Fixed
+
+
+## [4.42]
+### Added
 - Choose custom pinned variants to submit to MatchMaker Exchange
 - Submit structural variant as genes to the MatchMaker Exchange
 - Added function for maintainers and admins to remove gene panels
 - Admins can restore deleted gene panels
+- A development docker-compose file illustrating the scout/chanjo-report integration
 - Show AD on variants view for cancer SV (tumor and normal)
 - Cancer SV variants filter AD, AF (tumor and normal)
 - Hiding the variants score column also from cancer SVs, as for the SNVs
@@ -70,7 +77,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Extend case search to include internal MongoDB id
 - Support for connecting to a MongoDB replica set (.py config files)
 - Support for connecting to a MongoDB replica set (.yaml config files)
-- A development docker-compose file illustrating the scout/chanjo-report integration
 ### Fixed
 - Command to load the OMIM gene panel (`scout load panel --omim`)
 - Unify style of pinned and causative variants' badges on case page
