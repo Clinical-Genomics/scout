@@ -22,7 +22,7 @@ def shall_display_panel(panel_obj, user):
 
 def panel_write_granted(panel_obj, user):
     return any(
-        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer",[])]
+        ["maintainer" not in panel_obj, user.is_admin, user._id in panel_obj.get("maintainer", [])]
     )
 
 
