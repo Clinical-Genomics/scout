@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Typo in tx_overview function in variant controllers file
 - Fixed loqusdbapi SV search URL
 - SV variants filtering using Decipher criterion
+- Removing old gene panels that don't contain the `maintainer` key.
 
 ## [4.41.1]
 ### Fixed
