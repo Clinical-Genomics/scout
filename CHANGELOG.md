@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 ### Fixed
+- Avoid case page crash on Phenomizer queries timeout
 
 
 ## [4.42]
