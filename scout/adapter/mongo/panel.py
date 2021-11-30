@@ -58,13 +58,12 @@ class PanelHandler:
         """
         institute = institute or "cust002"
         existing_panel = self.gene_panel(panel_id="OMIM-AUTO")
-        if not existing_panel:
-            LOG.warning("OMIM-AUTO does not exists in database")
-            LOG.info("Creating a first version")
 
         version = 1.0
         if existing_panel:
             version = float(math.floor(existing_panel["version"]) + 1)
+        else:
+            LOG.warning("OMIM-AUTO does not exists in database. It will be created now.")
 
         LOG.info("Setting version to %s", version)
 
