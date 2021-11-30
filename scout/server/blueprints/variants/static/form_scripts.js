@@ -1,69 +1,103 @@
 /* exported populateCytobands */
-function populateCytobands(cytobands){
-  var chromPosPattern = new RegExp("^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)$");
-  var chrom = document.forms["filters_form"].elements["chrom"].value;
-  var chromPos = "";
-  if (typeof document.forms["filters_form"].elements["chrom_pos"] !== "undefined") {
-  	chromPos=document.forms["filters_form"].elements["chrom_pos"].value;
+function populateCytobands(cytobands) {
+	var chromPosPattern = new RegExp("^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)$");
+
+	var chrom_select = document.forms["filters_form"].elements["chrom"];
+  console.log("chrom select has type " + typeof(chrom_select))
+
+	var chrom = [];
+  var options = chrom_select && chrom_select.options;
+  var opt;
+
+  for (var i=0, iLen=options.length; i<iLen; i++) {
+    opt = options[i];
+
+    if (opt.selected) {
+    	if (opt.value !== "") {
+				chrom.push(opt.value);
+			}
+    }
+  }
+
+	var chromPos = "";
+	if (typeof document.forms["filters_form"].elements["chrom_pos"] !== "undefined") {
+		chromPos = document.forms["filters_form"].elements["chrom_pos"].value;
 	}
 
-  var chromosome = "";
-  console.log("Populate cytobands")
-  var matchedChrName = chromPos.match(chromPosPattern)
-  if(chrom==="" && chromPos===""){
-    startElem.value = "";
-    endElem.value = "";
-    return //only reset cytoband select element
-  // Set the selected chromosome name
-  } else if (chrom !== "" && matchedChrName !== null){
-    chromosome = matchedChrName[1]
-  } else if (chrom === "" && matchedChrName !== null){
-    chromosome = matchedChrName[1]
-  } else if (chrom == "" && matchedChrName == null) {
-    return
-  } else {
-    chromosome = chrom;
-  }
+	var chromosome = "";
+	console.log("Populate cytobands")
+	var matchedChrName = chromPos.match(chromPosPattern)
+	if (chrom === [] && chromPos === "") {
+		startElem.value = "";
+		endElem.value = "";
+		return //only reset cytoband select element
+		// Set the selected chromosome name
+	} else if (chrom !== [] && matchedChrName !== null) {
+		chromosome = matchedChrName[1]
+	} else if (chrom === [] && matchedChrName !== null) {
+		chromosome = matchedChrName[1]
+	} else if (chrom == [] && matchedChrName == null) {
+		console.log("chrom is empty still")
+		return
+	} else if (typeof chrom === 'string' || chrom instanceof String) {
+		chromosome = chrom;
+	} else {
+		console.log("chrom is array: add multiple chr cytobands")
+		for (var i = 0; i < chrom.length; i++) {
+			if (chrom[i] === undefined) {
+				console.log("chrom " + i + " is undefined!")
+			}
+			console.log("chrom is array: add multiple chr cytobands. first " + i + ":" + chrom[i] + "("+ typeof (chrom[i])+")")
+			populateCytobandsSingleChr(cytobands, chrom[i])
+		}
+		return
+	}
+	populateCytobandsSingleChr(cytobands, chromosome)
+}
 
-  var chrom_cytobands = cytobands[chromosome]["cytobands"]; // chromosome-specific cytobands
+function populateCytobandsSingleChr(cytobands, chromosome) {
+	console.log("cytobands 1: " + cytobands["1"] +  "("+ typeof (cytobands["1"])+")")
 
-  for (elem of [cytoStart, cytoEnd]) {
-    if (elem.options.length > 0){
-      elem.options.length = 0; //remove previous select options
-    }
-    var emptyStart = document.createElement("option");
-    emptyStart.textContent = "";
-    emptyStart.value = "";
-    elem.appendChild(emptyStart); //Add an empty (blank) option to the select
-  }
+	console.log("populate single chrom: " + chromosome + "("+ typeof (chromosome)+")")
+	var chrom_cytobands = cytobands[chromosome]["cytobands"]; // chromosome-specific cytobands
 
-  for(var i = 0; i < chrom_cytobands.length; i++) {
-    var opt = chrom_cytobands[i]
+	for (elem of [cytoStart, cytoEnd]) {
+		if (elem.options.length > 0) {
+			elem.options.length = 0; //remove previous select options
+		}
+		var emptyStart = document.createElement("option");
+		emptyStart.textContent = "";
+		emptyStart.value = "";
+		elem.appendChild(emptyStart); //Add an empty (blank) option to the select
+	}
 
-    // populate the cytoband start select
-    var interval = ["(start:",opt["start"], ")"].join("");
-    var optionText = [ chrom, opt["band"], interval ].join(" ");
+	for (var i = 0; i < chrom_cytobands.length; i++) {
+		var opt = chrom_cytobands[i]
 
-    // populate the cytoband start select
-    var el = document.createElement("option");
-    el.textContent = optionText;
-    el.value = opt["start"];
-    if(startElem.value === el.value){
-      el.selected = true;
-    }
-    cytoStart.appendChild(el);
+		// populate the cytoband start select
+		var interval = ["(start:", opt["start"], ")"].join("");
+		var optionText = [chrom, opt["band"], interval].join(" ");
 
-    var interval = ["(end:",opt["stop"], ")"].join("")
-    var optionText = [ chrom, opt["band"], interval ].join(" ");
+		// populate the cytoband start select
+		var el = document.createElement("option");
+		el.textContent = optionText;
+		el.value = opt["start"];
+		if (startElem.value === el.value) {
+			el.selected = true;
+		}
+		cytoStart.appendChild(el);
 
-    var el = document.createElement("option");
-    el.textContent = optionText;
-    el.value = opt["stop"];
-    if(endElem.value === el.value){
-      el.selected = true;
-    }
-    cytoEnd.appendChild(el);
-  }
+		var interval = ["(end:", opt["stop"], ")"].join("")
+		var optionText = [chrom, opt["band"], interval].join(" ");
+
+		var el = document.createElement("option");
+		el.textContent = optionText;
+		el.value = opt["stop"];
+		if (endElem.value === el.value) {
+			el.selected = true;
+		}
+		cytoEnd.appendChild(el);
+	}
 }
 
 function validateChromPos(){

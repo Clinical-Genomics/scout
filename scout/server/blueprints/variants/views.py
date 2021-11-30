@@ -442,7 +442,9 @@ def cancer_sv_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    cytobands = store.cytoband_by_chrom(genome_build)
+
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
