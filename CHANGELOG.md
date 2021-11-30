@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Changed `--downloads_folder` param into `--downloads-folder` in update genes command to make it consistent with other cli commands.
 ### Fixed
+- Freeze PyMongo lib to version<4.0 to keep supporting previous MongoDB versions
 
 
 ## [4.42]
