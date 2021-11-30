@@ -113,7 +113,7 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
 )
 @click.option(
     "-f",
-    "--downloads-folder",
+    "--downloads_folder",
     type=click.Path(exists=True, dir_okay=True, readable=True),
     help="specify path to folder where files necessary to update genes are pre-downloaded",
 )
