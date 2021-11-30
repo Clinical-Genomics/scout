@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Changed
+- Changed `--downloads_folder` param into `--downloads-folder` in update genes command to make it consistent with other cli commands.
 ### Fixed
 
 
