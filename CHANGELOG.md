@@ -9,7 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 ### Fixed
 - Freeze PyMongo lib to version<4.0 to keep supporting previous MongoDB versions
-
+- Speed up gene panels creation and update by collecting only light gene info from database
+- Avoid case page crash on Phenomizer queries timeout
 
 ## [4.42]
 ### Added
