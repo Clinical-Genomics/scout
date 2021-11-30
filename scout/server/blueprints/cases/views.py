@@ -405,12 +405,13 @@ def phenotypes_actions(institute_id, case_name):
         username = current_app.config["PHENOMIZER_USERNAME"]
         password = current_app.config["PHENOMIZER_PASSWORD"]
         diseases = controllers.hpo_diseases(username, password, hpo_ids)
-        return render_template(
-            "cases/diseases.html",
-            diseases=diseases,
-            institute=institute_obj,
-            case=case_obj,
-        )
+        if diseases:
+            return render_template(
+                "cases/diseases.html",
+                diseases=diseases,
+                institute=institute_obj,
+                case=case_obj,
+            )
 
     if action == "DELETE":
         for hpo_id in hpo_ids:
