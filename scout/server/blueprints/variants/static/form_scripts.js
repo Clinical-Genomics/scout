@@ -43,26 +43,30 @@ function populateCytobands(cytobands) {
 		chromosome = chrom;
 	} else {
 		console.log("chrom is array: add multiple chr cytobands")
+		first = true
 		for (var i = 0; i < chrom.length; i++) {
 			if (chrom[i] === undefined) {
 				console.log("chrom " + i + " is undefined!")
 			}
 			console.log("chrom is array: add multiple chr cytobands. first " + i + ":" + chrom[i] + "("+ typeof (chrom[i])+")")
-			populateCytobandsSingleChr(cytobands, chrom[i])
+			if (i !== 0) {
+				first = false
+			}
+			populateCytobandsSingleChr(cytobands, chrom[i], first)
 		}
 		return
 	}
-	populateCytobandsSingleChr(cytobands, chromosome)
+	populateCytobandsSingleChr(cytobands, chromosome, false)
 }
 
-function populateCytobandsSingleChr(cytobands, chromosome) {
+function populateCytobandsSingleChr(cytobands, chromosome, first) {
 	console.log("cytobands 1: " + cytobands["1"] +  "("+ typeof (cytobands["1"])+")")
 
 	console.log("populate single chrom: " + chromosome + "("+ typeof (chromosome)+")")
 	var chrom_cytobands = cytobands[chromosome]["cytobands"]; // chromosome-specific cytobands
 
 	for (elem of [cytoStart, cytoEnd]) {
-		if (elem.options.length > 0) {
+		if (first && elem.options.length > 0) {
 			elem.options.length = 0; //remove previous select options
 		}
 		var emptyStart = document.createElement("option");
@@ -76,7 +80,7 @@ function populateCytobandsSingleChr(cytobands, chromosome) {
 
 		// populate the cytoband start select
 		var interval = ["(start:", opt["start"], ")"].join("");
-		var optionText = [chrom, opt["band"], interval].join(" ");
+		var optionText = [chromosome, opt["band"], interval].join(" ");
 
 		// populate the cytoband start select
 		var el = document.createElement("option");
@@ -88,7 +92,7 @@ function populateCytobandsSingleChr(cytobands, chromosome) {
 		cytoStart.appendChild(el);
 
 		var interval = ["(end:", opt["stop"], ")"].join("")
-		var optionText = [chrom, opt["band"], interval].join(" ");
+		var optionText = [chromosome, opt["band"], interval].join(" ");
 
 		var el = document.createElement("option");
 		el.textContent = optionText;
