@@ -782,8 +782,8 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
         results = query_phenomizer.query(username, password, *hpo_ids)
         diseases = [result for result in results if result["p_value"] <= p_value_treshold]
         return diseases
-    except SystemExit:
-        return None
+    except RuntimeError:
+        flash("Could not establish a conection to Phenomizer", "danger")
 
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):

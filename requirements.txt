@@ -16,7 +16,7 @@ query_phenomizer
 Flask-Babel
 livereload
 python-dateutil
-pymongo>=3.7
+pymongo>=3.7,<4.0
 pathlib
 WeasyPrint==0.42.3
 xlsxwriter
