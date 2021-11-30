@@ -73,7 +73,7 @@ class GeneHandler(object):
         projection["start"] = 1
         projection["end"] = 1
 
-        LOG.debug("Fetching gene %s" % hgnc_identifier)
+        LOG.debug("Fetching gene (light) %s" % hgnc_identifier)
         gene_symbol_obj = self.hgnc_collection.find_one(query, projection)
         if not gene_symbol_obj:
             return None
