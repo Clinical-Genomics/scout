@@ -8,8 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 ### Fixed
+- Freeze PyMongo lib to version<4.0 to keep supporting previous MongoDB versions
 - Avoid case page crash on Phenomizer queries timeout
-
 
 ## [4.42]
 ### Added
