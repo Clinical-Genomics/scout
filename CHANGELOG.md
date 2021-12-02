@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 ### Fixed
+- Do not drop genes and transcripts collections when updating genes via the command line
 
 ## [4.42.1]
 ### Added

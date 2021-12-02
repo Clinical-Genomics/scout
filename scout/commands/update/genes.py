@@ -143,10 +143,11 @@ def genes(build, downloads_folder, api_key):
     else:  # If resources have been previosly downloaded, read those file and return their lines
         fetch_downloaded_resources(resources, downloads_folder, builds)
 
-    LOG.warning("Dropping all gene information")
-    adapter.drop_genes(build)
-    LOG.warning("Dropping all transcript information")
-    adapter.drop_transcripts(build)
+    for build in [builds]:
+        LOG.warning("Dropping all gene information")
+        adapter.drop_genes(build)
+        LOG.warning("Dropping all transcript information")
+        adapter.drop_transcripts(build)
 
     # Load genes and transcripts info
     for genome_build in builds:
