@@ -33,12 +33,11 @@ class IndexHandler(object):
 
     def load_indexes(self, collections=[]):
         """Add the proper indexes to the scout instance.
-
-        All indexes are specified in scout/constants/indexes.py
-
-        If this method is utilised when new indexes are defined those should be added
-
+        Args:
+            collections(list): list of collections to update indexes for.
+                               If empty, load indexes for all collections.
         """
+        LOG.info(f"Adding indexes for collections: {collections or INDEXES}")
         for collection_name in collections or INDEXES:
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
@@ -58,10 +57,11 @@ class IndexHandler(object):
     def update_indexes(self, collections=[]):
         """Update the indexes
 
-        If there are any indexes that are not added to the database, add those.
-
+        Args:
+            collections(list): list of collections to update indexes for.
+                               If empty, update indexes for all collections.
         """
-        LOG.info("Updating indexes...")
+        LOG.info(f"Updating indexes for collections: {collections or INDEXES}")
         nr_updated = 0
 
         for collection_name in collections or INDEXES:

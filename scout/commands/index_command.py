@@ -21,7 +21,7 @@ def abort_if_false(ctx, param, value):
     is_flag=True,
     callback=abort_if_false,
     expose_value=False,
-    prompt="This will delete and rebuild all indexes(if not --update). Are you sure?",
+    prompt="This will delete and rebuild indexes(if not --update) for the given collections (or the whole database). Are you sure?",
 )
 @click.option("--update", help="Update the indexes", is_flag=True)
 @click.option(
@@ -33,11 +33,10 @@ def index(update, collection):
     LOG.info("Running scout index")
     adapter = store
 
-    for coll in collection:
-        if coll in INDEXES:
-            LOG.error(coll)
+    for collx in collection:
+        if collx in INDEXES:
             continue
-        sys.exit(f"Collection '{coll}' not found in database")
+        sys.exit(f"Collection '{collx}' not found in database")
 
     if update:
         adapter.update_indexes(collection)
