@@ -31,7 +31,7 @@ class IndexHandler(object):
                     indexes.append(index_name)
         return indexes
 
-    def load_indexes(self):
+    def load_indexes(self, collections=[]):
         """Add the proper indexes to the scout instance.
 
         All indexes are specified in scout/constants/indexes.py
@@ -39,7 +39,7 @@ class IndexHandler(object):
         If this method is utilised when new indexes are defined those should be added
 
         """
-        for collection_name in INDEXES:
+        for collection_name in collections or INDEXES:
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
             for index in indexes:
@@ -55,7 +55,7 @@ class IndexHandler(object):
             )
             self.db[collection_name].create_indexes(indexes)
 
-    def update_indexes(self):
+    def update_indexes(self, collections=[]):
         """Update the indexes
 
         If there are any indexes that are not added to the database, add those.
@@ -64,7 +64,7 @@ class IndexHandler(object):
         LOG.info("Updating indexes...")
         nr_updated = 0
 
-        for collection_name in INDEXES:
+        for collection_name in collections or INDEXES:
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
             for index in indexes:
