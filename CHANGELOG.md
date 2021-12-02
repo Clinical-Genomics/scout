@@ -6,9 +6,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Specify which collection(s) update/build indexes for
 - Docker-compose example illustrating the LDAP login system setup
 ### Changed
 - LDAP login documentation
+### Fixed
+- Do not drop genes and transcripts collections when updating genes via the command line
+
+## [4.42.1]
+### Added
+### Changed
 ### Fixed
 - Freeze PyMongo lib to version<4.0 to keep supporting previous MongoDB versions
 - Speed up gene panels creation and update by collecting only light gene info from database
