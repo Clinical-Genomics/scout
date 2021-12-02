@@ -37,7 +37,7 @@ class IndexHandler(object):
             collections(list): list of collections to update indexes for.
                                If empty, load indexes for all collections.
         """
-        LOG.info(f"Adding indexes for collections: {collections or INDEXES}")
+        LOG.info(f"Adding indexes for collections: {collections or list(INDEXES.keys())}")
         for collection_name in collections or INDEXES:
             existing_indexes = self.indexes(collection_name)
             indexes = INDEXES[collection_name]
@@ -61,7 +61,7 @@ class IndexHandler(object):
             collections(list): list of collections to update indexes for.
                                If empty, update indexes for all collections.
         """
-        LOG.info(f"Updating indexes for collections: {collections or INDEXES}")
+        LOG.info(f"Updating indexes for collections: {collections or list(INDEXES.keys())}")
         nr_updated = 0
 
         for collection_name in collections or INDEXES:
