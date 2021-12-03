@@ -6,6 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+### Changed
+### Fixed
+
+
+## [4.43]
+### Added
 - Specify which collection(s) update/build indexes for
 ### Changed
 ### Fixed
