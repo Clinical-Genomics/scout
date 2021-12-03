@@ -806,9 +806,9 @@ def monitor(institute_id, case_name):
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
 
     if request.form["rerun_monitoring"]:
-        store.disable_monitoring(institute_obj, case_obj, user_obj, link)
+        store.unmonitor(institute_obj, case_obj, user_obj, link)
     else:
-        store.enable_monitoring(institute_obj, case_obj, user_obj, link)
+        store.monitor(institute_obj, case_obj, user_obj, link)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/reanalysis", methods=["POST"])
