@@ -14,14 +14,14 @@
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case) }}
-          {{ rank_model(case) }}
+          {{ rank_model(case) }}
           <li class="list-group-item sidebar-separator menu-collapsed"></li>
           {{ status(institute, case) }}
           {{ assign(institute, case) }}
           {% if not (case.is_archived or case.is_research) %}
             {{ research(case) }}
           {% endif %}
-          {{ rerun(case) }}
+          {{ rerun(institute, case) }}
           {{ share_case(institute, case, collaborators) }}
           {% if config.BEACON_URL %}
             {{ beacon_share(institute, case, current_user) }}
@@ -30,7 +30,7 @@
             {{ matchmaker_share(institute, case, current_user) }}
           {% endif %}
           {% if case.needs_check %}
-            {{ check_decipher(case, institute) }}
+            {{ check_decipher(case, institute) }}
           {% endif %}
           {{ confirm_inactivate(institute,case) }}
           {{ archive_case(institute,case) }}
@@ -260,7 +260,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro rerun(case) %}
+{% macro rerun(institute, case) %}
 <a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-retweet fa-fw mr-3"></span>
@@ -275,6 +275,11 @@
   {% else %}
     <button type="button" class="btn btn-warning form-control btn-sm" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
   {% endif %}
+  <p>
+    <form action="{{ url_for('cases.monitor', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-toggle="popover" data-content="Check box to enable Melter rerun monitoring.">Request rerun monitoring</span>
+    </form>
+  </p>
 </div>
 {% endmacro %}
 
