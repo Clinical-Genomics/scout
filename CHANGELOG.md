@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Added database index for OMIM disease term genes
 ### Changed
 ### Fixed
 - Do not drop HPO terms collection when updating HPO terms via the command line
