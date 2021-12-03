@@ -296,8 +296,8 @@ class CaseHandler(object):
         if reruns:
             query["rerun_requested"] = True
 
-        if reruns:
-            query["rerun_monitor"] = True
+        if rerun_monitor:
+            query["rerun_monitoring"] = True
 
         if status:
             query["status"] = status
