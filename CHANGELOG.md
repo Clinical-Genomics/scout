@@ -4,11 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.43.1]
 ### Added
 ### Changed
 ### Fixed
-
+- Do not drop HPO terms collection when updating HPO terms via the command line
 
 ## [4.43]
 ### Added
