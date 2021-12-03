@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Add a toggle for melter rerun monitoring of cases
 ### Changed
 ### Fixed
 
