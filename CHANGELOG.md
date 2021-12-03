@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 ### Fixed
 - Do not drop HPO terms collection when updating HPO terms via the command line
+- Do not drop disease (OMIM) terms collection when updating diseases via the command line
 
 ## [4.43]
 ### Added
