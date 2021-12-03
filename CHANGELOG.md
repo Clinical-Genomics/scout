@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+### Changed
+### Fixed
+
+## [4.43.1]
+### Added
 - Added database index for OMIM disease term genes
 ### Changed
 ### Fixed
