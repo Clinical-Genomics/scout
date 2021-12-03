@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 @click.option("-f", "--finished", is_flag=True, help="archived or solved")
 @click.option("--causatives", is_flag=True, help="Has causative variants")
 @click.option("--research-requested", is_flag=True, help="If research is requested")
-@click.option("--rerun-monitor", is_flag=True, "If case rerun monitoring is requested")
+@click.option("--rerun-monitor", is_flag=True, help="If case rerun monitoring is requested")
 @click.option("--is-research", is_flag=True, help="If case is in research mode")
 @click.option(
     "-s",
