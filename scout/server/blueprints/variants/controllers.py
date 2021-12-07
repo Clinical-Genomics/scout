@@ -1073,7 +1073,8 @@ def check_form_gene_symbols(
 
     for hgnc_symbol in hgnc_symbols:
         # Retrieve a gene with "hgnc_symbol" as hgnc symbol or a list of genes where hgnc_symbol is among the aliases
-        hgnc_genes = store.gene_by_symbol_or_aliases(symbol=hgnc_symbol, build=genome_build)
+        hgnc_genes = list(store.gene_by_symbol_or_aliases(symbol=hgnc_symbol, build=genome_build))
+
         if not hgnc_genes:
             not_found_symbols.append(hgnc_symbol)
 
