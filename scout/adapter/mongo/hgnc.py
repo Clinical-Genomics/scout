@@ -324,10 +324,13 @@ class GeneHandler(object):
             build(str)
 
         Returns:
-            res(dict or pymongo.Cursor(dict)): return a gene dictionary or a cursor with gene dictionaries
+            res(list or pymongo.Cursor(dict)): return a list with one gene or a cursor with several gene dictionaries
         """
         res = self.hgnc_collection.find_one({"hgnc_symbol": symbol, "build": str(build)})
-        return res or self.gene_by_alias(symbol, build="37")
+        if res:
+            return [res]
+        else:
+            return self.gene_by_alias(symbol, build="37")
 
     def gene_by_alias(self, symbol, build="37"):
         """Return an iterable with hgnc_genes which have the provided symbol in the gene aliases
