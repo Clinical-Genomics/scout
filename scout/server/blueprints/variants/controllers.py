@@ -1107,7 +1107,7 @@ def check_form_gene_symbols(
             "label": "warning",
         },
         "outdated_symbols": {
-            "message": "Gene panel versions used for loading variants of this case (clinical list) contain outdated gene symbols. The current HGNC id was found on the clinical list.",
+            "message": "Outdated gene symbols either provided in search or found in the panels used for the analysis.",
             "gene_list": outdated_symbols,
             "label": "info",
         },
