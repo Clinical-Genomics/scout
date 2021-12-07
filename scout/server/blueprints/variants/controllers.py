@@ -1074,6 +1074,10 @@ def check_form_gene_symbols(
     for hgnc_symbol in hgnc_symbols:
         hgnc_genes = store.hgnc_genes(hgnc_symbol=hgnc_symbol, build=genome_build)
 
+        if hgnc_genes is None:
+            not_found_symbols.append(hgnc_symbol)
+
+        tentatively_missing_symbols = False
         for hgnc_gene in hgnc_genes:
             if is_clinical is False:  # research variants
                 updated_hgnc_symbols.append(hgnc_symbol)
@@ -1082,9 +1086,15 @@ def check_form_gene_symbols(
                 if hgnc_symbol not in clinical_symbols:
                     # clinical symbols from gene panels might not be up to date with latest gene names
                     # but their HGNC id would still match
-                    outdated_symbols.append(hgnc_symbol)
+                    tentatively_missing_symbols = True
+                else:
+                    tentatively_missing_symbols = False
+                    continue
             else:  # clinical variants
                 non_clinical_symbols.append(hgnc_symbol)
+        if tentatively_missing_symbols:
+            # symbol was not found on the clinical list even when checking all genes returned as aliases
+            outdated_symbols.append(hgnc_symbol)
 
     errors = {
         "non_clinical_symbols": {
