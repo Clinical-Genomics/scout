@@ -1072,7 +1072,10 @@ def check_form_gene_symbols(
     clinical_symbols = store.clinical_symbols(case_obj)
 
     for hgnc_symbol in hgnc_symbols:
-        hgnc_genes = store.hgnc_genes(hgnc_symbol=hgnc_symbol, build=genome_build)
+        # Retrieve a gene with "hgnc_symbol" as hgnc symbol or a list of genes where hgnc_symbol is among the aliases
+        hgnc_genes = store.gene_by_alias(symbol=hgnc_symbol, build=genome_build)
+        if not hgnc_genes:
+            not_found_symbols.append(hgnc_symbol)
 
         for hgnc_gene in hgnc_genes:
             if is_clinical is False:  # research variants
