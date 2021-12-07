@@ -1075,9 +1075,7 @@ def check_form_gene_symbols(
         hgnc_genes = store.hgnc_genes(hgnc_symbol=hgnc_symbol, build=genome_build)
 
         for hgnc_gene in hgnc_genes:
-            if hgnc_gene is None:
-                not_found_symbols.append(hgnc_symbol)
-            elif is_clinical is False:  # research variants
+            if is_clinical is False:  # research variants
                 updated_hgnc_symbols.append(hgnc_symbol)
             elif hgnc_gene["hgnc_id"] in clinical_hgnc_ids:  # clinical variants
                 updated_hgnc_symbols.append(hgnc_symbol)
