@@ -1063,10 +1063,10 @@ def check_form_gene_symbols(
     Returns:
         updated_hgnc_symbols(list): List of gene symbols that are found in database and are up to date
     """
-    non_clinical_symbols = []
-    not_found_symbols = []
-    outdated_symbols = []
-    updated_hgnc_symbols = []
+    non_clinical_symbols = set()
+    not_found_symbols = set()
+    outdated_symbols = set()
+    updated_hgnc_symbols = set()
 
     clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
     clinical_symbols = store.clinical_symbols(case_obj)
@@ -1076,7 +1076,7 @@ def check_form_gene_symbols(
         hgnc_genes = list(store.gene_by_symbol_or_aliases(symbol=hgnc_symbol, build=genome_build))
 
         if not hgnc_genes:
-            not_found_symbols.append(hgnc_symbol)
+            not_found_symbols.add(hgnc_symbol)
             continue
 
         for hgnc_gene in hgnc_genes:
@@ -1084,7 +1084,7 @@ def check_form_gene_symbols(
 
             # collect queried symbols for both clinical variants and research variants
             if hgnc_gene["hgnc_id"] in clinical_hgnc_ids or is_clinical is False:
-                updated_hgnc_symbols.append(gene_symbol)
+                updated_hgnc_symbols.add(gene_symbol)
 
                 # research variants
                 if is_clinical is False:
@@ -1092,10 +1092,10 @@ def check_form_gene_symbols(
 
                 # warn if queried symbol or corresponding gene symbol in panel is outdated
                 if hgnc_symbol not in clinical_symbols:
-                    outdated_symbols.append(hgnc_symbol)
+                    outdated_symbols.add(hgnc_symbol)
 
             else:
-                non_clinical_symbols.append(hgnc_symbol)
+                non_clinical_symbols.add(hgnc_symbol)
 
     errors = {
         "non_clinical_symbols": {
