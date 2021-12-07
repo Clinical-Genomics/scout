@@ -341,8 +341,6 @@ class GeneHandler(object):
         Returns:
             res(pymongo.Cursor(dict))
         """
-        LOG.debug("Fetch gene by symbol if possible: {}".format(symbol))
-
         res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
         return res
 
