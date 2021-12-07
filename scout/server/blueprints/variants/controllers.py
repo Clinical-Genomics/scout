@@ -1077,20 +1077,24 @@ def check_form_gene_symbols(
 
         if not hgnc_genes:
             not_found_symbols.append(hgnc_symbol)
+            continue
 
         for hgnc_gene in hgnc_genes:
-            if is_clinical is False:  # research variants
-                updated_hgnc_symbols.append(hgnc_symbol)
-            elif hgnc_gene["hgnc_id"] in clinical_hgnc_ids:  # clinical variants
+            gene_symbol = hgnc_gene.get("hgnc_symbol")
+
+            # collect queried symbols for both clinical variants and research variants
+            if hgnc_gene["hgnc_id"] in clinical_hgnc_ids or is_clinical is False:
+                updated_hgnc_symbols.append(gene_symbol)
+
+                # research variants
+                if is_clinical is False:
+                    continue
+
+                # warn if queried symbol or corresponding gene symbol in panel is outdated
                 if hgnc_symbol not in clinical_symbols:
-                    # clinical symbols from gene panels might not be up to date with latest gene names
-                    # but their HGNC id would still match
                     outdated_symbols.append(hgnc_symbol)
-                    if hgnc_gene.get("hgnc_symbol"):
-                        updated_hgnc_symbols.append(hgnc_gene.get("hgnc_symbol"))
-                else:
-                    updated_hgnc_symbols.append(hgnc_symbol)
-            else:  # clinical variants
+
+            else:
                 non_clinical_symbols.append(hgnc_symbol)
 
     errors = {
