@@ -1095,7 +1095,7 @@ def check_form_gene_symbols(
                     outdated_symbols.add(hgnc_symbol)
 
             else:
-                non_clinical_symbols.add(hgnc_symbol)
+                non_clinical_symbols.add(gene_symbol)
 
     errors = {
         "non_clinical_symbols": {
