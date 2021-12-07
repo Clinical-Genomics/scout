@@ -317,8 +317,8 @@ class GeneHandler(object):
         return hgnc_dict
 
     def gene_by_symbol_or_aliases(self, symbol, build="37"):
-        """Return an iterable with only one gene is found with a given symbol or a list of genes
-           with the provided symbol contained in the aliases list.
+        """Return an iterable with only one gene when gene with a given symbol if found
+           or a cursor with genes where the provided symbol is among the aliases.
         Args:
             symbol(str)
             build(str)
