@@ -316,13 +316,21 @@ class GeneHandler(object):
         LOG.info("All genes fetched")
         return hgnc_dict
 
+    def gene_by_symbol_or_aliases(self, symbol, build="37"):
+        """Return an iterable with only one gene is found with a given symbol or a list of genes
+           with the provided symbol contained in the aliases list.
+        Args:
+            symbol(str)
+            build(str)
+
+        Returns:
+            res(dict or pymongo.Cursor(dict)): return a gene dictionary or a cursor with gene dictionaries
+        """
+        res = self.hgnc_collection.find_one({"hgnc_symbol": symbol, "build": str(build)})
+        return res or self.gene_by_alias(symbol, build="37")
+
     def gene_by_alias(self, symbol, build="37"):
-        """Return an iterable with hgnc_genes.
-
-        If the gene symbol is listed as primary the iterable will only have
-        one result. If not the iterable will include all hgnc genes that have
-        the symbol as an alias.
-
+        """Return an iterable with hgnc_genes which have the provided symbol in the gene aliases
         Args:
             symbol(str)
             build(str)
@@ -332,12 +340,7 @@ class GeneHandler(object):
         """
         LOG.debug("Fetch gene by symbol if possible: {}".format(symbol))
 
-        res = self.hgnc_collection.find({"hgnc_symbol": symbol, "build": str(build)})
-
-        if self.hgnc_collection.find_one({"aliases": symbol, "build": str(build)}) is None:
-            LOG.debug("No gene with symbol {} was found. Attempting an alias.".format(symbol))
-            res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
-
+        res = self.hgnc_collection.find({"aliases": symbol, "build": str(build)})
         return res
 
     def genes_by_alias(self, build="37", genes=None):
