@@ -173,8 +173,7 @@ class GeneHandler(object):
         return self.hgnc_collection.find({"aliases": hgnc_symbol, **build_query})
 
     def hgnc_genes_find_one(self, hgnc_symbol, build="37"):
-        """Find one hgnc genes that match a hgnc symbol. Replaces deprecated
-        pymongo.cursor.count()
+        """Find one hgnc genes that match a hgnc symbol.
 
         Check both hgnc_symbol and aliases
 
@@ -186,9 +185,7 @@ class GeneHandler(object):
         """
 
         LOG.debug("Find one genes with symbol %s" % hgnc_symbol)
-        return self.hgnc_collection.find_one(
-            filter={"build": build, "hgnc_symbol": hgnc_symbol, "aliases": hgnc_symbol}
-        )
+        return self.hgnc_collection.find_one(filter={"build": build, "aliases": hgnc_symbol})
 
     def get_query_alias_or_id(self, hgnc_symbol, build):
         """Return query to search for hgnc-symbol or aliases"""
