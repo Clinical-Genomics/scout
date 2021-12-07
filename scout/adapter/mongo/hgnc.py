@@ -329,8 +329,8 @@ class GeneHandler(object):
         res = self.hgnc_collection.find_one({"hgnc_symbol": symbol, "build": str(build)})
         if res:
             return [res]
-        else:
-            return self.gene_by_alias(symbol, build="37")
+
+        return self.gene_by_alias(symbol, build="37")
 
     def gene_by_alias(self, symbol, build="37"):
         """Return an iterable with hgnc_genes which have the provided symbol in the gene aliases
