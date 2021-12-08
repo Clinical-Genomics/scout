@@ -6,6 +6,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+### Changed
+### Fixed
+- Fix filter variants by genes
+
+## [4.43.1]
+### Added
+- Added database index for OMIM disease term genes
+### Changed
+### Fixed
+- Do not drop HPO terms collection when updating HPO terms via the command line
+- Do not drop disease (OMIM) terms collection when updating diseases via the command line
+
+## [4.43]
+### Added
 - Specify which collection(s) update/build indexes for
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 ### Fixed
