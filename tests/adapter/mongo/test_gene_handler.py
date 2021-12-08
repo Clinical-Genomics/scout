@@ -432,7 +432,7 @@ def test_gene_by_symbol_or_aliases(adapter, parsed_gene):
     assert type(result) == list
     assert len(result) == 1
 
-    # GIVEN a gene symbol not found in "hgnc_symbol" field of ant gene
+    # GIVEN a gene symbol not found in "hgnc_symbol" field of any gene
     # The function should return a pymongo iterable (results of searching genes by alias)
     result = adapter.gene_by_symbol_or_aliases(symbol="FOO")
     assert type(result) != list
