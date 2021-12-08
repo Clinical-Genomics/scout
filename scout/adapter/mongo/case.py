@@ -471,7 +471,7 @@ class CaseHandler(object):
         elif hgnc_symbols:
             LOG.info("Fetching genes by hgnc symbols")
             for symbol in hgnc_symbols:
-                those_genes = self.gene_by_alias(symbol=symbol, build=build)
+                those_genes = self.gene_aliases(symbol=symbol, build=build)
                 for gene_obj in those_genes:
                     res.append(gene_obj)
 
