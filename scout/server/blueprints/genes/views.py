@@ -50,6 +50,11 @@ def gene(hgnc_id=None, hgnc_symbol=None):
 def api_genes():
     """Return JSON data about genes."""
     query = request.args.get("query")
-    build = request.args.get("build", "all")
-    json_out = controllers.genes_to_json(store, query, build)
-    return jsonify(json_out)
+    if query is None:
+        return jsonify({"code": 400, "message": "missing 'query' param in request"})
+    build = request.args.get("build", "37")
+    try:
+        json_out = controllers.genes_to_json(store, query, build)
+        return jsonify(json_out)
+    except Exception as ex:
+        return jsonify({"code": 400, "message": ex})
