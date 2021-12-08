@@ -57,4 +57,4 @@ def api_genes():
         json_out = controllers.genes_to_json(store, query, build)
         return jsonify(json_out)
     except Exception as ex:
-        return jsonify({"code": 400, "message": ex})
+        return jsonify({"code": 500, "message": ex})
