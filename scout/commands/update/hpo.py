@@ -43,8 +43,9 @@ def hpo(hpoterms, hpo_to_genes):
     adapter = store
 
     LOG.info("Dropping HPO terms")
-    adapter.hpo_term_collection.drop()
+    adapter.hpo_term_collection.delete_many({})
     LOG.debug("HPO terms dropped")
+
     if hpoterms:
         hpoterms = get_file_handle(hpoterms)
     if hpo_to_genes:

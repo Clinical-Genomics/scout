@@ -19,7 +19,7 @@ def aliases(build, symbol):
 
     if symbol:
         alias_genes = {}
-        res = adapter.gene_by_alias(symbol, build=build)
+        res = adapter.gene_aliases(symbol, build=build)
         for gene_obj in res:
             hgnc_id = gene_obj["hgnc_id"]
             # Collect the true symbol given by hgnc
