@@ -91,7 +91,7 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
         assert resp.status_code == 302
 
 
-def test_unmonitor(app, institute_obj, case_obj):
+def test_unmonitor(app, institute_obj):
     """test case rerun monitoring function"""
 
     # GIVEN an initialized app
@@ -105,6 +105,8 @@ def test_unmonitor(app, institute_obj, case_obj):
         {"$set": {"rerun_monitoring": True}},
     )
 
+    form_data = {"rerun_monitoring": ""}
+
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
@@ -117,6 +119,7 @@ def test_unmonitor(app, institute_obj, case_obj):
                 institute_id=institute_obj["internal_id"],
                 case_name=a_case["display_name"],
             ),
+            data=form_data,
         )
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one({"_id": a_case["_id"]})
