@@ -80,7 +80,7 @@
                                 }
                             ]
                           }, // end of sashimi track with data
-                          {
+                          { // genes track
                             name: geneTrack.name,
                             type: geneTrack.type,
                             format: geneTrack.forma,
@@ -93,7 +93,7 @@
                             searchable: true,
                             order: {{counter.loop}},
                             infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
-                          },
+                          }, // end of genes track
                         {% endfor %}
                     ] // end of tracks
             };
