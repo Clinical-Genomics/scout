@@ -102,7 +102,7 @@ def diseases(downloads_folder, api_key):
     _check_resources(resources)
 
     LOG.info("Dropping DiseaseTerms")
-    adapter.disease_term_collection.drop()
+    adapter.disease_term_collection.delete_many({})
     LOG.debug("DiseaseTerms dropped")
 
     load_disease_terms(
