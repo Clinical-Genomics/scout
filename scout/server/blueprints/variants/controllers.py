@@ -1079,6 +1079,12 @@ def check_form_gene_symbols(
             not_found_symbols.add(hgnc_symbol)
             continue
 
+        if len(hgnc_genes) > 1:  # Gene was not found using provided symbol, aliases were returned
+            flash(
+                f"Could not find a gene with symbol '{hgnc_symbol}'. Search was extended to genes using symbol as an alias.",
+                "warning",
+            )
+
         for hgnc_gene in hgnc_genes:
             gene_symbol = hgnc_gene.get("hgnc_symbol")
 
