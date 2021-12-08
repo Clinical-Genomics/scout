@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Display Gene track beneath each sample track when displaying splice junctions in igv browser
 ### Fixed
+- Fix filter variants by genes
 
 ## [4.43.1]
 ### Added

@@ -108,7 +108,7 @@ def variants(
         if hgnc_id:
             gene_obj = adapter.hgnc_gene(hgnc_id, case_obj["genome_build"])
         if hgnc_symbol:
-            for res in adapter.gene_by_alias(hgnc_symbol, case_obj["genome_build"]):
+            for res in adapter.gene_aliases(hgnc_symbol, case_obj["genome_build"]):
                 gene_obj = res
         if not gene_obj:
             LOG.warning("The gene could not be found")
