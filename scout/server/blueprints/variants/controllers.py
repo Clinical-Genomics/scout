@@ -1073,17 +1073,20 @@ def check_form_gene_symbols(
 
     for hgnc_symbol in hgnc_symbols:
         # Retrieve a gene with "hgnc_symbol" as hgnc symbol or a list of genes where hgnc_symbol is among the aliases
-        hgnc_genes = list(store.gene_by_symbol_or_aliases(symbol=hgnc_symbol, build=genome_build))
+        hgnc_genes = store.gene_by_symbol_or_aliases(symbol=hgnc_symbol, build=genome_build)
 
-        if not hgnc_genes:
-            not_found_symbols.add(hgnc_symbol)
-            continue
-
-        if len(hgnc_genes) > 1:  # Gene was not found using provided symbol, aliases were returned
+        if (
+            isinstance(hgnc_genes, list) is False
+        ):  # Gene was not found using provided symbol, aliases were returned
+            hgnc_genes = list(hgnc_genes)
             flash(
                 f"Could not find a gene with symbol '{hgnc_symbol}'. Search was extended to genes using symbol as an alias.",
                 "warning",
             )
+
+        if not hgnc_genes:
+            not_found_symbols.add(hgnc_symbol)
+            continue
 
         for hgnc_gene in hgnc_genes:
             gene_symbol = hgnc_gene.get("hgnc_symbol")
