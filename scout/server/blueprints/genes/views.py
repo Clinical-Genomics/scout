@@ -50,7 +50,7 @@ def gene(hgnc_id=None, hgnc_symbol=None):
 def api_genes():
     """Return JSON data about genes."""
     query = request.args.get("query")
-    if query is None or query.isalnum() is False:
+    if query is None or query.replace("-", "").isalnum() is False:
         return jsonify({"code": 400, "message": "missing or invalid 'query' param in request"})
     build = request.args.get("build", "37")
 
