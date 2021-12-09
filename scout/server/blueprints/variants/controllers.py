@@ -1066,10 +1066,15 @@ def check_form_gene_symbols(
     non_clinical_symbols = set()
     not_found_symbols = set()
     outdated_symbols = set()
+    aliased_symbols = set()
     updated_hgnc_symbols = set()
 
     clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
     clinical_symbols = store.clinical_symbols(case_obj)
+
+    # if no clinical symobols / panels were found loaded, warnings are treated as with research
+    if len(clinical_hgnc_ids) == 0 and len(clinical_symbols) == 0:
+        is_clinical = False
 
     for hgnc_symbol in hgnc_symbols:
         # Retrieve a gene with "hgnc_symbol" as hgnc symbol or a list of genes where hgnc_symbol is among the aliases
@@ -1079,10 +1084,8 @@ def check_form_gene_symbols(
             isinstance(hgnc_genes, list) is False
         ):  # Gene was not found using provided symbol, aliases were returned
             hgnc_genes = list(hgnc_genes)
-            flash(
-                f"Could not find a gene with symbol '{hgnc_symbol}'. Search was extended to genes using symbol as an alias.",
-                "warning",
-            )
+            if hgnc_genes:
+                aliased_symbols.add(hgnc_symbol)
 
         if not hgnc_genes:
             not_found_symbols.add(hgnc_symbol)
@@ -1123,8 +1126,13 @@ def check_form_gene_symbols(
             "label": "warning",
         },
         "outdated_symbols": {
-            "message": "Outdated gene symbols either provided in search or found in the panels used for the analysis.",
+            "message": "Outdated gene symbols found in the clinical panels loaded for the analysis.",
             "gene_list": outdated_symbols,
+            "label": "info",
+        },
+        "aliased_symbols": {
+            "message": "Outdated gene symbols found in the search - alias used.",
+            "gene_list": aliased_symbols,
             "label": "info",
         },
     }
