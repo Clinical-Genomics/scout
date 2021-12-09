@@ -1126,7 +1126,7 @@ def check_form_gene_symbols(
             "label": "warning",
         },
         "outdated_symbols": {
-            "message": "Outdated gene symbols found in the clinical panel loaded for the analysis.",
+            "message": "Outdated gene symbols found in the clinical panels loaded for the analysis.",
             "gene_list": outdated_symbols,
             "label": "info",
         },
