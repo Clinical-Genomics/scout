@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Check outdated gene symbols and update with aliases also for cancer
 ### Fixed
 - Genes API endpoint to return a json formatted error when request is malformed
+- Gene api queries input check
 
 ## [4.43.1]
 ### Added
