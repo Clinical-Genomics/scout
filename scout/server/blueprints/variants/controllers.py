@@ -1083,6 +1083,7 @@ def check_form_gene_symbols(
             isinstance(hgnc_genes, list) is False
         ):  # Gene was not found using provided symbol, aliases were returned
             hgnc_genes = list(hgnc_genes)
+            outdated_symbols.add(hgnc_symbol)
 
         if not hgnc_genes:
             not_found_symbols.add(hgnc_symbol)
