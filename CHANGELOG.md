@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 ### Fixed
 - Fix filter variants by genes
+- Genes API endpoint to return a json formatted error when request is malformed
 
 ## [4.43.1]
 ### Added
