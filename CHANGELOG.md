@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Changed
+- Display Gene track beneath each sample track when displaying splice junctions in igv browser
+- Check outdated gene symbols and update with aliases also for cancer
 ### Fixed
 - Genes API endpoint to return a json formatted error when request is malformed
 
