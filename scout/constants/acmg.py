@@ -275,7 +275,7 @@ ACMG_CRITERIA["benign impact"] = OrderedDict(
                         "BP6",
                         {
                             "short": "Reported benign, evidence unavailable",
-                            "description": "Reputable source recently reports variant as pathogenic, but the evidence is not available to the laboratory to perform an independent evaluation",
+                            "description": "Reputable source recently reports variant as benign, but the evidence is not available to the laboratory to perform an independent evaluation",
                         },
                     ),
                     (
