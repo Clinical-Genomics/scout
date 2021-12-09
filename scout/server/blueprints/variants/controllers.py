@@ -1066,6 +1066,7 @@ def check_form_gene_symbols(
     non_clinical_symbols = set()
     not_found_symbols = set()
     outdated_symbols = set()
+    aliased_symbols = set()
     updated_hgnc_symbols = set()
 
     clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
@@ -1083,7 +1084,7 @@ def check_form_gene_symbols(
             isinstance(hgnc_genes, list) is False
         ):  # Gene was not found using provided symbol, aliases were returned
             hgnc_genes = list(hgnc_genes)
-            outdated_symbols.add(hgnc_symbol)
+            aliased_symbols.add(hgnc_symbol)
 
         if not hgnc_genes:
             not_found_symbols.add(hgnc_symbol)
@@ -1124,8 +1125,13 @@ def check_form_gene_symbols(
             "label": "warning",
         },
         "outdated_symbols": {
-            "message": "Outdated gene symbols either provided in search or found in the panels used for the analysis.",
+            "message": "Outdated gene symbols found in the clinical panel loaded for the analysis.",
             "gene_list": outdated_symbols,
+            "label": "info",
+        },
+        "aliased_symbols": {
+            "message": "Outdated gene symbols found in the search - alias used.",
+            "gene_list": aliased_symbols,
             "label": "info",
         },
     }
