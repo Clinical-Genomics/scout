@@ -445,6 +445,9 @@ def cancer_sv_variants(institute_id, case_name):
     controllers.populate_chrom_choices(form, case_obj)
 
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+
+    controllers.update_form_hgnc_symbols(store, case_obj, form)
+
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
