@@ -1072,7 +1072,7 @@ def check_form_gene_symbols(
     clinical_symbols = store.clinical_symbols(case_obj)
 
     # if no clinical symobols / panels were found loaded, warnings are treated as with research
-    if len(clinical_hgnc_ids == 0) and len(clinical_symbols == 0):
+    if len(clinical_hgnc_ids) == 0 and len(clinical_symbols) == 0:
         is_clinical = False
 
     for hgnc_symbol in hgnc_symbols:
@@ -1083,10 +1083,6 @@ def check_form_gene_symbols(
             isinstance(hgnc_genes, list) is False
         ):  # Gene was not found using provided symbol, aliases were returned
             hgnc_genes = list(hgnc_genes)
-            flash(
-                f"Could not find a gene with symbol '{hgnc_symbol}'. Search was extended to genes using symbol as an alias.",
-                "warning",
-            )
 
         if not hgnc_genes:
             not_found_symbols.add(hgnc_symbol)
