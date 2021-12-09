@@ -528,7 +528,7 @@ class PanelHandler:
 
     def clinical_symbols(self, case_obj):
         """Return all the clinical gene symbols for a case."""
-        panel_ids = [panel["panel_id"] for panel in case_obj["panels"]]
+        panel_ids = [panel["panel_id"] for panel in case_obj.get("panels", [])]
         query = self.panel_collection.aggregate(
             [
                 {"$match": {"_id": {"$in": panel_ids}}},
@@ -540,7 +540,7 @@ class PanelHandler:
 
     def clinical_hgnc_ids(self, case_obj):
         """Return all the clinical gene hgnc IDs for a case."""
-        panel_ids = [panel["panel_id"] for panel in case_obj["panels"]]
+        panel_ids = [panel["panel_id"] for panel in case_obj.get("panels", [])]
         query = self.panel_collection.aggregate(
             [
                 {"$match": {"_id": {"$in": panel_ids}}},
