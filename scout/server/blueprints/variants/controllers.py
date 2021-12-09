@@ -1063,29 +1063,51 @@ def check_form_gene_symbols(
     Returns:
         updated_hgnc_symbols(list): List of gene symbols that are found in database and are up to date
     """
-    non_clinical_symbols = []
-    not_found_symbols = []
-    outdated_symbols = []
-    updated_hgnc_symbols = []
+    non_clinical_symbols = set()
+    not_found_symbols = set()
+    outdated_symbols = set()
+    aliased_symbols = set()
+    updated_hgnc_symbols = set()
 
     clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
     clinical_symbols = store.clinical_symbols(case_obj)
 
-    for hgnc_symbol in hgnc_symbols:
-        hgnc_gene = store.hgnc_genes_find_one(hgnc_symbol, genome_build)
+    # if no clinical symobols / panels were found loaded, warnings are treated as with research
+    if len(clinical_hgnc_ids) == 0 and len(clinical_symbols) == 0:
+        is_clinical = False
 
-        if hgnc_gene is None:
-            not_found_symbols.append(hgnc_symbol)
-        elif is_clinical is False:  # research variants
-            updated_hgnc_symbols.append(hgnc_symbol)
-        elif hgnc_gene["hgnc_id"] in clinical_hgnc_ids:  # clinical variants
-            updated_hgnc_symbols.append(hgnc_symbol)
-            if hgnc_symbol not in clinical_symbols:
-                # clinical symbols from gene panels might not be up to date with latest gene names
-                # but their HGNC id would still match
-                outdated_symbols.append(hgnc_symbol)
-        else:  # clinical variants
-            non_clinical_symbols.append(hgnc_symbol)
+    for hgnc_symbol in hgnc_symbols:
+        # Retrieve a gene with "hgnc_symbol" as hgnc symbol or a list of genes where hgnc_symbol is among the aliases
+        hgnc_genes = store.gene_by_symbol_or_aliases(symbol=hgnc_symbol, build=genome_build)
+
+        if (
+            isinstance(hgnc_genes, list) is False
+        ):  # Gene was not found using provided symbol, aliases were returned
+            hgnc_genes = list(hgnc_genes)
+            if hgnc_genes:
+                aliased_symbols.add(hgnc_symbol)
+
+        if not hgnc_genes:
+            not_found_symbols.add(hgnc_symbol)
+            continue
+
+        for hgnc_gene in hgnc_genes:
+            gene_symbol = hgnc_gene.get("hgnc_symbol")
+
+            # collect queried symbols for both clinical variants and research variants
+            if hgnc_gene["hgnc_id"] in clinical_hgnc_ids or is_clinical is False:
+                updated_hgnc_symbols.add(gene_symbol)
+
+                # research variants
+                if is_clinical is False:
+                    continue
+
+                # warn if queried symbol or corresponding gene symbol in panel is outdated
+                if hgnc_symbol not in clinical_symbols:
+                    outdated_symbols.add(hgnc_symbol)
+
+            else:
+                non_clinical_symbols.add(gene_symbol)
 
     errors = {
         "non_clinical_symbols": {
@@ -1104,8 +1126,13 @@ def check_form_gene_symbols(
             "label": "warning",
         },
         "outdated_symbols": {
-            "message": "Gene panel versions used for loading variants of this case (clinical list) contain outdated gene symbols. The current HGNC id was found on the clinical list.",
+            "message": "Outdated gene symbols found in the clinical panels loaded for the analysis.",
             "gene_list": outdated_symbols,
+            "label": "info",
+        },
+        "aliased_symbols": {
+            "message": "Outdated gene symbols found in the search - alias used.",
+            "gene_list": aliased_symbols,
             "label": "info",
         },
     }
