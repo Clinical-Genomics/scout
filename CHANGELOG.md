@@ -10,8 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display Gene track beneath each sample track when displaying splice junctions in igv browser
 - Check outdated gene symbols and update with aliases for both RD and cancer variantS
 ### Fixed
-- Genes API endpoint to return a json formatted error when request is malformed
-- Gene api queries input check
+- Check query input check and fix Genes API endpoint and to return a json formatted error when request is malformed
 
 ## [4.43.1]
 ### Added
