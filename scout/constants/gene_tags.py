@@ -2,7 +2,7 @@
 # which are specified by GENETIC_MODELS (in variant_tags.py).
 # The following models are used while describing inheritance of genes in gene panels
 # It's a custom-compiled list of values
-GENE_STANDARD_INHERITANCE_MODELS = (
+GENE_PANELS_INHERITANCE_MODELS = (
     ("AD", "AD - Autosomal Dominant"),
     ("AR", "AR - Autosomal recessive"),
     ("XL", "XL - X Linked"),

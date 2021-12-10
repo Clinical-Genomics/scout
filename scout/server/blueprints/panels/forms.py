@@ -2,7 +2,7 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, SelectMultipleField, StringField
 
-from scout.constants import GENE_STANDARD_INHERITANCE_MODELS
+from scout.constants import GENE_PANELS_INHERITANCE_MODELS
 
 
 class PanelGeneForm(FlaskForm):
@@ -12,7 +12,7 @@ class PanelGeneForm(FlaskForm):
     database_entry_version = StringField()
 
     inheritance_models = SelectMultipleField(
-        "Manual inheritance (standard terms)", choices=GENE_STANDARD_INHERITANCE_MODELS
+        "Manual inheritance (standard terms)", choices=GENE_PANELS_INHERITANCE_MODELS
     )
     custom_inheritance_models = StringField(
         "Manual inheritance (custom terms)",
