@@ -404,7 +404,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
     loqusdb_id = institute_obj.get("loqusdb_id") or "default"
-    if loqusdb.loqusdb_settings[loqusdb_id]["version"] == None:
+    if loqusdb.loqusdb_settings[loqusdb_id]["version"] is None:
         flash("Could not connect to the preselected loqusdb instance", "danger")
         return {
             "total": "N/A",
