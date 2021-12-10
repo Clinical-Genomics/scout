@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add an option to export cases with rerun monitoring enabled
 ### Changed
 - Start Scout also when loqusdbapi is not reachable
+- Clearer definition of manual standard and custom inheritance models in gene panels
 ### Fixed
 - Gene panel crashing on edit action
 
