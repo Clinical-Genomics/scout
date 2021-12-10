@@ -20,6 +20,14 @@ class LoqusdbMock:
     def __init__(self):
         self.nr_cases = 130
         self.variants = {"1_169898014_T_C": {"families": ["vitalmouse"]}}
+        self.loqusdb_settings = {
+            "default": {
+                "api_url": "http://127.0.0.1:9000",
+                "instance_type": "api",
+                "id": "default",
+                "version": "2.5",
+            }
+        }
 
     def case_count(self):
         return self.nr_cases

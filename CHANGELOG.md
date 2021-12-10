@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Changed
+- Start Scout also when loqusdbapi is not reachable
 - Allow searching multiple chromosomes in filters
 ### Fixed
 - Gene panel crashing on edit action
