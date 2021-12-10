@@ -54,11 +54,11 @@
         </div>
         <div class="form-row ">
           <div class="form-group col-sm-2">
-            <label class="col-form-label">CSV file</label>
+            <label class="col-form-label">Gene panel file</label>
           </div>
           <div class="col-sm-5 text-center">
-            <input type="file" name="csv_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
-            <label class="custom-file-label" for="csv_file">Choose file</label><br>
+            <input type="file" name="panel_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
+            <label class="custom-file-label" for="panel_file">Choose file</label><br>
             <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" target="_blank">gene panel file</a>?</p>
           </div>
           <div class="col-sm-5">
@@ -175,18 +175,18 @@
         <div class="form-group">
           <div class="custom-control custom-radio">
             <input type="radio" id="add_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="add" checked>
-            <label class="custom-control-label" for="add_{{panel_obj.display_name}}">Add genes from CSV file</label>
+            <label class="custom-control-label" for="add_{{panel_obj.display_name}}">Add genes from text file</label>
           </div>
           <div class="custom-control custom-radio">
             <input type="radio" id="replace_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="replace">
-            <label class="custom-control-label" for="replace_{{panel_obj.display_name}}">Replace genes using CSV file</label>
+            <label class="custom-control-label" for="replace_{{panel_obj.display_name}}">Replace genes using text file</label>
           </div>
         </div>
       </div><!--end of col-->
       <div class="col-sm-7">
         <div class="form-group">
-            <input type="file" name="csv_file" class="custom-file-input" required>
-            <label class="custom-file-label" for="csv_file">Choose file</label><br>
+            <input type="file" name="panel_file" class="custom-file-input" required>
+            <label class="custom-file-label" for="panel_file">Choose file</label><br>
             <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
         </div>
       </div><!--end of col-->
