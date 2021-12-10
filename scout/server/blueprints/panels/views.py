@@ -235,7 +235,6 @@ def tx_choices(hgnc_id, panel_obj):
 @templated("panels/gene-edit.html")
 def gene_edit(panel_id, hgnc_id):
     """Edit additional information about a panel gene."""
-
     panel_obj = store.panel(panel_id)
     hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
         hgnc_identifier=hgnc_id, build="38"
@@ -259,9 +258,13 @@ def gene_edit(panel_id, hgnc_id):
         return redirect(url_for(".panel", panel_id=panel_id))
 
     if panel_gene:
-        form.custom_inheritance_models.data = ", ".join(
-            panel_gene.get("custom_inheritance_models", [])
-        )
+        custom_models = [
+            model for model in panel_gene.get("custom_inheritance_models", []) if model != ""
+        ]
+        if custom_models:
+            form.custom_inheritance_models.data = ", ".join(
+                panel_gene.get("custom_inheritance_models")
+            )
         for field_key in [
             "disease_associated_transcripts",
             "reduced_penetrance",

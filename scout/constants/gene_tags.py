@@ -2,17 +2,17 @@
 # which are specified by GENETIC_MODELS (in variant_tags.py).
 # The following models are used while describing inheritance of genes in gene panels
 # It's a custom-compiled list of values
-GENE_CUSTOM_INHERITANCE_MODELS = (
-    ("AD", "Autosomal Dominant"),
-    ("AR", "Autosomal recessive"),
-    ("XL", "X Linked"),
-    ("XD", "X Linked Dominant"),
-    ("XR", "X Linked Recessive"),
-    ("NA", "not available"),
-    ("AD (imprinting)", "Autosomal Dominant (imprinting)"),
-    ("digenic", "Digenic"),
-    ("AEI", "Allelic expression imbalance"),
-    ("other", "Other"),
+GENE_STANDARD_INHERITANCE_MODELS = (
+    ("AD", "AD - Autosomal Dominant"),
+    ("AR", "AR - Autosomal recessive"),
+    ("XL", "XL - X Linked"),
+    ("XD", "XD - X Linked Dominant"),
+    ("XR", "XR - X Linked Recessive"),
+    ("NA", "NA - not available"),
+    ("AD (imprinting)", "AD (imprinting) - Autosomal Dominant (imprinting)"),
+    ("digenic", "digenic - Digenic"),
+    ("AEI", "AEI - Allelic expression imbalance"),
+    ("other", "other - Other"),
 )
 
 VALID_MODELS = ("AR", "AD", "MT", "XD", "XR", "X", "Y")
