@@ -12,10 +12,9 @@ class PanelGeneForm(FlaskForm):
     database_entry_version = StringField()
 
     inheritance_models = SelectMultipleField(
-        "Standard inheritance models", choices=GENE_STANDARD_INHERITANCE_MODELS
+        "Manual inheritance (standard terms)", choices=GENE_STANDARD_INHERITANCE_MODELS
     )
     custom_inheritance_models = StringField(
-        "Other non-standard inheritance models (free text, comma separated)",
-        default="",
+        "Manual inheritance (custom terms)",
     )
     comment = StringField()

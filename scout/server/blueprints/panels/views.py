@@ -253,7 +253,6 @@ def gene_edit(panel_id, hgnc_id):
             info_data["custom_inheritance_models"] = info_data["custom_inheritance_models"].split(
                 ","
             )
-
         store.add_pending(panel_obj, hgnc_gene, action=action, info=info_data)
         return redirect(url_for(".panel", panel_id=panel_id))
 
