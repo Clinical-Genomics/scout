@@ -7,10 +7,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Changed
+- Start Scout also when loqusdbapi is not reachable
+- Clearer definition of manual standard and custom inheritance models in gene panels
+### Fixed
+- Gene panel crashing on edit action
+
+## [4.44]
+### Added
+### Changed
 - Display Gene track beneath each sample track when displaying splice junctions in igv browser
 - Check outdated gene symbols and update with aliases for both RD and cancer variantS
 ### Fixed
 - Added query input check and fixed the Genes API endpoint to return a json formatted error when request is malformed
+- Typo in ACMG BP6 tooltip
 
 ## [4.43.1]
 ### Added
