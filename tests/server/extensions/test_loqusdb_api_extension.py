@@ -17,10 +17,9 @@ def test_get_api_loqus_version_no_connection(loqus_api_app):
     """Test function that returns the version of the LoqusDB API when the API is not available"""
 
     # When the get_api_loqus_version function is invoked for a non-reachable API
-    # THEN it should raise ConfigError
+    # THEN it should set the loqus version to None
     with loqus_api_app.app_context():
-        with pytest.raises(ConfigError):
-            assert loqusdb.get_api_loqus_version(api_url="test_url")
+        assert loqusdb.get_api_loqus_version(api_url="test_url") == None
 
 
 def test_get_api_loqus_version(loqus_api_app, monkeypatch):
