@@ -170,12 +170,13 @@
         <tbody>
           <tr>
             {% if config.LOQUSDB_SETTINGS == 'Fail' %}
-              <td style="background-color: #ff9999;" colspan=3>Failed to contact loqusdb server</td>
-            {% else %}
+              <td style="background-color: #ff9999;" colspan=3>Failed to contact one of the connected loqusdb servers</td>
+              {% endif %}
+          </tr>
+          <tr>
             <td>{{ observations.observations|default('N/A') }}</td>
             <td>{{ observations.homozygote|default('N/A') }}</td>
             <td>{{ observations.total }}</td>
-            {% endif %}
           </tr>
         </tbody>
       </table>
