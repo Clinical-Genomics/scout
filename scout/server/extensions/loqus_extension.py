@@ -95,11 +95,10 @@ class LoqusDB:
                 setting["version"] = self.get_instance_version(setting)
             try:
                 self.version_check(setting)
-                self.loqus_ids = self.loqusdb_settings.keys()
-                LOG.debug(f"LoqusDB setup: {self.__repr__()}")
             except EnvironmentError as env_ex:
                 LOG.warning(env_ex)
-                app.config["LOQUSDB_SETTINGS"] = "Fail"
+            self.loqus_ids = self.loqusdb_settings.keys()
+            LOG.debug(f"LoqusDB setup: {self.__repr__()}")
 
     def version_check(self, loqusdb_settings):
         """Check if a compatible version is used otherwise raise an error"""

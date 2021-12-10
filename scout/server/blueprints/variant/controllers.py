@@ -2,7 +2,7 @@ import logging
 from base64 import b64encode
 from datetime import date
 
-from flask import url_for
+from flask import flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -430,6 +430,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
     loqusdb_id = institute_obj.get("loqusdb_id") or "default"
+    if loqusdb.loqusdb_settings[loqusdb_id]["version"] == None:
+        flash("Could not connect to the preselected loqusdb instance", "danger")
+
     obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
 
     if not obs_data:
@@ -469,6 +472,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
 
         obs_data["cases"].append(dict(case=other_case, variant=other_variant))
 
+    flash(obs_data)
     return obs_data
 
 
