@@ -71,7 +71,7 @@ def panel_create_or_update(store, request):
     # modify an existing panel
     update_option = request.form["modify_option"]
 
-    panel_obj = store.gene_panel(request.form["panel_name"], include_hidden=current_user.is_admin)
+    panel_obj = store.gene_panel(request.form["panel_name"])
     if panel_obj is None:
         return redirect(request.referrer)
 
