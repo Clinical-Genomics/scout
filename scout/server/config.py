@@ -48,6 +48,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #    "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"},
 #    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
 # }
+
 #
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
 # CLOUD_IGV_TRACKS = [
