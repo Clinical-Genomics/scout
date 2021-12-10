@@ -93,13 +93,19 @@ class LoqusDB:
                 setting["version"] = "2.5"
             else:
                 setting["version"] = self.get_instance_version(setting)
-            self.version_check(setting)
-
-        self.loqus_ids = self.loqusdb_settings.keys()
-        LOG.debug(f"LoqusDB setup: {self.__repr__()}")
+            try:
+                self.version_check(setting)
+                self.loqus_ids = self.loqusdb_settings.keys()
+                LOG.debug(f"LoqusDB setup: {self.__repr__()}")
+            except EnvironmentError as env_ex:
+                LOG.warning(env_ex)
+                app.config["LOQUSDB_SETTINGS"] = "Fail"
 
     def version_check(self, loqusdb_settings):
         """Check if a compatible version is used otherwise raise an error"""
+        if loqusdb_settings["version"] is None:
+            raise EnvironmentError("LoqusDB instance not available")
+
         if not loqusdb_settings["version"] >= "2.5":
             LOG.info("Please update your loqusdb version to >=2.5")
             raise EnvironmentError("Only compatible with loqusdb version >= 2.5")
@@ -127,9 +133,6 @@ class LoqusDB:
             return None
         json_resp = api_get("".join([api_url, "/"]))
         version = json_resp.get("content", {}).get("loqusdb_version")
-        if version is None:
-            raise ConfigError(f"LoqusDB API url '{api_url}' did not return a valid response.")
-
         return version
 
     def get_exec_loqus_version(self, loqusdb_id=None):
