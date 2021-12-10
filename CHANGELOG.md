@@ -9,6 +9,36 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Allow searching multiple chromosomes in filters
 ### Fixed
+- Gene panel crashing on edit action
+
+## [4.44]
+### Added
+### Changed
+- Display Gene track beneath each sample track when displaying splice junctions in igv browser
+- Check outdated gene symbols and update with aliases for both RD and cancer variantS
+### Fixed
+- Added query input check and fixed the Genes API endpoint to return a json formatted error when request is malformed
+- Typo in ACMG BP6 tooltip
+
+## [4.43.1]
+### Added
+- Added database index for OMIM disease term genes
+### Changed
+### Fixed
+- Do not drop HPO terms collection when updating HPO terms via the command line
+- Do not drop disease (OMIM) terms collection when updating diseases via the command line
+
+## [4.43]
+### Added
+- Specify which collection(s) update/build indexes for
+### Changed
+### Fixed
+- Do not drop genes and transcripts collections when updating genes via the command line
+
+## [4.42.1]
+### Added
+### Changed
+### Fixed
 - Freeze PyMongo lib to version<4.0 to keep supporting previous MongoDB versions
 - Speed up gene panels creation and update by collecting only light gene info from database
 - Avoid case page crash on Phenomizer queries timeout

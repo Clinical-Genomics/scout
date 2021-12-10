@@ -1,8 +1,10 @@
 import logging
+import sys
 
 import click
 from flask.cli import with_appcontext
 
+from scout.constants import INDEXES
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -19,16 +21,24 @@ def abort_if_false(ctx, param, value):
     is_flag=True,
     callback=abort_if_false,
     expose_value=False,
-    prompt="This will delete and rebuild all indexes(if not --update). Are you sure?",
+    prompt="This will delete and rebuild indexes(if not --update) for the given collections (or the whole database). Are you sure?",
 )
 @click.option("--update", help="Update the indexes", is_flag=True)
+@click.option(
+    "-c", "--collection", multiple=True, help="Name of collection to update/rebuild the indexes for"
+)
 @with_appcontext
-def index(update):
+def index(update, collection):
     """Create indexes for the database"""
     LOG.info("Running scout index")
     adapter = store
 
+    for collx in collection:
+        if collx in INDEXES:
+            continue
+        sys.exit(f"Collection '{collx}' not found in database")
+
     if update:
-        adapter.update_indexes()
+        adapter.update_indexes(collection)
     else:
-        adapter.load_indexes()
+        adapter.load_indexes(collection)
