@@ -35,8 +35,8 @@ def panel_create_or_update(store, request):
 
     """
     # Try to read the csv or txt file containing genes info
-    csv_file = request.files["csv_file"]
-    content = csv_file.stream.read()
+    panel_file = request.files["panel_file"]
+    content = panel_file.stream.read()
     lines = None
     try:
         if b"\n" in content:
