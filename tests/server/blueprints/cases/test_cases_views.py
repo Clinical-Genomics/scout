@@ -89,7 +89,7 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
         assert resp.status_code == 302
 
 
-def test_unmonitor(app, institute_obj):
+def test_monitor(app, institute_obj):
     """test case rerun monitoring function"""
 
     # GIVEN an initialized app
@@ -100,10 +100,10 @@ def test_unmonitor(app, institute_obj):
     # WHEN setting monitoring to true
     store.case_collection.find_one_and_update(
         {"_id": a_case["_id"]},
-        {"$set": {"rerun_monitoring": True}},
+        {"$set": {"rerun_monitoring": False}},
     )
 
-    form_data = {"rerun_monitoring": ""}
+    form_data = {"rerun_monitoring": "monitor"}
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -122,11 +122,11 @@ def test_unmonitor(app, institute_obj):
         assert resp.status_code == 302
         updated_case = store.case_collection.find_one({"_id": a_case["_id"]})
         # THEN the case should be updated
-        assert updated_case["rerun_monitoring"] is False
+        assert updated_case["rerun_monitoring"] is True
 
         # AND an unmonitor event should be created
         rerun_event = store.event_collection.find_one()
-        assert rerun_event.get("verb") == "unmonitor"
+        assert rerun_event.get("verb") == "monitor"
 
 
 def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
