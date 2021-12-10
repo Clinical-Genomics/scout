@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Check outdated gene symbols and update with aliases for both RD and cancer variantS
 ### Fixed
 - Added query input check and fixed the Genes API endpoint to return a json formatted error when request is malformed
+- Typo in ACMG BP6 tooltip
 
 ## [4.43.1]
 ### Added
