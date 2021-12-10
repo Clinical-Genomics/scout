@@ -8,6 +8,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 ### Fixed
+
+
+## [4.44.1]
+### Added
+### Changed
+### Fixed
 - Gene panel crashing on edit action
 
 ## [4.44]
