@@ -43,13 +43,13 @@
             <div class="row">
               <div class="col-md-4">
                 {{ form.inheritance_models.label(class="control-label") }}<br>
-                {{ form.inheritance_models(class="selectpicker") }}
+                {{ form.inheritance_models(class="selectpicker", data_width="100%") }}
               </div>
               <div class="col-md-4">
                 {{ form.custom_inheritance_models.label(class="control-label") }}
-                {{ form.custom_inheritance_models(class="form-control") }}
+                {{ form.custom_inheritance_models(class="form-control", placeholder="free text, comma separated") }}
               </div>
-              <div class="col-md-4">
+              <div class="col-md-2">
                 {{ form.database_entry_version.label(class="control-label") }}
                 (ex: 1.2)
                 {{ form.database_entry_version(class="form-control") }}
