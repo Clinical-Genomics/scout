@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a toggle for melter rerun monitoring of cases
 - Add an option to export cases with rerun monitoring enabled
 ### Changed
+- Start Scout also when loqusdbapi is not reachable
 ### Fixed
 - Gene panel crashing on edit action
 
