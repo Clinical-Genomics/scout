@@ -9,8 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a toggle for melter rerun monitoring of cases
 - Add an option to export cases with rerun monitoring enabled
 ### Changed
+- Display Gene track beneath each sample track when displaying splice junctions in igv browser
+- Check outdated gene symbols and update with aliases for both RD and cancer variantS
 ### Fixed
-- Fix filter variants by genes
+- Added query input check and fixed the Genes API endpoint to return a json formatted error when request is malformed
 
 ## [4.43.1]
 ### Added

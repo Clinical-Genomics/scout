@@ -30,8 +30,17 @@
 
 <script type="text/javascript">
 
-    document.addEventListener("DOMContentLoaded", function () {
+    function getGeneTrack(allTracks){
+        for(var i=0;i<allTracks.length;i++){
+          if (allTracks[i]["name"] === "Genes"){
+            return allTracks[i];
+          }
+        }
+    }
+    var geneTrack = getGeneTrack({{custom_tracks|safe}});
 
+    document.addEventListener("DOMContentLoaded", function () {
+      {% set counter = namespace(loop=0) %}
         var options =
             {
                 // Example of fully specifying a reference GRCh38. Scout is supporting only this for now
@@ -45,28 +54,15 @@
                 locus: '{{ locus }}',
                 tracks:
                     [
-                      {% for custTrack in custom_tracks %}
-                        {% if custTrack.name == "Genes" %}
-                          {
-                            name: "{{ custTrack.name }}",
-                            type: "{{ custTrack.type }}",
-                            format: "{{ custTrack.format }}",
-                            sourceType: "{{ custTrack.sourceType }}",
-                            url: "{{ custTrack.url|replace('%2F','/') }}",
-                            indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
-                            displayMode: "{{ custTrack.displayMode }}",
-                            visibilityWindow: 300000000,
-                            order: Number.MAX_VALUE,
-                            searchable: true
-                          },
-                        {% endif %}
-                      {% endfor %}
                         {% for track in tracks %} // sample tracks
+                        {% set counter.loop = counter.loop + 1 %}
                           {
                               type: 'merged',
                               name: '{{ track.name }}',
+                              order: {{counter.loop}},
                               height: 500,
-                              tracks: [
+                              tracks:
+                              [
                                 {
                                   type: 'wig',
                                   format: "bigwig",
@@ -84,6 +80,20 @@
                                 }
                             ]
                           }, // end of sashimi track with data
+                          { // genes track
+                            name: geneTrack.name,
+                            type: geneTrack.type,
+                            format: geneTrack.format,
+                            sourceType: geneTrack.sourceType,
+                            url: geneTrack.url,
+                            indexURL: geneTrack.indexURL,
+                            displayMode: geneTrack.displayMode,
+                            visibilityWindow: 300000000,
+                            height: 100,
+                            searchable: true,
+                            order: {{counter.loop}},
+                            infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
+                          }, // end of genes track
                         {% endfor %}
                     ] // end of tracks
             };
