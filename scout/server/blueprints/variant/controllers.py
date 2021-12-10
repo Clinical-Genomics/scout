@@ -2,7 +2,7 @@ import logging
 from base64 import b64encode
 from datetime import date
 
-from flask import url_for
+from flask import flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -401,6 +401,15 @@ def observations(store, loqusdb, case_obj, variant_obj):
     Returns:
         obs_data(dict)
     """
+    institute_id = variant_obj["institute"]
+    institute_obj = store.institute(institute_id)
+    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
+    if loqusdb.loqusdb_settings[loqusdb_id]["version"] is None:
+        flash("Could not connect to the preselected loqusdb instance", "danger")
+        return {
+            "total": "N/A",
+        }
+
     chrom = variant_obj["chromosome"]
     end_chrom = variant_obj.get("end_chrom", chrom)
     pos = variant_obj["position"]
@@ -426,10 +435,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": category,
     }
-
-    institute_id = variant_obj["institute"]
-    institute_obj = store.institute(institute_id)
-    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
     obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
 
     if not obs_data:

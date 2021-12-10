@@ -183,28 +183,6 @@ def test_loqusdb_exe_case_count_CalledProcessError(loqus_exe_app, monkeypatch):
         assert 0 == loqusdb.case_count(variant_category="snv")
 
 
-def test_loqusdb_exe_wrong_version(monkeypatch, loqus_exe, loqus_config):
-    """Test creating a loqus extension when loqusDB version is too old."""
-
-    # Given a mocked loqus exe instance returning a loqus version older than 2.5
-    def mockcommand(*args):
-        return "2.4"
-
-    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
-
-    # WHEN instantiating an adapter
-    with pytest.raises(EnvironmentError):
-        # Then the app should not be created because of EnvironmentError
-        app = create_app(
-            config=dict(
-                LOQUSDB_SETTINGS={
-                    "binary_path": loqus_exe,
-                    "loqusdb_config": loqus_config,
-                }
-            )
-        )
-
-
 def test_init_app_loqus_list(monkeypatch, loqus_exe, loqus_config):
     """Test creating a Loqus extension from a list of config params"""
 
