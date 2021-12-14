@@ -125,11 +125,11 @@ def test_parse_custom_images(scout_config):
 
 
 def test_parse_incorrect_custom_images(scout_config):
-    """Test parsing of case"""
+    """Test parsing of case with a mix of accepted file types and not-accepted
+    file types"""
 
-    # GIVEN two images (correct) and one pdf (incorrect)
+    # GIVEN one valid suffix and two invalid suffixes (.bnp, .pdf)
     scout_config["custom_images"] = {
-        "custom_images": {
             "case": {
                 "section_one": [
                     {
@@ -151,13 +151,11 @@ def test_parse_incorrect_custom_images(scout_config):
                     },
                 ],
             }
-        }
     }
 
     # WHEN images is parsed
-
     parsed_data = parse_case_config(scout_config)
-    LOG.debug("PDF: {}".format(scout_config))
+
     # THEN check that non valid image formats are being rejected
     assert len(parsed_data["custom_images"]["case"]["section_one"]) == 1
     assert "section_two" not in parsed_data["custom_images"]

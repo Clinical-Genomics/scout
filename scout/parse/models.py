@@ -78,16 +78,6 @@ class Image(BaseModel):
     def __eq__(self, other):
         return self.title == other.title
 
-    @root_validator
-    def valid_image_suffix(cls, values):
-        path = values.get("path")
-        path = Path(path)
-
-        # Skip configured image if path suffix is not an image file type
-        if not path.suffix[1:] in ["gif", "svg", "png", "jpg", "jpeg"]:
-            values["path"] = None
-            return values
-        return values
 
 
 class ScoutIndividual(BaseModel):
@@ -218,8 +208,14 @@ def read_filestream(image_list):
 
 
 class CustomImage(BaseModel):
+    """Top Level Custom Image Config Class
+    
+    Note that all image wild cards are expanded by this top-level class, therefore
+    reading of binaries and checking correct image formats is done here
+    """
     case: Dict[str, List[Image]] = []
     str: List[Image] = []
+
 
     @root_validator
     def expand_wildcards(cls, values):
@@ -246,6 +242,7 @@ class CustomImage(BaseModel):
 
         # 2. Travers case dict and
         cases = values["case"]
+
         cases_updated = {}
         for entry in cases:
             image_list = cases[entry]
@@ -274,7 +271,7 @@ class ScoutLoadConfig(BaseModel):
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
     coverage_qc_report: Optional[str] = None
-    custom_images: CustomImage = []
+    custom_images: Optional[CustomImage] = None
 
     # -  custom_images: Dict[str, List[Image]] = None
     # custom_images: Dict[str, Dict[str, List[Image]]] = None
