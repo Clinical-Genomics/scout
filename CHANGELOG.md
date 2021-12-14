@@ -6,19 +6,74 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+### Changed
+- Start Scout also when loqusdbapi is not reachable
+- Clearer definition of manual standard and custom inheritance models in gene panels
+### Fixed
+- Gene panel crashing on edit action
+
+## [4.44]
+### Added
+### Changed
+- Display Gene track beneath each sample track when displaying splice junctions in igv browser
+- Check outdated gene symbols and update with aliases for both RD and cancer variantS
+### Fixed
+- Added query input check and fixed the Genes API endpoint to return a json formatted error when request is malformed
+- Typo in ACMG BP6 tooltip
+
+## [4.43.1]
+### Added
+- Added database index for OMIM disease term genes
+### Changed
+### Fixed
+- Do not drop HPO terms collection when updating HPO terms via the command line
+- Do not drop disease (OMIM) terms collection when updating diseases via the command line
+
+## [4.43]
+### Added
+- Specify which collection(s) update/build indexes for
+### Changed
+### Fixed
+- Do not drop genes and transcripts collections when updating genes via the command line
+
+## [4.42.1]
+### Added
+### Changed
+### Fixed
+- Freeze PyMongo lib to version<4.0 to keep supporting previous MongoDB versions
+- Speed up gene panels creation and update by collecting only light gene info from database
+- Avoid case page crash on Phenomizer queries timeout
+
+## [4.42]
+### Added
 - Choose custom pinned variants to submit to MatchMaker Exchange
 - Submit structural variant as genes to the MatchMaker Exchange
+- Added function for maintainers and admins to remove gene panels
+- Admins can restore deleted gene panels
+- A development docker-compose file illustrating the scout/chanjo-report integration
+- Show AD on variants view for cancer SV (tumor and normal)
+- Cancer SV variants filter AD, AF (tumor and normal)
+- Hiding the variants score column also from cancer SVs, as for the SNVs
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
-- Display and download HPO gene panels' gene in italics
 - Improved documentation for connecting to loqusdb instances (including loqusdbapi)
+- Display and download HPO gene panels' gene symbols in italics
+- A faster-built and lighter Docker image
+- Reduce complexity of `panels` endpoint moving some code to the panels controllers
+- Update requirements to use flask-ldap3-login>=0.9.17 instead of freezing WTForm
 ### Fixed
 - Use of deprecated TextField after the upgrade of WTF to v3.0
 - Freeze to WTForms to version < 3
 - Remove the extra files (bed files and madeline.svg) introduced by mistake
 - Cli command loading demo data in docker-compose when case custom images exist and is None
 - Increased MongoDB connection serverSelectionTimeoutMS parameter to 30K (default value according to MongoDB documentation)
+- Better differentiate old obs counts 0 vs N/A
+- Broken cancer variants page when default gene panel was deleted
+- Typo in tx_overview function in variant controllers file
+- Fixed loqusdbapi SV search URL
+- SV variants filtering using Decipher criterion
+- Removing old gene panels that don't contain the `maintainer` key.
 
 ## [4.41.1]
 ### Fixed

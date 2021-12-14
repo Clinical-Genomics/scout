@@ -413,6 +413,7 @@ def cancer_case_obj(request, cancer_parsed_case):
     case["_id"] = cancer_parsed_case["case_id"]
     case["owner"] = cancer_parsed_case["owner"]
     case["has_svvariants"] = True
+    case["status"] = "inactive"
 
     case["individuals"][0]["sex"] = "1"
     case["individuals"][1]["sex"] = "1"
@@ -560,7 +561,7 @@ def institute_obj(request, parsed_institute):
 @pytest.fixture(scope="function")
 def managed_variants_lines(request):
     managed_variants_lines = [
-        "##my_csv_file",
+        "##my_panel_file",
         "#chromosome;position;end;reference;alternative;category;sub_category;description\n",
         "14;76548781;76548781;CTGGACC;G;snv;indel;IFT43 indel test\n",
         "17;48696925;48696925;G;T;snv;snv;CACNA1G intronic test\n",

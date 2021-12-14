@@ -73,7 +73,7 @@ def test_populate_chrom_choices(app):
         assert choice[0] == CHROMOSOMES_38[nr]
 
 
-def test_gene_panel_choices(institute_obj, case_obj):
+def test_gene_panel_choices(app, institute_obj, case_obj):
     """test controller function that populates gene panel filter select"""
 
     # GIVEN a case with a gene panel
@@ -89,7 +89,7 @@ def test_gene_panel_choices(institute_obj, case_obj):
     institute_obj["gene_panels"] = {"institute_panel_name": "Institute Panel display name"}
 
     # WHEN the functions creates the option for the filters select
-    panel_options = gene_panel_choices(institute_obj, case_obj)
+    panel_options = gene_panel_choices(store, institute_obj, case_obj)
 
     # THEN case-specific panel should be represented
     case_panel_option = (case_panel["panel_name"], case_panel["display_name"])

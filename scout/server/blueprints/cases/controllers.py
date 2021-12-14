@@ -130,6 +130,7 @@ def case(store, institute_obj, case_obj):
         panel_version = panel_info.get("version")
         panel_obj = store.gene_panel(panel_name, version=panel_version)
         latest_panel = store.gene_panel(panel_name)
+        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
@@ -781,8 +782,8 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
         results = query_phenomizer.query(username, password, *hpo_ids)
         diseases = [result for result in results if result["p_value"] <= p_value_treshold]
         return diseases
-    except SystemExit:
-        return None
+    except RuntimeError:
+        flash("Could not establish a conection to Phenomizer", "danger")
 
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):

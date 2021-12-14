@@ -2,7 +2,7 @@ import logging
 from base64 import b64encode
 from datetime import date
 
-from flask import url_for
+from flask import flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -83,7 +83,7 @@ def tx_overview(variant_obj):
                 decorated_tx = None
                 if ovw_tx["mane"] and ovw_tx["mane"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane"]
-                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].starstwith(refseq_id):
+                elif ovw_tx["mane_plus"] and ovw_tx["mane_plus"].startswith(refseq_id):
                     decorated_tx = ovw_tx["mane_plus"]
                 elif refseq_id.startswith("XM"):
                     ovw_tx["muted_refseq_ids"].append(refseq_id)
@@ -401,6 +401,15 @@ def observations(store, loqusdb, case_obj, variant_obj):
     Returns:
         obs_data(dict)
     """
+    institute_id = variant_obj["institute"]
+    institute_obj = store.institute(institute_id)
+    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
+    if loqusdb.loqusdb_settings[loqusdb_id]["version"] is None:
+        flash("Could not connect to the preselected loqusdb instance", "danger")
+        return {
+            "total": "N/A",
+        }
+
     chrom = variant_obj["chromosome"]
     end_chrom = variant_obj.get("end_chrom", chrom)
     pos = variant_obj["position"]
@@ -426,14 +435,12 @@ def observations(store, loqusdb, case_obj, variant_obj):
         "variant_type": variant_obj.get("sub_category", "").upper(),
         "category": category,
     }
-
-    institute_id = variant_obj["institute"]
-    institute_obj = store.institute(institute_id)
-    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
     obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
 
     if not obs_data:
         obs_data["total"] = loqusdb.case_count(variant_category=category, loqusdb_id=loqusdb_id)
+        if obs_data["total"]:
+            obs_data["observations"] = 0
         return obs_data
 
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
@@ -454,7 +461,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         other_institutes.update(set(other_case.get("collaborators", [])))
 
         if user_institutes_ids.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
+            # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
             continue
 
         other_variant = store.variant(

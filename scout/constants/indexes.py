@@ -1,6 +1,12 @@
 from pymongo import ASCENDING, DESCENDING, TEXT, IndexModel
 
 INDEXES = {
+    "disease_term": [
+        IndexModel(
+            [("genes", ASCENDING)],
+            name="genes",
+        )
+    ],
     "hgnc_gene": [
         IndexModel(
             [("build", ASCENDING), ("chromosome", ASCENDING)],

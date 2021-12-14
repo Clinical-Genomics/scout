@@ -18,9 +18,6 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
-    CLINICAL_FILTER_BASE,
-    CLINICAL_FILTER_BASE_CANCER,
-    CLINICAL_FILTER_BASE_SV,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
@@ -36,7 +33,15 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm, VariantFiltersForm
+from .forms import (
+    FILTERSFORMCLASS,
+    CancerFiltersForm,
+    CancerSvFiltersForm,
+    FiltersForm,
+    StrFiltersForm,
+    SvFiltersForm,
+    VariantFiltersForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -811,7 +816,7 @@ def upload_panel(store, institute_id, case_name, stream):
     return hgnc_symbols
 
 
-def gene_panel_choices(institute_obj, case_obj):
+def gene_panel_choices(store, institute_obj, case_obj):
     """Populates the multiselect containing all the gene panels to be used in variants filtering
     Args:
         institute_obj(dict): an institute dictionary
@@ -823,8 +828,10 @@ def gene_panel_choices(institute_obj, case_obj):
     panel_list = []
     # Add case default panels and the institute-specific panels to the panel select options
     for panel in case_obj.get("panels", []):
-        panel_option = (panel["panel_name"], panel["display_name"])
-        panel_list.append(panel_option)
+        latest_panel = store.gene_panel(panel["panel_name"])
+        if latest_panel is None or not latest_panel.get("hidden", False):
+            panel_option = (panel["panel_name"], panel["display_name"])
+            panel_list.append(panel_option)
 
     institute_choices = institute_obj.get("gene_panels", {})
 
@@ -866,10 +873,10 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
     else:
         clinical_filter_panels = default_panels
 
-    FiltersFormClass = VariantFiltersForm
+    FiltersFormClass = FILTERSFORMCLASS[category]
+
     if category == "snv":
-        FiltersFormClass = FiltersForm
-        clinical_filter_dict = CLINICAL_FILTER_BASE
+        clinical_filter_dict = FiltersFormClass.clinical_filter_base
         clinical_filter_dict.update(
             {
                 "gnomad_frequency": str(institute_obj["frequency_cutoff"]),
@@ -877,27 +884,14 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
             }
         )
         clinical_filter = MultiDict(clinical_filter_dict)
-    elif category in ("sv", "cancer_sv"):
-        FiltersFormClass = SvFiltersForm
-        clinical_filter_dict = CLINICAL_FILTER_BASE_SV
+    elif category in ("sv", "cancer", "cancer_sv"):
+        clinical_filter_dict = FiltersFormClass.clinical_filter_base
         clinical_filter_dict.update(
             {
                 "gene_panels": clinical_filter_panels,
             }
         )
         clinical_filter = MultiDict(clinical_filter_dict)
-    elif category == "cancer":
-        FiltersFormClass = CancerFiltersForm
-        clinical_filter_dict = CLINICAL_FILTER_BASE_CANCER
-        clinical_filter_dict.update(
-            {
-                "gene_panels": clinical_filter_panels,
-            }
-        )
-        clinical_filter = MultiDict(clinical_filter_dict)
-
-    elif category == "str":
-        FiltersFormClass = StrFiltersForm
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
@@ -1029,7 +1023,10 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     user_obj = store.user(current_user.email)
 
     if request_obj.method == "GET":
-        form = SvFiltersForm(request_obj.args)
+        if category == "sv":
+            form = SvFiltersForm(request_obj.args)
+        elif category == "cancer_sv":
+            form = CancerSvFiltersForm(request_obj.args)
         variant_type = request_obj.args.get("variant_type", "clinical")
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
@@ -1043,7 +1040,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         )
 
     # populate available panel choices
-    form.gene_panels.choices = gene_panel_choices(institute_obj, case_obj)
+    form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
 
     return form
 
@@ -1066,29 +1063,51 @@ def check_form_gene_symbols(
     Returns:
         updated_hgnc_symbols(list): List of gene symbols that are found in database and are up to date
     """
-    non_clinical_symbols = []
-    not_found_symbols = []
-    outdated_symbols = []
-    updated_hgnc_symbols = []
+    non_clinical_symbols = set()
+    not_found_symbols = set()
+    outdated_symbols = set()
+    aliased_symbols = set()
+    updated_hgnc_symbols = set()
 
     clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
     clinical_symbols = store.clinical_symbols(case_obj)
 
-    for hgnc_symbol in hgnc_symbols:
-        hgnc_gene = store.hgnc_genes_find_one(hgnc_symbol, genome_build)
+    # if no clinical symobols / panels were found loaded, warnings are treated as with research
+    if len(clinical_hgnc_ids) == 0 and len(clinical_symbols) == 0:
+        is_clinical = False
 
-        if hgnc_gene is None:
-            not_found_symbols.append(hgnc_symbol)
-        elif is_clinical is False:  # research variants
-            updated_hgnc_symbols.append(hgnc_symbol)
-        elif hgnc_gene["hgnc_id"] in clinical_hgnc_ids:  # clinical variants
-            updated_hgnc_symbols.append(hgnc_symbol)
-            if hgnc_symbol not in clinical_symbols:
-                # clinical symbols from gene panels might not be up to date with latest gene names
-                # but their HGNC id would still match
-                outdated_symbols.append(hgnc_symbol)
-        else:  # clinical variants
-            non_clinical_symbols.append(hgnc_symbol)
+    for hgnc_symbol in hgnc_symbols:
+        # Retrieve a gene with "hgnc_symbol" as hgnc symbol or a list of genes where hgnc_symbol is among the aliases
+        hgnc_genes = store.gene_by_symbol_or_aliases(symbol=hgnc_symbol, build=genome_build)
+
+        if (
+            isinstance(hgnc_genes, list) is False
+        ):  # Gene was not found using provided symbol, aliases were returned
+            hgnc_genes = list(hgnc_genes)
+            if hgnc_genes:
+                aliased_symbols.add(hgnc_symbol)
+
+        if not hgnc_genes:
+            not_found_symbols.add(hgnc_symbol)
+            continue
+
+        for hgnc_gene in hgnc_genes:
+            gene_symbol = hgnc_gene.get("hgnc_symbol")
+
+            # collect queried symbols for both clinical variants and research variants
+            if hgnc_gene["hgnc_id"] in clinical_hgnc_ids or is_clinical is False:
+                updated_hgnc_symbols.add(gene_symbol)
+
+                # research variants
+                if is_clinical is False:
+                    continue
+
+                # warn if queried symbol or corresponding gene symbol in panel is outdated
+                if hgnc_symbol not in clinical_symbols:
+                    outdated_symbols.add(hgnc_symbol)
+
+            else:
+                non_clinical_symbols.add(gene_symbol)
 
     errors = {
         "non_clinical_symbols": {
@@ -1107,8 +1126,13 @@ def check_form_gene_symbols(
             "label": "warning",
         },
         "outdated_symbols": {
-            "message": "Gene panel versions used for loading variants of this case (clinical list) contain outdated gene symbols. The current HGNC id was found on the clinical list.",
+            "message": "Outdated gene symbols found in the clinical panels loaded for the analysis.",
             "gene_list": outdated_symbols,
+            "label": "info",
+        },
+        "aliased_symbols": {
+            "message": "Outdated gene symbols found in the search - alias used.",
+            "gene_list": aliased_symbols,
             "label": "info",
         },
     }
@@ -1266,7 +1290,11 @@ def reset_all_dimissed(store, institute_obj, case_obj):
     for variant in evaluated_vars:
         if not variant.get("dismiss_variant"):  # not a dismissed variant
             continue
-        link_page = "variant.sv_variant" if variant.get("category") == "sv" else "variant.variant"
+        link_page = (
+            "variant.sv_variant"
+            if variant.get("category") in ("sv", "cancer_sv")
+            else "variant.variant"
+        )
         link = url_for(
             link_page,
             institute_id=institute_obj["_id"],

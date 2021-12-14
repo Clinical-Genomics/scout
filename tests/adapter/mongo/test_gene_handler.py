@@ -420,6 +420,24 @@ def test_hgnc_symbol_to_gene(adapter):
     assert gene_obj2["hgnc_symbol"] in res
 
 
+def test_gene_by_symbol_or_aliases(adapter, parsed_gene):
+    """Test the function that given a gene symbol returns either the official gene with that symbol
+    or all genes that have the gene as alias"""
+
+    # GIVEN a database containing a gene
+    adapter.load_hgnc_gene(parsed_gene)
+
+    # THEN using the function to search the gene by symbol should return a list with the gene
+    result = adapter.gene_by_symbol_or_aliases(symbol=parsed_gene["hgnc_symbol"])
+    assert type(result) == list
+    assert len(result) == 1
+
+    # GIVEN a gene symbol not found in "hgnc_symbol" field of any gene
+    # The function should return a pymongo iterable (results of searching genes by alias)
+    result = adapter.gene_by_symbol_or_aliases(symbol="FOO")
+    assert type(result) != list
+
+
 #################### HGNC transcript tests ####################
 
 
