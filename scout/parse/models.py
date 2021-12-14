@@ -79,7 +79,6 @@ class Image(BaseModel):
         return self.title == other.title
 
 
-
 class ScoutIndividual(BaseModel):
     alignment_path: Optional[str] = None
     analysis_type: Literal["wgs", "wes", "mixed", "unknown", "panel", "external"] = None
@@ -209,13 +208,13 @@ def read_filestream(image_list):
 
 class CustomImage(BaseModel):
     """Top Level Custom Image Config Class
-    
+
     Note that all image wild cards are expanded by this top-level class, therefore
     reading of binaries and checking correct image formats is done here
     """
+
     case: Dict[str, List[Image]] = []
     str: List[Image] = []
-
 
     @root_validator
     def expand_wildcards(cls, values):

@@ -129,27 +129,27 @@ def test_parse_incorrect_custom_images(scout_config):
 
     # GIVEN one valid suffix and two invalid suffixes (.bnp, .pdf)
     scout_config["custom_images"] = {
-            "case": {
-                "section_one": [
-                    {
-                        "title": "A png image",
-                        "description": "desc",
-                        "path": "scout/demo/images/custom_images/640x480_one.png",
-                    },
-                    {
-                        "title": "An incorrect bitmap image",
-                        "description": "desc",
-                        "path": "scout/demo/images/custom_images/640x480_one.bnp",
-                    },
-                ],
-                "section_two": [
-                    {
-                        "title": "A pdf image, not allowed",
-                        "description": "desc",
-                        "path": "scout/demo/images/custom_images/640x480_one.pdf",
-                    },
-                ],
-            }
+        "case": {
+            "section_one": [
+                {
+                    "title": "A png image",
+                    "description": "desc",
+                    "path": "scout/demo/images/custom_images/640x480_one.png",
+                },
+                {
+                    "title": "An incorrect bitmap image",
+                    "description": "desc",
+                    "path": "scout/demo/images/custom_images/640x480_one.bnp",
+                },
+            ],
+            "section_two": [
+                {
+                    "title": "A pdf image, not allowed",
+                    "description": "desc",
+                    "path": "scout/demo/images/custom_images/640x480_one.pdf",
+                },
+            ],
+        }
     }
 
     # WHEN images is parsed
