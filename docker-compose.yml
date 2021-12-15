@@ -28,13 +28,21 @@ services:
       - mongodb
 
   scout-web:
-    build: .
-    container_name: scout-web
+    build:
+      context: .
+      dockerfile: Dockerfile-server
     expose:
-      - '5000'
+      - '8000'
     ports:
-      - '5000:5000'
-    command: scout --host mongodb --demo serve --host 0.0.0.0
+      - '8000:8000'
+    environment:
+      SCOUT_CONFIG: /home/worker/app/scout/server/config.py
+      MONGO_HOST: mongodb
+      MONGO_DBNAME: scout-demo
+      GUNICORN_WORKERS: 1
+      GUNICORN_TREADS: 1
+      GUNICORN_BIND: 0.0.0.0:8000
+      GUNICORN_TIMEOUT: 400
     volumes:
       - ./scout:/home/worker/app/scout
     networks:
