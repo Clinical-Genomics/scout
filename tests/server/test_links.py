@@ -15,6 +15,9 @@ def test_alamut_link(app, institute_obj, variant_obj):
     # GIVEN that genome build 38 is provided
     build = 38
 
+    # GIVEN that the app settings contain parameter HIDE_ALAMUT_LINK = False
+    app.config["HIDE_ALAMUT_LINK"] = False
+
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
