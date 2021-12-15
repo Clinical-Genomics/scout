@@ -47,12 +47,21 @@ jobs:
     - name: Check out git repository
       uses: actions/checkout@v2
 
-    - name: Build and publish to Docker Hub
+    - name: Publish main image (Dockerfile) to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
         name: clinicalgenomics/scout
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: "latest,${{ github.event.release.tag_name }}"
+
+    - name: Publish server image (Dockerfile-server) to Registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: clinicalgenomics/scout-server
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        dockerfile: Dockerfile-server
         tags: "latest,${{ github.event.release.tag_name }}"
 
  deploy-docs:
@@ -69,4 +78,3 @@ jobs:
       run: pip install mkdocs mkdocs-material markdown-include
     - name: Deploy documentation
       run: mkdocs gh-deploy --force
-
