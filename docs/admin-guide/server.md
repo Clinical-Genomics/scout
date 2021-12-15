@@ -4,78 +4,111 @@ This document will explain how we like to run Scout in both development and prod
 
 ## Config
 
-The server has it's own config file, separate from the command line tool. It's written in Python for full expressivity. These are the settings you can use:
+In order to run the web server, it is usually necessary to provide a number of parameters. All available parameters should be specified in a python-formatted configuration file. This config file is passed as a parameter when the application is launched. The following example of a config file is is used for running the development server (read further down):
 
 ```python
-# flask.conf.py
+SECRET_KEY = "this is not secret..."
+REMEMBER_COOKIE_NAME = "scout_remember_me"
 
-# to encrypt cookie data
-SECRET_KEY = 'makeThisSomethingNonGuessable'  # required
+# MONGO_URI = "mongodb://127.0.0.1:27011,127.0.0.1:27012,127.0.0.1:27013/?replicaSet=rs0&readPreference=primary"
+MONGO_DBNAME = "scout"
 
-# connection details for MongoDB
-MONGO_DBNAME = 'scout'                        # required
-MONGO_PORT = 27017
-MONGO_USERNAME = 'mongoUser'
-MONGO_PASSWORD = 'mongoUserPassword'
+BOOTSTRAP_SERVE_LOCAL = True
+TEMPLATES_AUTO_RELOAD = True
+
+DEBUG_TB_INTERCEPT_REDIRECTS = False
+
+# Flask-mail: http://pythonhosted.org/flask-mail/
+# see: https://bitbucket.org/danjac/flask-mail/issue/3
+MAIL_SERVER = "smtp.gmail.com"
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USE_SSL = False
 
 # Filename of accrediation bagde image in server/bluprints/public/static
-# If not set no badge is displayed in scout
+# If null no badge is displayed in scout
 ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
-# connection string for Chanjo coverage database
-SQLALCHEMY_DATABASE_URI = 'mysql://chanjo:CHANJO_PASSWORD@localhost:3306/chanjo'
+# Parameters required for Google Oauth 2.0 login
+# GOOGLE = dict(
+#    client_id="client.apps.googleusercontent.com",
+#    client_secret="secret",
+#    discovery_url="https://accounts.google.com/.well-known/openid-configuration",
+# )
+
+# Chanjo database connection string - used by chanjo report to create coverage reports
+# SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
+
+# Configure gens service
+# GENS_HOST = "127.0.0.1"
+# GENS_PORT = 5000
+
+# Connection details for communicating with a rerunner service
+# RERUNNER_API_ENTRYPOINT = "http://rerunner:5001/v1.0/rerun"
+# RERUNNER_TIMEOUT = 10
+# RERUNNER_API_KEY = "I am the Keymaster of Gozer"
+
+# MatchMaker connection parameters
+# - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
+# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+# MME_URL = "http://localhost:9020"
+# MME_TOKEN = "DEMO"
+
+# Beacon connection settings
+# - Tested with cgbeacon2 (https://github.com/Clinical-Genomics/cgbeacon2) -
+# BEACON_URL = "http://localhost:6000/apiv1.0"
+# BEACON_TOKEN = "DEMO"
 
 # connection details for LoqusDB MongoDB database
-LOQUSDB_SETTINGS = dict(
-    database='loqusdb',
-    uri=("mongodb://{}:{}@localhost:{}/loqusdb"
-         .format(MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT)),
-)
+# Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
+# When multiple instances are available, admin users can modify which one is in use for a given institute from the admin settings page
+# LOQUSDB_SETTINGS = {
+#    "default" : {"binary_path": "/miniconda3/envs/loqus2.5/bin/loqusdb", "config_path": "/home/user/settings/loqus_default.yaml"},
+#    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
+# }
 
-# default chanjo coverage report language: 'sv' or 'en'
-REPORT_LANGUAGE = 'sv'
+#
+# Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
+# CLOUD_IGV_TRACKS = [
+#    {
+#        "name": "custom_public_bucket",
+#        "access": "public",
+#        "tracks": [
+#            {
+#                "name": "dbVar Pathogenic or Likely Pathogenic",
+#                "type": "variant",
+#                "format": "vcf",
+#                "build": "37",
+#                "url": "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/25777457/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz",
+#                "indexURL": "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/25777460/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz.tbi",
+#            }
+#        ],
+#    },
+# ]
 
-# Google email account to user for sending emails
-MAIL_USERNAME = 'paul.anderson@gmail.com'
-MAIL_PASSWORD = 'mySecretPassw0rd'
+# Chanjo-Report
+REPORT_LANGUAGE = "en"
+ACCEPT_LANGUAGES = ["en", "sv"]
 
-TICKET_SYSTEM_EMAIL = 'support@sekvens.nu'
+# TICKET_SYSTEM_EMAIL = "support@test_service.com"
 
-## FEATURE FLAGS
-# Allow users to browse variants marked causative from among all their institutes cases
+# FEATURE FLAGS
 SHOW_CAUSATIVES = True
-# Optionally show cards with legacy observed variant frequencies on variant pages
 SHOW_OBSERVED_VARIANT_ARCHIVE = True
-# Optionally hide API link to Alamut Visual. If False or non-existing Scout will show Alamut links.
 HIDE_ALAMUT_LINK = False
 
+# OMIM API KEY: Required for downloading definitions from OMIM (https://www.omim.org/api)
+# OMIM_API_KEY = 'valid_omim_api_key'
 
-# emails to send error log message to
-ADMINS = ['robin.andeer@scilifelab.se']
+# Parameters for enabling Phenomizer queries
+# PHENOMIZER_USERNAME = "test_user"
+# PHENOMIZER_PASSWORD = "test_password"
 
-# enable Google OAuth-based login
-GOOGLE = dict(
-    consumer_key='CLIENT_ID.apps.googleusercontent.com',
-    consumer_secret='CLIENT_SECRET',
-    # Prepend to all (non-absolute) request URLs
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    request_token_url=None,
-    request_token_params={
-        'scope': ("https://www.googleapis.com/auth/userinfo.profile "
-                  "https://www.googleapis.com/auth/userinfo.email"),
-    },
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    access_token_method='POST'
-)
-
-# enable the phenomizer service which links HPO phenotype terms to diseases/genes
-PHENOMIZER_USERNAME = 'phenoUser'
-PHENOMIZER_PASSWORD = 'phenoPassword'
-
-# Add a primer order link to complementary method verification emails - customise per genome build
-EXTERNAL_PRIMER_ORDER_LINK_37 = "https://www.primercompany.com/order?chr={chromosome}&pos={position}&build=37"
-EXTERNAL_PRIMER_ORDER_LINK_38 = "https://www.primercompany.com/order?chr={chromosome}&pos={position}"
+# Rank model links
+RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/rank_model_-v"
+RANK_MODEL_LINK_POSTFIX = "-.ini"
+SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
+SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 ```
 ### Minimal config
 
@@ -106,7 +139,7 @@ FLASK_DEBUG=1 \
 SCOUT_CONFIG="/full/path/to/flask.conf.py" \
 flask run
 ```
-The server can also be started from the scout cli with the command `scout serve`. There are multiple options here. To use a alternative flask config pass the path with option `-f/ --flask_config` like `scout -f path/to/flask.conf.py serve`.
+The server can also be started from the scout cli with the command `scout serve`. The default config file that will be used when no other configuration option is provided will be the one present under scout/server/config.py. To use an alternative flask config, you can use the `-f/ --flask_config` option. Example: `scout -f path/to/flask.conf.py serve`.
 
 
 ## Production
@@ -122,6 +155,8 @@ gunicorn \
     --certfile="/path/to/server.crt" \
     scout.server.auto:app
 ```
+
+Note that while it might still be necessary to provide a `SCOUT_CONFIG` environment variable pointing to python config file to run a full web server, some parameters like those used to connect to MongoDB (`MONGO_HOST`, `MONGO_DBNAME`, `MONGO_PORT`, `MONGO_USERNAME`, `MONGO_PASSWORD`, `MONGO_URI`) can be also be passed as environment variable. In that case they will have precedence over those provided in the config file.
 
 If you are running a larger environment, where this is one component, we encourage a reverse proxy configuration where Scout is served by Gunicorn, and reverse proxied by [NGINX](https://nginx.org/en/). Then NGINX will handle the secure communication.
 

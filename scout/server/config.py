@@ -21,6 +21,16 @@ MAIL_USE_SSL = False
 # If null no badge is displayed in scout
 ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
+# Parameters required for Google Oauth 2.0 login
+# GOOGLE = dict(
+#    client_id="client.apps.googleusercontent.com",
+#    client_secret="secret",
+#    discovery_url="https://accounts.google.com/.well-known/openid-configuration",
+# )
+
+# Chanjo database connection string - used by chanjo report to create coverage reports
+# SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
+
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
 # GENS_PORT = 5000
@@ -72,6 +82,8 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 REPORT_LANGUAGE = "en"
 ACCEPT_LANGUAGES = ["en", "sv"]
 
+# TICKET_SYSTEM_EMAIL = "support@test_service.com"
+
 # FEATURE FLAGS
 SHOW_CAUSATIVES = True
 SHOW_OBSERVED_VARIANT_ARCHIVE = True
@@ -80,8 +92,11 @@ HIDE_ALAMUT_LINK = False
 # OMIM API KEY: Required for downloading definitions from OMIM (https://www.omim.org/api)
 # OMIM_API_KEY = 'valid_omim_api_key'
 
-# Rank model links
+# Parameters for enabling Phenomizer queries
+# PHENOMIZER_USERNAME = "test_user"
+# PHENOMIZER_PASSWORD = "test_password"
 
+# Rank model links
 RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/rank_model_-v"
 RANK_MODEL_LINK_POSTFIX = "-.ini"
 SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
