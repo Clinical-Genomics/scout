@@ -156,7 +156,7 @@ gunicorn \
     scout.server.auto:app
 ```
 
-Note that while it might still be necessary to provide a `SCOUT_CONFIG` environment variable pointing to python config file to run a full web server, some parameters like those used to connect to MongoDB (`MONGO_HOST`, `MONGO_DBNAME`, `MONGO_PORT`, `MONGO_USERNAME`, `MONGO_PASSWORD`, `MONGO_URI`) can be also be passed as environment variable. In that case they will have precedence over those provided in the config file.
+Note that while it might still be necessary to provide a `SCOUT_CONFIG` environment variable pointing to python config file to run a full web server, some parameters like those used to connect to MongoDB (`MONGO_HOST`, `MONGO_DBNAME`, `MONGO_PORT`, `MONGO_USERNAME`, `MONGO_PASSWORD`, `MONGO_URI`) can be also be passed as environment variables. In that case they will have precedence over those provided in the config file.
 
 If you are running a larger environment, where this is one component, we encourage a reverse proxy configuration where Scout is served by Gunicorn, and reverse proxied by [NGINX](https://nginx.org/en/). Then NGINX will handle the secure communication.
 
