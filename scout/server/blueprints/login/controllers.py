@@ -6,22 +6,6 @@ from scout.server.extensions import ldap_manager
 
 LOG = logging.getLogger(__name__)
 
-DETECTIVES = [
-    "Dick Tracy",
-    "Miss Marple",
-    "Sherlock Holmes",
-    "Dr. Watson",
-    "Hercule Poirot",
-    "Jules Maigret",
-    "Inspector Morse",
-    "Dexter Morgan",
-    "Stella Gibson",
-    "Dale Cooper",
-    "Jessica Fletcher",
-    "Inspector Closseau",
-    "Columbo",
-]
-
 
 def ldap_authorized(userid, password):
     """Log in a LDAP user

@@ -55,7 +55,7 @@ class LdapManager(LDAPConn):
         )
 
         self.ldap_server = Server(
-            host=app.config["LDAP_HOST"],
+            host=app.config.get("LDAP_HOST") or app.config.get("LDAP_SERVER"),
             port=app.config["LDAP_PORT"],
             use_ssl=app.config["LDAP_USE_SSL"],
             connect_timeout=app.config["LDAP_CONNECT_TIMEOUT"],
