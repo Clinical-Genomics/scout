@@ -112,8 +112,6 @@ Let's start the demo server with the command `scout --demo serve`.
 
 4) It should be now possible to login the new user into Scout using email and password defined in the LDAP server!
 
-This very example (with another user) is also provided in this repository, under [container/development/docker-compose-LDAP.yml](https://github.com/Clinical-Genomics/scout/tree/master/containers/development/docker-compose-LDAP.yml).
-
 ## Simple login with userid
 
 Basic login with userid and password is the login system available whenever no advanced login system (either Google or LDAP) is specified in the Scout config file. To enable it, comment out or remove the LDAP and GOOGLE lines mentioned above from your config. It is an un-secure system which is not recommended to use. This is also the login system available in the demo instance of Scout.
