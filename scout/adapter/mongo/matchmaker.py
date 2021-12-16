@@ -8,6 +8,64 @@ LOG = logging.getLogger(__name__)
 class MMEHandler(object):
     """Class to handle case submissions to MatchMaker Exchange"""
 
+    def user_mme_submissions(self, user_obj):
+        """Return a set of all case _ids submitted to the Matchmaker Exchange by a user.
+
+        Args:
+            user_obj(dict): a scout user object
+        Returns:
+            submitted_cases(set); a set of case _ids
+        """
+        # All events associated to the provided user
+        user_events = self.user_events(user_obj)
+        # Collect unique case _id with MME submissions from provided user
+        submitted_cases = set()
+
+        for event in user_events:
+            if event.get("verb") != "mme_add":
+                continue
+            # Check that the cases patient's submission are still actual
+            case_obj = self.case(case_id=event.get("case"))
+            if case_obj is None:
+                continue
+            # Check that the case as an associated MME submission and that the user is the actual patients' contact
+            if case_obj.get("mme_submission") is None or case_obj["mme_submission"].get(
+                "subm_user"
+            ) != user_obj.get("email"):
+                continue
+            submitted_cases.add(case_obj["_id"])
+        return submitted_cases
+
+    def mme_reassign(self, case_ids, old_user, new_users_email):
+        """Reassign cases submitted to MME to another user
+        Args:
+            case_ids(set): a set of case _ids
+            old_contact(dict): a scout user object
+            new_users_email(str): email of another user in Scout
+        """
+        new_contact = self.user(new_users_email)
+        if new_contact is None:
+            raise ValueError(f"User with email '{new_users_email}' was not found.")
+        if "mme_submitter" not in new_contact.get("roles"):
+            raise ValueError(
+                f"Scout user with email '{new_users_email}' doesn't have a 'mme_submitter' role."
+            )
+        # Update MME submissions
+        new_patient_contact = {
+            "name": new_contact["name"],
+            "href": ":".join(["mailto", new_users_email]),
+            "institution": "Scout software user, Science For Life Laboratory, Stockholm, Sweden",
+        }
+        for case_id in case_ids:
+            case_obj = self.case(case_id=case_id)
+            case_subm_object = case_obj["mme_submission"]
+            # Update patients's contact info with new user data
+            for patient in case_subm_object.get("patients", []):
+                patient["contact"] = new_patient_contact
+            updated_case = self.case_mme_update(case_obj, new_contact, case_subm_object)
+            if updated_case:
+                LOG.info(f"MME contact info updated for case:{updated_case['_id']}")
+
     def case_mme_update(self, case_obj, user_obj, mme_subm_obj):
         """Updates a case after a submission to MatchMaker Exchange
         Args:
@@ -21,12 +79,15 @@ class MMEHandler(object):
         patient_ids = []
         updated = datetime.now()
         created = updated
+        patients = []
 
         existing_mm_submission = case_obj.get("mme_submission")
         if existing_mm_submission:
             created = existing_mm_submission.get("created_at")
+            patients = existing_mm_submission.get("patients")
 
-        patients = [resp["patient"] for resp in mme_subm_obj.get("server_responses")]
+        if mme_subm_obj.get("server_responses"):
+            patients = [resp["patient"] for resp in mme_subm_obj.get("server_responses")]
 
         subm_obj = {
             "created_at": created,
