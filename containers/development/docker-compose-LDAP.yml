@@ -1,6 +1,6 @@
 # HOWTO:
 # In: scout/server/config.py
-# ADD:
+# Un-comment the following lines
 # LDAP_HOST = "localhost"
 # LDAP_PORT = 10389
 # LDAP_BASE_DN = "dc=planetexpress,dc=com"

@@ -1,8 +1,8 @@
 # Setting up a user login system
 
 Scout currently supports 3 types of login systems:
-  - [Google authentication via OpenID Connect](##Google-OpenID-Connect-login-system)
-  - [LDAP authentication](##Login-using-Lightweight-Directory-Access-Protocol-(LDAP)
+  - [Google authentication via OpenID Connect](#Google-OpenID-Connect-login-system)
+  - [LDAP authentication](#Login-using-Lightweight-Directory-Access-Protocol)
   - [Simple authentication using userid](#simple-login-with-userid)
 
 **Login systems are mutually exclusive so when you choose a system, it will become be the only way all users will have access to the Scout app.**
@@ -45,11 +45,11 @@ The following command can be used to add a create a new user into the database:
 `scout load user -i institute-id -u "User Name" -m user_emaill@email.com`
 
 
-## Login using Lightweight Directory Access Protocol (LDAP)
+## Login using Lightweight Directory Access Protocol
 
 Institutional directory services authentication via LDAP is supported by Scout.
 
-LDAP authentication in Scout is acheved by using the [lask-ldap3-login](https://flask-ldap3-login.readthedocs.io/en/latest/) library.
+LDAP authentication in Scout is achieved by using the [flask-ldapconn](https://github.com/rroemhild/flask-ldapconn) library.
 
 Pre-requisites in order to authenticate users using LDAP:
 
@@ -64,14 +64,15 @@ Please **note that the while the `-id ldap_id` option is not a mandatory paramet
 LDAP server instances are different from case to case. Some basic LDAP config options (with example values) that can be used on the in the Scout config file are the following:
 
 ```
-# LDAP login Settings
-# LDAP_HOST = 'ad.mydomain.com'
+# LDAP_SERVER = "localhost" # Can also be named LDAP_HOST
 # LDAP_PORT = 389
-# LDAP_BASE_DN = 'dc=mydomain,dc=com'
-# LDAP_USER_DN = 'ou=users'
+# LDAP_BASE_DN = 'cn=admin,dc=example,dc=com
 # LDAP_USER_LOGIN_ATTR = "mail"
+# LDAP_USE_SSL = False
+# LDAP_USE_TLS = True
 ```
-A complete list of accepted parameters that can be used to reflect your LDAP server configuration is available in the [flask-ldap3-login configuration docs](https://flask-ldap3-login.readthedocs.io/en/latest/configuration.html#core).
+
+A complete list of accepted parameters that can be used to reflect your LDAP server configuration is available in the [flask-ldapconn readme page](https://github.com/rroemhild/flask-ldapconn).
 
 ### Considerations regarding the LDAP login in Scout.
 
@@ -103,8 +104,9 @@ Note that the created ID is an email address that is defined for the user in the
 LDAP_HOST = "localhost"
 LDAP_PORT = 10389
 LDAP_BASE_DN = "dc=planetexpress,dc=com"
-LDAP_USER_DN = "ou=people"
 LDAP_USER_LOGIN_ATTR = "mail"
+LDAP_USE_SSL = False
+LDAP_USE_TLS = True
 ```
 Let's start the demo server with the command `scout --demo serve`.
 
