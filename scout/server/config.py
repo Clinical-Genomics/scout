@@ -23,12 +23,12 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # LDAP login Settings
 # Complete list of accepted parameters available here: https://github.com/rroemhild/flask-ldapconn
-# LDAP_HOST = "localhost"
-# LDAP_PORT = 10389
-# LDAP_BASE_DN = "dc=planetexpress,dc=com"
-# LDAP_USER_LOGIN_ATTR = "mail"
-# LDAP_USE_SSL = False
-# LDAP_USE_TLS = True
+LDAP_HOST = "localhost"
+LDAP_PORT = 10389
+LDAP_BASE_DN = "dc=planetexpress,dc=com"
+LDAP_USER_LOGIN_ATTR = "mail"
+LDAP_USE_SSL = False
+LDAP_USE_TLS = True
 
 # Parameters required for Google Oauth 2.0 login
 # GOOGLE = dict(
