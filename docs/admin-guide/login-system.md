@@ -64,10 +64,10 @@ Please **note that the while the `-id ldap_id` option is not a mandatory paramet
 LDAP server instances are different from case to case. Some basic LDAP config options (with example values) that can be used on the in the Scout config file are the following:
 
 ```
-# LDAP_SERVER = "localhost" # Can also be named LDAP_HOST
+# LDAP_HOST = "localhost" # Can also be named LDAP_SERVER
 # LDAP_PORT = 389
-# LDAP_BASE_DN = 'cn=admin,dc=example,dc=com
-# LDAP_USER_LOGIN_ATTR = "mail"
+# LDAP_BASE_DN = 'cn=admin,dc=example,dc=com # Can also be named LDAP_BINDDN
+# LDAP_USER_LOGIN_ATTR = "mail" # Can also be named LDAP_SEARCH_ATTR
 # LDAP_USE_SSL = False
 # LDAP_USE_TLS = True
 ```

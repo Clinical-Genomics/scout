@@ -54,7 +54,10 @@ def login():
     user_id = None
     user_mail = None
 
-    if current_app.config.get("LDAP_HOST") and request.method == "POST":
+    if (
+        current_app.config.get("LDAP_HOST", current_app.config.get("LDAP_SERVER"))
+        and request.method == "POST"
+    ):
         ldap_authorized = controllers.ldap_authorized(
             request.form.get("ldap_user"), request.form.get("ldap_password")
         )
