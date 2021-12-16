@@ -24,7 +24,7 @@ class MMEHandler(object):
         for event in user_events:
             if event.get("verb") != "mme_add":
                 continue
-            # Check that the cases patient's submission are stll actual
+            # Check that the cases patient's submission are still actual
             case_obj = self.case(case_id=event.get("case"))
             if case_obj is None:
                 continue
