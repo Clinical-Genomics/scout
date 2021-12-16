@@ -132,10 +132,3 @@ def perform_login(user_dict):
         return redirect(request.args.get("next") or next_url or url_for("cases.index"))
     flash("sorry, you could not log in", "warning")
     return redirect(url_for("public.index"))
-
-
-# @ldap_manager.save_user
-# def save_user(dn, username, data, memberships):
-#    user = LdapUser(dn, username, data)
-#    ldap_users[dn] = user
-#    return user
