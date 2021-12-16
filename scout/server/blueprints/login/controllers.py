@@ -1,4 +1,10 @@
-"""Code for login controllers"""
+import logging
+
+from flask import current_app, flash
+
+from scout.server.extensions import ldap_manager
+
+LOG = logging.getLogger(__name__)
 
 DETECTIVES = [
     "Dick Tracy",
@@ -15,6 +21,30 @@ DETECTIVES = [
     "Inspector Closseau",
     "Columbo",
 ]
+
+
+def ldap_authorized(userid, password):
+    """Log in a LDAP user
+
+    Args:
+        userid(str): user id provided in ldap login form (usually and email)
+        password(str): user passord provided in ldap loding form
+
+    Returns:
+        authorized(bool): True or False
+    """
+    authorized = False
+    try:
+        authorized = ldap_manager.authenticate(
+            username=userid,
+            password=password,
+            base_dn=current_app.config.get("LDAP_BASE_DN"),
+            attribute=current_app.config.get("LDAP_USER_LOGIN_ATTR"),
+        )
+    except Exception as ex:
+        flash(ex, "danger")
+
+    return authorized
 
 
 def event_rank(count):
