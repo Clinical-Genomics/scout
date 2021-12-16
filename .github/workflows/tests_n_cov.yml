@@ -1,10 +1,10 @@
 name: Run tests and upload coverage
 
-on: [pull_request"]
+on: ["push", "pull_request"]
 
 jobs:
-  build:
-    name: Tests and Coverage
+  pytest-coveralls:
+    name: Run pytest and coveralls
     runs-on: ubuntu-latest
     strategy:
       matrix:
