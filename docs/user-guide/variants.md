@@ -134,9 +134,9 @@ The first other line starting with `#`, or the first line in the file is treated
 The columns that will be used by Scout are the following.
 - **chromosome(str)** Chromosome name. *Mandatory*
 - **position(int)** Start position. *Mandatory*
-- **end(int)** End position. *Mandatory*
-- **reference(str)** Reference sequence *Optional, but used for SNVs*
-- **alternative(str)** Alternative sequence *Optional, but used for SNVs*
+- **end(int)** End position. *Optional*
+- **reference(str)** Reference sequence *Mandatory* Use for SVs is only exact.
+- **alternative(str)** Alternative sequence *Mandatory* Use for SVs is only exact.
 - **category(str)** One of "snv", "sv", "cancer" or "cancer_sv" *Mandatory*
 - **sub_category(str)** Sub category of variant. For "snv" and "cancer" this is either "snv" or "indel". For "sv" and "cancer_sv" this is one of "ins", "del", "dup", "cnv", "inv" or "bnd". *Mandatory*
 - **build(str)** Defaults to "37". *Optional*
