@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Created a GitHub action that pushes the Dockerfile-server image to Docker Hub (scout-server) every time a new release is created
 ### Changed
 - Updated the python config file documentation in admin guide
+- Removed test matrices to speed up automatic testing of PRs
 ### Fixed
 
 
