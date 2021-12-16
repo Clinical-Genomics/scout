@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Created a GitHub action that pushes the Dockerfile-server image to Docker Hub (scout-server) every time a new release is created
 ### Changed
 - Updated the python config file documentation in admin guide
+- LDAP login documentation
+- Use lib flask-ldapconn instead of flask_ldap3_login> to handle ldap authentication
 ### Fixed
 
 
@@ -44,9 +46,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.43]
 ### Added
 - Specify which collection(s) update/build indexes for
-- Docker-compose example illustrating the LDAP login system setup
 ### Changed
-- LDAP login documentation
 ### Fixed
 - Do not drop genes and transcripts collections when updating genes via the command line
 
