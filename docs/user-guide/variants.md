@@ -144,6 +144,15 @@ The columns that will be used by Scout are the following.
 - **maintainer(str)** Placeholder, replaced by the current uploading user. *Optional placeholder*
 - **institutes(list(str))** Placeholder, replaced with the current uploading user institutes. *Optional placeholder*
 
+Example:
+
+```csv
+## Managed variants from some reliable source
+#chromosome;position;end;reference;alternative;category;sub_category;description
+14;76548781;76548781;CTGGACC;G;snv;indel;IFT43 indel test
+17;48696925;48696925;G;T;snv;snv;CACNA1G intronic test
+7;124491972;124491972;C;A;snv;snv;POT1 test snv
+```
 
 [clinvar]: https://www.ncbi.nlm.nih.gov/clinvar/
 [markdown]: https://help.github.com/articles/markdown-basics/
