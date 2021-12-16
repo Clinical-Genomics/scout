@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modified the code to collect database params specified as env vars
 - Created a GitHub action that pushes the Dockerfile-server image to Docker Hub (scout-server-stage) every time a PR is opened
 - Created a GitHub action that pushes the Dockerfile-server image to Docker Hub (scout-server) every time a new release is created
+- Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 ### Changed
 - Updated the python config file documentation in admin guide
 - Imporved LDAP login documentation
@@ -46,7 +47,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.43]
 ### Added
 - Specify which collection(s) update/build indexes for
-### Changed
 ### Fixed
 - Do not drop genes and transcripts collections when updating genes via the command line
 
