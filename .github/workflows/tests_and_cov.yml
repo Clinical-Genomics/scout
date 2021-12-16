@@ -4,7 +4,7 @@ on: [pull_request"]
 
 jobs:
   build:
-    name: Coverage
+    name: Tests and Coverage
     runs-on: ubuntu-latest
     strategy:
       matrix:
