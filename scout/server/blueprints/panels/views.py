@@ -2,7 +2,7 @@
 import datetime
 import logging
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 
@@ -14,6 +14,16 @@ from .forms import PanelGeneForm
 
 LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
+
+
+@genes_bp.route("/api/v1/panels/<panel_name>")
+@public_endpoint
+def api_panels(panel_name):
+    """Return JSON data about panels with a given panel name.
+    Returns all versions.
+    """
+    json_out = controllers.panels_to_json(store, panel_name)
+    return jsonify(json_out)
 
 
 @panels_bp.route("/panels", methods=["GET", "POST"])
