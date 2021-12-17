@@ -152,7 +152,7 @@ def case(
         LOG.info("Set needs_check to True for case %s", case_id)
         updates = {"needs_check": True}
         if sv_rankmodel_version:
-            updates["sv_rank_model_version"] = sv_rankmodel_version
+            updates["sv_rank_model_version"] = str(sv_rankmodel_version)
         if vcf_sv:
             updates["vcf_files.vcf_sv"] = vcf_sv
         if vcf_sv:

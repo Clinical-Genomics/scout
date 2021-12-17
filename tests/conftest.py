@@ -56,7 +56,7 @@ from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
 from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
-from scout.parse.case import parse_case, parse_custom_images
+from scout.parse.case import parse_case_config
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
@@ -387,21 +387,21 @@ def ped_lines(request):
 @pytest.fixture(scope="function")
 def case_lines(request, scout_config):
     """Get the lines for a case"""
-    case = parse_case(scout_config)
+    case = parse_case_config(scout_config)
     return case
 
 
 @pytest.fixture(scope="function")
 def parsed_case(request, scout_config):
     """Get the lines for a case"""
-    case = parse_case(scout_config)
+    case = parse_case_config(scout_config)
     return case
 
 
 @pytest.fixture(scope="function")
 def cancer_parsed_case(request, cancer_scout_config):
     """Get the lines for a cancer case"""
-    case = parse_case(cancer_scout_config)
+    case = parse_case_config(cancer_scout_config)
     return case
 
 
@@ -822,7 +822,6 @@ def real_populated_database(real_panel_database, parsed_case):
 
     LOG.info("Adding case to real adapter")
     case_obj = build_case(parsed_case, adapter)
-
     adapter._add_case(case_obj)
 
     return adapter
