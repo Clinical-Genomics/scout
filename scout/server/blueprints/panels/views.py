@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import logging
 
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 
 from scout.server.extensions import store
-from scout.server.utils import public_endpoint, templated, user_institutes
+from scout.server.utils import jsonconverter, public_endpoint, templated, user_institutes
 
 from . import controllers
 from .forms import PanelGeneForm
@@ -16,14 +17,15 @@ LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
 
 
-@panels_bp.route("/api/v1/panels/<panel_name>")
+@panels_bp.route("/api/v1/panels/<panel_name>", methods=["GET", "POST"])
 @public_endpoint
 def api_panels(panel_name):
     """Return JSON data about panels with a given panel name.
     Returns all versions.
     """
     json_out = controllers.panels_to_json(store, panel_name)
-    return jsonify(json_out)
+
+    return Response(json.dumps(json_out, default=jsonconverter), mimetype="application/json")
 
 
 @panels_bp.route("/panels", methods=["GET", "POST"])
