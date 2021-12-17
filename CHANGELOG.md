@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 ### Changed
 - Updated the python config file documentation in admin guide
+- Case configuration parsing now uses Pydantic for improved typechecking and config handling
 ### Fixed
 
 
@@ -140,8 +141,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed the database used in docker-compose file to use the official MongoDB v4.4 image
 - Modified the Python (3.6, 3.8) and MongoDB (3.2, 4.4, 5.0) versions used in testing matrices (GitHub actions)
 - Capitalize case search terms on institute and dashboard pages
-- Moved the code preparing the transcripts overview to the backend 
-- Case configuration parsing now uses Pydantic for improved typechecking and config handling
 
 
 ## [4.39]
