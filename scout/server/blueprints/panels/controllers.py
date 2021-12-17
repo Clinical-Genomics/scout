@@ -271,6 +271,4 @@ def panels_to_json(store, panel_name):
     """Fetch matching gene panels and convert to JSON."""
     gene_panels = list(store.gene_panels(panel_id=panel_name, include_hidden=True))
 
-    log.debug("gene panels %s", gene_panels)
-
     return gene_panels
