@@ -7,7 +7,7 @@
 
 ![Build Status - GitHub][actions-build-status]
 [![PyPI Version][pypi-img]][pypi-url]
-[![Coverage Status][coveralls-img]][coveralls-url]
+[![Coverage Status][codecov-img]][codecov-url]
 [![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
@@ -15,6 +15,7 @@
 [![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
 [![CodeFactor](https://www.codefactor.io/repository/github/clinical-genomics/scout/badge)](https://www.codefactor.io/repository/github/clinical-genomics/scout)
 [![Code style: black][black-image]][black-url]
+
 
 ## What is Scout?
 
@@ -263,8 +264,8 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [ismaintained-open-rate-url]: http://isitmaintained.com/project/Clinical-Genomics/scout
 [closed-issues-img]: https://img.shields.io/github/issues-closed/Clinical-Genomics/scout.svg
 [closed-issues-url]: https://GitHub.com/Clinical-Genomics/scout/issues?q=is%3Aissue+is%3Aclosed
-[coveralls-img]: https://coveralls.io/repos/github/Clinical-Genomics/scout/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/Clinical-Genomics/scout?branch=master
+[codecov-img]: https://codecov.io/gh/Clinical-Genomics/scout/branch/main/graph/badge.svg?token=BOhMTZ4T3c
+[codecov-url]: https://codecov.io/gh/Clinical-Genomics/scout
 [actions-build-status]: https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg
 [black-image]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black-url]: https://github.com/psf/black
