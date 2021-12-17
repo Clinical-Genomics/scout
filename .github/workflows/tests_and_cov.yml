@@ -1,6 +1,6 @@
-name: Run tests
+name: Run tests and push coverage to Codecov
 
-on: push
+on: ["push", "pull_request"]
 
 jobs:
   setup:
@@ -24,9 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        group: [1, 2, 3, 4, 5]
+        group: [1, 2, 3, 4]
         mongodb-version: ['4.4']
-
     steps:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.7.0
@@ -51,7 +50,7 @@ jobs:
           pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
 
       - name: Run pytest
-        run: pytest --cov --splits 5 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout
+        run: pytest --cov --splits 4 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout
 
       - name: Upload coverage
         uses: actions/upload-artifact@v2
@@ -73,7 +72,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install coverage
       - name: Download all artifacts
-        # Downloads coverage1, coverage2, etc.
+        # Download and combine coverage1, coverage2, etc.
         uses: actions/download-artifact@v2
       - name: Run coverage
         run: |
