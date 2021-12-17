@@ -3,7 +3,7 @@ name: Run tests
 on: push
 
 jobs:
-  pytest-split:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,7 +42,7 @@ jobs:
           path: .coverage
 
   coverage:
-    needs: pytest-split
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
