@@ -17,7 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
 - Removed test matrices to speed up automatic testing of PRs
 - Switch from Coveralls to Codecov to handle CI test coverage
-- Speed-up CI tests by splitting tests into groups using pytest-split in GitHub Action
+- Speed-up CI tests by caching installation of libs and splitting tests into groups using pytest-split
 ### Fixed
 
 ## [4.45]

@@ -16,6 +16,7 @@ jobs:
       - name: Install deps
         run: |
           pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
+          pip check
 
         # Cache package installation step to speed up the following step
       - uses: actions/cache@v2
@@ -54,7 +55,7 @@ jobs:
           pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
 
       - name: Run pytest
-        run: pytest --cov --splits 4 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout -n 2
+        run: pytest --cov --splits 4 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout
 
       - name: Upload coverage
         uses: actions/upload-artifact@v2
