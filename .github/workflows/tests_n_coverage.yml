@@ -30,7 +30,7 @@ jobs:
 
       - name: Install deps
         run: |
-          pip install --upgrade --upgrade-strategy eager -r dev-requirements.txt -e .
+          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
 
       - name: Run pytest
         run: pytest --cov --splits 5 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout
