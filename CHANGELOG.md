@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add an option to export cases with rerun monitoring enabled
 ### Changed
 - Updated the python config file documentation in admin guide
+- Case configuration parsing now uses Pydantic for improved typechecking and config handling
 ### Fixed
 
 
