@@ -4,7 +4,7 @@
 pytest-mock
 pytest>=5.2
 pytest-flask
-pytest-split
+pytest-test-groups
 pytest-cov
 mongomock==3.20
 responses
