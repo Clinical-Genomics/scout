@@ -13,6 +13,10 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Install deps
+        run: |
+          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
+
         # Cache package installation step to speed up the following step
       - uses: actions/cache@v2
         with:
@@ -45,12 +49,8 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
 
-      - name: Install deps
-        run: |
-          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
-
       - name: Run pytest
-        run: pytest --cov --splits 4 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout
+        run: pytest --cov --splits 4 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout -n 4
 
       - name: Upload coverage
         uses: actions/upload-artifact@v2
