@@ -14,7 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 ### Changed
 - Updated the python config file documentation in admin guide
-- Imporved LDAP login documentation
+- Case configuration parsing now uses Pydantic for improved typechecking and config handling
+- Improved LDAP login documentation
 - Use lib flask-ldapconn instead of flask_ldap3_login> to handle ldap authentication
 ### Fixed
 
