@@ -130,6 +130,7 @@ def case(store, institute_obj, case_obj):
         panel_version = panel_info.get("version")
         panel_obj = store.gene_panel(panel_name, version=panel_version)
         latest_panel = store.gene_panel(panel_name)
+        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
@@ -781,8 +782,8 @@ def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
         results = query_phenomizer.query(username, password, *hpo_ids)
         diseases = [result for result in results if result["p_value"] <= p_value_treshold]
         return diseases
-    except SystemExit:
-        return None
+    except RuntimeError:
+        flash("Could not establish a conection to Phenomizer", "danger")
 
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
@@ -1120,10 +1121,11 @@ def matchmaker_add(request, institute_id, case_name):
     # Check that general MME request requirements are fulfilled
     matchmaker_check_requirements(request)
     _, case_obj = institute_and_case(store, institute_id, case_name)
-    candidate_vars = case_obj.get("suspects") or []
+    candidate_vars = request.form.getlist("selected_var")
+
     if len(candidate_vars) > 3:
         flash(
-            "At the moment it is not possible to save to MatchMaker more than 3 pinned variants",
+            "At the moment it is not possible to save to MatchMaker more than 3 candidate variants / genes",
             "warning",
         )
         return redirect(request.referrer)
@@ -1187,7 +1189,7 @@ def matchmaker_add(request, institute_id, case_name):
 
         if candidate_vars:
             g_features = genomic_features(
-                store, case_obj, individual.get("display_name"), genes_only
+                store, case_obj, individual.get("display_name"), candidate_vars, genes_only
             )
             patient["genomicFeatures"] = g_features
         resp = matchmaker.patient_submit(patient)
@@ -1200,9 +1202,7 @@ def matchmaker_add(request, institute_id, case_name):
         )
         if resp.get("status_code") != 200:
             flash(
-                "an error occurred while adding patient to matchmaker: {}".format(
-                    resp.get("message")
-                ),
+                "an error occurred while adding patient to matchmaker: {}".format(resp),
                 "warning",
             )
             continue

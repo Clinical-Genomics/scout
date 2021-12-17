@@ -138,7 +138,7 @@ def parse_gene(gene_info):
 
     # Collect whichever model provided by the user.
     # Then populate inheritance_models and custom_inheritance_models on gene build step
-    gene["inheritance_models"] = [model.strip() for model in models.split(",")]
+    gene["inheritance_models"] = [model.strip() for model in models.split(",") if model != ""]
 
     # If a gene is known to be associated with mosaicism this is annotated
     gene["mosaicism"] = bool(gene_info.get("mosaicism"))

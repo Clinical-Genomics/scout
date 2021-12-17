@@ -7,7 +7,7 @@
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+   <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
   <li class="nav-item active">
     <span class="navbar-text">Gene Panels</span>
@@ -54,11 +54,11 @@
         </div>
         <div class="form-row ">
           <div class="form-group col-sm-2">
-            <label class="col-form-label">CSV file</label>
+            <label class="col-form-label">Gene panel file</label>
           </div>
           <div class="col-sm-5 text-center">
-            <input type="file" name="csv_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
-            <label class="custom-file-label" for="csv_file">Choose file</label><br>
+            <input type="file" name="panel_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
+            <label class="custom-file-label" for="panel_file">Choose file</label><br>
             <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" target="_blank">gene panel file</a>?</p>
           </div>
           <div class="col-sm-5">
@@ -76,7 +76,7 @@
 </div>
 {% endmacro %}
 
-{% macro panel_view(institute,panels) %}
+{% macro panel_view(institute, panels) %}
   <div class="card panel-default w-100 mt-3 justify-content-center">
     <div class="panel-heading">
       <strong>{{ institute.display_name }}</strong> - Panels
@@ -96,18 +96,58 @@
         <!--create table for each panel-->
         <tbody>
           <tr>
-            <td><a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a></td>
+            <td>
+              <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
+              {% if panel.hidden %}
+                <span class="badge badge-danger">Removed</span>
+              {% endif %}
+            </td>
             <td>{{ panel.version }} ({{ panel.date.date()}})</td>
             <td><span class="badge badge-pill badge-secondary">{{ panel.genes|length}}</span></td>
             <td><button id="{{panel._id}}" type="button" data-toggle="collapse" href="#paneldiv_{{panel._id}}" aria-expanded="false" aria-controls="paneldiv_{{panel._id}}" class="btn btn-primary btn-xs"><span class="fa fa-search-plus"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
-            <td><button id="{{panel._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{panel._id}}" aria-expanded="false" aria-controls="modifydiv_{{panel._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pencil-square-o"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
+            <td><button id="{{panel._id}}" type="buttonjj" data-toggle="collapse" href="#modifydiv_{{panel._id}}" aria-expanded="false" aria-controls="modifydiv_{{panel._id}}" class="btn btn-warning btn-xs"><span class="fa fa-pencil-square-o"></span></button><br>{{ history_view(panel._id, panel.panel_name) }}</td>
+            <td>
+              {% if panel.hidden %}
+                <form action="{{ url_for('panels.panel_restore', panel_id=panel._id) }}" method="POST">
+                  <button id="{{panel._id}}" type="submit" title="Restore panel" class="btn btn-success btn-xs"><span class="fa fa-undo"></span></button>
+                </form>
+              {% else %}
+              <button id="{{panel._id}}" type="button" data-toggle="modal" data-target="#remove-gene-panel-modal-{{ panel._id }}" class="btn btn-danger btn-xs"><span class="fa fa-trash"></span></button>
+              {% endif %}
+            </td>
           </tr>
           {{ modify_panel(panel._id, panel) }}
         </tbody>
+        {{ remove_gene_panel_modal(institute, panel) }}
       {% endfor %}
       </table>
     </div>
   </div>
+{% endmacro %}
+
+{% macro remove_gene_panel_modal(institute, panel) %}
+  <form action="{{ url_for('panels.panel_delete', panel_id=panel._id) }}"
+        method="POST">
+    <div class="modal fade" id="remove-gene-panel-modal-{{ panel._id }}">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Remove gene panel "{{panel.display_name}}"?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Are you sure that you would like to remove gene panel <strong>{{panel.display_name}}</strong> from <strong>{{institute._id}}</strong>?
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-danger" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Remove panel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
 {% endmacro %}
 
 {% macro history_view(panel_id, panel_name) %}
@@ -135,18 +175,18 @@
         <div class="form-group">
           <div class="custom-control custom-radio">
             <input type="radio" id="add_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="add" checked>
-            <label class="custom-control-label" for="add_{{panel_obj.display_name}}">Add genes from CSV file</label>
+            <label class="custom-control-label" for="add_{{panel_obj.display_name}}">Add genes from text file</label>
           </div>
           <div class="custom-control custom-radio">
             <input type="radio" id="replace_{{panel_obj.display_name}}" name="modify_option" class="custom-control-input" value="replace">
-            <label class="custom-control-label" for="replace_{{panel_obj.display_name}}">Replace genes using CSV file</label>
+            <label class="custom-control-label" for="replace_{{panel_obj.display_name}}">Replace genes using text file</label>
           </div>
         </div>
       </div><!--end of col-->
       <div class="col-sm-7">
         <div class="form-group">
-            <input type="file" name="csv_file" class="custom-file-input" required>
-            <label class="custom-file-label" for="csv_file">Choose file</label><br>
+            <input type="file" name="panel_file" class="custom-file-input" required>
+            <label class="custom-file-label" for="panel_file">Choose file</label><br>
             <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
         </div>
       </div><!--end of col-->

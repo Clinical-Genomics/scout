@@ -8,7 +8,6 @@ Flask-Bootstrap
 Flask-CORS
 path.py
 Flask-Markdown
-WTForms<3 # Remove this dependency after flask_ldap3_login issue #75 is fixed
 Flask-WTF
 Flask-Mail
 Flask-WeasyPrint
@@ -17,7 +16,7 @@ query_phenomizer
 Flask-Babel
 livereload
 python-dateutil
-pymongo>=3.7
+pymongo>=3.7,<4.0
 pathlib
 WeasyPrint==0.42.3
 xlsxwriter
@@ -26,13 +25,14 @@ cryptography<3.4
 
 # webapp login
 authlib
-flask_ldap3_login
+flask_ldap3_login>=0.9.17
 flask_login
 
 # Parsing
 cyvcf2<0.10.0
-PyYaml>=5.1
 ped_parser
+pydantic
+PyYaml>=5.1
 
 # extras
 intervaltree==3.0.2

@@ -7,7 +7,7 @@
 
 # Move this file under the main scout folder (at the same level of Dockerfile)
 # THEN run this container with the command:
-# docker-compose -f docker-compose-matchmaker.yml
+# docker-compose -f docker-compose-matchmaker.yml up
 
 version: '3'
 # usage:
