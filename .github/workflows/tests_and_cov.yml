@@ -54,7 +54,7 @@ jobs:
           pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
 
       - name: Run pytest
-        run: pytest --cov --splits 4 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout -n 4
+        run: pytest --cov --splits 4 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout -n 2
 
       - name: Upload coverage
         uses: actions/upload-artifact@v2
