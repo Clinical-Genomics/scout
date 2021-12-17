@@ -3,11 +3,11 @@ name: Run tests
 on: push
 
 jobs:
-  test:
+  pytest-split:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        group: [1, 2, 3, 4, 5]
+        group: [1, 2, 3, 4, 5, 6, 7, 8]
         mongodb-version: ['4.4']
     steps:
       - name: Start MongoDB
@@ -22,6 +22,11 @@ jobs:
         with:
           python-version: 3.8
 
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('dev-requirements.txt') }}
+
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
@@ -29,7 +34,7 @@ jobs:
 
       - name: Run pytest
         run: pytest --cov --splits 5 --group ${{ matrix.group }} --rootdir=/home/runner/work/scout
-        
+
       - name: Upload coverage
         uses: actions/upload-artifact@v2
         with:
@@ -37,7 +42,7 @@ jobs:
           path: .coverage
 
   coverage:
-    needs: test
+    needs: pytest-split
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -48,7 +53,7 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt -r requirements-dev.txt
+          pip install coverage
       - name: Download all artifacts
         # Downloads coverage1, coverage2, etc.
         uses: actions/download-artifact@v2
