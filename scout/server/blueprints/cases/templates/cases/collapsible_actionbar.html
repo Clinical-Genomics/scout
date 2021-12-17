@@ -277,7 +277,7 @@
   {% endif %}
   <p>
     <form action="{{ url_for('cases.monitor', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-toggle="popover" data-content="Check box to enable rerun monitoring with melter."> Request rerun monitoring</span>
+      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-toggle="popover" data-content="A new analysis will start when relevant parts of the workflow is updated"> Activate monitoring</span>
     </form>
   </p>
 </div>
