@@ -90,24 +90,6 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
     assert "KeyError" in result.output
 
 
-def test_load_case_KeyError2(mock_app, institute_obj, case_obj, monkeypatch):
-    """Test loading a case with a config file that will trigger KeyError"""
-    runner = mock_app.test_cli_runner()
-
-    # GIVEN a patched `parse_case` function that will raise KeyError
-    def mock_parse_case(*args):
-        raise KeyError
-
-    monkeypatch.setattr(case, "parse_individuals", mock_parse_case)
-
-    # WHEN calling scout load config
-    result = clear_db_and_load(case_obj, mock_app)
-
-    # THEN call will fail with KeyError
-    assert result.exit_code == 1
-    assert "KeyError" in result.output
-
-
 def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
     """Test loading a case with a config file that will trigger KeyError"""
     runner = mock_app.test_cli_runner()
@@ -116,25 +98,19 @@ def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
     def mock_parse_case(*args):
         raise SyntaxError
 
-    monkeypatch.setattr(case, "parse_individuals", mock_parse_case)
+    monkeypatch.setattr(case, "add_smn_info", mock_parse_case)
 
-    # WHEN calling scout load config
-    result = clear_db_and_load(case_obj, mock_app)
-
-    # THEN call will fail with KeyError
-    assert result.exit_code == 1
-    assert "SyntaxError" in result.output
-
-
-def clear_db_and_load(case_obj, mock_app):
-    """Clear and database and call cli load `scout load case scout`. Returns result of call"""
     # GIVEN a database with no cases
     store.delete_case(case_id=case_obj["_id"])
     assert store.case_collection.find_one() is None
 
     # WHEN case is loaded using a a yaml file
     runner = mock_app.test_cli_runner()
-    return runner.invoke(cli, ["load", "case", load_path])
+    result = runner.invoke(cli, ["load", "case", load_path])
+
+    # THEN call will fail with KeyError
+    assert result.exit_code == 1
+    assert "SyntaxError" in result.output
 
 
 def test_load_case_KeyMissing(mock_app, institute_obj, case_obj):
