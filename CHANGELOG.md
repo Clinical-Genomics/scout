@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 ### Changed
 - Updated the python config file documentation in admin guide
+- Case configuration parsing now uses Pydantic for improved typechecking and config handling
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
 ### Fixed

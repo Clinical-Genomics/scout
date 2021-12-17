@@ -37,7 +37,7 @@ def test_add_existing_case(adapter, case_obj):
         adapter._add_case(case_obj)
 
 
-def test_load_case_existing_case_id(adapter, institute_obj, case_obj, scout_config):
+def test_load_case_existing_case_id(adapter, institute_obj, case_obj):
     """testing adding another case with same _id and no update flag"""
 
     ## GIVEN an empty database with an isntitute
@@ -48,10 +48,10 @@ def test_load_case_existing_case_id(adapter, institute_obj, case_obj, scout_conf
     ## GIVEN an attempt to load the same case using the load_case function
     ## THEN it should raise integrity error
     with pytest.raises(IntegrityError):
-        adapter.load_case(config_data=scout_config)
+        adapter.load_case(case_obj)
 
 
-def test_load_case_existing_display_name(adapter, institute_obj, case_obj, scout_config):
+def test_load_case_existing_display_name(adapter, institute_obj, case_obj):
     """testing adding another case with same institute_id and display_name"""
 
     ## GIVEN an empty database with an isntitute
@@ -60,8 +60,8 @@ def test_load_case_existing_display_name(adapter, institute_obj, case_obj, scout
     adapter._add_case(case_obj)
 
     # GIVEN another case with same institute and display name of first case
-    config2 = copy.deepcopy(scout_config)
-    config2["family"] = "internal_id2"
+    config2 = copy.deepcopy(case_obj)
+    config2["case_id"] = "internal_id2"
 
     # GIVEN an attempt to load the other using the load_case function
     ## THEN it should raise integrity error
@@ -69,7 +69,7 @@ def test_load_case_existing_display_name(adapter, institute_obj, case_obj, scout
         adapter.load_case(config_data=config2)
 
 
-def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj, scout_config):
+def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj):
     """testing updating a case using config file containing a different case display name"""
 
     ## GIVEN an empty database with an isntitute
@@ -78,7 +78,7 @@ def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj
     adapter._add_case(case_obj)
 
     # GIVEN another case with same _id but different display_name
-    config2 = copy.deepcopy(scout_config)
+    config2 = copy.deepcopy(case_obj)
     config2["display_name"] = "case2"
 
     # GIVEN an attempt to update the case using the load_case function
@@ -87,9 +87,7 @@ def test_load_case_existing_case_different_name(adapter, institute_obj, case_obj
         adapter.load_case(config_data=config2, update=True)
 
 
-def test_load_case_existing_case_different_individuals(
-    adapter, institute_obj, case_obj, scout_config
-):
+def test_load_case_existing_case_different_individuals(adapter, institute_obj, case_obj):
     """testing updating a case when the new config file contains different individuals information"""
 
     ## GIVEN an empty database with an isntitute
@@ -98,8 +96,8 @@ def test_load_case_existing_case_different_individuals(
     adapter._add_case(case_obj)
 
     # GIVEN another case with same _id but different individuals information
-    config2 = copy.deepcopy(scout_config)
-    config2["samples"][0]["sample_id"] = "changed_sample_id"
+    config2 = copy.deepcopy(case_obj)
+    config2["individuals"][0]["individual_id"] = "changed_individual_id"
 
     # GIVEN an attempt to update the case using the load_case function
     ## THEN it should raise integrity error

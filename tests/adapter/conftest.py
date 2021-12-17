@@ -4,15 +4,16 @@ import pytest
 
 
 @pytest.fixture
-def real_oldcase_database(real_panel_database, scout_config):
+def real_oldcase_database(real_panel_database, parsed_case):
     # add case with old case id construct
-    config_data = deepcopy(scout_config)
-    config_data["family"] = "-".join([config_data["owner"], config_data["family_name"]])
+    config_data = deepcopy(parsed_case)
+    config_data["case_id"] = "-".join([config_data["owner"], config_data["display_name"]])
     case_obj = real_panel_database.load_case(config_data)
     # add suspect and causative!
     institute_obj = real_panel_database.institute(case_obj["owner"])
     user_obj = real_panel_database.users()[0]
     variant_obj = real_panel_database.variant_collection.find_one()
+
     real_panel_database.pin_variant(
         institute=institute_obj,
         case=case_obj,
