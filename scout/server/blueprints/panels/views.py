@@ -7,7 +7,7 @@ from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
 
 from scout.server.extensions import store
-from scout.server.utils import templated, user_institutes
+from scout.server.utils import public_endpoint, templated, user_institutes
 
 from . import controllers
 from .forms import PanelGeneForm
@@ -16,7 +16,7 @@ LOG = logging.getLogger(__name__)
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
 
 
-@genes_bp.route("/api/v1/panels/<panel_name>")
+@panels_bp.route("/api/v1/panels/<panel_name>")
 @public_endpoint
 def api_panels(panel_name):
     """Return JSON data about panels with a given panel name.
