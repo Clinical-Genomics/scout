@@ -3,18 +3,9 @@ name: Run tests
 on: push
 
 jobs:
-  test:
+  setup:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        group: [1, 2, 3, 4, 5]
-        mongodb-version: ['4.4']
     steps:
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
-        with:
-         mongodb-version: ${{ matrix.mongodb-version }}
-
       - uses: actions/checkout@v2
 
       - name: Set up Python 3.8
@@ -27,6 +18,27 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        group: [1, 2, 3, 4, 5]
+        mongodb-version: ['4.4']
+
+    steps:
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+         mongodb-version: ${{ matrix.mongodb-version }}
+
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
       - name: Install deps
         run: |
