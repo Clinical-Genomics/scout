@@ -109,7 +109,7 @@
           <td>{{ variant.category }}</td>
           <td>{{ variant.sub_category }}</td>
           <td>
-            {{ variant.description }}
+            {{ variant.description }}
             <div class="float-right">
               <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant.managed_variant_id) }}">
                   <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
@@ -145,10 +145,10 @@
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
       <td>{{ modify_form.chromosome(class_="form-control") }}</td>
-      <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}"></td>
+      <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}" required></td>
       <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
-      <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}"></td>
-      <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}"></td>
+      <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}" required></td>
+      <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}" required></td>
       <td>{{ modify_form.category(class_="form-control", onchange="populateSubTypeSelect('modify_variant')") }}</td>
       <td>{{ modify_form.sub_category(class_="form-control") }}</td>
       <td>
@@ -164,15 +164,13 @@
 
 {% macro load_variant_form() %}
     <div class="row">
-      Upload managed variants CSV file
-      <div class="col-sm-5 text-center">
-        <input type="file" name="csv_file" class="custom-file-input" required>
+      <div class="col-sm-3">Upload managed variants file</div>
+      <div class="col-sm-7 text-center">
+        <input type="file" name="csv_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
         <label class="custom-file-label" for="csv_file">Choose file</label><br>
         <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/variants/#Managed-variants-upload-file-format">managed variants file</a>?</p>
       </div>
-    </div>
-    <div class="row">
-      <div class="col text-center">
+      <div class="col-sm-2 text-center">
         <button type="submit" class="btn btn-outline-secondary">Upload</button>
       </div>
     </div>
@@ -198,10 +196,10 @@
     <tbody>
       <tr>
       <td>{{ add_form.chromosome(class_="form-control") }}</td>
-      <td><input type="number" name="position" id="position" class="form-control"></td>
+      <td><input type="number" name="position" id="position" class="form-control" required></td>
       <td><input type="number" name="end" id="end" class="form-control"></td>
-      <td><input type="text" name="reference" id="reference" class="form-control"></td>
-      <td><input type="text" name="alternative" id="alternative" class="form-control"></td>
+      <td><input type="text" name="reference" id="reference" class="form-control" required></td>
+      <td><input type="text" name="alternative" id="alternative" class="form-control" required></td>
       <td>{{ add_form.category(class_="form-control", onchange="populateSubTypeSelect('add_variant')") }}</td>
       <td>{{ add_form.sub_category(class_="form-control") }}</td>
       <td>

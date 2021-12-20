@@ -24,7 +24,8 @@ CATEGORY_CHOICES = [
 
 
 class ManagedVariantForm(FlaskForm):
-    position = IntegerField("Start position", [validators.Optional()])
+    position = IntegerField("Start position", [validators.InputRequired()])
+
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = SelectField("Cytoband start", choices=[])
     cytoband_end = SelectField("Cytoband end", choices=[])
@@ -35,6 +36,7 @@ class ManagedVariantForm(FlaskForm):
 
 
 class ManagedVariantsFilterForm(ManagedVariantForm):
+    position = IntegerField("Start position", [validators.Optional()])
     chromosome = SelectField("Chromosome", [validators.Optional()], choices=[])
 
     category = SelectMultipleField("Category", choices=CATEGORY_CHOICES)
@@ -45,16 +47,20 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 
 
 class ManagedVariantEditForm(ManagedVariantForm):
+    position = IntegerField("Start position", [validators.InputRequired()])
+
     chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
 
-    reference = StringField(label="Ref")
-    alternative = StringField(label="Alt")
+    reference = StringField(label="Ref", validators=[validators.InputRequired()])
+    alternative = StringField(label="Alt", validators=[validators.InputRequired()])
 
     category = SelectField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectField("Kind", choices=SUBCATEGORY_CHOICES)
 
 
 class ManagedVariantAddForm(ManagedVariantEditForm):
+    position = IntegerField("Start position", [validators.InputRequired()])
+
     add_variant = SubmitField(label="Add")
     cancel = SubmitField(label="Cancel")
 
