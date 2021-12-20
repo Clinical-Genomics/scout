@@ -1,47 +1,93 @@
-name: Run tests and upload coverage
+name: Run tests and push coverage to Codecov
 
-on: ["push", "pull_request"]
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
 
 jobs:
-  build:
-    name: Coverage
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Install deps
+        run: |
+          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
+          pip check
+
+        # Cache package installation step to speed up the following step
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
+
+  test:
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8]
-        mongodb-version: ["4.4"]
-
+        group: [1, 2, 3, 4, 5, 6]
+        mongodb-version: ['4.4']
     steps:
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+         mongodb-version: ${{ matrix.mongodb-version }}
 
-    # Check out Scout code
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    # Set up python
-    - name: Set up Python ${{ matrix.python-version}}
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version}}
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
-    # Set up mongodb
-    - name: Start MongoDB
-      uses: wbari/start-mongoDB@v0.2
-      with:
-        mongoDBVersion: ${{ matrix.mongodb-version}}
+        # Cache package installation step to speed up the following step
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
 
-    - name: Production Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install cython
-        pip install numpy
-        pip install -r requirements.txt
-        pip install -e .
-        pip install pytest-cov
-        pip install coveralls
+      - name: Install deps
+        run: |
+          pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
 
-    - name: Test with pytest & Coveralls
-      run: |
-        pip install -r requirements-dev.txt
-        pytest --cov=./
-        coveralls
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      - name: Run pytest
+        run: pytest --cov --test-group-count 6 --test-group=${{ matrix.group }} --rootdir=/home/runner/work/scout
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage${{ matrix.group }}
+          path: .coverage
+
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage
+      - name: Download all artifacts
+        # Download and combine coverage1, coverage2, etc.
+        uses: actions/download-artifact@v2
+      - name: Run coverage
+        run: |
+          coverage combine coverage*/.coverage*
+          coverage report
+          coverage xml
+      - uses: codecov/codecov-action@v1
