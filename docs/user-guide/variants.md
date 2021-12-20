@@ -127,7 +127,7 @@ Only interesting when the compound inheritance pattern is required, the list can
 ## Managed variants
 
 ### Managed variants upload file format
-The managed variants csv file is a tab or semicolon (;)-separated text file with a mandatory header that describes the columns and one line for each gene entry. You must use the same delimiter for the whole file. Ideally do not use the delimiter characters in other places in the file. Consult with an admin if you need to use the delimiter characters in other fields for help with escaping them or ensuring a higher priority separator is used on a previous line.
+The managed variants text file is a tab or semicolon (;)-separated text file with a mandatory header that describes the columns and one line for each gene entry. You must use the same delimiter for the whole file. Ideally do not use the delimiter characters in other places in the file. Consult with an admin if you need to use the delimiter characters in other fields for help with escaping them or ensuring a higher priority separator is used on a previous line.
 Initial lines starting with `##` are considered comments and are ignored.
 The first other line starting with `#`, or the first line in the file is treated as the header line.
 
