@@ -1,9 +1,9 @@
 # Setting up a user login system
 
 Scout currently supports 3 types of login systems:
-- [Google authentication via OpenID Connect](##Google-OpenID-Connect-login-system)
-- [LDAP authentication](##Login-using-Lightweight-Directory-Access-Protocol-(LDAP)
-- [Simple authentication using userid and password](## Simple login with user and password)
+  - [Google authentication via OpenID Connect](#Google-OpenID-Connect-login-system)
+  - [LDAP authentication](#Login-using-Lightweight-Directory-Access-Protocol)
+  - [Simple authentication using userid](#simple-login-with-userid)
 
 **Login systems are mutually exclusive so when you choose a system, it will become be the only way all users will have access to the Scout app.**
 
@@ -45,31 +45,73 @@ The following command can be used to add a create a new user into the database:
 `scout load user -i institute-id -u "User Name" -m user_emaill@email.com`
 
 
-## Login using Lightweight Directory Access Protocol (LDAP)
+## Login using Lightweight Directory Access Protocol
 
 Institutional directory services authentication via LDAP is supported by Scout.
 
-To enable LDAP authentication, add and customize the following lines in the config file:
+LDAP authentication in Scout is achieved by using the [flask-ldapconn](https://github.com/rroemhild/flask-ldapconn) library.
 
-```
-# LDAP connection settings
-LDAP_PORT = ldap-port (usually 389)
-LDAP_HOST = 'ldap-host'
-LDAP_BASE_DN = 'dc=example,dc=com'
-LDAP_BIND_USER_DN = 'cn=read-only-admin,dc=example,dc=com'
-LDAP_REQUIRED_GROUP = 'ou=scientists,dc=example,dc=com'
-LDAP_USER_SEARCH_SCOPE = 'SUBTREE',
-LDAP_GROUP_OBJECT_FILTER = '(objectClass=GroupOfUniqueNames)'
-```
+Pre-requisites in order to authenticate users using LDAP:
 
-- Make sure that all users that should be allowed to log in in the app are already present in the Scout database with an ID corresponding to a valid LDAP.
+- **An existing LDAP authentication server (external from Scout)**
+- **All users that should be logged in Scout using the LDAP should be previously saved into the scout database with an ID corresponding to a valid LDAP user.**
 
 The following command can be used to add a create a new user into the database:
-`scout load user -id ldap_id -i cust000 -u "User Name" -m useremail@email.com`
+`scout load user -id ldap_id (could be an email address) -i cust000 -u "User Name" -m useremail@email.com`
 
-Please note that the while the `-id ldap_id` option is not a mandatory parameter in the command used for adding users to the database, it is necessary for the LDAP login to successfully recognize the user in the system.
+Please **note that the while the `-id ldap_id` option is not a mandatory parameter in the command used for adding users to the database, it is necessary for the LDAP login to successfully recognize the user in the system**.
 
+LDAP server instances are different from case to case. Some basic LDAP config options (with example values) that can be used on the in the Scout config file are the following:
 
-## Simple login with userid and password
+```
+# LDAP_HOST = "localhost" # Can also be named LDAP_SERVER
+# LDAP_PORT = 389
+# LDAP_BASE_DN = 'cn=admin,dc=example,dc=com # Can also be named LDAP_BINDDN
+# LDAP_USER_LOGIN_ATTR = "mail" # Can also be named LDAP_SEARCH_ATTR
+# LDAP_USE_SSL = False
+# LDAP_USE_TLS = True
+```
+
+A complete list of accepted parameters that can be used to reflect your LDAP server configuration is available in the [flask-ldapconn readme page](https://github.com/rroemhild/flask-ldapconn).
+
+### Considerations regarding the LDAP login in Scout.
+
+Since Scout software needs to define internal user objects for functioning properly, the LDAP login check against the server is only the first step of the login process. The second step would be making sure that a user authenticated by a certain password exists also in the `user` collection of the Scout database. Because of this latter authentication step, it is not strictly necessary to define a stringent set of rules (for instance which groups the user must belong to) for the LDAP login system, because a user from any group will be logged into Scout, as long as it's previously saved in the Scout database.
+
+This entails that if a user should be removed from the system, it is enough just to remove it from the Scout database.
+
+### Example of LDAP login setup using Docker
+
+In order to understand how the LDAP authentication works, we are providing a docker-based example of a setup with a demo LDAP server containing pre-defined users. The LDAP auth server used here is based on the test server [docker-test-openldap](https://github.com/rroemhild/docker-test-openldap), that contains a number of pre-defined users and organizational user roles from the [Futurama Wiki](https://futurama.fandom.com/wiki/Futurama_Wiki) that are also described in the main page of the repository.
+
+1) You could start the data-populated LDAP server running the Docker command:
+```
+docker run --rm -p 10389:10389 -p 10636:10636 rroemhild/test-openldap
+```
+
+2) From the LDAP server, let's choose one character from Futurama that we would like to add as a user in a local instance of Scout, for instance [Dr. Zoidberg](https://github.com/rroemhild/docker-test-openldap#cnjohn-a-zoidbergoupeopledcplanetexpressdccom)
+
+![Dr. Zoidberg](https://static.wikia.nocookie.net/characterprofile/images/1/17/Zoidberg.png/revision/latest/scale-to-width-down/250?cb=20180603192711)
+
+Let's start adding the user to Scout with the command:
+```
+scout --demo load user -i cust000 -u "Dr. Zoidberg" -m zoidberg@planetexpress.com -id zoidberg@planetexpress.com
+```
+Note that the created ID is an email address that is defined for the user in the demo LDAP server: https://github.com/rroemhild/docker-test-openldap#cnjohn-a-zoidbergoupeopledcplanetexpressdccom. Note also that the password for this user is `zoidberg`.
+
+3) Finally, let's modify the Scout demo config file by adding the following lines:
+```
+LDAP_HOST = "localhost"
+LDAP_PORT = 10389
+LDAP_BASE_DN = "dc=planetexpress,dc=com"
+LDAP_USER_LOGIN_ATTR = "mail"
+LDAP_USE_SSL = False
+LDAP_USE_TLS = True
+```
+Let's start the demo server with the command `scout --demo serve`.
+
+4) It should be now possible to login the new user into Scout using email and password defined in the LDAP server!
+
+## Simple login with userid
 
 Basic login with userid and password is the login system available whenever no advanced login system (either Google or LDAP) is specified in the Scout config file. To enable it, comment out or remove the LDAP and GOOGLE lines mentioned above from your config. It is an un-secure system which is not recommended to use. This is also the login system available in the demo instance of Scout.

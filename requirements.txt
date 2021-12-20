@@ -25,8 +25,8 @@ cryptography<3.4
 
 # webapp login
 authlib
-flask_ldap3_login>=0.9.17
 flask_login
+flask-ldapconn
 
 # Parsing
 cyvcf2<0.10.0
