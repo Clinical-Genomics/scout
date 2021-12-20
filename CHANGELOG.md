@@ -18,7 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
 - Removed test matrices to speed up automatic testing of PRs
 - Switch from Coveralls to Codecov to handle CI test coverage
-- Speed-up CI tests by caching installation of libs and splitting tests into groups using pytest-split
+- Speed-up CI tests by caching installation of libs and splitting tests into randomized groups using pytest-test-groups
 - Improved LDAP login documentation
 - Use lib flask-ldapconn instead of flask_ldap3_login> to handle ldap authentication
 ### Fixed
