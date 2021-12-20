@@ -1,6 +1,6 @@
 import logging
-import os.path
 
+from flask import flash
 from flask_login import current_user
 
 from scout.build import build_managed_variant
@@ -132,6 +132,13 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
     for managed_variant_info in parse_managed_variant_lines(lines):
         total_variant_lines += 1
 
+        if not validate_managed_variant(managed_variant_info):
+            flash(
+                f"Managed variant info line {total_variant_lines} has errors ({managed_variant_info})",
+                "warning",
+            )
+            continue
+
         managed_variant_info.update({"maintainer": [current_user_id], "institutes": institutes})
         managed_variant_obj = build_managed_variant(managed_variant_info)
 
@@ -139,6 +146,32 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
             new_managed_variants += 1
 
     return new_managed_variants, total_variant_lines
+
+
+def validate_managed_variant(managed_variant_info):
+    """
+    Returns true
+    Args:
+        managed_variant_info: dict
+
+    Returns:
+        boolean
+    """
+    mandatory_fields = [
+        "chromosome",
+        "position",
+        "reference",
+        "alternative",
+        "category",
+        "sub_category",
+    ]
+
+    record_ok = True
+    for mandatory_field in mandatory_fields:
+        if not managed_variant_info.get(mandatory_field):
+            record_ok = False
+
+    return record_ok
 
 
 def modify_managed_variant(store, managed_variant_id, edit_form):

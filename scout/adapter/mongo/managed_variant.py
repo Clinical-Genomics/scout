@@ -50,8 +50,10 @@ class ManagedVariantHandler(object):
         collision = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
-        if collision:
-            LOG.debug("Collision - new variant already exists! Leaving variant unmodified.")
+        if collision and not original_obj_id:
+            LOG.debug(
+                "Collision - new variant already exists but no original id given! Leaving variant unmodified."
+            )
             return
 
         if original_obj_id:
