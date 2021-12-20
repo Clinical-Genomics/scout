@@ -4,6 +4,19 @@ from flask import url_for
 from scout.server.extensions import store
 
 
+def test_panel_api_json(client, real_panel_database):
+
+    # GIVEN a panel in the database
+    panel_obj = real_panel_database.gene_panels()[0]
+    panel_name = panel_obj["panel_name"]
+
+    # WHEN querying the gene panels api endpoint
+    resp = client.get(url_for("panels.api_panels", panel_name=panel_name))
+    # THEN it should JSON response with the target gene panel included
+    assert len(resp.json) > 0
+    assert panel_name in str(resp.json)
+
+
 def test_panel_get(client, real_panel_database):
     adapter = real_panel_database
 

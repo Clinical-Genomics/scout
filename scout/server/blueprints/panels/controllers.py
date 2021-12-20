@@ -265,3 +265,10 @@ def panel_export(store, panel_obj):
     panel_obj["name_and_version"] = full_name
 
     return dict(panel=panel_obj)
+
+
+def get_panels(store, panel_name):
+    """Fetch matching gene panels and return a list."""
+    gene_panels = list(store.gene_panels(panel_id=panel_name, include_hidden=True))
+
+    return gene_panels
