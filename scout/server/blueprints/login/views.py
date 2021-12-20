@@ -13,8 +13,6 @@ from flask import (
     session,
     url_for,
 )
-from flask_ldap3_login import AuthenticationResponseStatus
-from flask_ldap3_login.forms import LDAPLoginForm
 from flask_login import login_user, logout_user
 
 from scout.server.extensions import ldap_manager, login_manager, oauth_client, store
@@ -37,8 +35,6 @@ login_manager.login_view = "login.login"
 login_manager.login_message = "Please log in to access this page."
 login_manager.login_message_category = "info"
 
-ldap_users = {}  # used by ldap save_user
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -57,13 +53,19 @@ def login():
 
     user_id = None
     user_mail = None
-    if current_app.config.get("LDAP_HOST") and request.method == "POST":
-        form = LDAPLoginForm()
-        LOG.info("Validating LDAP user")
-        if not form.validate_on_submit():
-            flash("username-password combination is not valid, plase try again", "warning")
+
+    if (
+        current_app.config.get("LDAP_HOST", current_app.config.get("LDAP_SERVER"))
+        and request.method == "POST"
+    ):
+        ldap_authorized = controllers.ldap_authorized(
+            request.form.get("ldap_user"), request.form.get("ldap_password")
+        )
+        if ldap_authorized is True:
+            user_id = request.form.get("ldap_user")
+        else:
+            flash("User not authorized by LDAP server", "warning")
             return redirect(url_for("public.index"))
-        user_id = form.username.data
 
     if current_app.config.get("GOOGLE"):
         if session.get("email"):
@@ -83,7 +85,7 @@ def login():
 
     user_obj = store.user(email=user_mail, user_id=user_id)
     if user_obj is None:
-        flash("User not found", "warning")
+        flash("User not found in Scout database", "warning")
         return redirect(url_for("public.index"))
 
     user_obj["accessed_at"] = datetime.now()
@@ -133,10 +135,3 @@ def perform_login(user_dict):
         return redirect(request.args.get("next") or next_url or url_for("cases.index"))
     flash("sorry, you could not log in", "warning")
     return redirect(url_for("public.index"))
-
-
-@ldap_manager.save_user
-def save_user(dn, username, data, memberships):
-    user = LdapUser(dn, username, data)
-    ldap_users[dn] = user
-    return user
