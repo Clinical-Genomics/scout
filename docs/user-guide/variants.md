@@ -124,6 +124,36 @@ The out put files of expansion hunter if preferably annotated with [stranger][st
 ### Compounds (top 20)
 Only interesting when the compound inheritance pattern is required, the list can be very long but is by default cropped to the top 20 highest ranked ones as shown in the heading.
 
+## Managed variants
+
+### Managed variants upload file format
+The managed variants text file is a tab or semicolon (;)-separated text file with a mandatory header that describes the columns and one line for each gene entry. You must use the same delimiter for the whole file. Ideally do not use the delimiter characters in other places in the file. Consult with an admin if you need to use the delimiter characters in other fields for help with escaping them or ensuring a higher priority separator is used on a previous line.
+Initial lines starting with `##` are considered comments and are ignored.
+The first other line starting with `#`, or the first line in the file is treated as the header line.
+
+The columns that will be used by Scout are the following.
+- **chromosome(str)** Chromosome name. *Mandatory*
+- **position(int)** Start position. *Mandatory*
+- **end(int)** End position. *Optional*
+- **reference(str)** Reference sequence *Mandatory* Use for SVs is only exact.
+- **alternative(str)** Alternative sequence *Mandatory* Use for SVs is only exact.
+- **category(str)** One of "snv", "sv", "cancer" or "cancer_sv" *Mandatory*
+- **sub_category(str)** Sub category of variant. For "snv" and "cancer" this is either "snv" or "indel". For "sv" and "cancer_sv" this is one of "ins", "del", "dup", "cnv", "inv" or "bnd". *Mandatory*
+- **build(str)** Defaults to "37". *Optional*
+- **description(str)** Free text description of the variant. Classification status, evidence and references are appropriate, and if applicable affected gene(s), protein consequences and alternative variant names. *Optional*
+- **maintainer(str)** Placeholder, replaced by the current uploading user. *Optional placeholder*
+- **institutes(list(str))** Placeholder, replaced with the current uploading user institutes. *Optional placeholder*
+
+Example:
+
+```csv
+## Managed variants from some reliable source
+#chromosome;position;end;reference;alternative;category;sub_category;description
+14;76548781;76548781;CTGGACC;G;snv;indel;IFT43 indel test
+17;48696925;48696925;G;T;snv;snv;CACNA1G intronic test
+7;124491972;124491972;C;A;snv;snv;POT1 test snv
+```
+
 [clinvar]: https://www.ncbi.nlm.nih.gov/clinvar/
 [markdown]: https://help.github.com/articles/markdown-basics/
 [expansion-hunter]: https://github.com/Illumina/ExpansionHunter
