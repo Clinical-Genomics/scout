@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
-from flask_ldap3_login.forms import LDAPLoginForm
 from flask_login import current_user
 
-from scout.server.extensions import store
+from scout.server.extensions import ldap_manager, store
 
 
 def test_unathorized_login(app, institute_obj, case_obj):
@@ -44,7 +43,7 @@ def test_ldap_login(ldap_app, user_obj, monkeypatch):
     def return_user(*args, **kwargs):
         return user_obj
 
-    monkeypatch.setattr(LDAPLoginForm, "validate_on_submit", validate_ldap)
+    monkeypatch.setattr(ldap_manager, "authenticate", validate_ldap)
     monkeypatch.setattr(store, "user", return_user)
 
     # GIVEN an initialized app with LDAP config params
