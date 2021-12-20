@@ -47,8 +47,8 @@ class ManagedVariantsFilterForm(ManagedVariantForm):
 class ManagedVariantEditForm(ManagedVariantForm):
     chromosome = SelectField("Chromosome", [validators.Optional()], choices=CHROMOSOME_EDIT_OPTIONS)
 
-    reference = StringField(label="Ref")
-    alternative = StringField(label="Alt")
+    reference = StringField(label="Ref", validators=[validators.InputRequired()])
+    alternative = StringField(label="Alt", validators=[validators.InputRequired()])
 
     category = SelectField("Category", choices=CATEGORY_CHOICES)
     sub_category = SelectField("Kind", choices=SUBCATEGORY_CHOICES)
