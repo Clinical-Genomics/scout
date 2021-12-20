@@ -23,7 +23,7 @@ def api_panels(panel_name):
     """Return JSON data about panels with a given panel name.
     Returns all versions.
     """
-    json_out = controllers.panels_to_json(store, panel_name)
+    json_out = controllers.get_panels(store, panel_name)
 
     return Response(json.dumps(json_out, default=jsonconverter), mimetype="application/json")
 
