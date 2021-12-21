@@ -330,7 +330,7 @@ class GeneHandler(object):
         if res:
             return [res]
 
-        return self.gene_aliases(symbol, build="37")
+        return self.gene_aliases(symbol, build=build)
 
     def gene_aliases(self, symbol, build="37"):
         """Return an iterable with hgnc_genes which have the provided symbol in the gene aliases
