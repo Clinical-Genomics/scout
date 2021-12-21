@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved LDAP login documentation
 - Use lib flask-ldapconn instead of flask_ldap3_login> to handle ldap authentication
 - Updated Managed variant documentation in user guide
+- Made phenotype non-mandatory when marking a variant as partial causative
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
 
