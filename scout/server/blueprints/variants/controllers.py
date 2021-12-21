@@ -805,13 +805,17 @@ def upload_panel(store, institute_id, case_name, stream):
     raw_symbols = [
         line.strip().split("\t")[0] for line in stream if line and not line.startswith("#")
     ]
-    # check if supplied gene symbols exist
-    hgnc_symbols = []
+    # check if supplied gene symbols exist, search genes by official symbol or alias
+    hgnc_symbols = set()
     for raw_symbol in raw_symbols:
-        if store.hgnc_genes_find_one(raw_symbol) is None:
-            hgnc_symbols.append(raw_symbol)
-        else:
+        matching_genes = list(
+            store.gene_by_symbol_or_aliases(symbol=raw_symbol, build=case_obj.get("genome_build"))
+        )
+        if not matching_genes:
             flash("HGNC symbol not found: {}".format(raw_symbol), "warning")
+            continue
+        for gene_dict in matching_genes:
+            hgnc_symbols.add(gene_dict.get("hgnc_symbol"))
 
     return hgnc_symbols
 
