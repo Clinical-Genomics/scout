@@ -21,10 +21,11 @@ from scout.constants import (
 )
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
-from scout.server.links import ensembl, get_variant_links
+from scout.server.links import get_variant_links
 from scout.server.utils import (
     case_append_alignments,
     institute_and_case,
+    rank_score,
     user_institutes,
     variant_case,
 )
@@ -357,6 +358,11 @@ def variant(
 
     tx_overview(variant_obj)
 
+    # retrive rank ranges for the variant
+    rank_model_version = case_obj.get("rank_model_version")
+    rank_model = store.rank_model(rank_model_version)
+    rank_score_results = rank_score(variant_obj, rank_model)
+
     return {
         "institute": institute_obj,
         "case": case_obj,
@@ -376,6 +382,7 @@ def variant(
         "splice_junctions_tracks": has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
+        "rank_score_results": rank_score_results,
     }
 
 

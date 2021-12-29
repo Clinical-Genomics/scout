@@ -21,7 +21,13 @@ from scout.utils.acmg import get_acmg
 
 LOG = logging.getLogger(__name__)
 
-variant_bp = Blueprint("variant", __name__, static_folder="static", template_folder="templates")
+variant_bp = Blueprint(
+    "variant",
+    __name__,
+    template_folder="templates",
+    static_folder="static",
+    static_url_path="/variant/static",
+)
 
 
 @variant_bp.route("/update_tracks", methods=["POST"])

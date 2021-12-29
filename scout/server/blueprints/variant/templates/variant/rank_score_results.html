@@ -1,0 +1,39 @@
+{% macro rankscore_panel(rank_score_results) %}
+<div class="row">
+  <div class="col-12">
+    <div class="card panel-default">
+      <div class="panel-heading">Rank score results</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" >
+            <thead class="thead-light">
+              <tr>
+                {% for rank in rank_score_results %}
+                <th class="rank_score_results_heading">
+                  <span class="rank_score_results_category">{{ rank.category }}</span>
+                  <span class="rank_score_results_abbr" title="{{ rank.category }}">{{ rank.category_abbreviation }}</span>
+                </th>
+                {% endfor %}
+              </tr>
+              <tr>
+                {% for rank in rank_score_results %}
+                <th class="rank_score_results_sub_heading" title="range: {{ rank.min }} to {{ rank.max }}">
+                  <span class="rank_score_results_range">range: </span>{{ rank.min }} to {{ rank.max }}
+                </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {% for rank in rank_score_results %}
+                <td class="text-right"><strong>{{ rank.score }}</strong></td>
+                {% endfor %}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
