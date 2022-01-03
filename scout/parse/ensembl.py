@@ -25,73 +25,24 @@ def parse_ensembl_line(line, header):
 
     for word in raw_info:
         value = raw_info[word]
-
         if not value:
             continue
 
         if "chromosome" in word:
             ensembl_info["chrom"] = value
-
-        if "gene" in word:
-            if "id" in word:
-                ensembl_info["ensembl_gene_id"] = value
-            elif "start" in word:
-                ensembl_info["gene_start"] = int(value)
-            elif "end" in word:
-                ensembl_info["gene_end"] = int(value)
-
-        if "hgnc symbol" in word:
-            ensembl_info["hgnc_symbol"] = value
         if "gene name" in word:
             ensembl_info["hgnc_symbol"] = value
-
         if "hgnc id" in word:
             ensembl_info["hgnc_id"] = int(value.split(":")[-1])
-
-        if "transcript" in word:
-            if "id" in word:
-                ensembl_info["ensembl_transcript_id"] = value
-            elif "start" in word:
-                ensembl_info["transcript_start"] = int(value)
-            elif "end" in word:
-                ensembl_info["transcript_end"] = int(value)
-
-        if "exon" in word:
-            if "start" in word:
-                ensembl_info["exon_start"] = int(value)
-            elif "end" in word:
-                ensembl_info["exon_end"] = int(value)
-            elif "id" in word:
-                ensembl_info["ensembl_exon_id"] = value
-            elif "rank" in word:
-                ensembl_info["exon_rank"] = int(value)
-
-        if "utr" in word:
-
-            if "start" in word:
-                if "5" in word:
-                    ensembl_info["utr_5_start"] = int(value)
-                elif "3" in word:
-                    ensembl_info["utr_3_start"] = int(value)
-            elif "end" in word:
-                if "5" in word:
-                    ensembl_info["utr_5_end"] = int(value)
-                elif "3" in word:
-                    ensembl_info["utr_3_end"] = int(value)
-
+        if "hgnc symbol" in word:
+            ensembl_info["hgnc_symbol"] = value
         if "strand" in word:
             ensembl_info["strand"] = int(value)
 
-        if "refseq" in word:
-            if "mrna" in word:
-                if "predicted" in word:
-                    ensembl_info["refseq_mrna_predicted"] = value
-                else:
-                    ensembl_info["refseq_mrna"] = value
-
-            if "ncrna" in word:
-                ensembl_info["refseq_ncrna"] = value
-
+        ensembl_info = read_gene_info(ensembl_info, word)
+        ensembl_info = read_transcript_info(ensembl_info, word)
+        ensembl_info = read_exon_info(ensembl_info, word)
+        ensembl_info = read_utr_info(ensembl_info, word)
     return ensembl_info
 
 
@@ -268,3 +219,70 @@ def parse_ensembl_exons(lines):
             raise ValueError("ERROR: %s" % exon_id)
 
         yield exon
+
+
+def read_gene_info(ensembl_info, word):
+    """ Extract gene info from Ensembl formated line"""
+    if "gene" in word:
+        if "id" in word:
+            ensembl_info["ensembl_gene_id"] = value
+        elif "start" in word:
+            ensembl_info["gene_start"] = int(value)
+        elif "end" in word:
+            ensembl_info["gene_end"] = int(value)
+    return ensembl_info
+
+def read_transcript_info(ensembl_info, word):
+    """ Extract transcript info from Ensembl formated line"""
+    if "transcript" in word:
+        if "id" in word:
+            ensembl_info["ensembl_transcript_id"] = value
+        elif "start" in word:
+            ensembl_info["transcript_start"] = int(value)
+        elif "end" in word:
+            ensembl_info["transcript_end"] = int(value)
+    return ensembl_info
+
+def read_exon_info(ensembl_info, word):
+    """ Extract exon info from Ensembl formated line"""
+    if "exon" in word:
+        if "start" in word:
+            ensembl_info["exon_start"] = int(value)
+        elif "end" in word:
+            ensembl_info["exon_end"] = int(value)
+        elif "id" in word:
+            ensembl_info["ensembl_exon_id"] = value
+        elif "rank" in word:
+            ensembl_info["exon_rank"] = int(value)
+    return ensembl_info
+
+def read_utr_info(ensembl_info, word):
+    """ Extract UTR info from Ensembl formated line"""
+    if "utr" in word:
+        if "start" in word:
+            if "5" in word:
+                ensembl_info["utr_5_start"] = int(value)
+            elif "3" in word:
+                ensembl_info["utr_3_start"] = int(value)
+        elif "end" in word:
+            if "5" in word:
+                ensembl_info["utr_5_end"] = int(value)
+            elif "3" in word:
+                ensembl_info["utr_3_end"] = int(value)
+    return ensembl_info
+
+def read_refseq_info(ensembl_info, word):
+    """ Extract RefSeq info from Ensembl formated line"""
+    if "refseq" in word:
+        if "mrna" in word:
+            if "predicted" in word:
+                ensembl_info["refseq_mrna_predicted"] = value
+            else:
+                ensembl_info["refseq_mrna"] = value
+
+        if "ncrna" in word:
+            ensembl_info["refseq_ncrna"] = value
+    return ensembl_info
+                
+
+                
