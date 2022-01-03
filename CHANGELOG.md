@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated Managed variant documentation in user guide
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
+- Reduce code complexity (parse/ensembl.py)
 
 ## [4.45]
 ### Added
