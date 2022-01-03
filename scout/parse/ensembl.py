@@ -222,7 +222,7 @@ def parse_ensembl_exons(lines):
 
 
 def read_gene_info(ensembl_info, word):
-    """ Extract gene info from Ensembl formated line"""
+    """Extract gene info from Ensembl formated line"""
     if "gene" in word:
         if "id" in word:
             ensembl_info["ensembl_gene_id"] = value
@@ -232,8 +232,9 @@ def read_gene_info(ensembl_info, word):
             ensembl_info["gene_end"] = int(value)
     return ensembl_info
 
+
 def read_transcript_info(ensembl_info, word):
-    """ Extract transcript info from Ensembl formated line"""
+    """Extract transcript info from Ensembl formated line"""
     if "transcript" in word:
         if "id" in word:
             ensembl_info["ensembl_transcript_id"] = value
@@ -243,8 +244,9 @@ def read_transcript_info(ensembl_info, word):
             ensembl_info["transcript_end"] = int(value)
     return ensembl_info
 
+
 def read_exon_info(ensembl_info, word):
-    """ Extract exon info from Ensembl formated line"""
+    """Extract exon info from Ensembl formated line"""
     if "exon" in word:
         if "start" in word:
             ensembl_info["exon_start"] = int(value)
@@ -256,8 +258,9 @@ def read_exon_info(ensembl_info, word):
             ensembl_info["exon_rank"] = int(value)
     return ensembl_info
 
+
 def read_utr_info(ensembl_info, word):
-    """ Extract UTR info from Ensembl formated line"""
+    """Extract UTR info from Ensembl formated line"""
     if "utr" in word:
         if "start" in word:
             if "5" in word:
@@ -271,8 +274,9 @@ def read_utr_info(ensembl_info, word):
                 ensembl_info["utr_3_end"] = int(value)
     return ensembl_info
 
+
 def read_refseq_info(ensembl_info, word):
-    """ Extract RefSeq info from Ensembl formated line"""
+    """Extract RefSeq info from Ensembl formated line"""
     if "refseq" in word:
         if "mrna" in word:
             if "predicted" in word:
@@ -283,6 +287,3 @@ def read_refseq_info(ensembl_info, word):
         if "ncrna" in word:
             ensembl_info["refseq_ncrna"] = value
     return ensembl_info
-                
-
-                
