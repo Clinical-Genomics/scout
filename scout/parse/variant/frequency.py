@@ -22,7 +22,7 @@ def parse_frequencies(variant, transcripts):
     # Gnomad have both snv and sv frequencies
     gnomad_keys = ["GNOMADAF", "GNOMAD_AF", "gnomad_svAF"]
     gnomad_max_keys = ["GNOMADAF_popmax", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
- 
+
     update_frequency_from_vcf(frequencies, variant, exac_keys, "exac")
     update_frequency_from_vcf(frequencies, variant, exac_max_keys, "exac_max")
     update_frequency_from_vcf(frequencies, variant, gnomad_keys, "gnomad")
@@ -33,7 +33,6 @@ def parse_frequencies(variant, transcripts):
     # For mitochondrial variants, keep both "hom" and "het" freqs
     update_frequency_from_vcf(frequencies, variant, ["GNOMAD_MT_AF_HOM"], "gnomad_mt_homoplasmic")
     update_frequency_from_vcf(frequencies, variant, ["GNOMAD_MT_AF_HET"], "gnomad_mt_heteroplasmic")
-
 
     # Search transcripts if not found in VCF
     if not frequencies:
@@ -96,7 +95,9 @@ def parse_sv_frequencies(variant):
     cg_keys = ["clinical_genomics_mipAF", "clinical_genomics_mipOCC"]
 
     update_frequency_from_vcf(sv_frequencies, variant, clingen_benign_keys, "clingen_cgh_benign")
-    update_frequency_from_vcf(sv_frequencies, variant, clingen_pathogenic_keys, "clingen_cgh_pathogenic")
+    update_frequency_from_vcf(
+        sv_frequencies, variant, clingen_pathogenic_keys, "clingen_cgh_pathogenic"
+    )
     update_frequency_from_vcf(sv_frequencies, variant, clingen_ngi_keys, "clingen_ngi")
     update_frequency_from_vcf(sv_frequencies, variant, swegen_keys, "swegen")
     update_frequency_from_vcf(sv_frequencies, variant, decipher_keys, "decipher")
@@ -121,17 +122,13 @@ def parse_sv_frequency(variant, info_key):
     return None
 
 
-
-
 def update_frequency_from_vcf(frequency, variant, key_list, new_key):
-    """Update frequency dict if key is found """
+    """Update frequency dict if key is found"""
     for the_key in key_list:
         result = parse_frequency(variant, the_key)
         if result is not None:
             frequency[new_key] = result
             break
-
-
 
 
 def update_frequency_from_transcript(frequencies, transcripts):
