@@ -270,7 +270,7 @@ def get_dbsnp_list(entry):
     if variant_ids:
         for variant_id in variant_ids.split("&"):
             if variant_id.startswith("rs"):
-                transcript["dbsnp"].append(variant_id)
+                dbsnp_list.append(variant_id)
     return dbsnp_list
 
 
@@ -363,18 +363,3 @@ def set_frequencies(transcript, entry):
         LOG.debug("Only splitted and normalised VEP v90+ is supported")
 
 
-def get_domains(entry):
-    """"""
-    if entry.get("DOMAINS", None):
-        pfam_domains = entry["DOMAINS"].split("&")
-
-        for annotation in pfam_domains:
-            annotation = annotation.split(":")
-            domain_name = annotation[0]
-            domain_id = annotation[1]
-            if domain_name == "Pfam_domain":
-                transcript["pfam_domain"] = domain_id
-            elif domain_name == "PROSITE_profiles":
-                transcript["prosite_profile"] = domain_id
-            elif domain_name == "SMART_domains":
-                transcript["smart_domain"] = domain_id
