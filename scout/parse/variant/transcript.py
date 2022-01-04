@@ -361,5 +361,3 @@ def set_frequencies(transcript, entry):
     except Exception as err:
         LOG.debug("Something went wrong when parsing frequencies")
         LOG.debug("Only splitted and normalised VEP v90+ is supported")
-
-
