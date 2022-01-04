@@ -20,6 +20,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript = {}
         # There can be several functional annotations for one variant
         functional_annotations = entry.get("CONSEQUENCE", "").split("&")
+        # XXX: functional annotations is set again in end of function, is that correct?
         transcript["functional_annotations"] = functional_annotations
         # Get the transcript id (ensembl gene id)
         transcript_id = entry.get("FEATURE", "").split(":")[0]
@@ -27,18 +28,9 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         # Add the hgnc gene identifiers
         # The HGNC ID is prefered and will be used if it exists
-        hgnc_id = entry.get("HGNC_ID")
-        if hgnc_id:
-            hgnc_id = hgnc_id.split(":")[-1]
-            transcript["hgnc_id"] = int(hgnc_id)
-        else:
-            transcript["hgnc_id"] = None
+        transcript["hgnc_id"] = get_hgnc_id(entry)
+        transcript["hgnc_symbol"] = entry.get("SYMBOL")
 
-        hgnc_symbol = entry.get("SYMBOL")
-        if hgnc_symbol:
-            transcript["hgnc_symbol"] = hgnc_symbol
-        else:
-            transcript["hgnc_symbol"] = None
 
         ########### Fill it with the available information ###########
 
@@ -48,26 +40,11 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["protein_id"] = entry.get("ENSP")
 
         ## Polyphen prediction ##
-        polyphen_prediction = entry.get("POLYPHEN")
-        # Default is 'unknown'
-        prediction_term = "unknown"
-        if polyphen_prediction:
-            prediction_term = polyphen_prediction.split("(")[0]
-        transcript["polyphen_prediction"] = prediction_term
+        transcript["polyphen_prediction"] = get_prediction_term(entry)
 
         ## Sift prediction ##
-        # Check with other key if it does not exist
-        sift_prediction = entry.get("SIFT")
-        # Default is 'unknown'
-        prediction_term = "unknown"
+        transcript["sift_prediction"] = get_prediction_term(entry)
 
-        if not sift_prediction:
-            sift_prediction = entry.get("SIFT_PRED")
-
-        if sift_prediction:
-            prediction_term = sift_prediction.split("(")[0]
-
-        transcript["sift_prediction"] = prediction_term
 
         if entry.get("REVEL_RANKSCORE"):
             transcript["revel"] = float(entry.get("REVEL_RANKSCORE"))
@@ -96,33 +73,13 @@ def parse_transcripts(raw_transcripts, allele=None):
                 elif domain_name == "SMART_domains":
                     transcript["smart_domain"] = domain_id
 
-        coding_sequence_entry = entry.get("HGVSC", "").split(":")
-        protein_sequence_entry = entry.get("HGVSP", "").split(":")
 
-        coding_sequence_name = None
-        if len(coding_sequence_entry) > 1:
-            coding_sequence_name = coding_sequence_entry[-1]
-
-        transcript["coding_sequence_name"] = coding_sequence_name
-
-        protein_sequence_name = None
-        if len(protein_sequence_entry) > 1:
-            protein_sequence_name = protein_sequence_entry[-1]
-
-        transcript["protein_sequence_name"] = protein_sequence_name
-
+        transcript["coding_sequence_name"] = get_coding_sequence(entry)
+        transcript["protein_sequence_name"] = get_protein_sequence(entry)
         transcript["biotype"] = entry.get("BIOTYPE")
-
         transcript["exon"] = entry.get("EXON")
         transcript["intron"] = entry.get("INTRON")
-
-        if entry.get("STRAND"):
-            if entry["STRAND"] == "1":
-                transcript["strand"] = "+"
-            elif entry["STRAND"] == "-1":
-                transcript["strand"] = "-"
-        else:
-            transcript["strand"] = None
+        transcript["strand"] = get_strand(transcript, entry)
 
         functional = []
         regional = []
@@ -130,8 +87,8 @@ def parse_transcripts(raw_transcripts, allele=None):
             functional.append(annotation)
             regional.append(SO_TERMS[annotation]["region"])
 
-        transcript["functional_annotations"] = functional
-        transcript["region_annotations"] = regional
+        transcript["functional_annotations"] = get_functional_annotations(functional_annotations)
+        transcript["region_annotations"] = get_regional_annotation(functional_annotations)
 
         # Check if the transcript is marked cannonical by vep
         transcript["is_canonical"] = entry.get("CANONICAL") == "YES"
@@ -163,60 +120,9 @@ def parse_transcripts(raw_transcripts, allele=None):
         if entry.get("GNOMAD_MT_AF_HET", "") != "":
             transcript["gnomad_mt_heteroplasmic"] = float(entry.get("GNOMAD_MT_AF_HET"))
 
-        # Check frequencies
-        # There are different keys for different versions of VEP
-        # We only support version 90+
-        thousandg_freqs = []
-        gnomad_freqs = []
-        try:
-            # The keys for VEP v90+:
-            # 'AF' or '1000GAF' - 1000G all populations combined
-            # 'xxx_AF' - 1000G (or NHLBI-ESP) individual populations
-            # 'gnomAD_AF' - gnomAD exomes, all populations combined
-            # 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
-            # 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
-            # https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
-
-            # Loop over all keys to find frequency entries
-            for key in entry:
-                # All frequencies endswith AF
-                if not key.endswith("AF"):
-                    continue
-
-                value = entry[key]
-                if not value:
-                    continue
-
-                # This is the 1000G max af information
-                if key == "AF" or key == "1000GAF":
-                    transcript["thousand_g_maf"] = float(value)
-                    continue
-
-                if key == "GNOMAD_AF":
-                    transcript["gnomad_maf"] = float(value)
-                    continue
-
-                if key == "EXAC_MAX_AF":
-                    transcript["exac_max"] = float(value)
-                    transcript["exac_maf"] = float(value)
-                    continue
-
-                if "GNOMAD" in key:
-                    gnomad_freqs.append(float(value))
-
-                else:
-                    thousandg_freqs.append(float(value))
-
-            if thousandg_freqs:
-                transcript["thousandg_max"] = max(thousandg_freqs)
-
-            if gnomad_freqs:
-                transcript["gnomad_max"] = max(gnomad_freqs)
-
-        except Exception as err:
-            LOG.debug("Something went wrong when parsing frequencies")
-            LOG.debug("Only splitted and normalised VEP v90+ is supported")
-
+        # Update transcript with maximum frequencies found in entry
+        set_frequencies(transcript, entry)
+        
         if entry.get("CLINVAR_CLNVID"):
             transcript["clinvar_clnvid"] = entry["CLINVAR_CLNVID"]
             transcript["clinvar_clnsig"] = entry.get("CLINVAR_CLNSIG").lower()
@@ -226,21 +132,8 @@ def parse_transcripts(raw_transcripts, allele=None):
         if clnsig:
             transcript["clnsig"] = clnsig.split("&")
 
-        transcript["dbsnp"] = []
-        transcript["cosmic"] = []
-        variant_ids = entry.get("EXISTING_VARIATION")
-
-        if variant_ids:
-            for variant_id in variant_ids.split("&"):
-                if variant_id.startswith("rs"):
-                    transcript["dbsnp"].append(variant_id)
-                elif variant_id.startswith("COSM") or variant_id.startswith("COSV"):
-                    transcript["cosmic"].append(variant_id)
-
-        cosmic_ids = entry.get("COSMIC")
-        if cosmic_ids:
-            for cosmic_id in cosmic_ids.split("&"):
-                transcript["cosmic"].append(cosmic_id)
+        transcript["dbsnp"] = get_dbsnp_list(entry)
+        transcript["cosmic"] = get_cosmic_list(entry)
 
         yield transcript
 
@@ -312,3 +205,184 @@ def parse_transcripts_spliceai(transcript, entry):
     transcript["spliceai_delta_score"] = spliceai_delta_score
     transcript["spliceai_delta_position"] = spliceai_delta_position
     transcript["spliceai_prediction"] = spliceai_prediction
+
+
+
+
+
+def get_strand(transcript, entry):
+    """Get string from transcript"""
+    if entry.get("STRAND") == "1":
+        return "+"
+    if entry.get("STRAND") == "-1":
+        return "-"
+    else:
+        return None
+
+
+def get_protein_sequence(entry):
+    """Get HGVSP from entry"""
+    return get_sequence_aux(entry, "HGVSP")
+
+
+def get_coding_sequence(entry):
+    """Get HGVSC from entry"""
+    return get_sequence_aux(entry, "HGVSC")
+
+def get_sequence_aux(entry, id):
+    """Auxiliary function will extract id form entry"""
+    sequence_entry = entry.get(id, "").split(":")
+    if len(sequence_entry) > 1:
+        return sequence_entry[-1]
+    return None
+
+
+
+def get_hgnc_id(entry):
+    """"""
+    hgnc_id = entry.get("HGNC_ID")
+    if hgnc_id:
+        hgnc_id = hgnc_id.split(":")[-1]
+        return int(hgnc_id)
+    return None
+    
+
+def get_prediction_term(entry):
+    """Get polyphen prediction, return default 'unknown' if not found"""
+    polyphen_prediction = entry.get("POLYPHEN")
+    if polyphen_prediction:
+        return polyphen_prediction.split("(")[0]
+    return "unknown"
+
+def get_sift_prediction(entry):
+    """"""
+    # Check with other key if it does not exist
+    default_term = "unknown"
+    sift_prediction = entry.get("SIFT")
+
+    if not sift_prediction:
+        sift_prediction = entry.get("SIFT_PRED")
+    if sift_prediction:
+        return sift_prediction.split("(")[0]
+    return default_term
+
+
+
+def get_dbsnp_list(entry):
+    """"""
+    dbsnp_list = []
+    variant_ids = entry.get("EXISTING_VARIATION")
+
+    if variant_ids:
+        for variant_id in variant_ids.split("&"):
+            if variant_id.startswith("rs"):
+                transcript["dbsnp"].append(variant_id)
+    return dbsnp_list
+
+def get_cosmic_list(entry):
+    """"""
+    cosmic_list = []
+    variant_ids = entry.get("EXISTING_VARIATION")
+    
+    if variant_ids:
+        for variant_id in variant_ids.split("&"):
+            if variant_id.startswith("COSM") or variant_id.startswith("COSV"):
+                cosmic_list.append(variant_id)
+
+    cosmic_ids = entry.get("COSMIC")
+    if cosmic_ids:
+        for cosmic_id in cosmic_ids.split("&"):
+            cosmic_list.append(cosmic_id)
+
+    return cosmic_list
+
+def get_functional_annotations(functional_annotations):
+    """" """
+    functional_list = []
+    for annotation in functional_annotations:
+        functional_list.append(annotation)
+    return functional_list
+
+def get_regional_annotation(functional_annotations):
+    """ """
+    regional_list = []
+    for annotation in functional_annotations:
+        regional_list.append(SO_TERMS[annotation]["region"])
+    return regional_list
+
+def set_frequencies(transcript, entry):
+    """ Check frequencies. There are different keys for different versions of VEP
+    We only support version 90+"""
+    thousandg_freqs = []
+    gnomad_freqs = []
+    try:
+        # The keys for VEP v90+:
+        # 'AF' or '1000GAF' - 1000G all populations combined
+        # 'xxx_AF' - 1000G (or NHLBI-ESP) individual populations
+        # 'gnomAD_AF' - gnomAD exomes, all populations combined
+        # 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
+        # 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
+        # https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
+
+        # Loop over all keys to find frequency entries
+        for key in entry:
+            # All frequencies endswith AF
+            if not key.endswith("AF"):
+                continue
+
+            value = entry[key]
+            if not value:
+                continue
+
+            # This is the 1000G max af information
+            if key == "AF" or key == "1000GAF":
+                transcript["thousand_g_maf"] = float(value)
+                continue
+
+            if key == "GNOMAD_AF":
+                transcript["gnomad_maf"] = float(value)
+                continue
+
+            if key == "EXAC_MAX_AF":
+                transcript["exac_max"] = float(value)
+                transcript["exac_maf"] = float(value)
+                continue
+
+            if "GNOMAD" in key:
+                gnomad_freqs.append(float(value))
+
+            else:
+                thousandg_freqs.append(float(value))
+
+        if thousandg_freqs:
+            transcript["thousandg_max"] = max(thousandg_freqs)
+
+        if gnomad_freqs:
+            transcript["gnomad_max"] = max(gnomad_freqs)
+
+    except Exception as err:
+        LOG.debug("Something went wrong when parsing frequencies")
+        LOG.debug("Only splitted and normalised VEP v90+ is supported")
+
+
+    
+
+def get_domains(entry):
+    """"""
+    if entry.get("DOMAINS", None):
+        pfam_domains = entry["DOMAINS"].split("&")
+
+        for annotation in pfam_domains:
+            annotation = annotation.split(":")
+            domain_name = annotation[0]
+            domain_id = annotation[1]
+            if domain_name == "Pfam_domain":
+                transcript["pfam_domain"] = domain_id
+            elif domain_name == "PROSITE_profiles":
+                transcript["prosite_profile"] = domain_id
+            elif domain_name == "SMART_domains":
+                transcript["smart_domain"] = domain_id
+
+
+
+
