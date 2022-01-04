@@ -31,7 +31,6 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["hgnc_id"] = get_hgnc_id(entry)
         transcript["hgnc_symbol"] = entry.get("SYMBOL")
 
-
         ########### Fill it with the available information ###########
 
         ### Protein specific annotations ###
@@ -44,7 +43,6 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         ## Sift prediction ##
         transcript["sift_prediction"] = get_prediction_term(entry)
-
 
         if entry.get("REVEL_RANKSCORE"):
             transcript["revel"] = float(entry.get("REVEL_RANKSCORE"))
@@ -72,7 +70,6 @@ def parse_transcripts(raw_transcripts, allele=None):
                     transcript["prosite_profile"] = domain_id
                 elif domain_name == "SMART_domains":
                     transcript["smart_domain"] = domain_id
-
 
         transcript["coding_sequence_name"] = get_coding_sequence(entry)
         transcript["protein_sequence_name"] = get_protein_sequence(entry)
@@ -122,7 +119,7 @@ def parse_transcripts(raw_transcripts, allele=None):
 
         # Update transcript with maximum frequencies found in entry
         set_frequencies(transcript, entry)
-        
+
         if entry.get("CLINVAR_CLNVID"):
             transcript["clinvar_clnvid"] = entry["CLINVAR_CLNVID"]
             transcript["clinvar_clnsig"] = entry.get("CLINVAR_CLNSIG").lower()
@@ -207,9 +204,6 @@ def parse_transcripts_spliceai(transcript, entry):
     transcript["spliceai_prediction"] = spliceai_prediction
 
 
-
-
-
 def get_strand(transcript, entry):
     """Get string from transcript"""
     if entry.get("STRAND") == "1":
@@ -229,13 +223,13 @@ def get_coding_sequence(entry):
     """Get HGVSC from entry"""
     return get_sequence_aux(entry, "HGVSC")
 
+
 def get_sequence_aux(entry, id):
     """Auxiliary function will extract id form entry"""
     sequence_entry = entry.get(id, "").split(":")
     if len(sequence_entry) > 1:
         return sequence_entry[-1]
     return None
-
 
 
 def get_hgnc_id(entry):
@@ -245,7 +239,7 @@ def get_hgnc_id(entry):
         hgnc_id = hgnc_id.split(":")[-1]
         return int(hgnc_id)
     return None
-    
+
 
 def get_prediction_term(entry):
     """Get polyphen prediction, return default 'unknown' if not found"""
@@ -253,6 +247,7 @@ def get_prediction_term(entry):
     if polyphen_prediction:
         return polyphen_prediction.split("(")[0]
     return "unknown"
+
 
 def get_sift_prediction(entry):
     """"""
@@ -267,7 +262,6 @@ def get_sift_prediction(entry):
     return default_term
 
 
-
 def get_dbsnp_list(entry):
     """"""
     dbsnp_list = []
@@ -279,11 +273,12 @@ def get_dbsnp_list(entry):
                 transcript["dbsnp"].append(variant_id)
     return dbsnp_list
 
+
 def get_cosmic_list(entry):
     """"""
     cosmic_list = []
     variant_ids = entry.get("EXISTING_VARIATION")
-    
+
     if variant_ids:
         for variant_id in variant_ids.split("&"):
             if variant_id.startswith("COSM") or variant_id.startswith("COSV"):
@@ -296,12 +291,14 @@ def get_cosmic_list(entry):
 
     return cosmic_list
 
+
 def get_functional_annotations(functional_annotations):
-    """" """
+    """ " """
     functional_list = []
     for annotation in functional_annotations:
         functional_list.append(annotation)
     return functional_list
+
 
 def get_regional_annotation(functional_annotations):
     """ """
@@ -310,8 +307,9 @@ def get_regional_annotation(functional_annotations):
         regional_list.append(SO_TERMS[annotation]["region"])
     return regional_list
 
+
 def set_frequencies(transcript, entry):
-    """ Check frequencies. There are different keys for different versions of VEP
+    """Check frequencies. There are different keys for different versions of VEP
     We only support version 90+"""
     thousandg_freqs = []
     gnomad_freqs = []
@@ -365,8 +363,6 @@ def set_frequencies(transcript, entry):
         LOG.debug("Only splitted and normalised VEP v90+ is supported")
 
 
-    
-
 def get_domains(entry):
     """"""
     if entry.get("DOMAINS", None):
@@ -382,7 +378,3 @@ def get_domains(entry):
                 transcript["prosite_profile"] = domain_id
             elif domain_name == "SMART_domains":
                 transcript["smart_domain"] = domain_id
-
-
-
-
