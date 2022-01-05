@@ -85,84 +85,15 @@ def parse_genotype(variant, ind, pos):
         gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     # STR specific
-    gt_call["so"] = get_str_so(variant)
+    gt_call["so"] = get_str_so(variant, pos)
 
     (spanning_ref, spanning_alt) = _parse_format_entry(variant, pos, "ADSP")
     (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
     (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
 
     # SV specific
-    paired_end_alt = None
-    paired_end_ref = None
-    split_read_alt = None
-    split_read_ref = None
-
-    # Check if PE is annotated
-    # This is the number of paired end reads that supports the variant
-    if "PE" in variant.FORMAT:
-        try:
-            value = int(variant.format("PE")[pos])
-            if value >= 0:
-                paired_end_alt = value
-        except ValueError as _ignore_error:
-            pass
-
-    # Check if PR is annotated
-    # Number of paired end reads that supports ref and alt
-    if "PR" in variant.FORMAT:
-        values = variant.format("PR")[pos]
-        try:
-            alt_value = int(values[1])
-            ref_value = int(values[0])
-            if alt_value >= 0:
-                paired_end_alt = alt_value
-            if ref_value >= 0:
-                paired_end_ref = ref_value
-        except ValueError as r:
-            pass
-
-    # Check if 'SR' is annotated
-    if "SR" in variant.FORMAT:
-        values = variant.format("SR")[pos]
-        alt_value = 0
-        ref_value = 0
-        if len(values) == 1:
-            alt_value = int(values[0])
-        if len(values) == 2:
-            alt_value = int(values[1])
-            ref_value = int(values[0])
-        if alt_value >= 0:
-            split_read_alt = alt_value
-        if ref_value >= 0:
-            split_read_ref = ref_value
-
-    # Number of paired ends that supports the event
-    if "DV" in variant.FORMAT:
-        values = variant.format("DV")[pos]
-        alt_value = int(values[0])
-        if alt_value >= 0:
-            paired_end_alt = alt_value
-
-    # Number of paired ends that supports the reference
-    if "DR" in variant.FORMAT:
-        values = variant.format("DR")[pos]
-        ref_value = int(values[0])
-        if alt_value >= 0:
-            paired_end_ref = ref_value
-
-    # Number of split reads that supports the event
-    if "RV" in variant.FORMAT:
-        values = variant.format("RV")[pos]
-        alt_value = int(values[0])
-        if alt_value >= 0:
-            split_read_alt = alt_value
-
-    # Number of split reads that supports the reference
-    if "RR" in variant.FORMAT:
-        values = variant.format("RR")[pos]
-        ref_value = int(values[0])
-        if ref_value >= 0:
-            split_read_ref = ref_value
+    (paired_end_ref, paired_end_alt) = get_paired_ends(variant, pos)
+    (split_read_ref, split_read_alt) = get_split_reads(variant, pos)
 
 
     alt_depth = get_alt_depth(variant,
@@ -192,6 +123,89 @@ def parse_genotype(variant, ind, pos):
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
 
     return gt_call
+
+
+
+def get_paired_ends(variant, pos):
+    """Get paired ends"""
+    # SV specific
+    paired_end_alt = None
+    paired_end_ref = None
+
+    # Check if PE is annotated
+    # This is the number of paired end reads that supports the variant
+    if "PE" in variant.FORMAT:
+        try:
+            value = int(variant.format("PE")[pos])
+            if value >= 0:
+                paired_end_alt = value
+        except ValueError as _ignore_error:
+            pass
+
+    # Check if PR is annotated
+    # Number of paired end reads that supports ref and alt
+    if "PR" in variant.FORMAT:
+        values = variant.format("PR")[pos]
+        try:
+            alt_value = int(values[1])
+            ref_value = int(values[0])
+            if alt_value >= 0:
+                paired_end_alt = alt_value
+            if ref_value >= 0:
+                paired_end_ref = ref_value
+        except ValueError as _ignore_error:
+            pass
+
+    # Number of paired ends that supports the event
+    if "DV" in variant.FORMAT:
+        values = variant.format("DV")[pos]
+        alt_value = int(values[0])
+        if alt_value >= 0:
+            paired_end_alt = alt_value
+
+    # Number of paired ends that supports the reference
+    if "DR" in variant.FORMAT:
+        values = variant.format("DR")[pos]
+        ref_value = int(values[0])
+        if alt_value >= 0:
+            paired_end_ref = ref_value
+    return (paired_end_ref, paired_end_alt)
+
+
+def get_split_reads(variant, pos):
+    """Get split reads"""
+    split_read_alt = None
+    split_read_ref = None
+    # Check if 'SR' is annotated
+    if "SR" in variant.FORMAT:
+        values = variant.format("SR")[pos]
+        alt_value = 0
+        ref_value = 0
+        if len(values) == 1:
+            alt_value = int(values[0])
+        if len(values) == 2:
+            alt_value = int(values[1])
+            ref_value = int(values[0])
+        if alt_value >= 0:
+            split_read_alt = alt_value
+        if ref_value >= 0:
+            split_read_ref = ref_value
+
+    # Number of split reads that supports the event
+    if "RV" in variant.FORMAT:
+        values = variant.format("RV")[pos]
+        alt_value = int(values[0])
+        if alt_value >= 0:
+            split_read_alt = alt_value
+
+    # Number of split reads that supports the reference
+    if "RR" in variant.FORMAT:
+        values = variant.format("RR")[pos]
+        ref_value = int(values[0])
+        if ref_value >= 0:
+            split_read_ref = ref_value
+
+    return (split_read_ref, split_read_alt)
 
 
 def get_alt_frequency(variant, pos):
@@ -225,6 +239,7 @@ def get_read_depth(variant, pos, alt_depth, ref_depth):
     return read_depth
 
 def get_ref_depth(variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref):
+    """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth == -1:
         if any([paired_end_ref, split_read_ref]):
@@ -247,6 +262,7 @@ def get_ref_depth(variant, pos, paired_end_ref, split_read_ref, spanning_ref, fl
 
 
 def get_alt_depth(variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt):
+    """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth == -1:
         if "VD" in variant.FORMAT:
@@ -270,7 +286,7 @@ def get_alt_depth(variant, pos, paired_end_alt, split_read_alt, spanning_alt, fl
     return alt_depth
 
 
-def get_str_so(variant):
+def get_str_so(variant, pos):
     """Get str SO from variant"""
     str_so = None
     if "SO" in variant.FORMAT:
