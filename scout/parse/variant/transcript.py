@@ -42,7 +42,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["polyphen_prediction"] = get_prediction_term(entry)
 
         ## Sift prediction ##
-        transcript["sift_prediction"] = get_prediction_term(entry)
+        transcript["sift_prediction"] = get_sift_prediction(entry)
 
         if entry.get("REVEL_RANKSCORE"):
             transcript["revel"] = float(entry.get("REVEL_RANKSCORE"))
