@@ -95,14 +95,9 @@ def parse_genotype(variant, ind, pos):
     (paired_end_ref, paired_end_alt) = get_paired_ends(variant, pos)
     (split_read_ref, split_read_alt) = get_split_reads(variant, pos)
 
-
-    alt_depth = get_alt_depth(variant,
-                              pos,
-                              paired_end_alt,
-                              split_read_alt,
-                              spanning_alt,
-                              flanking_alt,
-                              inrepeat_alt)
+    alt_depth = get_alt_depth(
+        variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt
+    )
     gt_call["alt_depth"] = alt_depth
 
     alt_frequency = float(variant.gt_alt_freqs[pos])
@@ -110,20 +105,15 @@ def parse_genotype(variant, ind, pos):
         if "AF" in variant.FORMAT:
             alt_frequency = float(variant.format("AF")[pos][0])
 
-    ref_depth = get_ref_depth(variant,
-                              pos,
-                              paired_end_ref,
-                              split_read_ref,
-                              spanning_ref,
-                              flanking_ref,
-                              inrepeat_ref)
+    ref_depth = get_ref_depth(
+        variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref
+    )
     gt_call["ref_depth"] = ref_depth
     gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
     gt_call["alt_frequency"] = get_alt_frequency(variant, pos)
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
 
     return gt_call
-
 
 
 def get_paired_ends(variant, pos):
@@ -238,7 +228,10 @@ def get_read_depth(variant, pos, alt_depth, ref_depth):
                 read_depth += alt_depth
     return read_depth
 
-def get_ref_depth(variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref):
+
+def get_ref_depth(
+    variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref
+):
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth == -1:
@@ -260,8 +253,9 @@ def get_ref_depth(variant, pos, paired_end_ref, split_read_ref, spanning_ref, fl
     return ref_depth
 
 
-
-def get_alt_depth(variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt):
+def get_alt_depth(
+    variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt
+):
     """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth == -1:
