@@ -142,7 +142,7 @@
       </table>
         <br>
         <div class="card mt-3" >
-          <form id="dowload_var_stats" action="{{ url_for('variants.download_verified')}}" method="GET">
+          <form id="download_verified" action="{{ url_for('variants.download_verified')}}" method="GET">
             <button type="submit" name="verified_vars" value="verified" class="form-control">Download all verified variants for your cases</button>
           </form>
         </div>
@@ -158,6 +158,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
+
+    document.querySelector("#download_verified").addEventListener("submit", function(e){
+      // Avoid page spinner being stuck on download verified variants
+      $(window).unbind('beforeunload');
+    });
 
     var sel = document.getElementById("search_type");
     var text = document.getElementById("search_term");
