@@ -7,8 +7,17 @@ from scout.server.blueprints.cases.controllers import (
     case_report_content,
     mt_coverage_stats,
     phenotypes_genes,
+    populate_coverage_form,
 )
 from scout.server.extensions import store
+
+
+def test_populate_coverage_form(app, institute_obj, case_obj):
+    """Test function that populates form to be passed to chanjo-report to create coverage report"""
+
+    form = populate_coverage_form(institute_obj, case_obj)
+    for field in ["gene_ids", "sample_id", "level", "panel_name"]:
+        assert field in form.__dict__
 
 
 def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list):
@@ -128,13 +137,12 @@ def test_coverage_stats(app, monkeypatch):
                 assert key in coverage_stats[sample]
 
 
-def test_case_controller_rank_model_link(adapter, institute_obj, test_case):
+def test_case_controller_rank_model_link(app, adapter, institute_obj, test_case):
     # GIVEN an adapter with a case
     test_case["rank_model_version"] = "1.3"
     adapter.case_collection.insert_one(test_case)
     adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
-    app = Flask(__name__)
     app.config["RANK_MODEL_LINK_PREFIX"] = "http://"
     app.config["RANK_MODEL_LINK_POSTFIX"] = ".ini"
     # WHEN fetching a case with the controller
@@ -144,12 +152,11 @@ def test_case_controller_rank_model_link(adapter, institute_obj, test_case):
     assert "rank_model_link" in fetched_case
 
 
-def test_case_controller(adapter, institute_obj, test_case):
+def test_case_controller(app, adapter, institute_obj, test_case):
     # GIVEN an adapter with a case
     adapter.case_collection.insert_one(test_case)
     adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
-    app = Flask(__name__)
     # WHEN fetching a case with the controller
     with app.app_context():
         data = case(adapter, institute_obj, fetched_case)
@@ -157,13 +164,12 @@ def test_case_controller(adapter, institute_obj, test_case):
     assert "rank_model_link" not in fetched_case
 
 
-def test_case_controller_no_panels(adapter, institute_obj, test_case):
+def test_case_controller_no_panels(app, adapter, institute_obj, test_case):
     # GIVEN an adapter with a case without gene panels
     adapter.case_collection.insert_one(test_case)
     adapter.institute_collection.insert_one(institute_obj)
     fetched_case = adapter.case_collection.find_one()
     assert "panel_names" not in fetched_case
-    app = Flask(__name__)
     # WHEN fetching a case with the controller
     with app.app_context():
         data = case(adapter, institute_obj, fetched_case)
@@ -186,7 +192,7 @@ def test_case_controller_with_panel(app, institute_obj, panel, test_case):
     # GIVEN an adapter with a gene panel
     store.panel_collection.insert_one(panel)
     fetched_case = store.case_collection.find_one()
-    app = Flask(__name__)
+
     # WHEN fetching a case with the controller
     with app.app_context():
         data = case(store, institute_obj, fetched_case)
