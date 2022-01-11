@@ -16,7 +16,7 @@ def test_populate_coverage_form(app, institute_obj, case_obj):
     """Test function that populates form to be passed to chanjo-report to create coverage report"""
 
     form = populate_coverage_form(institute_obj, case_obj)
-    for field in ["gene_ids", "sample_id", "level", "panel_name"]:
+    for field in ["gene_ids", "level", "panel_name"]:
         assert field in form.__dict__
 
 

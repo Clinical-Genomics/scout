@@ -65,12 +65,9 @@ def populate_coverage_form(institute_obj, case_obj):
         form(FlaskForm): a populated FlaskForm
     """
     gene_ids = ",".join([str(gene_id) for gene_id in case_obj.get("default_genes", [])])
-    sample_ids = case_obj.get("individual_ids", [])
     coverage_cutoff = institute_obj.get("coverage_cutoff")
     panel_names = ", ".join(case_obj.get("panel_names", []))
-    form = CoverageForm(
-        gene_ids=gene_ids, sample_id=sample_ids, level=coverage_cutoff, panel_name=panel_names
-    )
+    form = CoverageForm(gene_ids=gene_ids, level=coverage_cutoff, panel_name=panel_names)
     return form
 
 

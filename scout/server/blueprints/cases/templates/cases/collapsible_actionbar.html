@@ -95,7 +95,6 @@
             <form method="POST" id="coverage_html" target="_blank" action="{{url_for('report.report', sample_id=case.individual_ids)}}">
               {{ coverage_form.csrf_token }}
               {{ coverage_form.gene_ids }}
-              {{ coverage_form.sample_id }}
               {{ coverage_form.level }}
               {{ coverage_form.panel_name }}
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
