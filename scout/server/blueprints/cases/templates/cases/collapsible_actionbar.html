@@ -1,4 +1,4 @@
-{% macro action_bar(institute, case, collaborators, current_user) %}
+{% macro action_bar(institute, case, collaborators, current_user, coverage_form) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -10,7 +10,7 @@
               </div>
           </a>
           <!-- Menu with submenu -->
-          {{ reports(institute,case) }}
+          {{ reports(institute,case,coverage_form) }}
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case) }}
@@ -55,7 +55,7 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro reports(institute,case) %}
+{% macro reports(institute, case, coverage_form) %}
 <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-book fa-fw mr-3"></span>
@@ -92,8 +92,12 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">Coverage</span>
-            <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
-              <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
+            <form method="POST" id="coverage_html" target="_blank" action="{{url_for('report.report')}}">
+              {{ coverage_form.csrf_token }}
+              {{ coverage_form.gene_ids }}
+              {{ coverage_form.sample_id }}
+              {{ coverage_form.level }}
+              {{ coverage_form.panel_name }}
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
                 <i class="fa fa-link"></i></a>
             </form>

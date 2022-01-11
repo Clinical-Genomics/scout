@@ -38,6 +38,7 @@ from scout.constants.variant_tags import (
 )
 from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.server.blueprints.cases.forms import CoverageForm
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
@@ -51,6 +52,26 @@ JSON_HEADERS = {
     "Content-type": "application/json; charset=utf-8",
     "Accept": "text/json",
 }
+
+
+def populate_coverage_form(institute_obj, case_obj):
+    """Populate the form to be sent to chanjo-report (report.report endpoint) using institute and case info
+
+    Args:
+        institute_obj(models.Institute)
+        case_obj(models.Case)
+
+    Returns:
+        form(FlaskForm): a populated FlaskForm
+    """
+    gene_ids = ",".join([str(gene_id) for gene_id in case_obj.get("default_genes", [])])
+    sample_ids = case_obj.get("individual_ids", [])
+    coverage_cutoff = institute_obj.get("coverage_cutoff")
+    panel_names = ", ".join(case_obj.get("panel_names", []))
+    form = CoverageForm(
+        gene_ids=gene_ids, sample_id=sample_ids, level=coverage_cutoff, panel_name=panel_names
+    )
+    return form
 
 
 def case(store, institute_obj, case_obj):
@@ -242,6 +263,7 @@ def case(store, institute_obj, case_obj):
         "omim_terms": omim_terms,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
+        "coverage_form": populate_coverage_form(institute_obj, case_obj),
     }
 
     return data
