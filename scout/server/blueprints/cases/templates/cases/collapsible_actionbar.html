@@ -92,7 +92,7 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">Coverage</span>
-            <form method="POST" id="coverage_html" target="_blank" action="{{url_for('report.report')}}">
+            <form method="POST" id="coverage_html" target="_blank" action="{{url_for('report.report', sample_id=case.individual_ids)}}">
               {{ coverage_form.csrf_token }}
               {{ coverage_form.gene_ids }}
               {{ coverage_form.sample_id }}
