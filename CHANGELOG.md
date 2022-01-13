@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified gene variants search code
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
+- Exporting validated variants with missing "genes" database key
 - Variants filtering by gene symbols file
 
 ## [4.45]
