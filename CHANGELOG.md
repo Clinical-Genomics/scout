@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated Managed variant documentation in user guide
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
+- Exporting validated variants with missing "genes" database key
 - No results returned when searching for gene variants using a phenotype term 
 
 ## [4.45]
