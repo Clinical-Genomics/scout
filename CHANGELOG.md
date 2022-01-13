@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - OMIM disease descriptions in ClinVar submission form
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
+- Exporting validated variants with missing "genes" database key
 
 ## [4.45]
 ### Added
