@@ -99,7 +99,9 @@ def export_verified_variants(aggregate_variants, unique_callers):
             genes = []
             prot_effect = []
             funct_anno = []
-            for gene in variant.get("genes"):  # this will be a unique long field in the document
+            for gene in variant.get(
+                "genes", []
+            ):  # this will be a unique long field in the document
                 genes.append(gene.get("hgnc_symbol", ""))
                 funct_anno.append(gene.get("functional_annotation"))
                 for transcript in gene.get("transcripts"):
