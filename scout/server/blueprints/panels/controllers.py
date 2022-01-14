@@ -9,7 +9,7 @@ from flask_login import current_user
 from scout.build.panel import build_panel
 from scout.parse.panel import parse_genes
 
-log = logging.getLogger(__name__)
+LOG = logging.getLogger(__name__)
 
 INHERITANCE_MODELS = ["ar", "ad", "mt", "xr", "xd", "x", "y"]
 
@@ -26,19 +26,16 @@ def panel_write_granted(panel_obj, user):
     )
 
 
-def panel_create_or_update(store, request):
-    """Process a user request to create a new gene panel
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        request(flask.request) request sent by browser form to the /panels endpoint
-
+def panel_decode_lines(panel_file):
+    """Returns a provided gene panel file as single lines
+    Accepts:
+        panel_file (werkzeug.datastructures.FileStorage)
+    Returns:
+        lines(list): list of lines present in gene panel uploaded using the form
     """
-    # Try to read the csv or txt file containing genes info
-    panel_file = request.files["panel_file"]
     content = panel_file.stream.read()
     lines = None
-    try:
+    try:  # Try to read the csv or txt file containing genes info
         if b"\n" in content:
             lines = content.decode("utf-8-sig", "ignore").split("\n")
         else:
@@ -48,37 +45,59 @@ def panel_create_or_update(store, request):
             "Something went wrong while parsing the panel gene panel file! ({})".format(err),
             "danger",
         )
+    return lines
+
+
+def create_new_panel(store, request, lines):
+    """Create a new gene panel with the data provided using the form
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        request(flask.request) request sent by browser form to the /panels endpoint
+        lines(list): list of lines containing gene data
+
+    Returns:
+        new_panel_id(str): the _id a newly created panel
+    """
+    new_panel_name = request.form.get("new_panel_name")
+    new_panel_id = new_panel(
+        store=store,
+        institute_id=request.form["institute"],
+        panel_name=new_panel_name,
+        display_name=request.form["display_name"] or new_panel_name.replace("_", " "),
+        csv_lines=lines,
+        maintainer=[current_user._id],
+        description=request.form["description"],
+    )
+    if new_panel_id is None:
         return redirect(request.referrer)
 
-    # check if a new panel should be created or the user is modifying an existing one
-    new_panel_name = request.form.get("new_panel_name")
-    if new_panel_name:  # create a new panel
-        new_panel_id = new_panel(
-            store=store,
-            institute_id=request.form["institute"],
-            panel_name=new_panel_name,
-            display_name=request.form["display_name"] or new_panel_name.replace("_", " "),
-            csv_lines=lines,
-            maintainer=[current_user._id],
-            description=request.form["description"],
-        )
-        if new_panel_id is None:
-            return redirect(request.referrer)
+    flash("New gene panel added: {}!".format(new_panel_name), "success")
+    return new_panel_id
 
-        flash("new gene panel added, {}!".format(new_panel_name), "success")
-        return redirect(url_for("panels.panel", panel_id=new_panel_id))
 
-    # modify an existing panel
+def update_existing_panel(store, request, lines):
+    """Update an existing panel by replacing its genes of adding genes to the existing ones
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        request(flask.request) request sent by browser form to the /panels endpoint
+        lines(list): list of lines containing gene data
+
+    Returns:
+        panel_obj.get("_id") (str): the _id of the panel the used is editing
+    """
+    panel_name = request.form["panel_name"]
     update_option = request.form["modify_option"]
 
-    panel_obj = store.gene_panel(request.form["panel_name"])
+    panel_obj = store.gene_panel(panel_name)
     if panel_obj is None:
         return redirect(request.referrer)
 
     if panel_write_granted(panel_obj, current_user):
         panel_obj = update_panel(
             store=store,
-            panel_name=request.form["panel_name"],
+            panel_name=panel_name,
             csv_lines=lines,
             option=update_option,
         )
@@ -87,8 +106,33 @@ def panel_create_or_update(store, request):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
+    return panel_obj.get("_id")
 
-    return redirect(url_for("panels.panel", panel_id=panel_obj["_id"]))
+
+def panel_create_or_update(store, request):
+    """Process a user request to create a new gene panel
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        request(flask.request) request sent by browser form to the /panels endpoint
+
+    Returns:
+        redirect_id(str): the ID of the panel to redirect the page to
+    """
+    redirect_id = None
+    panel_file = request.files["panel_file"]
+    lines = panel_decode_lines(panel_file)
+
+    if not lines:
+        return redirect(request.referrer)
+
+    # check if a new panel should be created or the user is modifying an existing one
+    if request.form.get("new_panel_name"):  # Create a new panel
+        redirect_id = create_new_panel(store, request, lines)
+    else:  # Update an existing panel
+        redirect_id = update_existing_panel(store, request, lines)
+
+    return redirect_id
 
 
 def panel(store, panel_obj):
@@ -225,14 +269,14 @@ def new_panel(
         )
         return None
 
-    log.debug("parse genes from CSV input")
+    LOG.debug("parse genes from CSV input")
     try:
         new_genes = parse_genes(csv_lines)
     except SyntaxError as error:
         flash(error.args[0], "danger")
         return None
 
-    log.debug("build new gene panel")
+    LOG.debug("build new gene panel")
 
     panel_id = None
     try:
