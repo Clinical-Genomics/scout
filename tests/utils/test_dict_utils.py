@@ -33,4 +33,3 @@ def test_remove_empty_list():
     # THEN calling removeNoneValues(dict) will remove key-value pair
     # where value=None
     assert {"a": "1", "b": 2} == remove_empty_list(d)
-    
