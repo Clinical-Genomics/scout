@@ -1,4 +1,4 @@
-from scout.utils.dict_utils import remove_nonetype, remove_empty_list
+from scout.utils.dict_utils import remove_empty_list, remove_nonetype
 
 
 def test_remove_nonetype_no_change():
