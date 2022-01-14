@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Created a GitHub action that pushes the Dockerfile-server image to Docker Hub (scout-server) every time a new release is created
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 - Expose public API JSON gene panels endpoint, primarily to enable automated rerun checking for updates
+- Add utils for dictionary type
 ### Changed
 - Updated the python config file documentation in admin guide
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
@@ -22,8 +23,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved LDAP login documentation
 - Use lib flask-ldapconn instead of flask_ldap3_login> to handle ldap authentication
 - Updated Managed variant documentation in user guide
+- Fix and simplify creating and editing of gene panels
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
+- Exporting validated variants with missing "genes" database key
 
 ## [4.45]
 ### Added
