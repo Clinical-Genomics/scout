@@ -20,7 +20,7 @@ def test_remove_nonetype():
 
 def test_remove_empty_list_no_change():
     # WHEN a dict *not* containing an empty list, []
-    d = {"a": "1", "b": 2, "c": 3}
+    d = {"a": "1", "b": 2, "c": [3]}
 
     # THEN calling removeNoneValues(dict) will not change dict
     assert d == remove_empty_list(d)
