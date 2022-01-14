@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Created a GitHub action that pushes the Dockerfile-server image to Docker Hub (scout-server) every time a new release is created
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 - Expose public API JSON gene panels endpoint, primarily to enable automated rerun checking for updates
+- Scout-REViewer-Service integration - show REViewer picture if available
 ### Changed
 - Updated the python config file documentation in admin guide
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
