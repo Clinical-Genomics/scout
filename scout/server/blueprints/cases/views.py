@@ -122,7 +122,7 @@ def matchmaker_matches(institute_id, case_name):
 def matchmaker_match(institute_id, case_name, target):
     """Starts an internal match or a match against one or all MME external nodes"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    match_results = controllers.matchmaker_match(request, target, institute_id, case_name)
+    controllers.matchmaker_match(request, target, institute_id, case_name)
     return redirect(request.referrer)
 
 

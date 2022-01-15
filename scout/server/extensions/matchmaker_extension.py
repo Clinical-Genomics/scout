@@ -121,6 +121,7 @@ class MatchMaker:
         """
         url = "".join([self.host, "/matches/", patient_id])
         resp = self.request(url=url, method="GET", accept="application/json")
+        LOG.warning(f"Patient Matches endpoint retuerned------------->{resp}")
         return resp
 
     def match_internal(self, patient_obj):
