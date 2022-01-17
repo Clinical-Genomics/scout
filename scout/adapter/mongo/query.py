@@ -129,9 +129,9 @@ class QueryHandler(object):
 
         if mongo_case_query != {}:
             mongo_case_query["owner"] = institute_id
-            LOG.debug("Search cases for selection set, using query {0}".format(select_case_obj))
-            select_case_obj = self.case_collection.find(mongo_case_query)
-            select_cases = [case_id.get("display_name") for case_id in select_case_obj]
+            LOG.debug("Search cases for selection set, using query {0}".format(mongo_case_query))
+            select_case_objs = self.case_collection.find(mongo_case_query)
+            select_cases = [case_id.get("_id") for case_id in select_case_objs]
 
         if query.get("similar_case"):
             similar_case_display_name = query["similar_case"][0]
