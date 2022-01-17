@@ -168,12 +168,16 @@ class CaseHandler(object):
 
         if query_field == "exact_pheno":
             if query_term != "":
-                query["phenotype_terms.phenotype_id"] = query_term
+                # User might have provided multiple query terms
+                query["phenotype_terms.phenotype_id"] = {
+                    "$in": [term for term in query_term.replace(" ", "").split(",")]
+                }
             else:  # query for cases with no HPO terms
                 query["$or"] = [
                     {"phenotype_terms": {"$size": 0}},
                     {"phenotype_terms": {"$exists": False}},
                 ]
+
         if query_field == "synopsis":
             if query_term != "":
                 query["$text"] = {"$search": query_term}

@@ -136,7 +136,7 @@ SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))
 CASE_SEARCH_TERMS = {
     "case": {"label": "Case or Individual Name", "prefix": "case:"},
     "exact_pheno": {
-        "label": "HPO Term",
+        "label": "HPO Terms",
         "prefix": "exact_pheno:",
     },
     "synopsis": {
