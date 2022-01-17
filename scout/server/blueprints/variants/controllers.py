@@ -1073,10 +1073,10 @@ def check_form_gene_symbols(
     aliased_symbols = set()
     updated_hgnc_symbols = set()
 
-    clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
-    clinical_symbols = store.clinical_symbols(case_obj)
+    clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj) if case_obj else []
+    clinical_symbols = store.clinical_symbols(case_obj) if case_obj else []
 
-    # if no clinical symobols / panels were found loaded, warnings are treated as with research
+    # if no clinical symbols / panels were found loaded, warnings are treated as with research
     if len(clinical_hgnc_ids) == 0 and len(clinical_symbols) == 0:
         is_clinical = False
 
@@ -1165,7 +1165,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     hgnc_symbols = []
     not_found_ids = []
-    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    genome_build = "38" if case_obj and "38" in str(case_obj.get("genome_build", "37")) else "37"
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
@@ -1181,7 +1181,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
                 hgnc_symbols.append(hgnc_symbol)
 
     # add HPO genes to list, if they were missing
-    if "hpo" in form.data["gene_panels"]:
+    if "hpo" in form.data.get("gene_panels", []):
         hpo_symbols = list(
             set(term_obj["hgnc_symbol"] for term_obj in case_obj["dynamic_gene_list"])
         )
@@ -1193,6 +1193,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     # check if supplied gene symbols exist and are clinical
     is_clinical = form.data.get("variant_type", "clinical") == "clinical"
+
     updated_hgnc_symbols = check_form_gene_symbols(
         store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
     )

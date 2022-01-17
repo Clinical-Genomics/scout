@@ -9,6 +9,7 @@ from flask_login import current_user
 from werkzeug.datastructures import Headers
 
 from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
+from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
 
@@ -144,6 +145,10 @@ def gene_variants(institute_id):
         form.variant_type.data = ["clinical"]
 
     variant_type = form.data.get("variant_type")
+
+    # check if supplied gene symbols exist
+    if form.hgnc_symbols.data:
+        update_form_hgnc_symbols(store=store, case_obj=None, form=form)
 
     variants_query = store.gene_variants(
         query=form.data,
