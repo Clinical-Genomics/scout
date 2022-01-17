@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 - Expose public API JSON gene panels endpoint, primarily to enable automated rerun checking for updates
 - Add utils for dictionary type
+- Filter institute cases using multiple HPO terms
 - Script to pull, archive and switch all web pages to local versions of remote css and js
 ### Changed
 - Updated the python config file documentation in admin guide
@@ -28,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
 - Exporting validated variants with missing "genes" database key
+- No results returned when searching for gene variants using a phenotype term 
 
 ## [4.45]
 ### Added
