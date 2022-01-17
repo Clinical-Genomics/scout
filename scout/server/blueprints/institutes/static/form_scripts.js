@@ -3,7 +3,7 @@ var sel = document.getElementById('search_type');
 
 var selectHelper = {
   "case:": "example:18201",
-  "exact_pheno:": "example:HP:0001166,HP:0001250,..",
+  "exact_pheno:": "example:HP:0001166,HP:0001250,...",
   "synopsis:" : "example:epilepsy",
   "panel:" : "example:NMD",
   "status:": "example:active",
