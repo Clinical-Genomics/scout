@@ -2,7 +2,6 @@
 import json
 import logging
 
-import pymongo
 from bson import ObjectId
 from flask import Blueprint, Response, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
@@ -11,7 +10,7 @@ from werkzeug.datastructures import Headers
 from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import loqusdb, store
-from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
+from scout.server.utils import institute_and_case, jsonconverter, templated
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
@@ -135,35 +134,38 @@ def gene_variants(institute_id):
 
     institute_obj = institute_and_case(store, institute_id)
 
-    # populate form, conditional on request method
-    if request.method == "POST":
-        form = GeneVariantFiltersForm(request.form)
-    else:
+    data = {}
+
+    if request.method == "GET":
         form = GeneVariantFiltersForm(request.args)
+    else:  # POST
+        form = GeneVariantFiltersForm(request.form)
+        if form.variant_type.data == []:
+            form.variant_type.data = ["clinical"]
 
-    if form.variant_type.data == []:
-        form.variant_type.data = ["clinical"]
+        variant_type = form.data.get("variant_type")
 
-    variant_type = form.data.get("variant_type")
-
-    # check if supplied gene symbols exist
-    if form.hgnc_symbols.data:
         update_form_hgnc_symbols(store=store, case_obj=None, form=form)
 
-    variants_query = store.gene_variants(
-        query=form.data,
-        institute_id=institute_id,
-        category="snv",
-        variant_type=variant_type,
-    )
+        # If no valid gene is provided, redirect to form
+        if not form.hgnc_symbols.data:
+            flash("Provided gene symbols could not be used in variants' search", "warning")
+            return redirect(request.referrer)
 
-    result_size = store.count_gene_variants(
-        query=form.data,
-        institute_id=institute_id,
-        category="snv",
-        variant_type=variant_type,
-    )
-    data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
+        variants_query = store.gene_variants(
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
+        )
+
+        result_size = store.count_gene_variants(
+            query=form.data,
+            institute_id=institute_id,
+            category="snv",
+            variant_type=variant_type,
+        )
+        data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
 
     return dict(institute=institute_obj, form=form, page=page, **data)
 

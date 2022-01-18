@@ -86,7 +86,7 @@
 {% macro cell_rank(variant) %}
     <a
        href="{{ url_for('variant.variant', institute_id=variant.institute,
-            case_name=variant.case_display_name, variant_id=variant._id) }}">
+            case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
       {{ variant.case_display_name}}
     </a>
     :
