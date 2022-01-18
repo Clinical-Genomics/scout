@@ -372,7 +372,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
     return unevaluated
 
 
-def gene_variants(store, pymongo_cursor, variant_count, institute_id, page=1, per_page=50):
+def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
