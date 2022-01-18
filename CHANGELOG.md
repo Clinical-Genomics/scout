@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated Managed variant documentation in user guide
 - Fix and simplify creating and editing of gene panels
 - Simplified gene variants search code
+- Increased the height of the genes track in the IGV viewer
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
 ### Fixed
