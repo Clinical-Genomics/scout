@@ -152,7 +152,7 @@ class QueryHandler(object):
 
         if (
             select_cases is not None
-        ):  # Could be an emopty list, and in that case the search would not return variants
+        ):  # Could be an empty list, and in that case the search would not return variants
             mongo_variant_query["case_id"] = {"$in": select_cases}
 
         rank_score = query.get("rank_score") or 15
