@@ -58,6 +58,7 @@
                             order: Number.MIN_VALUE,
                             {% if custTrack.name == "Genes" %}
                                 indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",
+                                height: 150,
                             {% endif %}
                         },
                       {% endfor %}
