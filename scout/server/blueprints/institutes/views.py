@@ -2,7 +2,6 @@
 import json
 import logging
 
-import pymongo
 from bson import ObjectId
 from flask import Blueprint, Response, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
@@ -11,7 +10,7 @@ from werkzeug.datastructures import Headers
 from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import loqusdb, store
-from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
+from scout.server.utils import institute_and_case, jsonconverter, templated
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
