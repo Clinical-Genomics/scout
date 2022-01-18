@@ -9,6 +9,7 @@ from flask_login import current_user
 from werkzeug.datastructures import Headers
 
 from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
+from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
 
@@ -146,57 +147,24 @@ def gene_variants(institute_id):
     variant_type = form.data.get("variant_type")
 
     # check if supplied gene symbols exist
-    hgnc_symbols = []
-    not_found_symbols = []
-    not_found_ids = []
-    data = {}
-    if (form.hgnc_symbols.data) and len(form.hgnc_symbols.data) > 0:
-        for hgnc_symbol in form.hgnc_symbols.data:
-            if hgnc_symbol.isdigit():
-                hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="37")
+    if form.hgnc_symbols.data:
+        update_form_hgnc_symbols(store=store, case_obj=None, form=form)
 
-                if hgnc_gene_caption is None:
-                    hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), build="38")
+    variants_query = store.gene_variants(
+        query=form.data,
+        institute_id=institute_id,
+        category="snv",
+        variant_type=variant_type,
+    )
 
-                if hgnc_gene_caption is None:
-                    not_found_ids.append(hgnc_symbol)
-                else:
-                    hgnc_symbols.append(hgnc_gene_caption["hgnc_symbol"])
+    result_size = store.count_gene_variants(
+        query=form.data,
+        institute_id=institute_id,
+        category="snv",
+        variant_type=variant_type,
+    )
+    data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
 
-            elif store.hgnc_genes_find_one(hgnc_symbol) is None:
-                not_found_symbols.append(hgnc_symbol)
-            else:
-                hgnc_symbols.append(hgnc_symbol)
-
-        if not_found_ids:
-            flash("HGNC id not found: {}".format(", ".join(not_found_ids)), "warning")
-        if not_found_symbols:
-            flash(
-                "HGNC symbol not found: {}".format(", ".join(not_found_symbols)),
-                "warning",
-            )
-
-        if hgnc_symbols == []:
-            # If there are not genes to search, return to previous page with a warning
-            flash("No valid gene provided for variant search.", "warning")
-            return redirect(request.referrer)
-
-        form.hgnc_symbols.data = hgnc_symbols
-
-        variants_query = store.gene_variants(
-            query=form.data,
-            institute_id=institute_id,
-            category="snv",
-            variant_type=variant_type,
-        )
-
-        result_size = store.count_gene_variants(
-            query=form.data,
-            institute_id=institute_id,
-            category="snv",
-            variant_type=variant_type,
-        )
-        data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
