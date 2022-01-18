@@ -127,7 +127,7 @@ class QueryHandler(object):
             mongo_case_query["cohorts"] = {"$in": query["cohorts"]}
 
         if mongo_case_query != {}:
-            mongo_case_query["collaborators"] = {"$in": institute_id}
+            mongo_case_query["collaborators"] = institute_id
             LOG.debug("Search cases for selection set, using query {0}".format(mongo_case_query))
             select_case_objs = self.case_collection.find(mongo_case_query)
             select_cases = [case_id.get("_id") for case_id in select_case_objs]
