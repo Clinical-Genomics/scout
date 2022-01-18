@@ -145,9 +145,12 @@ def gene_variants(institute_id):
 
         variant_type = form.data.get("variant_type")
 
-        # check if supplied gene symbols exist
-        if form.hgnc_symbols.data:
-            update_form_hgnc_symbols(store=store, case_obj=None, form=form)
+        update_form_hgnc_symbols(store=store, case_obj=None, form=form)
+
+        # If no valid gene is provided, redirect to form
+        if not form.hgnc_symbols.data:
+            flash("Provided gene symbols could not be used in variants' search", "warning")
+            return redirect(request.referrer)
 
         variants_query = store.gene_variants(
             query=form.data,
