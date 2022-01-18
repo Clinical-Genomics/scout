@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Expose public API JSON gene panels endpoint, primarily to enable automated rerun checking for updates
 - Add utils for dictionary type
 - Filter institute cases using multiple HPO terms
+- Vulture GitHub action to identify and remove unused variables and imports
 ### Changed
 - Updated the python config file documentation in admin guide
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
@@ -31,7 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
 - Exporting validated variants with missing "genes" database key
-- No results returned when searching for gene variants using a phenotype term 
+- No results returned when searching for gene variants using a phenotype term
 - Variants filtering by gene symbols file
 
 ## [4.45]
