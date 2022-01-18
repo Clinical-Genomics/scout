@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - No results returned when searching for gene variants using a phenotype term
 - Variants filtering by gene symbols file
 - Make gene HGNC symbols field mandatory in gene variants page and run search only on form submit
+- Make sure collaborator gene variants are still visible, even if HPO filter is used
 
 ## [4.45]
 ### Added
