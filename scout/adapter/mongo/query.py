@@ -107,8 +107,7 @@ class QueryHandler(object):
 
         LOG.debug("Building a mongo query for %s" % query)
 
-        if query.get("hgnc_symbols"):
-            mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
+        mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
 
         mongo_variant_query["variant_type"] = {"$in": variant_type}
 
@@ -151,7 +150,9 @@ class QueryHandler(object):
             else:
                 LOG.debug("Case %s not found.", similar_case_display_name)
 
-        if select_cases:
+        if (
+            select_cases is not None
+        ):  # Could be an emopty list, and in that case the search would not return variants
             mongo_variant_query["case_id"] = {"$in": select_cases}
 
         rank_score = query.get("rank_score") or 15
