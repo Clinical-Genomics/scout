@@ -41,7 +41,7 @@ RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin
 COPY --chown=worker:worker --from=python-builder /venv /venv
 
 WORKDIR /home/worker/app
-COPY --chown=worker:worker . /home/worker/app
+COPY . /home/worker/app
 
 # Install only Scout app
 RUN pip install --no-cache-dir --editable .[coverage]
