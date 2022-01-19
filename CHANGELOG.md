@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.46.1]
 ### Fixed
-- Downloading on files generated within the app container (MT-report, verified variants, pedigrees, ..)
+- Downloading of files generated within the app container (MT-report, verified variants, pedigrees, ..)
 
 ## [4.46]
 ### Added
