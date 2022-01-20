@@ -33,7 +33,15 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
+from .forms import (
+    FILTERSFORMCLASS,
+    CancerFiltersForm,
+    CancerSvFiltersForm,
+    FiltersForm,
+    StrFiltersForm,
+    SvFiltersForm,
+    VariantFiltersForm,
+)
 
 LOG = logging.getLogger(__name__)
 
