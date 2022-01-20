@@ -41,7 +41,7 @@ from .forms import (
     StrFiltersForm,
     SvFiltersForm,
     VariantFiltersForm,
-)
+)  # noqa: F401
 
 LOG = logging.getLogger(__name__)
 
