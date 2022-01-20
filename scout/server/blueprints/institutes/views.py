@@ -165,7 +165,7 @@ def gene_variants(institute_id):
             category="snv",
             variant_type=variant_type,
         )
-        data = controllers.gene_variants(store, variants_query, result_size, institute_id, page)
+        data = controllers.gene_variants(store, variants_query, result_size, page)
 
     return dict(institute=institute_obj, form=form, page=page, **data)
 
