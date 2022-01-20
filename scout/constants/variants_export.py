@@ -9,8 +9,7 @@ EXPORT_HEADER = [
     "Canonical_transcript/HGVS/protein_change",
     "Primary_transcript/HGVS/protein_change",
     "CADD",
-    "GERP",
-    "GnomAD Max AF",
+    "GnomAD AF",
 ]
 
 MT_EXPORT_HEADER = [

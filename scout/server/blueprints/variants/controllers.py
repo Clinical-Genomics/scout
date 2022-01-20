@@ -582,6 +582,10 @@ def variant_export_lines(store, case_obj, variants_query):
                 )  # empty HGNC id, emoty gene name and empty transcripts columns
                 empty_col += 1
 
+        variant_line.append(variant.get("cadd_score", "N/A"))
+
+        variant_line.append(variant.get("gnomad_frequency", "N/A"))
+
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
             for variant_gt in variant_gts:
@@ -592,12 +596,6 @@ def variant_export_lines(store, case_obj, variants_query):
                     variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
                     # gather genotype quality info
                     variant_line.append(variant_gt["genotype_quality"])
-
-        variant_line.append(variant.get("cadd_score", "N/A"))
-        variant_line.append(variant.get("gerp_conservation", "N/A"))
-        frequencies = variant.get("frequencies", {})
-        variant_line.append(frequencies.get("gnomad_max"), "N/A"))
-
 
         variant_line = [str(i) for i in variant_line]
         export_variants.append(",".join(variant_line))
