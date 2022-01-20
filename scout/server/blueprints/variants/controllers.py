@@ -586,11 +586,18 @@ def variant_export_lines(store, case_obj, variants_query):
         for individual in case_obj["individuals"]:
             for variant_gt in variant_gts:
                 if individual["individual_id"] == variant_gt["sample_id"]:
+                    variant_line.append(variant_gt["genotype_call"])
                     # gather coverage info
                     variant_line.append(variant_gt["allele_depths"][0])  # AD reference
                     variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
                     # gather genotype quality info
                     variant_line.append(variant_gt["genotype_quality"])
+
+        variant_line.append(variant.get("cadd_score", "N/A"))
+        variant_line.append(variant.get("gerp_conservation", "N/A"))
+        frequencies = variant.get("frequencies", {})
+        variant_line.append(frequencies.get("gnomad_max"), "N/A"))
+
 
         variant_line = [str(i) for i in variant_line]
         export_variants.append(",".join(variant_line))
@@ -686,6 +693,7 @@ def variants_export_header(case_obj):
     # Add fields specific for case samples
     for individual in case_obj["individuals"]:
         display_name = str(individual["display_name"])
+        header.append("GT_" + display_name)  # Add Genotype filed for a sample
         header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
         header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
         header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample

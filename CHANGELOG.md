@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+##
+### Added
+- Added CADD, GERP, GnomAD and genotype calls to variantS export
+
 ## [4.46.1]
 ### Fixed
 - Downloading of files generated within the app container (MT-report, verified variants, pedigrees, ..)
