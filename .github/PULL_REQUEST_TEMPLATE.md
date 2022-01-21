@@ -2,7 +2,7 @@ This PR adds a functionality or fixes a bug.
 OR
 This PR marks a new Scout release. We apply semantic versioning. This is a major/minor/patch release for reasons.
 
-**Prepare to test**
+**Prepare for testing**
 1. Make sure the PR is pushed and available on [Docker Hub](https://hub.docker.com/repository/docker/clinicalgenomics/scout-server-stage)
 1. `ssh your.email@cg-vm1.scilifelab.se`
 1. `sudo -iu hiseq.clinical`
