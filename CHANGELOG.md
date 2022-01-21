@@ -4,11 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.47]
 ### Added
 - Added CADD, GnomAD and genotype calls to variantS export
 ### Changed
 - Pull request template, to illustrate how to deploy pull request branches on cg-vm1 stage server
+### Fixed
+- Compiled Docker image contains a patched version (v4.9) of chanjo-report
 
 ## [4.46.1]
 ### Fixed
