@@ -4,8 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## []
+### Added
+- Added CADD, GnomAD and genotype calls to variantS export
+### Fixed
+- Avoid mismatching_state: CSRF MismatchingStateError when submitting form data to obtain coverage report in chanjo-report
+
+## [4.46.1]
+### Fixed
+- Downloading of files generated within the app container (MT-report, verified variants, pedigrees, ..)
+
+## [4.46]
 ### Added
 - Created a Dockefile to be used to serve the dockerized app in production
 - Modified the code to collect database params specified as env vars
@@ -34,7 +43,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - No results returned when searching for gene variants using a phenotype term
 - Variants filtering by gene symbols file
 - Make gene HGNC symbols field mandatory in gene variants page and run search only on form submit
-- Avoid mismatching_state: CSRF MismatchingStateError when submitting form data to obtain coverage report in chanjo-report
+- Make sure collaborator gene variants are still visible, even if HPO filter is used
 
 ## [4.45]
 ### Added
