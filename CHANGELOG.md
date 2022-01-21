@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added CADD, GnomAD and genotype calls to variantS export
 ### Fixed
 - Avoid mismatching_state: CSRF MismatchingStateError when submitting form data to obtain coverage report in chanjo-report
+### Changed
+- Pull request template, to illustrate how to deploy pull request branches on cg-vm1 stage server
 
 ## [4.46.1]
 ### Fixed
