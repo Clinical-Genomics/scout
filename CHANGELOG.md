@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added CADD, GnomAD and genotype calls to variantS export
 ### Changed
 - Pull request template, to illustrate how to deploy pull request branches on cg-vm1 stage server
-### fixed
+### Fixed
 - Compiled Docker image contains a patched version (v4.9) of chanjo-report
 
 ## [4.46.1]
