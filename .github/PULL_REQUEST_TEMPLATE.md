@@ -13,7 +13,7 @@ This PR marks a new Scout release. We apply semantic versioning. This is a major
 1. Find which scout branch (old_branch) is currently deployed on cg-vm1: `podman ps`
 1. Stop the service with current deployed branch: `systemctl --user stop scout.target`
 1. Start the scout service with the branch to test: `systemctl --user start scout@<this_branch>`
-1. Make sure the branch is deployed: `systemctl --user status scout@<this_branch>`
+1. Make sure the branch is deployed: `systemctl --user status scout.target`
 </details>
 
 **How to test**:
