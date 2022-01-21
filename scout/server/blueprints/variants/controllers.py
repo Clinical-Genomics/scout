@@ -34,7 +34,7 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import (
+from .forms import (  # noqa: F401
     FILTERSFORMCLASS,
     CancerFiltersForm,
     CancerSvFiltersForm,
@@ -602,10 +602,15 @@ def variant_export_lines(store, case_obj, variants_query):
                 )  # empty HGNC id, emoty gene name and empty transcripts columns
                 empty_col += 1
 
+        variant_line.append(variant.get("cadd_score", "N/A"))
+
+        variant_line.append(variant.get("gnomad_frequency", "N/A"))
+
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
             for variant_gt in variant_gts:
                 if individual["individual_id"] == variant_gt["sample_id"]:
+                    variant_line.append(variant_gt["genotype_call"])
                     # gather coverage info
                     variant_line.append(variant_gt["allele_depths"][0])  # AD reference
                     variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
@@ -706,6 +711,7 @@ def variants_export_header(case_obj):
     # Add fields specific for case samples
     for individual in case_obj["individuals"]:
         display_name = str(individual["display_name"])
+        header.append("GT_" + display_name)  # Add Genotype filed for a sample
         header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
         header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
         header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
