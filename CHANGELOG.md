@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [ ]
+### Changed
+- Update igv.js to v2.10.5
+
 ## [4.47]
 ### Added
 - Added CADD, GnomAD and genotype calls to variantS export
