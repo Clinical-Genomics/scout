@@ -1,4 +1,5 @@
 {% extends "layout_bs4.html" %}
+{% from "variant/buttons.html" import database_buttons %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
 {% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
@@ -348,6 +349,9 @@
           {% endfor %}
         </div>
       </ul>
+      {% if variant.category != "str" %}
+        {{ database_buttons(variant) }}
+      {% endif %}
       {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
