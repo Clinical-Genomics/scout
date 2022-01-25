@@ -3,7 +3,7 @@
 {% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button, modal_causative %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
-{% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
+{% from "variant/buttons.html" import database_buttons, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
 {% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table  %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
@@ -268,42 +268,9 @@
       <div class="h6 mt-1">
         {{ clinsig_table(variant) }}
       </div>
-    <!--LINK out resources-->
-      <div class="h6 mt-1">Databases</div>
-      <div>
-        <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
-        <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
-        {% if variant.cosmic_links %} <!-- This is a list of tuples : [(id1, link1), (id2, link2), ..] -->
-          {% for cosmic_link in variant.cosmic_links %}
-            <a data-toggle="tooltip" title="COSMIC" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{cosmic_link[1]}}" target="_blank">{{cosmic_link[0]}}</a>
-          {% endfor %}
-        {% endif %}
-        {% if variant.dbsnp_id %}
-          {% for snp in variant.dbsnp_id.split(';') %}
-            <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank" href="{{variant.snp_links[snp]}}">dbSNP ({{ snp }})</a>
-          {% endfor %}
-        {% endif %}
-      </div>
-      <div class="btn-group">
-        {% if primary_transcript and primary_transcript.varsome_link %}
-        <a href="{{ primary_transcript.varsome_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
-          data-toggle="tooltip" title="Varsome">V</a>
-        {% endif %}
-        {% if primary_transcript and primary_transcript.tp53_link %}
-          <a href="{{ primary_transcript.tp53_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
-            data-toggle="tooltip" title="MutanTP53">TP53</a>
-        {% endif %}
-        {% if primary_transcript and primary_transcript.cbioportal_link %}
-          <a href="{{ primary_transcript.cbioportal_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
-            data-toggle="tooltip" title="cBioPortal">CBP</a>
-        {% endif %}
-        {% if primary_transcript and primary_transcript.mycancergenome_link %}
-          <a href="{{ primary_transcript.mycancergenome_link }}" class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" target="_blank"
-            data-toggle="tooltip" title="MyCancerGenome">MCG</a>
-        {% endif %}
-      </div>
+      <!--LINK out resources-->
+      {{database_buttons(variant)}}
     </div>
-
     <!--IGV URLS-->
     <div class="h6 ml-4">Alignment</div>
     {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
