@@ -1,5 +1,3 @@
-from flask import get_template_attribute
-
 from scout.server.blueprints.variant.utils import (
     add_panel_specific_gene_info,
     clinsig_human,
