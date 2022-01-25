@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Update igv.js to v2.10.5
 ### Fixed
-- Reintroduced missing links to Swegen and Beacon in RD variant page, summary section
+- Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 
 ## [4.47]
 ### Added
