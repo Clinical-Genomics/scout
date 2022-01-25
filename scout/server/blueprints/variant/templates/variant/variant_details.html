@@ -138,17 +138,6 @@
         </tbody>
       </table>
     </div>
-    {% if variant.track == "rd" %}
-      <div class="card-footer">
-        <a href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
-        <a href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
-        {% if variant.cosmic_link %}
-          <a href="{{ variant.cosmic_link }}" target="_blank">COSMIC</a>
-        {% else %}
-          COSMIC
-        {% endif %}
-      </div>
-    {% endif %}
   </div>
 {% endmacro %}
 
