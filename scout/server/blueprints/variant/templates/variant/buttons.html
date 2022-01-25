@@ -1,5 +1,5 @@
 {% macro database_buttons(variant) %}
-<div>
+<div class="mt-3">
   <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.swegen_link }}" target="_blank">SweGen</a>
   <a class="btn btn-sm btn-info text-white mr-1 mb-1" role="button" href="{{ variant.beacon_link }}" target="_blank">Beacon</a>
   {% if variant.cosmic_links %} <!-- This is a list of tuples : [(id1, link1), (id2, link2), ..] -->

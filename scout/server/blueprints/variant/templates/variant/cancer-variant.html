@@ -264,15 +264,16 @@
         </li>
         <li class="list-group-item">Rank score: <span class="font-weight-bold">{{ variant.rank_score }}</span>
         </li>
+        <li class="list-group-item">
+          {{ clinsig_table(variant) }}
+        </li>
+        <li class="list-group-item">
+          {{ database_buttons(variant) }}
+        </li>
       </ul>
-      <div class="h6 mt-1">
-        {{ clinsig_table(variant) }}
-      </div>
-      <!--LINK out resources-->
-      {{database_buttons(variant)}}
     </div>
     <!--IGV URLS-->
-    <div class="h6 ml-4">Alignment</div>
+    <div class="ml-4">Alignment</div>
     {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
 
     </div>
