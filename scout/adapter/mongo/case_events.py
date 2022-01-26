@@ -5,7 +5,7 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 
-from scout.constants import CASE_STATUSES, REV_ACMG_MAP
+from scout.constants import CASE_STATUSES
 
 LOG = logging.getLogger(__name__)
 
