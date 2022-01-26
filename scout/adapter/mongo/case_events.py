@@ -295,7 +295,7 @@ class CaseEventHandler(object):
             updated_case(dict)
         """
 
-        LOG.info("Creating event for opening research for case" " {0}".format(case["display_name"]))
+        LOG.info("Creating event for closing research for case" " {0}".format(case["display_name"]))
 
         self.create_event(
             institute=institute,
