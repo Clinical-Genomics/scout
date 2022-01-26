@@ -534,7 +534,6 @@ def upload_panel(institute_id, case_name):
 def download_verified():
     """Download all verified variants for user's cases"""
 
-    flash(current_user.__dict__)
     user_institutes = (
         [inst["_id"] for inst in store.institutes()]
         if current_user.is_admin
