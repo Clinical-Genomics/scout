@@ -6,7 +6,7 @@ import os.path
 import shutil
 
 import pymongo
-from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for
+from flask import Blueprint, flash, redirect, request, send_file, url_for
 from flask_login import current_user
 
 from scout.constants import (
