@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 - Expose public API JSON gene panels endpoint, primarily to enable automated rerun checking for updates
 - Add utils for dictionary type
+- Cast MNVs to SNV
 ### Changed
 - Updated the python config file documentation in admin guide
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
