@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
 - Missing delivery report in demo case
+- Pull request template instructions on how to deploy to test server 
 
 ## [4.47]
 ### Added
