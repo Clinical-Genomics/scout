@@ -405,10 +405,10 @@
   <form action="{{ url_for('cases.reset_research', institute_id=institute._id,
                            case_name=case.display_name) }}" method="GET">
     <div class="modal fade" id="cancel-research-modal">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-body">
-            <p>Cancel research variants upload request?</p>
+            <p>Cancel request to upload research variants?</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
