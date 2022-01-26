@@ -7,9 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [ ]
 ### Changed
 - Update igv.js to v2.10.5
+- Updated example of a case delivery report
 - Reduce code complexity (parse/ensembl.py)
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
+- Demo delivery report orientation to fit new columns
+- Missing delivery report in demo case
 
 ## [4.47]
 ### Added
