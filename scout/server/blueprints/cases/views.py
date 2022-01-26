@@ -824,6 +824,13 @@ def research(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/reset_research", methods=["GET"])
+def reset_research(institute_id, case_name):
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    return "Reset research"
+
+
 @cases_bp.route("/<institute_id>/<case_name>/cohorts", methods=["POST"])
 def cohorts(institute_id, case_name):
     """Add/remove institute tags."""
