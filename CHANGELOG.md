@@ -9,8 +9,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to cancel a request for research variants in case page
 ### Changed
 - Update igv.js to v2.10.5
+- Updated example of a case delivery report
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
+- Demo delivery report orientation to fit new columns
+- Missing delivery report in demo case
 
 ## [4.47]
 ### Added

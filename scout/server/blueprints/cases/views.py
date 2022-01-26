@@ -7,7 +7,6 @@ import re
 import shutil
 from operator import itemgetter
 
-import requests
 from flask import (
     Blueprint,
     abort,
@@ -677,6 +676,9 @@ def delivery_report(institute_id, case_name):
     else:
         delivery_report = case_obj["delivery_report"]
 
+    out_dir = os.path.abspath(os.path.dirname(delivery_report))
+    filename = os.path.basename(delivery_report)
+
     report_format = request.args.get("format", "html")
     if report_format == "pdf":
         try:  # file could not be available
@@ -700,9 +702,6 @@ def delivery_report(institute_id, case_name):
                 ),
                 "warning",
             )
-
-    out_dir = os.path.dirname(delivery_report)
-    filename = os.path.basename(delivery_report)
 
     return send_from_directory(out_dir, filename)
 
