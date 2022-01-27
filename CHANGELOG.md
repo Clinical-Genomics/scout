@@ -8,10 +8,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Update igv.js to v2.10.5
 - Updated example of a case delivery report
+- Unfreeze cyvcf2
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
 - Missing delivery report in demo case
+- Cast MNVs to SNV for test
 
 ## [4.47]
 ### Added
