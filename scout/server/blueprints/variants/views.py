@@ -6,7 +6,7 @@ import os.path
 import shutil
 
 import pymongo
-from flask import Blueprint, abort, current_app, flash, redirect, request, send_file, url_for
+from flask import Blueprint, flash, redirect, request, send_file, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -534,8 +534,14 @@ def upload_panel(institute_id, case_name):
 @variants_bp.route("/verified", methods=["GET"])
 def download_verified():
     """Download all verified variants for user's cases"""
+
     user_obj = store.user(current_user.email)
-    user_institutes = user_obj.get("institutes")
+
+    user_institutes = (
+        [inst["_id"] for inst in store.institutes()]
+        if current_user.is_admin
+        else user_obj.get("institutes")
+    )
     temp_excel_dir = os.path.join(variants_bp.static_folder, "verified_folder")
     os.makedirs(temp_excel_dir, exist_ok=True)
 

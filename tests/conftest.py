@@ -30,31 +30,28 @@ from scout.demo import (
     load_path,
     panel_path,
     ped_path,
-    research_snv_path,
-    research_sv_path,
     vep_97_annotated_path,
 )
 
 # These are the reduced data files
+from scout.demo.resources import genes38_reduced_path  # noqa
+from scout.demo.resources import transcripts38_reduced_path  # noqa
 from scout.demo.resources import (
     exac_reduced_path,
     exons37_reduced_path,
     exons38_reduced_path,
     genemap2_reduced_path,
     genes37_reduced_path,
-    genes38_reduced_path,
     genes_to_phenotype_reduced_path,
     hgnc_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
     phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
-    transcripts38_reduced_path,
 )
 from scout.load import load_hgnc_genes
 from scout.load.hpo import load_hpo
 from scout.load.transcript import load_transcripts
-from scout.log import init_log
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case_config
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
@@ -64,15 +61,12 @@ from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
 from scout.parse.variant.headers import parse_rank_results_header
 from scout.server.app import create_app
-from scout.server.blueprints.login.models import LoginUser
 from scout.utils.handle import get_file_handle
 from scout.utils.link import link_genes
 
 DATABASE = "testdb"
 REAL_DATABASE = "realtestdb"
 
-# root_logger = logging.getLogger()
-# init_log(root_logger, loglevel='INFO')
 LOG = logging.getLogger(__name__)
 
 ##################### App fixtures #####################
@@ -330,9 +324,8 @@ def hpo_disease_handle(request, phenotype_to_genes_file):
 def hpo_database(
     request,
     gene_database,
-    hpo_terms_handle,
-    hpo_genes_handle,
-    hpo_disease_handle,
+    genemap_file,
+    hpo_terms_file,
     phenotype_to_genes_file,
 ):
     "Returns an adapter to a database populated with hpo terms"
@@ -340,8 +333,8 @@ def hpo_database(
 
     load_hpo(
         adapter=gene_database,
-        disease_lines=get_file_handle(genemap2_reduced_path),
-        hpo_lines=get_file_handle(hpoterms_reduced_path),
+        disease_lines=get_file_handle(genemap_file),
+        hpo_lines=get_file_handle(hpo_terms_file),
         hpo_gene_lines=get_file_handle(phenotype_to_genes_file),
     )
     return adapter
@@ -861,7 +854,7 @@ def real_variant_database(real_populated_database):
 
 
 @pytest.fixture(scope="function")
-def sv_database(request, populated_database, variant_objs, sv_variant_objs):
+def sv_database(request, populated_database):
     """Returns an adapter to a database populated with user, institute, case
     and variants"""
     adapter = populated_database
@@ -1131,7 +1124,7 @@ def parsed_variant(request, one_variant, case_obj):
 def parsed_str_variant(request, one_str_variant, case_obj):
     """Return a parsed variant"""
     print("")
-    variant_dict = parse_variant(one_str_variant, case_obj)
+    variant_dict = parse_variant(one_str_variant, case_obj, category="str")
     return variant_dict
 
 
