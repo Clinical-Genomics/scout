@@ -253,13 +253,13 @@ class QueryHandler(object):
                         LOG.debug(f"Query chrom {query_chrom} has All selected")
                         continue
                     if len(query_chrom) == 1:
-                        query_chrom = query_chrom[0]
+                        query["chrom"] = query_chrom[0]
                     else:
                         mongo_query["chromosome"] = {"$in": query_chrom}
                         continue
                 coordinate_query = None
                 if category == "snv":
-                    mongo_query["chromosome"] = query_chrom
+                    mongo_query["chromosome"] = query.get("chrom")
                     if query.get("start") and query.get("end"):
                         self.coordinate_filter(query, mongo_query)
                 else:  # sv

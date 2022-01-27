@@ -9,12 +9,18 @@ function populateCytobands(cytobands) {
   var options = chrom_select && chrom_select.options;
   var opt;
 
+  all_option_selected = false
+  if(chrom_select.selectedIndex === 0) {
+  	all_option_selected = true
+	}
+
   for (var i=0, iLen=options.length; i<iLen; i++) {
     opt = options[i];
-
-    if (opt.selected) {
-    	if (opt.value !== "") {
-				chrom.push(opt.value);
+    if (opt.selected && opt.value !== "") {
+    	if (all_option_selected === true) {
+				opt.selected = false
+			} else {
+    		chrom.push(opt.value);
 			}
     }
   }
@@ -42,33 +48,33 @@ function populateCytobands(cytobands) {
 	} else if (typeof chrom === 'string' || chrom instanceof String) {
 		chromosome = chrom;
 	} else {
-		console.log("chrom is array: add multiple chr cytobands")
-		first = true
-		for (var i = 0; i < chrom.length; i++) {
-			if (chrom[i] === undefined) {
-				console.log("chrom " + i + " is undefined!")
+		console.log("chrom is array! Depopulate cytobands if more than one chrom is selected")
+		if (chrom.length > 1) {
+			// disable
+			for (elem of [cytoStart, cytoEnd]) {
+				elem.options.length = 0; //remove previous cytoband select options
 			}
-			console.log("chrom is array: add multiple chr cytobands. first " + i + ":" + chrom[i] + "("+ typeof (chrom[i])+")")
-			if (i !== 0) {
-				first = false
-			}
-			populateCytobandsSingleChr(cytobands, chrom[i], first)
+			return
 		}
-		return
+		chromosome = chrom[0]
+		if (chromosome === undefined) {
+				console.log("chrom is undefined!")
+				return
+		}
+		console.log("chrom is array, but only one member. Add chr " + chromosome + "("+ typeof (chromosome)+")")
 	}
-	populateCytobandsSingleChr(cytobands, chromosome, false)
+	populateCytobandsSingleChr(cytobands, chromosome)
 }
 
-function populateCytobandsSingleChr(cytobands, chromosome, first) {
+function populateCytobandsSingleChr(cytobands, chromosome) {
 	console.log("cytobands 1: " + cytobands["1"] +  "("+ typeof (cytobands["1"])+")")
 
 	console.log("populate single chrom: " + chromosome + "("+ typeof (chromosome)+")")
 	var chrom_cytobands = cytobands[chromosome]["cytobands"]; // chromosome-specific cytobands
 
 	for (elem of [cytoStart, cytoEnd]) {
-		if (first && elem.options.length > 0) {
-			elem.options.length = 0; //remove previous select options
-		}
+		elem.options.length = 0; //remove previous select options
+
 		var emptyStart = document.createElement("option");
 		emptyStart.textContent = "";
 		emptyStart.value = "";
