@@ -90,7 +90,7 @@ def parse_variant(
         if category == "snp":
             category = "snv"
         if category == "mnp":
-            LOG.error("Category MNP : {}".format(variant.REF))
+            LOG.warning("Category MNP found: {}".format(parsed_variant["ids"]["display_name"]))
             category = "snv"
 
     parsed_variant["category"] = category

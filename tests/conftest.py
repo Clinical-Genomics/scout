@@ -854,7 +854,7 @@ def real_variant_database(real_populated_database):
 
 
 @pytest.fixture(scope="function")
-def sv_database(request, populated_database, variant_objs, sv_variant_objs):
+def sv_database(request, populated_database):
     """Returns an adapter to a database populated with user, institute, case
     and variants"""
     adapter = populated_database
