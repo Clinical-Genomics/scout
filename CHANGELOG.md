@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Demo delivery report orientation to fit new columns
 - Missing delivery report in demo case
 - Cast MNVs to SNV for test
+- Export verified variants from all institutes when user is admin
 
 ## [4.47]
 ### Added
