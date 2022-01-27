@@ -1,9 +1,7 @@
 import logging
-from pprint import pprint as pp
 
 from scout.constants import CHR_PATTERN
 from scout.exceptions import VcfError
-from scout.utils.md5 import generate_md5_key
 
 from .callers import parse_callers
 from .clnsig import parse_clnsig
@@ -54,7 +52,6 @@ def parse_variant(
     vep_header = vep_header or []
 
     parsed_variant = {}
-
     # Create the ID for the variant
     case_id = case["_id"]
     if "-" in case_id:
@@ -91,6 +88,9 @@ def parse_variant(
         if category == "indel":
             category = "snv"
         if category == "snp":
+            category = "snv"
+        if category == "mnp":
+            LOG.warning("Category MNP found: {}".format(parsed_variant["ids"]["display_name"]))
             category = "snv"
 
     parsed_variant["category"] = category
