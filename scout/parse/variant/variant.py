@@ -1,9 +1,7 @@
 import logging
-from pprint import pprint as pp
 
 from scout.constants import CHR_PATTERN
 from scout.exceptions import VcfError
-from scout.utils.md5 import generate_md5_key
 
 from .callers import parse_callers
 from .clnsig import parse_clnsig
