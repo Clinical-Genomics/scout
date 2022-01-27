@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update igv.js to v2.10.5
 - Updated example of a case delivery report
 - Unfreeze cyvcf2
+- Builder images used in Scout Dockerfiles
 - Reduce code complexity (parse/ensembl.py)
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
