@@ -2,8 +2,6 @@
 import os
 import tempfile
 
-import pytest
-
 from scout.commands import cli
 from scout.demo import load_path, ped_path
 from scout.parse import case
@@ -72,7 +70,7 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
     runner = mock_app.test_cli_runner()
 
     # GIVEN a patched scout add_smn_info function that will raise KeyError
-    def mock_smn_info(*args):
+    def mock_smn_info(*args):  # noqa
         raise KeyError
 
     monkeypatch.setattr(case, "add_smn_info", mock_smn_info)
@@ -95,7 +93,7 @@ def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
     runner = mock_app.test_cli_runner()
 
     # GIVEN a patched `parse_case` function that will raise KeyError
-    def mock_parse_case(*args):
+    def mock_parse_case(*args):  # noqa
         raise SyntaxError
 
     monkeypatch.setattr(case, "add_smn_info", mock_parse_case)
