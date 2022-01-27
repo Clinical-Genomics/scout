@@ -537,7 +537,7 @@ def download_verified():
     user_institutes = (
         [inst["_id"] for inst in store.institutes()]
         if current_user.is_admin
-        else current_user.get("institutes")
+        else user_obj.get("institutes")
     )
     temp_excel_dir = os.path.join(variants_bp.static_folder, "verified_folder")
     os.makedirs(temp_excel_dir, exist_ok=True)
