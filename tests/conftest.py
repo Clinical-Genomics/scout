@@ -324,8 +324,8 @@ def hpo_disease_handle(request, phenotype_to_genes_file):
 def hpo_database(
     request,
     gene_database,
-    genemap2_reduced_path,
-    hpoterms_reduced_path,
+    genemap_file,
+    hpo_terms_file,
     phenotype_to_genes_file,
 ):
     "Returns an adapter to a database populated with hpo terms"
@@ -333,8 +333,8 @@ def hpo_database(
 
     load_hpo(
         adapter=gene_database,
-        disease_lines=get_file_handle(genemap2_reduced_path),
-        hpo_lines=get_file_handle(hpoterms_reduced_path),
+        disease_lines=get_file_handle(genemap_file),
+        hpo_lines=get_file_handle(hpo_terms_file),
         hpo_gene_lines=get_file_handle(phenotype_to_genes_file),
     )
     return adapter
