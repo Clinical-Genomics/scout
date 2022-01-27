@@ -1,7 +1,7 @@
 ###########
 # BUILDER #
 ###########
-FROM clinicalgenomics/python3.8-cyvcf2-venv:1.0 AS python-builder
+FROM clinicalgenomics/python3.8-venv:1.0 AS python-builder
 
 ENV PATH="/venv/bin:$PATH"
 
