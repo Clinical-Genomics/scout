@@ -1131,7 +1131,7 @@ def parsed_variant(request, one_variant, case_obj):
 def parsed_str_variant(request, one_str_variant, case_obj):
     """Return a parsed variant"""
     print("")
-    variant_dict = parse_variant(one_str_variant, case_obj)
+    variant_dict = parse_variant(one_str_variant, case_obj, category="str")
     return variant_dict
 
 
