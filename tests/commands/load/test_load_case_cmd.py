@@ -193,4 +193,4 @@ def test_load_case_BadPath(mock_app, institute_obj, case_obj):
     result = runner.invoke(cli, ["load", "case", temp_conf])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code == 1
-    assert "Exception: bad path" in result.output
+    assert "Error opening" in result.output
