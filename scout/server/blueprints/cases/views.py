@@ -740,13 +740,10 @@ def coverage_qc_report(institute_id, case_name):
         return abort(404)
 
     report_format = request.args.get("format", "html")
-
-    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
-    filename = os.path.basename(coverage_qc_report)
-
     if report_format == "pdf":
         try:
-            bytes_file = html_2_pdf_file(coverage_qc_report, "landscape", 1000)
+            path_2_html_file = os.path.abspath(coverage_qc_report)
+            bytes_file = html_2_pdf_file(path_2_html_file, "landscape", 1000)
             file_name = "_".join(
                 [
                     case_obj["display_name"],
@@ -767,6 +764,9 @@ def coverage_qc_report(institute_id, case_name):
                 ),
                 "warning",
             )
+
+    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
+    filename = os.path.basename(coverage_qc_report)
 
     return send_from_directory(out_dir, filename)
 
