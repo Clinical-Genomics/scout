@@ -755,6 +755,17 @@ def _test_delivery_report(client, institute_obj, case_obj, response_format):
         {"$set": {"delivery_report": delivery_report_path}},
     )
 
+    # WHEN accessing the delivery report page with the format=pdf param
+    resp = client.get(
+        url_for(
+            "cases.delivery_report",
+            institute_id=institute_obj["internal_id"],
+            case_name=case_obj["display_name"],
+            format=response_format,
+        )
+    )
+    return resp
+
 
 def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
