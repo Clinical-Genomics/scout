@@ -2,6 +2,38 @@
 {% from "utils.html" import comments_table %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge %}
 
+{% macro filter_scripts_main(cytobands) %}
+  <script type="text/javascript">
+    var startElem = document.getElementById("start");
+    var endElem = document.getElementById("end");
+    var coords=[startElem,endElem];
+    coords.forEach(function (item) {
+      item.addEventListener("change", eraseChromPosString);
+    });
+
+    var cytoStart = document.getElementById("cytoband_start");
+    initSearchConstraints(cytoStart, startElem)
+
+    var cytoEnd = document.getElementById("cytoband_end");
+    initSearchConstraints(cytoEnd, endElem)
+
+    var chromSel = document.getElementById("chrom");
+    chromSel.addEventListener("change", sanitizeChromSelOptions);
+    chromSel.addEventListener("change", eraseChromPosString);
+    chromSel.addEventListener("change", populateCytobands({{cytobands|safe}}) );
+
+    var chromPosInpt = document.getElementById("chrom_pos");
+    chromPosInpt.addEventListener("change", updatedChromPosInput);
+    chromPosInpt.addEventListener("change", populateCytobands({{cytobands|safe}}));
+
+    document.getElementById('hide_dismissed').onchange = function() {
+      document.getElementById('expand_search').value = "False";
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
+  </script>
+{% endmacro %}
+
 {% macro mark_heteroplasmic_mt(individuals, samples) %}
   {% for ind in individuals if ind.phenotype == 2 %}
     {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
