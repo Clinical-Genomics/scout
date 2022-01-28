@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Unfreeze cyvcf2
 - Builder images used in Scout Dockerfiles
 - Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
+- Updated cancer "Coverage and QC report" example
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
