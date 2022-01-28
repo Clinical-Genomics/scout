@@ -53,6 +53,8 @@ function populateCytobands(cytobands) {
 			// disable
 			for (elem of [cytoStart, cytoEnd]) {
 				elem.options.length = 0; //remove previous cytoband select options
+				startElem.value = null
+				endElem.value = null
 			}
 			return
 		}
