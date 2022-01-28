@@ -10,12 +10,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated example of a case delivery report
 - Unfreeze cyvcf2
 - Builder images used in Scout Dockerfiles
+- Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
 - Missing delivery report in demo case
 - Cast MNVs to SNV for test
 - Export verified variants from all institutes when user is admin
+- Cancer coverage and QC report not found for demo cancer case
 
 ## [4.47]
 ### Added

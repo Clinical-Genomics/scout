@@ -1,17 +1,42 @@
 """Common utilities for the server code"""
 import datetime
-import io
 import logging
 import os
 import pathlib
 import zipfile
 from functools import wraps
+from io import BytesIO
 
 from bson.objectid import ObjectId
 from flask import abort, flash, render_template, request
 from flask_login import current_user
+from pdfkit import from_string
 
 LOG = logging.getLogger(__name__)
+
+
+def html_2_pdf_file(html_file_path, oriantation, dpi=1000):
+    """Creates a pdf file from the content of an HTML file
+
+    Args:
+        html_file_path("str"): A string path to an HTML resource file
+        oriantation(string): landscape, portrait
+        dpi(int): dot density of the page to be printed
+
+    Returns:
+        bytes_file(BytesIO): a BytesIO file
+    """
+    options = {
+        "page-size": "A4",
+        "orientation": oriantation,
+        "encoding": "UTF-8",
+        "dpi": dpi,
+    }
+    html_file = open(html_file_path, "r")
+    source_code = html_file.read()
+    pdf = from_string(source_code, False, options=options)
+    bytes_file = BytesIO(pdf)
+    return bytes_file
 
 
 def jsonconverter(obj):
@@ -223,7 +248,7 @@ def zip_dir_to_obj(path):
         data(io.BytesIO): zipped data object
     """
 
-    data = io.BytesIO()
+    data = BytesIO()
     with zipfile.ZipFile(data, mode="w") as z:
         for f_name in pathlib.Path(path).iterdir():
             z.write(f_name, os.path.basename(f_name))
