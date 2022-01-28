@@ -8,7 +8,7 @@ from functools import wraps
 from io import BytesIO
 
 from bson.objectid import ObjectId
-from flask import abort, flash, render_template, request
+from flask import abort, current_app, flash, render_template, request
 from flask_login import current_user
 from pdfkit import from_string
 
@@ -26,6 +26,11 @@ def html_2_pdf_file(html_file_path, orientation, dpi=1000):
     Returns:
         bytes_file(BytesIO): a BytesIO file
     """
+    if not os.path.isabs(
+        html_file_path
+    ):  # This applies to demo reports placed under scout/scout/demo
+        html_file_path = os.path.abspath(html_file_path)
+
     options = {
         "page-size": "A4",
         "orientation": orientation,
