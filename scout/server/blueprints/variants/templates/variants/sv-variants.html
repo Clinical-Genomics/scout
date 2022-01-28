@@ -158,25 +158,9 @@ onsubmit="return validateForm()">
     var startElem = document.getElementById("start");
     var endElem = document.getElementById("end");
     var coords=[startElem,endElem];
-
-    coords.forEach(function (item, index) {
-      item.addEventListener("input", function() {
-      eraseChromPosString()});
+    coords.forEach(function (item) {
+      item.addEventListener("change", eraseChromPosString);
     });
-
-    var chromSel = document.getElementById("chrom");
-    chromSel.addEventListener("change", function() {
-      populateCytobands({{cytobands|safe}});
-    });
-
-    var chromPosInpt = document.getElementById("chrom_pos");
-    chromPosInpt.addEventListener("change", function() {
-      populateCytobands({{cytobands|safe}});
-    })
-
-   chromPosInpt.addEventListener("input", function() {
-      updateCoordinateFields(event.target)
-   })
 
     var cytoStart = document.getElementById("cytoband_start");
     initSearchConstraints(cytoStart, startElem)
@@ -184,11 +168,20 @@ onsubmit="return validateForm()">
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
 
-    document.getElementById('hide_dismissed').onchange = function() {
+    var chromSel = document.getElementById("chrom");
+    chromSel.addEventListener("change", sanitizeChromSelOptions);
+    chromSel.addEventListener("change", eraseChromPosString);
+    chromSel.addEventListener("change", populateCytobands({{cytobands|safe}}) );
+
+    var chromPosInpt = document.getElementById("chrom_pos");
+    chromPosInpt.addEventListener("change", updatedChromPosInput);
+    chromPosInpt.addEventListener("change", populateCytobands({{cytobands|safe}}));
+
+    document.getElementById('hide_dismissed').addEventListener("change", function() {
       document.getElementById('expand_search').value = "False";
       var the_form = document.forms['filters_form'];
       the_form.submit();
-    };
+    });
 
     $('select[multiple]').selectpicker({
         width: '100%'

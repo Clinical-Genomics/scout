@@ -1,23 +1,17 @@
-/* exported populateCytobands */
-function populateCytobands(cytobands) {
-	var chromPosPattern = new RegExp("^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)$");
-
-	var chrom_select = document.forms["filters_form"].elements["chrom"];
-  console.log("chrom select has type " + typeof(chrom_select))
+/* exported sanitizeChromSelOptions */
+function sanitizeChromSelOptions() {
 
 	var chrom = [];
+	var chrom_select = document.forms["filters_form"].elements["chrom"];
   var options = chrom_select && chrom_select.options;
   var opt;
 
-  all_option_selected = false
-  if(chrom_select.selectedIndex === 0) {
-  	all_option_selected = true
-	}
-
-  for (var i=0, iLen=options.length; i<iLen; i++) {
+  // clear other options if All is selected
+	// and take note of otherwise selected chrs
+  for (var i=1, iLen=options.length; i<iLen; i++) {
     opt = options[i];
-    if (opt.selected && opt.value !== "") {
-    	if (all_option_selected === true) {
+    if (opt.selected) {
+    	if (chrom_select.selectedIndex === 0) {
 				opt.selected = false
 			} else {
     		chrom.push(opt.value);
@@ -25,53 +19,52 @@ function populateCytobands(cytobands) {
     }
   }
 
-	var chromPos = "";
-	if (typeof document.forms["filters_form"].elements["chrom_pos"] !== "undefined") {
-		chromPos = document.forms["filters_form"].elements["chrom_pos"].value;
-	}
-
-	var chromosome = "";
-	console.log("Populate cytobands")
-	var matchedChrName = chromPos.match(chromPosPattern)
-	if (chrom === [] && chromPos === "") {
-		startElem.value = "";
-		endElem.value = "";
-		return //only reset cytoband select element
-		// Set the selected chromosome name
-	} else if (chrom !== [] && matchedChrName !== null) {
-		chromosome = matchedChrName[1]
-	} else if (chrom === [] && matchedChrName !== null) {
-		chromosome = matchedChrName[1]
-	} else if (chrom == [] && matchedChrName == null) {
-		console.log("chrom is empty still")
+	console.log("Depopulate cytobands if more than one chrom is selected, all selected ,")
+	if (chrom.length > 1) {
+		// disable
+		for (elem of [cytoStart, cytoEnd]) {
+			elem.options.length = 0; //remove previous cytoband select options
+			startElem.value = null
+			endElem.value = null
+		}
 		return
-	} else if (typeof chrom === 'string' || chrom instanceof String) {
-		chromosome = chrom;
-	} else {
-		console.log("chrom is array! Depopulate cytobands if more than one chrom is selected")
-		if (chrom.length > 1) {
-			// disable
-			for (elem of [cytoStart, cytoEnd]) {
-				elem.options.length = 0; //remove previous cytoband select options
-				startElem.value = null
-				endElem.value = null
-			}
-			return
-		}
-		chromosome = chrom[0]
-		if (chromosome === undefined) {
-				console.log("chrom is undefined!")
-				return
-		}
-		console.log("chrom is array, but only one member. Add chr " + chromosome + "("+ typeof (chromosome)+")")
 	}
-	populateCytobandsSingleChr(cytobands, chromosome)
 }
 
-function populateCytobandsSingleChr(cytobands, chromosome) {
-	console.log("cytobands 1: " + cytobands["1"] +  "("+ typeof (cytobands["1"])+")")
+function getSelectedChromosomes() {
+	var chrom_select = document.forms["filters_form"].elements["chrom"];
 
-	console.log("populate single chrom: " + chromosome + "("+ typeof (chromosome)+")")
+	var chrom = [];
+  var options = chrom_select && chrom_select.options;
+  var opt;
+
+  // return empty array if All option is selected
+  if (chrom_select.selectedIndex === 0) {
+		return chrom
+	}
+ 	// return individually selected chrs
+  for (var i=1, iLen=options.length; i<iLen; i++) {
+    opt = options[i];
+    if (opt.selected) {
+			chrom.push(opt.value);
+		}
+	}
+  return chrom
+}
+
+/* exported populateCytobands */
+function populateCytobands(cytobands) {
+  console.log("Populate cytobands")
+
+	var chromosome = "";
+	chrom = getSelectedChromosomes();
+	if (chrom.length != 1) {
+		console.log("More than one chr selected")
+		return
+	}
+	chromosome = chrom[0]
+
+	console.log("Add chr " + chromosome + "("+ typeof (chromosome)+")")
 	var chrom_cytobands = cytobands[chromosome]["cytobands"]; // chromosome-specific cytobands
 
 	for (elem of [cytoStart, cytoEnd]) {
@@ -152,6 +145,9 @@ function validateForm(){
       alert("Chromosome field is required");
       return false;
     }
+    else if (chrom.length > 1) {
+    	alert("Start and end coordinates are only applicable with one selected chromosome");
+		}
     else if( !start || !end){
       alert("Both start and end coordinates are required");
       return false;
@@ -171,7 +167,7 @@ function validateForm(){
 // syncSearchConstraints(selectorId:HTML-selector, textId:HTML-textfield)
 //
 // Initialize and synchronize 'startelem' and 'cyto_start', used for setting
-// contrsaints when searching variants in cytoband.
+// constraints when searching variants in cytoband.
 function initSearchConstraints(selectorId, textId){
     console.log("init cytoband search: selector and text")
     selectorId.addEventListener("change", function() {
@@ -220,47 +216,59 @@ function eraseChromPosString() {
   document.forms["filters_form"].elements["chrom_pos"].value = "";
 }
 
-
 /* exported updateCoordinateFields */
 // Link chromosome position input field with chromosome and cytoband dropdowns.
-// Changes to chrom and cytoband dropdowns are reflected in chrom_pos input
 // Changes in chrom_pos input are reflected in chrom, start and end fields
-function updateCoordinateFields(element) {
-  var chrom = document.forms["filters_form"].elements["chrom"];
-  var chromPos = document.forms["filters_form"].elements["chrom_pos"];
-  var chromPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1})?([0-9]+)?)?$";
-  // parse chromosome position info
-  var chrName, startPos, endPos, sign, padding;
-  try {
-    [_, chrName, startPos, endPos, sign, padding] = chromPos.value.replaceAll(',', '').match(chromPosPattern);
-    console.log(`Parsing ChrPos: ${chrName}, coord: ${startPos}-${endPos}, padding: ${sign}${padding}`)
-  } catch (err) {
-    console.log('ChrPos empty')
-  }
-  // update elements
-  if (element === chrom) {
-    // if alterations in chromosome input field triggered the event
-    chromPos.value = element.selectedOptions[0].value;
-  } else if (element === chromPos && chrName == null) {
-    console.log(`ChrPos regexp not matching ${chromPos.value}`)
-		chrom.querySelector(`[value=""]`).selected = true;
-  } else {
-		console.log(chrName)
-		chrom.querySelector(`[value="${chrName}"]`).selected = true;
-		// set default padding and sign
-		padding = padding != null ? padding : 0
-		sign = sign != null ? sign : '+'
-		// Update start and end input fields
-		if (startPos != null) {
-			// invert sign expand before starting position
-			var newStartPos = eval(`${startPos} ${sign == '+' ? '-' : '+' } ${padding}`);
-			newStartPos = newStartPos < 0 ? 0 : newStartPos
-			document.forms["filters_form"].elements["start"].value = newStartPos;
+function updatedChromPosInput() {
+	console.log('Update to chrom pos field detected!')
+	var chromSel = document.forms["filters_form"].elements["chrom"];
+	var chromPos = document.forms["filters_form"].elements["chrom_pos"];
+	var chromPosPattern = "^(?:chr)?([1-9]|1[0-9]|2[0-2]|X|Y|MT)(?::([0-9]+)-([0-9]+)([+-]{1})?([0-9]+)?)?$";
+	// parse chromosome position info
+	var chrName, startPos, endPos, sign, padding;
+	try {
+		[_, chrName, startPos, endPos, sign, padding] = chromPos.value.replaceAll(',', '').match(chromPosPattern);
+		console.log(`Parsing ChrPos: ${chrName}, coord: ${startPos}-${endPos}, padding: ${sign}${padding}`)
+	} catch (err) {
+		console.log('ChrPos empty')
+		return
+	}
+
+	console.log(chrName)
+	// set default padding and sign
+	padding = padding != null ? padding : 0
+	sign = sign != null ? sign : '+'
+	// Update start and end input fields
+	if (startPos != null) {
+		// invert sign expand before starting position
+		var newStartPos = eval(`${startPos} ${sign == '+' ? '-' : '+' } ${padding}`);
+		newStartPos = newStartPos < 0 ? 0 : newStartPos
+		document.forms["filters_form"].elements["start"].value = newStartPos;
+	}
+	if (endPos != null) {
+		var newEndPos = eval(`${endPos} ${sign} ${padding}`);
+		newEndPos = newEndPos < 0 ? 0 : newEndPos
+		document.forms["filters_form"].elements["end"].value = newEndPos;
+	}
+	if (chrName != null) {
+		// select this chromosome ONLY in chromSel dropdown
+  	for (var i = 0; i < chromSel.length; i++) {
+  		if (chromSel.options[i].value !== chrName) {
+				chromSel.options[i].selected = false;
+			} else {
+  			chromSel.options[i].selected = true;
+			}
 		}
-		if (endPos != null) {
-			var newEndPos = eval(`${endPos} ${sign} ${padding}`);
-			newEndPos = newEndPos < 0 ? 0 : newEndPos
-			document.forms["filters_form"].elements["end"].value = newEndPos;
+	} else {
+		console.log(`ChrPos regexp not matching ${chromPos.value} - chrName empty`)
+		// select the all chromosomes option ONLY in chromSel dropdown
+  	for (var i = 0; i < chromSel.length; i++) {
+  		if (chromSel.options[i].value !== "") {
+				chromSel.options[i].selected = false;
+			} else {
+  			chromSel.options[i].selected = true;
+			}
 		}
 	}
 }
+
