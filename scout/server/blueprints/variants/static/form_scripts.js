@@ -1,3 +1,4 @@
+
 /* exported sanitizeChromSelOptions */
 function sanitizeChromSelOptions() {
 
@@ -216,7 +217,7 @@ function eraseChromPosString() {
   document.forms["filters_form"].elements["chrom_pos"].value = "";
 }
 
-/* exported updateCoordinateFields */
+/* exported updatedChromPosInput */
 // Link chromosome position input field with chromosome and cytoband dropdowns.
 // Changes in chrom_pos input are reflected in chrom, start and end fields
 function updatedChromPosInput() {
