@@ -28,6 +28,9 @@ RUN apt-get update && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
+# Create a symlink to wkhtmltopdf
+RUN ln -s /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf
+
 # Do not upgrade to the latest pip version to ensure more reproducible builds
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PATH="/venv/bin:$PATH"
