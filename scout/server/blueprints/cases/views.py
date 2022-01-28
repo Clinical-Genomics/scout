@@ -763,6 +763,7 @@ def coverage_qc_report(institute_id, case_name):
                 ),
                 "warning",
             )
+            LOG.error(ex)
             return redirect(request.referrer)
 
     out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))

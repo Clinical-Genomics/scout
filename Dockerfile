@@ -25,14 +25,9 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends wget libjpeg62-turbo xfonts-75dpi xfonts-base libpango-1.0-0 libpangocairo-1.0-0 && \
+     apt-get -y install -y --no-install-recommends wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
-
-# Install wkhtmltopdf
-RUN wget -q --no-check-certificate https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb && \
-    dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb && \
-    rm wkhtmltox_0.12.6-1.buster_amd64.deb
 
 # Do not upgrade to the latest pip version to ensure more reproducible builds
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1

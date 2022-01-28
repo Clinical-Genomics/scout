@@ -3,14 +3,15 @@ import datetime
 import logging
 import os
 import pathlib
+import shutil
 import zipfile
 from functools import wraps
 from io import BytesIO
 
+import pdfkit
 from bson.objectid import ObjectId
 from flask import abort, current_app, flash, render_template, request
 from flask_login import current_user
-from pdfkit import from_string
 
 LOG = logging.getLogger(__name__)
 
@@ -31,15 +32,17 @@ def html_2_pdf_file(html_file_path, orientation, dpi=900):
     ):  # This applies to demo reports placed under scout/scout/demo
         html_file_path = os.path.abspath(html_file_path)
 
+    configuration = pdfkit.configuration(wkhtmltopdf=shutil.which("wkhtmltopdf"))
     options = {
         "page-size": "A4",
         "orientation": orientation,
         "encoding": "UTF-8",
         "dpi": dpi,
     }
+
     html_file = open(html_file_path, "r")
     source_code = html_file.read()
-    pdf = from_string(source_code, False, options=options)
+    pdf = pdfkit.from_string(source_code, False, options=options, configuration=configuration)
     bytes_file = BytesIO(pdf)
     return bytes_file
 
