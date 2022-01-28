@@ -734,31 +734,39 @@ def gene_fusion_report(institute_id, case_name, report_type):
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
     _, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("coverage_qc_report") is None:
+    coverage_qc_report = case_obj.get("coverage_qc_report")
+
+    if coverage_qc_report is None:
         return abort(404)
 
-    coverage_qc_report = data["case"]["coverage_qc_report"]
     report_format = request.args.get("format", "html")
 
     out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
     filename = os.path.basename(coverage_qc_report)
 
     if report_format == "pdf":
-        bytes_file = html_2_pdf_file(coverage_qc_report, "landscape", 1000)
-        file_name = "_".join(
-            [
-                case_obj["display_name"],
-                datetime.datetime.now().strftime("%Y-%m-%d"),
-                "coverage_qc_report.pdf",
-            ]
-        )
-        return send_file(
-            bytes_file,
-            attachment_filename=file_name,
-            mimetype="application/pdf",
-            as_attachment=True,
-        )
+        try:
+            bytes_file = html_2_pdf_file(coverage_qc_report, "landscape", 1000)
+            file_name = "_".join(
+                [
+                    case_obj["display_name"],
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "coverage_qc_report.pdf",
+                ]
+            )
+            return send_file(
+                bytes_file,
+                attachment_filename=file_name,
+                mimetype="application/pdf",
+                as_attachment=True,
+            )
+        except Exception as ex:
+            flash(
+                "An error occurred while Coverage and QC report {} -- {}".format(
+                    coverage_qc_report, ex
+                ),
+                "warning",
+            )
 
     return send_from_directory(out_dir, filename)
 
