@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 from flask_login import current_user
 
-from scout.demo import coverage_qc_report_path, delivery_report_path
+from scout.demo import delivery_report_path
 from scout.server.blueprints.cases import controllers
 from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
 from scout.server.extensions import mail, store
@@ -727,25 +727,6 @@ def test_status(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
         assert resp.status_code == 302  # page should be redirected
 
 
-def test_html_coverage_qc_report(app, institute_obj, cancer_case_obj, user_obj):
-    """Test the endpoint that shows the cancer coverage_qc_report in HTML format"""
-
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-
-        resp = client.get(
-            url_for(
-                "cases.coverage_qc_report",
-                institute_id=institute_obj["internal_id"],
-                case_name=cancer_case_obj["display_name"],
-                format="html",
-            )
-        )
-        # THEN the endpoint should return the delivery report HTML page
-        assert "Klinisk sekvensering av cancerprover" in str(resp.data)
-
-
 def _test_delivery_report(client, institute_obj, case_obj, response_format):
     """Test helper: test report of given format"""
 
@@ -776,14 +757,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        resp = client.get(
-            url_for(
-                "cases.coverage_qc_report",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-                format="html",
-            )
-        )
+        resp = _test_delivery_report(client, institute_obj, case_obj, response_format="html")
         # THEN the endpoint should return the delivery report HTML page
         assert "Leveransrapport Clinical Genomics" in str(resp.data)
 

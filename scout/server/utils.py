@@ -15,12 +15,12 @@ from pdfkit import from_string
 LOG = logging.getLogger(__name__)
 
 
-def html_2_pdf_file(html_file_path, oriantation, dpi=1000):
+def html_2_pdf_file(html_file_path, orientation, dpi=1000):
     """Creates a pdf file from the content of an HTML file
 
     Args:
         html_file_path("str"): A string path to an HTML resource file
-        oriantation(string): landscape, portrait
+        orientation(string): landscape, portrait
         dpi(int): dot density of the page to be printed
 
     Returns:
@@ -28,7 +28,7 @@ def html_2_pdf_file(html_file_path, oriantation, dpi=1000):
     """
     options = {
         "page-size": "A4",
-        "orientation": oriantation,
+        "orientation": orientation,
         "encoding": "UTF-8",
         "dpi": dpi,
     }
