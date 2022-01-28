@@ -742,7 +742,7 @@ def coverage_qc_report(institute_id, case_name):
     report_format = request.args.get("format", "html")
     if report_format == "pdf":
         try:
-            bytes_file = html_2_pdf_file(coverage_qc_report, "landscape", 1000)
+            bytes_file = html_2_pdf_file(coverage_qc_report, "landscape", 900)
             file_name = "_".join(
                 [
                     case_obj["display_name"],

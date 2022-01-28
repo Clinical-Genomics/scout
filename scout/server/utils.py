@@ -15,7 +15,7 @@ from pdfkit import from_string
 LOG = logging.getLogger(__name__)
 
 
-def html_2_pdf_file(html_file_path, orientation, dpi=1000):
+def html_2_pdf_file(html_file_path, orientation, dpi=900):
     """Creates a pdf file from the content of an HTML file
 
     Args:
