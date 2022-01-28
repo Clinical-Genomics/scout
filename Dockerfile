@@ -25,12 +25,12 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends libpango-1.0-0 libpangocairo-1.0-0 wget && \
+     apt-get -y install -y --no-install-recommends wget libpango-1.0-0 libpangocairo-1.0-0 && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
 # Install wkhtmltopdf
-RUN wget --no-check-certificate https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && \
+RUN wget -q --no-check-certificate https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && \
     dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb && \
     rm wkhtmltox_0.12.5-1.bionic_amd64.deb
 
