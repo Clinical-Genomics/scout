@@ -25,14 +25,16 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends wget libpango-1.0-0 libpangocairo-1.0-0 && \
+     apt-get -y install -y --no-install-recommends libpango-1.0-0 libpangocairo-1.0-0 && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 
-# Install wkhtmltopdf
-RUN wget -q --no-check-certificate https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.bionic_amd64.deb && \
-    dpkg -i wkhtmltox_0.12.5-1.bionic_amd64.deb && \
-    rm wkhtmltox_0.12.5-1.bionic_amd64.deb
+RUN curl -L#o wk.tar.xz https://downloads.wkhtmltopdf.org/0.12/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz \
+   && tar xf wk.tar.xz \
+   && cp wkhtmltox/bin/wkhtmltopdf /usr/bin \
+   && cp wkhtmltox/bin/wkhtmltoimage /usr/bin \
+   && rm wk.tar.xz \
+   && rm -r wkhtmltox
 
 # Do not upgrade to the latest pip version to ensure more reproducible builds
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
