@@ -10,13 +10,13 @@ from io import BytesIO
 
 import pdfkit
 from bson.objectid import ObjectId
-from flask import abort, current_app, flash, render_template, request
+from flask import abort, flash, render_template, request
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
 
 
-def html_2_pdf_file(html_file_path, orientation, dpi=800):
+def html_2_pdf_file(html_file_path, orientation, dpi=600):
     """Creates a pdf file from the content of an HTML file
 
     Args:
@@ -41,11 +41,7 @@ def html_2_pdf_file(html_file_path, orientation, dpi=800):
 
     html_file = open(html_file_path, "r")
     source_code = html_file.read()
-    if "WKHTMLTOPDF" in os.environ:
-        configuration = pdfkit.configuration(wkhtmltopdf=os.environ.get("WKHTMLTOPDF"))
-        pdf = pdfkit.from_string(source_code, False, options=options, configuration=configuration)
-    else:
-        pdf = pdfkit.from_string(source_code, False, options=options)
+    pdf = pdfkit.from_string(source_code, False, options=options)
     bytes_file = BytesIO(pdf)
     return bytes_file
 
