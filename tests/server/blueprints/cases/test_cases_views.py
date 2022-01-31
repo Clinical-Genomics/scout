@@ -773,7 +773,7 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
         resp = _test_delivery_report(client, institute_obj, case_obj, response_format="pdf")
         # a successful response should be returned
-        assert resp.status_code == 404
+        assert resp.status_code == 200
         # and it should contain a pdf file, not HTML code
         assert resp.mimetype == "application/pdf"
 
