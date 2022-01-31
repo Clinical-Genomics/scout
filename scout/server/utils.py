@@ -16,7 +16,7 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
-def html_2_pdf_file(html_file_path, orientation, dpi=900):
+def html_2_pdf_file(html_file_path, orientation, dpi=800):
     """Creates a pdf file from the content of an HTML file
 
     Args:
@@ -32,7 +32,6 @@ def html_2_pdf_file(html_file_path, orientation, dpi=900):
     ):  # This applies to demo reports placed under scout/scout/demo
         html_file_path = os.path.abspath(html_file_path)
 
-    configuration = pdfkit.configuration(wkhtmltopdf=shutil.which("wkhtmltopdf"))
     options = {
         "page-size": "A4",
         "orientation": orientation,
@@ -42,7 +41,11 @@ def html_2_pdf_file(html_file_path, orientation, dpi=900):
 
     html_file = open(html_file_path, "r")
     source_code = html_file.read()
-    pdf = pdfkit.from_string(source_code, False, options=options, configuration=configuration)
+    if "WKHTMLTOPDF" in os.environ:
+        configuration = pdfkit.configuration(wkhtmltopdf=os.environ.get("WKHTMLTOPDF"))
+        pdf = pdfkit.from_string(source_code, False, options=options, configuration=configuration)
+    else:
+        pdf = pdfkit.from_string(source_code, False, options=options)
     bytes_file = BytesIO(pdf)
     return bytes_file
 

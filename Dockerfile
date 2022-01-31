@@ -11,7 +11,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-
 #########
 # FINAL #
 #########
@@ -31,6 +30,7 @@ RUN apt-get update && \
 
 # Do not upgrade to the latest pip version to ensure more reproducible builds
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV WKHTMLTOPDF="/usr/bin/wkhtmltopdf"
 ENV PATH="/venv/bin:$PATH"
 RUN echo export PATH="/venv/bin:\$PATH" > /etc/profile.d/venv.sh
 
