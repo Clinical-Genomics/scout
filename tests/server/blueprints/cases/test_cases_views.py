@@ -773,8 +773,33 @@ def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
         resp = _test_delivery_report(client, institute_obj, case_obj, response_format="pdf")
         # a successful response should be returned
-        assert resp.status_code == 200
+        assert resp.status_code == 404
         # and it should contain a pdf file, not HTML code
+        assert resp.mimetype == "application/pdf"
+
+
+def test_pdf_coverage_qc_report(app, institute_obj, cancer_case_obj, user_obj):
+    """Test the endpoint that returns a cancer case's coverage and qc report in PDF format"""
+
+    # GIVEN a database containing a cancer case
+    store.case_collection.insert_one(cancer_case_obj)
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        # WHEN accessing the coverage and qc report with the format=pdf param
+        resp = client.get(
+            url_for(
+                "cases.coverage_qc_report",
+                institute_id=institute_obj["internal_id"],
+                case_name=cancer_case_obj["display_name"],
+                format="pdf",
+            )
+        )
+        # a successful response should be returned
+        assert resp.status_code == 200
+        # and it should contain a PDF file
         assert resp.mimetype == "application/pdf"
 
 
