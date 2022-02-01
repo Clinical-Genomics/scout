@@ -242,7 +242,7 @@ def configure_email_logging(app):
         mailhost=app.config["MAIL_SERVER"],
         fromaddr=app.config["MAIL_USERNAME"],
         toaddrs=app.config["ADMINS"],
-        subject="O_ops... {} failed on {}!".format(app.name, app.hos),
+        subject="O_ops... {} failed on {}!".format(app.name, app.host),
         credentials=(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"]),
     )
     mail_handler.setLevel(logging.ERROR)
