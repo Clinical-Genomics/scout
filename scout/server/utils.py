@@ -30,6 +30,7 @@ def html_to_pdf_file(html_string, orientation, dpi=600):
         "orientation": orientation,
         "encoding": "UTF-8",
         "dpi": dpi,
+        "enable-local-file-access": "",
     }
     pdf = pdfkit.from_string(html_string, False, options=options, verbose=True)
     bytes_file = BytesIO(pdf)
