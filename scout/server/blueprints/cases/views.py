@@ -26,7 +26,7 @@ from flask_weasyprint import HTML, render_pdf
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, matchmaker, rerunner, store
 from scout.server.utils import (
-    html_2_pdf_file,
+    html_to_pdf_file,
     institute_and_case,
     jsonconverter,
     templated,
@@ -740,22 +740,30 @@ def coverage_qc_report(institute_id, case_name):
         return abort(404)
 
     report_format = request.args.get("format", "html")
+
+    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
+    filename = os.path.basename(coverage_qc_report)
+
+    LOG.warning(out_dir)
+
     if report_format == "pdf":
         try:
-            bytes_file = html_2_pdf_file(coverage_qc_report, "landscape", 600)
-            file_name = "_".join(
-                [
-                    case_obj["display_name"],
-                    datetime.datetime.now().strftime("%Y-%m-%d"),
-                    "coverage_qc_report.pdf",
-                ]
-            )
-            return send_file(
-                bytes_file,
-                attachment_filename=file_name,
-                mimetype="application/pdf",
-                as_attachment=True,
-            )
+            with open(os.path.abspath(coverage_qc_report), "r") as html_file:
+                source_code = html_file.read()
+                bytes_file = html_to_pdf_file(source_code, "landscape", 300)
+                file_name = "_".join(
+                    [
+                        case_obj["display_name"],
+                        datetime.datetime.now().strftime("%Y-%m-%d"),
+                        "coverage_qc_report.pdf",
+                    ]
+                )
+                return send_file(
+                    bytes_file,
+                    attachment_filename=file_name,
+                    mimetype="application/pdf",
+                    as_attachment=True,
+                )
         except Exception as ex:
             flash(
                 "An error occurred while converting report to PDF: {} -- {}".format(
@@ -765,9 +773,6 @@ def coverage_qc_report(institute_id, case_name):
             )
             LOG.error(ex)
             return redirect(request.referrer)
-
-    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
-    filename = os.path.basename(coverage_qc_report)
 
     return send_from_directory(out_dir, filename)
 

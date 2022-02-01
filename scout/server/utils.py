@@ -16,32 +16,26 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
-def html_2_pdf_file(html_file_path, orientation, dpi=600):
+def html_to_pdf_file(html_string, orientation, dpi=96):
     """Creates a pdf file from the content of an HTML file
 
     Args:
-        html_file_path("str"): A string path to an HTML resource file
+        html_string(string): an HTML string to be rendered as PDF
         orientation(string): landscape, portrait
         dpi(int): dot density of the page to be printed
 
     Returns:
         bytes_file(BytesIO): a BytesIO file
     """
-    if not os.path.isabs(
-        html_file_path
-    ):  # This applies to demo reports placed under scout/scout/demo
-        html_file_path = os.path.abspath(html_file_path)
 
     options = {
         "page-size": "A4",
         "orientation": orientation,
         "encoding": "UTF-8",
         "dpi": dpi,
+        "enable-local-file-access": None,
     }
-
-    html_file = open(html_file_path, "r")
-    source_code = html_file.read()
-    pdf = pdfkit.from_string(source_code, False, options=options)
+    pdf = pdfkit.from_string(html_string, False, options=options, verbose=True)
     bytes_file = BytesIO(pdf)
     return bytes_file
 
