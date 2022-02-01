@@ -8,7 +8,6 @@ from base64 import b64encode
 
 import query_phenomizer
 import requests
-from bs4 import BeautifulSoup
 from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
