@@ -176,7 +176,7 @@ def register_filters(app):
         Return:
             str: humanized string of the decimal number
         """
-        min_number = 10**-ndigits
+        min_number = 10 ** -ndigits
         if isinstance(number, str):
             number = None
         if number is None:
@@ -238,11 +238,12 @@ def configure_email_logging(app):
 
     from scout.log import TlsSMTPHandler
 
+    mongodbname = app.config["MONGO_DBNAME"]
     mail_handler = TlsSMTPHandler(
         mailhost=app.config["MAIL_SERVER"],
         fromaddr=app.config["MAIL_USERNAME"],
         toaddrs=app.config["ADMINS"],
-        subject="O_ops... {} failed on {}!".format(app.name, app.host),
+        subject="O_ops... {} failed on db {}!".format(app.name, mongodbname),
         credentials=(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"]),
     )
     mail_handler.setLevel(logging.ERROR)
