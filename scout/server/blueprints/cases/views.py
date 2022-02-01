@@ -230,7 +230,7 @@ def pdf_case_report(institute_id, case_name):
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
-    bytes_file = html_to_pdf_file(html_report, "portrait", 900)
+    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
     file_name = "_".join(
         [
             case_obj["display_name"],

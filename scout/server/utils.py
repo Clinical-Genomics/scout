@@ -15,7 +15,7 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
-def html_to_pdf_file(html_string, orientation, dpi=600):
+def html_to_pdf_file(html_string, orientation, dpi=96):
     """Creates a pdf file from the content of an HTML file
     Args:
         html_string(string): An HTML string to be rendered as PDF
