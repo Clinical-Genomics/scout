@@ -7,6 +7,7 @@ import re
 import shutil
 from operator import itemgetter
 
+from cairosvg import svg2png
 from flask import (
     Blueprint,
     abort,
@@ -26,6 +27,7 @@ from flask_weasyprint import HTML, render_pdf
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, matchmaker, rerunner, store
 from scout.server.utils import (
+    html_to_pdf_file,
     institute_and_case,
     jsonconverter,
     templated,
@@ -225,16 +227,28 @@ def pdf_case_report(institute_id, case_name):
 
     # workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") is not None:
-        with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
-            temp_madeline.write(case_obj["madeline_info"])
+        write_to = os.path.join(cases_bp.static_folder, "madeline.png")
+        svg2png(
+            bytestring=case_obj["madeline_info"],
+            write_to=write_to,
+        )
+        data["case"]["madeline_path"] = write_to
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
-    return render_pdf(
-        HTML(string=html_report),
-        download_filename=case_obj["display_name"]
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + "_scout.pdf",
+
+    bytes_file = html_to_pdf_file(html_report, "portrait", 800)
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            "report.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 
