@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Crash report email subject gives host name
 - Export general case report to PDF using PDFKit instead of WeasyPrint
 - Do not include coverage report in PDF case report since they might have different orientation
+- Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
+- Updated cancer "Coverage and QC report" example
 - Reduce code complexity (parse/ensembl.py)
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
@@ -20,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing delivery report in demo case
 - Cast MNVs to SNV for test
 - Export verified variants from all institutes when user is admin
+- Cancer coverage and QC report not found for demo cancer case
 
 ## [4.47]
 ### Added
