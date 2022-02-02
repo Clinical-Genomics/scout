@@ -8,8 +8,8 @@ function sanitizeChromSelOptions() {
   // clear other options if All is selected
 	if (chrom_select.selectedIndex === 0) {
 		console.log("All selected - clear list")
-		for (var i=0; i<chrom_select.selectedOptions.length; i++) {
-			chrom_select.selectedOptions[i].value = false
+		for (var i=1; i<chrom_select.options.length; i++) {
+			chrom_select.options[i].selected = false
 		}
 	}
 
