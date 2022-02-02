@@ -1,13 +1,9 @@
-/* exported sanitizeChromSelOptions() */
-function sanitizeChromSelOptions() {
-	var chrom_select = document.forms["filters_form"].elements["chrom"];
-  var opt;
-
-	console.log("SanitizeChromSelOptions")
+/* exported updatedChromSelOptions */
+function updatedChromSelOptions() {
+	console.log("updatedChromSelOptions")
 
   chrom = getSelectedChromosomes()
 	if (chrom.length != 1) {
-		console.log("Depopulate cytobands if more than one chrom is selected, all selected")
 		for (elem of [cytoStart, cytoEnd]) {
 			elem.options.length = 0; // remove previous cytoband select options
 		}
@@ -190,13 +186,13 @@ function enableDismiss(){
   }
 }
 
-/* exported eraseChromPosString() */
+/* exported eraseChromPosString */
 function eraseChromPosString() {
   // Erase content of chrom_pos field
   document.forms["filters_form"].elements["chrom_pos"].value = "";
 }
 
-/* exported updatedChromPosInput() */
+/* exported updatedChromPosInput */
 // Link chromosome position input field with chromosome and cytoband dropdowns.
 // Changes in chrom_pos input are reflected in chrom, start and end fields
 function updatedChromPosInput() {

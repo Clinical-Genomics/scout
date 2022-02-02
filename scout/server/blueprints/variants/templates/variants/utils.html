@@ -19,7 +19,7 @@
 
     var chromSel = document.getElementById("chrom");
     chromSel.addEventListener("change", function() { populateCytobands({{cytobands|safe}}) });
-    chromSel.addEventListener("change", sanitizeChromSelOptions);
+    chromSel.addEventListener("change", updatedChromSelOptions);
 
     var chromPosInpt = document.getElementById("chrom_pos");
     if (chromPosInpt) {
