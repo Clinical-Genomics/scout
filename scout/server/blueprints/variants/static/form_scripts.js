@@ -5,14 +5,6 @@ function sanitizeChromSelOptions() {
 
 	console.log("SanitizeChromSelOptions")
 
-  // clear other options if All is selected
-	if (chrom_select.selectedIndex === 0) {
-		console.log("All selected - clear list")
-		for (var i=1; i<chrom_select.options.length; i++) {
-			chrom_select.options[i].selected = false
-		}
-	}
-
   chrom = getSelectedChromosomes()
 	if (chrom.length != 1) {
 		console.log("Depopulate cytobands if more than one chrom is selected, all selected")
@@ -33,10 +25,6 @@ function getSelectedChromosomes() {
 
 	var chrom = [];
 
-  // return empty array if All option is selected
-  if (chrom_select.selectedIndex === 0) {
-		return chrom
-	}
  	// return selected chrs; will never contain All option
   for (var i=0; i < chrom_select.selectedOptions.length; i++) {
 		chrom.push(chrom_select.selectedOptions[i].value)
