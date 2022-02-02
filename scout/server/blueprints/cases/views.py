@@ -741,33 +741,43 @@ def gene_fusion_report(institute_id, case_name, report_type):
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
     _, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("coverage_qc_report") is None:
+    coverage_qc_report = case_obj.get("coverage_qc_report")
+
+    if coverage_qc_report is None:
         return abort(404)
 
-    coverage_qc_report = data["case"]["coverage_qc_report"]
     report_format = request.args.get("format", "html")
+
+    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
+    filename = os.path.basename(coverage_qc_report)
+
     if report_format == "pdf":
-        try:  # file could not be available
-            html_file = open(coverage_qc_report, "r")
-            source_code = html_file.read()
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_coverage_qc_report.pdf",
-            )
+        try:
+            with open(os.path.abspath(coverage_qc_report), "r") as html_file:
+                source_code = html_file.read()
+                bytes_file = html_to_pdf_file(source_code, "landscape", 300)
+                file_name = "_".join(
+                    [
+                        case_obj["display_name"],
+                        datetime.datetime.now().strftime("%Y-%m-%d"),
+                        "coverage_qc_report.pdf",
+                    ]
+                )
+                return send_file(
+                    bytes_file,
+                    attachment_filename=file_name,
+                    mimetype="application/pdf",
+                    as_attachment=True,
+                )
         except Exception as ex:
             flash(
-                "An error occurred while downloading delivery report {} -- {}".format(
+                "An error occurred while converting report to PDF: {} -- {}".format(
                     coverage_qc_report, ex
                 ),
                 "warning",
             )
-
-    out_dir = os.path.dirname(coverage_qc_report)
-    filename = os.path.basename(coverage_qc_report)
+            LOG.error(ex)
+            return redirect(request.referrer)
 
     return send_from_directory(out_dir, filename)
 
