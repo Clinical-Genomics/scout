@@ -5,7 +5,6 @@ from io import BytesIO
 import pytest
 from flask import url_for
 
-from scout.demo import coverage_qc_report_path
 from scout.server.links import get_variant_links
 from scout.server.utils import append_safe, find_index, html_to_pdf_file, variant_case
 
