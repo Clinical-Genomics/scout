@@ -219,13 +219,13 @@ def pdf_case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_id, case_name)
 
-    # workaround to be able to print the case pedigree to pdf
+    # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") is not None:
         write_to = os.path.join(cases_bp.static_folder, "madeline.png")
         svg2png(
             bytestring=case_obj["madeline_info"],
             write_to=write_to,
-        )
+        )  # Transform to png, since PDFkit can't render svg images
         data["case"]["madeline_path"] = write_to
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
