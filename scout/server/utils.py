@@ -3,7 +3,6 @@ import datetime
 import logging
 import os
 import pathlib
-import shutil
 import zipfile
 from functools import wraps
 from io import BytesIO
