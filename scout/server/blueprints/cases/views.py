@@ -235,7 +235,7 @@ def pdf_case_report(institute_id, case_name):
         [
             case_obj["display_name"],
             datetime.datetime.now().strftime("%Y-%m-%d"),
-            "report.pdf",
+            "scout_report.pdf",
         ]
     )
     return send_file(
