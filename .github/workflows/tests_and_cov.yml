@@ -56,7 +56,10 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('setup.py') }}-${{ hashFiles('requirements-dev.txt') }}
 
-      - name: Install deps
+      - name: Install the HTML 2 PDF renderer
+        run: sudo apt-get install -y wkhtmltopdf
+
+      - name: Install python deps
         run: |
           pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
 
