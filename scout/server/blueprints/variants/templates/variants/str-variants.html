@@ -50,7 +50,7 @@
       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
           {{ str_filters(form, institute, case) }}
       </div>
-    {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
+      {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
     </div>
   </form>
   <div class="card mt-3">
@@ -146,6 +146,10 @@
 
     $("#filters").change(function () {
       {{ update_stash_filter_button_status(current_user, filters) }}
+    });
+
+    $('select[multiple]').selectpicker({
+      width: '100%'
     });
 
     $(function () {
