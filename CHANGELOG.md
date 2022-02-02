@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Unfreeze cyvcf2
 - Builder images used in Scout Dockerfiles
 - Crash report email subject gives host name
+- Export general case report to PDF using PDFKit instead of WeasyPrint
+- Do not include coverage report in PDF case report since they might have different orientation
 - Reduce code complexity (parse/ensembl.py)
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
