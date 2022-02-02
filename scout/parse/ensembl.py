@@ -43,6 +43,7 @@ def parse_ensembl_line(line, header):
         ensembl_info = read_transcript_info(ensembl_info, word, value)
         ensembl_info = read_exon_info(ensembl_info, word, value)
         ensembl_info = read_utr_info(ensembl_info, word, value)
+        ensembl_info = read_refseq_info(ensembl_info, word, value)
     return ensembl_info
 
 
