@@ -1,22 +1,18 @@
 /* exported sanitizeChromSelOptions() */
 function sanitizeChromSelOptions() {
-	var chrom = [];
 	var chrom_select = document.forms["filters_form"].elements["chrom"];
-  var options = chrom_select && chrom_select.options;
   var opt;
 
 	console.log("SanitizeChromSelOptions")
 
   // clear other options if All is selected
 	if (chrom_select.selectedIndex === 0) {
-		console.log("All selected - clear others")
-  	for (var i=1, iLen=options.length; i<iLen; i++) {
-    	opt = options[i];
-    	if (opt.selected) {
-				opt.selected = false
-			}
-    }
-  }
+		console.log("All selected - clear list")
+		for (var i=0; i<chrom_select.selectedOptions.length; i++) {
+			chrom_select.selectedOptions[i].value = false
+		}
+	}
+
   chrom = getSelectedChromosomes()
 	if (chrom.length != 1) {
 		console.log("Depopulate cytobands if more than one chrom is selected, all selected")
@@ -36,19 +32,14 @@ function getSelectedChromosomes() {
 	var chrom_select = document.forms["filters_form"].elements["chrom"];
 
 	var chrom = [];
-  var options = chrom_select && chrom_select.options;
-  var opt;
 
   // return empty array if All option is selected
   if (chrom_select.selectedIndex === 0) {
 		return chrom
 	}
- 	// return selected chrs
-  for (var i=1, iLen=options.length; i<iLen; i++) {
-    opt = options[i];
-    if (opt.selected) {
-			chrom.push(opt.value);
-		}
+ 	// return selected chrs; will never contain All option
+  for (var i=0; i < chrom_select.selectedOptions.length; i++) {
+		chrom.push(chrom_select.selectedOptions[i].value)
 	}
   return chrom
 }

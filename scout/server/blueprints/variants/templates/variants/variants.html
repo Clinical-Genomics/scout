@@ -173,7 +173,7 @@
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
   <script type="text/javascript">
-
+  
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
       {{ update_stash_filter_button_status(current_user, filters) }}
