@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated example of a case delivery report
 - Unfreeze cyvcf2
 - Builder images used in Scout Dockerfiles
+- Crash report email subject gives host name
 - Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
 - Updated cancer "Coverage and QC report" example
 ### Fixed
