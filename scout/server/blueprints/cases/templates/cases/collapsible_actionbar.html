@@ -565,11 +565,11 @@
     </div>
     <div>
       <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                        case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+                        case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
     </div>
     <div>
       <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                        case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                        case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
     </div>
   </div>
 </div>
