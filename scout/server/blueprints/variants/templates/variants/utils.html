@@ -17,14 +17,18 @@
     var cytoEnd = document.getElementById("cytoband_end");
     initSearchConstraints(cytoEnd, endElem)
 
+
     var chromSel = document.getElementById("chrom");
+    chromSel.addEventListener("multiselectclose", populateCytobands({{cytobands|safe}}) );
     chromSel.addEventListener("change", sanitizeChromSelOptions);
-    chromSel.addEventListener("change", eraseChromPosString);
-    chromSel.addEventListener("change", populateCytobands({{cytobands|safe}}) );
 
     var chromPosInpt = document.getElementById("chrom_pos");
-    chromPosInpt.addEventListener("change", updatedChromPosInput);
-    chromPosInpt.addEventListener("change", populateCytobands({{cytobands|safe}}));
+    if (chromPosInpt) {
+      chromPosInpt.addEventListener("change", updatedChromPosInput);
+      chromPosInpt.addEventListener("change", populateCytobands({{cytobands|safe}}));
+      chromSel.addEventListener("change", eraseChromPosString);
+    }
+
 
     document.getElementById('hide_dismissed').onchange = function() {
       document.getElementById('expand_search').value = "False";
@@ -318,7 +322,8 @@
 <div class="form-group">
   <div class="row">
     <div class="col-1">
-      {{ wtf.form_field(form.chrom) }}
+      {{ form.chrom.label(class="control-label") }}
+      {{ form.chrom(class="selectpicker") }}
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.start) }}
