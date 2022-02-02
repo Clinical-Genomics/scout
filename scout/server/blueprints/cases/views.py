@@ -692,16 +692,20 @@ def delivery_report(institute_id, case_name):
         try:  # file could not be available
             html_file = open(delivery_report, "r")
             source_code = html_file.read()
-            # remove image, since it is problematic to render it in the PDF version
-            source_code = re.sub(
-                '<img class=.*?alt="SWEDAC logo">', "", source_code, flags=re.DOTALL
+
+            bytes_file = html_to_pdf_file(source_code, "portrait", 300)
+            file_name = "_".join(
+                [
+                    case_obj["display_name"],
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "scout_delivery.pdf",
+                ]
             )
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_scout_delivery.pdf",
+            return send_file(
+                bytes_file,
+                attachment_filename=file_name,
+                mimetype="application/pdf",
+                as_attachment=True,
             )
         except Exception as ex:
             flash(
@@ -709,6 +713,9 @@ def delivery_report(institute_id, case_name):
                     delivery_report, ex
                 ),
                 "warning",
+            )
+            LOG.error(
+                f"An error occurred while downloading delivery report {delivery_report} -- {ex}"
             )
 
     return send_from_directory(out_dir, filename)
