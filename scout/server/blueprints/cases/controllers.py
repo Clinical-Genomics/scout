@@ -8,7 +8,6 @@ from base64 import b64encode
 
 import query_phenomizer
 import requests
-from bs4 import BeautifulSoup
 from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
@@ -435,58 +434,6 @@ def case_report_content(store, institute_id, case_name):
     case_report_variants(store, case_obj, institute_obj, data)
 
     return data
-
-
-def coverage_report_contents(store, institute_obj, case_obj, base_url):
-    """Posts a request to chanjo-report and capture the body of the returned response to include it in case report
-
-    Args:
-        store(adapter.MongoAdapter)
-        institute_obj(models.Institute)
-        case_obj(models.Case)
-        base_url(str): base url of server
-
-    Returns:
-        coverage_data(str): string rendering of the content between <body </body> tags of a coverage report
-    """
-
-    request_data = {}
-    # extract sample ids from case_obj and add them to the post request object:
-    request_data["sample_id"] = [ind["individual_id"] for ind in case_obj["individuals"]]
-
-    # extract default panel names and default genes from case_obj and add them to the post request object
-    distinct_genes = set()
-    panel_names = []
-    for panel_info in case_obj.get("panels", []):
-        if panel_info.get("is_default") is False:
-            continue
-        panel_obj = store.gene_panel(panel_info["panel_name"], version=panel_info.get("version"))
-        distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
-        full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
-        panel_names.append(full_name)
-    panel_names = " ,".join(panel_names)
-    request_data["gene_ids"] = ",".join([str(gene_id) for gene_id in list(distinct_genes)])
-    request_data["panel_name"] = panel_names
-    request_data["request_sent"] = datetime.datetime.now()
-
-    # add institute-specific cutoff level to the post request object
-    request_data["level"] = institute_obj.get("coverage_cutoff", 15)
-
-    # send get request to chanjo report
-    # disable default certificate verification
-    resp = requests.post(base_url + "reports/report", data=request_data)
-
-    # read response content
-    soup = BeautifulSoup(resp.text)
-
-    # remove links in the printed version of coverage report
-    for tag in soup.find_all("a"):
-        tag.replaceWith("")
-
-    # extract body content using BeautifulSoup
-    coverage_data = "".join(["%s" % x for x in soup.body.contents])
-
-    return coverage_data
 
 
 def mt_coverage_stats(individuals, ref_chrom="14"):
