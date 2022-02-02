@@ -53,7 +53,7 @@ def test_update_groups(mock_app, tmpdir):
     assert updated_institute["phenotype_groups"]["HP:0000003"]["abbr"] == "ABBR1"
 
     # create a mock phenotype group file
-    phenotype_group_text = u"""#comment line\nHP:0000331\tABBR2\n"""
+    phenotype_group_text = """#comment line\nHP:0000331\tABBR2\n"""
     p = tmpdir.mkdir("sub").join("pheno_groups.csv")
     p.write(phenotype_group_text)
     assert p.read() == phenotype_group_text
