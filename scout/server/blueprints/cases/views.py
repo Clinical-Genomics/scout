@@ -3,7 +3,6 @@ import datetime
 import json
 import logging
 import os.path
-import re
 import shutil
 from operator import itemgetter
 
