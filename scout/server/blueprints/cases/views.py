@@ -751,7 +751,6 @@ def coverage_qc_report(institute_id, case_name):
     out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
     filename = os.path.basename(coverage_qc_report)
 
-    LOG.warning(out_dir)
 
     if report_format == "pdf":
         try:
