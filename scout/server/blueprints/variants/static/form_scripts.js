@@ -5,29 +5,31 @@ function sanitizeChromSelOptions() {
   var options = chrom_select && chrom_select.options;
   var opt;
 
+	console.log("SanitizeChromSelOptions")
+
   // clear other options if All is selected
-	// and take note of otherwise selected chrs
-  for (var i=1, iLen=options.length; i<iLen; i++) {
-    opt = options[i];
-    if (opt.selected) {
-    	if (chrom_select.selectedIndex === 0) {
+	if (chrom_select.selectedIndex === 0) {
+		console.log("All selected - clear others")
+  	for (var i=1, iLen=options.length; i<iLen; i++) {
+    	opt = options[i];
+    	if (opt.selected) {
 				opt.selected = false
-			} else {
-    		chrom.push(opt.value);
 			}
     }
   }
-
-	console.log("Depopulate cytobands if more than one chrom is selected, all selected ,")
-	if (chrom.length > 1) {
-		// disable
+  chrom = getSelectedChromosomes()
+	if (chrom.length != 1) {
+		console.log("Depopulate cytobands if more than one chrom is selected, all selected")
 		for (elem of [cytoStart, cytoEnd]) {
-			elem.options.length = 0; //remove previous cytoband select options
-			startElem.value = null
-			endElem.value = null
+			elem.options.length = 0; // remove previous cytoband select options
 		}
+		// clear start and end values
+		startElem.value = null
+		endElem.value = null
+
 		return
 	}
+	return
 }
 
 function getSelectedChromosomes() {
@@ -41,7 +43,7 @@ function getSelectedChromosomes() {
   if (chrom_select.selectedIndex === 0) {
 		return chrom
 	}
- 	// return individually selected chrs
+ 	// return selected chrs
   for (var i=1, iLen=options.length; i<iLen; i++) {
     opt = options[i];
     if (opt.selected) {
