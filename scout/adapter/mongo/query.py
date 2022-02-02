@@ -249,7 +249,7 @@ class QueryHandler(object):
             if criterion == "chrom" and query.get("chrom"):  # filter by coordinates
                 query_chrom = query.get("chrom")
                 if isinstance(query_chrom, list):
-                    if "" in query_chrom:
+                    if "" in query_chrom or query_chrom == []:
                         LOG.debug(f"Query chrom {query_chrom} has All selected")
                         continue
                     if len(query_chrom) == 1:
