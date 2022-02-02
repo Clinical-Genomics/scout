@@ -1,6 +1,5 @@
 # Everything needed in production
 
-BeautifulSoup4
 werkzeug
 Flask>=0.10
 Flask-DebugToolbar

@@ -18,7 +18,6 @@ LOG = logging.getLogger(__name__)
 
 def html_to_pdf_file(html_string, orientation, dpi=96):
     """Creates a pdf file from the content of an HTML file
-
     Args:
         html_string(string): an HTML string to be rendered as PDF
         orientation(string): landscape, portrait
@@ -27,7 +26,6 @@ def html_to_pdf_file(html_string, orientation, dpi=96):
     Returns:
         bytes_file(BytesIO): a BytesIO file
     """
-
     options = {
         "page-size": "A4",
         "orientation": orientation,

@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Unfreeze cyvcf2
 - Builder images used in Scout Dockerfiles
 - Crash report email subject gives host name
+- Export general case report to PDF using PDFKit instead of WeasyPrint
+- Do not include coverage report in PDF case report since they might have different orientation
 - Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
 - Updated cancer "Coverage and QC report" example
 ### Fixed
