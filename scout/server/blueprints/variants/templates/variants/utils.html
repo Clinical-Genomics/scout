@@ -19,16 +19,15 @@
 
 
     var chromSel = document.getElementById("chrom");
-    chromSel.addEventListener("multiselectclose", populateCytobands({{cytobands|safe}}) );
+    chromSel.addEventListener("change", function() { populateCytobands({{cytobands|safe}}) });
     chromSel.addEventListener("change", sanitizeChromSelOptions);
 
     var chromPosInpt = document.getElementById("chrom_pos");
     if (chromPosInpt) {
       chromPosInpt.addEventListener("change", updatedChromPosInput);
-      chromPosInpt.addEventListener("change", populateCytobands({{cytobands|safe}}));
+      chromPosInpt.addEventListener("change", function() { populateCytobands({{cytobands|safe}}) });
       chromSel.addEventListener("change", eraseChromPosString);
     }
-
 
     document.getElementById('hide_dismissed').onchange = function() {
       document.getElementById('expand_search').value = "False";
