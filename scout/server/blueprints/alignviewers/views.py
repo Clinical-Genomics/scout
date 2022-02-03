@@ -67,7 +67,7 @@ def remote_cors(remote_url):
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
-    file_path = request.args.get("file")
+    file_path = request.args.get("file") or ""
     range_header = request.headers.get("Range", None)
     if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
         return abort(500)
