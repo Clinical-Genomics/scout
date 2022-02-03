@@ -78,6 +78,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Start Scout also when loqusdbapi is not reachable
 - Clearer definition of manual standard and custom inheritance models in gene panels
+- Allow searching multiple chromosomes in filters
 ### Fixed
 - Gene panel crashing on edit action
 
