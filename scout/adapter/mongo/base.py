@@ -28,7 +28,6 @@ Copyright (c) 2017 __MoonsoInc__. All rights reserved.
 
 """
 import logging
-from datetime import datetime
 
 from flask import current_app
 
