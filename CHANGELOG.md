@@ -15,6 +15,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not include coverage report in PDF case report since they might have different orientation
 - Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
 - Updated cancer "Coverage and QC report" example
+- Keep portrait orientation in PDF delivery report
+- Export delivery report to PDF using PDFKit
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
@@ -23,6 +25,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export verified variants from all institutes when user is admin
 - Cancer coverage and QC report not found for demo cancer case
 - Pull request template instructions on how to deploy to test server 
+- PDF Delivery report not showing Swedac logo
+- Fix code typos
 
 ## [4.47]
 ### Added
@@ -73,6 +77,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Start Scout also when loqusdbapi is not reachable
 - Clearer definition of manual standard and custom inheritance models in gene panels
+- Allow searching multiple chromosomes in filters
 ### Fixed
 - Gene panel crashing on edit action
 
