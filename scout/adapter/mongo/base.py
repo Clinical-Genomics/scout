@@ -104,6 +104,7 @@ class MongoAdapter(
         self.event_collection = database.event
         self.exon_collection = database.exon
         self.filter_collection = database.filter
+        self.hgnc_collection = database.hgnc_gene
         self.hpo_term_collection = database.hpo_term
         self.institute_collection = database.institute
         self.managed_variant_collection = database.managed_variant
@@ -112,7 +113,6 @@ class MongoAdapter(
         self.transcript_collection = database.transcript
         self.user_collection = database.user
         self.variant_collection = database.variant
-        self.hgnc_collection = database.hgnc_gene
 
     def collections(self):
         """Return all collection names
