@@ -113,7 +113,7 @@ class VariantFiltersForm(FlaskForm):
         render_kw={"placeholder": "<chr>:<start pos>-<end pos>[optional +/-<span>]"},
     )
 
-    chrom = NonValidatingSelectField("Chromosome", choices=[], default="")
+    chrom = NonValidatingSelectMultipleField("Chromosome", choices=[], default="")
     start = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = NonValidatingSelectField("Cytoband start", choices=[])

@@ -69,7 +69,7 @@ def test_populate_chrom_choices(app):
     populate_chrom_choices(form, case)
     choices = form.chrom.choices
 
-    for nr, choice in enumerate(choices[1:]):  # first choice is not a chromosome, but all chroms
+    for nr, choice in enumerate(choices):
         assert choice[0] == CHROMOSOMES_38[nr]
 
 
