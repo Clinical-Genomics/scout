@@ -79,7 +79,7 @@ class MongoAdapter(
     PhenoModelHandler,
 ):
 
-    """Adapter for cummunication with a mongo database."""
+    """Adapter for communication with a Mongo database."""
 
     def __init__(self, database=None):
         if database:
@@ -94,25 +94,25 @@ class MongoAdapter(
     def setup(self, database):
         """Setup connection to database."""
         self.db = database
-        self.hgnc_collection = database.hgnc_gene
-        self.user_collection = database.user
-        self.institute_collection = database.institute
-        self.event_collection = database.event
+        self.acmg_collection = database.acmg
         self.case_collection = database.case
         self.case_group_collection = database.case_group
-        self.panel_collection = database.gene_panel
-        self.hpo_term_collection = database.hpo_term
-        self.disease_term_collection = database.disease_term
-        self.variant_collection = database.variant
-        self.acmg_collection = database.acmg
         self.clinvar_collection = database.clinvar
         self.clinvar_submission_collection = database.clinvar_submission
-        self.exon_collection = database.exon
-        self.transcript_collection = database.transcript
-        self.filter_collection = database.filter
         self.cytoband_collection = database.cytoband
+        self.disease_term_collection = database.disease_term
+        self.event_collection = database.event
+        self.exon_collection = database.exon
+        self.filter_collection = database.filter
+        self.hpo_term_collection = database.hpo_term
+        self.institute_collection = database.institute
         self.managed_variant_collection = database.managed_variant
+        self.panel_collection = database.gene_panel
         self.phenomodel_collection = database.phenomodel
+        self.transcript_collection = database.transcript
+        self.user_collection = database.user
+        self.variant_collection = database.variant
+        self.hgnc_collection = database.hgnc_gene
 
     def collections(self):
         """Return all collection names
