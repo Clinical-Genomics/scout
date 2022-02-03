@@ -169,7 +169,6 @@ class QueryHandler(object):
 
         These are the different query options:
             {
-                'chrom': str,
                 'thousand_genomes_frequency': float,
                 'exac_frequency': float,
                 'clingen_ngi': int,
@@ -183,7 +182,7 @@ class QueryHandler(object):
                 'clinsig': list,
                 'clinsig_confident_always_returned': boolean,
                 'variant_type': str(('research', 'clinical')),
-                'chrom': str,
+                'chrom': str or list of str,
                 'start': int,
                 'end': int,
                 'svtype': list,
@@ -248,9 +247,19 @@ class QueryHandler(object):
                 continue
 
             if criterion == "chrom" and query.get("chrom"):  # filter by coordinates
+                query_chrom = query.get("chrom")
+                if isinstance(query_chrom, list):
+                    if "" in query_chrom or query_chrom == []:
+                        LOG.debug(f"Query chrom {query_chrom} has All selected")
+                        continue
+                    if len(query_chrom) == 1:
+                        query["chrom"] = query_chrom[0]
+                    else:
+                        mongo_query["chromosome"] = {"$in": query_chrom}
+                        continue
                 coordinate_query = None
-                if category == "snv":
-                    mongo_query["chromosome"] = query["chrom"]
+                if category in ["snv", "cancer"]:
+                    mongo_query["chromosome"] = query.get("chrom")
                     if query.get("start") and query.get("end"):
                         self.coordinate_filter(query, mongo_query)
                 else:  # sv
