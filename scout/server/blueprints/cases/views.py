@@ -21,7 +21,6 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
-from flask_weasyprint import HTML, render_pdf
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, matchmaker, rerunner, store
