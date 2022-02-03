@@ -258,7 +258,7 @@ class QueryHandler(object):
                         mongo_query["chromosome"] = {"$in": query_chrom}
                         continue
                 coordinate_query = None
-                if category == "snv":
+                if category in ["snv", "cancer"]:
                     mongo_query["chromosome"] = query.get("chrom")
                     if query.get("start") and query.get("end"):
                         self.coordinate_filter(query, mongo_query)
