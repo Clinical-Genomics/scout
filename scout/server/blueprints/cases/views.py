@@ -716,7 +716,6 @@ def delivery_report(institute_id, case_name):
             LOG.error(
                 f"An error occurred while downloading delivery report {delivery_report} -- {ex}"
             )
-            return redirect(request.referrer)
 
     return send_from_directory(out_dir, filename)
 
@@ -784,7 +783,6 @@ def coverage_qc_report(institute_id, case_name):
                 "warning",
             )
             LOG.error(ex)
-            return redirect(request.referrer)
 
     return send_from_directory(out_dir, filename)
 
