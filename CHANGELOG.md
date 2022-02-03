@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cast MNVs to SNV for test
 - Export verified variants from all institutes when user is admin
 - Cancer coverage and QC report not found for demo cancer case
+- Pull request template instructions on how to deploy to test server 
 
 ## [4.47]
 ### Added
