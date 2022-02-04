@@ -91,6 +91,68 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
         assert resp.status_code == 302
 
 
+def test_research(app, institute_obj, case_obj, mocker, mock_redirect):
+    """Test the endpoint to request research variants for a case"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    # GIVEN a test case without request research pending
+    test_case = store.case_collection.find_one()
+    assert test_case.get("research_requested") is False
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # WHEN rerun request is sent
+        client.post(
+            url_for(
+                "cases.research",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+        )
+
+        # THEN the updated case should have research_requested set to True
+        assert store.case_collection.find_one({"research_requested": True})
+        # AND a relative event should have been created in the evens collection
+        assert store.event_collection.find_one({"verb": "open_research"})
+
+
+def test_reset_research(app, institute_obj, case_obj, mocker, mock_redirect):
+    """Test the endpoint to cancel the upload of research variants for a case"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # WHEN research variants request is sent
+        client.post(
+            url_for(
+                "cases.research",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+        )
+        # GIVEN a test case with request research pending
+        assert store.case_collection.find_one({"research_requested": True})
+
+        # WHEN the request for research variants is canceled
+        client.get(
+            url_for(
+                "cases.reset_research",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+        )
+        # THEN the updated case should have research_requested set to False
+        assert store.case_collection.find_one({"research_requested": False})
+        # AND a relative event should have been created in the evens collection
+        assert store.event_collection.find_one({"verb": "reset_research"})
+
+
 def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
     """test case rerun function"""
 
