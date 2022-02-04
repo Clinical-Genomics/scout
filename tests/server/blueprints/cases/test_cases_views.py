@@ -150,7 +150,7 @@ def test_reset_research(app, institute_obj, case_obj, mocker, mock_redirect):
         # THEN the updated case should have research_requested set to False
         assert store.case_collection.find_one({"research_requested": False})
         # AND a relative event should have been created in the evens collection
-        assert store.event_collection.find_one({"verb": "close_research"})
+        assert store.event_collection.find_one({"verb": "reset_research"})
 
 
 def test_rerun(app, institute_obj, case_obj, monkeypatch, mocker, mock_redirect):
