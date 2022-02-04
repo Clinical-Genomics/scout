@@ -21,7 +21,6 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
-from flask_weasyprint import HTML, render_pdf
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, matchmaker, rerunner, store
@@ -928,13 +927,21 @@ def download_hpo_genes(institute_id, case_name, category):
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
         html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><i>{term.get('genes')}</i><br>"
-    return render_pdf(
-        HTML(string=html_content),
-        download_filename=case_obj["display_name"]
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + category
-        + "_dynamic_phenotypes.pdf",
+
+    bytes_file = html_to_pdf_file(html_content, "portrait", 300)
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            category,
+            "dynamic_phenotypes.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 
