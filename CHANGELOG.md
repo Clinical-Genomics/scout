@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pull request template instructions on how to deploy to test server
 - PDF Delivery report not showing Swedac logo
 - Fix code typos
+- Disable codefactor raised by ESLint for javascript functions located on another file
 
 ## [4.47]
 ### Added
