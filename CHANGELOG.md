@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated cancer "Coverage and QC report" example
 - Keep portrait orientation in PDF delivery report
 - Export delivery report to PDF using PDFKit
+- Removed WeasyPrint lib dependency 
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
