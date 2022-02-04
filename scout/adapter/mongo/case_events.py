@@ -303,7 +303,7 @@ class CaseEventHandler(object):
             user=user,
             link=link,
             category="case",
-            verb="close_research",
+            verb="reset_research",
             subject=case["display_name"],
         )
 
