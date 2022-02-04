@@ -71,6 +71,7 @@ VERBS_MAP = {
     "cancel_sanger": "cancelled sanger order for",
     "archive": "archived",
     "open_research": "opened research mode for",
+    "reset_research": "canceled research mode request for",
     "mark_causative": "marked causative for",
     "unmark_causative": "unmarked causative for",
     "mark_partial_causative": "mark partial causative for",

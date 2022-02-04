@@ -241,7 +241,7 @@
 {% endmacro %}
 
 {% macro research(case) %}
-<a href="#submenu2" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="submenu2" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu2" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="submenu2" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-graduation-cap fa-fw mr-3"></span>
     <span class="menu-collapsed">Research list</span>
@@ -250,9 +250,10 @@
 </a>
 <!-- Submenu content -->
   {% if case.research_requested %}
-    <div id='submenu2' class="collapse-show">
-      <div class="card card-body">Research pending</div>
-    </div>
+    <span class="d-flex align-items-center">
+      <i class="text-white mt-1 ml-3">Research pending</i>
+      <button type="button" class="btn btn-danger btn-xs ml-3" data-toggle="modal" data-target="#cancel-research-modal"><i class="fa fa-hand-paper-o text-white"></i></button>
+    </span>
   {% else %}
     <div id='submenu2' class="collapse">
       <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
@@ -269,13 +270,15 @@
   </div>
 </a>
 <!-- Submenu content -->
-<div id='submenu3' class="collapse sidebar-submenu">
-  {% if case.rerun_requested %}
-    <i class="text-white">Rerun pending</i>
-  {% else %}
-    <button type="button" class="btn btn-warning form-control btn-sm" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
-  {% endif %}
-</div>
+{% if case.rerun_requested %}
+  <span class="d-flex align-items-center">
+    <i class="text-white mt-1 ml-3">Rerun pending</i>
+  </span>
+{% else %}
+  <div id='submenu3' class="collapse">
+    <button type="button" class="btn btn-warning btn-sm form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+  </div>
+{% endif %}
 {% endmacro %}
 
 {% macro share_case(institute, case, collaborators) %}
@@ -396,6 +399,24 @@
           </div>
         </div>
       </div>
+    </div>
+  </form>
+
+  <form action="{{ url_for('cases.reset_research', institute_id=institute._id,
+                           case_name=case.display_name) }}" method="GET">
+    <div class="modal fade" id="cancel-research-modal">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-body">
+            <p>Cancel request to upload research variants?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </form>
 {% endmacro %}
