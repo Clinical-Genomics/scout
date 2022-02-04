@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [ ]
+### Added
+- Option to cancel a request for research variants in case page
 ### Changed
 - Update igv.js to v2.10.5
 - Updated example of a case delivery report
