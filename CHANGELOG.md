@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Keep portrait orientation in PDF delivery report
 - Export delivery report to PDF using PDFKit instead of Weasyprint
 - PDF export of clinical and research HPO panels using PDFKit instead of Weasyprint
+- Export gene panel report to PDF using PDFKit
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
@@ -31,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - PDF Delivery report not showing Swedac logo
 - Fix code typos
 - Disable codefactor raised by ESLint for javascript functions located on another file
+- Loading spinner stuck after downloading a PDF gene panel report
 
 ## [4.47]
 ### Added

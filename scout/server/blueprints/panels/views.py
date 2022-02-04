@@ -3,12 +3,17 @@ import datetime
 import json
 import logging
 
-from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
 from flask_login import current_user
-from flask_weasyprint import HTML, render_pdf
 
 from scout.server.extensions import store
-from scout.server.utils import jsonconverter, public_endpoint, templated, user_institutes
+from scout.server.utils import (
+    html_to_pdf_file,
+    jsonconverter,
+    public_endpoint,
+    templated,
+    user_institutes,
+)
 
 from . import controllers
 from .forms import PanelGeneForm
@@ -197,14 +202,21 @@ def panel_export(panel_id):
     data = controllers.panel_export(store, panel_obj)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d")
     html_report = render_template("panels/panel_pdf_simple.html", **data)
-    return render_pdf(
-        HTML(string=html_report),
-        download_filename=data["panel"]["panel_name"]
-        + "_"
-        + str(data["panel"]["version"])
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + "_scout.pdf",
+
+    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
+    file_name = "_".join(
+        [
+            data["panel"]["panel_name"],
+            str(data["panel"]["version"]),
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            "scout.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 
