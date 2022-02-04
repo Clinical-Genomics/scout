@@ -1,5 +1,5 @@
 /* exported updatedChromSelOptions */
-function updatedChromSelOptions() {
+function updatedChromSelOptions() { // eslint-disable-line no-unused-vars
 	console.log("updatedChromSelOptions")
 
   chrom = getSelectedChromosomes()
@@ -195,7 +195,7 @@ function eraseChromPosString() {
 /* exported updatedChromPosInput */
 // Link chromosome position input field with chromosome and cytoband dropdowns.
 // Changes in chrom_pos input are reflected in chrom, start and end fields
-function updatedChromPosInput() {
+function updatedChromPosInput() { // eslint-disable-line no-unused-vars
 	console.log('Update to chrom pos field detected!')
 	var chromSel = document.forms["filters_form"].elements["chrom"];
 	var chromPos = document.forms["filters_form"].elements["chrom_pos"];
@@ -247,4 +247,3 @@ function updatedChromPosInput() {
 		}
 	}
 }
-
