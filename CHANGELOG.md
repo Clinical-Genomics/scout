@@ -19,6 +19,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export delivery report to PDF using PDFKit instead of Weasyprint
 - PDF export of clinical and research HPO panels using PDFKit instead of Weasyprint
 - Export gene panel report to PDF using PDFKit
+- Export delivery report to PDF using PDFKit
+- Removed WeasyPrint lib dependency 
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
