@@ -282,7 +282,7 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
-    def close_research(self, institute, case, user, link):
+    def reset_research(self, institute, case, user, link):
         """Reset research request status for a given case
 
         Args:
