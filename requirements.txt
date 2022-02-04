@@ -9,7 +9,6 @@ path.py
 Flask-Markdown
 Flask-WTF
 Flask-Mail
-Flask-WeasyPrint
 coloredlogs<=14.0
 query_phenomizer
 Flask-Babel
@@ -17,11 +16,13 @@ livereload
 python-dateutil
 pymongo>=3.7,<4.0
 pathlib
-WeasyPrint==0.42.3
 pdfkit
 xlsxwriter
 click
 cryptography<3.4
+defusedxml
+svglib
+cairosvg
 
 # webapp login
 authlib
