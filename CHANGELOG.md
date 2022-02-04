@@ -24,9 +24,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cast MNVs to SNV for test
 - Export verified variants from all institutes when user is admin
 - Cancer coverage and QC report not found for demo cancer case
-- Pull request template instructions on how to deploy to test server 
+- Pull request template instructions on how to deploy to test server
 - PDF Delivery report not showing Swedac logo
 - Fix code typos
+- Disable codefactor raised by ESLint for javascript functions located on another file
 - IGV browser crashing when file system with alignment files is not mounted
 
 ## [4.47]
