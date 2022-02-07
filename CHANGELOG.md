@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [ ]
+## [4.48.1]
+### Fixed
+- General case PDF report for recent cases with no pedigree
+
+## [4.48]
 ### Added
 - Option to cancel a request for research variants in case page
 ### Changed
@@ -21,8 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export delivery report to PDF using PDFKit instead of Weasyprint
 - PDF export of clinical and research HPO panels using PDFKit instead of Weasyprint
 - Export gene panel report to PDF using PDFKit
-- Export delivery report to PDF using PDFKit
-- Removed WeasyPrint lib dependency 
+- Removed WeasyPrint lib dependency
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
