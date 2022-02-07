@@ -83,7 +83,9 @@
 	            {% if format == 'html' %}
 	              {{ case.madeline_info|safe }}
 	            {% elif case.madeline_path %} <!--PDF version-->
-                <img alt="pedigree_img" src="{{case.madeline_path}}">
+                <!--<img alt="pedigree_img" src="{{case.madeline_path}}">-->
+                madeline path:{{case.madeline_path}}<br>
+                madeline string:#{{madeline_info}}#
 	            {% endif %}
           </td>
           {% endif %}
