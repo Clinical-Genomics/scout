@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Fixed
+- General case PDF report for cases with no pedigree
+
 ## [4.48]
 ### Added
 - Option to cancel a request for research variants in case page
