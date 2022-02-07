@@ -35,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix code typos
 - Disable codefactor raised by ESLint for javascript functions located on another file
 - Loading spinner stuck after downloading a PDF gene panel report
+- IGV browser crashing when file system with alignment files is not mounted
 
 ## [4.47]
 ### Added
