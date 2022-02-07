@@ -218,7 +218,7 @@ def pdf_case_report(institute_id, case_name):
     data = controllers.case_report_content(store, institute_id, case_name)
 
     # Workaround to be able to print the case pedigree to pdf
-    if case_obj.get("madeline_info") is not None:
+    if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
         write_to = os.path.join(cases_bp.static_folder, "madeline.png")
         svg2png(
             bytestring=case_obj["madeline_info"],
