@@ -82,7 +82,7 @@
 	        <td>
 	            {% if format == 'html' %}
 	              {{ case.madeline_info|safe }}
-	            {% else %} <!--PDF version-->
+	            {% elif case.madeline_path %} <!--PDF version-->
                 <img alt="pedigree_img" src="{{case.madeline_path}}">
 	            {% endif %}
           </td>
