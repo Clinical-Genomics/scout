@@ -4,9 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.48.1]
 ### Fixed
-- General case PDF report for cases with no pedigree
+- General case PDF report for recent cases with no pedigree
 
 ## [4.48]
 ### Added
