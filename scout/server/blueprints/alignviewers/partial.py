@@ -28,7 +28,10 @@ def parse_byte_range(byte_range):
 def send_file_partial(path):
     range_header = request.headers.get("Range", None)
     if not range_header:
-        return send_file(path)
+        try:
+            return send_file(path)
+        except IOError:
+            return abort(404, "File not found")
 
     try:
         byte_range = parse_byte_range(request.headers["Range"])
