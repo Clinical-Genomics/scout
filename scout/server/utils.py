@@ -15,12 +15,13 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
-def html_to_pdf_file(html_string, orientation, dpi=96):
+def html_to_pdf_file(html_string, orientation, dpi=96, margins=["2cm", "1cm", "1cm", "1cm"]):
     """Creates a pdf file from the content of an HTML file
     Args:
         html_string(string): an HTML string to be rendered as PDF
         orientation(string): landscape, portrait
         dpi(int): dot density of the page to be printed
+        margins(list): [ margin-top, margin-right, margin-bottom, margin-left], in cm
 
     Returns:
         bytes_file(BytesIO): a BytesIO file
@@ -30,6 +31,10 @@ def html_to_pdf_file(html_string, orientation, dpi=96):
         "orientation": orientation,
         "encoding": "UTF-8",
         "dpi": dpi,
+        "margin-top": margins[0],
+        "margin-right": margins[1],
+        "margin-bottom": margins[2],
+        "margin-left": margins[3],
         "enable-local-file-access": None,
     }
     pdf = pdfkit.from_string(html_string, False, options=options, verbose=True)
