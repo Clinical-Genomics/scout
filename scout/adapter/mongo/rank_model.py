@@ -8,6 +8,18 @@ LOG = logging.getLogger(__name__)
 
 
 class RankModelHandler(object):
+    def fetch_rank_model(self, rank_model_url):
+        try:
+          return urllib.request.urlopen(rank_model_url, timeout=20)
+        except:
+          return None
+
+    def parse_rank_model(self, response):
+        try:
+          return ConfigObj(response).dict()
+        except:
+          return None
+
     def add_rank_model(self, rank_model_url):
         """Fetch a rank model from remote.
 
@@ -15,17 +27,17 @@ class RankModelHandler(object):
             rank_model_url(string): A string with the url to the rank model ini file to fetch.
 
         Returns:
-            rank_model(dict): a copy of what was inserted
+            rank_model(dict): a copy of what was inserted, or empty if failed
         """
-        LOG.info("Adding rank model to the database")
+        response = self.fetch_rank_model(rank_model_url)
+        config = self.parse_rank_model(response)
 
-        response = urllib.request.urlopen(rank_model_url, timeout=20)
-        config = ConfigObj(response).dict()
-        config.update({"_id": rank_model_url})
-        config_id = self.rank_model_collection.insert_one(config).inserted_id
-        rank_model = self.rank_model_collection.find_one(config_id)
+        if (config):
+          config.update({"_id": rank_model_url})
+          config_id = self.rank_model_collection.insert_one(config).inserted_id
+          return self.rank_model_collection.find_one(config_id)
 
-        return rank_model
+        return {}
 
     def rank_model(self, rank_model_version=None):
         """Fetch a rank model from the database or fetch it from remote.
