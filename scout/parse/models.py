@@ -6,7 +6,7 @@ import re
 from fractions import Fraction
 from glob import glob
 from pathlib import Path
-from typing import Any, ByteString, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, Field, root_validator, validator
 from typing_extensions import Literal
@@ -281,20 +281,20 @@ class ScoutLoadConfig(BaseModel):
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
-    genome_build: int = Field([], alias="human_genome_build")
+    genome_build: int = Field(38, alias="human_genome_build")
     individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
-    madeline_info: Optional[str] = Field("", alias="madeline")  #!
+    madeline_info: Optional[str] = Field(None, alias="madeline")  #!
     multiqc: Optional[str] = None
     owner: str = None
     peddy_ped: Optional[str] = None
-    peddy_ped_check: Optional[str] = Field("", alias="peddy_check")
-    peddy_sex_check: Optional[str] = Field("", alias="peddy_sex")
+    peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")
+    peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")
     phenotype_terms: Optional[List[str]] = None
-    rank_model_version: Optional[str] = ""
+    rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
     smn_tsv: Optional[str] = None
-    sv_rank_model_version: Optional[str] = ""
+    sv_rank_model_version: Optional[str] = None
     synopsis: Union[List[str], str] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles]
