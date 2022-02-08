@@ -10,15 +10,15 @@ LOG = logging.getLogger(__name__)
 class RankModelHandler(object):
     def fetch_rank_model(self, rank_model_url):
         try:
-          return urllib.request.urlopen(rank_model_url, timeout=20)
+            return urllib.request.urlopen(rank_model_url, timeout=20)
         except:
-          return None
+            return None
 
     def parse_rank_model(self, response):
         try:
-          return ConfigObj(response).dict()
+            return ConfigObj(response).dict()
         except:
-          return None
+            return None
 
     def add_rank_model(self, rank_model_url):
         """Fetch a rank model from remote.
@@ -32,10 +32,10 @@ class RankModelHandler(object):
         response = self.fetch_rank_model(rank_model_url)
         config = self.parse_rank_model(response)
 
-        if (config):
-          config.update({"_id": rank_model_url})
-          config_id = self.rank_model_collection.insert_one(config).inserted_id
-          return self.rank_model_collection.find_one(config_id)
+        if config:
+            config.update({"_id": rank_model_url})
+            config_id = self.rank_model_collection.insert_one(config).inserted_id
+            return self.rank_model_collection.find_one(config_id)
 
         return {}
 
