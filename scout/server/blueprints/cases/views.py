@@ -235,7 +235,9 @@ def pdf_case_report(institute_id, case_name):
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
-    bytes_file = html_to_pdf_file(html_string=html_report, orientation="portrait", zoom=0.75)
+    bytes_file = html_to_pdf_file(
+        html_string=html_report, orientation="portrait", dpi=300, zoom=0.75
+    )
     file_name = "_".join(
         [
             case_obj["display_name"],
