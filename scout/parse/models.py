@@ -291,10 +291,10 @@ class ScoutLoadConfig(BaseModel):
     peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")
     peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")
     phenotype_terms: Optional[List[str]] = None
-    rank_model_version: Optional[str] = ""
+    rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
     smn_tsv: Optional[str] = None
-    sv_rank_model_version: Optional[str] = ""
+    sv_rank_model_version: Optional[str] = None
     synopsis: Union[List[str], str] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles]
