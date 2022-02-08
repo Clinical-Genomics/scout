@@ -19,5 +19,5 @@ jobs:
         uses: anaynayak/python-vulture-action@v1.0
         id: vulture
         with:
-          vulture-args: --min-confidence 80 --ignore-names cls ${{steps.files.outputs.all}}
+          vulture-args: --min-confidence 80 --ignore-names cls,args ${{steps.files.outputs.all}}
         continue-on-error: true
