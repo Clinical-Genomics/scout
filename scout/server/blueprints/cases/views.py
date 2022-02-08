@@ -935,7 +935,7 @@ def download_hpo_genes(institute_id, case_name, category):
     phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
-        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><i>{term.get('genes')}</i><br>"
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><font style='font-size:16px;'><i>{term.get('genes')}</i></font><br><br>"
 
     bytes_file = html_to_pdf_file(html_content, "portrait", 300)
     file_name = "_".join(
