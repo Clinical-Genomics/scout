@@ -27,7 +27,7 @@ def test_coverage_report_contents(app, institute_obj, case_obj):
         status=200,
     )
 
-    # THEN the returned result should be content included in <body> of the HTML response
+    # THEN the returned result should be the HTML content included in the <body> of the HTML response
     assert coverage_report_contents(base_url, institute_obj, case_obj) == "This is a test"
 
 
