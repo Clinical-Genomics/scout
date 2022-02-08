@@ -121,6 +121,15 @@ def rank_score(variant, rank_model):
             if isinstance(v, dict) and isinstance(int(v.get("score")), (int))
         ]
 
+    def get_category_abbr(category_name):
+        category_names = category_name.split(" ")
+
+        return (
+            "".join([x[0].upper() for x in category_names])
+            if len(category_names) > 1
+            else category_name
+        )
+
     def get_rank(model, info_fields, variant, category):
         fields = [f for f in info_fields if f.get("category") == category]
         scores = [get_scores(field) for field in fields]
@@ -131,27 +140,29 @@ def rank_score(variant, rank_model):
         )
 
         category_name = category.replace("_", " ").title()
-        category_names = category_name.split(" ")
-        category_abbr = (
-            "".join([x[0].upper() for x in category_names])
-            if len(category_names) > 1
-            else category_name
-        )
 
         return {
             "category": category_name,
-            "category_abbreviation": category_abbr,
+            "category_abbreviation": get_category_abbr(category_name),
             "score": rank_score.get("score"),
             "min": min(flattend_scores),
             "max": max(flattend_scores),
         }
 
-    def get_rank_score_results(model):
-        fields = [v for v in model.values() if isinstance(v, dict) and v.get("field") == "INFO"]
+    def get_rank_score_results(rank_model):
+        info_fields = [
+            v for v in rank_model.values() if isinstance(v, dict) and v.get("field") == "INFO"
+        ]
 
-        return [get_rank(model, fields, variant, c) for c in model["Categories"].keys()]
+        return [
+            get_rank(rank_model, info_fields, variant, category)
+            for category in rank_model["Categories"].keys()
+        ]
 
-    return sorted(get_rank_score_results(rank_model), key=lambda k: k["category"].casefold())
+    try:
+        return sorted(get_rank_score_results(rank_model), key=lambda k: k["category"].casefold())
+    except:
+        return []
 
 
 def user_institutes(store, login_user):
