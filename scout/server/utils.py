@@ -136,7 +136,7 @@ def rank_score(variant, rank_model):
         flattend_scores = [n for v in scores for n in v]
         # finds the already pre-calculated score
         rank_score = next(
-            (r for r in variant.get("rank_score_results") if r.get("category") == category), None
+            (r for r in variant.get("rank_score_results") if r.get("category") == category), {}
         )
 
         category_name = category.replace("_", " ").title()
