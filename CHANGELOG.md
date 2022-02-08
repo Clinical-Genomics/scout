@@ -7,11 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Fixed
 - Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check, rank_model_version and sv_rank_model_version
-
-## [4.48.1]
 ### Changed
 - Introduced page margins on exported PDF reports
 - Smaller gene fonts in downloaded HPO genes PDF reports
+
 
 ## [4.48.1]
 ### Fixed
