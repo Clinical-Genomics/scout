@@ -78,8 +78,7 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         panel_names.append(full_name)
     panel_names = " ,".join(panel_names)
-    request_data["extras"] = {"gene_ids": list(distinct_genes)}
-
+    request_data["gene_ids"] = ",".join([str(gene_id) for gene_id in list(distinct_genes)])
     request_data["panel_name"] = panel_names
     request_data["request_sent"] = datetime.datetime.now()
 
