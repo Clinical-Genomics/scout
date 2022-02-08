@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.48.1]
+### Changed
+- Introduced page margins on exported PDF reports
+- Smaller gene fonts in downloaded HPO genes PDF reports
+
+## [4.48.1]
 ### Fixed
 - General case PDF report for recent cases with no pedigree
 
