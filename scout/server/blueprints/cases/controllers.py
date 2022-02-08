@@ -52,10 +52,11 @@ JSON_HEADERS = {
 }
 
 
-def coverage_report_contents(institute_obj, case_obj):
+def coverage_report_contents(base_url, institute_obj, case_obj):
     """Capture the contents of a case coverage report (chanjo-report), to be displayed in the general case report
 
     Args:
+        base_url(str): base url of this application
         institute_obj(models.Institute)
         case_obj(models.Case)
 
@@ -86,9 +87,10 @@ def coverage_report_contents(institute_obj, case_obj):
     request_data["level"] = institute_obj.get("coverage_cutoff", 15)
 
     # Collect the coverage report HTML string
-    coverage_report_html = render_template("report/report.html", format="pdf", **request_data)
+    resp = requests.post(base_url + "reports/report", data=request_data)
+
     # Extract the contents between <body> and </body>
-    html_body_content = coverage_report_html.split("<body>")[1].split("</body>")[0]
+    html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
     return html_body_content
 
 

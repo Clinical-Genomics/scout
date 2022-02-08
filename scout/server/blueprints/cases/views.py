@@ -222,7 +222,9 @@ def pdf_case_report(institute_id, case_name):
         current_app.config.get("SQLALCHEMY_DATABASE_URI")
         and case_obj.get("track", "rare") != "cancer"
     ):
-        data["coverage_report"] = controllers.coverage_report_contents(institute_obj, case_obj)
+        data["coverage_report"] = controllers.coverage_report_contents(
+            request.url_root, institute_obj, case_obj
+        )
 
     # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
