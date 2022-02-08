@@ -9,7 +9,7 @@ from base64 import b64encode
 import query_phenomizer
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, flash, redirect, render_template, request, url_for
+from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
 from flask_mail import Message
 from requests.auth import HTTPBasicAuth
