@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Fixed
+- Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check
+
 ## [4.48.1]
 ### Fixed
 - General case PDF report for recent cases with no pedigree
