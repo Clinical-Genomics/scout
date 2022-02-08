@@ -61,7 +61,7 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
         case_obj(models.Case)
 
     Returns:
-        coverage_html(str): A string corresponding to the HTML content of a chanjo-report
+        html_body_content(str): A string corresponding to the text within the <body> of an HTML chanjo-report page
     """
     request_data = {}
     # extract sample ids from case_obj and add them to the post request object:
