@@ -9,7 +9,7 @@ from base64 import b64encode
 import query_phenomizer
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, flash, redirect, request, url_for
+from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_mail import Message
 from requests.auth import HTTPBasicAuth
@@ -50,6 +50,46 @@ JSON_HEADERS = {
     "Content-type": "application/json; charset=utf-8",
     "Accept": "text/json",
 }
+
+
+def coverage_report_contents(institute_obj, case_obj):
+    """Capture the contents of a case coverage report (chanjo-report), to be displayed in the general case report
+
+    Args:
+        institute_obj(models.Institute)
+        case_obj(models.Case)
+
+    Returns:
+        coverage_html(str): A string corresponding to the HTML content of a chanjo-report
+    """
+    request_data = {}
+    # extract sample ids from case_obj and add them to the post request object:
+    request_data["sample_id"] = [ind["individual_id"] for ind in case_obj["individuals"]]
+
+    # extract default panel names and default genes from case_obj and add them to the post request object
+    distinct_genes = set()
+    panel_names = []
+    for panel_info in case_obj.get("panels", []):
+        if panel_info.get("is_default") is False:
+            continue
+        panel_obj = store.gene_panel(panel_info["panel_name"], version=panel_info.get("version"))
+        distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
+        full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
+        panel_names.append(full_name)
+    panel_names = " ,".join(panel_names)
+    request_data["extras"] = {"gene_ids": list(distinct_genes)}
+
+    request_data["panel_name"] = panel_names
+    request_data["request_sent"] = datetime.datetime.now()
+
+    # add institute-specific cutoff level to the post request object
+    request_data["level"] = institute_obj.get("coverage_cutoff", 15)
+
+    # Collect the coverage report HTML string
+    coverage_report_html = render_template("report/report.html", format="pdf", **request_data)
+    # Extract the contents between <body> and </body>
+    html_body_content = coverage_report_html.split("<body>")[1].split("</body>")[0]
+    return html_body_content
 
 
 def case(store, institute_obj, case_obj):

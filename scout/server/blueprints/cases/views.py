@@ -217,6 +217,13 @@ def pdf_case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_id, case_name)
 
+    # add coverage report on the bottom of this report
+    if (
+        current_app.config.get("SQLALCHEMY_DATABASE_URI")
+        and case_obj.get("track", "rare") != "cancer"
+    ):
+        data["coverage_report"] = controllers.coverage_report_contents(institute_obj, case_obj)
+
     # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
         write_to = os.path.join(cases_bp.static_folder, "madeline.png")
@@ -228,7 +235,7 @@ def pdf_case_report(institute_id, case_name):
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
-    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
+    bytes_file = html_to_pdf_file(html_string=html_report, orientation="portrait", zoom=0.75)
     file_name = "_".join(
         [
             case_obj["display_name"],
