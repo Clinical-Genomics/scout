@@ -77,7 +77,6 @@ def case(institute_id, case_name):
         tissue_types=SAMPLE_SOURCE,
         gens_info=gens.connection_settings(case_obj.get("genome_build")),
         display_rerunner=rerunner.connection_settings.get("display", False),
-        path_exists=path_exists,
         **data,
     )
 
