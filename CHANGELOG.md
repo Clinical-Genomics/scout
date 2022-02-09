@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Introduced page margins on exported PDF reports
 - Smaller gene fonts in downloaded HPO genes PDF reports
+- Reintroduced gene coverage data in the PDF-exported general report
 
 ## [4.48.1]
 ### Fixed
