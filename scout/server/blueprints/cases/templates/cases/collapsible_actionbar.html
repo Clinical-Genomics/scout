@@ -88,7 +88,7 @@
           {% if case.multiqc is existing %}
             <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
           {% else %}
-            <i class="fa fa-exclamation-triangle ml-1"></i>
+            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system.">
           {% endif %}
         </div>
       </div>
@@ -553,7 +553,7 @@
                           case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
       </div>
     {% else %}
-      <div><i class="fa fa-exclamation-triangle"></i></div>
+      <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></i></div>
     {% endif %}
   </div>
 </div>
@@ -570,7 +570,7 @@
         <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
       {% else %}
-        <i class="fa fa-exclamation-triangle ml-1"></i>
+        <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></i>
       {% endif %}
     </div>
   </div>
@@ -591,7 +591,7 @@
             <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
                             case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
           {% else %}
-            <i class="fa fa-exclamation-triangle ml-1"></i>
+            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></i>
           {% endif %}
         </div>
       </div>
@@ -617,7 +617,7 @@
                           case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
       </div>
     {% else %}
-         <div><i class="fa fa-exclamation-triangle ml-1"></i></div>
+         <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></i></div>
     {% endif %}
   </div>
 </div>
