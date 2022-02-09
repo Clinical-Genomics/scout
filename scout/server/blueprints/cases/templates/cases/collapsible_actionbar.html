@@ -14,7 +14,7 @@
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case) }}
-          {{ rank_model(case) }}
+          {{ rank_model(case) }}
           <li class="list-group-item sidebar-separator menu-collapsed"></li>
           {{ status(institute, case) }}
           {{ assign(institute, case) }}
@@ -30,7 +30,7 @@
             {{ matchmaker_share(institute, case, current_user) }}
           {% endif %}
           {% if case.needs_check %}
-            {{ check_decipher(case, institute) }}
+            {{ check_decipher(case, institute) }}
           {% endif %}
           {{ confirm_inactivate(institute,case) }}
           {{ archive_case(institute,case) }}
@@ -84,7 +84,11 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">MultiQC</span>
-          <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+          {% if os.path.exists(data["case"]["multiqc"]) %}
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+          {% else %}
+            <i class="fa fa-exclamation-triangle"></i>
+          {% endif %}
         </div>
       </div>
     {% endif %}
@@ -533,14 +537,18 @@
     <div>
       <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})</span>
     </div>
-    <div>
-      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                        case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
-    </div>
-    <div>
-      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                        case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
-    </div>
+    {% if os.path.exists(data["case"]["delivery_report"]) or date != None %}
+      <div>
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                          case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+      </div>
+      <div>
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                          case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+      </div>
+    {% else %}
+      <div><i class="fa fa-exclamation-triangle"></i></div>
+    {% endif %}
   </div>
 </div>
 {% endmacro %}
@@ -552,8 +560,12 @@
       <span class="menu-collapsed ml-2">CNV report</span>
     </div>
     <div>
-      <a href="{{ url_for('cases.cnv_report', institute_id=institute,
+      {% if os.path.exists(data["case"]["cnv_report"]) %}
+        <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+      {% else %}
+        <i class="fa fa-exclamation-triangle"></i>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -569,8 +581,12 @@
           <span class="menu-collapsed ml-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
+          {% if os.path.exists(data["case"][report_type]) %}
+            <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
                             case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+          {% else %}
+            <i class="fa fa-exclamation-triangle"></i>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -584,14 +600,19 @@
     <div>
       <span class="menu-collapsed ml-2">Coverage and QC report</span>
     </div>
-    <div>
-      <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                        case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
-    </div>
-    <div>
-      <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                        case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
-    </div>
+
+    {% if os.path.exists(data["case"][coverage_qc_report]) %}
+      <div>
+        <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
+                          case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+      </div>
+      <div>
+        <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
+                          case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+      </div>
+    {% else %}
+         <div><i class="fa fa-exclamation-triangle"></i></div>
+    {% endif %}
   </div>
 </div>
 {% endmacro %}
