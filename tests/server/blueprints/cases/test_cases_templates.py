@@ -2,10 +2,8 @@
 import datetime
 
 from flask import get_template_attribute, url_for
-from pymongo import ReturnDocument
 
 from scout.server.blueprints.cases.views import path_exists
-from scout.server.extensions import store
 
 
 def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_updated_info):
