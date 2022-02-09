@@ -343,9 +343,9 @@
 
 {% macro matchmaker_share(institute, case, current_user) %}
   {% if "mme_submitter" not in current_user.roles %}
-    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to MatchMaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to Matchmaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% elif "suspects" not in case or case.suspects|length == 0 %}
-    <a disabled="disabled" data-toggle="popover" data-content="No pinned variants for this case. Please pin at least a variant (SNV, SV) to share to the MatchMaker Exchange" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-toggle="popover" data-content="No pinned variants for this case. Please pin at least a variant (SNV, SV) to share to the Matchmaker Exchange" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% else %}
     <a data-target="#matchmaker_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% endif %}
