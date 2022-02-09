@@ -58,16 +58,19 @@
 
 {% macro patient_data() %}
 <div class="ml-3 mt-3">
-  <div class="row">
-    {% for patient in case.mme_submission.patients %}
-      <div class="col-4"> <!-- Patient info -->
-        <ul class="list-group">
-          <li class="list-group-item">Patient id: <strong>{{patient.id}}</strong></li>
-          <li class="list-group-item">Patient label: <strong>{{patient.label}}</strong></li>
-          <li class="list-group-item">Sex: <strong>{{patient.sex or "n.a."}}</strong></li>
-        </ul>
+  {% for patient in case.mme_submission.patients %}
+    <div class="row d-flex align-items-center mt-3">
+      <div class="col-4 card"> <!-- Patient info -->
+        <div class="card-body">
+          <ul class="list-group">
+            <li class="list-group-item" style=""><h5>Patient id: <strong>{{patient.id}}</strong></h5></li>
+            <li class="list-group-item"><h5>Patient label: <strong>{{patient.label}}</strong></h5></li>
+            <li class="list-group-item"><h5>Gender: <strong>{{patient.sex or "n.a."}}</strong></h5></li>
+          </ul>
+        </div>
       </div>
-      <div class="col-8">
+
+      <div class="col-8 card">
         <div class="row"> <!-- HPO terms -->
           <div class="col-3 d-flex align-items-center"><h5>Phenotype features<br>(HPO terms)</h5></div>
           <div class="col-9">
@@ -84,23 +87,52 @@
         </div>
         <hr>
         <div class="row"> <!-- OMIM terms -->
-          <div class="col-3 d-flex align-items-center"><h5>Diagnoses<br>(OMIM terms)</h5></div>
+          <div class="col-3 d-flex align-items-center mb-3"><h5>Diagnoses<br>(OMIM terms)</h5></div>
           <div class="col-9">
             <ul class="list-group list-group-flush">
               {% for omim in case.mme_submission.disorders %}
                 <li class="list-group-item">
                   <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
                   <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
-                  </a>
+                  </a>{{omim.label}}
                 </li>
               {% endfor %}
             </ul>
           </div>
         </div>
       </div>
-    {% endfor %}
-  </div>
-  <br>
+    </div>
+
+    <div class="mt-3""> <!-- Genotype features -->
+      {% for g_feat in patient.genomicFeatures %}
+        <div class="card col-4">
+          <ul class="list-group list-group-flush">
+            {% for key, value in g_feat.items() %}
+              <li class="list-group-item">
+                {% if key == 'gene' %}
+                  <h5>Gene:<strong>{{value.id}}</strong></h5>
+                {% elif key == 'variant' %}
+                  {% for ikey, item in value.items() %}
+                    {{ikey}}:<strong>{{item}}</strong><br>
+                  {% endfor %}
+                {% elif key == 'type' %} <!-- this will be variant effect -->
+                  {{key}}:<strong>{{value.label}}</strong>
+                {% else %} <!-- this will be zygosity -->
+                  {{key}}:<strong>{{value}}</strong>
+                  {% if value == 1 %}
+                    (heteroz. or hemiz. if on X in males)
+                  {% elif value == 2 %}
+                    (homozygous)
+                  {% endif %}
+                {% endif %}
+              </li>
+            {% endfor %} <!-- End of for key, value in g_feat.items() -->
+          </ul>
+        </div> <!-- End of g_feat card -->
+      {% endfor %} <!-- End of for g_feat in patient.genomicFeatures -->
+    </div>
+
+  {% endfor %} <!-- End of for patient in case.mme_submission.patients loop -->
 </div>
 {% endmacro %}
 
