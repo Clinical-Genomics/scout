@@ -11,7 +11,7 @@
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
 {% endblock %}
 
-{% block css %}
+{% block css %}se_exi
 {{ super() }}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="{{ url_for('cases.static', filename='case_styles.css') }}"></link>
@@ -44,7 +44,7 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    {{ action_bar(institute, case, collaborators, current_user) }} <!-- This is the sidebar -->
+    {{ action_bar(institute, case, collaborators, current_user, path_exists) }} <!-- This is the sidebar -->
     {{ case_page() }}
   </div> <!-- end of div id body-row -->
 </div>

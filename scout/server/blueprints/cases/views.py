@@ -69,6 +69,11 @@ def case(institute_id, case_name):
         return redirect(request.referrer)
 
     data = controllers.case(store, institute_obj, case_obj)
+
+    def path_exists(path):
+        """Check if file exists. Helper for jinja template."""
+        return os.path.exists(path)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -76,6 +81,7 @@ def case(institute_id, case_name):
         tissue_types=SAMPLE_SOURCE,
         gens_info=gens.connection_settings(case_obj.get("genome_build")),
         display_rerunner=rerunner.connection_settings.get("display", False),
+        path_exists=path_exists,
         **data,
     )
 

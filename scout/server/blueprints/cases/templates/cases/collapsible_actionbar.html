@@ -1,4 +1,4 @@
-{% macro action_bar(institute, case, collaborators, current_user) %}
+{% macro action_bar(institute, case, collaborators, current_user, path_exists) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -10,7 +10,7 @@
               </div>
           </a>
           <!-- Menu with submenu -->
-          {{ reports(institute,case) }}
+          {{ reports(institute,case, path_exists) }}
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case) }}
@@ -55,7 +55,7 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro reports(institute,case) %}
+{% macro reports(institute,case, path_exists) %}
 <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-book fa-fw mr-3"></span>
@@ -84,7 +84,7 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">MultiQC</span>
-          {% if os.path.exists(data["case"]["multiqc"]) %}
+          {% if path_exists(case.multiqc) %}
             <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
           {% else %}
             <i class="fa fa-exclamation-triangle"></i>
@@ -117,16 +117,16 @@
     </div>
     {% endif %}
     {% if case.cnv_report %}
-      {{ cnv_report(institute._id, case) }}
+      {{ cnv_report(institute._id, case, path_exists) }}
     {% endif %}
     {% if case.gene_fusion_report or case.gene_fusion_report_research %}
-      {{ gene_fusion_reports(institute._id, case) }}
+      {{ gene_fusion_reports(institute._id, case, path_exists) }}
     {% endif %}
     {% if case.coverage_qc_report %}
-      {{ coverage_qc_report(institute._id, case) }}
+      {{ coverage_qc_report(institute._id, case, path_exists) }}
     {% endif %}
     {% if case.delivery_report %}
-      {{ delivery_report(institute._id, case) }}
+      {{ delivery_report(institute._id, case, path_exists=path_exists) }}
     {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
@@ -531,13 +531,13 @@
 </div>
 {% endmacro %}
 
-{% macro delivery_report(institute, case, date=None) %}
+{% macro delivery_report(institute, case, date=None, path_exists=None) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight">
     <div>
       <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})</span>
     </div>
-    {% if os.path.exists(data["case"]["delivery_report"]) or date != None %}
+    {% if date != None or path_exists(case.delivery_report) %}
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                           case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
@@ -553,14 +553,14 @@
 </div>
 {% endmacro %}
 
-{% macro cnv_report(institute, case) %}
+{% macro cnv_report(institute, case, path_exists) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight">
     <div>
       <span class="menu-collapsed ml-2">CNV report</span>
     </div>
     <div>
-      {% if os.path.exists(data["case"]["cnv_report"]) %}
+      {% if path_exists(case.cnv_report) %}
         <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
       {% else %}
@@ -571,7 +571,7 @@
 </div>
 {% endmacro %}
 
-{% macro gene_fusion_reports(institute, case) %}
+{% macro gene_fusion_reports(institute, case, path_exists) %}
 {% set fusion_reports = ["gene_fusion_report", "gene_fusion_report_research"] %}
 {% for report_type in fusion_reports %}
   {% if case[report_type] %}
@@ -581,7 +581,7 @@
           <span class="menu-collapsed ml-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
         </div>
         <div>
-          {% if os.path.exists(data["case"][report_type]) %}
+          {% if path_exists(case[report_type]) %}
             <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
                             case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
           {% else %}
@@ -601,7 +601,7 @@
       <span class="menu-collapsed ml-2">Coverage and QC report</span>
     </div>
 
-    {% if os.path.exists(data["case"][coverage_qc_report]) %}
+    {% if path_exists(case.coverage_qc_report) %}
       <div>
         <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
                           case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
