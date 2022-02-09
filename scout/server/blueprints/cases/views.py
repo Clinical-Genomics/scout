@@ -59,11 +59,6 @@ def index():
     return dict(institutes=institutes_count)
 
 
-def path_exists(path):
-    """Check if file exists. Helper for jinja template."""
-    return os.path.exists(path)
-
-
 @cases_bp.route("/<institute_id>/<case_name>")
 @templated("cases/case.html")
 def case(institute_id, case_name):

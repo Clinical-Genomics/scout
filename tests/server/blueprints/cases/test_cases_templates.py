@@ -3,8 +3,6 @@ import datetime
 
 from flask import get_template_attribute, url_for
 
-from scout.server.blueprints.cases.views import path_exists
-
 
 def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_updated_info):
     """Test the variant_transcripts macro present in the general report page"""
@@ -87,7 +85,6 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
             institute=institute_obj,
             case=case_obj,
             current_user=user_obj,
-            path_exists=path_exists,
         )
 
         # It should show the expected items:
@@ -124,7 +121,6 @@ def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
             institute=institute_obj,
             case=cancer_case_obj,
             current_user=user_obj,
-            path_exists=path_exists,
         )
 
         # It should show the expected items:
