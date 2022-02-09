@@ -1,7 +1,6 @@
 """Code for flask app"""
 import logging
 import os
-import re
 
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
