@@ -126,12 +126,17 @@
       {{ coverage_qc_report(institute._id, case, path_exists) }}
     {% endif %}
     {% if case.delivery_report %}
-      {{ delivery_report(institute._id, case, path_exists=path_exists) }}
+      {{ delivery_report(institute._id, case, date=None, path_exists=path_exists) }}
     {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
         {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
-          {{ delivery_report( institute._id, case, analysis.date.date() ) }}
+          {% if path_exists(analysis.delivery_report) %}
+            {{ delivery_report( institute._id, case, date=analysis.date.date()) }}
+          {% else %}
+            {{ delivery_report( institute._id, case, date=analysis.date.date(), path_exists=false) }}
+          {% endif %}
+
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -537,7 +542,7 @@
     <div>
       <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})</span>
     </div>
-    {% if date != None or path_exists(case.delivery_report) %}
+    {% if (date == None and path_exists(case.delivery_report)) or (date != None and path_exists == None) %}
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                           case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
