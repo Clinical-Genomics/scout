@@ -24,7 +24,7 @@ def html_to_pdf_file(
         orientation(string): landscape, portrait
         dpi(int): dot density of the page to be printed
         margins(list): [ margin-top, margin-right, margin-bottom, margin-left], in cm
-        zoom(float): increase of decrease the size of the content on the pages
+        zoom(float): change the size of the content on the pages
 
     Returns:
         bytes_file(BytesIO): a BytesIO file
