@@ -93,7 +93,7 @@
               {% for omim in case.mme_submission.disorders %}
                 <li class="list-group-item">
                   <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
-                  <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
+                  <span class="badge badge-sm badge-secondary mr-3">{{omim.id}}</span>
                   </a>{{omim.label}}
                 </li>
               {% endfor %}
