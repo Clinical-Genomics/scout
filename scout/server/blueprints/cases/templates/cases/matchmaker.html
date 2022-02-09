@@ -20,7 +20,7 @@
     </a>
   </li>
   <li class="nav-item active">
-    <span class="navbar-text">MatchMaker</span>
+    <span class="navbar-text">Matchmaker</span>
   </li>
 {% endblock %}
 
@@ -36,7 +36,7 @@
         </ol>
       </nav>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient Overview <i class="fa fa-id-card-o" aria-hidden="true"></i></h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient overview <i class="fa fa-id-card-o" aria-hidden="true"></i></h4></a></li>
         <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Global matches <i class="fa fa-globe" aria-hidden="true"></i></h4></a></li>
         <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Local matches <i class="fa fa-hospital-o" aria-hidden="true"></i></h4></a></li>
       </ul>
@@ -59,68 +59,48 @@
 {% macro patient_data() %}
 <div class="ml-3 mt-3">
   <div class="row">
-    <div class="col">
-      <h5>Patients</h5>
-      {% for patient in case.mme_submission.patients %}
+    {% for patient in case.mme_submission.patients %}
+      <div class="col-4"> <!-- Patient info -->
         <ul class="list-group">
           <li class="list-group-item">Patient id: <strong>{{patient.id}}</strong></li>
           <li class="list-group-item">Patient label: <strong>{{patient.label}}</strong></li>
-          <li class="list-group-item">Sex: <strong>{{patient.sex}}</strong></li>
+          <li class="list-group-item">Sex: <strong>{{patient.sex or "n.a."}}</strong></li>
         </ul>
-      {% endfor %}
-    </div>
-    <div class="col">
-      <h5>Phenotype features (HPO terms)</h5>
-        {% for hpo in case.mme_submission.features %}
-          <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
-            <span class="badge badge-sm badge-info">{{hpo.id}}</span>
-          </a>
-        {% endfor %}
-    </div>
-    <div class="col">
-      <h5>Diagnoses (OMIM terms)</h5>
-      {% for omim in case.mme_submission.disorders %}
-        <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
-          <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
-        </a>
-      {% endfor %}
-    </div>
-  </div>
-  <br>
-  <div>
-    <h5>Candidate genes/variants</h5>
-    {% for patient in case.mme_submission.patients %}
-      <div class="row">
-        {% for g_feat in patient.genomicFeatures %}
-          <div class="col">
-            <ul class="list-group">
-              {% for key, value in g_feat.items() %}
-                <li class="list-group-item py-2">
-                  {% if key == 'gene' %}
-                    <span class="badge badge-secondary">{{value.id}}</span>
-                  {% elif key == 'variant' %}
-                    {% for ikey, item in value.items() %}
-                      {{ikey}}:<strong>{{item}}</strong><br>
-                    {% endfor %}
-                  {% elif key == 'type' %} <!-- this will be variant effect -->
-                    {{key}}:<strong>{{value.label}}</strong>
-                    <br>
-                  {% else %} <!-- this will be zygosity -->
-                    {{key}}:<strong>{{value}}</strong>
-                    {% if value == 1 %}
-                      (heteroz. or hemiz. if on X in males)
-                    {% elif value == 2 %}
-                      (homozygous)
-                    {% endif %}
-                  {% endif %}
+      </div>
+      <div class="col-8">
+        <div class="row"> <!-- HPO terms -->
+          <div class="col-3 d-flex align-items-center"><h5>Phenotype features<br>(HPO terms)</h5></div>
+          <div class="col-9">
+            <ul class="list-group list-group-flush">
+              {% for hpo in case.mme_submission.features %}
+                <li class="list-group-item">
+                  <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
+                  <span class="badge badge-sm badge-info mr-3">{{hpo.id}}</span>
+                  </a>{{hpo.label}}
                 </li>
               {% endfor %}
             </ul>
           </div>
-      {% endfor %}
+        </div>
+        <hr>
+        <div class="row"> <!-- OMIM terms -->
+          <div class="col-3 d-flex align-items-center"><h5>Diagnoses<br>(OMIM terms)</h5></div>
+          <div class="col-9">
+            <ul class="list-group list-group-flush">
+              {% for omim in case.mme_submission.disorders %}
+                <li class="list-group-item">
+                  <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
+                  <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
       </div>
     {% endfor %}
   </div>
+  <br>
 </div>
 {% endmacro %}
 
