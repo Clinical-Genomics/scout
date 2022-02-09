@@ -16,18 +16,19 @@ def test_parse_hpo_terms(case_obj, test_hpo_terms):
         assert feature["observed"] == "yes"
 
 
-def test_omim_terms(case_obj):
+def test_omim_terms(adapter, case_obj, test_omim_term):
     """Test extracting and formatting OMIM terms from a case for a MatchMaker submission"""
 
-    # GIVEN a case with OMIM terms
-    omim_ids = [121210, 616266]
-    case_obj["diagnosis_phenotypes"] = omim_ids
+    # GIVEN a database containing an OMIM term
+    adapter.disease_term_collection.insert_one(test_omim_term)
 
-    # THEN the omim_terms function shuld extract them and organize them as MatchMaker disorders
-    disorders = omim_terms(case_obj)
-    assert len(disorders) == len(disorders)
-    for nr, disorder in enumerate(disorders):
-        assert disorder["id"] == f"MIM:{omim_ids[nr]}"
+    # GIVEN a case with OMIM terms
+    case_obj["diagnosis_phenotypes"] = [test_omim_term["disease_nr"]]
+
+    # THEN the omim_terms function shuld extract OMIM terms with an ID and a label
+    disorders = omim_terms(adapter, case_obj)
+    assert disorders[0]["id"] == f"MIM:{test_omim_term['disease_nr']}"
+    assert disorders[0]["label"] == test_omim_term["description"]
 
 
 def test_genomic_features(real_variant_database, case_obj):
