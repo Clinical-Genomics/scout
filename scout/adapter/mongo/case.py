@@ -638,8 +638,6 @@ class CaseHandler(object):
         # Build the case object
         case_obj = build_case(config_data, self)
 
-        LOG.warning(case_obj)
-
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
