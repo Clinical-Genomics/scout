@@ -112,7 +112,6 @@ def parse_case_config(config):
         LOG.warning("No configuration in command: {}".format(config))
         return {}
     parsed_config = ScoutLoadConfig(**config)
-    # LOG.debug("RETURN: {}".format(parsed_config.dict()))
     return parsed_config.dict()
 
 

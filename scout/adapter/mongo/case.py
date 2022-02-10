@@ -637,6 +637,9 @@ class CaseHandler(object):
             raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
         # Build the case object
         case_obj = build_case(config_data, self)
+
+        LOG.warning(case_obj)
+
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
@@ -827,30 +830,29 @@ class CaseHandler(object):
                     "analysis_date": case_obj["analysis_date"],
                     "chromograph_image_files": case_obj.get("chromograph_image_files"),
                     "chromograph_prefixes": case_obj.get("chromograph_prefixes"),
-                    "custom_images": case_obj.get("custom_images"),
-                    "cnv_report": case_obj.get("cnv_report"),
-                    "coverage_qc_report": case_obj.get("coverage_qc_report"),
-                    "delivery_report": case_obj.get("delivery_report"),
-                    "gene_fusion_report": case_obj.get("gene_fusion_report"),
-                    "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
+                    "custom_images": case_obj["custom_images"] if case_obj.get("custom_images"),
+                    "cnv_report": case_obj["cnv_report"] if case_obj.get("cnv_report"),
+                    "coverage_qc_report": case_obj["coverage_qc_report"] if case_obj.get("coverage_qc_report"),
+                    "delivery_report": case_obj["delivery_report"] if case_obj.get("delivery_report"),
+                    "gene_fusion_report": case_obj["gene_fusion_report"] if case_obj.get("gene_fusion_report"),
+                    "gene_fusion_report_research": case_obj["gene_fusion_report_research"] if case_obj.get("gene_fusion_report_research"),
                     "genome_build": case_obj.get("genome_build", "37"),
                     "has_strvariants": case_obj.get("has_strvariants"),
                     "has_svvariants": case_obj.get("has_svvariants"),
                     "individuals": case_obj["individuals"],
                     "is_research": case_obj.get("is_research", False),
                     "madeline_info": case_obj.get("madeline_info"),
-                    "mme_submission": case_obj.get("mme_submission"),
-                    "multiqc": case_obj.get("multiqc"),
+                    "mme_submission": case_obj["mme_submission"] if case_obj.get("mme_submission"),
+                    "multiqc": case_obj["multiqc"] if case_obj.get("multiqc"),
                     "panels": case_obj.get("panels", []),
-                    "rank_model_version": case_obj.get("rank_model_version"),
+                    "rank_model_version": case_obj["rank_model_version"] if case_obj.get("rank_model_version"),
                     "rerun_requested": case_obj.get("rerun_requested", False),
                     "research_requested": case_obj.get("research_requested", False),
-                    "smn_tsv": case_obj.get("smn_tsv"),
+                    "smn_tsv": case_obj["smn_tsv"] if case_obj.get("smn_tsv"),
                     "status": case_obj.get("status"),
-                    "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
+                    "sv_rank_model_version": case_obj["sv_rank_model_version"] if case_obj.get("sv_rank_model_version"),
                     "track": case_obj.get("track", "rare"),
                     "updated_at": updated_at,
-                    "variants_stats": case_obj.get("variants_stats"),
                     "vcf_files": case_obj.get("vcf_files"),
                 },
             },
