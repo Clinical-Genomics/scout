@@ -103,7 +103,7 @@
       </div>
     </div>
 
-    <div class="mt-3""> <!-- Genotype features -->
+    <div class="mt-3"> <!-- Genotype features -->
       {% for g_feat in patient.genomicFeatures %}
         <div class="card col-4">
           <ul class="list-group list-group-flush">
@@ -172,7 +172,7 @@
                   <tbody class="table-secondary">
                     {% for match_result in match_obj.patients %}
                        <tr class="{{ loop.cycle('odd', 'even') }}">
-                         <td style="width: 5%" class="border-bottom-0"><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
+                         <td style="width: 5%" class="border-bottom-0"><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</td>
                          <td style="width: 10%">{{match_result.node.label}}</td>
                          <td style="width: 15%">
                            {% if "http" in match_result.patient_id %}
@@ -231,7 +231,7 @@
                                   </ul>
                                 </div>
                               {% endfor %}
-                            </div>
+                            </td>
                          </tr>
                         {% endif %}
                     {% endfor %} <!-- end of for patient in match_obj.patients -->
