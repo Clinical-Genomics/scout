@@ -1,6 +1,6 @@
 """Code for flask app"""
 import logging
-import re
+import os
 
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
@@ -66,6 +66,7 @@ def create_app(config_file=None, config=None):
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
+    register_tests(app)
 
     if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
         # setup email logging of errors
@@ -207,10 +208,17 @@ def register_filters(app):
 
     @app.template_filter()
     def count_cursor(pymongo_cursor):
-        """Count numer of returned documents (deprecated pymongo.cursor.count())"""
+        """Count number of returned documents (deprecated pymongo.cursor.count())"""
         # Perform operations on a copy of the cursor so original does not move
         cursor_copy = pymongo_cursor.clone()
         return len(list(cursor_copy))
+
+
+def register_tests(app):
+    @app.template_test("existing")
+    def path_exists(path):
+        """Check if file exists. Helper for jinja template."""
+        return os.path.exists(path)
 
 
 def configure_oauth_login(app):

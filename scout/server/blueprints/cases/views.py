@@ -69,6 +69,7 @@ def case(institute_id, case_name):
         return redirect(request.referrer)
 
     data = controllers.case(store, institute_obj, case_obj)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
