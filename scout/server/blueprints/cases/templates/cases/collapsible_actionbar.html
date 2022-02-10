@@ -88,7 +88,7 @@
           {% if case.multiqc is existing %}
             <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
           {% else %}
-            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system.">
+            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></i>
           {% endif %}
         </div>
       </div>
