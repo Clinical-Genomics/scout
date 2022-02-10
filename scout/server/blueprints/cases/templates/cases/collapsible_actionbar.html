@@ -131,13 +131,8 @@
     {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
-        {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
-          {% if analysis.delivery_report is existing %}
-            {{ delivery_report( institute._id, case, date=analysis.date.date()) }}
-          {% else %}
-            {{ delivery_report( institute._id, case, date=analysis.date.date(), analysis_path_exists=false) }}
-          {% endif %}
-
+        {% if analysis.delivery_report %}
+          {{ analysis_report( institute._id, case, analysis) }}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -537,20 +532,44 @@
 </div>
 {% endmacro %}
 
-{% macro delivery_report(institute, case, date=None, analysis_path_exists=None) %}
+{% macro analysis_report(institute, case, analysis) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight">
     <div>
-      <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})</span>
+      <span class="menu-collapsed ml-2">Delivery ({{ analysis.date.date() }})</span>
     </div>
-    {% if (date == None and case.delivery_report is existing) or (date != None and analysis_path_exists == None) %}
+    {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
+                          case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><i class="fa fa-link"></i></a>
       </div>
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                          case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+      </div>
+    {% elif analysis.delivery_report == case.delivery_report %}
+      <div><i class="fa fa-exclamation-circle ml-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but it is the same as the latest."></i></div>
+    {% else %}
+      <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro delivery_report(institute, case) %}
+<div href="#" class="bg-dark list-group-item text-white">
+  <div class="d-flex flex-row flex-fill bd-highlight">
+    <div>
+      <span class="menu-collapsed ml-2">Delivery ({{ case.analysis_date.date() }})</span>
+    </div>
+    {% if case.delivery_report is existing %}
+      <div>
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                          case_name=case.display_name, date=None) }}" target="_blank"><i class="fa fa-link"></i></a>
+      </div>
+      <div>
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                          case_name=case.display_name, date=None, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
       </div>
     {% else %}
       <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
