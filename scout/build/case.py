@@ -252,8 +252,6 @@ def build_case(case_data, adapter):
 
     # Files
     case_obj["madeline_info"] = case_data.get("madeline_info")
-    case_obj["chromograph_image_files"] = case_data.get("chromograph_image_files")
-    case_obj["chromograph_prefixes"] = case_data.get("chromograph_prefixes")
 
     case_obj["custom_images"] = case_data.get("custom_images")
     for custom_report in CUSTOM_CASE_REPORTS:

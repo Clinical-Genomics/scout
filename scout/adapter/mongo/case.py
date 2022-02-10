@@ -758,8 +758,6 @@ class CaseHandler(object):
 
         The following will be updated:
             - analysis_date: Is updated to the new date
-            - chromograph_image_files: path to Chromograph image files
-            - chromograph_prefixes: path to Chromograph prefixes
             - cnv_report: path to the CNV report file
             - collaborators: If new collaborators these will be added to the old ones
             - coverage_qc_report: path to the static coverage and qc report file
@@ -825,8 +823,6 @@ class CaseHandler(object):
                 },
                 "$set": {
                     "analysis_date": case_obj["analysis_date"],
-                    "chromograph_image_files": case_obj.get("chromograph_image_files"),
-                    "chromograph_prefixes": case_obj.get("chromograph_prefixes"),
                     "custom_images": case_obj.get("custom_images"),
                     "cnv_report": case_obj.get("cnv_report"),
                     "coverage_qc_report": case_obj.get("coverage_qc_report"),
