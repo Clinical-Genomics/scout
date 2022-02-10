@@ -547,7 +547,7 @@
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
                           case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
       </div>
-    {% elif analysis.delivery_report == case.delivery_report and analysis.date.date() != case.anlysis_date.date() %}
+    {% elif analysis.delivery_report == case.delivery_report and analysis.date.date() != case.analysis_date.date() %}
       <div><i class="fa fa-exclamation-circle ml-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but it is the same as the latest."></i></div>
     {% else %}
       <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
