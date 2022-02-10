@@ -14,7 +14,7 @@
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case) }}
-          {{ rank_model(case) }}
+          {{ rank_model(case) }}
           <li class="list-group-item sidebar-separator menu-collapsed"></li>
           {{ status(institute, case) }}
           {{ assign(institute, case) }}
@@ -30,7 +30,7 @@
             {{ matchmaker_share(institute, case, current_user) }}
           {% endif %}
           {% if case.needs_check %}
-            {{ check_decipher(case, institute) }}
+            {{ check_decipher(case, institute) }}
           {% endif %}
           {{ confirm_inactivate(institute,case) }}
           {{ archive_case(institute,case) }}
@@ -50,6 +50,7 @@
             {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
               <a><span class="badge badge-pill badge-sm badge-warning" data-toggle="popover" data-placement="left" data-html="true" data-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
             {% endif %}
+          </span>
         </div>
       </div>
   {% endfor %}
@@ -84,7 +85,11 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ml-2">MultiQC</span>
-          <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+          {% if case.multiqc is existing %}
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+          {% else %}
+            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></i>
+          {% endif %}
         </div>
       </div>
     {% endif %}
@@ -126,8 +131,8 @@
     {% endif %}
     {% if case.analyses %}
       {% for analysis in case.analyses %}
-        {% if analysis.delivery_report and analysis.delivery_report != case.delivery_report %}
-          {{ delivery_report( institute._id, case, analysis.date.date() ) }}
+        {% if analysis.delivery_report %}
+          {{ analysis_report( institute._id, case, analysis) }}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -358,7 +363,7 @@
 {% endmacro %}
 
 {% macro check_decipher(case, institute) %}
-<a href="#submenu5" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">  <div class="d-flex w-100 justify-content-start align-items-center"
+<a href="#submenu5" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-check fa-fw mr-3"></span>
     <span class="menu-collapsed">Decipher check</span>
@@ -527,20 +532,51 @@
 </div>
 {% endmacro %}
 
-{% macro delivery_report(institute, case, date=None) %}
+{% macro analysis_report(institute, case, analysis) %}
+{% if analysis.delivery_report == case.delivery_report and analysis.date.date() == case.analysis_date.date() %}
+{% else %}
+  <div href="#" class="bg-dark list-group-item text-white">
+    <div class="d-flex flex-row flex-fill bd-highlight">
+      <div>
+        <span class="menu-collapsed ml-2">Delivery ({{ analysis.date.date() }})</span>
+      </div>
+      {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
+        <div>
+          <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><i class="fa fa-link"></i></a>
+        </div>
+        <div>
+          <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+        </div>
+      {% elif analysis.delivery_report == case.delivery_report %}
+        <div><i class="fa fa-exclamation-circle ml-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></i></div>
+      {% else %}
+        <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}
+{% endmacro %}
+
+{% macro delivery_report(institute, case) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight">
     <div>
-      <span class="menu-collapsed ml-2">Delivery ({{date or case.analysis_date.date() }})</span>
+      <span class="menu-collapsed ml-2">Delivery ({{ case.analysis_date.date() }})</span>
     </div>
-    <div>
-      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                        case_name=case.display_name, date=date) }}" target="_blank"><i class="fa fa-link"></i></a>
-    </div>
-    <div>
-      <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                        case_name=case.display_name, date=date, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
-    </div>
+    {% if case.delivery_report is existing %}
+      <div>
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                          case_name=case.display_name, date=None) }}" target="_blank"><i class="fa fa-link"></i></a>
+      </div>
+      <div>
+        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
+                          case_name=case.display_name, date=None, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+      </div>
+    {% else %}
+      <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
+    {% endif %}
   </div>
 </div>
 {% endmacro %}
@@ -552,8 +588,12 @@
       <span class="menu-collapsed ml-2">CNV report</span>
     </div>
     <div>
-      <a href="{{ url_for('cases.cnv_report', institute_id=institute,
+      {% if case.cnv_report is existing %}
+        <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+      {% else %}
+        <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></i>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -569,8 +609,12 @@
           <span class="menu-collapsed ml-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
+          {% if case[report_type] is existing %}
+            <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
                             case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+          {% else %}
+            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></i>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -584,14 +628,19 @@
     <div>
       <span class="menu-collapsed ml-2">Coverage and QC report</span>
     </div>
-    <div>
-      <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                        case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
-    </div>
-    <div>
-      <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                        case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
-    </div>
+
+    {% if case.coverage_qc_report is existing %}
+      <div>
+        <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
+                          case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+      </div>
+      <div>
+        <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
+                          case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+      </div>
+    {% else %}
+         <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></i></div>
+    {% endif %}
   </div>
 </div>
 {% endmacro %}
