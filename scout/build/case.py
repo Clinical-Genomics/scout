@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.exceptions import PedigreeError, ConfigError, IntegrityError
+from scout.exceptions import ConfigError, IntegrityError
 from . import build_individual
 
 LOG = logging.getLogger(__name__)

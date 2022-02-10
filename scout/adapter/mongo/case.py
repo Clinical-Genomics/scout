@@ -3,7 +3,6 @@ import datetime
 import logging
 import operator
 from copy import deepcopy
-from pprint import pprint as pp
 
 import pymongo
 
