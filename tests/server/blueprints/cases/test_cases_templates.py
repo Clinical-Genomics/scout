@@ -2,9 +2,6 @@
 import datetime
 
 from flask import get_template_attribute, url_for
-from pymongo import ReturnDocument
-
-from scout.server.extensions import store
 
 
 def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_updated_info):
@@ -84,7 +81,11 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
     with app.test_client() as client:
         # WHEN the case sidebar macro is called
         macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
-        html = macro(institute=institute_obj, case=case_obj, current_user=user_obj)
+        html = macro(
+            institute=institute_obj,
+            case=case_obj,
+            current_user=user_obj,
+        )
 
         # It should show the expected items:
         assert "Reports" in html
@@ -116,7 +117,11 @@ def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
     with app.test_client() as client:
         # WHEN the case sidebar macro is called
         macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
-        html = macro(institute=institute_obj, case=cancer_case_obj, current_user=user_obj)
+        html = macro(
+            institute=institute_obj,
+            case=cancer_case_obj,
+            current_user=user_obj,
+        )
 
         # It should show the expected items:
         assert "CNV report" in html
