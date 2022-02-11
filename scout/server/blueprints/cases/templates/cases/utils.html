@@ -5,18 +5,18 @@
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">MatchMaker Exchange patient submission</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Matchmaker Exchange patient submission</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div> <!-- end of modal title -->
       <div class="modal-body">
-        {% if case.mme_submission %} <!-- case was already submitted to MatchMaker -->
+        {% if case.mme_submission %} <!-- case was already submitted to Matchmaker -->
           <div class="row d-flex justify-content-around">
             <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Submission details <span class="fas fa-people-arrows"></span></a>
             <select class="custom-select" onchange="window.open(this.value,'_self');" style="width:auto;">
                  <option selected>Match against</option>
-                 <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in MatchMaker</option>
+                 <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in Matchmaker</option>
                  {% if mme_nodes %}
                     {% for node in mme_nodes %}
                       <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
@@ -26,8 +26,8 @@
           </div>
           <hr>
           <p><a href="#mme_form" data-toggle="collapse">Modify submission</a></p>
-        {% else %} <!-- display option to submit case to MatchMaker -->
-          <p>This case is not yet in MatchMaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
+        {% else %} <!-- display option to submit case to Matchmaker -->
+          <p>This case is not yet in Matchmaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
         {% endif %}
         <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
             <div id="mme_form" class="collapse">
@@ -110,7 +110,7 @@
                   {% if case.mme_submission %}
                     Update case
                   {% else %}
-                    Share to MatchMaker
+                    Share to Matchmaker
                   {% endif %}</button>
               </div>
             </div>
@@ -129,7 +129,7 @@
   <form id="mme_delete" method="POST" action="{{ url_for('cases.matchmaker_delete', institute_id=institute._id, case_name=case.display_name )}}">
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#mme_delete_confirm">
-    Remove case from MatchMaker
+    Remove case from Matchmaker
     </button>
     <!-- Modal -->
     <div class="modal fade" id="mme_delete_confirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
