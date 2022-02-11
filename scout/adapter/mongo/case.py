@@ -850,7 +850,6 @@ class CaseHandler(object):
                     "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
                     "track": case_obj.get("track", "rare"),
                     "updated_at": updated_at,
-                    "variants_stats": case_obj.get("variants_stats"),
                     "vcf_files": case_obj.get("vcf_files"),
                 },
             },
@@ -872,7 +871,6 @@ class CaseHandler(object):
             "sv_rank_model_version",
         ]:
             if updated_case.get(key):  # Do not remove key if it has a value
-                LOG.warning(f"{key}--->{updated_case[key]}")
                 continue
             unset_keys[key] = 1
 
