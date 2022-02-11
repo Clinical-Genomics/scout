@@ -1,10 +1,5 @@
 import datetime
 import logging
-import re
-from fractions import Fraction
-from glob import glob
-from pathlib import Path
-from pprint import pprint as pp
 
 from ped_parser import FamilyParser
 
@@ -13,7 +8,6 @@ from scout.exceptions import PedigreeError
 from scout.parse.models import ScoutLoadConfig
 from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
-from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
