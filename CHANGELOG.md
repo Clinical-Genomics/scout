@@ -15,7 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reintroduced gene coverage data in the PDF-exported general report
 - Check for existence of case report files before creating sidebar links
 - Better description of HPO and OMIM terms for patients submitted to Matchmaker Exchange
-- Do not save keys without values when updating a case
+- Remove null non-mandatory key/values when updating a case
 
 ## [4.48.1]
 ### Fixed
