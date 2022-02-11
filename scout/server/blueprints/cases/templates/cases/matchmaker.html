@@ -4,6 +4,15 @@
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
 {% endblock %}
 
+{% block css %}
+{{ super() }}
+<style>
+.even {
+   background: #d1d5db;
+}
+</style>
+{% endblock %}
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -20,7 +29,7 @@
     </a>
   </li>
   <li class="nav-item active">
-    <span class="navbar-text">MatchMaker</span>
+    <span class="navbar-text">Matchmaker</span>
   </li>
 {% endblock %}
 
@@ -36,7 +45,7 @@
         </ol>
       </nav>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient Overview <i class="fa fa-id-card-o" aria-hidden="true"></i></h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 1 %}active{% endif %}" data-toggle="tab" onclick="hide_div(1)"><h4>Patient overview <i class="fa fa-id-card-o" aria-hidden="true"></i></h4></a></li>
         <li class="nav-item"><a href="#" class="nav-link {% if panel == 2 %}active{% endif %}" data-toggle="tab" onclick="hide_div(2)"><h4>Global matches <i class="fa fa-globe" aria-hidden="true"></i></h4></a></li>
         <li class="nav-item"><a href="#" class="nav-link {% if panel == 3 %}active{% endif %}" data-toggle="tab" onclick="hide_div(3)"><h4>Local matches <i class="fa fa-hospital-o" aria-hidden="true"></i></h4></a></li>
       </ul>
@@ -57,54 +66,60 @@
 {% endblock %}
 
 {% macro patient_data() %}
-<div class="ml-3 mt-3">
-  <div class="row">
-    <div class="col">
-      <h5>Patients</h5>
-      {% for patient in case.mme_submission.patients %}
+  {% for patient in case.mme_submission.patients %}
+  <div class="row mt-3 {{ loop.cycle('odd', 'even') }}">
+    <div class="col-2.5"> <!-- Patient general info -->
+      <div class="card-body">
+        <div class="card-title pb-1 pt-1 bg-secondary text-white">Patient #{{loop.index}}</div>
         <ul class="list-group">
-          <li class="list-group-item">Patient id: <strong>{{patient.id}}</strong></li>
+          <li class="list-group-item" style="">Patient id: <strong>{{patient.id}}</strong></li>
           <li class="list-group-item">Patient label: <strong>{{patient.label}}</strong></li>
-          <li class="list-group-item">Sex: <strong>{{patient.sex}}</strong></li>
+          <li class="list-group-item">Gender: <strong>{{patient.sex or "n.a."}}</strong></li>
         </ul>
-      {% endfor %}
-    </div>
-    <div class="col">
-      <h5>Phenotype features (HPO terms)</h5>
-        {% for hpo in case.mme_submission.features %}
-          <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
-            <span class="badge badge-sm badge-info">{{hpo.id}}</span>
-          </a>
-        {% endfor %}
-    </div>
-    <div class="col">
-      <h5>Diagnoses (OMIM terms)</h5>
-      {% for omim in case.mme_submission.disorders %}
-        <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
-          <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
-        </a>
-      {% endfor %}
-    </div>
-  </div>
-  <br>
-  <div>
-    <h5>Candidate genes/variants</h5>
-    {% for patient in case.mme_submission.patients %}
+      </div>
+    </div> <!-- End of patient's general info -->
+
+    <div class="col-3"> <!-- Phenotypes (HPO and OMIM) -->
+      <div class="card-body">
+        <div class="card-title pb-1 pt-1 bg-secondary text-white">Phenotype features (HPO terms)</div>
+        <ul class="list-group list-group-flush">
+          {% for hpo in case.mme_submission.features %}
+            <li class="list-group-item">
+              <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
+              <span class="badge badge-sm badge-info">{{hpo.id}}</span>
+              </a>{{hpo.label}}
+            </li>
+          {% endfor %}
+        </ul>
+
+        <div class="card-title pb-1 pt-1 bg-secondary text-white mt-3">Diagnoses (OMIM terms)</div>
+        <ul class="list-group list-group-flush">
+          {% for omim in case.mme_submission.disorders %}
+            <li class="list-group-item">
+              <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
+              <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
+              </a>{{omim.label}}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div> <!-- End of phenotypes (HPO and OMIM) -->
+
+    <div class="col-6"> <!-- Gene & variants -->
       <div class="row">
         {% for g_feat in patient.genomicFeatures %}
-          <div class="col">
-            <ul class="list-group">
+          <div class="card col-4 mt-3 mb-3">
+            <ul class="list-group list-group-flush">
               {% for key, value in g_feat.items() %}
-                <li class="list-group-item py-2">
+                <li class="list-group-item">
                   {% if key == 'gene' %}
-                    <span class="badge badge-secondary">{{value.id}}</span>
+                    <div class="card-title pb-1 pt-1 bg-dark text-white">Gene:{{value.id}}</div>
                   {% elif key == 'variant' %}
                     {% for ikey, item in value.items() %}
                       {{ikey}}:<strong>{{item}}</strong><br>
                     {% endfor %}
                   {% elif key == 'type' %} <!-- this will be variant effect -->
                     {{key}}:<strong>{{value.label}}</strong>
-                    <br>
                   {% else %} <!-- this will be zygosity -->
                     {{key}}:<strong>{{value}}</strong>
                     {% if value == 1 %}
@@ -114,14 +129,15 @@
                     {% endif %}
                   {% endif %}
                 </li>
-              {% endfor %}
+              {% endfor %} <!-- End of for key, value in g_feat.items() -->
             </ul>
-          </div>
-      {% endfor %}
+          </div> <!-- End of g_feat card -->
+        {% endfor %} <!-- End of for g_feat in patient.genomicFeatures -->
       </div>
-    {% endfor %}
-  </div>
-</div>
+    </div> <!-- End of genes and variants -->
+  </div> <!-- End of patient row -->
+  <br><br>
+  {% endfor %} <!-- End of for patient in case.mme_submission.patients loop -->
 {% endmacro %}
 
 {% macro show_matches(type) %}
@@ -160,7 +176,7 @@
                   <tbody class="table-secondary">
                     {% for match_result in match_obj.patients %}
                        <tr class="{{ loop.cycle('odd', 'even') }}">
-                         <td style="width: 5%" class="border-bottom-0"><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</badge></td>
+                         <td style="width: 5%" class="border-bottom-0"><span class="badge badge-primary badge-pill">{{match_result.score.patient|round(4)}}</td>
                          <td style="width: 10%">{{match_result.node.label}}</td>
                          <td style="width: 15%">
                            {% if "http" in match_result.patient_id %}
@@ -219,7 +235,7 @@
                                   </ul>
                                 </div>
                               {% endfor %}
-                            </div>
+                            </td>
                          </tr>
                         {% endif %}
                     {% endfor %} <!-- end of for patient in match_obj.patients -->
