@@ -63,7 +63,7 @@ nav:
       - Server: 'admin-guide/server.md'
       - Chanjo coverage integration: 'admin-guide/chanjo_coverage_integration.md'
       - Loqusdb integration: 'admin-guide/loqusdb_integration.md'
-      - MatchMaker Exchange integration: 'admin-guide/matchmaker_exchange_integration.md'
+      - Matchmaker Exchange integration: 'admin-guide/matchmaker_exchange_integration.md'
       - Indexes: 'admin-guide/indexes.md'
       - Institutes: 'admin-guide/institute.md'
       - Display data:
