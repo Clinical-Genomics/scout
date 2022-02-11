@@ -4,6 +4,15 @@
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
 {% endblock %}
 
+{% block css %}
+{{ super() }}
+<style>
+.odd {
+   background: #d1d5db;
+}
+</style>
+{% endblock %}
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -57,83 +66,78 @@
 {% endblock %}
 
 {% macro patient_data() %}
-<div class="ml-3 mt-3">
   {% for patient in case.mme_submission.patients %}
-    <div class="row d-flex align-items-center mt-3">
-      <div class="col-4 card"> <!-- Patient info -->
-        <div class="card-body">
-          <ul class="list-group">
-            <li class="list-group-item" style=""><h5>Patient id: <strong>{{patient.id}}</strong></h5></li>
-            <li class="list-group-item"><h5>Patient label: <strong>{{patient.label}}</strong></h5></li>
-            <li class="list-group-item"><h5>Gender: <strong>{{patient.sex or "n.a."}}</strong></h5></li>
-          </ul>
-        </div>
+  <div class="row mt-3 {{ loop.cycle('odd', 'even') }}">
+    <div class="col-2.5"> <!-- Patient general info -->
+      <div class="card-body">
+        <div class="card-title pb-1 pt-1 bg-secondary text-white">Patient #{{loop.index}}</div>
+        <ul class="list-group">
+          <li class="list-group-item" style="">Patient id: <strong>{{patient.id}}</strong></li>
+          <li class="list-group-item">Patient label: <strong>{{patient.label}}</strong></li>
+          <li class="list-group-item">Gender: <strong>{{patient.sex or "n.a."}}</strong></li>
+        </ul>
       </div>
+    </div> <!-- End of patient's general info -->
 
-      <div class="col-8 card">
-        <div class="row"> <!-- HPO terms -->
-          <div class="col-3 d-flex align-items-center"><h5>Phenotype features<br>(HPO terms)</h5></div>
-          <div class="col-9">
-            <ul class="list-group list-group-flush">
-              {% for hpo in case.mme_submission.features %}
-                <li class="list-group-item">
-                  <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
-                  <span class="badge badge-sm badge-info mr-3">{{hpo.id}}</span>
-                  </a>{{hpo.label}}
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-        <hr>
-        <div class="row"> <!-- OMIM terms -->
-          <div class="col-3 d-flex align-items-center mb-3"><h5>Diagnoses<br>(OMIM terms)</h5></div>
-          <div class="col-9">
-            <ul class="list-group list-group-flush">
-              {% for omim in case.mme_submission.disorders %}
-                <li class="list-group-item">
-                  <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
-                  <span class="badge badge-sm badge-secondary mr-3">{{omim.id}}</span>
-                  </a>{{omim.label}}
-                </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
+    <div class="col-3"> <!-- Phenotypes (HPO and OMIM) -->
+      <div class="card-body">
+        <div class="card-title pb-1 pt-1 bg-secondary text-white">Phenotype features (HPO terms)</div>
+        <ul class="list-group list-group-flush">
+          {% for hpo in case.mme_submission.features %}
+            <li class="list-group-item">
+              <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.id}}">
+              <span class="badge badge-sm badge-info">{{hpo.id}}</span>
+              </a>{{hpo.label}}
+            </li>
+          {% endfor %}
+        </ul>
+
+        <div class="card-title pb-1 pt-1 bg-secondary text-white mt-3">Diagnoses (OMIM terms)</div>
+        <ul class="list-group list-group-flush">
+          {% for omim in case.mme_submission.disorders %}
+            <li class="list-group-item">
+              <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim.id[4:]}}">
+              <span class="badge badge-sm badge-secondary">{{omim.id}}</span>
+              </a>{{omim.label}}
+            </li>
+          {% endfor %}
+        </ul>
       </div>
-    </div>
+    </div> <!-- End of phenotypes (HPO and OMIM) -->
 
-    <div class="mt-3"> <!-- Genotype features -->
-      {% for g_feat in patient.genomicFeatures %}
-        <div class="card col-4">
-          <ul class="list-group list-group-flush">
-            {% for key, value in g_feat.items() %}
-              <li class="list-group-item">
-                {% if key == 'gene' %}
-                  <h5>Gene:<strong>{{value.id}}</strong></h5>
-                {% elif key == 'variant' %}
-                  {% for ikey, item in value.items() %}
-                    {{ikey}}:<strong>{{item}}</strong><br>
-                  {% endfor %}
-                {% elif key == 'type' %} <!-- this will be variant effect -->
-                  {{key}}:<strong>{{value.label}}</strong>
-                {% else %} <!-- this will be zygosity -->
-                  {{key}}:<strong>{{value}}</strong>
-                  {% if value == 1 %}
-                    (heteroz. or hemiz. if on X in males)
-                  {% elif value == 2 %}
-                    (homozygous)
+    <div class="col-6"> <!-- Gene & variants -->
+      <div class="row">
+        {% for g_feat in patient.genomicFeatures %}
+          <div class="card col-4 mt-3 mb-3">
+            <ul class="list-group list-group-flush">
+              {% for key, value in g_feat.items() %}
+                <li class="list-group-item">
+                  {% if key == 'gene' %}
+                    <div class="card-title pb-1 pt-1 bg-dark text-white">Gene:{{value.id}}</div>
+                  {% elif key == 'variant' %}
+                    {% for ikey, item in value.items() %}
+                      {{ikey}}:<strong>{{item}}</strong><br>
+                    {% endfor %}
+                  {% elif key == 'type' %} <!-- this will be variant effect -->
+                    {{key}}:<strong>{{value.label}}</strong>
+                  {% else %} <!-- this will be zygosity -->
+                    {{key}}:<strong>{{value}}</strong>
+                    {% if value == 1 %}
+                      (heteroz. or hemiz. if on X in males)
+                    {% elif value == 2 %}
+                      (homozygous)
+                    {% endif %}
                   {% endif %}
-                {% endif %}
-              </li>
-            {% endfor %} <!-- End of for key, value in g_feat.items() -->
-          </ul>
-        </div> <!-- End of g_feat card -->
-      {% endfor %} <!-- End of for g_feat in patient.genomicFeatures -->
-    </div>
-
+                </li>
+              {% endfor %} <!-- End of for key, value in g_feat.items() -->
+            </ul>
+          </div> <!-- End of g_feat card -->
+        {% endfor %} <!-- End of for g_feat in patient.genomicFeatures -->
+      </div>
+    </div> <!-- End of genes and variants -->
+  </div> <!-- End of patient row -->
+  <br><br>
   {% endfor %} <!-- End of for patient in case.mme_submission.patients loop -->
-</div>
 {% endmacro %}
 
 {% macro show_matches(type) %}
