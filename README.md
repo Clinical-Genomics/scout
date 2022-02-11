@@ -197,14 +197,14 @@ Scout currently supports 3 mutually exclusive types of login:
 The first 2 solutions are both suitable for a production server. A description on how to set up an advanced login system is available in the [admin guide](docs/admin-guide/login-system.md)
 
 
-### Integration with MatchMaker Exchange
+### Integration with Matchmaker Exchange
 
-Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker
+Starting from release 4.4, Scout offers integration for patient data sharing via Matchmaker
 Exchange.
-General info about MatchMaker and patient matching could be found in [this paper][matchmaker-pub].
-For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its
+General info about Matchmaker and patient matching could be found in [this paper][matchmaker-pub].
+For a technical guideline of our implementation of Matchmaker Exchange at Clinical Genomics and its
 integration with Scout check scouts [matchmaker docs][matchmaker-scout].
-A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can
+A user-oriented guide describing how to share case and variant data to Matchmaker using Scout can
 be found [here][matchmaker-scout-sharing].
 
 

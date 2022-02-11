@@ -1124,7 +1124,7 @@ def matchmaker_add(request, institute_id, case_name):
         if "features" in request.form and case_obj.get("phenotype_terms")
         else []
     )
-    disorders = omim_terms(case_obj) if "disorders" in request.form else []
+    disorders = omim_terms(store, case_obj) if "disorders" in request.form else []
     genes_only = request.form.get("genomicfeatures") == "genes"
 
     if not features and not candidate_vars:
