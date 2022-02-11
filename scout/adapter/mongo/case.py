@@ -882,7 +882,7 @@ class CaseHandler(object):
                 return_document=pymongo.ReturnDocument.AFTER,
             )
 
-        LOG.debug("Case updated")
+        LOG.info("Case updated")
         return updated_case
 
     def replace_case(self, case_obj):
