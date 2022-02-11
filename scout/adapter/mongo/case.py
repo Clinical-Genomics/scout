@@ -637,7 +637,6 @@ class CaseHandler(object):
             raise IntegrityError("Institute '%s' does not exist in database" % config_data["owner"])
         # Build the case object
         case_obj = build_case(config_data, self)
-
         # Check if case exists with old case id
         old_caseid = "-".join([case_obj["owner"], case_obj["display_name"]])
         old_case = self.case(old_caseid)
@@ -814,41 +813,6 @@ class CaseHandler(object):
                 if ind.get("tissue_type") is None:
                     ind["tissue_type"] = old_ind.get("tissue_type")
 
-        # Update mandatory case fields
-        update_fields = {
-            "analysis_date": case_obj["analysis_date"],
-            "genome_build": case_obj.get("genome_build", "37"),
-            "has_strvariants": case_obj.get("has_strvariants"),
-            "has_svvariants": case_obj.get("has_svvariants"),
-            "individuals": case_obj["individuals"],
-            "is_research": case_obj.get("is_research", False),
-            "madeline_info": case_obj.get("madeline_info"),
-            "panels": case_obj.get("panels", []),
-            "rerun_requested": case_obj.get("rerun_requested", False),
-            "research_requested": case_obj.get("research_requested", False),
-            "status": case_obj.get("status"),
-            "track": case_obj.get("track", "rare"),
-            "updated_at": updated_at,
-            "vcf_files": case_obj.get("vcf_files"),
-        }
-
-        # Check if config object contains non-mandatory fields
-        for key in [
-            "custom_images",
-            "cnv_report",
-            "coverage_qc_report",
-            "delivery_report",
-            "gene_fusion_report",
-            "gene_fusion_report_research",
-            "mme_submission",
-            "multiqc",
-            "rank_model_version",
-            "smn_tsv",
-            "sv_rank_model_version",
-        ]:
-            if case_obj.get(key):
-                update_fields[key] = case_obj[key]
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {
@@ -859,12 +823,68 @@ class CaseHandler(object):
                         "delivery_report": old_case.get("delivery_report"),
                     },
                 },
-                "$set": update_fields,
+                "$set": {
+                    "analysis_date": case_obj["analysis_date"],
+                    "chromograph_image_files": case_obj.get("chromograph_image_files"),
+                    "chromograph_prefixes": case_obj.get("chromograph_prefixes"),
+                    "custom_images": case_obj.get("custom_images"),
+                    "cnv_report": case_obj.get("cnv_report"),
+                    "coverage_qc_report": case_obj.get("coverage_qc_report"),
+                    "delivery_report": case_obj.get("delivery_report"),
+                    "gene_fusion_report": case_obj.get("gene_fusion_report"),
+                    "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
+                    "genome_build": case_obj.get("genome_build", "37"),
+                    "has_strvariants": case_obj.get("has_strvariants"),
+                    "has_svvariants": case_obj.get("has_svvariants"),
+                    "individuals": case_obj["individuals"],
+                    "is_research": case_obj.get("is_research", False),
+                    "madeline_info": case_obj.get("madeline_info"),
+                    "mme_submission": case_obj.get("mme_submission"),
+                    "multiqc": case_obj.get("multiqc"),
+                    "panels": case_obj.get("panels", []),
+                    "rank_model_version": case_obj.get("rank_model_version"),
+                    "rerun_requested": case_obj.get("rerun_requested", False),
+                    "research_requested": case_obj.get("research_requested", False),
+                    "smn_tsv": case_obj.get("smn_tsv"),
+                    "status": case_obj.get("status"),
+                    "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
+                    "track": case_obj.get("track", "rare"),
+                    "updated_at": updated_at,
+                    "variants_stats": case_obj.get("variants_stats"),
+                    "vcf_files": case_obj.get("vcf_files"),
+                },
             },
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
-        LOG.info("Case updated")
+        # Remove non-mandatory key/values if they contain a null value
+        unset_keys = {}
+        for key in [
+            "custom_images",
+            "cnv_report",
+            "coverage_qc_report",
+            "gene_fusion_report",
+            "gene_fusion_report_research",
+            "mme_submission",
+            "multiqc",
+            "rank_model_version",
+            "smn_tsv",
+            "sv_rank_model_version",
+        ]:
+            if updated_case.get(key):  # Do not remove key if it has a value
+                LOG.warning(f"{key}--->{updated_case[key]}")
+                continue
+            unset_keys[key] = 1
+
+        if len(unset_keys.keys()):
+            LOG.debug(f"Removing the following unused keys from updated case: {unset_keys.keys()}")
+            updated_case = self.case_collection.find_one_and_update(
+                {"_id": case_obj["_id"]},
+                {"$unset": unset_keys},
+                return_document=pymongo.ReturnDocument.AFTER,
+            )
+
+        LOG.debug("Case updated")
         return updated_case
 
     def replace_case(self, case_obj):
