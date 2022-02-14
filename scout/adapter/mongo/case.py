@@ -873,7 +873,7 @@ class CaseHandler(object):
                 continue
             unset_keys[key] = ""
 
-        if len(unset_keys.keys()):
+        if len(unset_keys.keys()) > 0:
             LOG.debug(f"Removing the following unused keys from updated case: {unset_keys.keys()}")
             updated_case = self.case_collection.find_one_and_update(
                 {"_id": case_obj["_id"]},
