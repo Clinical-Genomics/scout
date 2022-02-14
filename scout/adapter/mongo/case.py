@@ -845,12 +845,37 @@ class CaseHandler(object):
                     "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
                     "track": case_obj.get("track", "rare"),
                     "updated_at": updated_at,
-                    "variants_stats": case_obj.get("variants_stats"),
                     "vcf_files": case_obj.get("vcf_files"),
                 },
             },
             return_document=pymongo.ReturnDocument.AFTER,
         )
+
+        # Remove non-mandatory key/values if they contain a null value
+        unset_keys = {}
+        for key in [
+            "custom_images",
+            "cnv_report",
+            "coverage_qc_report",
+            "gene_fusion_report",
+            "gene_fusion_report_research",
+            "mme_submission",
+            "multiqc",
+            "rank_model_version",
+            "smn_tsv",
+            "sv_rank_model_version",
+        ]:
+            if updated_case.get(key):  # Do not remove key if it has a value
+                continue
+            unset_keys[key] = ""
+
+        if len(unset_keys.keys()) > 0:
+            LOG.debug(f"Removing the following unused keys from updated case: {unset_keys.keys()}")
+            updated_case = self.case_collection.find_one_and_update(
+                {"_id": case_obj["_id"]},
+                {"$unset": unset_keys},
+                return_document=pymongo.ReturnDocument.AFTER,
+            )
 
         LOG.info("Case updated")
         return updated_case
