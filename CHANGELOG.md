@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check, rank_model_version and sv_rank_model_version
 - Replace `MatchMaker` with `Matchmaker` in all places visible by a user
 - Save diagnosis labels along with OMIM terms in Matchmaker Exchange submission objects
+- Run `sudo apt-get update` in Dockerfiles to be able to fetch all required libs
 ### Changed
 - Introduced page margins on exported PDF reports
 - Smaller gene fonts in downloaded HPO genes PDF reports
