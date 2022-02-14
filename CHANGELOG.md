@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.49]
 ### Fixed
 - Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check, rank_model_version and sv_rank_model_version
 - Replace `MatchMaker` with `Matchmaker` in all places visible by a user
