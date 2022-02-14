@@ -871,7 +871,7 @@ class CaseHandler(object):
         ]:
             if updated_case.get(key):  # Do not remove key if it has a value
                 continue
-            unset_keys[key] = 1
+            unset_keys[key] = ""
 
         if len(unset_keys.keys()):
             LOG.debug(f"Removing the following unused keys from updated case: {unset_keys.keys()}")
