@@ -10,12 +10,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace `MatchMaker` with `Matchmaker` in all places visible by a user
 - Save diagnosis labels along with OMIM terms in Matchmaker Exchange submission objects
 - `libegl-mesa0_21.0.3-0ubuntu0.3~20.04.5_amd64.deb` lib not found by GitHub actions Docker build
+- Remove unused `chromograph_image_files` and `chromograph_prefixes` keys saved when creating or updating an RD case
 ### Changed
 - Introduced page margins on exported PDF reports
 - Smaller gene fonts in downloaded HPO genes PDF reports
 - Reintroduced gene coverage data in the PDF-exported general report
 - Check for existence of case report files before creating sidebar links
 - Better description of HPO and OMIM terms for patients submitted to Matchmaker Exchange
+- Remove null non-mandatory key/values when updating a case
 
 ## [4.48.1]
 ### Fixed
