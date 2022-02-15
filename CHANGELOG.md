@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Introduced page margins on exported PDF reports
 - Smaller gene fonts in downloaded HPO genes PDF reports
-- Reintroduced gene coverage data in the PDF-exported general report
+- Reintroduced gene coverage data in the PDF-exported general report of rare-disease cases
 - Check for existence of case report files before creating sidebar links
 - Better description of HPO and OMIM terms for patients submitted to Matchmaker Exchange
 - Remove null non-mandatory key/values when updating a case
