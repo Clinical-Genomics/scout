@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Check for existence of case report files before creating sidebar links
 - Better description of HPO and OMIM terms for patients submitted to Matchmaker Exchange
 - Remove null non-mandatory key/values when updating a case
+- Freeze WTForms<3 due to several form input rendering changes
 
 ## [4.48.1]
 ### Fixed
