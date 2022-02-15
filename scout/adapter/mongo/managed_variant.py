@@ -143,6 +143,7 @@ class ManagedVariantHandler(object):
 
         query = {"category": {"$in": category}}
         query_with_options = self.add_options(query, query_options)
+        LOG.warning(query_with_options)
         return self.managed_variant_collection.find(query_with_options)
 
     def count_managed_variants(
@@ -172,7 +173,10 @@ class ManagedVariantHandler(object):
 
         if query_options:
             if "description" in query_options:
-                query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
+                query["description"] = {
+                    "$regex": ".*" + query_options["description"] + ".*",
+                    "$options": "i",
+                }
 
             if "position" in query_options:
                 query["end"] = {"$gte": int(query_options["position"])}
