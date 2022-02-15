@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 
-import pymongo
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
 
@@ -172,7 +171,10 @@ class ManagedVariantHandler(object):
 
         if query_options:
             if "description" in query_options:
-                query["description"] = {"$regex": ".*" + query_options["description"] + ".*"}
+                query["description"] = {
+                    "$regex": ".*" + query_options["description"] + ".*",
+                    "$options": "i",
+                }
 
             if "position" in query_options:
                 query["end"] = {"$gte": int(query_options["position"])}
@@ -188,8 +190,12 @@ class ManagedVariantHandler(object):
 
         return query
 
-    def get_managed_variants(self, institute_id=None, category=["snv"], build="37"):
+    def get_managed_variants(self, category=["snv"], build="37"):
         """Return managed variant_ids. Limit by institute, category and build.
+
+        Accepts:
+            category(str): "snv", "sv"
+            build(str): "37" or "38"
 
         Returns:
             managed_variant_ids(iterable(variant_id: String))
