@@ -5,20 +5,15 @@ import pathlib
 import re
 import tempfile
 from datetime import datetime
-from pprint import pprint as pp
 
 # Third party modules
 import pymongo
 from cyvcf2 import VCF
-from intervaltree import IntervalTree
-from pymongo.errors import BulkWriteError, DuplicateKeyError
+from pymongo.errors import DuplicateKeyError
 
-from scout.build import build_variant
 from scout.exceptions import IntegrityError
-from scout.parse.variant import parse_variant
 
 # Local modules
-from scout.parse.variant.rank_score import parse_rank_score
 from scout.utils.coordinates import is_par
 
 from .variant_loader import VariantLoader
