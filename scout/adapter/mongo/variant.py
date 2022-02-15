@@ -500,7 +500,7 @@ class VariantHandler(VariantLoader):
 
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
 
-        positional_variant_ids = self.get_managed_variants(institute_id)
+        positional_variant_ids = self.get_managed_variants()
 
         if len(positional_variant_ids) == 0:
             return []
