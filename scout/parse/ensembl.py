@@ -39,11 +39,11 @@ def parse_ensembl_line(line, header):
         if "strand" in word:
             ensembl_info["strand"] = int(value)
 
-        ensembl_info = read_gene_info(ensembl_info, word, value)
-        ensembl_info = read_transcript_info(ensembl_info, word, value)
-        ensembl_info = read_exon_info(ensembl_info, word, value)
-        ensembl_info = read_utr_info(ensembl_info, word, value)
-        ensembl_info = read_refseq_info(ensembl_info, word, value)
+        update_gene_info(ensembl_info, word, value)
+        update_transcript_info(ensembl_info, word, value)
+        update_exon_info(ensembl_info, word, value)
+        update_utr_info(ensembl_info, word, value)
+        update_refseq_info(ensembl_info, word, value)
     return ensembl_info
 
 
@@ -222,7 +222,7 @@ def parse_ensembl_exons(lines):
         yield exon
 
 
-def read_gene_info(ensembl_info, word, value):
+def update_gene_info(ensembl_info, word, value):
     """Extract gene info from Ensembl formated line"""
     if "gene" in word:
         if "id" in word:
@@ -234,7 +234,7 @@ def read_gene_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def read_transcript_info(ensembl_info, word, value):
+def update_transcript_info(ensembl_info, word, value):
     """Extract transcript info from Ensembl formated line"""
     if "transcript" in word:
         if "id" in word:
@@ -246,7 +246,7 @@ def read_transcript_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def read_exon_info(ensembl_info, word, value):
+def update_exon_info(ensembl_info, word, value):
     """Extract exon info from Ensembl formated line"""
     if "exon" in word:
         if "start" in word:
@@ -260,7 +260,7 @@ def read_exon_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def read_utr_info(ensembl_info, word, value):
+def update_utr_info(ensembl_info, word, value):
     """Extract UTR info from Ensembl formated line"""
     if "utr" in word:
         if "start" in word:
@@ -276,7 +276,7 @@ def read_utr_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def read_refseq_info(ensembl_info, word, value):
+def update_refseq_info(ensembl_info, word, value):
     """Extract RefSeq info from Ensembl formated line"""
     if "refseq" in word:
         if "mrna" in word:
