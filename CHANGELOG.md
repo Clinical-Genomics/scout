@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Added
+- Individual-specific OMIM terms
+- OMIM disease descriptions in ClinVar submission form
+
 ## [4.49]
 ### Fixed
 - Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check, rank_model_version and sv_rank_model_version
@@ -92,8 +97,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix and simplify creating and editing of gene panels
 - Simplified gene variants search code
 - Increased the height of the genes track in the IGV viewer
-- Individual-specific OMIM terms
-- OMIM disease descriptions in ClinVar submission form
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
 - Exporting validated variants with missing "genes" database key
