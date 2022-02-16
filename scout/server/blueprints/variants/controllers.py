@@ -34,7 +34,7 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import (
+from .forms import (  # noqa: F401
     FILTERSFORMCLASS,
     CancerFiltersForm,
     CancerSvFiltersForm,
@@ -602,10 +602,15 @@ def variant_export_lines(store, case_obj, variants_query):
                 )  # empty HGNC id, emoty gene name and empty transcripts columns
                 empty_col += 1
 
+        variant_line.append(variant.get("cadd_score", "N/A"))
+
+        variant_line.append(variant.get("gnomad_frequency", "N/A"))
+
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
         for individual in case_obj["individuals"]:
             for variant_gt in variant_gts:
                 if individual["individual_id"] == variant_gt["sample_id"]:
+                    variant_line.append(variant_gt["genotype_call"])
                     # gather coverage info
                     variant_line.append(variant_gt["allele_depths"][0])  # AD reference
                     variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
@@ -706,6 +711,7 @@ def variants_export_header(case_obj):
     # Add fields specific for case samples
     for individual in case_obj["individuals"]:
         display_name = str(individual["display_name"])
+        header.append("GT_" + display_name)  # Add Genotype filed for a sample
         header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
         header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
         header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
@@ -825,13 +831,17 @@ def upload_panel(store, institute_id, case_name, stream):
     raw_symbols = [
         line.strip().split("\t")[0] for line in stream if line and not line.startswith("#")
     ]
-    # check if supplied gene symbols exist
-    hgnc_symbols = []
+    # check if supplied gene symbols exist, search genes by official symbol or alias
+    hgnc_symbols = set()
     for raw_symbol in raw_symbols:
-        if store.hgnc_genes_find_one(raw_symbol) is None:
-            hgnc_symbols.append(raw_symbol)
-        else:
+        matching_genes = list(
+            store.gene_by_symbol_or_aliases(symbol=raw_symbol, build=case_obj.get("genome_build"))
+        )
+        if not matching_genes:
             flash("HGNC symbol not found: {}".format(raw_symbol), "warning")
+            continue
+        for gene_dict in matching_genes:
+            hgnc_symbols.add(gene_dict.get("hgnc_symbol"))
 
     return hgnc_symbols
 
@@ -1065,6 +1075,54 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
     return form
 
 
+def _flash_gene_symbol_errors(
+    non_clinical_symbols, not_found_symbols, not_found_ids, outdated_symbols, aliased_symbols
+):
+    """Flash error messages to make user aware that submitted gene symbols could not be directly used in variants search
+    Args:
+        non_clinical_symbols(set)
+        not_found_symbols(set)
+        not_found_ids(set)
+        not_found_ids(set)
+        outdated_symbols(set)
+        aliased_symbols(set)
+    """
+
+    errors = {
+        "non_clinical_symbols": {
+            "message": "Genes not included in gene panel versions in use when loading this case (clinical list)",
+            "gene_list": non_clinical_symbols,
+            "label": "info",
+        },
+        "not_found_symbols": {
+            "message": "HGNC symbols not present in database's genes collection",
+            "gene_list": not_found_symbols,
+            "label": "warning",
+        },
+        "not_found_ids": {
+            "message": "HGNC ids not present in database's genes collection",
+            "gene_list": not_found_ids,
+            "label": "warning",
+        },
+        "outdated_symbols": {
+            "message": "Outdated gene symbols found in the clinical panels loaded for the analysis.",
+            "gene_list": outdated_symbols,
+            "label": "info",
+        },
+        "aliased_symbols": {
+            "message": "Outdated gene symbols found in the search - alias used.",
+            "gene_list": aliased_symbols,
+            "label": "info",
+        },
+    }
+
+    # warn user if gene symbols are corresponding to any current gene,
+    for error in errors.values():
+        if not error["gene_list"]:
+            continue
+        flash(f'{error["message"]}:{error["gene_list"]}', error["label"])
+
+
 def check_form_gene_symbols(
     store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
 ):
@@ -1089,10 +1147,10 @@ def check_form_gene_symbols(
     aliased_symbols = set()
     updated_hgnc_symbols = set()
 
-    clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj)
-    clinical_symbols = store.clinical_symbols(case_obj)
+    clinical_hgnc_ids = store.clinical_hgnc_ids(case_obj) if case_obj else []
+    clinical_symbols = store.clinical_symbols(case_obj) if case_obj else []
 
-    # if no clinical symobols / panels were found loaded, warnings are treated as with research
+    # if no clinical symbols / panels were found loaded, warnings are treated as with research
     if len(clinical_hgnc_ids) == 0 and len(clinical_symbols) == 0:
         is_clinical = False
 
@@ -1129,39 +1187,9 @@ def check_form_gene_symbols(
             else:
                 non_clinical_symbols.add(gene_symbol)
 
-    errors = {
-        "non_clinical_symbols": {
-            "message": "Genes not included in gene panel versions in use when loading this case (clinical list)",
-            "gene_list": non_clinical_symbols,
-            "label": "info",
-        },
-        "not_found_symbols": {
-            "message": "HGNC symbols not present in database's genes collection",
-            "gene_list": not_found_symbols,
-            "label": "warning",
-        },
-        "not_found_ids": {
-            "message": "HGNC ids not present in database's genes collection",
-            "gene_list": not_found_ids,
-            "label": "warning",
-        },
-        "outdated_symbols": {
-            "message": "Outdated gene symbols found in the clinical panels loaded for the analysis.",
-            "gene_list": outdated_symbols,
-            "label": "info",
-        },
-        "aliased_symbols": {
-            "message": "Outdated gene symbols found in the search - alias used.",
-            "gene_list": aliased_symbols,
-            "label": "info",
-        },
-    }
-
-    # warn user if gene symbols are corresponding to any current gene,
-    for error in errors.values():
-        if not error["gene_list"]:
-            continue
-        flash(f'{error["message"]}:{error["gene_list"]}', error["label"])
+    _flash_gene_symbol_errors(
+        non_clinical_symbols, not_found_symbols, not_found_ids, outdated_symbols, aliased_symbols
+    )
 
     return updated_hgnc_symbols
 
@@ -1181,7 +1209,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     hgnc_symbols = []
     not_found_ids = []
-    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    genome_build = "38" if case_obj and "38" in str(case_obj.get("genome_build", "37")) else "37"
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
@@ -1197,7 +1225,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
                 hgnc_symbols.append(hgnc_symbol)
 
     # add HPO genes to list, if they were missing
-    if "hpo" in form.data["gene_panels"]:
+    if "hpo" in form.data.get("gene_panels", []):
         hpo_symbols = list(
             set(term_obj["hgnc_symbol"] for term_obj in case_obj["dynamic_gene_list"])
         )
@@ -1209,6 +1237,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     # check if supplied gene symbols exist and are clinical
     is_clinical = form.data.get("variant_type", "clinical") == "clinical"
+
     updated_hgnc_symbols = check_form_gene_symbols(
         store, case_obj, is_clinical, genome_build, hgnc_symbols, not_found_ids
     )

@@ -107,8 +107,7 @@ class QueryHandler(object):
 
         LOG.debug("Building a mongo query for %s" % query)
 
-        if query.get("hgnc_symbols"):
-            mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
+        mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
 
         mongo_variant_query["variant_type"] = {"$in": variant_type}
 
@@ -128,10 +127,10 @@ class QueryHandler(object):
             mongo_case_query["cohorts"] = {"$in": query["cohorts"]}
 
         if mongo_case_query != {}:
-            mongo_case_query["owner"] = institute_id
-            LOG.debug("Search cases for selection set, using query {0}".format(select_case_obj))
-            select_case_obj = self.case_collection.find(mongo_case_query)
-            select_cases = [case_id.get("display_name") for case_id in select_case_obj]
+            mongo_case_query["collaborators"] = institute_id
+            LOG.debug("Search cases for selection set, using query {0}".format(mongo_case_query))
+            select_case_objs = self.case_collection.find(mongo_case_query)
+            select_cases = [case_id.get("_id") for case_id in select_case_objs]
 
         if query.get("similar_case"):
             similar_case_display_name = query["similar_case"][0]
@@ -151,7 +150,9 @@ class QueryHandler(object):
             else:
                 LOG.debug("Case %s not found.", similar_case_display_name)
 
-        if select_cases:
+        if (
+            select_cases is not None
+        ):  # Could be an empty list, and in that case the search would not return variants
             mongo_variant_query["case_id"] = {"$in": select_cases}
 
         rank_score = query.get("rank_score") or 15

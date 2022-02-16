@@ -4,8 +4,43 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [ ]
+### Added
+- Scout-REViewer-Service integration - show REViewer picture if available
 
-## []
+## [ ]
+### Changed
+- Update igv.js to v2.10.5
+- Updated example of a case delivery report
+- Unfreeze cyvcf2
+- Builder images used in Scout Dockerfiles
+- Crash report email subject gives host name
+- Export general case report to PDF using PDFKit instead of WeasyPrint
+- Do not include coverage report in PDF case report since they might have different orientation
+- Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
+- Updated cancer "Coverage and QC report" example
+### Fixed
+- Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
+- Demo delivery report orientation to fit new columns
+- Missing delivery report in demo case
+- Cast MNVs to SNV for test
+- Export verified variants from all institutes when user is admin
+- Cancer coverage and QC report not found for demo cancer case
+- Pull request template instructions on how to deploy to test server
+
+## [4.47]
+### Added
+- Added CADD, GnomAD and genotype calls to variantS export
+### Changed
+- Pull request template, to illustrate how to deploy pull request branches on cg-vm1 stage server
+### Fixed
+- Compiled Docker image contains a patched version (v4.9) of chanjo-report
+
+## [4.46.1]
+### Fixed
+- Downloading of files generated within the app container (MT-report, verified variants, pedigrees, ..)
+
+## [4.46]
 ### Added
 - Created a Dockefile to be used to serve the dockerized app in production
 - Modified the code to collect database params specified as env vars
@@ -13,7 +48,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Created a GitHub action that pushes the Dockerfile-server image to Docker Hub (scout-server) every time a new release is created
 - Reassign MatchMaker Exchange submission to another user when a Scout user is deleted
 - Expose public API JSON gene panels endpoint, primarily to enable automated rerun checking for updates
-- Scout-REViewer-Service integration - show REViewer picture if available
+- Add utils for dictionary type
+- Filter institute cases using multiple HPO terms
+- Vulture GitHub action to identify and remove unused variables and imports
 ### Changed
 - Updated the python config file documentation in admin guide
 - Case configuration parsing now uses Pydantic for improved typechecking and config handling
@@ -23,8 +60,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved LDAP login documentation
 - Use lib flask-ldapconn instead of flask_ldap3_login> to handle ldap authentication
 - Updated Managed variant documentation in user guide
+- Fix and simplify creating and editing of gene panels
+- Simplified gene variants search code
+- Increased the height of the genes track in the IGV viewer
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
+- Exporting validated variants with missing "genes" database key
+- No results returned when searching for gene variants using a phenotype term
+- Variants filtering by gene symbols file
+- Make gene HGNC symbols field mandatory in gene variants page and run search only on form submit
+- Make sure collaborator gene variants are still visible, even if HPO filter is used
 
 ## [4.45]
 ### Added

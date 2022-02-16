@@ -1,6 +1,5 @@
 # Everything needed in production
 
-BeautifulSoup4
 werkzeug
 Flask>=0.10
 Flask-DebugToolbar
@@ -19,6 +18,7 @@ python-dateutil
 pymongo>=3.7,<4.0
 pathlib
 WeasyPrint==0.42.3
+pdfkit
 xlsxwriter
 click
 cryptography<3.4
@@ -29,7 +29,7 @@ flask_login
 flask-ldapconn
 
 # Parsing
-cyvcf2<0.10.0
+cyvcf2
 ped_parser
 pydantic
 PyYaml>=5.1

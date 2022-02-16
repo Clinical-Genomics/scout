@@ -32,8 +32,9 @@ def api_panels(panel_name):
 @templated("panels/panels.html")
 def panels():
     """Show all panels for a user"""
-    if request.method == "POST":
-        controllers.panel_create_or_update(store, request)
+    if request.method == "POST":  # Edit/create a new panel and redirect to its page
+        redirect_panel_id = controllers.panel_create_or_update(store, request)
+        return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [
@@ -71,6 +72,7 @@ def panels():
 @templated("panels/panel.html")
 def panel(panel_id):
     """Display (and add pending updates to) a specific gene panel."""
+
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
 
     if request.method == "POST":

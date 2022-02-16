@@ -7,10 +7,9 @@ import re
 import shutil
 from operator import itemgetter
 
-import requests
+from cairosvg import svg2png
 from flask import (
     Blueprint,
-    Response,
     abort,
     current_app,
     flash,
@@ -24,12 +23,11 @@ from flask import (
 )
 from flask_login import current_user
 from flask_weasyprint import HTML, render_pdf
-from requests.exceptions import ReadTimeout
-from werkzeug.datastructures import Headers
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import RerunnerError, gens, mail, matchmaker, rerunner, store
+from scout.server.extensions import gens, mail, matchmaker, rerunner, store
 from scout.server.utils import (
+    html_to_pdf_file,
     institute_and_case,
     jsonconverter,
     templated,
@@ -221,24 +219,30 @@ def pdf_case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_id, case_name)
 
-    # add coverage report on the bottom of this report
-    if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
-        data["coverage_report"] = controllers.coverage_report_contents(
-            store, institute_obj, case_obj, request.url_root
-        )
-
-    # workaround to be able to print the case pedigree to pdf
+    # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") is not None:
-        with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
-            temp_madeline.write(case_obj["madeline_info"])
+        write_to = os.path.join(cases_bp.static_folder, "madeline.png")
+        svg2png(
+            bytestring=case_obj["madeline_info"],
+            write_to=write_to,
+        )  # Transform to png, since PDFkit can't render svg images
+        data["case"]["madeline_path"] = write_to
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
-    return render_pdf(
-        HTML(string=html_report),
-        download_filename=case_obj["display_name"]
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + "_scout.pdf",
+
+    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            "scout_report.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 
@@ -680,6 +684,9 @@ def delivery_report(institute_id, case_name):
     else:
         delivery_report = case_obj["delivery_report"]
 
+    out_dir = os.path.abspath(os.path.dirname(delivery_report))
+    filename = os.path.basename(delivery_report)
+
     report_format = request.args.get("format", "html")
     if report_format == "pdf":
         try:  # file could not be available
@@ -703,9 +710,6 @@ def delivery_report(institute_id, case_name):
                 ),
                 "warning",
             )
-
-    out_dir = os.path.dirname(delivery_report)
-    filename = os.path.basename(delivery_report)
 
     return send_from_directory(out_dir, filename)
 
@@ -737,33 +741,43 @@ def gene_fusion_report(institute_id, case_name, report_type):
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
     _, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("coverage_qc_report") is None:
+    coverage_qc_report = case_obj.get("coverage_qc_report")
+
+    if coverage_qc_report is None:
         return abort(404)
 
-    coverage_qc_report = data["case"]["coverage_qc_report"]
     report_format = request.args.get("format", "html")
+
+    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
+    filename = os.path.basename(coverage_qc_report)
+
     if report_format == "pdf":
-        try:  # file could not be available
-            html_file = open(coverage_qc_report, "r")
-            source_code = html_file.read()
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_coverage_qc_report.pdf",
-            )
+        try:
+            with open(os.path.abspath(coverage_qc_report), "r") as html_file:
+                source_code = html_file.read()
+                bytes_file = html_to_pdf_file(source_code, "landscape", 300)
+                file_name = "_".join(
+                    [
+                        case_obj["display_name"],
+                        datetime.datetime.now().strftime("%Y-%m-%d"),
+                        "coverage_qc_report.pdf",
+                    ]
+                )
+                return send_file(
+                    bytes_file,
+                    attachment_filename=file_name,
+                    mimetype="application/pdf",
+                    as_attachment=True,
+                )
         except Exception as ex:
             flash(
-                "An error occurred while downloading delivery report {} -- {}".format(
+                "An error occurred while converting report to PDF: {} -- {}".format(
                     coverage_qc_report, ex
                 ),
                 "warning",
             )
-
-    out_dir = os.path.dirname(coverage_qc_report)
-    filename = os.path.basename(coverage_qc_report)
+            LOG.error(ex)
+            return redirect(request.referrer)
 
     return send_from_directory(out_dir, filename)
 

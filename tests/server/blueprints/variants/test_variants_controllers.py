@@ -375,8 +375,8 @@ def test_variant_csv_export(real_variant_database, case_obj):
     export_header = variants_export_header(case_obj)
 
     # Assert that exported document has n fields:
-    # n = (EXPORT_HEADER items in variants_export.py) + (3 * number of individuals analysed for the case)
-    assert len(export_header) == len(EXPORT_HEADER) + 3 * len(case_obj["individuals"])
+    # n = (EXPORT_HEADER items in variants_export.py) + (4 * number of individuals analysed for the case)
+    assert len(export_header) == len(EXPORT_HEADER) + 4 * len(case_obj["individuals"])
 
     # Given the lines of the document to be exported
     export_lines = variant_export_lines(adapter, case_obj, variants_to_export)
