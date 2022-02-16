@@ -66,6 +66,10 @@ def managed_variants(request):
         subcat[0] for subcat in SUBCATEGORY_CHOICES
     ]:
         query_options["sub_category"].append(sub_cat)
+
+    if request.form.get("description") is not None and request.form.get("description") != "":
+        query_options["description"] = request.form["description"]
+
     # Set requested variant coordinates in query options
     set_query_coordinates(query_options, request.form)
 
