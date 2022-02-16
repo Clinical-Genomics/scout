@@ -388,7 +388,6 @@ def case_report_variants(store, case_obj, institute_obj, data):
                 add_case=False,
                 add_other=False,
                 get_overlapping=False,
-                add_compounds=False,
                 variant_type=var_obj["category"],
                 institute_obj=institute_obj,
                 case_obj=case_obj,

@@ -285,7 +285,6 @@ def test_variant_controller_with_compounds(app, institute_obj, case_obj):
             add_case=True,
             add_other=True,
             get_overlapping=True,
-            add_compounds=True,
             variant_type=category,
         )
 
@@ -325,7 +324,6 @@ def test_variant_controller_with_clnsig(app, institute_obj, case_obj):
             add_case=True,
             add_other=True,
             get_overlapping=True,
-            add_compounds=True,
             variant_type=category,
         )
 
@@ -356,7 +354,6 @@ def test_variant_controller(app, institute_obj, case_obj, variant_obj):
             add_case=True,
             add_other=True,
             get_overlapping=True,
-            add_compounds=True,
             variant_type=category,
         )
 
