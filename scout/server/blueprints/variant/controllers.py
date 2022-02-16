@@ -21,7 +21,7 @@ from scout.constants import (
 )
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
-from scout.server.links import ensembl, get_variant_links
+from scout.server.links import get_variant_links
 from scout.server.utils import (
     case_append_alignments,
     institute_and_case,
