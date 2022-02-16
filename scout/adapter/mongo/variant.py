@@ -5,20 +5,15 @@ import pathlib
 import re
 import tempfile
 from datetime import datetime
-from pprint import pprint as pp
 
 # Third party modules
 import pymongo
 from cyvcf2 import VCF
-from intervaltree import IntervalTree
-from pymongo.errors import BulkWriteError, DuplicateKeyError
+from pymongo.errors import DuplicateKeyError
 
-from scout.build import build_variant
 from scout.exceptions import IntegrityError
-from scout.parse.variant import parse_variant
 
 # Local modules
-from scout.parse.variant.rank_score import parse_rank_score
 from scout.utils.coordinates import is_par
 
 from .variant_loader import VariantLoader
@@ -500,7 +495,7 @@ class VariantHandler(VariantLoader):
 
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
 
-        positional_variant_ids = self.get_managed_variants(institute_id)
+        positional_variant_ids = self.get_managed_variants()
 
         if len(positional_variant_ids) == 0:
             return []

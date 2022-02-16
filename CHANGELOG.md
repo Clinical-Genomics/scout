@@ -4,20 +4,22 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.49]
 ### Fixed
 - Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check, rank_model_version and sv_rank_model_version
 - Replace `MatchMaker` with `Matchmaker` in all places visible by a user
 - Save diagnosis labels along with OMIM terms in Matchmaker Exchange submission objects
 - `libegl-mesa0_21.0.3-0ubuntu0.3~20.04.5_amd64.deb` lib not found by GitHub actions Docker build
 - Remove unused `chromograph_image_files` and `chromograph_prefixes` keys saved when creating or updating an RD case
+- Search managed variants by description and with ignore case
 ### Changed
 - Introduced page margins on exported PDF reports
 - Smaller gene fonts in downloaded HPO genes PDF reports
-- Reintroduced gene coverage data in the PDF-exported general report
+- Reintroduced gene coverage data in the PDF-exported general report of rare-disease cases
 - Check for existence of case report files before creating sidebar links
 - Better description of HPO and OMIM terms for patients submitted to Matchmaker Exchange
 - Remove null non-mandatory key/values when updating a case
+- Freeze WTForms<3 due to several form input rendering changes
 
 ## [4.48.1]
 ### Fixed
