@@ -2,6 +2,40 @@
 {% from "utils.html" import comments_table %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge %}
 
+{% macro filter_script_main(cytobands) %}
+  <script type="text/javascript">
+    var startElem = document.getElementById("start");
+    var endElem = document.getElementById("end");
+    var coords=[startElem,endElem];
+    coords.forEach(function (item) {
+      item.addEventListener("change", eraseChromPosString);
+    });
+
+    var cytoStart = document.getElementById("cytoband_start");
+    initSearchConstraints(cytoStart, startElem)
+
+    var cytoEnd = document.getElementById("cytoband_end");
+    initSearchConstraints(cytoEnd, endElem)
+
+    var chromSel = document.getElementById("chrom");
+    chromSel.addEventListener("change", function() { populateCytobands({{cytobands|safe}}) });
+    chromSel.addEventListener("change", updatedChromSelOptions);
+
+    var chromPosInpt = document.getElementById("chrom_pos");
+    if (chromPosInpt) {
+      chromPosInpt.addEventListener("change", updatedChromPosInput);
+      chromPosInpt.addEventListener("change", function() { populateCytobands({{cytobands|safe}}) });
+      chromSel.addEventListener("change", eraseChromPosString);
+    }
+
+    document.getElementById('hide_dismissed').onchange = function() {
+      document.getElementById('expand_search').value = "False";
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
+  </script>
+{% endmacro %}
+
 {% macro mark_heteroplasmic_mt(individuals, samples) %}
   {% for ind in individuals if ind.phenotype == 2 %}
     {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
@@ -202,12 +236,13 @@
       {{ form.gnomad_frequency.label(class="control-label") }}
       {{ form.gnomad_frequency(class="form-control") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.local_obs.label(class="control-label") }}
       {{ form.local_obs(class="form-control") }}
     </div>
-    <div class="col-1">
-      {{ wtf.form_field(form.chrom) }}
+    <div class="col-2">
+      {{ form.chrom.label(class="control-label") }}
+      {{ form.chrom(class="selectpicker", data_actions_box="true") }}
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.start) }}
@@ -285,8 +320,9 @@
 </div>
 <div class="form-group">
   <div class="row">
-    <div class="col-1">
-      {{ wtf.form_field(form.chrom) }}
+    <div class="col-2">
+      {{ form.chrom.label(class="control-label") }}
+      {{ form.chrom(class="selectpicker", data_actions_box="true") }}
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.start) }}
@@ -389,22 +425,23 @@
 </div>
 <div class="form-group">
   <div class="row">
-    <div class="col-3">
+    <div class="col-4">
       <div class="row">
-        <div class="col-6">
+        <div class="col-4">
            {{ form.clingen_ngi.label(class="control-label") }}
            {{ form.clingen_ngi(class="form-control") }}
         </div>
-        <div class="col-6">
+        <div class="col-4">
           {{ form.swegen.label(class="control-label") }}
           {{ form.swegen(class="form-control") }}
         </div>
-      </div>
+        <div class="col-4">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="selectpicker", data_actions_box="true") }}
+        </div>
+        </div>
     </div>
-    <div class="col-1">
-      {{ form.chrom.label(class="control-label") }}
-      {{ form.chrom(class="form-control") }}
-    </div>
+
     <div class="col-2">
       {{ wtf.form_field(form.start) }}
     </div>
@@ -535,8 +572,9 @@
     </div>
     <div class="form-group" id="chromosome_search">
       <div class="row" style="margin-top:20px;">
-        <div class="col-1">
-          {{ wtf.form_field(form.chrom) }}
+        <div class="col-2">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="selectpicker", data_actions_box="true") }}
         </div>
         <div class="col-2">
           {{ wtf.form_field(form.start) }}
@@ -550,7 +588,7 @@
         <div class="col-2">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
           {{ wtf.form_field(form.chrom_pos) }}
         </div>
       </div>
@@ -651,8 +689,9 @@
     </div>
     <div class="form-group" id="chromosome_search">
       <div class="row" style="margin-top:20px;">
-        <div class="col-1">
-          {{ wtf.form_field(form.chrom) }}
+        <div class="col-2">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="selectpicker", data_actions_box="true") }}
         </div>
         <div class="col-2">
           {{ wtf.form_field(form.start) }}
@@ -666,7 +705,7 @@
         <div class="col-2">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
-        <div class="col-3">
+        <div class="col-2">
           {{ wtf.form_field(form.chrom_pos) }}
         </div>
       </div>

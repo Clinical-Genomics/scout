@@ -1,8 +1,8 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table, pedigree_panel %}
 {% from "variants/components.html" import gene_cell, frequency_cell_general %}
-{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
 {% from "variant/buttons.html" import igv_button, reviewer_button%}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filter_script_main %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
@@ -50,7 +50,7 @@
       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
           {{ str_filters(form, institute, case) }}
       </div>
-    {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
+      {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
     </div>
   </form>
   <div class="card mt-3">
@@ -136,28 +136,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
-  <script>
-    var startElem = document.getElementById("start");
-    var endElem = document.getElementById("end");
-
-    var chromSel = document.getElementById("chrom");
-    chromSel.addEventListener("change", function() {
-      populateCytobands({{cytobands|safe}});
-    });
-
-    var cytoStart = document.getElementById("cytoband_start");
-    initSearchConstraints(cytoStart, startElem)
-
-    var cytoEnd = document.getElementById("cytoband_end");
-    initSearchConstraints(cytoEnd, endElem)
-
-    document.getElementById('hide_dismissed').onchange = function() {
-      document.getElementById('expand_search').value = "False";
-      var the_form = document.forms['filters_form'];
-      the_form.submit();
-    };
-
+  {{ filter_script_main(cytobands) }}
+  <script type="text/javascript">
     window.onload=function() {
       populateCytobands({{cytobands|safe}});
       {{ update_stash_filter_button_status(current_user, filters) }}
@@ -165,6 +147,10 @@
 
     $("#filters").change(function () {
       {{ update_stash_filter_button_status(current_user, filters) }}
+    });
+
+    $('select[multiple]').selectpicker({
+      width: '100%'
     });
 
     $(function () {

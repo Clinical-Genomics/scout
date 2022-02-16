@@ -48,10 +48,10 @@ LOG = logging.getLogger(__name__)
 
 
 def populate_chrom_choices(form, case_obj):
-    """Populate the option of the chromosome select accordig to the case genome build"""
+    """Populate the option of the chromosome select according to the case genome build"""
     # Populate chromosome choices
     chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
-    form.chrom.choices = [("", "All")] + [(chrom, chrom) for chrom in chromosomes]
+    form.chrom.choices = [(chrom, chrom) for chrom in chromosomes]
 
 
 def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):

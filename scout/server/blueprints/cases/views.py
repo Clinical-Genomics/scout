@@ -3,7 +3,6 @@ import datetime
 import json
 import logging
 import os.path
-import re
 import shutil
 from operator import itemgetter
 
@@ -22,7 +21,6 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
-from flask_weasyprint import HTML, render_pdf
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, matchmaker, rerunner, store
@@ -71,6 +69,7 @@ def case(institute_id, case_name):
         return redirect(request.referrer)
 
     data = controllers.case(store, institute_obj, case_obj)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -219,8 +218,17 @@ def pdf_case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_id, case_name)
 
+    # add coverage report on the bottom of this report
+    if (
+        current_app.config.get("SQLALCHEMY_DATABASE_URI")
+        and case_obj.get("track", "rare") != "cancer"
+    ):
+        data["coverage_report"] = controllers.coverage_report_contents(
+            request.url_root, institute_obj, case_obj
+        )
+
     # Workaround to be able to print the case pedigree to pdf
-    if case_obj.get("madeline_info") is not None:
+    if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
         write_to = os.path.join(cases_bp.static_folder, "madeline.png")
         svg2png(
             bytestring=case_obj["madeline_info"],
@@ -230,7 +238,9 @@ def pdf_case_report(institute_id, case_name):
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
-    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
+    bytes_file = html_to_pdf_file(
+        html_string=html_report, orientation="portrait", dpi=300, zoom=0.7
+    )
     file_name = "_".join(
         [
             case_obj["display_name"],
@@ -692,16 +702,20 @@ def delivery_report(institute_id, case_name):
         try:  # file could not be available
             html_file = open(delivery_report, "r")
             source_code = html_file.read()
-            # remove image, since it is problematic to render it in the PDF version
-            source_code = re.sub(
-                '<img class=.*?alt="SWEDAC logo">', "", source_code, flags=re.DOTALL
+
+            bytes_file = html_to_pdf_file(source_code, "portrait", 300)
+            file_name = "_".join(
+                [
+                    case_obj["display_name"],
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "scout_delivery.pdf",
+                ]
             )
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_scout_delivery.pdf",
+            return send_file(
+                bytes_file,
+                attachment_filename=file_name,
+                mimetype="application/pdf",
+                as_attachment=True,
             )
         except Exception as ex:
             flash(
@@ -709,6 +723,9 @@ def delivery_report(institute_id, case_name):
                     delivery_report, ex
                 ),
                 "warning",
+            )
+            LOG.error(
+                f"An error occurred while downloading delivery report {delivery_report} -- {ex}"
             )
 
     return send_from_directory(out_dir, filename)
@@ -777,7 +794,6 @@ def coverage_qc_report(institute_id, case_name):
                 "warning",
             )
             LOG.error(ex)
-            return redirect(request.referrer)
 
     return send_from_directory(out_dir, filename)
 
@@ -835,6 +851,15 @@ def research(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     store.open_research(institute_obj, case_obj, user_obj, link)
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/reset_research", methods=["GET"])
+def reset_research(institute_id, case_name):
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for(".case", institute_id=institute_id, case_name=case_name)
+    store.reset_research(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
 
 
@@ -922,14 +947,22 @@ def download_hpo_genes(institute_id, case_name, category):
     phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
-        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><i>{term.get('genes')}</i><br>"
-    return render_pdf(
-        HTML(string=html_content),
-        download_filename=case_obj["display_name"]
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + category
-        + "_dynamic_phenotypes.pdf",
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><font style='font-size:16px;'><i>{term.get('genes')}</i></font><br><br>"
+
+    bytes_file = html_to_pdf_file(html_content, "portrait", 300)
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            category,
+            "dynamic_phenotypes.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 

@@ -6,9 +6,33 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [ ]
 ### Added
-- Scout-REViewer-Service integration - show REViewer picture if available
+- `Scout-REViewer-Service` integration - show `REViewer` picture if available
 
 ## [ ]
+## [4.49]
+### Fixed
+- Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check, rank_model_version and sv_rank_model_version
+- Replace `MatchMaker` with `Matchmaker` in all places visible by a user
+- Save diagnosis labels along with OMIM terms in Matchmaker Exchange submission objects
+- `libegl-mesa0_21.0.3-0ubuntu0.3~20.04.5_amd64.deb` lib not found by GitHub actions Docker build
+- Remove unused `chromograph_image_files` and `chromograph_prefixes` keys saved when creating or updating an RD case
+- Search managed variants by description and with ignore case
+### Changed
+- Introduced page margins on exported PDF reports
+- Smaller gene fonts in downloaded HPO genes PDF reports
+- Reintroduced gene coverage data in the PDF-exported general report of rare-disease cases
+- Check for existence of case report files before creating sidebar links
+- Better description of HPO and OMIM terms for patients submitted to Matchmaker Exchange
+- Remove null non-mandatory key/values when updating a case
+- Freeze WTForms<3 due to several form input rendering changes
+
+## [4.48.1]
+### Fixed
+- General case PDF report for recent cases with no pedigree
+
+## [4.48]
+### Added
+- Option to cancel a request for research variants in case page
 ### Changed
 - Update igv.js to v2.10.5
 - Updated example of a case delivery report
@@ -19,6 +43,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not include coverage report in PDF case report since they might have different orientation
 - Export cancer cases's "Coverage and QC report" to PDF using PDFKit instead of Weasyprint
 - Updated cancer "Coverage and QC report" example
+- Keep portrait orientation in PDF delivery report
+- Export delivery report to PDF using PDFKit instead of Weasyprint
+- PDF export of clinical and research HPO panels using PDFKit instead of Weasyprint
+- Export gene panel report to PDF using PDFKit
+- Removed WeasyPrint lib dependency
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns
@@ -27,6 +56,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export verified variants from all institutes when user is admin
 - Cancer coverage and QC report not found for demo cancer case
 - Pull request template instructions on how to deploy to test server
+<<<<<<< HEAD
+=======
+- PDF Delivery report not showing Swedac logo
+- Fix code typos
+- Disable codefactor raised by ESLint for javascript functions located on another file
+- Loading spinner stuck after downloading a PDF gene panel report
+- IGV browser crashing when file system with alignment files is not mounted
+>>>>>>> c1630a12b53509b779abf7a06fb8666b36842674
 
 ## [4.47]
 ### Added
@@ -76,6 +113,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Start Scout also when loqusdbapi is not reachable
 - Clearer definition of manual standard and custom inheritance models in gene panels
+- Allow searching multiple chromosomes in filters
 ### Fixed
 - Gene panel crashing on edit action
 

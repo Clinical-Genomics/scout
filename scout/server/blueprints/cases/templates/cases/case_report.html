@@ -64,7 +64,7 @@
    {{ dismissed_panel() }}
    [END OF VARIANT REPORT]<br><br>
    {% if coverage_report %}
-    {{ coverage_report|safe }}<br>
+    <div style="display: inline-block;">{{ coverage_report|safe }}</div><br>
    {% endif %}
    <a href="https://clinical-genomics.github.io/scout" target="_blank">clinical-genomics.github.io/scout</a>
 </div>
@@ -82,7 +82,7 @@
 	        <td>
 	            {% if format == 'html' %}
 	              {{ case.madeline_info|safe }}
-	            {% else %} <!--PDF version-->
+	            {% elif case.madeline_path %} <!--PDF version-->
                 <img alt="pedigree_img" src="{{case.madeline_path}}">
 	            {% endif %}
           </td>

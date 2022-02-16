@@ -5,7 +5,7 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 
-from scout.constants import CASE_STATUSES, REV_ACMG_MAP
+from scout.constants import CASE_STATUSES
 
 LOG = logging.getLogger(__name__)
 
@@ -277,6 +277,41 @@ class CaseEventHandler(object):
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"research_requested": True}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+        LOG.debug("Case updated")
+        return updated_case
+
+    def reset_research(self, institute, case, user, link):
+        """Reset research request status for a given case
+
+        Args:
+            institute (dict): A Institute object
+            case (dict): Case object
+            user (dict): A User object
+            link (str): The url to be used in the event
+
+        Returns:
+            updated_case(dict)
+        """
+
+        LOG.info("Creating event for closing research for case" " {0}".format(case["display_name"]))
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="case",
+            verb="reset_research",
+            subject=case["display_name"],
+        )
+
+        LOG.info("Set research_requested for case {0} to False".format(case["display_name"]))
+
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case["_id"]},
+            {"$set": {"research_requested": False}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
         LOG.debug("Case updated")

@@ -52,6 +52,47 @@ JSON_HEADERS = {
 }
 
 
+def coverage_report_contents(base_url, institute_obj, case_obj):
+    """Capture the contents of a case coverage report (chanjo-report), to be displayed in the general case report
+
+    Args:
+        base_url(str): base url of this application
+        institute_obj(models.Institute)
+        case_obj(models.Case)
+
+    Returns:
+        html_body_content(str): A string corresponding to the text within the <body> of an HTML chanjo-report page
+    """
+    request_data = {}
+    # extract sample ids from case_obj and add them to the post request object:
+    request_data["sample_id"] = [ind["individual_id"] for ind in case_obj["individuals"]]
+
+    # extract default panel names and default genes from case_obj and add them to the post request object
+    distinct_genes = set()
+    panel_names = []
+    for panel_info in case_obj.get("panels", []):
+        if panel_info.get("is_default") is False:
+            continue
+        panel_obj = store.gene_panel(panel_info["panel_name"], version=panel_info.get("version"))
+        distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
+        full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
+        panel_names.append(full_name)
+    panel_names = " ,".join(panel_names)
+    request_data["gene_ids"] = ",".join([str(gene_id) for gene_id in list(distinct_genes)])
+    request_data["panel_name"] = panel_names
+    request_data["request_sent"] = datetime.datetime.now()
+
+    # add institute-specific cutoff level to the post request object
+    request_data["level"] = institute_obj.get("coverage_cutoff", 15)
+
+    # Collect the coverage report HTML string
+    resp = requests.post(base_url + "reports/report", data=request_data)
+
+    # Extract the contents between <body> and </body>
+    html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
+    return html_body_content
+
+
 def case(store, institute_obj, case_obj):
     """Preprocess a single case.
 
@@ -1083,7 +1124,7 @@ def matchmaker_add(request, institute_id, case_name):
         if "features" in request.form and case_obj.get("phenotype_terms")
         else []
     )
-    disorders = omim_terms(case_obj) if "disorders" in request.form else []
+    disorders = omim_terms(store, case_obj) if "disorders" in request.form else []
     genes_only = request.form.get("genomicfeatures") == "genes"
 
     if not features and not candidate_vars:
