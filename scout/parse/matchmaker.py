@@ -38,9 +38,10 @@ def hpo_terms(case_obj):
     return features
 
 
-def omim_terms(case_obj):
+def omim_terms(store, case_obj):
     """Extract all OMIM phenotypes available for the case
     Args:
+        store(scout.adapter.MongoAdapter)
         case_obj(dict): a scout case object
     Returns:
         disorders(list): a list of OMIM disorder objects
@@ -51,7 +52,14 @@ def omim_terms(case_obj):
     case_disorders = case_obj.get("diagnosis_phenotypes")  # array of OMIM terms
     if case_disorders:
         for disorder in case_disorders:
-            disorder_obj = {"id": ":".join(["MIM", str(disorder)])}
+            omim_term = store.disease_term(disorder)
+            if omim_term is None:
+                LOG.warning(f"Disease term {disorder} could not be found in database.")
+                continue
+            disorder_obj = {
+                "id": ":".join(["MIM", str(disorder)]),
+                "label": omim_term.get("description"),
+            }
             disorders.append(disorder_obj)
     return disorders
 

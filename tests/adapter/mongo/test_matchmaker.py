@@ -36,4 +36,4 @@ def test_case_mme_delete(adapter, case_obj, user_obj, institute_obj, mme_patient
     updated_case = adapter.case_mme_delete(submitted_case, user_obj)
 
     # Case should not have associated MME submission data any more
-    assert updated_case["mme_submission"] is None
+    assert updated_case.get("mme_submission") is None

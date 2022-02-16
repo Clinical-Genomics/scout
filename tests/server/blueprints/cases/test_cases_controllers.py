@@ -1,14 +1,34 @@
 """Tests for the cases controllers"""
-import requests  # import requests for the purposes of monkeypatching
+import requests
+import responses
 from flask import Blueprint, Flask, url_for
 
 from scout.server.blueprints.cases.controllers import (
     case,
     case_report_content,
+    coverage_report_contents,
     mt_coverage_stats,
     phenotypes_genes,
 )
 from scout.server.extensions import store
+
+
+@responses.activate
+def test_coverage_report_contents(app, institute_obj, case_obj):
+    """Test the method that extracts the <body> out of HTML response from a call to chanjo-report"""
+
+    base_url = "http://test.com/"
+
+    # GIVEN a mocked response from chanjo-report
+    responses.add(
+        responses.POST,
+        f"{base_url}reports/report",
+        body="<html><body>This is a test</body></html>",
+        status=200,
+    )
+
+    # THEN the returned result should be the HTML content included in the <body> of the HTML response
+    assert coverage_report_contents(base_url, institute_obj, case_obj) == "This is a test"
 
 
 def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list):
