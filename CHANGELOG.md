@@ -134,7 +134,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.43]
 ### Added
 - Specify which collection(s) update/build indexes for
-### Changed
 ### Fixed
 - Do not drop genes and transcripts collections when updating genes via the command line
 
@@ -156,7 +155,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show AD on variants view for cancer SV (tumor and normal)
 - Cancer SV variants filter AD, AF (tumor and normal)
 - Hiding the variants score column also from cancer SVs, as for the SNVs
-- A development docker-compose file illustrating the scout/chanjo-report integration
 ### Changed
 - Enforce same case _id and display_name when updating a case
 - Enforce same individual ids, display names and affected status when updating a case
