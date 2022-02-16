@@ -3,11 +3,10 @@ import datetime
 import json
 import logging
 import os.path
-import re
 import shutil
 from operator import itemgetter
 
-import requests
+from cairosvg import svg2png
 from flask import (
     Blueprint,
     abort,
@@ -22,11 +21,11 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
-from flask_weasyprint import HTML, render_pdf
 
-from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.extensions import mail, store
+from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
+from scout.server.extensions import gens, mail, matchmaker, rerunner, store
 from scout.server.utils import (
+    html_to_pdf_file,
     institute_and_case,
     jsonconverter,
     templated,
