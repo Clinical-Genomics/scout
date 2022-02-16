@@ -76,10 +76,10 @@
 	    <a name="phenotype" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
 	  </div>
 	  <div class="card-body">
-	    <table class="table table-sm">
+	    <table class="table table-sm" style="table-layout:fixed;">
 	      <tr>
           {% if case.madeline_info and case.individuals|length > 1 %}
-	        <td>
+	        <td style='width: 33%;'>
 	            {% if format == 'html' %}
 	              {{ case.madeline_info|safe }}
 	            {% elif case.madeline_path %} <!--PDF version-->
@@ -95,10 +95,10 @@
 	            </tr>
 	          </table>
 	          <br>
-	          <table class="table table-sm">
+	          <table class="table table-sm" style="table-layout:fixed;">
 	            <thead>
 	              <tr>
-	                <th>Sample</th>
+	                <th style='width: 30%;'>Sample</th>
 	                <th>Sex</th>
                   <th>Status</th>
 	                <th>Sequencing</th>
