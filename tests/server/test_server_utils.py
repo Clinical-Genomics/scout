@@ -1,11 +1,32 @@
 """Tests for server utils"""
 import tempfile
+from io import BytesIO
 
 import pytest
 from flask import url_for
 
 from scout.server.links import get_variant_links
-from scout.server.utils import append_safe, find_index, variant_case
+from scout.server.utils import append_safe, find_index, html_to_pdf_file, variant_case
+
+
+def test_html_to_pdf_file():
+    """Test function that converts HTML file into pdf file using PDFKit"""
+
+    test_content = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <title>A demo html page</title>
+        </head>
+        <body>
+        <p>Hello world!</p>
+        </body>
+        </html>
+    """
+
+    # GIVEN an HTML report to be converted to PDF:
+    bytes_file = html_to_pdf_file(test_content, "landscape", 300)
+    assert isinstance(bytes_file, BytesIO)
 
 
 def test_get_variant_links(app, institute_obj, variant_obj):

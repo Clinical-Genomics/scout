@@ -65,8 +65,8 @@
             <div class="col-sm-8">
               {{ variants_buttons() }}
             </div>
-        </div>
-    </div> <!--end of div class="row" -->
+        </div> <!--end of div class="row" -->
+      </div>
 
       {% if other_causatives|length > 0%}
         <div class="row mt-0">
@@ -171,10 +171,8 @@
       {{ reanalysis_modal(institute, case) }}
       {{ beacon_modal(case) }}
       {{ matchmaker_modal(institute, case, suspects, mme_nodes) }}
-    </div> <!-- end of card body -->
-  </div> <!-- end of card div-->
-</div><!-- end of <div class="col"> -->
-</div>
+  </div><!-- end of <div containter> -->
+</div><!-- end of <div col> -->
 {% endmacro %}
 
 {% macro variants_buttons() %}
@@ -282,7 +280,7 @@
           <div class="col-12">
             {% for grouped_case in case_group %}
               <span class="badge badge-pill badge-light">
-                <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}"">{{ grouped_case.display_name }}</a>
+                <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}">{{ grouped_case.display_name }}</a>
                   <span>
                     <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
                         <span class="fa fa-remove"></span></a>
@@ -316,6 +314,7 @@
           {% for grouped_case in case_group %}
             <li class="list-group-item">{{ grouped_case.display_name }}</li>
           {% endfor %}
+          </ul>
           Add case:
           <input type="text" name="other_case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10"></input>
         </div>

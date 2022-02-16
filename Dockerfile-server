@@ -1,7 +1,7 @@
 ###########
 # BUILDER #
 ###########
-FROM clinicalgenomics/python3.8-cyvcf2-venv:1.0 AS python-builder
+FROM clinicalgenomics/python3.8-venv:1.0 AS python-builder
 
 ENV PATH="/venv/bin:$PATH"
 
@@ -10,6 +10,7 @@ WORKDIR /app
 # Install Scout dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt gunicorn
+
 
 #########
 # FINAL #
@@ -24,7 +25,7 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install -y --no-install-recommends libpango-1.0-0 libpangocairo-1.0-0 && \
+     apt-get -y install -y --no-install-recommends wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 

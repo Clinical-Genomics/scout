@@ -69,6 +69,7 @@ def case(institute_id, case_name):
         return redirect(request.referrer)
 
     data = controllers.case(store, institute_obj, case_obj)
+
     return dict(
         **data,
     )
@@ -212,23 +213,40 @@ def pdf_case_report(institute_id, case_name):
     data = controllers.case_report_content(store, institute_id, case_name)
 
     # add coverage report on the bottom of this report
-    if current_app.config.get("SQLALCHEMY_DATABASE_URI"):
+    if (
+        current_app.config.get("SQLALCHEMY_DATABASE_URI")
+        and case_obj.get("track", "rare") != "cancer"
+    ):
         data["coverage_report"] = controllers.coverage_report_contents(
-            store, institute_obj, case_obj, request.url_root
+            request.url_root, institute_obj, case_obj
         )
 
-    # workaround to be able to print the case pedigree to pdf
-    if case_obj.get("madeline_info") is not None:
-        with open(os.path.join(cases_bp.static_folder, "madeline.svg"), "w") as temp_madeline:
-            temp_madeline.write(case_obj["madeline_info"])
+    # Workaround to be able to print the case pedigree to pdf
+    if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
+        write_to = os.path.join(cases_bp.static_folder, "madeline.png")
+        svg2png(
+            bytestring=case_obj["madeline_info"],
+            write_to=write_to,
+        )  # Transform to png, since PDFkit can't render svg images
+        data["case"]["madeline_path"] = write_to
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
-    return render_pdf(
-        HTML(string=html_report),
-        download_filename=case_obj["display_name"]
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + "_scout.pdf",
+
+    bytes_file = html_to_pdf_file(
+        html_string=html_report, orientation="portrait", dpi=300, zoom=0.7
+    )
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            "scout_report.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 
@@ -661,21 +679,28 @@ def delivery_report(institute_id, case_name):
     else:
         delivery_report = case_obj["delivery_report"]
 
+    out_dir = os.path.abspath(os.path.dirname(delivery_report))
+    filename = os.path.basename(delivery_report)
+
     report_format = request.args.get("format", "html")
     if report_format == "pdf":
         try:  # file could not be available
             html_file = open(delivery_report, "r")
             source_code = html_file.read()
-            # remove image, since it is problematic to render it in the PDF version
-            source_code = re.sub(
-                '<img class=.*?alt="SWEDAC logo">', "", source_code, flags=re.DOTALL
+
+            bytes_file = html_to_pdf_file(source_code, "portrait", 300)
+            file_name = "_".join(
+                [
+                    case_obj["display_name"],
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "scout_delivery.pdf",
+                ]
             )
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_scout_delivery.pdf",
+            return send_file(
+                bytes_file,
+                attachment_filename=file_name,
+                mimetype="application/pdf",
+                as_attachment=True,
             )
         except Exception as ex:
             flash(
@@ -684,9 +709,9 @@ def delivery_report(institute_id, case_name):
                 ),
                 "warning",
             )
-
-    out_dir = os.path.dirname(delivery_report)
-    filename = os.path.basename(delivery_report)
+            LOG.error(
+                f"An error occurred while downloading delivery report {delivery_report} -- {ex}"
+            )
 
     return send_from_directory(out_dir, filename)
 
@@ -718,33 +743,42 @@ def gene_fusion_report(institute_id, case_name, report_type):
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
     _, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("coverage_qc_report") is None:
+    coverage_qc_report = case_obj.get("coverage_qc_report")
+
+    if coverage_qc_report is None:
         return abort(404)
 
-    coverage_qc_report = data["case"]["coverage_qc_report"]
     report_format = request.args.get("format", "html")
+
+    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
+    filename = os.path.basename(coverage_qc_report)
+
     if report_format == "pdf":
-        try:  # file could not be available
-            html_file = open(coverage_qc_report, "r")
-            source_code = html_file.read()
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_coverage_qc_report.pdf",
-            )
+        try:
+            with open(os.path.abspath(coverage_qc_report), "r") as html_file:
+                source_code = html_file.read()
+                bytes_file = html_to_pdf_file(source_code, "landscape", 300)
+                file_name = "_".join(
+                    [
+                        case_obj["display_name"],
+                        datetime.datetime.now().strftime("%Y-%m-%d"),
+                        "coverage_qc_report.pdf",
+                    ]
+                )
+                return send_file(
+                    bytes_file,
+                    attachment_filename=file_name,
+                    mimetype="application/pdf",
+                    as_attachment=True,
+                )
         except Exception as ex:
             flash(
-                "An error occurred while downloading delivery report {} -- {}".format(
+                "An error occurred while converting report to PDF: {} -- {}".format(
                     coverage_qc_report, ex
                 ),
                 "warning",
             )
-
-    out_dir = os.path.dirname(coverage_qc_report)
-    filename = os.path.basename(coverage_qc_report)
+            LOG.error(ex)
 
     return send_from_directory(out_dir, filename)
 
@@ -802,6 +836,15 @@ def research(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     store.open_research(institute_obj, case_obj, user_obj, link)
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/reset_research", methods=["GET"])
+def reset_research(institute_id, case_name):
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for(".case", institute_id=institute_id, case_name=case_name)
+    store.reset_research(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
 
 
@@ -889,14 +932,22 @@ def download_hpo_genes(institute_id, case_name, category):
     phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
-        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><i>{term.get('genes')}</i><br>"
-    return render_pdf(
-        HTML(string=html_content),
-        download_filename=case_obj["display_name"]
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + category
-        + "_dynamic_phenotypes.pdf",
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><font style='font-size:16px;'><i>{term.get('genes')}</i></font><br><br>"
+
+    bytes_file = html_to_pdf_file(html_content, "portrait", 300)
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            category,
+            "dynamic_phenotypes.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 

@@ -1,7 +1,7 @@
 {% extends "layout_bs4.html" %}
 
 {% from "variants/components.html" import gene_cell, frequency_cell_general, observed_cell_general %}
-{% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status %}
+{% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge, other_tiered_variants %}
 
 {% block title %}
@@ -185,47 +185,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
+  {{ filter_script_main(cytobands) }}
   <script type="text/javascript">
-
-    var startElem = document.getElementById("start");
-    var endElem = document.getElementById("end");
-    var coords=[startElem,endElem];
-
-    coords.forEach(function (item, index) {
-      item.addEventListener("input", function() {
-      eraseChromPosString()});
-    });
-
-    var chromSel = document.getElementById("chrom");
-    chromSel.addEventListener("change", function() {
-        populateCytobands({{cytobands|safe}});
-    });
-
-    var chromPosInpt = document.getElementById("chrom_pos");
-    chromPosInpt.addEventListener("change", function() {
-      populateCytobands({{cytobands|safe}});
-    })
-
-    chromPosInpt.addEventListener("input", function() {
-      updateCoordinateFields(event.target)
-    })
-
-    var cytoStart = document.getElementById("cytoband_start");
-    initSearchConstraints(cytoStart, startElem)
-
-    var cytoEnd = document.getElementById("cytoband_end");
-    initSearchConstraints(cytoEnd, endElem)
-
-    document.getElementById('hide_dismissed').onchange = function() {
-      document.getElementById('expand_search').value = "False";
-      var the_form = document.forms['filters_form'];
-      the_form.submit();
-    };
 
     $('select[multiple]').selectpicker({
       width: '100%'
     });
-
 
     window.onload=function() {
         populateCytobands({{cytobands|safe}});

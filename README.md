@@ -66,6 +66,8 @@ pip install --editable .
 
 Scout PDF reports are created using [Flask-WeasyPrint](https://pythonhosted.org/Flask-WeasyPrint/). This library requires external dependencies which need be installed separately (namely Cairo and Pango). See platform-specific instructions for Linux, macOS and Windows available on the WeasyPrint installation [pages](https://weasyprint.readthedocs.io/en/stable/install.html#).
 
+<b>NB</b>: in order to convert HTML reports into PDF reports, we have recently switched from the WeasyPrint lib to [python-pdfkit](https://github.com/JazzCore/python-pdfkit). For this reason, when upgrading to a Scout version >4.47, you need to install an additional [wkhtmltopdf system library](https://wkhtmltopdf.org/).
+
 You also need to have an instance of MongoDB running. I've found that it's easiest to do using the official Docker image:
 
 ```bash
@@ -195,14 +197,14 @@ Scout currently supports 3 mutually exclusive types of login:
 The first 2 solutions are both suitable for a production server. A description on how to set up an advanced login system is available in the [admin guide](docs/admin-guide/login-system.md)
 
 
-### Integration with MatchMaker Exchange
+### Integration with Matchmaker Exchange
 
-Starting from release 4.4, Scout offers integration for patient data sharing via MatchMaker
+Starting from release 4.4, Scout offers integration for patient data sharing via Matchmaker
 Exchange.
-General info about MatchMaker and patient matching could be found in [this paper][matchmaker-pub].
-For a technical guideline of our implementation of MatchMaker Exchange at Clinical Genomics and its
+General info about Matchmaker and patient matching could be found in [this paper][matchmaker-pub].
+For a technical guideline of our implementation of Matchmaker Exchange at Clinical Genomics and its
 integration with Scout check scouts [matchmaker docs][matchmaker-scout].
-A user-oriented guide describing how to share case and variant data to MatchMaker using Scout can
+A user-oriented guide describing how to share case and variant data to Matchmaker using Scout can
 be found [here][matchmaker-scout-sharing].
 
 
