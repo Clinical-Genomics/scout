@@ -9,7 +9,6 @@ from scout.constants import CASE_STATUSES
 from scout.server.extensions import store
 from scout.server.utils import jsonconverter
 
-from .export_handler import bson_handler
 from .utils import json_option
 
 LOG = logging.getLogger(__name__)
