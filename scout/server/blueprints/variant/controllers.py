@@ -21,7 +21,7 @@ from scout.constants import (
 )
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
-from scout.server.links import ensembl, get_variant_links
+from scout.server.links import get_variant_links
 from scout.server.utils import (
     case_append_alignments,
     institute_and_case,
@@ -550,6 +550,10 @@ def clinvar_export(store, institute_id, case_name, variant_id):
 
     """
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    # If case diagnoses are a list of integers, convert into a list of dictionaries
+    case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
+    if case_diagnoses and isinstance(case_diagnoses[0], int):
+        case_obj = store.convert_diagnoses_format(case_obj)
     pinned = [
         store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
     ]

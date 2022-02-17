@@ -482,7 +482,7 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
-    def diagnose(self, institute, case, user, link, level, omim_id, remove=False):
+    def diagnose(self, institute, case, user, link, omim_obj, omim_inds=[], remove=False):
         """Diagnose a case using OMIM ids.
 
         Args:
@@ -490,36 +490,45 @@ class CaseEventHandler(object):
             case (dict): Case object
             user (dict): A User object
             link (str): The url to be used in the event
-            level (str): choices=('phenotype','gene')
+            omim_obj(dict): An OMIM term dictionary
+            omim_inds(list): List of case individuals with diagnosis
+            remove(bool):
 
         Return:
             updated_case
 
         """
-        if level == "phenotype":
-            case_key = "diagnosis_phenotypes"
-        elif level == "gene":
-            case_key = "diagnosis_genes"
-        else:
-            raise TypeError("wrong level")
+        omim_modif_id = omim_obj["_id"]  # OMIM ID to add or remove from case diagnoses
+        updated_diagnoses = []
+        case_diagnoses = case.get("diagnosis_phenotypes") or []
 
-        diagnosis_list = case.get(case_key, [])
-        omim_number = int(omim_id.split(":")[-1])
+        if remove is True:  # Remove term from case diagnoses list
+            for case_dia in case_diagnoses:
+                if case_dia.get("disease_id") == omim_modif_id:
+                    continue
+                updated_diagnoses.append(case_dia)
+        else:  # Add new diagnosis term to case diseases list
+            updated_diagnoses = case_diagnoses
+            new_dia = {
+                "disease_nr": omim_obj["disease_nr"],
+                "disease_id": omim_modif_id,
+                "description": omim_obj["description"],
+            }
+            if omim_inds:
+                new_dia["individuals"] = [
+                    {
+                        "individual_id": ind.split("|")[0],
+                        "individual_name": ind.split("|")[1],
+                    }
+                    for ind in omim_inds
+                ]
+            updated_diagnoses.append(new_dia)
 
-        updated_case = None
-        if remove and omim_number in diagnosis_list:
-            updated_case = self.case_collection.find_one_and_update(
-                {"_id": case["_id"]},
-                {"$pull": {case_key: omim_number}},
-                return_document=pymongo.ReturnDocument.AFTER,
-            )
-
-        elif omim_number not in diagnosis_list:
-            updated_case = self.case_collection.find_one_and_update(
-                {"_id": case["_id"]},
-                {"$push": {case_key: omim_number}},
-                return_document=pymongo.ReturnDocument.AFTER,
-            )
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case["_id"]},
+            {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
 
         if updated_case:
             self.create_event(
@@ -530,7 +539,8 @@ class CaseEventHandler(object):
                 category="case",
                 verb="update_diagnosis",
                 subject=case["display_name"],
-                content=omim_id,
+                content=omim_modif_id,
+                individuals=[ind.split("|")[1] for ind in omim_inds],
             )
 
         return updated_case
