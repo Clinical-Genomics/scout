@@ -6,7 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Individual-specific OMIM terms
+- OMIM disease descriptions in ClinVar submission form
 - Rank score results now show the ranking range.
+### Changed
+- Slightly smaller and improved layout of content in case PDF report
 
 ## [4.49]
 ### Fixed
