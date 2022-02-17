@@ -72,7 +72,7 @@ class DiagnosisHandler(object):
         """Return all complete OMIM diagnoses for a case
 
         Args:
-            case_diagnoses(list) list of case diagnoses disctionaries
+            case_diagnoses(list) list of case diagnoses dictionaries
 
         Returns:
             result(pymongo.Cursor): A cursor with OMIM terms
