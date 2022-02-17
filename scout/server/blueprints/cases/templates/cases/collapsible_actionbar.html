@@ -278,7 +278,7 @@
 {% if case.rerun_requested %}
   {% if config.RERUN_MONITOR %}
     <div id='submenu3' class="collapse">
-      {{ melter_interact(institute, case) }}
+      {{ rerun_monitor_interact(institute, case) }}
     </div>
   {% endif %}
   <span class="d-flex align-items-center">
@@ -287,7 +287,7 @@
 {% else %}
   <div id='submenu3' class="collapse">
     {% if config.RERUN_MONITOR %}
-      {{ melter_interact(institute, case) }}
+      {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
     <button type="button" class="btn btn-warning btn-sm form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
   </div>
@@ -295,7 +295,7 @@
 {% endmacro %}
 
 
-{% macro melter_interact(institute, case) %}
+{% macro rerun_monitor_interact(institute, case) %}
   <div class="ml-3 mt-1">
     <form action="{{ url_for('cases.rerun_monitor', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
       <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-toggle="tooltip" title="A new analysis will start when relevant parts of the workflow are updated"> Activate monitoring</span>
