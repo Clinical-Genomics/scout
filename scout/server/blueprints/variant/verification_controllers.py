@@ -57,7 +57,6 @@ def variant_verification(
         add_case=True,
         add_other=False,
         get_overlapping=False,
-        add_compounds=False,
     )
     variant_obj = data["variant"]
     case_obj = data["case"]
