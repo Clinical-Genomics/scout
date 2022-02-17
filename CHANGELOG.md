@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
+### Added
+- Individual-specific OMIM terms
+- OMIM disease descriptions in ClinVar submission form
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation

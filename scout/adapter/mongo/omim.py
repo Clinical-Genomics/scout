@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from pymongo import ASCENDING
+from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
@@ -42,21 +42,44 @@ class DiagnosisHandler(object):
         )
         return res
 
-    def case_omim_diagnoses(self, case_obj):
+    def convert_diagnoses_format(self, case_obj):
+        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a list of OMIM terms dictionaries
+        Args:
+            case_obj(dict)
+
+        Returns:
+            updated_case(dict)
+        """
+        updated_diagnoses = []
+        for disease_nr in case_obj.get("diagnosis_phenotypes", []):
+            disease_term = self.disease_term(disease_identifier=disease_nr)
+            if disease_term is None:
+                continue
+            updated_diagnoses.append(
+                {
+                    "disease_nr": disease_nr,
+                    "disease_id": disease_term.get("disease_id"),
+                    "description": disease_term.get("description"),
+                }
+            )
+        return self.case_collection.find_one_and_update(
+            {"_id": case_obj["_id"]},
+            {"$set": {"diagnosis_phenotypes": updated_diagnoses}},
+            return_document=ReturnDocument.AFTER,
+        )
+
+    def case_omim_diagnoses(self, case_diagnoses):
         """Return all complete OMIM diagnoses for a case
 
         Args:
-            case_obj(dict)
+            case_diagnoses(list) list of case diagnoses dictionaries
 
         Returns:
             result(pymongo.Cursor): A cursor with OMIM terms
 
         """
-        result = None
-
-        # Collect OMIM terms from case 'diagnosis_phenotypes' and 'diagnosis_genes'
-        omim_ids = case_obj.get("diagnosis_phenotypes", []) + case_obj.get("diagnosis_genes", [])
-        res = self.disease_term_collection.find({"disease_nr": {"$in": omim_ids}}).sort(
+        omim_ids = [dia["disease_id"] for dia in case_diagnoses]
+        res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING
         )
         return res
