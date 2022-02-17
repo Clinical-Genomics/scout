@@ -814,7 +814,7 @@ def rerun(institute_id, case_name):
 
 
 @cases_bp.route("/<institute_id>/<case_name>/monitor", methods=["POST"])
-def monitor(institute_id, case_name):
+def rerun_monitor(institute_id, case_name):
     """Request a case to be monitored for future reruns."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
