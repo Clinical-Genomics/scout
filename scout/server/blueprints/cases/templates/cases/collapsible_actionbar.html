@@ -276,7 +276,7 @@
 </a>
 <!-- Submenu content -->
 {% if case.rerun_requested %}
-  {% if config.RERUN_MONITOR %}
+  {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
     <div id='submenu3' class="collapse">
       {{ rerun_monitor_interact(institute, case) }}
     </div>
@@ -286,7 +286,7 @@
   </span>
 {% else %}
   <div id='submenu3' class="collapse">
-    {% if config.RERUN_MONITOR %}
+    {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
     <button type="button" class="btn btn-warning btn-sm form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
