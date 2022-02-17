@@ -432,7 +432,7 @@ class CaseEventHandler(object):
             user=user,
             link=link,
             category="case",
-            verb="monitor",
+            verb="rerun_monitor",
             subject=case["display_name"],
         )
 
