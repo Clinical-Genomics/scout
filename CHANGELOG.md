@@ -4,11 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [ ]
+## []
 ### Added
+- Individual-specific OMIM terms
+- OMIM disease descriptions in ClinVar submission form
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available
+### Changed
+- Slightly smaller and improved layout of content in case PDF report
+- Relabel more cancer variant pages somatic for navigation
 
-## [ ]
 ## [4.49]
 ### Fixed
 - Pydantic model types for genome_build, madeline_info, peddy_ped_check and peddy_sex_check, rank_model_version and sv_rank_model_version
@@ -56,14 +60,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export verified variants from all institutes when user is admin
 - Cancer coverage and QC report not found for demo cancer case
 - Pull request template instructions on how to deploy to test server
-<<<<<<< HEAD
-=======
 - PDF Delivery report not showing Swedac logo
 - Fix code typos
 - Disable codefactor raised by ESLint for javascript functions located on another file
 - Loading spinner stuck after downloading a PDF gene panel report
 - IGV browser crashing when file system with alignment files is not mounted
->>>>>>> c1630a12b53509b779abf7a06fb8666b36842674
 
 ## [4.47]
 ### Added
