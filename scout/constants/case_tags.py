@@ -89,7 +89,7 @@ VERBS_MAP = {
     "unshare": "revoked access for",
     "rerun": "requested rerun of",
     "rerun_monitor": "requested rerun monitoring for",
-    "unmonitor": "disabled rerun monitoring for",
+    "rerun_unmonitor": "disabled rerun monitoring for",
     "validate": "marked validation status for",
     "update_diagnosis": "updated diagnosis for",
     "add_cohort": "updated cohort for",
