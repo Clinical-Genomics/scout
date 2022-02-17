@@ -71,12 +71,6 @@ def case(institute_id, case_name):
     data = controllers.case(store, institute_obj, case_obj)
 
     return dict(
-        institute=institute_obj,
-        case=case_obj,
-        mme_nodes=matchmaker.connected_nodes,
-        tissue_types=SAMPLE_SOURCE,
-        gens_info=gens.connection_settings(case_obj.get("genome_build")),
-        display_rerunner=rerunner.connection_settings.get("display", False),
         **data,
     )
 
@@ -87,7 +81,7 @@ def sma(institute_id, case_name):
     """Visualize case SMA data - SMN CN calls"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, format="html", **data)
+    return dict(format="html", **data)
 
 
 @cases_bp.route("/beacon_submit", methods=["POST"])
@@ -287,34 +281,25 @@ def mt_report(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/diagnose", methods=["POST"])
 def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
-
-    level = "phenotype" if "phenotype" in request.form else "gene"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
 
     omim_id = request.form["omim_term"].split("|")[0]
+    omim_inds = request.form.getlist("omim_inds")  # Individual-level phenotypes
 
     if not "OMIM:" in omim_id:  # Could be an omim number provided by user
         omim_id = ":".join(["OMIM", omim_id])
 
     # Make sure omim term exists in database:
     omim_obj = store.disease_term(omim_id.strip())
-    if level == "phenotype" and omim_obj is None:
+    if omim_obj is None:
         flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
         return redirect(request.referrer)
 
     remove = True if request.args.get("remove") == "yes" else False
-    store.diagnose(
-        institute_obj,
-        case_obj,
-        user_obj,
-        link,
-        level=level,
-        omim_id=omim_id,
-        remove=remove,
-    )
-    return redirect(request.referrer)
+    store.diagnose(institute_obj, case_obj, user_obj, link, omim_obj, omim_inds, remove)
+    return redirect("#".join([link, "omim_assign"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
