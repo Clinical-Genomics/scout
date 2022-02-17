@@ -463,7 +463,7 @@ class CaseEventHandler(object):
             user=user,
             link=link,
             category="case",
-            verb="unmonitor",
+            verb="rerun_unmonitor",
             subject=case["display_name"],
         )
 
