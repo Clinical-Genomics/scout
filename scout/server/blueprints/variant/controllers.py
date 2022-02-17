@@ -165,7 +165,6 @@ def variant(
     add_case=True,
     add_other=True,
     get_overlapping=True,
-    add_compounds=True,
     variant_category=None,
     variant_type=None,
     case_obj=None,
