@@ -276,7 +276,7 @@
 </a>
 <!-- Submenu content -->
 {% if case.rerun_requested %}
-  {% if config.SHOW_MELTER %}
+  {% if config.RERUN_MONITOR %}
     <div id='submenu3' class="collapse">
       {{ melter_interact(institute, case) }}
     </div>
@@ -286,7 +286,7 @@
   </span>
 {% else %}
   <div id='submenu3' class="collapse">
-    {% if config.SHOW_MELTER %}
+    {% if config.RERUN_MONITOR %}
       {{ melter_interact(institute, case) }}
     {% endif %}
     <button type="button" class="btn btn-warning btn-sm form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>

@@ -22,8 +22,8 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, matchmaker, rerunner, store
+from scout.constants import CUSTOM_CASE_REPORTS
+from scout.server.extensions import mail, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
