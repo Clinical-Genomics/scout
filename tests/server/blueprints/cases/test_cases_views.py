@@ -115,7 +115,7 @@ def test_rerun_monitor(app, institute_obj, mocker, mock_redirect):
         # WHEN rerun monitor is toggled
         resp = client.post(
             url_for(
-                "cases.monitor",
+                "cases.rerun_monitor",
                 institute_id=institute_obj["internal_id"],
                 case_name=a_case["display_name"],
             ),
