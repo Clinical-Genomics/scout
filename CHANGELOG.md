@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
+- Add a toggle for melter rerun monitoring of cases
+- Add a config option to show the rerun monitoring toggle
+- Add a cli option to export cases with rerun monitoring enabled
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
