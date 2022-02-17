@@ -89,7 +89,7 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
         assert resp.status_code == 302
 
 
-def test_monitor(app, institute_obj, mocker, mock_redirect):
+def test_rerun_monitor(app, institute_obj, mocker, mock_redirect):
     """test case rerun monitoring function"""
 
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
