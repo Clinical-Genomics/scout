@@ -128,7 +128,7 @@ def test_rerun_monitor(app, institute_obj, mocker, mock_redirect):
 
         # AND an unmonitor event should be created
         rerun_event = store.event_collection.find_one()
-        assert rerun_event.get("verb") == "monitor"
+        assert rerun_event.get("verb") == "rerun_monitor"
 
 
 def test_research(app, institute_obj, case_obj, mocker, mock_redirect):
