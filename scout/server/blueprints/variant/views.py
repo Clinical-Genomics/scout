@@ -303,19 +303,29 @@ def clinvar(institute_id, case_name, variant_id):
             conditions = request.form.getlist(key)  # can be HPO or OMIM conditions
             if conditions:
                 variant_id = key.split("@")[1]
-                cond_types = []
-                cond_values = []
+                possible_cond_types = []
+                possible_cond_values = []
 
                 for condition in conditions:
-                    cond_types.append(condition.split("_")[0])  # 'HPO' or 'OMIM'
-                    cond_values.append(condition.split("_")[1])  # HPO id or OMIM ID
+                    possible_cond_types.append(condition.split("_")[0])  # 'HPO' or 'OMIM'
+                    possible_cond_values.append(condition.split("_")[1])  # HPO id or OMIM ID
+
+                cond_type = None
+                cond_values = []
+                if "OMIM" in possible_cond_types:
+                    for c_type, c_value in zip(possible_cond_types, possible_cond_values):
+                        if c_type == "OMIM":
+                            cond_type = "OMIM"
+                            cond_values.append(c_value)
+                else:
+                    cond_type = "HPO"
+                    cond_values = possible_cond_values
 
                 if key.startswith(
                     "conditions@"
                 ):  # Filling in 'condition_id_type' and 'condition_id_value' in variant data
-                    form_dict["@".join(["condition_id_type", variant_id])] = ";".join(
-                        cond_types
-                    )  # Flattened list
+                    form_dict["@".join(["condition_id_type", variant_id])] = cond_type
+                    # Flattened list
                     form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
                         cond_values
                     )  # Flattened list
