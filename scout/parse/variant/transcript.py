@@ -210,8 +210,7 @@ def get_strand(transcript, entry):
         return "+"
     if entry.get("STRAND") == "-1":
         return "-"
-    else:
-        return None
+    return None
 
 
 def get_protein_sequence(entry):
