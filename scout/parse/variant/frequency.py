@@ -123,7 +123,17 @@ def parse_sv_frequency(variant, info_key):
 
 
 def update_frequency_from_vcf(frequency, variant, key_list, new_key):
-    """Update frequency dict if key is found"""
+    """Update frequency dict if key is found
+
+    Args:
+       frequency(dict)
+       variant(cyvcf2.Variant)
+       key_list(str list)
+       new_key: (str, key for frequency)
+    Returns:
+       frequency(dict): Updated if key of key_list is found in variant
+    """
+
     for the_key in key_list:
         result = parse_frequency(variant, the_key)
         if result is not None:
