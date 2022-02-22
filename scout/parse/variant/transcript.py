@@ -76,7 +76,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["biotype"] = entry.get("BIOTYPE")
         transcript["exon"] = entry.get("EXON")
         transcript["intron"] = entry.get("INTRON")
-        transcript["strand"] = get_strand(transcript, entry)
+        transcript["strand"] = get_strand(entry)
 
         functional = []
         regional = []
@@ -204,7 +204,7 @@ def parse_transcripts_spliceai(transcript, entry):
     transcript["spliceai_prediction"] = spliceai_prediction
 
 
-def get_strand(transcript, entry):
+def get_strand(entry):
     """Get string from transcript"""
     if entry.get("STRAND") == "1":
         return "+"
