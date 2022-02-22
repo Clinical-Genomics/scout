@@ -49,7 +49,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # RERUNNER_TIMEOUT = 10
 # RERUNNER_API_KEY = "I am the Keymaster of Gozer"
 
-# MatchMaker connection parameters
+# Matchmaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
 # MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
 # MME_URL = "http://localhost:9020"

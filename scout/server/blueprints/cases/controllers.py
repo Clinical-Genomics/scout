@@ -24,6 +24,7 @@ from scout.constants import (
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
     PHENOTYPE_MAP,
+    SAMPLE_SOURCE,
     SEX_MAP,
     VARIANT_REPORT_VARIANT_FEATURES,
     VERBS_MAP,
@@ -39,7 +40,7 @@ from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import RerunnerError, matchmaker, rerunner, store
+from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
 from scout.server.utils import institute_and_case
 from scout.utils.scout_requests import delete_request_json, post_request_json
 
@@ -50,6 +51,47 @@ JSON_HEADERS = {
     "Content-type": "application/json; charset=utf-8",
     "Accept": "text/json",
 }
+
+
+def coverage_report_contents(base_url, institute_obj, case_obj):
+    """Capture the contents of a case coverage report (chanjo-report), to be displayed in the general case report
+
+    Args:
+        base_url(str): base url of this application
+        institute_obj(models.Institute)
+        case_obj(models.Case)
+
+    Returns:
+        html_body_content(str): A string corresponding to the text within the <body> of an HTML chanjo-report page
+    """
+    request_data = {}
+    # extract sample ids from case_obj and add them to the post request object:
+    request_data["sample_id"] = [ind["individual_id"] for ind in case_obj["individuals"]]
+
+    # extract default panel names and default genes from case_obj and add them to the post request object
+    distinct_genes = set()
+    panel_names = []
+    for panel_info in case_obj.get("panels", []):
+        if panel_info.get("is_default") is False:
+            continue
+        panel_obj = store.gene_panel(panel_info["panel_name"], version=panel_info.get("version"))
+        distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
+        full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
+        panel_names.append(full_name)
+    panel_names = " ,".join(panel_names)
+    request_data["gene_ids"] = ",".join([str(gene_id) for gene_id in list(distinct_genes)])
+    request_data["panel_name"] = panel_names
+    request_data["request_sent"] = datetime.datetime.now()
+
+    # add institute-specific cutoff level to the post request object
+    request_data["level"] = institute_obj.get("coverage_cutoff", 15)
+
+    # Collect the coverage report HTML string
+    resp = requests.post(base_url + "reports/report", data=request_data)
+
+    # Extract the contents between <body> and </body>
+    html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
+    return html_body_content
 
 
 def case(store, institute_obj, case_obj):
@@ -212,8 +254,17 @@ def case(store, institute_obj, case_obj):
     # Phenotype groups can be specific for an institute, there are some default groups
     pheno_groups = institute_obj.get("phenotype_groups") or PHENOTYPE_GROUPS
 
-    # complete OMIM diagnoses specific for this case
-    omim_terms = {term["disease_nr"]: term for term in store.case_omim_diagnoses(case_obj)}
+    # If case diagnoses are a list of integers, convert into a list of dictionaries
+    omim_terms = {}
+    case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
+    if case_diagnoses:
+        if isinstance(case_diagnoses[0], int):
+            case_obj = store.convert_diagnoses_format(case_obj)
+        # Fetch complete OMIM diagnoses specific for this case
+        omim_terms = {
+            term["disease_id"]: term
+            for term in store.case_omim_diagnoses(case_obj.get("diagnosis_phenotypes"))
+        }
 
     if case_obj.get("custom_images"):
         # re-encode images as base64
@@ -224,6 +275,8 @@ def case(store, institute_obj, case_obj):
                 img["data"] = b64encode(img["data"]).decode("utf-8")
 
     data = {
+        "institute": institute_obj,
+        "case": case_obj,
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
         "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
@@ -241,6 +294,10 @@ def case(store, institute_obj, case_obj):
         "omim_terms": omim_terms,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
+        "tissue_types": SAMPLE_SOURCE,
+        "mme_nodes": matchmaker.connected_nodes,
+        "gens_info": gens.connection_settings(case_obj.get("genome_build")),
+        "display_rerunner": rerunner.connection_settings.get("display", False),
     }
 
     return data
@@ -347,7 +404,6 @@ def case_report_variants(store, case_obj, institute_obj, data):
                 add_case=False,
                 add_other=False,
                 get_overlapping=False,
-                add_compounds=False,
                 variant_type=var_obj["category"],
                 institute_obj=institute_obj,
                 case_obj=case_obj,
@@ -1083,7 +1139,7 @@ def matchmaker_add(request, institute_id, case_name):
         if "features" in request.form and case_obj.get("phenotype_terms")
         else []
     )
-    disorders = omim_terms(case_obj) if "disorders" in request.form else []
+    disorders = omim_terms(store, case_obj) if "disorders" in request.form else []
     genes_only = request.form.get("genomicfeatures") == "genes"
 
     if not features and not candidate_vars:

@@ -3,7 +3,6 @@ import datetime
 import json
 import logging
 import os.path
-import re
 import shutil
 from operator import itemgetter
 
@@ -22,7 +21,6 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
-from flask_weasyprint import HTML, render_pdf
 
 from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
 from scout.server.extensions import gens, mail, matchmaker, rerunner, store
@@ -71,13 +69,8 @@ def case(institute_id, case_name):
         return redirect(request.referrer)
 
     data = controllers.case(store, institute_obj, case_obj)
+
     return dict(
-        institute=institute_obj,
-        case=case_obj,
-        mme_nodes=matchmaker.connected_nodes,
-        tissue_types=SAMPLE_SOURCE,
-        gens_info=gens.connection_settings(case_obj.get("genome_build")),
-        display_rerunner=rerunner.connection_settings.get("display", False),
         **data,
     )
 
@@ -88,7 +81,7 @@ def sma(institute_id, case_name):
     """Visualize case SMA data - SMN CN calls"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case(store, institute_obj, case_obj)
-    return dict(institute=institute_obj, case=case_obj, format="html", **data)
+    return dict(format="html", **data)
 
 
 @cases_bp.route("/beacon_submit", methods=["POST"])
@@ -219,8 +212,17 @@ def pdf_case_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.case_report_content(store, institute_id, case_name)
 
+    # add coverage report on the bottom of this report
+    if (
+        current_app.config.get("SQLALCHEMY_DATABASE_URI")
+        and case_obj.get("track", "rare") != "cancer"
+    ):
+        data["coverage_report"] = controllers.coverage_report_contents(
+            request.url_root, institute_obj, case_obj
+        )
+
     # Workaround to be able to print the case pedigree to pdf
-    if case_obj.get("madeline_info") is not None:
+    if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
         write_to = os.path.join(cases_bp.static_folder, "madeline.png")
         svg2png(
             bytestring=case_obj["madeline_info"],
@@ -230,7 +232,9 @@ def pdf_case_report(institute_id, case_name):
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
-    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
+    bytes_file = html_to_pdf_file(
+        html_string=html_report, orientation="portrait", dpi=300, zoom=0.6
+    )
     file_name = "_".join(
         [
             case_obj["display_name"],
@@ -277,34 +281,25 @@ def mt_report(institute_id, case_name):
 @cases_bp.route("/<institute_id>/<case_name>/diagnose", methods=["POST"])
 def case_diagnosis(institute_id, case_name):
     """Add or remove a diagnosis for a case."""
-
-    level = "phenotype" if "phenotype" in request.form else "gene"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
 
     omim_id = request.form["omim_term"].split("|")[0]
+    omim_inds = request.form.getlist("omim_inds")  # Individual-level phenotypes
 
     if not "OMIM:" in omim_id:  # Could be an omim number provided by user
         omim_id = ":".join(["OMIM", omim_id])
 
     # Make sure omim term exists in database:
     omim_obj = store.disease_term(omim_id.strip())
-    if level == "phenotype" and omim_obj is None:
+    if omim_obj is None:
         flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
         return redirect(request.referrer)
 
     remove = True if request.args.get("remove") == "yes" else False
-    store.diagnose(
-        institute_obj,
-        case_obj,
-        user_obj,
-        link,
-        level=level,
-        omim_id=omim_id,
-        remove=remove,
-    )
-    return redirect(request.referrer)
+    store.diagnose(institute_obj, case_obj, user_obj, link, omim_obj, omim_inds, remove)
+    return redirect("#".join([link, "omim_assign"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
@@ -692,16 +687,20 @@ def delivery_report(institute_id, case_name):
         try:  # file could not be available
             html_file = open(delivery_report, "r")
             source_code = html_file.read()
-            # remove image, since it is problematic to render it in the PDF version
-            source_code = re.sub(
-                '<img class=.*?alt="SWEDAC logo">', "", source_code, flags=re.DOTALL
+
+            bytes_file = html_to_pdf_file(source_code, "portrait", 300)
+            file_name = "_".join(
+                [
+                    case_obj["display_name"],
+                    datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "scout_delivery.pdf",
+                ]
             )
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_scout_delivery.pdf",
+            return send_file(
+                bytes_file,
+                attachment_filename=file_name,
+                mimetype="application/pdf",
+                as_attachment=True,
             )
         except Exception as ex:
             flash(
@@ -709,6 +708,9 @@ def delivery_report(institute_id, case_name):
                     delivery_report, ex
                 ),
                 "warning",
+            )
+            LOG.error(
+                f"An error occurred while downloading delivery report {delivery_report} -- {ex}"
             )
 
     return send_from_directory(out_dir, filename)
@@ -741,33 +743,42 @@ def gene_fusion_report(institute_id, case_name, report_type):
 def coverage_qc_report(institute_id, case_name):
     """Display coverage and qc report."""
     _, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("coverage_qc_report") is None:
+    coverage_qc_report = case_obj.get("coverage_qc_report")
+
+    if coverage_qc_report is None:
         return abort(404)
 
-    coverage_qc_report = data["case"]["coverage_qc_report"]
     report_format = request.args.get("format", "html")
+
+    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
+    filename = os.path.basename(coverage_qc_report)
+
     if report_format == "pdf":
-        try:  # file could not be available
-            html_file = open(coverage_qc_report, "r")
-            source_code = html_file.read()
-            return render_pdf(
-                HTML(string=source_code),
-                download_filename=case_obj["display_name"]
-                + "_"
-                + datetime.datetime.now().strftime("%Y-%m-%d")
-                + "_coverage_qc_report.pdf",
-            )
+        try:
+            with open(os.path.abspath(coverage_qc_report), "r") as html_file:
+                source_code = html_file.read()
+                bytes_file = html_to_pdf_file(source_code, "landscape", 300)
+                file_name = "_".join(
+                    [
+                        case_obj["display_name"],
+                        datetime.datetime.now().strftime("%Y-%m-%d"),
+                        "coverage_qc_report.pdf",
+                    ]
+                )
+                return send_file(
+                    bytes_file,
+                    attachment_filename=file_name,
+                    mimetype="application/pdf",
+                    as_attachment=True,
+                )
         except Exception as ex:
             flash(
-                "An error occurred while downloading delivery report {} -- {}".format(
+                "An error occurred while converting report to PDF: {} -- {}".format(
                     coverage_qc_report, ex
                 ),
                 "warning",
             )
-
-    out_dir = os.path.dirname(coverage_qc_report)
-    filename = os.path.basename(coverage_qc_report)
+            LOG.error(ex)
 
     return send_from_directory(out_dir, filename)
 
@@ -825,6 +836,15 @@ def research(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
     store.open_research(institute_obj, case_obj, user_obj, link)
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/reset_research", methods=["GET"])
+def reset_research(institute_id, case_name):
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for(".case", institute_id=institute_id, case_name=case_name)
+    store.reset_research(institute_obj, case_obj, user_obj, link)
     return redirect(request.referrer)
 
 
@@ -912,14 +932,22 @@ def download_hpo_genes(institute_id, case_name, category):
     phenotype_terms_with_genes = controllers.phenotypes_genes(store, case_obj, is_clinical)
     html_content = ""
     for term_id, term in phenotype_terms_with_genes.items():
-        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><i>{term.get('genes')}</i><br>"
-    return render_pdf(
-        HTML(string=html_content),
-        download_filename=case_obj["display_name"]
-        + "_"
-        + datetime.datetime.now().strftime("%Y-%m-%d")
-        + category
-        + "_dynamic_phenotypes.pdf",
+        html_content += f"<hr><strong>{term_id} - {term.get('description')}</strong><br><br><font style='font-size:16px;'><i>{term.get('genes')}</i></font><br><br>"
+
+    bytes_file = html_to_pdf_file(html_content, "portrait", 300)
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            category,
+            "dynamic_phenotypes.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        attachment_filename=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
     )
 
 

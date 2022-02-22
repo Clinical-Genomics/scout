@@ -192,7 +192,7 @@ text{
 }
 
 ]]></style>
- <script type="text/javascript" xlink:href="javascript/madeline.js"></script>
+ <script type="text/javascript" xlink:href="/cases/static/madeline.js"></script>
  <marker id="endArrow" viewBox="0 0 10 10" refX="1" refY="5" markerUnits="strokeWidth" orient="auto" markerWidth="5" markerHeight="4">  <polyline points="0,0 10,5 0,10 1,5" fill="#000" /> </marker>
  </defs>
  <g class="pedigree" transform="translate(-372.14)">
