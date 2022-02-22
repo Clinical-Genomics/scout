@@ -94,14 +94,14 @@ def parse_sv_frequencies(variant):
     decipher_keys = ["decipherAF", "decipher"]
     cg_keys = ["clinical_genomics_mipAF", "clinical_genomics_mipOCC"]
 
-    update_frequency_from_vcf(sv_frequencies, variant, clingen_benign_keys, "clingen_cgh_benign")
-    update_frequency_from_vcf(
+    update_sv_frequency_from_vcf(sv_frequencies, variant, clingen_benign_keys, "clingen_cgh_benign")
+    update_sv_frequency_from_vcf(
         sv_frequencies, variant, clingen_pathogenic_keys, "clingen_cgh_pathogenic"
     )
-    update_frequency_from_vcf(sv_frequencies, variant, clingen_ngi_keys, "clingen_ngi")
-    update_frequency_from_vcf(sv_frequencies, variant, swegen_keys, "swegen")
-    update_frequency_from_vcf(sv_frequencies, variant, decipher_keys, "decipher")
-    update_frequency_from_vcf(sv_frequencies, variant, cg_keys, "clingen_mip")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, clingen_ngi_keys, "clingen_ngi")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, swegen_keys, "swegen")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, decipher_keys, "decipher")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, cg_keys, "clingen_mip")
 
     return sv_frequencies
 
@@ -136,6 +136,26 @@ def update_frequency_from_vcf(frequency, variant, key_list, new_key):
 
     for the_key in key_list:
         result = parse_frequency(variant, the_key)
+        if result is not None:
+            frequency[new_key] = result
+            break
+
+
+def update_sv_frequency_from_vcf(frequency, variant, key_list, new_key):
+    """Update frequency dict if key is found. Treat frequencies as float and
+    occurances as int.
+
+    Args:
+       frequency(dict)
+       variant(cyvcf2.Variant)
+       key_list(str list)
+       new_key: (str, key for frequency)
+    Returns:
+       frequency(dict): Updated if key of key_list is found in variant
+    """
+
+    for the_key in key_list:
+        result = parse_sv_frequency(variant, the_key)
         if result is not None:
             frequency[new_key] = result
             break
