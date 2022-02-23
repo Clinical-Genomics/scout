@@ -22,8 +22,8 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CUSTOM_CASE_REPORTS, SAMPLE_SOURCE
-from scout.server.extensions import gens, mail, matchmaker, rerunner, store
+from scout.constants import CUSTOM_CASE_REPORTS
+from scout.server.extensions import mail, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
@@ -810,6 +810,21 @@ def rerun(institute_id, case_name):
     recipient = current_app.config.get("TICKET_SYSTEM_EMAIL")
 
     controllers.rerun(store, mail, current_user, institute_id, case_name, sender, recipient)
+    return redirect(request.referrer)
+
+
+@cases_bp.route("/<institute_id>/<case_name>/monitor", methods=["POST"])
+def rerun_monitor(institute_id, case_name):
+    """Request a case to be monitored for future reruns."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for(".case", institute_id=institute_id, case_name=case_name)
+
+    if request.form.get("rerun_monitoring") == "monitor":
+        store.monitor(institute_obj, case_obj, user_obj, link)
+    else:
+        store.unmonitor(institute_obj, case_obj, user_obj, link)
+
     return redirect(request.referrer)
 
 

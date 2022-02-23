@@ -413,11 +413,73 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
+    def monitor(self, institute, case, user, link):
+        """Enable rerun monitoring for a case.
+
+        Args:
+             institute (dict): An Institute object
+             case (dict): Case object
+             user (dict): A User object
+             link (str): The url to be used in the event
+
+        Return:
+             updated_case
+        """
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="case",
+            verb="rerun_monitor",
+            subject=case["display_name"],
+        )
+
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case["_id"]},
+            {"$set": {"rerun_monitoring": True}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+        LOG.debug("Case updated")
+        return updated_case
+
+    def unmonitor(self, institute, case, user, link):
+        """Disable rerun monitoring for a case.
+
+        Args:
+          institute (dict): An Institute object
+          case (dict): Case object
+          user (dict): A User object
+          link (str): The url to be used in the event
+
+        Return:
+          updated_case
+        """
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="case",
+            verb="rerun_unmonitor",
+            subject=case["display_name"],
+        )
+
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case["_id"]},
+            {"$set": {"rerun_monitoring": False}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
+        LOG.debug("Case updated")
+        return updated_case
+
     def share(self, institute, case, collaborator_id, user, link):
         """Share a case with a new institute.
 
         Args:
-            institute (dict): A Institute object
+            institute (dict): An Institute object
             case (dict): Case object
             collaborator_id (str): A instute id
             user (dict): A User object
