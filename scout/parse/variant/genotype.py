@@ -85,26 +85,37 @@ def parse_genotype(variant, ind, pos):
         gt_call["genotype_call"] = "/".join([GENOTYPE_MAP[ref_call], GENOTYPE_MAP[alt_call]])
 
     # STR specific
-    str_so = None
-    if "SO" in variant.FORMAT:
-        try:
-            so = variant.format("SO")[pos]
-            if so not in [None, -1]:
-                str_so = str(so)
-        except ValueError as e:
-            pass
-
-    gt_call["so"] = str_so
+    gt_call["so"] = get_str_so(variant, pos)
 
     (spanning_ref, spanning_alt) = _parse_format_entry(variant, pos, "ADSP")
     (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
     (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
 
     # SV specific
+    (paired_end_ref, paired_end_alt) = get_paired_ends(variant, pos)
+    (split_read_ref, split_read_alt) = get_split_reads(variant, pos)
+
+    alt_depth = get_alt_depth(
+        variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt
+    )
+    gt_call["alt_depth"] = alt_depth
+
+    ref_depth = get_ref_depth(
+        variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref
+    )
+    gt_call["ref_depth"] = ref_depth
+    gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
+    gt_call["alt_frequency"] = get_alt_frequency(variant, pos)
+    gt_call["genotype_quality"] = int(variant.gt_quals[pos])
+
+    return gt_call
+
+
+def get_paired_ends(variant, pos):
+    """Get paired ends"""
+    # SV specific
     paired_end_alt = None
     paired_end_ref = None
-    split_read_alt = None
-    split_read_ref = None
 
     # Check if PE is annotated
     # This is the number of paired end reads that supports the variant
@@ -113,7 +124,7 @@ def parse_genotype(variant, ind, pos):
             value = int(variant.format("PE")[pos])
             if value >= 0:
                 paired_end_alt = value
-        except ValueError as e:
+        except ValueError as _ignore_error:
             pass
 
     # Check if PR is annotated
@@ -127,9 +138,29 @@ def parse_genotype(variant, ind, pos):
                 paired_end_alt = alt_value
             if ref_value >= 0:
                 paired_end_ref = ref_value
-        except ValueError as r:
+        except ValueError as _ignore_error:
             pass
 
+    # Number of paired ends that supports the event
+    if "DV" in variant.FORMAT:
+        values = variant.format("DV")[pos]
+        alt_value = int(values[0])
+        if alt_value >= 0:
+            paired_end_alt = alt_value
+
+    # Number of paired ends that supports the reference
+    if "DR" in variant.FORMAT:
+        values = variant.format("DR")[pos]
+        ref_value = int(values[0])
+        if alt_value >= 0:
+            paired_end_ref = ref_value
+    return (paired_end_ref, paired_end_alt)
+
+
+def get_split_reads(variant, pos):
+    """Get split reads"""
+    split_read_alt = None
+    split_read_ref = None
     # Check if 'SR' is annotated
     if "SR" in variant.FORMAT:
         values = variant.format("SR")[pos]
@@ -145,20 +176,6 @@ def parse_genotype(variant, ind, pos):
         if ref_value >= 0:
             split_read_ref = ref_value
 
-    # Number of paired ends that supports the event
-    if "DV" in variant.FORMAT:
-        values = variant.format("DV")[pos]
-        alt_value = int(values[0])
-        if alt_value >= 0:
-            paired_end_alt = alt_value
-
-    # Number of paired ends that supports the reference
-    if "DR" in variant.FORMAT:
-        values = variant.format("DR")[pos]
-        ref_value = int(values[0])
-        if alt_value >= 0:
-            paired_end_ref = ref_value
-
     # Number of split reads that supports the event
     if "RV" in variant.FORMAT:
         values = variant.format("RV")[pos]
@@ -173,6 +190,68 @@ def parse_genotype(variant, ind, pos):
         if ref_value >= 0:
             split_read_ref = ref_value
 
+    return (split_read_ref, split_read_alt)
+
+
+def get_alt_frequency(variant, pos):
+    """ """
+    alt_frequency = float(variant.gt_alt_freqs[pos])
+    if alt_frequency == -1:
+        if "AF" in variant.FORMAT:
+            alt_frequency = float(variant.format("AF")[pos][0])
+    return alt_frequency
+
+
+def get_read_depth(variant, pos, alt_depth, ref_depth):
+    """Read depth"""
+    read_depth = int(variant.gt_depths[pos])
+    if read_depth == -1:
+        # If read depth could not be parsed by cyvcf2, try to get it manually
+        if "DP" in variant.FORMAT:
+            read_depth = int(variant.format("DP")[pos][0])
+        elif "LC" in variant.FORMAT:
+            value = variant.format("LC")[pos][0]
+            try:
+                read_depth = int(round(value))
+            except ValueError as _ignore_error:
+                pass
+        elif alt_depth != -1 or ref_depth != -1:
+            read_depth = 0
+            if alt_depth != -1:
+                read_depth += alt_depth
+            if ref_depth != -1:
+                read_depth += alt_depth
+    return read_depth
+
+
+def get_ref_depth(
+    variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref
+):
+    """Get reference read depth"""
+    ref_depth = int(variant.gt_ref_depths[pos])
+    if ref_depth == -1:
+        if any([paired_end_ref, split_read_ref]):
+            ref_depth = 0
+            if paired_end_ref:
+                ref_depth += paired_end_ref
+            if split_read_ref:
+                ref_depth += split_read_ref
+
+        if any([spanning_ref, flanking_ref, inrepeat_ref]):
+            ref_depth = 0
+            if spanning_ref:
+                ref_depth += spanning_ref
+            if flanking_ref:
+                ref_depth += flanking_ref
+            if inrepeat_ref:
+                ref_depth += inrepeat_ref
+    return ref_depth
+
+
+def get_alt_depth(
+    variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt
+):
+    """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth == -1:
         if "VD" in variant.FORMAT:
@@ -193,59 +272,20 @@ def parse_genotype(variant, ind, pos):
                 alt_depth += flanking_alt
             if inrepeat_alt:
                 alt_depth += inrepeat_alt
+    return alt_depth
 
-    gt_call["alt_depth"] = alt_depth
 
-    ref_depth = int(variant.gt_ref_depths[pos])
-    if ref_depth == -1:
-        if any([paired_end_ref, split_read_ref]):
-            ref_depth = 0
-            if paired_end_ref:
-                ref_depth += paired_end_ref
-            if split_read_ref:
-                ref_depth += split_read_ref
-
-        if any([spanning_ref, flanking_ref, inrepeat_ref]):
-            ref_depth = 0
-            if spanning_ref:
-                ref_depth += spanning_ref
-            if flanking_ref:
-                ref_depth += flanking_ref
-            if inrepeat_ref:
-                ref_depth += inrepeat_ref
-
-    gt_call["ref_depth"] = ref_depth
-
-    alt_frequency = float(variant.gt_alt_freqs[pos])
-    if alt_frequency == -1:
-        if "AF" in variant.FORMAT:
-            alt_frequency = float(variant.format("AF")[pos][0])
-
-    read_depth = int(variant.gt_depths[pos])
-    if read_depth == -1:
-        # If read depth could not be parsed by cyvcf2, try to get it manually
-        if "DP" in variant.FORMAT:
-            read_depth = int(variant.format("DP")[pos][0])
-        elif "LC" in variant.FORMAT:
-            value = variant.format("LC")[pos][0]
-            try:
-                read_depth = int(round(value))
-            except ValueError as e:
-                pass
-        elif alt_depth != -1 or ref_depth != -1:
-            read_depth = 0
-            if alt_depth != -1:
-                read_depth += alt_depth
-            if ref_depth != -1:
-                read_depth += alt_depth
-
-    gt_call["read_depth"] = read_depth
-
-    gt_call["alt_frequency"] = alt_frequency
-
-    gt_call["genotype_quality"] = int(variant.gt_quals[pos])
-
-    return gt_call
+def get_str_so(variant, pos):
+    """Get str SO from variant"""
+    str_so = None
+    if "SO" in variant.FORMAT:
+        try:
+            so = variant.format("SO")[pos]
+            if so not in [None, -1]:
+                str_so = str(so)
+        except ValueError as _ignore_error:
+            pass
+    return str_so
 
 
 def _parse_format_entry(variant, pos, format_entry_name):
@@ -279,6 +319,6 @@ def _parse_format_entry(variant, pos, format_entry_name):
                 ref = ref_value
             if alt_value >= 0:
                 alt = alt_value
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError) as _ignore_error:
             pass
     return (ref, alt)
