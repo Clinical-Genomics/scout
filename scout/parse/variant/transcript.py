@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from pprint import pprint as pp
 
 from scout.constants import SO_TERMS
 
@@ -20,11 +19,8 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript = {}
         # There can be several functional annotations for one variant
         functional_annotations = entry.get("CONSEQUENCE", "").split("&")
-        # XXX: functional annotations is set again in end of function, is that correct?
-        transcript["functional_annotations"] = functional_annotations
         # Get the transcript id (ensembl gene id)
-        transcript_id = entry.get("FEATURE", "").split(":")[0]
-        transcript["transcript_id"] = transcript_id
+        transcript["transcript_id"] = entry.get("FEATURE", "").split(":")[0]
 
         # Add the hgnc gene identifiers
         # The HGNC ID is prefered and will be used if it exists
@@ -39,7 +35,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["protein_id"] = entry.get("ENSP")
 
         ## Polyphen prediction ##
-        transcript["polyphen_prediction"] = get_prediction_term(entry)
+        transcript["polyphen_prediction"] = get_polyphen_prediction(entry)
 
         ## Sift prediction ##
         transcript["sift_prediction"] = get_sift_prediction(entry)
@@ -77,14 +73,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         transcript["exon"] = entry.get("EXON")
         transcript["intron"] = entry.get("INTRON")
         transcript["strand"] = get_strand(entry)
-
-        functional = []
-        regional = []
-        for annotation in functional_annotations:
-            functional.append(annotation)
-            regional.append(SO_TERMS[annotation]["region"])
-
-        transcript["functional_annotations"] = get_functional_annotations(functional_annotations)
+        transcript["functional_annotations"] = functional_annotations
         transcript["region_annotations"] = get_regional_annotation(functional_annotations)
 
         # Check if the transcript is marked cannonical by vep
@@ -117,8 +106,7 @@ def parse_transcripts(raw_transcripts, allele=None):
         if entry.get("GNOMAD_MT_AF_HET", "") != "":
             transcript["gnomad_mt_heteroplasmic"] = float(entry.get("GNOMAD_MT_AF_HET"))
 
-        # Update transcript with maximum frequencies found in entry
-        set_frequencies(transcript, entry)
+        set_variant_frequencies(transcript, entry)
 
         if entry.get("CLINVAR_CLNVID"):
             transcript["clinvar_clnvid"] = entry["CLINVAR_CLNVID"]
@@ -240,7 +228,7 @@ def get_hgnc_id(entry):
     return None
 
 
-def get_prediction_term(entry):
+def get_polyphen_prediction(entry):
     """Get polyphen prediction, return default 'unknown' if not found"""
     polyphen_prediction = entry.get("POLYPHEN")
     if polyphen_prediction:
@@ -249,20 +237,18 @@ def get_prediction_term(entry):
 
 
 def get_sift_prediction(entry):
-    """"""
-    # Check with other key if it does not exist
-    default_term = "unknown"
-    sift_prediction = entry.get("SIFT")
+    """Get SIFT prediction from entry. Sorting Intolerant From Tolerant."""
 
+    sift_prediction = entry.get("SIFT")
     if not sift_prediction:
         sift_prediction = entry.get("SIFT_PRED")
     if sift_prediction:
         return sift_prediction.split("(")[0]
-    return default_term
+    return "unknown"
 
 
 def get_dbsnp_list(entry):
-    """"""
+    """Get dbSNP -the NCBI database of genetic variation- data if present in entry."""
     dbsnp_list = []
     variant_ids = entry.get("EXISTING_VARIATION")
 
@@ -274,7 +260,7 @@ def get_dbsnp_list(entry):
 
 
 def get_cosmic_list(entry):
-    """"""
+    """Get COSMIC -Catalogue Of Somatic Mutations In Cancer- if present in entry."""
     cosmic_list = []
     variant_ids = entry.get("EXISTING_VARIATION")
 
@@ -291,37 +277,31 @@ def get_cosmic_list(entry):
     return cosmic_list
 
 
-def get_functional_annotations(functional_annotations):
-    """ " """
-    functional_list = []
-    for annotation in functional_annotations:
-        functional_list.append(annotation)
-    return functional_list
-
-
 def get_regional_annotation(functional_annotations):
-    """ """
+    """Get regional annotation from SO TERM """
     regional_list = []
     for annotation in functional_annotations:
         regional_list.append(SO_TERMS[annotation]["region"])
     return regional_list
 
 
-def set_frequencies(transcript, entry):
-    """Check frequencies. There are different keys for different versions of VEP
-    We only support version 90+"""
+def set_variant_frequencies(transcript, entry):
+    """Set variant frequencies found in entry. There are different keys 
+    for different versions of VEP. Currently only supports version 90+. 
+
+    The keys for VEP v90+:
+    * 'AF' or '1000GAF' - 1000G all populations combined
+    * 'xxx_AF' - 1000G (or NHLBI-ESP) individual populations
+    * 'gnomAD_AF' - gnomAD exomes, all populations combined
+    * 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
+    * 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
+
+    Reference: https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
+    """
+    
     thousandg_freqs = []
     gnomad_freqs = []
     try:
-        # The keys for VEP v90+:
-        # 'AF' or '1000GAF' - 1000G all populations combined
-        # 'xxx_AF' - 1000G (or NHLBI-ESP) individual populations
-        # 'gnomAD_AF' - gnomAD exomes, all populations combined
-        # 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
-        # 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
-        # https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
-
-        # Loop over all keys to find frequency entries
         for key in entry:
             # All frequencies endswith AF
             if not key.endswith("AF"):
@@ -358,5 +338,5 @@ def set_frequencies(transcript, entry):
             transcript["gnomad_max"] = max(gnomad_freqs)
 
     except Exception as err:
-        LOG.debug("Something went wrong when parsing frequencies")
-        LOG.debug("Only splitted and normalised VEP v90+ is supported")
+        LOG.waning("Failed to parse variant frequencies")
+        LOG.warning("Only splitted and normalised VEP v90+ is supported")
