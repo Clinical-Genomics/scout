@@ -278,7 +278,7 @@ def get_cosmic_list(entry):
 
 
 def get_regional_annotation(functional_annotations):
-    """Get regional annotation from SO TERM """
+    """Get regional annotation from SO TERM"""
     regional_list = []
     for annotation in functional_annotations:
         regional_list.append(SO_TERMS[annotation]["region"])
@@ -286,8 +286,8 @@ def get_regional_annotation(functional_annotations):
 
 
 def set_variant_frequencies(transcript, entry):
-    """Set variant frequencies found in entry. There are different keys 
-    for different versions of VEP. Currently only supports version 90+. 
+    """Set variant frequencies found in entry. There are different keys
+    for different versions of VEP. Currently only supports version 90+.
 
     The keys for VEP v90+:
     * 'AF' or '1000GAF' - 1000G all populations combined
@@ -298,7 +298,7 @@ def set_variant_frequencies(transcript, entry):
 
     Reference: https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
     """
-    
+
     thousandg_freqs = []
     gnomad_freqs = []
     try:
