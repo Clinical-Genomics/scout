@@ -100,11 +100,6 @@ def parse_genotype(variant, ind, pos):
     )
     gt_call["alt_depth"] = alt_depth
 
-    alt_frequency = float(variant.gt_alt_freqs[pos])
-    if alt_frequency == -1:
-        if "AF" in variant.FORMAT:
-            alt_frequency = float(variant.format("AF")[pos][0])
-
     ref_depth = get_ref_depth(
         variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref
     )
