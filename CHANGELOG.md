@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
 - Removed unused `add_compounds` param from variant controllers function
+- Changed default hg19 genome for IGV.js to legacy hg19_1kg_decoy to fix a few problematic loci
 
 ## [4.49]
 ### Fixed
