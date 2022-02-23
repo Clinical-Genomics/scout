@@ -97,6 +97,8 @@ ACCEPT_LANGUAGES = ["en", "sv"]
 SHOW_CAUSATIVES = True
 SHOW_OBSERVED_VARIANT_ARCHIVE = True
 HIDE_ALAMUT_LINK = True
+# Display case rerun monitoring toggle
+RERUN_MONITOR = True
 
 # OMIM API KEY: Required for downloading definitions from OMIM (https://www.omim.org/api)
 # OMIM_API_KEY = 'valid_omim_api_key'
