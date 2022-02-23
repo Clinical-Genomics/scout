@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
 - Removed unused `add_compounds` param from variant controllers function
+- Reduce code complexity (parse/ensembl.py)
 
 ## [4.49]
 ### Fixed
@@ -54,9 +55,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export delivery report to PDF using PDFKit instead of Weasyprint
 - PDF export of clinical and research HPO panels using PDFKit instead of Weasyprint
 - Export gene panel report to PDF using PDFKit
-- Export delivery report to PDF using PDFKit
-- Removed WeasyPrint lib dependency 
-- Reduce code complexity (parse/ensembl.py)
+- Removed WeasyPrint lib dependency
 
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
