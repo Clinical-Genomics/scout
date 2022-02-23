@@ -4,10 +4,8 @@ import datetime
 import requests
 from bson.objectid import ObjectId
 from flask import current_app, json, url_for
-from flask_login import current_user
 
 from scout.demo import delivery_report_path
-from scout.server.blueprints.cases import controllers
 from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
 from scout.server.extensions import mail, store
 
@@ -89,6 +87,48 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
 
         # It should return redirect to previous page
         assert resp.status_code == 302
+
+
+def test_rerun_monitor(app, institute_obj, mocker, mock_redirect):
+    """test case rerun monitoring function"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    # GIVEN an initialized app
+    # GIVEN a valid user
+    # GIVEN a test case without rerun monitoring
+    a_case = store.case_collection.find_one()
+    assert not a_case.get("rerun_monitoring")
+    # WHEN setting monitoring to true
+    store.case_collection.find_one_and_update(
+        {"_id": a_case["_id"]},
+        {"$set": {"rerun_monitoring": False}},
+    )
+
+    form_data = {"rerun_monitoring": "monitor"}
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN rerun monitor is toggled
+        resp = client.post(
+            url_for(
+                "cases.rerun_monitor",
+                institute_id=institute_obj["internal_id"],
+                case_name=a_case["display_name"],
+            ),
+            data=form_data,
+        )
+        assert resp.status_code == 302
+        updated_case = store.case_collection.find_one({"_id": a_case["_id"]})
+        # THEN the case should be updated
+        assert updated_case["rerun_monitoring"] is True
+
+        # AND an unmonitor event should be created
+        rerun_event = store.event_collection.find_one()
+        assert rerun_event.get("verb") == "rerun_monitor"
 
 
 def test_research(app, institute_obj, case_obj, mocker, mock_redirect):

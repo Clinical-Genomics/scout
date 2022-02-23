@@ -229,6 +229,7 @@ class CaseHandler(object):
         skip_assigned=False,
         has_causatives=False,
         reruns=False,
+        rerun_monitor=False,
         finished=False,
         research_requested=False,
         is_research=False,
@@ -296,6 +297,9 @@ class CaseHandler(object):
 
         if reruns:
             query["rerun_requested"] = True
+
+        if rerun_monitor:
+            query["rerun_monitoring"] = True
 
         if status:
             query["status"] = status
