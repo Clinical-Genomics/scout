@@ -211,9 +211,9 @@ def get_coding_sequence(entry):
     return get_sequence_aux(entry, "HGVSC")
 
 
-def get_sequence_aux(entry, id):
-    """Auxiliary function will extract id form entry"""
-    sequence_entry = entry.get(id, "").split(":")
+def get_sequence_aux(entry, name):
+    """Auxiliary function will extract name form entry"""
+    sequence_entry = entry.get(name, "").split(":")
     if len(sequence_entry) > 1:
         return sequence_entry[-1]
     return None
