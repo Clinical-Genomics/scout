@@ -21,7 +21,7 @@
           {% if not (case.is_archived or case.is_research) %}
             {{ research(case) }}
           {% endif %}
-          {{ rerun(case) }}
+          {{ rerun(institute, case) }}
           {{ share_case(institute, case, collaborators) }}
           {% if config.BEACON_URL %}
             {{ beacon_share(institute, case, current_user) }}
@@ -266,7 +266,7 @@
   {% endif %}
 {% endmacro %}
 
-{% macro rerun(case) %}
+{% macro rerun(institute, case) %}
 <a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
     <span class="fa fa-retweet fa-fw mr-3"></span>
@@ -276,14 +276,31 @@
 </a>
 <!-- Submenu content -->
 {% if case.rerun_requested %}
+  {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
+    <div id='submenu3' class="collapse">
+      {{ rerun_monitor_interact(institute, case) }}
+    </div>
+  {% endif %}
   <span class="d-flex align-items-center">
     <i class="text-white mt-1 ml-3">Rerun pending</i>
   </span>
 {% else %}
   <div id='submenu3' class="collapse">
+    {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
+      {{ rerun_monitor_interact(institute, case) }}
+    {% endif %}
     <button type="button" class="btn btn-warning btn-sm form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
   </div>
 {% endif %}
+{% endmacro %}
+
+
+{% macro rerun_monitor_interact(institute, case) %}
+  <div class="ml-3 mt-1">
+    <form action="{{ url_for('cases.rerun_monitor', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-toggle="tooltip" title="A new analysis will start when relevant parts of the workflow are updated"> Activate monitoring</span>
+    </form>
+  </div>
 {% endmacro %}
 
 {% macro share_case(institute, case, collaborators) %}

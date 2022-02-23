@@ -7,8 +7,8 @@ from flask.cli import with_appcontext
 
 from scout.constants import CASE_STATUSES
 from scout.server.extensions import store
+from scout.server.utils import jsonconverter
 
-from .export_handler import bson_handler
 from .utils import json_option
 
 LOG = logging.getLogger(__name__)
@@ -21,6 +21,11 @@ LOG = logging.getLogger(__name__)
 @click.option("-f", "--finished", is_flag=True, help="archived or solved")
 @click.option("--causatives", is_flag=True, help="Has causative variants")
 @click.option("--research-requested", is_flag=True, help="If research is requested")
+@click.option(
+    "--rerun-monitor",
+    is_flag=True,
+    help="Return cases where continuous rerun monitoring has been requested",
+)
 @click.option("--is-research", is_flag=True, help="If case is in research mode")
 @click.option(
     "-s",
@@ -38,12 +43,15 @@ def cases(
     finished,
     causatives,
     research_requested,
+    rerun_monitor,
     is_research,
     status,
     within_days,
     json,
 ):
-    """Interact with cases existing in the database."""
+    """Interact with cases existing in the database.
+    Return cases matching search criteria options/flags.
+    """
     adapter = store
 
     models = []
@@ -58,6 +66,7 @@ def cases(
         models = adapter.cases(
             collaborator=institute,
             reruns=reruns,
+            rerun_monitor=rerun_monitor,
             finished=finished,
             has_causatives=causatives,
             research_requested=research_requested,
@@ -70,7 +79,7 @@ def cases(
             LOG.info("No cases could be found")
 
     if json:
-        click.echo(json_lib.dumps(models, default=bson_handler))
+        click.echo(json_lib.dumps(models, default=jsonconverter))
         return
 
     for model in models:
