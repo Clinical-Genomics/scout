@@ -79,6 +79,9 @@ def panel(panel_id):
     """Display (and add pending updates to) a specific gene panel."""
 
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
+    if not panel_obj:
+        flash("Panel with id {} not found.".format(panel_id), "warning")
+        return redirect(url_for("panels.panels"))
 
     if request.method == "POST":
         if request.form.get("update_description"):
