@@ -260,8 +260,8 @@ def set_analysis_date(case_obj, case_data):
 
 
 def set_genome_build(case_obj, case_data):
-    genome_build = case_data.get("genome_build", "37")
-    if not genome_build in ["37", "38"]:
+    genome_build = case_data.get("genome_build", 37)
+    if not genome_build in [37, 38]:
         raise ValueError(f"Genom build {genome_build} not supported")
     case_obj["genome_build"] = genome_build
 
@@ -274,13 +274,14 @@ def set_cohort(case_obj, case_data):
 def sync_cohort_view(case_obj, institute_obj, adapter):
     """Check if all case cohorts are registered under the institute db. If not update
     database"""
-    institute_cohorts = set(institute_obj.get("cohorts", []))
-    all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
-    if len(all_cohorts) > len(institute_cohorts):
-        LOG.warning("Updating institute object with new cohort terms from case_obj")
-        adapter.institute_collection.find_one_and_update(
-            {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
-        )
+    if case_obj.get("cohorts"):
+        institute_cohorts = set(institute_obj.get("cohorts", []))
+        all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
+        if len(all_cohorts) > len(institute_cohorts):
+            LOG.warning("Updating institute object with new cohort terms from case_obj")
+            adapter.institute_collection.find_one_and_update(
+                {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
+            )
 
 
 def set_phenotype_terms(case_obj, case_data, adapter):
