@@ -22,93 +22,25 @@ def parse_frequencies(variant, transcripts):
     # Gnomad have both snv and sv frequencies
     gnomad_keys = ["GNOMADAF", "GNOMAD_AF", "gnomad_svAF"]
     gnomad_max_keys = ["GNOMADAF_popmax", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
-    gnomad_mt_keys = ["GNOMAD_MT_AF_HOM", "GNOMAD_MT_AF_HET"]
 
-    for test_key in thousand_genomes_keys:
-        thousand_g = parse_frequency(variant, test_key)
-        if thousand_g is not None:
-            frequencies["thousand_g"] = thousand_g
-            break
-
-    for test_key in thousand_genomes_max_keys:
-        thousand_g_max = parse_frequency(variant, test_key)
-        if thousand_g_max is not None:
-            frequencies["thousand_g_max"] = thousand_g_max
-            break
-
-    for test_key in exac_keys:
-        exac = parse_frequency(variant, test_key)
-        if exac is not None:
-            frequencies["exac"] = exac
-            break
-
-    for test_key in exac_max_keys:
-        exac_max = parse_frequency(variant, test_key)
-        if exac_max is not None:
-            frequencies["exac_max"] = exac_max
-            break
-
-    for test_key in gnomad_keys:
-        gnomad = parse_frequency(variant, test_key)
-        if gnomad is not None:
-            frequencies["gnomad"] = gnomad
-            break
-
-    for test_key in gnomad_max_keys:
-        gnomad_max = parse_frequency(variant, test_key)
-        if gnomad_max is not None:
-            frequencies["gnomad_max"] = gnomad_max
-            break
+    update_frequency_from_vcf(frequencies, variant, exac_keys, "exac")
+    update_frequency_from_vcf(frequencies, variant, exac_max_keys, "exac_max")
+    update_frequency_from_vcf(frequencies, variant, gnomad_keys, "gnomad")
+    update_frequency_from_vcf(frequencies, variant, gnomad_max_keys, "gnomad_max")
+    update_frequency_from_vcf(frequencies, variant, thousand_genomes_keys, "thousand_g")
+    update_frequency_from_vcf(frequencies, variant, thousand_genomes_max_keys, "thousand_g_max")
 
     # For mitochondrial variants, keep both "hom" and "het" freqs
-    gnomad_mt_hom = parse_frequency(variant, "GNOMAD_MT_AF_HOM")
-    if gnomad_mt_hom is not None:
-        frequencies["gnomad_mt_homoplasmic"] = gnomad_mt_hom
-
-    gnomad_mt_het = parse_frequency(variant, "GNOMAD_MT_AF_HET")
-    if gnomad_mt_het is not None:
-        frequencies["gnomad_mt_heteroplasmic"] = gnomad_mt_het
+    update_frequency_from_vcf(frequencies, variant, ["GNOMAD_MT_AF_HOM"], "gnomad_mt_homoplasmic")
+    update_frequency_from_vcf(frequencies, variant, ["GNOMAD_MT_AF_HET"], "gnomad_mt_heteroplasmic")
 
     # Search transcripts if not found in VCF
     if not frequencies:
-        for transcript in transcripts:
-            exac = transcript.get("exac_maf")
-            exac_max = transcript.get("exac_max")
-
-            thousand_g = transcript.get("thousand_g_maf")
-            thousandg_max = transcript.get("thousandg_max")
-
-            gnomad = transcript.get("gnomad_maf")
-            gnomad_max = transcript.get("gnomad_max")
-
-            gnomad_mt_hom = transcript.get("gnomad_mt_homoplasmic")
-            gnomad_mt_het = transcript.get("gnomad_mt_heteroplasmic")
-
-            if exac:
-                frequencies["exac"] = exac
-            if exac_max:
-                frequencies["exac_max"] = exac_max
-            if thousand_g:
-                frequencies["thousand_g"] = thousand_g
-            if thousandg_max:
-                frequencies["thousand_g_max"] = thousandg_max
-            if gnomad:
-                frequencies["gnomad"] = gnomad
-            if gnomad_max:
-                frequencies["gnomad_max"] = gnomad_max
-            if gnomad_mt_hom:
-                frequencies["gnomad_mt_homoplasmic"] = gnomad_mt_hom
-            if gnomad_mt_het:
-                frequencies["gnomad_mt_heteroplasmic"] = gnomad_mt_het
+        update_frequency_from_transcript(frequencies, transcripts)
 
     # These are SV-specific frequencies
-    thousand_g_left = parse_frequency(variant, "left_1000GAF")
-    if thousand_g_left is not None:
-        frequencies["thousand_g_left"] = thousand_g_left
-
-    thousand_g_right = parse_frequency(variant, "right_1000GAF")
-    if thousand_g_right is not None:
-        frequencies["thousand_g_right"] = thousand_g_right
+    update_frequency_from_vcf(frequencies, variant, ["left_1000GAF"], "thousand_g_left")
+    update_frequency_from_vcf(frequencies, variant, ["right_1000GAF"], "thousand_g_right")
 
     return frequencies
 
@@ -158,54 +90,18 @@ def parse_sv_frequencies(variant):
     ]
 
     clingen_ngi_keys = ["clingen_ngi", "clingen_ngiAF", "clingen_ngiOCC"]
-
     swegen_keys = ["swegen", "swegenAF"]
-
     decipher_keys = ["decipherAF", "decipher"]
-
     cg_keys = ["clinical_genomics_mipAF", "clinical_genomics_mipOCC"]
 
-    for key in clingen_benign_keys:
-        value = parse_sv_frequency(variant, key)
-        if value is None:
-            continue
-        sv_frequencies["clingen_cgh_benign"] = value
-        break
-
-    for key in clingen_pathogenic_keys:
-        value = parse_sv_frequency(variant, key)
-        if value is None:
-            continue
-        sv_frequencies["clingen_cgh_pathogenic"] = value
-        break
-
-    for key in clingen_ngi_keys:
-        value = parse_sv_frequency(variant, key)
-        if value is None:
-            continue
-        sv_frequencies["clingen_ngi"] = value
-        break
-
-    for key in swegen_keys:
-        value = parse_sv_frequency(variant, key)
-        if value is None:
-            continue
-        sv_frequencies["swegen"] = value
-        break
-
-    for key in decipher_keys:
-        value = parse_sv_frequency(variant, key)
-        if value is None:
-            continue
-        sv_frequencies["decipher"] = value
-        break
-
-    for key in cg_keys:
-        value = parse_sv_frequency(variant, key)
-        if value is None:
-            continue
-        sv_frequencies["clingen_mip"] = value
-        break
+    update_sv_frequency_from_vcf(sv_frequencies, variant, clingen_benign_keys, "clingen_cgh_benign")
+    update_sv_frequency_from_vcf(
+        sv_frequencies, variant, clingen_pathogenic_keys, "clingen_cgh_pathogenic"
+    )
+    update_sv_frequency_from_vcf(sv_frequencies, variant, clingen_ngi_keys, "clingen_ngi")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, swegen_keys, "swegen")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, decipher_keys, "decipher")
+    update_sv_frequency_from_vcf(sv_frequencies, variant, cg_keys, "clingen_mip")
 
     return sv_frequencies
 
@@ -224,3 +120,74 @@ def parse_sv_frequency(variant, info_key):
     if value > 0:
         return value
     return None
+
+
+def update_frequency_from_vcf(frequency, variant, key_list, new_key):
+    """Update frequency dict if key is found
+
+    Args:
+       frequency(dict)
+       variant(cyvcf2.Variant)
+       key_list(str list)
+       new_key: (str, key for frequency)
+    Returns:
+       frequency(dict): Updated if key of key_list is found in variant
+    """
+
+    for the_key in key_list:
+        result = parse_frequency(variant, the_key)
+        if result is not None:
+            frequency[new_key] = result
+            break
+
+
+def update_sv_frequency_from_vcf(frequency, variant, key_list, new_key):
+    """Update frequency dict if key is found. Treat frequencies as float and
+    occurances as int.
+
+    Args:
+       frequency(dict)
+       variant(cyvcf2.Variant)
+       key_list(str list)
+       new_key: (str, key for frequency)
+    Returns:
+       frequency(dict): Updated if key of key_list is found in variant
+    """
+
+    for the_key in key_list:
+        result = parse_sv_frequency(variant, the_key)
+        if result is not None:
+            frequency[new_key] = result
+            break
+
+
+def update_frequency_from_transcript(frequencies, transcripts):
+    for transcript in transcripts:
+        exac = transcript.get("exac_maf")
+        exac_max = transcript.get("exac_max")
+
+        thousand_g = transcript.get("thousand_g_maf")
+        thousandg_max = transcript.get("thousandg_max")
+
+        gnomad = transcript.get("gnomad_maf")
+        gnomad_max = transcript.get("gnomad_max")
+
+        gnomad_mt_hom = transcript.get("gnomad_mt_homoplasmic")
+        gnomad_mt_het = transcript.get("gnomad_mt_heteroplasmic")
+
+        if exac:
+            frequencies["exac"] = exac
+        if exac_max:
+            frequencies["exac_max"] = exac_max
+        if thousand_g:
+            frequencies["thousand_g"] = thousand_g
+        if thousandg_max:
+            frequencies["thousand_g_max"] = thousandg_max
+        if gnomad:
+            frequencies["gnomad"] = gnomad
+        if gnomad_max:
+            frequencies["gnomad_max"] = gnomad_max
+        if gnomad_mt_hom:
+            frequencies["gnomad_mt_homoplasmic"] = gnomad_mt_hom
+        if gnomad_mt_het:
+            frequencies["gnomad_mt_heteroplasmic"] = gnomad_mt_het
