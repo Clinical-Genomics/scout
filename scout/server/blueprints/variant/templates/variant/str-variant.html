@@ -1,0 +1,521 @@
+{% extends "layout_bs4.html" %}
+{% from "variant/buttons.html" import database_buttons %}
+{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "variants/utils.html" import compounds_table %}
+{% from "variant/utils.html" import modal_causative, rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
+{% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
+{% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table %}
+{% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
+
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+   <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    {% if cancer %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} somatic variants
+      </a>
+    {% elif str %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
+        {{ variant.variant_type|capitalize }} STR variants
+      </a>
+    {% else %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} SNV and INDELs
+      </a>
+    {% endif %}
+  </li>
+  <li class="nav-item active">
+    <p class="navbar-text text-nowrap">{{ variant.display_name|truncate(20, True) }}</p>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    <li class="nav-item text-nowrap">{{ sanger_button(variant) }}</li>
+  {% endif %}
+  <li class="nav-item">{{ pin_button(variant, case, institute) }}</li>
+  <li class="nav-item text-nowrap">{{ causative_button(variant, case, institute) }}</li>
+  {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+  <div class="container-float">
+    {% if variant.missing_data %}
+    <div class="row">
+      <div class="alert alert-warning">Showing only first 30 genes!</div>
+    </div>
+    {% endif %}
+
+    <div class="row"><div class="col-12">{{ matching_variants(managed_variant, causatives) }}</div></div>
+
+    <div class="row">
+      <div class="col-lg-3 col-md-6">
+        {{ panel_classify(variant, institute, case, ACMG_OPTIONS, manual_rank_options, cancer_tier_options, dismiss_variant_options, mosaic_variant_options, evaluations) }}
+      </div>
+      <div class="col-lg-5 col-md-6">
+        {{ panel_summary() }}
+      </div>
+      <div class="col-lg-4">
+        {{ frequencies(variant) }}
+        {% if config['LOQUSDB_SETTINGS'] %}
+          {{ observations_panel(variant, observations, case) }}
+        {% endif %}
+        {{  old_observations(variant) }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-12">
+        <div class="card panel-default">
+          {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+        </div>
+        {{ omim_phenotypes(variant) }}
+        {{ genemodels_panel(variant) }}
+        {{ inheritance_panel(variant) }}
+
+      </div>
+      <div class="col-lg-8 col-md-12">
+        {% if variant.disease_associated_transcripts %}
+          <div class="row"><div class="col-12">{{ disease_associated(variant) }}</div></div>
+        {% endif %}
+        <div class="row"><div class="col-12">{{ transcripts_overview(variant) }}</div></div>
+          <div class="row">
+            {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+            {% if has_pedigree %}
+              <div class="col-lg-4">
+                {{ pedigree_panel(case) }}
+              </div>
+            {% endif %}
+            <div class="col-lg-8">
+              {{ gtcall_panel(variant) }}
+            </div>
+            <div class="col-lg-4">
+              {{ severity_list(variant) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+              {{ conservations(variant) }}
+            </div>
+            {% if variant.azlength %}
+              <div class="col-lg-4 col-md-6">
+                {{ autozygosity_panel(variant) }}
+              </div>
+            {% endif %}
+            <div class="col-lg-4 col-md-6">
+              {{ mappability(variant) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if variant.compounds %}
+      <div class="row">
+        <div class="col-12">{{ compounds_panel(institute, case, variant) }}</div>
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-12">{{ rankscore_panel(variant) }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="card ">
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-item nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
+            </div>
+
+          </nav>
+          <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
+            <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel(variant) }}</div>
+            <div class="tab-pane fade" id="nav-proteins" role="tabpanel" aria-labelledby="nav-proteins-tab">{{ proteins_panel(variant) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">{{ external_links(case, variant) }}</div>
+    </div>
+
+    {% if variant.custom_images %}
+      <div class="row">
+        <div class="col-12">{{ panel_custom_images(variant.custom_images) }}</div>
+      </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-12">{{ activity_panel(events|reverse) }}</div>
+    </div>
+    {% if config['MAIL_USERNAME'] %}
+      {# Email setting must be setup #}
+      {{ modal_sanger(institute, case, variant, current_user) }}
+    {% endif %}
+
+    {% if config['MAIL_USERNAME'] %}
+      {# Email setting must be setup #}
+      {{ modal_cancel_sanger(institute, case, variant, current_user) }}
+    {% endif %}
+</div>
+{{ modal_causative(case, institute, variant) }}
+{% endblock %}
+
+
+{% macro panel_custom_images(images) %}
+  <div id="attached-img-panel" class="card mt-3 panel-default">
+    <div class="panel-heading">
+      <div
+          class="panel-heading collapsed"
+          data-toggle="collapse"
+          data-parent="#attached-img-panel"
+          data-target="#attached-images"
+          onclick="flipArrowIcon(this)"
+      ><span class="fa fa-angle-down rotate-icon"></span>
+          &nbsp;Attached images
+      </div>
+    </div>
+    <div id="attached-images" class="card-body collapse" data-parent="#attached-img-panel">
+     {% for image in images %}
+       <h6 class="font-weight-bold">{{ image.title }}</h6>
+       <img src="data:image/{{image.format}};base64,{{image.data|safe}}"
+         class="pb-3"
+         alt="{{ image.description }}"
+         title="{{ image.description }}"
+         {% if image.width %} width="{{image.width}}"{% endif %}
+         {% if image.height %} height="{{image.height}}"{% endif %}
+       />
+     {% endfor %}
+    </div>
+  </div>
+{% endmacro  %}
+
+
+{% macro panel_summary() %}
+  <div class="card mt-3 panel-default">
+      <div class="panel-heading">Summary</div>
+    <div class="card-body">
+      <table class="table table-bordered table-fixed table-sm">
+        <tbody>
+          <tr>
+            <td>
+              Position:
+	      <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+            </td>
+            <td colspan=3>
+              Change:
+              {% if variant.reference|length > 8 %}
+                <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong>
+              {% else %}
+                <strong>{{ variant.reference }}</strong>
+              {% endif %}
+              →
+              {%- if variant.alternative|length > 8 -%}
+                <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong>
+              {% else %}
+                <strong>{{ variant.alternative }}</strong>
+              {% endif %}
+	    </td>
+          </tr>
+          <tr>
+            <td>
+              Rank
+              <span><strong>{{ variant.variant_rank }}</strong></span>
+            </td>
+            <td>
+              Rank score
+              <span><strong>{{ variant.rank_score }}</strong></span>
+            </td>
+            <td>
+              CADD score
+              <span><strong>
+                {% if variant.cadd_score %}
+                  {{ variant.cadd_score|round(1) }}
+                {% else %}
+                  -
+                {% endif %}
+              </strong></span>
+            </td>
+            <td>
+              QUAL
+              <span><strong>
+                {% if variant.quality %}
+                  {{ variant.quality|int }}
+                {% else %}
+                  -
+                {% endif %}
+              </strong></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table table-bordered table-fixed table-sm">
+        <tbody class="border-top">
+          <tr>
+            <td>
+              Matches OMIM inhert.
+              {% if variant.is_matching_inheritance %}
+                <span class="badge badge-success float-right">Yes</span>
+              {% else %}
+                <div class="badge badge-warning float-right">No</div>
+              {% endif %}
+            </td>
+            <td>
+              Frequency
+              <div class="badge badge-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-right">
+                {{ variant.frequency }}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      {{ clinsig_table(variant) }}
+      {% if variant.mitomap_associated_diseases %}
+        <table class="table table-bordered table-fixed table-sm">
+          <tbody>
+            <tr>
+              <td><strong>MITOMAP associated diseases</strong></td>
+              <td>{{ variant.mitomap_associated_diseases.split('/')|join('<br>')|safe }}</td>
+            </tr>
+        </table>
+      {% endif %}
+      <ul class="list-group mb-3">
+        {% if variant.dbsnp_id %}
+          {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
+          <li class="list-group-item">
+            SNP info
+            <span class="float-right">
+              {% for snp in dbsnp_ids %}
+                <a target="_blank" href="{{variant.snp_links[snp]}}">
+                  {{ snp }}
+                </a>
+              {% endfor %}
+            </span>
+          </li>
+        {% endif %}
+      </ul>
+      <table class="table table-bordered table-fixed table-sm">
+        <thead class="border-top">
+          <tr class="active">
+            <th>Gene</th>
+            <th>Region</th>
+            <th>Function</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for gene in variant.genes %}
+            <tr>
+              <th>
+                <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                </a>
+              </th>
+              <td>{{ gene.region_annotation }}</td>
+              <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <ul class="list-group">
+        <div class="list-group-item">
+          <strong>Gene panels:</strong><br>
+          {% for panel_id in variant.panels %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+          {% endfor %}
+        </div>
+      </ul>
+      {% if variant.category != "str" %}
+        {{ database_buttons(variant) }}
+      {% endif %}
+      {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
+      {% if variant.custom %}
+      <table class="table table-bordered table-sm">
+	<thead>
+	  <th>Custom annotation</th>
+	  <th>Value</th>
+	</thead>
+	<tbody>
+	  {% for pair in variant.custom %}
+	  <tr>
+	    <td>
+	      {{ pair[0] }}
+	    </td>
+	    <td>
+	      {{ pair[1] }}
+	    </td>
+	  </tr>
+	  {% endfor %}
+	</tbody>
+      </table>
+      {% endif %}
+
+    </div> <!-- end of card body -->
+  </div> <!--  end of card div -->
+{% endmacro %}
+
+{% macro acmg_form(selected=None) %}
+  <label class="mt-3">ACMG classification</label>
+  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
+    <div class="d-flex justify-content-between">
+      {% for option in ACMG_OPTIONS %}
+        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
+          {{ option.short }}
+        </button>
+      {% endfor %}
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro acmg_classification_item(data) %}
+  {% set current_variant = (data.variant_specific == variant._id) %}
+  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
+    <div class="d-flex">
+      <span>
+        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
+          {{ data.classification.label }}
+        </a>
+        <span class="badge badge-info">{{ data.classification.short }}</span>
+      </span>
+      <span>
+        {% if not current_variant %}
+          <small>{{ data.case.display_name }}</small>
+        {% endif %}
+      </span>
+    </div>
+    <small class="text-muted">
+      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
+      {{ data.user_name }} on {{ data.created_at.date() }}
+      {% if current_variant %}
+        <button class="btn btn-xs btn-link">Delete</button>
+      {% endif %}
+      </form>
+    </small>
+  </li>
+{% endmacro %}
+
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+  <script>
+    const flipArrowIcon = (element) => {
+      const icon = element.firstChild
+      if (element.classList.contains('collapsed')) {
+        icon.classList.replace('fa-angle-down', 'fa-angle-up')
+      } else {
+        icon.classList.replace('fa-angle-up', 'fa-angle-down')
+      }
+    }
+
+    function set_scrolly_table(table_id) {
+    if (document.getElementById(table_id).rows.length > 5) {
+      $('#' + table_id).DataTable({
+        scrollY: 350,
+        stripeClasses: [],
+        scrollCollapse: true,
+        paging: false,
+        searching: false,
+        ordering: true,
+        info: false})
+      }
+    }
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+      $($.fn.dataTable.tables(true)).DataTable()
+      .columns.adjust()
+    });
+
+    set_scrolly_table('transcript_overview_table')
+    set_scrolly_table('proteins_panel_table')
+    set_scrolly_table('transcripts_panel_table')
+
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip({
+        container: 'body'
+      });
+
+    $('select[multiple]').selectpicker({
+        width: '100%'
+      });
+    });
+
+    function validate_causative_form(){
+      var partial_checkbox = document.getElementById("partial_causative");
+      if (partial_checkbox.checked == true){
+        var nOmimTerms = $('#omim_select option:selected').length;
+        var nHpoTerms = $('#hpo_select option:selected').length;
+        if ( nOmimTerms== 0 & nHpoTerms==0){
+          alert('Select at least a phenotype term or diagnosis')
+          return false
+        }
+      }
+    }
+
+    $('.js-copy').click(function() {
+      var text = $(this).attr('data-copy');
+      var el = $(this);
+      copyToClipboard(text, el);
+    });
+
+    // Code from https://codepen.io/nathanlong/pen/ZpAmjv
+    function copyToClipboard(text, el) {
+    var copyTest = document.queryCommandSupported('copy');
+    var elOriginalText = el.attr('data-original-title');
+
+    if (copyTest === true) {
+      var copyTextArea = document.createElement("textarea");
+      copyTextArea.value = text;
+      document.body.appendChild(copyTextArea);
+      copyTextArea.select();
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'Copied!' : 'Whoops, not copied!';
+        el.attr('data-original-title', msg).tooltip('show');
+      } catch (err) {
+        console.log('Oops, unable to copy');
+      }
+      document.body.removeChild(copyTextArea);
+      el.attr('data-original-title', elOriginalText);
+    } else {
+      // Fallback if browser doesn't support .execCommand('copy')
+      window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
+    }
+  }
+
+  </script>
+{% endblock %}

@@ -64,10 +64,19 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["civic_link"] = civic_gene(hgnc_symbol)
     gene_obj["iarctp53_link"] = iarctp53(hgnc_symbol)
     gene_obj["stripy_link"] = stripy_gene(hgnc_symbol)
+    gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
 
 
 def stripy_gene(hgnc_symbol):
     link = "//https://stripy.org/database/{}"
+
+    if not hgnc_symbol:
+        return None
+    return link.format(hgnc_symbol)
+
+
+def gnomad_str_gene(hgnc_symbol):
+    link = "https://gnomad.broadinstitute.org/short-tandem-repeat/{}?dataset=gnomad_r3"
 
     if not hgnc_symbol:
         return None
