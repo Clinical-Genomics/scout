@@ -182,7 +182,7 @@
         <h6>No matching causative or managed variants</h6>
       </div> <!--end of card body-->
     </div><!--end of card-->
-  {% endif%}
+  {% endif %}
 
   {% if matching_tiered %}
     <div class="card">
@@ -257,7 +257,7 @@
             <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
             <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
           {% endif %}
-            <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
+          <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
       </div>
     {% endfor %}
   </div>
