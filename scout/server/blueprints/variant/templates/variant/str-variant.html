@@ -64,15 +64,10 @@
   {{ super() }}
 {% endblock %}
 
+{# Up to here is common to variant and relevant also for STR-variants - consider a joint template #}
+
 {% block content_main %}
   <div class="container-float">
-    {% if variant.missing_data %}
-    <div class="row">
-      <div class="alert alert-warning">Showing only first 30 genes!</div>
-    </div>
-    {% endif %}
-
-    <div class="row"><div class="col-12">{{ matching_variants(managed_variant, causatives) }}</div></div>
 
     <div class="row">
       <div class="col-lg-3 col-md-6">
@@ -83,10 +78,6 @@
       </div>
       <div class="col-lg-4">
         {{ frequencies(variant) }}
-        {% if config['LOQUSDB_SETTINGS'] %}
-          {{ observations_panel(variant, observations, case) }}
-        {% endif %}
-        {{  old_observations(variant) }}
       </div>
     </div>
     <div class="row">
@@ -94,16 +85,10 @@
         <div class="card panel-default">
           {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
         </div>
+        {{ str_geno_pheno(variant) }}
         {{ omim_phenotypes(variant) }}
-        {{ genemodels_panel(variant) }}
-        {{ inheritance_panel(variant) }}
-
       </div>
       <div class="col-lg-8 col-md-12">
-        {% if variant.disease_associated_transcripts %}
-          <div class="row"><div class="col-12">{{ disease_associated(variant) }}</div></div>
-        {% endif %}
-        <div class="row"><div class="col-12">{{ transcripts_overview(variant) }}</div></div>
           <div class="row">
             {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
             {% if has_pedigree %}
@@ -113,20 +98,6 @@
             {% endif %}
             <div class="col-lg-8">
               {{ gtcall_panel(variant) }}
-            </div>
-            <div class="col-lg-4">
-              {{ severity_list(variant) }}
-            </div>
-            <div class="col-lg-4 col-md-6">
-              {{ conservations(variant) }}
-            </div>
-            {% if variant.azlength %}
-              <div class="col-lg-4 col-md-6">
-                {{ autozygosity_panel(variant) }}
-              </div>
-            {% endif %}
-            <div class="col-lg-4 col-md-6">
-              {{ mappability(variant) }}
             </div>
           </div>
         </div>
@@ -139,30 +110,9 @@
       </div>
     {% endif %}
     <div class="row">
-      <div class="col-12">{{ rankscore_panel(variant) }}</div>
-    </div>
-    <div class="row">
       <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
     </div>
-    <div class="row">
-      <div class="col-12">
-        <div class="card ">
-          <nav>
-            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
-              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
-              <a class="nav-item nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
-            </div>
 
-          </nav>
-          <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
-            <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel(variant) }}</div>
-            <div class="tab-pane fade" id="nav-proteins" role="tabpanel" aria-labelledby="nav-proteins-tab">{{ proteins_panel(variant) }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="row">
       <div class="col-12">{{ external_links(case, variant) }}</div>
     </div>
