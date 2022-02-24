@@ -115,52 +115,95 @@ def build_case(case_data, adapter):
     institute_obj = adapter.institute(institute_id)
     if not institute_obj:
         raise IntegrityError("Institute %s not found in database" % institute_id)
-    case_obj["owner"] = case_data["owner"]
 
-    # Owner allways has to be part of collaborators
+    case_obj["owner"] = case_data["owner"]
+    case_obj["smn_tsv"] = case_data.get("smn_tsv")
+    case_obj["collaborators"] = get_collaborators(case_data)
+    case_obj["individuals"] = get_individuals(case_data)
+    case_obj["synopsis"] = case_data.get("synopsis", "")
+
+    set_analysis_date(case_obj, case_data)
+    set_assignee(case_obj, case_data)
+    set_causatives(case_obj, case_data)
+    set_suspects(case_obj, case_data)
+    set_timestamps(case_obj)
+
+    case_obj["is_research"] = False
+    case_obj["lims_id"] = case_data.get("lims_id", "")
+    case_obj["rerun_requested"] = False
+    case_obj["research_requested"] = False
+    case_obj["status"] = "inactive"
+    case_obj["panels"] = get_panels(case_data, adapter)
+    case_obj["dynamic_gene_list"] = []
+
+    # Meta data
+    set_genome_build(case_obj, case_data)
+
+    if case_data.get("rank_model_version"):
+        case_obj["rank_model_version"] = str(case_data["rank_model_version"])
+
+    if case_data.get("sv_rank_model_version"):
+        case_obj["sv_rank_model_version"] = str(case_data["sv_rank_model_version"])
+
+    if case_data.get("rank_score_threshold"):
+        case_obj["rank_score_threshold"] = float(case_data["rank_score_threshold"])
+
+    set_cohort(case_obj, case_data)
+    sync_cohort_view(case_obj, institute_obj, adapter)
+    set_phenotype_terms(case_obj, case_data, adapter)
+    set_phenotype_groups(case_obj, case_data, adapter)
+
+    # Files
+    case_obj["madeline_info"] = case_data.get("madeline_info")
+
+    case_obj["custom_images"] = case_data.get("custom_images")
+    set_custom_report(case_obj, case_data)
+    case_obj["vcf_files"] = case_data.get("vcf_files", {})
+    case_obj["delivery_report"] = case_data.get("delivery_report")
+
+    case_obj["has_svvariants"] = False
+    if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get(
+        "vcf_sv_research"
+    ):
+        case_obj["has_svvariants"] = True
+
+    case_obj["has_strvariants"] = False
+    if case_obj["vcf_files"].get("vcf_str"):
+        case_obj["has_strvariants"] = True
+
+    case_obj["is_migrated"] = False
+
+    # What experiment is used, alternatives are rare (rare disease) or cancer
+    case_obj["track"] = case_data.get("track", "rare")
+    case_obj["group"] = case_data.get("group", [])
+
+    return case_obj
+
+
+def get_collaborators(case_data):
+    """Return a list of collaborators with owner appended.  Owner must
+    be part of collaborators"""
     collaborators = set(case_data.get("collaborators", []))
     collaborators.add(case_data["owner"])
-    case_obj["collaborators"] = list(collaborators)
+    return list(collaborators)
 
-    if case_data.get("assignee"):
-        case_obj["assignees"] = [case_data["assignee"]]
 
-    case_obj["smn_tsv"] = case_data.get("smn_tsv")
-
-    # Individuals
+def get_individuals(case_data):
+    """
+    Returns samples with with affected individual first.
+    """
     ind_objs = []
     try:
         for individual in case_data.get("individuals", []):
             ind_objs.append(build_individual(individual))
     except Exception as error:
-        ## TODO add some action here
+        # TODO: Do something useful here
         raise error
-    # sort the samples to put the affected individual first
-    sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
-    case_obj["individuals"] = sorted_inds
+    return sorted(ind_objs, key=lambda ind: -ind["phenotype"])
 
-    now = datetime.now()
-    case_obj["created_at"] = now
-    case_obj["updated_at"] = now
 
-    if case_data.get("suspects"):
-        case_obj["suspects"] = case_data["suspects"]
-    if case_data.get("causatives"):
-        case_obj["causatives"] = case_data["causatives"]
-
-    case_obj["synopsis"] = case_data.get("synopsis", "")
-
-    case_obj["status"] = "inactive"
-    case_obj["is_research"] = False
-    case_obj["research_requested"] = False
-    case_obj["rerun_requested"] = False
-
-    case_obj["lims_id"] = case_data.get("lims_id", "")
-
-    analysis_date = case_data.get("analysis_date")
-    if analysis_date:
-        case_obj["analysis_date"] = analysis_date
-
+def get_panels(case_data, adapter):
+    """"""
     # We store some metadata and references about gene panels in 'panels'
     case_panels = case_data.get("gene_panels", [])
     default_panels = case_data.get("default_panels", [])
@@ -175,55 +218,73 @@ def build_case(case_data, adapter):
             )
             continue
         panel = {
+            "display_name": panel_obj["display_name"],
+            "is_default": False,
+            "nr_genes": len(panel_obj["genes"]),
             "panel_id": panel_obj["_id"],
             "panel_name": panel_obj["panel_name"],
-            "display_name": panel_obj["display_name"],
-            "version": panel_obj["version"],
             "updated_at": panel_obj["date"],
-            "nr_genes": len(panel_obj["genes"]),
+            "version": panel_obj["version"],
         }
         if panel_name in default_panels:
             panel["is_default"] = True
-        else:
-            panel["is_default"] = False
         panels.append(panel)
 
-    case_obj["panels"] = panels
+    return panels
 
-    case_obj["dynamic_gene_list"] = []
 
-    # Meta data
+def set_timestamps(case_obj):
+    now = datetime.now()
+    case_obj["created_at"] = now
+    case_obj["updated_at"] = now
+
+
+def set_suspects(case_obj, case_data):
+    if case_data.get("suspects"):
+        case_obj["suspects"] = case_data["suspects"]
+
+
+def set_causatives(case_obj, case_data):
+    if case_data.get("causatives"):
+        case_obj["causatives"] = case_data["causatives"]
+
+
+def set_assignee(case_obj, case_data):
+    if case_data.get("assignee"):
+        case_obj["assignees"] = [case_data["assignee"]]
+
+
+def set_analysis_date(case_obj, case_data):
+    if case_data.get("analysis_date"):
+        case_obj["analysis_date"] = case_data["analysis_date"]
+
+
+def set_genome_build(case_obj, case_data):
     genome_build = case_data.get("genome_build", "37")
     if not genome_build in ["37", "38"]:
-        pass
-        ##TODO raise exception if invalid genome build was used
-
+        raise ValueError(f"Genom build {genome_build} not supported")
     case_obj["genome_build"] = genome_build
 
-    if case_data.get("rank_model_version"):
-        case_obj["rank_model_version"] = str(case_data["rank_model_version"])
 
-    if case_data.get("sv_rank_model_version"):
-        case_obj["sv_rank_model_version"] = str(case_data["sv_rank_model_version"])
-
-    if case_data.get("rank_score_threshold"):
-        case_obj["rank_score_threshold"] = float(case_data["rank_score_threshold"])
-
-    # Cohort information
+def set_cohort(case_obj, case_data):
     if case_data.get("cohorts"):
         case_obj["cohorts"] = case_data["cohorts"]
-        # Check if all case cohorts are registered under the institute
-        institute_cohorts = set(institute_obj.get("cohorts", []))
-        all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
-        if len(all_cohorts) > len(institute_cohorts):
-            # if not, update institute with new cohorts
-            LOG.warning("Updating institute object with new cohort terms")
-            adapter.institute_collection.find_one_and_update(
-                {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
-            )
 
-    # phenotype information
 
+def sync_cohort_view(case_obj, institute_obj, adapter):
+    """Check if all case cohorts are registered under the institute db. If not update
+    database"""
+    institute_cohorts = set(institute_obj.get("cohorts", []))
+    all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
+    if len(all_cohorts) > len(institute_cohorts):
+        LOG.warning("Updating institute object with new cohort terms from case_obj")
+        adapter.institute_collection.find_one_and_update(
+            {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
+        )
+
+
+def set_phenotype_terms(case_obj, case_data, adapter):
+    """Update case_obj with phenotype_terms from phenotypes found in case_data"""
     if case_data.get("phenotype_terms"):
         phenotypes = []
         for phenotype in case_data["phenotype_terms"]:
@@ -240,7 +301,9 @@ def build_case(case_data, adapter):
         if phenotypes:
             case_obj["phenotype_terms"] = phenotypes
 
-    # phenotype groups
+
+def set_phenotype_groups(case_obj, case_data, adapter):
+    """Set phenotype groups"""
     if case_data.get("phenotype_groups"):
         phenotype_groups = []
         for phenotype in case_data["phenotype_groups"]:
@@ -250,30 +313,10 @@ def build_case(case_data, adapter):
         if phenotype_groups:
             case_obj["phenotype_groups"] = phenotype_groups
 
-    # Files
-    case_obj["madeline_info"] = case_data.get("madeline_info")
 
-    case_obj["custom_images"] = case_data.get("custom_images")
+def set_custom_report(case_obj, case_data):
+    """Set custom_report of case_obj if matching macro is found.
+    For example: multiqc, cnv_report, etc"""
     for custom_report in CUSTOM_CASE_REPORTS:
         if custom_report in case_data:
             case_obj[custom_report] = case_data.get(custom_report)
-
-    case_obj["vcf_files"] = case_data.get("vcf_files", {})
-    case_obj["delivery_report"] = case_data.get("delivery_report")
-
-    case_obj["has_svvariants"] = False
-    if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research"):
-        case_obj["has_svvariants"] = True
-
-    case_obj["has_strvariants"] = False
-    if case_obj["vcf_files"].get("vcf_str"):
-        case_obj["has_strvariants"] = True
-
-    case_obj["is_migrated"] = False
-
-    # What experiment is used, alternatives are rare (rare disease) or cancer
-    case_obj["track"] = case_data.get("track", "rare")
-
-    case_obj["group"] = case_data.get("group", [])
-
-    return case_obj
