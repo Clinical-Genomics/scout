@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused `add_compounds` param from variant controllers function
 - Changed default hg19 genome for IGV.js to legacy hg19_1kg_decoy to fix a few problematic loci
 - Reduce code complexity (parse/ensembl.py)
+- Made phenotype non-mandatory when marking a variant as partial causative
 
 ## [4.49]
 ### Fixed
@@ -110,7 +111,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix and simplify creating and editing of gene panels
 - Simplified gene variants search code
 - Increased the height of the genes track in the IGV viewer
-- Made phenotype non-mandatory when marking a variant as partial causative
 ### Fixed
 - Validate uploaded managed variant file lines, warning the user.
 - Exporting validated variants with missing "genes" database key
