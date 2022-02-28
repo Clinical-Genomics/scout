@@ -170,6 +170,7 @@ def clinvar_submission_lines(submission_objs, submission_header):
                     header_key in CLINVAR_SILENCE_IF_EXISTS.keys()
                     and CLINVAR_SILENCE_IF_EXISTS[header_key] in submission_obj
                 ):  # ignore certain fields if other prioritised fields are also filled in
+                    # e.g. columns [chrom, start, stop] should not be used if the [hgvs] column is filled in
                     csv_line.append('""')
                 else:
                     csv_line.append('"' + submission_obj.get(header_key) + '"')
