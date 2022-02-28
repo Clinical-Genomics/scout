@@ -31,7 +31,7 @@ from scout.server.blueprints.variant.utils import (
     predictions,
     update_representative_gene,
 )
-from scout.server.links import cosmic_links, str_source_link
+from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
 from .forms import (  # noqa: F401
@@ -58,7 +58,7 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
-    more_variants = True if variant_count > (skip_count + per_page) else False
+    more_variants = variant_count > (skip_count + per_page)
     variant_res = variants_query.skip(skip_count).limit(per_page)
 
     genome_build = str(case_obj.get("genome_build", "37"))
@@ -69,7 +69,7 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
 
     variants = []
     for variant_obj in variant_res:
-        overlapping_svs = [sv for sv in store.overlapping(variant_obj)]
+        overlapping_svs = list(store.overlapping(variant_obj))
         variant_obj["overlapping"] = overlapping_svs or None
 
         evaluations = []
@@ -150,7 +150,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
     """Pre-process list of SV variants."""
     skip_count = per_page * max(page - 1, 0)
 
-    more_variants = True if variant_count > (skip_count + per_page) else False
+    more_variants = variant_count > (skip_count + per_page)
     variants = []
     genome_build = str(case_obj.get("genome_build", "37"))
     if genome_build not in ["37", "38"]:
@@ -386,8 +386,16 @@ def parse_variant(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
 
+    # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
+    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
+        variant_obj["genes"] = []
+        for hgnc_id in variant_obj.get("hgnc_ids"):
+            variant_gene = {"hgnc_id": hgnc_id}
+            variant_obj["genes"].append(variant_gene)
+
     # Update the hgnc symbols if they are incorrect
     variant_genes = variant_obj.get("genes")
+
     if variant_genes is not None:
         for gene_obj in variant_genes:
             # If there is no hgnc id there is nothin we can do
@@ -402,6 +410,7 @@ def parse_variant(
                 gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
                 # phenotypes may not exist for the hgnc_gene either, but try
                 gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
+            add_gene_links(gene_obj, genome_build)
 
     # We update the variant if some information was missing from loading
     # Or if symbold in reference genes have changed

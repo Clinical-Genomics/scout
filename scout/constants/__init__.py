@@ -24,7 +24,12 @@ from .case_tags import (
     SEX_MAP,
     VERBS_MAP,
 )
-from .clinvar import CASEDATA_HEADER, CLINVAR_HEADER, CLINVAR_INHERITANCE_MODELS
+from .clinvar import (
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    CLINVAR_INHERITANCE_MODELS,
+    CLINVAR_SILENCE_IF_EXISTS,
+)
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .file_types import FILE_TYPE_MAP
 from .filters import CLINICAL_FILTER_BASE, CLINICAL_FILTER_BASE_CANCER, CLINICAL_FILTER_BASE_SV
@@ -39,7 +44,13 @@ from .gene_tags import (
 )
 from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
 from .indexes import INDEXES
-from .phenotype import COHORT_TAGS, PHENOTYPE_GROUPS, UPDATE_DISEASES_RESOURCES
+from .phenotype import (
+    COHORT_TAGS,
+    HPO_URL,
+    HPOTERMS_URL,
+    PHENOTYPE_GROUPS,
+    UPDATE_DISEASES_RESOURCES,
+)
 from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
 from .so_terms import SEVERE_SO_TERMS, SO_TERM_KEYS, SO_TERMS
 from .variant_tags import (

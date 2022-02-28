@@ -1,3 +1,8 @@
+HPO_URL = "http://purl.obolibrary.org/obo/hp/hpoa/{}"
+HPOTERMS_URL = (
+    "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo"
+)
+
 PHENOTYPE_GROUPS = {
     "HP:0001298": {"name": "Encephalopathy", "abbr": "ENC"},
     "HP:0012759": {"name": "Neurodevelopmental abnormality", "abbr": "NDEV"},
