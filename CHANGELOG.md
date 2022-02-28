@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a cli option to export cases with rerun monitoring enabled
 ### Fixed
 - A malformed panel id request would crash with exception: now gives user warning flash with redirect
+- Link to HPO resource file hosted on `http://purl.obolibrary.org`
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation

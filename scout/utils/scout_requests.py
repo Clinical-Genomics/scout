@@ -8,15 +8,10 @@ from urllib.error import HTTPError
 import requests
 from defusedxml import ElementTree
 
-from scout.constants import CHROMOSOMES
+from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
-
-HPO_URL = "https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/{}"
-HPOTERMS_URL = (
-    "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo"
-)
 TIMEOUT = 20
 
 
