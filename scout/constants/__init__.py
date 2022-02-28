@@ -44,7 +44,13 @@ from .gene_tags import (
 )
 from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
 from .indexes import INDEXES
-from .phenotype import COHORT_TAGS, PHENOTYPE_GROUPS, UPDATE_DISEASES_RESOURCES
+from .phenotype import (
+    COHORT_TAGS,
+    HPO_URL,
+    HPOTERMS_URL,
+    PHENOTYPE_GROUPS,
+    UPDATE_DISEASES_RESOURCES,
+)
 from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
 from .so_terms import SEVERE_SO_TERMS, SO_TERM_KEYS, SO_TERMS
 from .variant_tags import (
