@@ -212,8 +212,23 @@
     {% if variant.str_source is defined %}
       <div><strong>Source:</strong> {{ variant.str_source.display }} </div>
       <div>Click to visit {{ variant.str_source.type }}
+      {% for gene in variant.genes %}
+        {% if gene.phenotypes %}
+          <div><strong>OMIM disease</strong>
+          {% for disease in gene.phenotypes %}
+            <div>
+                {{ disease.description }}
+            </div>
+          {% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
     {%endif%}
   </div>"
   title="">{{ variant.str_repid }}
   </a>
+  {% for gene in variant.genes %}
+    <span class="badge badge-secondary"><a href="{{ gene.stripy_link }}" class="text-white">S</a></span>
+    <span class="badge badge-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white">G</a></span>
+  {% endfor %}
 {% endmacro %}
