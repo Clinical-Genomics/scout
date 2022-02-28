@@ -310,7 +310,7 @@
 
 {% macro verify_modal() %}
 <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                         case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
+                         case_name=case.display_name, variant_id=variant._id, order=True) }}"
       method="POST">
   <div class="modal fade" id="svVerifyModal">
     <div class="modal-dialog">
@@ -336,7 +336,7 @@
 
 {% macro modal_cancel_verify() %}
   <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
+                           case_name=case.display_name, variant_id=variant._id, order=False) }}"
         method="POST">
     <div class="modal fade" id="cancelVerifyModal">
       <div class="modal-dialog">

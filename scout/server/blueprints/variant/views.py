@@ -350,10 +350,10 @@ def clinvar(institute_id, case_name, variant_id):
 
 
 @variant_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>",
+    "/<institute_id>/<case_name>/<variant_id>/<order>",
     methods=["POST"],
 )
-def verify(institute_id, case_name, variant_id, variant_category, order):
+def verify(institute_id, case_name, variant_id, order):
     """Start procedure to validate variant using other techniques."""
     comment = request.form.get("verification_comment")
 
