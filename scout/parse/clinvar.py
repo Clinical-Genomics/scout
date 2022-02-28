@@ -1,4 +1,4 @@
-from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER, CLINVAR_SILENCE_IF_EXISTS
 
 
 def set_submission_objects(form_fields):
@@ -162,10 +162,18 @@ def clinvar_submission_lines(submission_objs, submission_header):
             header_key,
             header_value,
         ) in submission_header.items():  # header_keys are the same keys as in submission_objs
+
             if (
                 header_key in submission_obj
             ):  # The field is filled in for this variant/casedata object
-                csv_line.append('"' + submission_obj.get(header_key) + '"')
+                if (
+                    header_key in CLINVAR_SILENCE_IF_EXISTS.keys()
+                    and CLINVAR_SILENCE_IF_EXISTS[header_key] in submission_obj
+                ):  # ignore certain fields if other prioritised fields are also filled in
+                    # e.g. columns [chrom, start, stop] should not be used if the [hgvs] column is filled in
+                    csv_line.append('""')
+                else:
+                    csv_line.append('"' + submission_obj.get(header_key) + '"')
             else:  # Empty field for this this variant/casedata object
                 csv_line.append('""')
 
