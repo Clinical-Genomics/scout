@@ -189,9 +189,7 @@ def get_collaborators(case_data):
 
 
 def get_individuals(case_data):
-    """
-    Returns samples with with affected individual first.
-    """
+    """Returns samples with with affected individual first"""
     ind_objs = []
     try:
         for individual in case_data.get("individuals", []):
@@ -203,7 +201,7 @@ def get_individuals(case_data):
 
 
 def get_panels(case_data, adapter):
-    """"""
+    """Return gene panels from case_data"""
     # We store some metadata and references about gene panels in 'panels'
     case_panels = case_data.get("gene_panels", [])
     default_panels = case_data.get("default_panels", [])
@@ -234,6 +232,7 @@ def get_panels(case_data, adapter):
 
 
 def set_timestamps(case_obj):
+    """Set case_obj's internal creation and update timestamps to now'"""
     now = datetime.now()
     case_obj["created_at"] = now
     case_obj["updated_at"] = now
