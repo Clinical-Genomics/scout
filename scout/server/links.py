@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 from flask import current_app
 
 from scout.constants import SPIDEX_HUMAN
