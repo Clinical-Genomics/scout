@@ -39,7 +39,10 @@ def panels():
     """Show all panels for a user"""
     if request.method == "POST":  # Edit/create a new panel and redirect to its page
         redirect_panel_id = controllers.panel_create_or_update(store, request)
-        return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
+        if redirect_panel_id:
+            return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
+        else:
+            return redirect(url_for("panels.panels"))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [

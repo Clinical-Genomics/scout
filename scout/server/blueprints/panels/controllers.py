@@ -70,7 +70,7 @@ def create_new_panel(store, request, lines):
         description=request.form["description"],
     )
     if new_panel_id is None:
-        return redirect(request.referrer)
+        return None
 
     flash("New gene panel added: {}!".format(new_panel_name), "success")
     return new_panel_id
@@ -274,6 +274,7 @@ def new_panel(
         new_genes = parse_genes(csv_lines)
     except SyntaxError as error:
         flash(error.args[0], "danger")
+        LOG.debug("Ooops!")
         return None
 
     LOG.debug("build new gene panel")
