@@ -1,8 +1,3 @@
-"""
-Methods for parsing HPO terms extracted from the following files:
-https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/genes_to_phenotype.txt
-https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/phenotype_to_genes.txt
-"""
 import logging
 
 LOG = logging.getLogger(__name__)
