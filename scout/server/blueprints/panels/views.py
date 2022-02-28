@@ -41,8 +41,8 @@ def panels():
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
             return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
-        else:
-            return redirect(url_for("panels.panels"))
+
+        return redirect(url_for("panels.panels"))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [
