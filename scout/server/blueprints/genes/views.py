@@ -52,7 +52,7 @@ def api_genes():
     query = request.args.get("query")
     if query is None or query.replace("-", "").isalnum() is False:
         return jsonify({"code": 400, "message": "missing or invalid 'query' param in request"})
-    build = request.args.get("build", "37")
+    build = request.args.get("build")
 
     json_out = controllers.genes_to_json(store, query, build)
     return jsonify(json_out)
