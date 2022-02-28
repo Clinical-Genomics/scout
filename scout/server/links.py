@@ -68,7 +68,7 @@ def add_gene_links(gene_obj, build=37):
 
 
 def stripy_gene(hgnc_symbol):
-    link = "//https://stripy.org/database/{}"
+    link = "https://stripy.org/database/{}"
 
     if not hgnc_symbol:
         return None
