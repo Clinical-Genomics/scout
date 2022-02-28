@@ -65,6 +65,8 @@ CASEDATA_HEADER = {
     "testing_lab": "Testing laboratory",
     "reported_at": "Date variant was reported to submitter",
 }
+# silence fields in ClinVar CSV output if other fields exist to avoid validation error - the latter are preferred
+CLINVAR_SILENCE_IF_EXISTS = {"chromosome": "hgvs", "start": "hgvs", "stop": "hgvs"}
 
 CLNSIG_TERMS = {
     "affects",
