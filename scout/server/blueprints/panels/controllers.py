@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime as dt
 import logging
-import operator
 
-from flask import abort, flash, redirect, url_for
+from flask import flash, redirect
 from flask_login import current_user
 
 from scout.build.panel import build_panel
@@ -92,7 +91,7 @@ def update_existing_panel(store, request, lines):
 
     panel_obj = store.gene_panel(panel_name)
     if panel_obj is None:
-        return redirect(request.referrer)
+        return None
 
     if panel_write_granted(panel_obj, current_user):
         panel_obj = update_panel(
