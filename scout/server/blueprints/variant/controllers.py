@@ -552,24 +552,20 @@ def build_clinvar_submission(store, request, institute_id, case_name, variant_id
         if "@" in key:
             variant_id = key.split("@")[1]
 
-        pheno_terms = []
-        if (
-            key.startswith("hpo_terms")
-            or key.startswith("omim_terms")
-            or key.startswith("clin_features")
-        ):
-            pheno_terms = [term for term in request.form.getlist(key)]
+        if key.startswith("hpo_terms") and f"omim_terms@{variant_id}" not in request.form:
+            form_dict["@".join(["condition_id_type", variant_id])] = "HPO"
+            form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
+                request.form.getlist(key)
+            )
 
-            if key.startswith("hpo_terms") and f"omim_terms@{variant_id}" not in request.form:
-                form_dict["@".join(["condition_id_type", variant_id])] = "HPO"
-                form_dict["@".join(["condition_id_value", variant_id])] = ";".join(pheno_terms)
+        elif key.startswith("omim_terms"):
+            form_dict["@".join(["condition_id_type", variant_id])] = "OMIM"
+            form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
+                request.form.getlist(key)
+            )
 
-            elif key.startswith("omim_terms"):
-                form_dict["@".join(["condition_id_type", variant_id])] = "OMIM"
-                form_dict["@".join(["condition_id_value", variant_id])] = ";".join(pheno_terms)
-
-            elif key.startswith("clin_features"):
-                form_dict[key] = ";".join(pheno_terms)
+        elif key.startswith("clin_features"):
+            form_dict[key] = ";".join(request.form.getlist(key))
 
         else:
             form_dict[key] = value
