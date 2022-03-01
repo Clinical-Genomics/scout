@@ -549,8 +549,6 @@ def build_clinvar_submission(store, request, institute_id, case_name, variant_id
     omim_terms = set()
     hpo_terms = set()
 
-    LOG.warning(request.form)
-
     # flatten up HPO and OMIM terms lists into string of keys separated by semicolon
     for key, value in request.form.items():
         if "@" in key:
