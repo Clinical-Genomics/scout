@@ -548,19 +548,22 @@ def build_clinvar_submission(store, request, institute_id, case_name, variant_id
     form_dict = {}
     omim_terms = set()
     hpo_terms = set()
+
+    LOG.warning(request.form)
+
     # flatten up HPO and OMIM terms lists into string of keys separated by semicolon
     for key, value in request.form.items():
         if "@" in key:
             variant_id = key.split("@")[1]
 
-        if key.startswith("hpo_terms@"):
+        if key.startswith("hpo_terms") and f"omim_terms@{variant_id}" not in request.form:
             for term in request.form.getlist(key):
                 hpo_terms.add(term)
 
             form_dict["@".join(["condition_id_type", variant_id])] = "HPO"
             form_dict["@".join(["condition_id_value", variant_id])] = ";".join(hpo_terms)
 
-        if key.startswith("omim_terms@"):
+        if key.startswith("omim_terms"):
             for term in request.form.getlist(key):
                 omim_terms.add(term)
             form_dict["@".join(["condition_id_type", variant_id])] = "OMIM"
