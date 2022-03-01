@@ -3,6 +3,24 @@ from scout.exceptions import VcfError
 from scout.parse.variant import parse_variant
 
 
+def test_parse_old_obs_archive(case_obj, cyvcf2_variant):
+    """Test parsing local_obs_old and local_obs_old_freq off a variant VCF file"""
+
+    nr_old_obs = 22
+    freq_old_obs = 0.3
+
+    # GIVEN a VCF variant containing old local observations stats
+    cyvcf2_variant.INFO["clinical_genomics_loqusObs"] = nr_old_obs
+    cyvcf2_variant.INFO["clinical_genomics_loqusFrq"] = freq_old_obs
+
+    # WHEN parsing the variant
+    parsed_var = parse_variant(cyvcf2_variant, case_obj)
+
+    # THEN the parsed variant should contain these values
+    assert parsed_var["local_obs_old"] == nr_old_obs
+    assert parsed_var["local_obs_old_freq"] == freq_old_obs
+
+
 def test_parse_minimal(one_variant, case_obj):
     """Test to parse a minimal variant"""
     parsed_variant = parse_variant(one_variant, case_obj, variant_type="clinical")
