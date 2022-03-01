@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-"main concept of MongoDB is embed whenever possible"
-Ref: http://stackoverflow.com/questions/4655610#comment5129510_4656431
-"""
-
-from scout.constants import CLINSIG_MAP, CONSERVATION, GENETIC_MODELS, VARIANT_CALL
 
 variant = dict(
     # document_id is a md5 string created by institute_genelist_caseid_variantid:
