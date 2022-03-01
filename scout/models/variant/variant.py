@@ -71,8 +71,7 @@ variant = dict(
     max_exac_frequency=float,
     local_frequency=float,
     local_obs_old=int,
-    local_obs_hom_old=int,
-    local_obs_total_old=int,
+    local_obs_old_freq=float,
     # Predicted deleteriousness:
     cadd_score=float,
     clnsig=list,  # list of <clinsig>

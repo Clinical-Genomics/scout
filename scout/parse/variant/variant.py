@@ -332,13 +332,13 @@ def parse_variant(
     parsed_variant["frequencies"] = frequencies
 
     # parse out old local observation count
-    local_obs_old = variant.INFO.get("Obs")
+    local_obs_old = variant.INFO.get("clinical_genomics_loqusObs")
     if local_obs_old:
         parsed_variant["local_obs_old"] = int(local_obs_old)
 
-    local_obs_hom_old = variant.INFO.get("Hom")
-    if local_obs_hom_old:
-        parsed_variant["local_obs_hom_old"] = int(local_obs_hom_old)
+    local_obs_old_freq = variant.INFO.get("clinical_genomics_loqusFrq")
+    if local_obs_old_freq:
+        parsed_variant["local_obs_old_freq"] = float(local_obs_old_freq)
 
     ###################### Add severity predictions ######################
     cadd = parse_cadd(variant, parsed_transcripts)

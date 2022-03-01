@@ -96,8 +96,7 @@ def build_variant(
         max_exac_frequency = float,
         local_frequency = float,
         local_obs_old = int,
-        local_obs_hom_old = int,
-        local_obs_total_old = int,
+        local_obs_old_freq = float,
 
         # Predicted deleteriousness:
         cadd_score = float,
@@ -392,8 +391,8 @@ def build_variant(
     if variant.get("local_obs_old"):
         variant_obj["local_obs_old"] = variant["local_obs_old"]
 
-    if variant.get("local_obs_hom_old"):
-        variant_obj["local_obs_hom_old"] = variant["local_obs_hom_old"]
+    if variant.get("local_obs_old_freq"):
+        variant_obj["local_obs_old_freq"] = variant["local_obs_old_freq"]
 
     # Add the sv counts:
     if frequencies.get("clingen_benign"):
