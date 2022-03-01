@@ -89,18 +89,17 @@ def load_panel(panel_path, adapter, **kwargs):
             LOG.warning("Maintainer %s does not exist in user database", maintainer)
             raise Abort()
 
-    parsed_panel = parse_gene_panel(
-        path=panel_path,
-        institute=institute,
-        panel_type=kwargs.get("panel_type"),
-        date=date,
-        version=version,
-        panel_id=panel_id,
-        maintainer=maintainer,
-        display_name=display_name,
-    )
-
     try:
+        parsed_panel = parse_gene_panel(
+            path=panel_path,
+            institute=institute,
+            panel_type=kwargs.get("panel_type"),
+            date=date,
+            version=version,
+            panel_id=panel_id,
+            maintainer=maintainer,
+            display_name=display_name,
+        )
         adapter.load_panel(parsed_panel=parsed_panel)
     except Exception as err:
         raise err

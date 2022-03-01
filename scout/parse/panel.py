@@ -221,7 +221,7 @@ def parse_genes(gene_lines):
             gene = parse_gene(gene_info)
         except Exception as err:
             LOG.warning(err)
-            raise SyntaxError("Line {0} is malformed".format(i + 1))
+            raise SyntaxError("Line {0} is malformed: {1}".format(i + 1, err))
 
         identifier = gene.pop("identifier")
 
