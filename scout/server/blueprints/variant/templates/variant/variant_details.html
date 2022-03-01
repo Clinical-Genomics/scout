@@ -196,15 +196,13 @@
         <thead class="thead-light">
           <tr>
             <th scope="col">Nr obs.</th>
-            <th scope="col">Nr homo.</th>
-            <th scope="col">Total nr.</th>
+            <th scope="col">Frequency</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>{{ variant.local_obs_old|default('N/A') }}</td>
-            <td>{{ variant.local_obs_hom_old|default('N/A') }}</td>
-            <td>{{ variant.local_obs_total_old|default('N/A') }}</td>
+            <td>{{ variant.local_obs_old_freq|default('N/A') }}</td>
           </tr>
         </tbody>
       </table>
