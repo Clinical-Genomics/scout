@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed default hg19 genome for IGV.js to legacy hg19_1kg_decoy to fix a few problematic loci
 - Reduce code complexity (parse/ensembl.py)
 - Silence certain fields in ClinVar export if prioritised ones exist (chrom-start-end if hgvs exist)
+- Made phenotype non-mandatory when marking a variant as partial causative
 
 ## [4.49]
 ### Fixed
