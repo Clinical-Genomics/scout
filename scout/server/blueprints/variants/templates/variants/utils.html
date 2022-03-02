@@ -263,8 +263,14 @@
         String coordinates
       </a>
     </div>
-    <div id="stringcoords" class="collapse col-5 offset-1">
-      {{ wtf.form_field(form.chrom_pos) }}
+    <div class="col-3 offset-1">
+      <div id="stringcoords" class="collapse">
+        {{ wtf.form_field(form.chrom_pos) }}
+      </div>
+    </div>
+    <div class="col-2 form-check form-check-inline offset-3">
+      {{ form.filter_unaffected(class="form-check-input") }}
+      {{ form.filter_unaffected.label(class="form-check-label") }}
     </div>
   </div>
 </div>
