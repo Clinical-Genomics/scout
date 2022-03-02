@@ -284,3 +284,17 @@ def zip_dir_to_obj(path):
     data.seek(0)
 
     return data
+
+
+
+def get_events_of_interest(store, user_name):
+    """Return a list of events of interest for user. This includes:
+       * TODO
+       * TODO
+       * TODO"""
+
+    # 1. does user have access rights?
+    # 2. read users events from store
+    # 3. drop events of insignificance
+    # 4. return data list 
+    
