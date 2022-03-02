@@ -2,7 +2,7 @@ from scout.parse.variant.gene import parse_genes
 from scout.parse.variant.transcript import parse_transcripts
 
 
-def test_get_genes(cyvcf2_variant):
+def test_get_genes():
     csq_entry = (
         "C|missense_variant|MODERATE|POC1A|ENSG00000164087|"
         "Transcript|ENST00000296484|protein_coding|4/11||ENST00000296484.2"
