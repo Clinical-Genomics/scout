@@ -6,7 +6,7 @@ from scout.constants import SO_TERMS
 LOG = logging.getLogger(__name__)
 
 
-def parse_transcripts(raw_transcripts, allele=None):
+def parse_transcripts(raw_transcripts):
     """Parse transcript information from VCF variants
 
     Args:
