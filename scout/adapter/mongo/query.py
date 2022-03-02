@@ -209,8 +209,6 @@ class QueryHandler(object):
         mongo_query = {}
         coordinate_query = None
 
-        LOG.warning(f"query----->{query}")
-
         ##### Base query params
 
         # set up the fundamental query params: case_id, category, type and

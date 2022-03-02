@@ -33,6 +33,12 @@
       var the_form = document.forms['filters_form'];
       the_form.submit();
     };
+
+    document.getElementById('hide_unaffected').onchange = function() {
+      document.getElementById('expand_search').value = "False";
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
   </script>
 {% endmacro %}
 
@@ -55,11 +61,15 @@
       {{ form.hide_dismissed }}
       {{ form.hide_dismissed.label(class="ml-3") }}
     </div>
-    <div class="col-3 offset-3 d-flex justify-content-start">
+    <div class="col-3 d-flex justify-content-end">
       Filter returns {{result_size}} / {{ total_variants }} variants.
     </div>
-    <div class="col-3 offset-1 d-flex justify-content-end">
+    <div class="col-3 d-flex justify-content-start">
       Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.
+    </div>
+    <div class="col-3 form-check form-check-inline justify-content-end">
+      {{ form.hide_unaffected(class="form-check-input") }}
+      {{ form.hide_unaffected.label(class="form-check-label") }}
     </div>
   </div>
 </div>
@@ -267,10 +277,6 @@
       <div id="stringcoords" class="collapse">
         {{ wtf.form_field(form.chrom_pos) }}
       </div>
-    </div>
-    <div class="col-2 form-check form-check-inline offset-3">
-      {{ form.hide_unaffected(class="form-check-input") }}
-      {{ form.hide_unaffected.label(class="form-check-label") }}
     </div>
   </div>
 </div>
