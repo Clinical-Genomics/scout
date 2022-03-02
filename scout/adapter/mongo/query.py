@@ -360,7 +360,7 @@ class QueryHandler(object):
             }  # At least one of the affected individuals should harbor the variant
         }
         for ind in case_inds:
-            if ind["phenotype"] == 1:  # 1=unaffected, 2=affected
+            if ind["phenotype"] in [1, "unaffected"]:  # 1=unaffected, 2=affected
                 continue
             affected_query["$elemMatch"]["$or"].append(
                 {
