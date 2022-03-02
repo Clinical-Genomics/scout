@@ -1003,7 +1003,6 @@ def persistent_filter_actions(
             flash("Requested filter was locked or not found", "warning")
 
     if form is None:
-        LOG.error("HERE")
         form = FiltersFormClass(request_form)
 
     return form
