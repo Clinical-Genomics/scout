@@ -25,6 +25,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reduce code complexity (parse/ensembl.py)
 - Silence certain fields in ClinVar export if prioritised ones exist (chrom-start-end if hgvs exist)
 - Made phenotype non-mandatory when marking a variant as partial causative
+- Only one phenotype condition type (OMIM or HPO) per variant is used in ClinVar submissions
+- ClinVar submission variant condition prefers OMIM over HPO if available
 - Refactor to reduce code complexity
 
 ## [4.49]

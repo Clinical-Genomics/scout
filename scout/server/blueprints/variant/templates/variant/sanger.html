@@ -62,7 +62,7 @@
 
 {% macro modal_sanger(institute, case, variant, current_user) %}
   <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=True) }}"
+                           case_name=case.display_name, variant_id=variant._id, order=True) }}"
         method="POST">
     <div class="modal fade" id="sangerModal">
       <div class="modal-dialog" role="document">
@@ -89,7 +89,7 @@
 
 {% macro modal_cancel_sanger(institute, case, variant, current_user) %}
   <form action="{{ url_for('variant.verify', institute_id=institute._id,
-                           case_name=case.display_name, variant_id=variant._id, variant_category=variant.category, order=False) }}"
+                           case_name=case.display_name, variant_id=variant._id, order=False) }}"
         method="POST">
     <div class="modal fade" id="cancelSangerModal">
       <div class="modal-dialog">
