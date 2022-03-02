@@ -232,7 +232,7 @@ def get_panels(case_data, adapter):
 
 
 def set_timestamps(case_obj):
-    """Set case_obj's internal creation and update timestamps to now'"""
+    """Set case_obj's internal creation and update timestamps to now"""
     now = datetime.now()
     case_obj["created_at"] = now
     case_obj["updated_at"] = now
