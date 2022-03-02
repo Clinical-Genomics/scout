@@ -350,16 +350,13 @@ class QueryHandler(object):
         Accepts:
             mongo_query(dict): a dictionary containing a query key/values
             case_id(str): _id of a case
-
-            {"samples": { "$elemMatch": { "sample_id": "ADM1059A2", "genotype_call" : {"$nin": ["0/0", "./.", "./0", "0/."]}}}}
         """
-        LOG.error("HERE BITCHES")
         affected_query = {
-            "$elemMatch": {"$or": []}
-        }  # Any of the affected individuals should exibit the variant
+            "$elemMatch": {"$or": []}  # Any of the affected individuals should exibit the variant
+        }
         case_obj = self.case(case_id=case_id)
         for ind in case_obj.get("individuals", []):
-            if ind["phenotype"] == 2:  # Afftected
+            if ind["phenotype"] == 2:  # Affected
                 affected_query["$elemMatch"]["$or"].append(
                     {
                         "sample_id": ind["individual_id"],
