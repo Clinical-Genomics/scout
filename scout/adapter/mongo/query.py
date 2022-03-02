@@ -355,7 +355,9 @@ class QueryHandler(object):
             return
 
         affected_query = {
-            "$elemMatch": {"$or": []}  # Any of the affected individuals should exibit the variant
+            "$elemMatch": {
+                "$or": []
+            }  # At least one of the affected individuals should harnor the variant
         }
         for ind in case_inds:
             if ind["phenotype"] == 2:  # Affected
