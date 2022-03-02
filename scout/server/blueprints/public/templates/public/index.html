@@ -1,4 +1,5 @@
 {% extends "layout_bs4.html" %}
+{% from "utils.html" import recent_events %}
 
 {% block content_main %}
 <div class="container">
@@ -16,9 +17,14 @@
     {% if current_user.is_authenticated %}
       <p>
         <a class="btn btn-primary btn-lg text-white" href="{{ url_for('cases.index') }}" role="button">
-          Welcome <strong>{{ current_user.name }}!</strong>
+          Welcome <strong>{{ current_user.name }}!</strong>         
         </a>
+        Welcome <strong>{{ current_user.name }}!</strong>         
       </p>
+      <br>
+    <p>
+      Recent activity {{recent_events(current_user.name)}}
+    </p>
     {% else %}
       {% if config.GOOGLE %}
         <a class="btn btn-primary" onclick="sendBrowserInfo()" href="{{ url_for('login.login') }}" role="button">
