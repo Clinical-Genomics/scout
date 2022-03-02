@@ -353,6 +353,8 @@ class QueryHandler(object):
             "$elemMatch": {"$or": []}  # Any of the affected individuals should exibit the variant
         }
         case_obj = self.case(case_id=case_id)
+        if len(case_obj.get("individuals"), []) == 1:  # No point in adding this filter
+            return
         for ind in case_obj.get("individuals", []):
             if ind["phenotype"] == 2:  # Affected
                 affected_query["$elemMatch"]["$or"].append(
