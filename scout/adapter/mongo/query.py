@@ -360,13 +360,14 @@ class QueryHandler(object):
             }  # At least one of the affected individuals should harbor the variant
         }
         for ind in case_inds:
-            if ind["phenotype"] == 2:  # Affected
-                affected_query["$elemMatch"]["$or"].append(
-                    {
-                        "sample_id": ind["individual_id"],
-                        "genotype_call": {"$nin": ["0/0", "./.", "./0", "0/."]},
-                    }
-                )
+            if ind["phenotype"] == 1:  # 1=unaffected, 2=affected
+                continue
+            affected_query["$elemMatch"]["$or"].append(
+                {
+                    "sample_id": ind["individual_id"],
+                    "genotype_call": {"$nin": ["0/0", "./.", "./0", "0/."]},
+                }
+            )
         mongo_query["samples"] = affected_query
 
     def clinsig_query(self, query, mongo_query):
