@@ -280,7 +280,7 @@ def parse_variant(
     parsed_transcripts = []
     dbsnp_ids = set()
     cosmic_ids = set()
-    for parsed_transcript in parse_transcripts(raw_transcripts, parsed_variant["alternative"]):
+    for parsed_transcript in parse_transcripts(raw_transcripts):
         parsed_transcripts.append(parsed_transcript)
         for dbsnp in parsed_transcript.get("dbsnp", []):
             dbsnp_ids.add(dbsnp)
