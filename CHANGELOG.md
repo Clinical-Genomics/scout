@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to HPO resource file hosted on `http://purl.obolibrary.org`
 - Gene search form when gene exists only in build 38
 - Fixed odd redirect error and poor error message on missing column for gene panel csv upload
+- Typo in parse variant transcripts function
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation

@@ -6,7 +6,7 @@ from scout.constants import SO_TERMS
 LOG = logging.getLogger(__name__)
 
 
-def parse_transcripts(raw_transcripts, allele=None):
+def parse_transcripts(raw_transcripts):
     """Parse transcript information from VCF variants
 
     Args:
@@ -338,5 +338,5 @@ def set_variant_frequencies(transcript, entry):
             transcript["gnomad_max"] = max(gnomad_freqs)
 
     except Exception as err:
-        LOG.waning("Failed to parse variant frequencies")
+        LOG.warning("Failed to parse variant frequencies")
         LOG.warning("Only splitted and normalised VEP v90+ is supported")
