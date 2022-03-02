@@ -261,7 +261,7 @@ def set_analysis_date(case_obj, case_data):
 def set_genome_build(case_obj, case_data):
     genome_build = case_data.get("genome_build", 37)
     if not genome_build in [37, 38]:
-        raise ValueError(f"Genom build {genome_build} not supported")
+        raise ValueError(f"Genome build {genome_build} not supported")
     case_obj["genome_build"] = genome_build
 
 
