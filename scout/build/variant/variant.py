@@ -97,7 +97,7 @@ def build_variant(
         local_frequency = float,
         local_obs_old = int,
         local_obs_hom_old = int,
-        local_obs_total_old = int,
+        local_obs_old_freq = float,
 
         # Predicted deleteriousness:
         cadd_score = float,
@@ -389,11 +389,14 @@ def build_variant(
         variant_obj["thousand_genomes_frequency_right"] = float(frequencies["thousand_g_right"])
 
     # add the local observation counts from the old archive
-    if variant.get("local_obs_old"):
+    if variant.get("local_obs_old"):  # SNVs and SVs
         variant_obj["local_obs_old"] = variant["local_obs_old"]
 
-    if variant.get("local_obs_hom_old"):
+    if variant.get("local_obs_hom_old"):  # SNVs
         variant_obj["local_obs_hom_old"] = variant["local_obs_hom_old"]
+
+    if variant.get("local_obs_old_freq"):  # SVs
+        variant_obj["local_obs_old_freq"] = variant["local_obs_old_freq"]
 
     # Add the sv counts:
     if frequencies.get("clingen_benign"):
