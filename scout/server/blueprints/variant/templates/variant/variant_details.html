@@ -197,14 +197,14 @@
           <tr>
             <th scope="col">Nr obs.</th>
             <th scope="col">Nr homo.</th>
-            <th scope="col">Total nr.</th>
+            <th scope="col">Frequency</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>{{ variant.local_obs_old|default('N/A') }}</td>
             <td>{{ variant.local_obs_hom_old|default('N/A') }}</td>
-            <td>{{ variant.local_obs_total_old|default('N/A') }}</td>
+            <td>{% if variant.local_obs_old_freq %} {{variant.local_obs_old_freq|round(6)}} {% else %} N/A {% endif %}</td>
           </tr>
         </tbody>
       </table>
