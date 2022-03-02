@@ -3,7 +3,7 @@ from scout.exceptions import VcfError
 from scout.parse.variant import parse_variant
 
 
-def test_parse_old_obs_archive(case_obj, cyvcf2_variant):
+def test_parse_old_obs_archive_SV(case_obj, cyvcf2_variant):
     """Test parsing local_obs_old and local_obs_old_freq off a variant VCF file"""
 
     nr_old_obs = 22
