@@ -33,9 +33,9 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import CancerFiltersForm  # noqa: F401
 from .forms import (
     FILTERSFORMCLASS,
+    CancerFiltersForm,  # noqa: F401
     CancerSvFiltersForm,
     FiltersForm,
     StrFiltersForm,
@@ -914,7 +914,6 @@ def populate_filters_form(store, institute_obj, case_obj, user_obj, category, re
 
     if bool(request_form.get("clinical_filter")):
         form = FiltersFormClass(clinical_filter)
-
     else:
         form = persistent_filter_actions(
             store,

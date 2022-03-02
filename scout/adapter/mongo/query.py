@@ -349,13 +349,15 @@ class QueryHandler(object):
             mongo_query(dict): a dictionary containing a query key/values
             case_id(str): _id of a case
         """
+        case_obj = self.case(case_id=case_id)
+        case_inds = case_obj.get("individuals", [])
+        if len(case_inds) == 1:  # No point in adding this filter
+            return
+
         affected_query = {
             "$elemMatch": {"$or": []}  # Any of the affected individuals should exibit the variant
         }
-        case_obj = self.case(case_id=case_id)
-        if len(case_obj.get("individuals"), []) == 1:  # No point in adding this filter
-            return
-        for ind in case_obj.get("individuals", []):
+        for ind in case_inds:
             if ind["phenotype"] == 2:  # Affected
                 affected_query["$elemMatch"]["$or"].append(
                     {

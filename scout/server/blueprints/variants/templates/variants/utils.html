@@ -55,21 +55,23 @@
 
 {% macro filter_form_footer(form, result_size, total_variants, more_variants, page, nvars) %}
 <div class="card-footer text-center">
-  <div class="row">
-    <div class="col-2 d-flex align-items-baseline justify-content-start">
-      <input type="hidden" id="expand_search" name="expand_search">
-      {{ form.hide_dismissed }}
-      {{ form.hide_dismissed.label(class="ml-3") }}
+  <input type="hidden" id="expand_search" name="expand_search">
+  <div class="row d-flex d-flex justify-content-start">
+    <div class="col-3">
+      <div class="form-check d-flex justify-content-start">
+        {{ form.hide_dismissed(class="form-check-input") }}
+        {{ form.hide_dismissed.label(class="form-check-label") }}
+      </div>
+      <div class="form-check d-flex justify-content-start">
+        {{ form.hide_unaffected(class="form-check-input") }}
+        {{ form.hide_unaffected.label(class="form-check-label") }}
+      </div>
     </div>
     <div class="col-3 d-flex justify-content-end">
       Filter returns {{result_size}} / {{ total_variants }} variants.
     </div>
     <div class="col-3 d-flex justify-content-start">
       Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.
-    </div>
-    <div class="col-3 form-check form-check-inline justify-content-end">
-      {{ form.hide_unaffected(class="form-check-input") }}
-      {{ form.hide_unaffected.label(class="form-check-label") }}
     </div>
   </div>
 </div>
