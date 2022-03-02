@@ -474,18 +474,6 @@
       });
     });
 
-    function validate_causative_form(){
-      var partial_checkbox = document.getElementById("partial_causative");
-      if (partial_checkbox.checked == true){
-        var nOmimTerms = $('#omim_select option:selected').length;
-        var nHpoTerms = $('#hpo_select option:selected').length;
-        if ( nOmimTerms== 0 & nHpoTerms==0){
-          alert('Select at least a phenotype term or diagnosis')
-          return false
-        }
-      }
-    }
-
     $('.js-copy').click(function() {
       var text = $(this).attr('data-copy');
       var el = $(this);
