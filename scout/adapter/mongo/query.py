@@ -368,7 +368,10 @@ class QueryHandler(object):
                     "genotype_call": {"$nin": ["0/0", "./.", "./0", "0/."]},
                 }
             )
-        mongo_query["samples"] = affected_query
+        if affected_query["$elemMatch"][
+            "$or"
+        ]:  # Consider situation where all individuals are unaffected
+            mongo_query["samples"] = affected_query
 
     def clinsig_query(self, query, mongo_query):
         """Add clinsig filter values to the mongo query object
