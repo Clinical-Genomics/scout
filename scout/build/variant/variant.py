@@ -96,7 +96,7 @@ def build_variant(
         max_exac_frequency = float,
         local_frequency = float,
         local_obs_old = int,
-        local_obs_hom_old = int
+        local_obs_hom_old = int,
         local_obs_old_freq = float,
 
         # Predicted deleteriousness:

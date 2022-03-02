@@ -64,8 +64,8 @@ variant = dict(
     max_thousand_genomes_frequency=float,
     max_exac_frequency=float,
     local_frequency=float,
-    local_obs_hom_old=int,
     local_obs_old=int,
+    local_obs_hom_old=int,
     local_obs_old_freq=float,
     # Predicted deleteriousness:
     cadd_score=float,
