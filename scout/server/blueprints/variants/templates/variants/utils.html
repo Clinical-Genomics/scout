@@ -34,7 +34,7 @@
       the_form.submit();
     };
 
-    document.getElementById('hide_unaffected').onchange = function() {
+    document.getElementById('show_unaffected').onchange = function() {
       document.getElementById('expand_search').value = "False";
       var the_form = document.forms['filters_form'];
       the_form.submit();
@@ -63,8 +63,8 @@
         {{ form.hide_dismissed.label(class="form-check-label") }}
       </div>
       <div class="form-check d-flex justify-content-start">
-        {{ form.hide_unaffected(class="form-check-input") }}
-        {{ form.hide_unaffected.label(class="form-check-label") }}
+        {{ form.show_unaffected(class="form-check-input") }}
+        {{ form.show_unaffected.label(class="form-check-label") }}
       </div>
     </div>
     <div class="col-3 d-flex justify-content-end">

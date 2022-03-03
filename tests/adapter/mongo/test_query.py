@@ -48,13 +48,13 @@ def test_build_query(adapter):
 
 
 def test_build_query_hide_not_in_affected(adapter, case_obj):
-    """Test variants query build with hide_unaffected parameter"""
+    """Test variants query build with show_unaffected parameter"""
 
     # GIVEN a database with a case with one affected individual
     adapter.case_collection.insert_one(case_obj)
 
-    # WHEN hide_unaffected = True param is provided to the query builder
-    query = {"hide_unaffected": True}
+    # WHEN show_unaffected = True param is provided to the query builder
+    query = {"show_unaffected": True}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
 
     # Then the variant query should return only variants in the affected individual and in presence of the allele

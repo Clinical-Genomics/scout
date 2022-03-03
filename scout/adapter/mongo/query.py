@@ -275,7 +275,7 @@ class QueryHandler(object):
             if criterion == "hide_dismissed" and query.get(criterion) is True:
                 mongo_query["dismiss_variant"] = {"$in": [None, []]}
 
-            if criterion == "hide_unaffected" and query.get(criterion) is True:
+            if criterion == "show_unaffected" and query.get(criterion) is False:
                 self.affected_inds_query(mongo_query, case_id)
 
             ##### end of fundamental query params
