@@ -89,15 +89,17 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     request_data["level"] = institute_obj.get("coverage_cutoff", 15)
 
     # Collect the coverage report HTML string
-    resp = requests.post(
-        base_url + "reports/report", timeout=COVERAGE_REPORT_TIMEOUT, data=request_data
-    )
+    try:
+        resp = requests.post(
+            base_url + "reports/report", timeout=COVERAGE_REPORT_TIMEOUT, data=request_data
+        )
+    except requests.Timeout:
+        html_body_content = "<span><b>Coverage report unavailable</b></span>"
 
     # Extract the contents between <body> and </body>
     if resp.text and "<body>" in resp.text:
         html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
-    else:
-        html_body_content = "<span><b>Coverage report unavailable</b></span>"
+
     return html_body_content
 
 
