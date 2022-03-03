@@ -57,7 +57,7 @@
 <div class="card-footer text-center">
   <input type="hidden" id="expand_search" name="expand_search">
   <div class="row d-flex d-flex justify-content-start">
-    <div class="col-3">
+    <div class="col-4">
       <div class="form-check d-flex justify-content-start">
         {{ form.hide_dismissed(class="form-check-input") }}
         {{ form.hide_dismissed.label(class="form-check-label") }}
@@ -67,10 +67,10 @@
         {{ form.show_unaffected.label(class="form-check-label") }}
       </div>
     </div>
-    <div class="col-3 d-flex justify-content-end">
+    <div class="col-4 d-flex justify-content-start">
       Filter returns {{result_size}} / {{ total_variants }} variants.
     </div>
-    <div class="col-3 d-flex justify-content-start">
+    <div class="col-4 d-flex justify-content-end">
       Showing {%if more_variants %}page {{page}}{%else%}last page{% endif %} with {{nvars}} variants.
     </div>
   </div>
