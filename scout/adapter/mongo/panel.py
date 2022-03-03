@@ -228,7 +228,6 @@ class PanelHandler:
             query["version"] = version
             return self.panel_collection.find_one(query)
 
-        LOG.info("Fetching gene panels %s from database", panel_id)
         res = self.panel_collection.find(query).sort("version", -1)
 
         for panel in res:
