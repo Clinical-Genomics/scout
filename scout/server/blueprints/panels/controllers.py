@@ -195,7 +195,7 @@ def update_panel(store, panel_name, csv_lines, option):
         if not new_gene["hgnc_id"]:
             flash("gene missing hgnc id: {}".format(new_gene["hgnc_symbol"]), "danger")
             continue
-        gene_obj = store.hgnc_gene(new_gene["hgnc_id"])
+        gene_obj = store.hgnc_gene_caption(new_gene["hgnc_id"])
         if gene_obj is None:
             flash(
                 "gene not found: {} - {}".format(new_gene["hgnc_id"], new_gene["hgnc_symbol"]),
