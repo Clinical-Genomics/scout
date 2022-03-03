@@ -33,7 +33,7 @@
    </div>
   </div>
 
-  <div class="table-responsive" style="padding-top: 25px; overflow-y: auto; height: 600px;">
+  <div class="table-responsive" style="padding-top: 25px; overflow-y: auto;">
     <table class="table table-bordered table-hover">
 <thead>
         <tr>
@@ -206,11 +206,6 @@
       $('select[multiple]').selectpicker({
           width: '100%'
         });
-
-      document.getElementById('symbol_file').onchange = function() {
-        var the_form = document.forms['filters_form'];
-        the_form.submit();
-      };
     })
 
   </script>
