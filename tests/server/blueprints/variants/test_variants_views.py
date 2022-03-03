@@ -325,13 +325,15 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, vari
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
-        # When the cancer SNV variants page is loaded by GET request (no filter)
+        # When the cancer SNV variants page is loaded by GET request (show all vars)
+        form_data = {"show_unaffected": True}
         resp = client.get(
             url_for(
                 "variants.cancer_variants",
                 institute_id=institute_obj["internal_id"],
                 case_name=cancer_case_obj["display_name"],
-            )
+            ),
+            data=form_data,
         )
 
         # THEN it should return a page
@@ -340,9 +342,7 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, vari
         assert variant_obj["_id"] in str(resp.data)
 
         # When a POST request filter with VAF > than the VAF in test_var is sent to the page
-        form_data = {
-            "tumor_frequency": 0.5,
-        }
+        form_data = {"tumor_frequency": 0.5, "show_unaffected": True}
         resp = client.post(
             url_for(
                 "variants.cancer_variants",
