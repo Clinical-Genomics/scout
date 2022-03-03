@@ -95,11 +95,10 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
         )
     except requests.Timeout:
         html_body_content = "<span><b>Coverage report unavailable</b></span>"
+        return html_body_content
 
     # Extract the contents between <body> and </body>
-    if resp and resp.text and "<body>" in resp.text:
-        html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
-
+    html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
     return html_body_content
 
 
