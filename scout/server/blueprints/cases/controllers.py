@@ -90,7 +90,10 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     resp = requests.post(base_url + "reports/report", data=request_data)
 
     # Extract the contents between <body> and </body>
-    html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
+    if resp.text and "<body>" in resp.text:
+        html_body_content = resp.text.split("<body>")[1].split("</body>")[0]
+    else:
+        html_body_content = "<span><b>Coverage report unavailable</b></span>"
     return html_body_content
 
 
