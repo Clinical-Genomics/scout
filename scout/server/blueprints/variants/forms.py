@@ -123,7 +123,7 @@ class VariantFiltersForm(FlaskForm):
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
-    hide_unaffected = BooleanField("Hide variants present only in unaffected", default=True)
+    hide_unaffected = BooleanField("Hide variants present only in unaffected", default="checked")
 
 
 class FiltersForm(VariantFiltersForm):
