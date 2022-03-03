@@ -60,16 +60,21 @@ def update_representative_gene(variant_obj, variant_genes):
         variant_obj(Variant): a variant object
         variant_genes(list(Genes): a list of genes
     """
+
     if variant_genes:
         first_rep_gene = min(
-            variant_genes, key=lambda gn: SO_TERMS[gn["functional_annotation"]]["rank"]
+            variant_genes,
+            key=lambda gn: SO_TERMS.get(
+                gn.get("functional_annotation"), {"rank": 999, "region": "unknown"}
+            )["rank"],
         )
         # get HGVNp identifier from the canonical transcript
         hgvsp_identifier = None
-        for tc in first_rep_gene["transcripts"]:
+        for tc in first_rep_gene.get("transcripts", []):
             if tc["is_canonical"]:
                 hgvsp_identifier = tc.get("protein_sequence_name")
         first_rep_gene["hgvsp_identifier"] = hgvsp_identifier
+
         variant_obj["first_rep_gene"] = first_rep_gene
     else:
         variant_obj["first_rep_gene"] = None
@@ -180,6 +185,14 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
     variant_obj["has_refseq"] = False
     variant_obj["disease_associated_transcripts"] = []
     all_models = set()
+
+    # seed genes structure for (STR) variants that have only hgnc_ids
+    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
+        variant_obj["genes"] = []
+        for hgnc_id in variant_obj.get("hgnc_ids"):
+            variant_gene = {"hgnc_id": hgnc_id}
+            variant_obj["genes"].append(variant_gene)
+
     if variant_obj.get("genes"):
         for variant_gene in variant_obj["genes"]:
             hgnc_id = variant_gene["hgnc_id"]

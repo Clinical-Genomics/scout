@@ -11,10 +11,26 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a toggle for melter rerun monitoring of cases
 - Add a config option to show the rerun monitoring toggle
 - Add a cli option to export cases with rerun monitoring enabled
+- Add a link to STRipy for STR variants
+### Fixed
+- A malformed panel id request would crash with exception: now gives user warning flash with redirect
+- Link to HPO resource file hosted on `http://purl.obolibrary.org`
+- Gene search form when gene exists only in build 38
+- Fixed odd redirect error and poor error message on missing column for gene panel csv upload
+- Typo in parse variant transcripts function
+- Modified keys name used to parse local observations (archived) frequencies to reflect change in MIP keys naming
+- Better error handling for partly broken/timed out chanjo reports
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
 - Removed unused `add_compounds` param from variant controllers function
+- Changed default hg19 genome for IGV.js to legacy hg19_1kg_decoy to fix a few problematic loci
+- Reduce code complexity (parse/ensembl.py)
+- Silence certain fields in ClinVar export if prioritised ones exist (chrom-start-end if hgvs exist)
+- Made phenotype non-mandatory when marking a variant as partial causative
+- Only one phenotype condition type (OMIM or HPO) per variant is used in ClinVar submissions
+- ClinVar submission variant condition prefers OMIM over HPO if available
+- Use lighter version of gene objects in Omim MongoDB adapter, panels controllers, panels views and institute controllers
 - Gene-variants table size is now adaptive
 - Remove unused file upload on gene-variants page
 
@@ -57,6 +73,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - PDF export of clinical and research HPO panels using PDFKit instead of Weasyprint
 - Export gene panel report to PDF using PDFKit
 - Removed WeasyPrint lib dependency
+
 ### Fixed
 - Reintroduced missing links to Swegen and Beacon and dbSNP in RD variant page, summary section
 - Demo delivery report orientation to fit new columns

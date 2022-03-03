@@ -39,7 +39,10 @@ def panels():
     """Show all panels for a user"""
     if request.method == "POST":  # Edit/create a new panel and redirect to its page
         redirect_panel_id = controllers.panel_create_or_update(store, request)
-        return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
+        if redirect_panel_id:
+            return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
+
+        return redirect(url_for("panels.panels"))
 
     institutes = list(user_institutes(store, current_user))
     panel_names = [
@@ -79,6 +82,9 @@ def panel(panel_id):
     """Display (and add pending updates to) a specific gene panel."""
 
     panel_obj = store.gene_panel(panel_id) or store.panel(panel_id)
+    if not panel_obj:
+        flash("Panel with id {} not found.".format(panel_id), "warning")
+        return redirect(url_for("panels.panels"))
 
     if request.method == "POST":
         if request.form.get("update_description"):
@@ -103,9 +109,9 @@ def panel(panel_id):
             flash("Provided HGNC is not valid : '{}'".format(raw_hgnc_id), "danger")
             return redirect(request.referrer)
         action = request.form["action"]
-        gene_obj = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
-            hgnc_identifier=hgnc_id, build="38"
-        )
+        gene_obj = store.hgnc_gene_caption(
+            hgnc_identifier=hgnc_id, build="37"
+        ) or store.hgnc_gene_caption(hgnc_identifier=hgnc_id, build="38")
         if gene_obj is None:
             flash("HGNC id not found: {}".format(hgnc_id), "warning")
             return redirect(request.referrer)
@@ -262,9 +268,9 @@ def tx_choices(hgnc_id, panel_obj):
 def gene_edit(panel_id, hgnc_id):
     """Edit additional information about a panel gene."""
     panel_obj = store.panel(panel_id)
-    hgnc_gene = store.hgnc_gene(hgnc_identifier=hgnc_id, build="37") or store.hgnc_gene(
-        hgnc_identifier=hgnc_id, build="38"
-    )
+    hgnc_gene = store.hgnc_gene_caption(
+        hgnc_identifier=hgnc_id, build="37"
+    ) or store.hgnc_gene_caption(hgnc_identifier=hgnc_id, build="38")
     panel_gene = controllers.existing_gene(store, panel_obj, hgnc_id)
 
     form = PanelGeneForm()

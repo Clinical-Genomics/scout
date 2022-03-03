@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime as dt
 import logging
-import operator
 
-from flask import abort, flash, redirect, url_for
+from flask import flash, redirect
 from flask_login import current_user
 
 from scout.build.panel import build_panel
@@ -70,7 +69,7 @@ def create_new_panel(store, request, lines):
         description=request.form["description"],
     )
     if new_panel_id is None:
-        return redirect(request.referrer)
+        return None
 
     flash("New gene panel added: {}!".format(new_panel_name), "success")
     return new_panel_id
@@ -92,7 +91,7 @@ def update_existing_panel(store, request, lines):
 
     panel_obj = store.gene_panel(panel_name)
     if panel_obj is None:
-        return redirect(request.referrer)
+        return None
 
     if panel_write_granted(panel_obj, current_user):
         panel_obj = update_panel(
@@ -196,7 +195,7 @@ def update_panel(store, panel_name, csv_lines, option):
         if not new_gene["hgnc_id"]:
             flash("gene missing hgnc id: {}".format(new_gene["hgnc_symbol"]), "danger")
             continue
-        gene_obj = store.hgnc_gene(new_gene["hgnc_id"])
+        gene_obj = store.hgnc_gene_caption(new_gene["hgnc_id"])
         if gene_obj is None:
             flash(
                 "gene not found: {} - {}".format(new_gene["hgnc_id"], new_gene["hgnc_symbol"]),
@@ -274,6 +273,7 @@ def new_panel(
         new_genes = parse_genes(csv_lines)
     except SyntaxError as error:
         flash(error.args[0], "danger")
+        LOG.debug("Ooops!")
         return None
 
     LOG.debug("build new gene panel")

@@ -5,7 +5,7 @@ from flask_login import current_user
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
 from scout.parse.clinvar import set_submission_objects
-from scout.server.blueprints.variant.controllers import clinvar_export
+from scout.server.blueprints.variant.controllers import build_clinvar_submission, clinvar_export
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations
 from scout.server.blueprints.variant.controllers import variant as variant_controller
@@ -292,58 +292,23 @@ def acmg():
 @templated("variant/clinvar.html")
 def clinvar(institute_id, case_name, variant_id):
     """Build a clinVar submission form for a variant."""
-    data = clinvar_export(store, institute_id, case_name, variant_id)
+
     if request.method == "GET":
+        data = clinvar_export(store, institute_id, case_name, variant_id)
         return data
+
     # POST
-    form_dict = {}
-    # flatten up HPO and OMIM terms lists into string of keys separated by semicolon
-    for key, value in request.form.items():
-        if key.startswith("conditions@") or key.startswith("clin_features@"):
-            conditions = request.form.getlist(key)  # can be HPO or OMIM conditions
-            if conditions:
-                variant_id = key.split("@")[1]
-                cond_types = []
-                cond_values = []
+    build_clinvar_submission(store, request, institute_id, case_name, variant_id)
 
-                for condition in conditions:
-                    cond_types.append(condition.split("_")[0])  # 'HPO' or 'OMIM'
-                    cond_values.append(condition.split("_")[1])  # HPO id or OMIM ID
-
-                if key.startswith(
-                    "conditions@"
-                ):  # Filling in 'condition_id_type' and 'condition_id_value' in variant data
-                    form_dict["@".join(["condition_id_type", variant_id])] = ";".join(
-                        cond_types
-                    )  # Flattened list
-                    form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
-                        cond_values
-                    )  # Flattened list
-                elif key.startswith("clin_features@"):  # Filling in 'clin_features' in casedata
-                    form_dict["@".join(["clin_features", variant_id])] = ";".join(
-                        cond_values
-                    )  # Flattened list
-
-        else:
-            form_dict[key] = value
-
-    # A tuple of submission objects (variants and casedata objects):
-    submission_objects = set_submission_objects(form_dict)
-
-    # Add submission data to an open clinvar submission object,
-    # or create a new if no open submission is found in database
-    open_submission = store.get_open_clinvar_submission(institute_id)
-    updated_submission = store.add_to_submission(open_submission["_id"], submission_objects)
-
-    # Redirect to clinvar submissions handling page, and pass it the updated_submission_object
+    # Redirect to clinvar submissions handling page, to show the newest submission object
     return redirect(url_for("overview.clinvar_submissions", institute_id=institute_id))
 
 
 @variant_bp.route(
-    "/<institute_id>/<case_name>/<variant_id>/<variant_category>/<order>",
+    "/<institute_id>/<case_name>/<variant_id>/<order>",
     methods=["POST"],
 )
-def verify(institute_id, case_name, variant_id, variant_category, order):
+def verify(institute_id, case_name, variant_id, order):
     """Start procedure to validate variant using other techniques."""
     comment = request.form.get("verification_comment")
 
