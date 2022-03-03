@@ -67,6 +67,7 @@ class GeneHandler(object):
         query["hgnc_id"] = hgnc_identifier
         query["build"] = build
 
+        projection["hgnc_id"] = 1
         projection["hgnc_symbol"] = 1
         projection["description"] = 1
         projection["chromosome"] = 1
