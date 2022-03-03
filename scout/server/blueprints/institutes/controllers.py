@@ -10,7 +10,6 @@ from pymongo import ASCENDING, DESCENDING
 
 from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.genes.controllers import gene
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, user_institutes
@@ -408,8 +407,8 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         if variant_genes is not None:
             for gene_obj in variant_genes:
                 hgnc_id = gene_obj["hgnc_id"]
-                gene_symbol = gene(store, hgnc_id)["symbol"]
-                gene_symbols = [gene_symbol]
+                gene_caption = store.hgnc_gene_caption(hgnc_id)
+                gene_symbols = [gene_caption["hgnc_symbol"]]
 
                 # gather HGVS info from gene transcripts
                 (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
