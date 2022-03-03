@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed odd redirect error and poor error message on missing column for gene panel csv upload
 - Typo in parse variant transcripts function
 - Modified keys name used to parse local observations (archived) frequencies to reflect change in MIP keys naming
+- Better error handling for partly broken/timed out chanjo reports
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
