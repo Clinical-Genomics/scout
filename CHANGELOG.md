@@ -29,7 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Made phenotype non-mandatory when marking a variant as partial causative
 - Only one phenotype condition type (OMIM or HPO) per variant is used in ClinVar submissions
 - ClinVar submission variant condition prefers OMIM over HPO if available
-
+- Use lighter version of gene objects in omim, panels controllers and panels views
 
 ## [4.49]
 ### Fixed
