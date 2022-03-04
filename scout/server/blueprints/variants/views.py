@@ -123,7 +123,9 @@ def variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    data = controllers.variants(store, institute_obj, case_obj, variants_query, result_size, page)
+    data = controllers.variants(
+        store, institute_obj, case_obj, variants_query, result_size, page, query_form=form.query
+    )
     expand_search = request.method == "POST" and request.form.get("expand_search") in [
         "True",
         "",

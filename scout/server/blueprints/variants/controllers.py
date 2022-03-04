@@ -53,7 +53,16 @@ def populate_chrom_choices(form, case_obj):
     form.chrom.choices = [(chrom, chrom) for chrom in chromosomes]
 
 
-def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
+def variants(
+    store,
+    institute_obj,
+    case_obj,
+    variants_query,
+    variant_count,
+    page=1,
+    per_page=50,
+    query_form=None,
+):
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
@@ -110,6 +119,7 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
                 update=True,
                 genome_build=genome_build,
                 case_dismissed_vars=case_dismissed_vars,
+                query_form=query_form,
             )
         )
 
@@ -337,6 +347,7 @@ def parse_variant(
     genome_build="37",
     get_compounds=True,
     case_dismissed_vars=[],
+    query_form=None,
 ):
     """Parse information about variants.
     - Adds information about compounds
@@ -350,6 +361,7 @@ def parse_variant(
         get_compounds(bool): if compounds should be added to added to the returned variant object
         genome_build(str)
         case_dismissed_vars(list): list of dismissed variants for this case
+        query_form(dict): query form for additional compounds filtering
     """
     has_changed = False
     compounds = variant_obj.get("compounds", [])
@@ -365,6 +377,11 @@ def parse_variant(
         variant_obj["compounds"] = sorted(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
+
+        # check compound against current query
+        for compound in compounds:
+            if variant_obj.get("cadd_score") > query_form["cadd_score"]:
+                variant_obj["is_dismissed"] = True
 
     # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
     if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
