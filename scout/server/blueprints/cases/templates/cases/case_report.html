@@ -177,12 +177,39 @@
   	              {% for pheno in case.phenotype_terms %}
   	                <li>
   	                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
+                    {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
+                      {% for case_ind in case.individuals %}
+                        {% if feature_ind.individual_name == case_ind.display_name %}
+                          <span class="ml-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
   	                </li>
   	              {% endfor %}
   	            </ul>
   	          {% else %}
-  	            No phenotype terms associated.
+  	            No associated HPO terms.
   	          {% endif %}
+              <br>
+              <strong>Associated diagnoses:</strong><br>
+              {% if case.diagnosis_phenotypes %}
+                <ul>
+                  {% for dia in case.diagnosis_phenotypes %}
+                    <li>
+                      {{dia.description}} (<a href="{{url_for('diagnoses.omim_diagnosis', omim_nr=dia.disease_id)}}" target="_blank">{{dia.disease_id}})</a>
+                      {% for feature_ind in dia.individuals %} <!-- display eventual individual-level HPO terms -->
+                        {% for case_ind in case.individuals %}
+                          {% if feature_ind.individual_name == case_ind.display_name %}
+                            <span class="ml-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
+                          {% endif %}
+                        {% endfor %}
+                      {% endfor %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                No associated OMIM diagnoses.
+              {% endif %}
 	        </td>
 	      </tr>
               {% if comments | count_cursor > 0 %}
