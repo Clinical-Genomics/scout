@@ -47,8 +47,31 @@ def test_build_query(adapter):
     assert query["variant_type"] == "clinical"
 
 
+def test_build_query_hide_not_in_affected(adapter, case_obj):
+    """Test variants query build with show_unaffected parameter"""
+
+    # GIVEN a database with a case with one affected individual
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN show_unaffected = True param is provided to the query builder
+    query = {"show_unaffected": False}
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+
+    # Then the variant query should return only variants in the affected individual and in presence of the allele
+    assert mongo_query["samples"] == {
+        "$elemMatch": {
+            "$or": [
+                {
+                    "sample_id": case_obj["individuals"][0]["individual_id"],
+                    "genotype_call": {"$nin": ["0/0", "./.", "./0", "0/."]},
+                }
+            ]
+        }
+    }
+
+
 def test_build_query_hide_dismissed(adapter, case_obj):
-    """test variants query with hide_dismissed parameter"""
+    """Test variants query with hide_dismissed parameter"""
 
     # WHEN hide_dismissed = True param is provided to the query builder
     query = {"hide_dismissed": True}
