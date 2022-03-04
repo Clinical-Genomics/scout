@@ -3,6 +3,8 @@ from flask import current_app
 from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1
 
+SHALLOW_REFERENCE_STR_LOCI = ["ARX", "HOXA13"]
+
 
 def add_gene_links(gene_obj, build=37):
     """Update a gene object with links
@@ -70,6 +72,9 @@ def stripy_gene(hgnc_symbol):
 
     if not hgnc_symbol:
         return None
+
+    if hgnc_symbol in SHALLOW_REFERENCE_STR_LOCI:
+        return "https://stripy.org/database"
     return link.format(hgnc_symbol)
 
 
@@ -78,6 +83,10 @@ def gnomad_str_gene(hgnc_symbol):
 
     if not hgnc_symbol:
         return None
+
+    if hgnc_symbol in SHALLOW_REFERENCE_STR_LOCI:
+        return "https://gnomad.broadinstitute.org/short-tandem-repeats?dataset=gnomad_r3"
+
     return link.format(hgnc_symbol)
 
 

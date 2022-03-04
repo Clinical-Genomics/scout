@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a toggle for melter rerun monitoring of cases
 - Add a config option to show the rerun monitoring toggle
 - Add a cli option to export cases with rerun monitoring enabled
-- Add a link to STRipy for STR variants
+- Add a link to STRipy for STR variants; shallow for ARX and HOXA13
 - Hide by default variants only present in unaffected individuals in variants filters
 ### Fixed
 - A malformed panel id request would crash with exception: now gives user warning flash with redirect
@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Typo in parse variant transcripts function
 - Modified keys name used to parse local observations (archived) frequencies to reflect change in MIP keys naming
 - Better error handling for partly broken/timed out chanjo reports
+- Broken javascript code when case Chromograph data is malformed
 ### Changed
 - Slightly smaller and improved layout of content in case general PDF report
 - Relabel more cancer variant pages somatic for navigation
