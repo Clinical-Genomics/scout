@@ -16,6 +16,7 @@ CASE_REPORT_CASE_FEATURES = [
     "madeline_info",
     "synopsis",
     "phenotype_terms",
+    "diagnosis_phenotypes",
     "panels",
 ]
 
