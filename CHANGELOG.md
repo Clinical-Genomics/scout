@@ -22,9 +22,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modified keys name used to parse local observations (archived) frequencies to reflect change in MIP keys naming
 - Better error handling for partly broken/timed out chanjo reports
 - Broken javascript code when case Chromograph data is malformed
+- Broader space for case synopsis in general report
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
+- Unify caseS nav links
 - Removed unused `add_compounds` param from variant controllers function
 - Changed default hg19 genome for IGV.js to legacy hg19_1kg_decoy to fix a few problematic loci
 - Reduce code complexity (parse/ensembl.py)
