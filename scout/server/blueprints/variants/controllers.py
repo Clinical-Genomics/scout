@@ -34,9 +34,9 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import (  # noqa: F401
+from .forms import CancerFiltersForm  # noqa: F401
+from .forms import (
     FILTERSFORMCLASS,
-    CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
     StrFiltersForm,
