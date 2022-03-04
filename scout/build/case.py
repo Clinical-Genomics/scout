@@ -189,14 +189,10 @@ def get_collaborators(case_data):
 
 
 def get_individuals(case_data):
-    """Returns samples with with affected individual first"""
+    """Return samples with with affected individual first"""
     ind_objs = []
-    try:
-        for individual in case_data.get("individuals", []):
-            ind_objs.append(build_individual(individual))
-    except Exception as error:
-        # TODO: Do something useful here
-        raise error
+    for individual in case_data.get("individuals", []):
+        ind_objs.append(build_individual(individual))
     return sorted(ind_objs, key=lambda ind: -ind["phenotype"])
 
 
