@@ -334,7 +334,7 @@
   {% set chromograph_available = false %}
   {% for i in case.individuals %}
     {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
-      {% set chromograph_images = true %}
+      {% set chromograph_available = true %}
       <div class="panel-heading">
         <h5 class="panel-title">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
