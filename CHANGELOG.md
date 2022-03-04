@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Typo in parse variant transcripts function
 - Modified keys name used to parse local observations (archived) frequencies to reflect change in MIP keys naming
 - Better error handling for partly broken/timed out chanjo reports
+- Broken javascript code when case Chromograph data is malformed
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
