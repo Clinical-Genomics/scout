@@ -161,6 +161,8 @@
 	          </strong><br><br>
 	        </td>
 	      </tr>
+      </table>
+      <table
 	      <tr>
 	        <td style="width:50%">
 	          {% if case.synopsis %}
@@ -168,19 +170,19 @@
 	            {{ case.synopsis|markdown }}
 	          {% endif %}
 	        </td>
-	        <td>
-	          <strong>Associated phenotypes:</strong><br>
-	          {% if case.phenotype_terms %}
-	            <ul>
-	              {% for pheno in case.phenotype_terms %}
-	                <li>
-	                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
-	                </li>
-	              {% endfor %}
-	            </ul>
-	          {% else %}
-	            No phenotype terms associated.
-	          {% endif %}
+	        <td class="ml-3 d-flex align-items-start flex-column">
+            <strong>Associated phenotypes:</strong><br>
+  	          {% if case.phenotype_terms %}
+  	            <ul>
+  	              {% for pheno in case.phenotype_terms %}
+  	                <li>
+  	                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
+  	                </li>
+  	              {% endfor %}
+  	            </ul>
+  	          {% else %}
+  	            No phenotype terms associated.
+  	          {% endif %}
 	        </td>
 	      </tr>
               {% if comments | count_cursor > 0 %}
