@@ -110,7 +110,7 @@ def build_case(case_data, adapter):
     # Check if institute exists in database
     try:
         institute_id = case_data["owner"]
-    except KeyError as err:
+    except KeyError as _err:
         raise ConfigError("Case has to have a institute")
     institute_obj = adapter.institute(institute_id)
     if not institute_obj:
@@ -148,8 +148,7 @@ def build_case(case_data, adapter):
     if case_data.get("rank_score_threshold"):
         case_obj["rank_score_threshold"] = float(case_data["rank_score_threshold"])
 
-    set_cohort(case_obj, case_data)
-    sync_cohort_view(case_obj, institute_obj, adapter)
+    set_cohort(case_obj, case_data, institute_obj, adapter)
     set_phenotype_terms(case_obj, case_data, adapter)
     set_phenotype_groups(case_obj, case_data, adapter)
 
@@ -205,7 +204,7 @@ def get_panels(case_data, adapter):
 
     Returns:
         List(panel{})
-        
+
     """
     # We store some metadata and references about gene panels in 'panels'
     case_panels = case_data.get("gene_panels", [])
@@ -270,19 +269,27 @@ def set_genome_build(case_obj, case_data):
     case_obj["genome_build"] = genome_build
 
 
-def set_cohort(case_obj, case_data):
+def set_cohort(case_obj, case_data, institute_obj, adapter):
+    """Set cohort information to case_obj. Also check if all case cohorts are
+    registered under the institute db. If not update the database.
+
+    Args:
+        case_obj(Dict)
+        case_data(Dict)
+        institute_obj()
+        adapter(scout.adapter.MongoAdapter)
+
+    Returns:
+        None
+    """
     if case_data.get("cohorts"):
         case_obj["cohorts"] = case_data["cohorts"]
-
-
-def sync_cohort_view(case_obj, institute_obj, adapter):
-    """Check if all case cohorts are registered under the institute db. If not update
-    database"""
-    if case_obj.get("cohorts"):
+        # Check if all case cohorts are registered under the institute
         institute_cohorts = set(institute_obj.get("cohorts", []))
         all_cohorts = institute_cohorts.union(set(case_obj["cohorts"]))
         if len(all_cohorts) > len(institute_cohorts):
-            LOG.warning("Updating institute object with new cohort terms from case_obj")
+            # if not, update institute with new cohorts
+            LOG.warning("Updating institute object with new cohort terms")
             adapter.institute_collection.find_one_and_update(
                 {"_id": institute_obj["_id"]}, {"$set": {"cohorts": list(all_cohorts)}}
             )
