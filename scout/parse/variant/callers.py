@@ -48,4 +48,10 @@ def parse_callers(variant, category="snv"):
             filter_status = "Filtered - {}".format(filter_status.replace(";", " - "))
         callers["gatk"] = filter_status
 
+    if category == "sv" and not raw_info or other_info:
+        filter_status = "Pass"
+        if variant.FILTER is not None:
+            filter_status = "Filtered - {}".format(filter_status.replace(";", " - "))
+        callers["wes"] = filter_status
+
     return callers
