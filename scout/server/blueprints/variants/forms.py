@@ -123,6 +123,8 @@ class VariantFiltersForm(FlaskForm):
     filter_variants = SubmitField(label="Filter variants")
     export = SubmitField(label="Filter and export")
 
+    show_unaffected = BooleanField("Show variants present only in unaffected", default=False)
+
 
 class FiltersForm(VariantFiltersForm):
     """Base FiltersForm for SNVs - extends VariantFiltersForm."""
