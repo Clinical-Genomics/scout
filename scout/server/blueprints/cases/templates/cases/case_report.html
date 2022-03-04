@@ -1,5 +1,4 @@
 {% from "cases/utils.html" import variant_transcripts %}
-{% from "cases/phenotype.html" import hpo_item %}
 
 {% extends "report_base.html" %}
 
@@ -189,9 +188,23 @@
   	              {% endfor %}
   	            </ul>
   	          {% else %}
-  	            No phenotype terms associated.
+  	            No associated HPO terms.
   	          {% endif %}
-              <hr>
+              <br>
+              <strong>Associated diagnoses:</strong><br>
+              {{case}}
+              {% if diagnosis_phenotypes in case %}
+                <ul>
+                  {% for dia in case.diagnosis_phenotypes %}
+                    {{dia}}
+                    <li>
+                      {{dia.description}} (<a href="{{url_for('diagnoses.omim_diagnosis', omim_nr=dia.disease_id)}}" target="_blank">{{dia.disease_id}})</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                No associated OMIM diagnoses.
+              {% endif %}
 	        </td>
 	      </tr>
               {% if comments | count_cursor > 0 %}
