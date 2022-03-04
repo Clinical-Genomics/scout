@@ -197,7 +197,16 @@ def get_individuals(case_data):
 
 
 def get_panels(case_data, adapter):
-    """Return gene panels from case_data"""
+    """Return list of gene panels from case_data
+
+    Args:
+        case_data(Dict)
+        adapter(scout.adapter.MongoAdapter)
+
+    Returns:
+        List(panel{})
+        
+    """
     # We store some metadata and references about gene panels in 'panels'
     case_panels = case_data.get("gene_panels", [])
     default_panels = case_data.get("default_panels", [])
