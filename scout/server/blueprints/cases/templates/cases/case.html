@@ -331,8 +331,10 @@
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% macro insert_multi_image_panel() %}
 <div class="panel-group" id="accordion">
+  {% set chromograph_available = false %}
   {% for i in case.individuals %}
     {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
+      {% set chromograph_images = true %}
       <div class="panel-heading">
         <h5 class="panel-title">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
@@ -452,19 +454,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
 
 <script>
-  window.onload= add_image_panels();
-  window.onresize= function(){
-      console.log("Width '%s' ", $(window).width())
-      add_image_panels();
-  }
-
-
-  function add_image_panels(){
-      add_image_to_individual_panel( {{case.individuals|tojson}},
-                                     "{{institute._id}}",
-                                     "{{case.display_name}}"
-                                   );
-  }
+  {% if chromograph_available %}
+    window.onload= add_image_panels();
+    window.onresize= function(){
+        console.log("Width '%s' ", $(window).width())
+        add_image_panels();
+    }
+    function add_image_panels(){
+        add_image_to_individual_panel( {{case.individuals|tojson}},
+                                       "{{institute._id}}",
+                                       "{{case.display_name}}"
+                                     );
+    }
+  {% endif %}
 
   {% if case.panels %}
     $('#panel-table').DataTable({
