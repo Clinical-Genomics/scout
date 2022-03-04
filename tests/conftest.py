@@ -1048,7 +1048,7 @@ def parsed_cancer_variant(request, cancer_variants, one_cancer_variant, cancer_c
 
 
 @pytest.fixture(scope="function")
-def cancer_variant_obj(request, parsed_cancer_variant, cancer_case_obj):
+def cancer_variant_obj(request, parsed_cancer_variant):
     LOG.info("Return one cancer variant obj")
     institute_id = "cust000"
 
