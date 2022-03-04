@@ -33,7 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Use lighter version of gene objects in Omim MongoDB adapter, panels controllers, panels views and institute controllers
 - Gene-variants table size is now adaptive
 - Remove unused file upload on gene-variants page
-- Refactor to reduce code complexity
+- Refactor `build/build_case` function to reduce code complexity
 
 ## [4.49]
 ### Fixed
