@@ -1033,14 +1033,22 @@ def one_cancer_variant(request, cancer_snv_file):
 
 
 @pytest.fixture(scope="function")
-def parsed_cancer_variant(request, one_cancer_variant, cancer_case_obj):
+def parsed_cancer_variant(request, cancer_variants, one_cancer_variant, cancer_case_obj):
     """Return a parsed variant"""
-    variant_dict = parse_variant(one_cancer_variant, cancer_case_obj)
+
+    individual_positions = {}
+    for i, ind in enumerate(cancer_variants.samples):
+        individual_positions[ind] = i
+
+    variant_dict = parse_variant(
+        one_cancer_variant, cancer_case_obj, individual_positions=individual_positions
+    )
+
     return variant_dict
 
 
 @pytest.fixture(scope="function")
-def cancer_variant_obj(request, parsed_cancer_variant):
+def cancer_variant_obj(request, parsed_cancer_variant, cancer_case_obj):
     LOG.info("Return one cancer variant obj")
     institute_id = "cust000"
 
@@ -1113,6 +1121,13 @@ def variants(request, variant_clinical_file):
 
 
 @pytest.fixture(scope="function")
+def cancer_variants(cancer_snv_file):
+    LOG.info("Return VCF-parsed cancer SNVs")
+    cancer_variants = VCF(cancer_snv_file)
+    return cancer_variants
+
+
+@pytest.fixture(scope="function")
 def parsed_variant(request, one_variant, case_obj):
     """Return a parsed variant"""
     print("")
@@ -1178,7 +1193,7 @@ def parsed_sv_variant(request, one_sv_variant, case_obj):
 @pytest.fixture(scope="function")
 def parsed_variants(request, variants, case_obj):
     """Get a generator with parsed variants"""
-    print("")
+
     individual_positions = {}
     for i, ind in enumerate(variants.samples):
         individual_positions[ind] = i

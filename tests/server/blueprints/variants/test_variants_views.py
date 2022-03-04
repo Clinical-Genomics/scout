@@ -301,16 +301,19 @@ def test_filter_cancer_variants_wrong_params(app, institute_obj, case_obj):
         assert resp.status_code == 302
 
 
-def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, variant_obj):
+def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, cancer_variant_obj):
     """Tests the cancer form filter by VAF"""
 
     # GIVEN a database containing a cancer case
     assert store.case_collection.insert_one(cancer_case_obj)
 
-    variant_obj["tumor"] = {"alt_freq": 0.49}
+    # with a variant with a given tumor VAF
+    cancer_variant_obj["tumor"] = {"alt_freq": 0.49}
+    assert store.variant_collection.insert_one(cancer_variant_obj)
+
     # GIVEN a variant belonging to the case that has tumor alternate frequency
     assert store.variant_collection.find_one_and_update(
-        {"_id": variant_obj["_id"]},
+        {"_id": cancer_variant_obj["_id"]},
         {
             "$set": {
                 "case_id": cancer_case_obj["_id"],
@@ -325,24 +328,24 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, vari
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
-        # When the cancer SNV variants page is loaded by GET request (show all vars)
-        form_data = {"show_unaffected": True}
+        # When the cancer SNV variants page is loaded by GET request (no filter)
         resp = client.get(
             url_for(
                 "variants.cancer_variants",
                 institute_id=institute_obj["internal_id"],
                 case_name=cancer_case_obj["display_name"],
-            ),
-            data=form_data,
+            )
         )
 
         # THEN it should return a page
         assert resp.status_code == 200
         # With the above variant
-        assert variant_obj["_id"] in str(resp.data)
+        assert cancer_variant_obj["_id"] in str(resp.data)
 
         # When a POST request filter with VAF > than the VAF in test_var is sent to the page
-        form_data = {"tumor_frequency": 0.5, "show_unaffected": True}
+        form_data = {
+            "tumor_frequency": 0.5,
+        }
         resp = client.post(
             url_for(
                 "variants.cancer_variants",
@@ -354,7 +357,7 @@ def test_filter_cancer_variants_by_vaf(app, institute_obj, cancer_case_obj, vari
         # THEN it should return a page
         assert resp.status_code == 200
         # Without the variant
-        assert variant_obj["_id"] not in str(resp.data)
+        assert cancer_variant_obj["_id"] not in str(resp.data)
 
 
 def test_sv_cancer_variants(app, institute_obj, cancer_case_obj):
