@@ -275,6 +275,9 @@ class QueryHandler(object):
             if criterion == "hide_dismissed" and query.get(criterion) is True:
                 mongo_query["dismiss_variant"] = {"$in": [None, []]}
 
+            if criterion == "show_unaffected" and query.get(criterion) is False:
+                self.affected_inds_query(mongo_query, case_id)
+
             ##### end of fundamental query params
 
         ##### start of the custom query params
@@ -338,6 +341,37 @@ class QueryHandler(object):
 
         LOG.info("mongo query: %s", mongo_query)
         return mongo_query
+
+    def affected_inds_query(self, mongo_query, case_id):
+        """Add info to variants query to filter out variants which are only in unaffected individuals
+
+        Accepts:
+            mongo_query(dict): a dictionary containing a query key/values
+            case_id(str): _id of a case
+        """
+        case_obj = self.case(case_id=case_id)
+        case_inds = case_obj.get("individuals", [])
+        if len(case_inds) == 1:  # No point in adding this filter
+            return
+
+        affected_query = {
+            "$elemMatch": {
+                "$or": []
+            }  # At least one of the affected individuals should harbor the variant
+        }
+        for ind in case_inds:
+            if ind["phenotype"] in [1, "unaffected"]:  # 1=unaffected, 2=affected
+                continue
+            affected_query["$elemMatch"]["$or"].append(
+                {
+                    "sample_id": ind["individual_id"],
+                    "genotype_call": {"$nin": ["0/0", "./.", "./0", "0/."]},
+                }
+            )
+        if affected_query["$elemMatch"][
+            "$or"
+        ]:  # Consider situation where all individuals are unaffected
+            mongo_query["samples"] = affected_query
 
     def clinsig_query(self, query, mongo_query):
         """Add clinsig filter values to the mongo query object
