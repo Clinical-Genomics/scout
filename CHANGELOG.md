@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.50]
 ### Added
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
@@ -22,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modified keys name used to parse local observations (archived) frequencies to reflect change in MIP keys naming
 - Better error handling for partly broken/timed out chanjo reports
 ### Changed
-- Slightly smaller and improved layout of content in case PDF report
+- Slightly smaller and improved layout of content in case general PDF report
 - Relabel more cancer variant pages somatic for navigation
 - Removed unused `add_compounds` param from variant controllers function
 - Changed default hg19 genome for IGV.js to legacy hg19_1kg_decoy to fix a few problematic loci

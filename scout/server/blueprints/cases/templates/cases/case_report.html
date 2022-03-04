@@ -151,6 +151,8 @@
 	          </table>
 	        </td>
 	      </tr>
+      </table>
+      <table>
 	      <tr>
 	        <td>Case status: <strong>
 	          {% if 'solved' in case.status%}
@@ -162,7 +164,7 @@
 	        </td>
 	      </tr>
 	      <tr>
-	        <td style="width:50%">
+	        <td style="width:60%">
 	          {% if case.synopsis %}
 	            <strong>Synopsis:</strong>
 	            {{ case.synopsis|markdown }}
