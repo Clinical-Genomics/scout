@@ -1,4 +1,5 @@
 {% from "cases/utils.html" import variant_transcripts %}
+{% from "cases/phenotype.html" import hpo_item %}
 
 {% extends "report_base.html" %}
 
@@ -177,12 +178,20 @@
   	              {% for pheno in case.phenotype_terms %}
   	                <li>
   	                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
+                    {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
+                      {% for case_ind in case.individuals %}
+                        {% if feature_ind.individual_name == case_ind.display_name %}
+                          <span class="ml-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
   	                </li>
   	              {% endfor %}
   	            </ul>
   	          {% else %}
   	            No phenotype terms associated.
   	          {% endif %}
+              <hr>
 	        </td>
 	      </tr>
               {% if comments | count_cursor > 0 %}
