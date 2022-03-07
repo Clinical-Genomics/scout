@@ -161,7 +161,7 @@ CASE_SEARCH_TERMS = {
         "placeholder": "example:HP:0001166",
     },
     "cohort": {"label": "Patient Cohort", "prefix": "cohort:", "placeholder": "example:pedhep"},
-    "similar case": {
+    "similar_case": {
         "label": "Similar Case",
         "prefix": "similar_case:",
         "placeholder": "example:18201",

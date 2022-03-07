@@ -159,28 +159,40 @@
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
 
-    document.querySelector("#download_verified").addEventListener("submit", function(e){
-      // Avoid page spinner being stuck on download verified variants
-      $(window).unbind('beforeunload');
-    });
+    if(document.getElementById('download_verified')){
+      document.querySelector("#download_verified").addEventListener("submit", function(e){
+        // Avoid page spinner being stuck on download verified variants
+        $(window).unbind('beforeunload');
+      });
+    }
 
-    var sel = document.getElementById("search_type");
-    var text = document.getElementById("search_term");
+    // Code taking care of case filtering
+    var caseSearchTerms = {{ search_terms|safe }};
+    var searchTerm = document.getElementById('search_term'); // Case search term label
+    var sel = document.getElementById('search_type'); // Case search term select
+    document.getElementById("search_type").onchange = function() {
+      // Change case search term placeholder
+      selectedKey = sel.options[sel.selectedIndex].value.slice(0, -1);
+      if(selectedKey){
+        searchTerm.placeholder=caseSearchTerms[selectedKey]["placeholder"];
+        searchTerm.disabled = false;
+      }
+      else{
+        searchTerm.disabled = (sel.value == "");
+        searchTerm.placeholder="Search term";
+      }
+      // Reset search
+      searchTerm.value="";
+    };
 
     $(document).ready(function(){
-      text.disabled = (sel.value == "");
+      searchTerm.disabled = (sel.value == "");
       {% if not total_cases %}
         hide_div("all");
       {% else %}
         hide_div('{{panel}}');
       {% endif %}
     });
-
-    if(sel){
-      sel.onchange = function(e) {
-        text.disabled = (sel.value == "");
-      };
-    }
 
     function hide_div(show_div){
       panels = ["general", "cases", "variants"];
