@@ -65,6 +65,15 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["iarctp53_link"] = iarctp53(hgnc_symbol)
     gene_obj["stripy_link"] = stripy_gene(hgnc_symbol)
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
+    gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
+
+
+def panelapp_gene(hgnc_symbol):
+    link = "https://panelapp.genomicsengland.co.uk/panels/entities/{}"
+
+    if not hgnc_symbol:
+        return None
+    return link.format(hgnc_symbol)
 
 
 def stripy_gene(hgnc_symbol):
