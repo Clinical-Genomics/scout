@@ -94,6 +94,7 @@ class VariantFiltersForm(FlaskForm):
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
 
     cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
+    compound_rank_score = IntegerField("Compound rank score")
     cadd_inclusive = BooleanField("CADD inclusive")
     clinsig = NonValidatingSelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
 

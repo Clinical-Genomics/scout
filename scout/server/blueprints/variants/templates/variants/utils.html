@@ -202,8 +202,8 @@
       {{ form.genetic_models(class="selectpicker") }}
     </div>
     <div class="col-2">
-      {{ form.clinvar_tag() }}
-      {{ form.clinvar_tag.label(class="ml-2") }}
+      {{ form.compound_rank_score.label(class="control-label") }}
+      {{ form.compound_rank_score() }}
     </div>
   </div>
 </div>
@@ -236,9 +236,13 @@
       {{ form.clinsig.label(class="control-label") }}
       {{ form.clinsig(class="selectpicker") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.clinsig_confident_always_returned.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Always show selected CLINSIG entries with trusted revision status levels.") }}
       <div>{{ form.clinsig_confident_always_returned() }}</div>
+    </div>
+    <div class="col-1">
+      {{ form.clinvar_tag() }}
+      {{ form.clinvar_tag.label(class="ml-2") }}
     </div>
   </div>
 </div>
