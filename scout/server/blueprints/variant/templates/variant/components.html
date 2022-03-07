@@ -261,6 +261,7 @@
             <a href="{{ gene.stripy_link }}" class="btn btn-outline-secondary" target="_blank">STRipy</a>
             <a href="{{ gene.gnomad_str_link}}" class="btn btn-outline-secondary" target="_blank">GnomAD STR</a>
           {% endif %}
+          <a href="{{ gene.panelapp_link }}" class="btn btn-outline-secondary" target="_blank">PanelApp</a>
           <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
       </div>
     {% endfor %}

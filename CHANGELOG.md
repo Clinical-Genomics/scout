@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide by default variants only present in unaffected individuals in variants filters
 - OMIM terms in general case report
 - Individual-level info on OMIM and HPO terms in general case report
+- PanelApp gene link among the external links on variant page
 - Dashboard case filters fields help
 - Filter cases by OMIM terms in cases and dashboard pages
 ### Fixed
