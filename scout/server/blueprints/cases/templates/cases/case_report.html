@@ -176,7 +176,7 @@
   	            <ul>
   	              {% for pheno in case.phenotype_terms %}
   	                <li>
-  	                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
+  	                {{pheno.feature}} - (<a href="https://hpo.jax.org/app/browse/term/{{pheno.phenotype_id}}" target="_blank">{{pheno.phenotype_id}})</a>
                     {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
                       {% for case_ind in case.individuals %}
                         {% if feature_ind.individual_name == case_ind.display_name %}
@@ -196,7 +196,7 @@
                 <ul>
                   {% for dia in case.diagnosis_phenotypes %}
                     <li>
-                      {{dia.description}} (<a href="{{url_for('diagnoses.omim_diagnosis', omim_nr=dia.disease_id)}}" target="_blank">{{dia.disease_id}})</a>
+                      {{dia.description}} (<a href="https://omim.org/entry/{{dia.disease_nr}}" target="_blank">{{dia.disease_id}})</a>
                       {% for feature_ind in dia.individuals %} <!-- display eventual individual-level OMIM terms -->
                         {% for case_ind in case.individuals %}
                           {% if feature_ind.individual_name == case_ind.display_name %}
