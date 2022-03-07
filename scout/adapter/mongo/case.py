@@ -184,10 +184,10 @@ class CaseHandler(object):
                 query["$or"] = [
                     {
                         "diagnosis_phenotypes.disease_id": {"$in": omim_terms}
-                    },  # OMIM phenotypes are assigned as key/values of a dictionary
+                    },  # OMIM phenotypes are assigned as a list of dictionaries
                     {
                         "diagnosis_phenotypes": {"$in": omim_terms}
-                    },  # old way of saving OMIM terms for a case --> list
+                    },  # old way of saving OMIM terms --> list of ids [616538,611277]
                 ]
 
             else:  # query for cases with no HPO terms
