@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import copy
 import logging
-from pprint import pprint as pp
 
 import pymongo
 import pytest
 
-from scout.constants import INDEXES, REV_ACMG_MAP
+from scout.constants import REV_ACMG_MAP
 from scout.exceptions import IntegrityError
 
 logger = logging.getLogger(__name__)
