@@ -578,7 +578,11 @@ class VariantHandler(VariantLoader):
         """
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
         var_causative_events = self.event_collection.find(
-            {"institute": institute_id, "verb": "mark_causative", "category": "variant"}
+            {
+                "institute": institute_id,
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                "category": "variant",
+            }
         )
         positional_variant_ids = set()
         for var_event in var_causative_events:
@@ -594,6 +598,15 @@ class VariantHandler(VariantLoader):
             other_causative_id = other_link.split("/")[-1]
 
             if other_causative_id in other_case.get("causatives", []):
+                positional_variant_ids.add(var_event["variant_id"])
+
+            LOG.debug(
+                "Other causative id %s, keys %s",
+                other_causative_id,
+                other_case.get("partial_causatives", {}).keys(),
+            )
+            if other_causative_id in other_case.get("partial_causatives", {}).keys():
+                LOG.debug("match partial causative!")
                 positional_variant_ids.add(var_event["variant_id"])
 
         return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
