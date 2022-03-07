@@ -283,4 +283,16 @@
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="{{ url_for('overview.static', filename='form_scripts.js') }}"></script>
+  <script>
+  var caseSearchTerms = {{ search_terms|safe }};
+  var searchTerm = document.getElementById('search_term'); // Case search term label
+  var sel = document.getElementById('search_type'); // Case search term select
+  document.getElementById("search_type").onchange = function() {
+    // Change case search term placeholder
+    selectedItem = sel.options[sel.selectedIndex].value.slice(0, -1);
+    searchTerm.placeholder=caseSearchTerms[selectedItem]["placeholder"];
+    // Reset search
+    searchTerm.value="";
+  };
+  </script>
 {% endblock %}
