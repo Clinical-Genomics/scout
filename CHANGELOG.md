@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a cli option to export cases with rerun monitoring enabled
 - Add a link to STRipy for STR variants; shallow for ARX and HOXA13
 - Hide by default variants only present in unaffected individuals in variants filters
+- OMIM terms in general case report
+- Individual-level info on OMIM and HPO terms in general case report
 ### Fixed
 - A malformed panel id request would crash with exception: now gives user warning flash with redirect
 - Link to HPO resource file hosted on `http://purl.obolibrary.org`
