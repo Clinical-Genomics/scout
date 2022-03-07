@@ -177,6 +177,25 @@ class CaseHandler(object):
                     {"phenotype_terms": {"$exists": False}},
                 ]
 
+        if query_field == "exact_dia":
+            if query_term != "":
+                # User might have provided multiple query terms
+                omim_terms = [term for term in query_term.replace(" ", "").split(",")]
+                query["$or"] = [
+                    {
+                        "diagnosis_phenotypes.disease_id": {"$in": omim_terms}
+                    },  # OMIM phenotypes are assigned as key/values of a dictionary
+                    {
+                        "diagnosis_phenotypes": {"$in": omim_terms}
+                    },  # old way of saving OMIM terms for a case --> list
+                ]
+
+            else:  # query for cases with no HPO terms
+                query["$or"] = [
+                    {"diagnosis_phenotypes": {"$size": 0}},
+                    {"diagnosis_phenotypes": {"$exists": False}},
+                ]
+
         if query_field == "synopsis":
             if query_term != "":
                 query["$text"] = {"$search": query_term}
