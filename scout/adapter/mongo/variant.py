@@ -558,7 +558,6 @@ class VariantHandler(VariantLoader):
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
-        LOG.debug("Attempting filtered matching causatives query: %s", filters)
         return self.variant_collection.find(filters)
 
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
@@ -600,13 +599,7 @@ class VariantHandler(VariantLoader):
             if other_causative_id in other_case.get("causatives", []):
                 positional_variant_ids.add(var_event["variant_id"])
 
-            LOG.debug(
-                "Other causative id %s, keys %s",
-                other_causative_id,
-                other_case.get("partial_causatives", {}).keys(),
-            )
             if other_causative_id in other_case.get("partial_causatives", {}).keys():
-                LOG.debug("match partial causative!")
                 positional_variant_ids.add(var_event["variant_id"])
 
         return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
@@ -755,12 +748,6 @@ class VariantHandler(VariantLoader):
             evaluation_event["variant_id"] for evaluation_event in evaluation_events
         ]
 
-        LOG.debug(
-            "Found evaluated variant ids for case %s institute %s: %s ",
-            case_id,
-            institute_id,
-            evaluated_variant_ids,
-        )
         return evaluated_variant_ids
 
     def evaluated_variants(self, case_id, institute_id):
