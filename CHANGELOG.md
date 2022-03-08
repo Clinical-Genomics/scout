@@ -33,6 +33,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken javascript code when case Chromograph data is malformed
 - Broader space for case synopsis in general report
 - Show partial causatives on causatives and matching causatives panels
+- Partial causative assignment in cases with no OMIM or HPO terms
+- Partial causative OMIM select options in variant page
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
