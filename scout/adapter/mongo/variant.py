@@ -660,6 +660,18 @@ class VariantHandler(VariantLoader):
                 yielded_other_causative_ids.append(other_causative_id)
                 yield other_causative
 
+            other_case_partial_causatives = other_case.get("partial_causatives", {}).keys()
+            if other_causative_id in other_case_partial_causatives:
+                other_causative = {
+                    "_id": other_causative_id,
+                    "institute_id": other_case["owner"],
+                    "case_id": other_case["_id"],
+                    "case_display_name": other_case["display_name"],
+                    "partial": True,
+                }
+                yielded_other_causative_ids.append(other_causative_id)
+                yield other_causative
+
     def delete_variants(self, case_id, variant_type, category=None):
         """Delete variants of one type for a case
 
