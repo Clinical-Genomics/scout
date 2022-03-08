@@ -3,6 +3,7 @@ import logging
 from flask import flash, redirect, request, url_for
 from flask_login import current_user
 
+from scout.constants import CASE_SEARCH_TERMS
 from scout.server.extensions import store
 from scout.server.utils import user_institutes
 
@@ -58,7 +59,7 @@ def populate_dashboard_data(request):
     Returns:
         data(dict): data to be diplayed in the template
     """
-    data = {"dashboard_form": dashboard_form(request.form)}
+    data = {"dashboard_form": dashboard_form(request.form), "search_terms": CASE_SEARCH_TERMS}
     if request.method == "GET":
         return data
 
