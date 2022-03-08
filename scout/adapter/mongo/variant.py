@@ -4,14 +4,10 @@ import logging
 import pathlib
 import re
 import tempfile
-from datetime import datetime
 
 # Third party modules
 import pymongo
 from cyvcf2 import VCF
-from pymongo.errors import DuplicateKeyError
-
-from scout.exceptions import IntegrityError
 
 # Local modules
 from scout.utils.coordinates import is_par
@@ -558,7 +554,6 @@ class VariantHandler(VariantLoader):
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
-        LOG.debug("Attempting filtered matching causatives query: %s", filters)
         return self.variant_collection.find(filters)
 
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
@@ -578,7 +573,11 @@ class VariantHandler(VariantLoader):
         """
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
         var_causative_events = self.event_collection.find(
-            {"institute": institute_id, "verb": "mark_causative", "category": "variant"}
+            {
+                "institute": institute_id,
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                "category": "variant",
+            }
         )
         positional_variant_ids = set()
         for var_event in var_causative_events:
@@ -594,6 +593,9 @@ class VariantHandler(VariantLoader):
             other_causative_id = other_link.split("/")[-1]
 
             if other_causative_id in other_case.get("causatives", []):
+                positional_variant_ids.add(var_event["variant_id"])
+
+            if other_causative_id in other_case.get("partial_causatives", {}).keys():
                 positional_variant_ids.add(var_event["variant_id"])
 
         return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
@@ -650,6 +652,18 @@ class VariantHandler(VariantLoader):
                     "institute_id": other_case["owner"],
                     "case_id": other_case["_id"],
                     "case_display_name": other_case["display_name"],
+                }
+                yielded_other_causative_ids.append(other_causative_id)
+                yield other_causative
+
+            other_case_partial_causatives = other_case.get("partial_causatives", {}).keys()
+            if other_causative_id in other_case_partial_causatives:
+                other_causative = {
+                    "_id": other_causative_id,
+                    "institute_id": other_case["owner"],
+                    "case_id": other_case["_id"],
+                    "case_display_name": other_case["display_name"],
+                    "partial": True,
                 }
                 yielded_other_causative_ids.append(other_causative_id)
                 yield other_causative
@@ -742,12 +756,6 @@ class VariantHandler(VariantLoader):
             evaluation_event["variant_id"] for evaluation_event in evaluation_events
         ]
 
-        LOG.debug(
-            "Found evaluated variant ids for case %s institute %s: %s ",
-            case_id,
-            institute_id,
-            evaluated_variant_ids,
-        )
         return evaluated_variant_ids
 
     def evaluated_variants(self, case_id, institute_id):
