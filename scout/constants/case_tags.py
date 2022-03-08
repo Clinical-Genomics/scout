@@ -136,32 +136,46 @@ SOURCES = [
 SAMPLE_SOURCE = dict((i, el) for i, el in enumerate(SOURCES))
 
 CASE_SEARCH_TERMS = {
-    "case": {"label": "Case or Individual Name", "prefix": "case:"},
+    "case": {"label": "Case or Individual Name", "prefix": "case:", "placeholder": "example:18201"},
     "exact_pheno": {
         "label": "HPO Terms",
         "prefix": "exact_pheno:",
+        "placeholder": "example:HP:0001166,HP:0001250,...",
+    },
+    "exact_dia": {
+        "label": "OMIM Terms",
+        "prefix": "exact_dia:",
+        "placeholder": "example:OMIM:616538,OMIM:607681,...",
     },
     "synopsis": {
         "label": "Search Synopsis",
         "prefix": "synopsis:",
+        "placeholder": "example:epilepsy",
     },
-    "panel": {"label": "Gene Panel", "prefix": "panel:"},
-    "status": {"label": "Case Status", "prefix": "status:"},
-    "track": {"label": "Analysis Track", "prefix": "track:"},
+    "panel": {"label": "Gene Panel", "prefix": "panel:", "placeholder": "example:NMD"},
+    "status": {"label": "Case Status", "prefix": "status:", "placeholder": "example:active"},
+    "track": {"label": "Analysis Track", "prefix": "track:", "placeholder": "rare or cancer"},
     "pheno_group": {
         "label": "Phenotype Group",
         "prefix": "pheno_group:",
+        "placeholder": "example:HP:0001166",
     },
-    "cohort": {"label": "Patient Cohort", "prefix": "cohort:"},
-    "Similar case": {
+    "cohort": {"label": "Patient Cohort", "prefix": "cohort:", "placeholder": "example:pedhep"},
+    "similar_case": {
         "label": "Similar Case",
         "prefix": "similar_case:",
+        "placeholder": "example:18201",
     },
     "similar_pheno": {
         "label": "Similar Phenotype",
         "prefix": "similar_pheno:",
+        "placeholder": "example:HP:0001166,HP:0001250,..",
     },
-    "pinned": {"label": "Pinned Gene", "prefix": "pinned:"},
-    "causative": {"label": "Causative Gene", "prefix": "causative:"},
-    "user": {"label": "Assigned User", "prefix": "user:"},
+    "pinned": {"label": "Pinned Gene", "prefix": "pinned:", "placeholder": "example:POT1"},
+    "causative": {"label": "Causative Gene", "prefix": "causative:", "placeholder": "example:POT1"},
+    "user": {
+        "label": "Assigned User",
+        "prefix": "user:",
+        "placeholder": "example:John Doe",
+    },
 }

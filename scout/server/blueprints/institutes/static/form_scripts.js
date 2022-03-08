@@ -1,26 +1,3 @@
-var searchTerm = document.getElementById('search_term');
-var sel = document.getElementById('search_type');
-
-var selectHelper = {
-  "case:": "example:18201",
-  "exact_pheno:": "example:HP:0001166,HP:0001250,...",
-  "synopsis:" : "example:epilepsy",
-  "panel:" : "example:NMD",
-  "status:": "example:active",
-  "pheno_group:" : "example:HP:0001166",
-  "cohort:" : "example:pedhep",
-  "similar_case:" : "example:18201",
-  "similar_pheno:" : "example:HP:0001166,HP:0001250,..",
-  "pinned:": "example:POT1",
-  "causative:": "example:POT1",
-  "user:": "example:Kent",
-};
-
-document.getElementById("search_type").onchange = function() {
-  searchTerm.placeholder=selectHelper[sel.value];
-  searchTerm.value="";
-};
-
 $(function () {
   $('[data-toggle="tooltip"]').tooltip();
   $('table').stickyTableHeaders({
