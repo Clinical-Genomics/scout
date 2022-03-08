@@ -26,6 +26,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better error handling for partly broken/timed out chanjo reports
 - Broken javascript code when case Chromograph data is malformed
 - Broader space for case synopsis in general report
+- Partial causative assignment in cases with no OMIM or HPO terms
+- Partial causative OMIM select options in variant page
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation
