@@ -441,7 +441,7 @@
                 <div class="col-8">
                   {% for omim in variant_phenotypes.omim_terms %}
                     <span class="badge badge-sm badge-secondary">
-                      <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim}}">
+                      <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim|replace('OMIM:','')}}">
                         {{omim}}
                       </a>
                     </span>
