@@ -74,7 +74,7 @@ def causatives(institute_id):
             variants,
             key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
         )
-    LOG.debug("all raw causative variants: %s", variants)
+
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:
@@ -89,7 +89,6 @@ def causatives(institute_id):
 
         all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
 
-    LOG.debug("all causative variants: %s", all_variants)
     acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
 
     return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
