@@ -4,14 +4,10 @@ import logging
 import pathlib
 import re
 import tempfile
-from datetime import datetime
 
 # Third party modules
 import pymongo
 from cyvcf2 import VCF
-from pymongo.errors import DuplicateKeyError
-
-from scout.exceptions import IntegrityError
 
 # Local modules
 from scout.utils.coordinates import is_par
