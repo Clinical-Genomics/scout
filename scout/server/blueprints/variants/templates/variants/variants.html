@@ -146,9 +146,12 @@
   {% endfor %}
 
   {% if variant.compounds %}
-    <a href="#" class="badge badge-primary text-white" data-toggle="popover" data-placement="left"
-    data-html="true" data-trigger="hover click"
-    data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
+    {% for compound in variant.compounds if compound.is_dismissed %}
+    {% else %}
+      <a href="#" class="badge badge-primary text-white" data-toggle="popover" data-placement="left"
+      data-html="true" data-trigger="hover click"
+      data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
+    {% endfor %}
   {% endif %}
   {% if variant.mosaic_tags %}
     <span class="badge badge-warning">mosaic</span>
