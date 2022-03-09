@@ -380,7 +380,7 @@ def parse_variant(
 
         # check compound against current query rank score
         for compound in variant_obj["compounds"]:
-            if (query_form.get("compound_rank_score") is not None) and (
+            if (query_form and query_form.get("compound_rank_score") is not None) and (
                 compound.get("rank_score") < query_form.get("compound_rank_score")
             ):
                 compound["is_dismissed"] = True
