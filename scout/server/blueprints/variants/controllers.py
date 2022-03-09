@@ -378,16 +378,12 @@ def parse_variant(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
 
-        # check compound against current query
-        LOG.debug("check compound filter cadd %s", query_form.get("compound_rank_score"))
+        # check compound against current query rank score
         for compound in variant_obj["compounds"]:
             if (query_form.get("compound_rank_score") is not None) and (
                 compound.get("rank_score") < query_form.get("compound_rank_score")
             ):
                 compound["is_dismissed"] = True
-                LOG.debug(
-                    "CADD score for compound dismiss: %s", compound.get("compound_rank_score")
-                )
 
     # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
     if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
