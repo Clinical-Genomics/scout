@@ -176,13 +176,40 @@
   	            <ul>
   	              {% for pheno in case.phenotype_terms %}
   	                <li>
-  	                {{pheno.feature}} - (<a href="{{pheno.hpo_link}}" target="_blank">{{pheno.phenotype_id}})</a>
+  	                {{pheno.feature}} - (<a href="https://hpo.jax.org/app/browse/term/{{pheno.phenotype_id}}" target="_blank">{{pheno.phenotype_id}})</a>
+                    {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
+                      {% for case_ind in case.individuals %}
+                        {% if feature_ind.individual_name == case_ind.display_name %}
+                          <span class="ml-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
   	                </li>
   	              {% endfor %}
   	            </ul>
   	          {% else %}
-  	            No phenotype terms associated.
+  	            No associated HPO terms.
   	          {% endif %}
+              <br>
+              <strong>Associated diagnoses:</strong><br>
+              {% if case.diagnosis_phenotypes %}
+                <ul>
+                  {% for dia in case.diagnosis_phenotypes %}
+                    <li>
+                      {{dia.description}} (<a href="https://omim.org/entry/{{dia.disease_nr}}" target="_blank">{{dia.disease_id}})</a>
+                      {% for feature_ind in dia.individuals %} <!-- display eventual individual-level OMIM terms -->
+                        {% for case_ind in case.individuals %}
+                          {% if feature_ind.individual_name == case_ind.display_name %}
+                            <span class="ml-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
+                          {% endif %}
+                        {% endfor %}
+                      {% endfor %}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                No associated OMIM diagnoses.
+              {% endif %}
 	        </td>
 	      </tr>
               {% if comments | count_cursor > 0 %}
@@ -460,7 +487,7 @@
       </div>
       {% if variant.get('phenotypes') %}
         <div class="row mt-3">
-          <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-secondary">Partial causative</span>
+          <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
             OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
             HPO terms:&nbsp;
             {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
@@ -951,7 +978,7 @@
     </div>
     {% if variant.get('phenotypes') %}
       <div class="row mt-3">
-        <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-secondary">Partial causative</span>
+        <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
           OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
           HPO terms:&nbsp;
           {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
@@ -1198,7 +1225,7 @@
     </div>
     {% if variant.get('phenotypes') %}
       <div class="row mt-3">
-        <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-secondary">Partial causative</span>
+        <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
           OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
           HPO terms:&nbsp;
           {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}

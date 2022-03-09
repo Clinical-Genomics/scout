@@ -74,6 +74,7 @@ def causatives(institute_id):
             variants,
             key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
         )
+
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:

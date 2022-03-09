@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [ ]
+### Fixed
+- Show matching causative STR_repid for legacy str variants (pre Stranger hgnc_id)
+
+## [4.50]
 ### Added
 - Individual-specific OMIM terms
 - OMIM disease descriptions in ClinVar submission form
@@ -13,6 +17,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add a cli option to export cases with rerun monitoring enabled
 - Add a link to STRipy for STR variants; shallow for ARX and HOXA13
 - Hide by default variants only present in unaffected individuals in variants filters
+- OMIM terms in general case report
+- Individual-level info on OMIM and HPO terms in general case report
+- PanelApp gene link among the external links on variant page
+- Dashboard case filters fields help
+- Filter cases by OMIM terms in cases and dashboard pages
 ### Fixed
 - A malformed panel id request would crash with exception: now gives user warning flash with redirect
 - Link to HPO resource file hosted on `http://purl.obolibrary.org`
@@ -23,6 +32,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better error handling for partly broken/timed out chanjo reports
 - Broken javascript code when case Chromograph data is malformed
 - Broader space for case synopsis in general report
+- Show partial causatives on causatives and matching causatives panels
+- Partial causative assignment in cases with no OMIM or HPO terms
+- Partial causative OMIM select options in variant page
 ### Changed
 - Slightly smaller and improved layout of content in case PDF report
 - Relabel more cancer variant pages somatic for navigation

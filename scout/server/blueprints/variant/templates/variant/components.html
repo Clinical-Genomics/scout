@@ -157,6 +157,9 @@
                               variant_id=other_variant._id) }}">
             {{ other_variant.case_display_name }}
           </a>&nbsp;
+          {% if other_variant.partial %}
+            <span class="badge badge-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
+          {% endif %}
         {% endfor %}
       </div> <!--end of card body-->
     </div><!--end of card-->
@@ -261,6 +264,7 @@
             <a href="{{ gene.stripy_link }}" class="btn btn-outline-secondary" target="_blank">STRipy</a>
             <a href="{{ gene.gnomad_str_link}}" class="btn btn-outline-secondary" target="_blank">GnomAD STR</a>
           {% endif %}
+          <a href="{{ gene.panelapp_link }}" class="btn btn-outline-secondary" target="_blank">PanelApp</a>
           <a href="http://marrvel.org/human/variant/{{ variant.chromosome }}:{{ variant.position }} {{ variant.reference }}>{{variant.alternative}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
       </div>
     {% endfor %}

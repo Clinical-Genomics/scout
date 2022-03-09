@@ -441,7 +441,7 @@
                 <div class="col-8">
                   {% for omim in variant_phenotypes.omim_terms %}
                     <span class="badge badge-sm badge-secondary">
-                      <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim}}">
+                      <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim|replace('OMIM:','')}}">
                         {{omim}}
                       </a>
                     </span>
@@ -584,7 +584,7 @@
         <li class="list-group-item">
           <a href="{{ url_for('variant.variant', institute_id=institute._id,
                               case_name=case.display_name, variant_id=variant._id) }}">
-            {{ variant.hgnc_symbols|join(', ') or variant.hgnc_ids|join(', ')}}
+            {{ variant.hgnc_symbols|join(', ') or variant.hgnc_ids|join(', ') or variant.str_repid }}
           </a>
         </li>
       {% else %}

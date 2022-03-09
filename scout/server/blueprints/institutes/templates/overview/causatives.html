@@ -82,7 +82,7 @@
           {% for _, group in variant_groups.items() %}
           {% set group_variant = group[0][1] %}
           {% for case, variant in group %}
-          {% if case.causatives and variant._id in case.causatives %}
+          {% if (case.causatives and variant._id in case.causatives) or (case.partial_causatives and variant._id in case.partial_causatives) %}
           <tr>
             <td>
               {{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}
@@ -142,6 +142,9 @@
               </a>
             </td>
             <td>
+              {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
+                <span class="badge badge-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
+              {% endif %}
               <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
                 {{ case.status }}
               </span>
