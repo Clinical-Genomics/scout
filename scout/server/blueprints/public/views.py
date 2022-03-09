@@ -4,8 +4,13 @@ from pathlib import Path
 
 from flask import Blueprint, current_app, render_template, send_from_directory
 
+from flask_login import current_user
+
 from scout import __version__
 from scout.server.utils import public_endpoint
+from scout.server.extensions import store
+
+from . import controllers
 
 LOG = logging.getLogger(__name__)
 
@@ -22,13 +27,15 @@ public_bp = Blueprint(
 @public_endpoint
 def index():
     """Show the static landing page."""
-
+    LOG.debug("***HOME")
     badge_name = current_app.config.get("ACCREDITATION_BADGE")
     if badge_name and not Path(public_bp.static_folder, badge_name).is_file():
         LOG.warning(f'No file with name "{badge_name}" in {public_bp.static_folder}')
         badge_name = None
 
-    return render_template("public/index.html", version=__version__, accred_badge=badge_name)
+
+    data = controllers.get_events_of_interest(store, current_user)
+    return render_template("public/index.html", version=__version__, accred_badge=badge_name, event_list=data)
 
 
 @public_bp.route("/favicon")
