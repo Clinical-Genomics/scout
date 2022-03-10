@@ -848,10 +848,10 @@ class VariantHandler(VariantLoader):
             if category != var_type:
                 continue
             if variant_type == "clinical":
-                variant_file = case_obj["vcf_files"].get("_".join(["vcf", "var_type"]))
+                variant_file = case_obj["vcf_files"].get("_".join(["vcf", var_type]))
+                LOG.error(variant_file)
             elif variant_type == "research":
-                variant_file = case_obj["vcf_files"].get("_".join(["vcf", "var_type", "research"]))
-
+                variant_file = case_obj["vcf_files"].get("_".join(["vcf", var_type, "research"]))
         return variant_file
 
     def get_region_vcf(
