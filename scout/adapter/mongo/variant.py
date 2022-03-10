@@ -832,6 +832,28 @@ class VariantHandler(VariantLoader):
         # Return a list with the variant objects
         return variants.values()
 
+    def get_variant_file(self, case_obj, category, variant_type):
+        """Retrieve that should be parsed to extract variants
+
+        Accepts:
+            case_obj(dict): a case dictionary
+            category(str): "snv", "sv", "str", "cancer"
+            variant_type(str): "clinical" or "research"
+
+        Returns:
+            variant_file(str): string path to a VCF file on disk
+        """
+        variant_file = None
+        for var_type in ["snv", "sv", "str", "research"]:
+            if category != var_type:
+                continue
+            if variant_type == "clinical":
+                variant_file = case_obj["vcf_files"].get("_".join(["vcf", "var_type"]))
+            elif variant_type == "research":
+                variant_file = case_obj["vcf_files"].get("_".join(["vcf", "var_type", "research"]))
+
+        return variant_file
+
     def get_region_vcf(
         self,
         case_obj,
@@ -849,7 +871,7 @@ class VariantHandler(VariantLoader):
         Args:
             case_obj(dict): A case from the scout database
             variant_type(str): 'clinical' or 'research'. Default: 'clinical'
-            category(str): 'snv' or 'sv'. Default: 'snv'
+            category(str): "snv", "sv", "str", "cancer". Default: 'snv'
             rank_threshold(float): Only load variants above this score. Default: 5
             chrom(str): Load variants from a certain chromosome
             start(int): Specify the start position
@@ -861,22 +883,7 @@ class VariantHandler(VariantLoader):
         """
         rank_threshold = rank_threshold or -100
 
-        variant_file = None
-        if variant_type == "clinical":
-            if category == "snv":
-                variant_file = case_obj["vcf_files"].get("vcf_snv")
-            elif category == "sv":
-                variant_file = case_obj["vcf_files"].get("vcf_sv")
-            elif category == "str":
-                variant_file = case_obj["vcf_files"].get("vcf_str")
-            elif category == "cancer":
-                variant_file = case_obj["vcf_files"].get("vcf_cancer")
-        elif variant_type == "research":
-            if category == "snv":
-                variant_file = case_obj["vcf_files"].get("vcf_snv_research")
-            elif category == "sv":
-                variant_file = case_obj["vcf_files"].get("vcf_sv_research")
-
+        variant_file = self.get_variant_file(case_obj, category, variant_type)
         if not variant_file:
             raise FileNotFoundError("VCF file does not seem to exist")
 
