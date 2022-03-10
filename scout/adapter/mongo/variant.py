@@ -849,7 +849,6 @@ class VariantHandler(VariantLoader):
                 continue
             if variant_type == "clinical":
                 variant_file = case_obj["vcf_files"].get("_".join(["vcf", var_type]))
-                LOG.error(variant_file)
             elif variant_type == "research":
                 variant_file = case_obj["vcf_files"].get("_".join(["vcf", var_type, "research"]))
         return variant_file
