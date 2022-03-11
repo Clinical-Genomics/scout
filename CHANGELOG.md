@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide/shade compound variants based on rank score on variantS from filter
 
 ## [4.50.1]
+### Changed
+- Simplified code of scout/adapter/mongo/variant
 ### Fixed
 - Show matching causative STR_repid for legacy str variants (pre Stranger hgnc_id)
 
