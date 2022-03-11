@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.50.1]
+### Changed
+- Simplified code of scout/adapter/mongo/variant
 ### Fixed
 - Show matching causative STR_repid for legacy str variants (pre Stranger hgnc_id)
 
