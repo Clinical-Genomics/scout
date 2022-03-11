@@ -844,7 +844,7 @@ class VariantHandler(VariantLoader):
             variant_file(str): string path to a VCF file on disk
         """
         variant_file = None
-        for var_type in ["snv", "sv", "str", "research"]:
+        for var_type in ["snv", "sv", "str", "cancer"]:
             if category != var_type:
                 continue
             if variant_type == "clinical":
