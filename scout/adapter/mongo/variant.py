@@ -833,7 +833,7 @@ class VariantHandler(VariantLoader):
         return variants.values()
 
     def get_variant_file(self, case_obj, category, variant_type):
-        """Retrieve that should be parsed to extract variants
+        """Retrieve file name for file that should be parsed to extract variants
 
         Accepts:
             case_obj(dict): a case dictionary
