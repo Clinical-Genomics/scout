@@ -447,19 +447,23 @@ def hide_compounds_query(store, variant_obj, query_form):
             compound["is_dismissed"] = True
             continue
 
-        compound_mirror_freq_items = [
-            "gnomad_frequency",
-            "clingen_ngi",
-            "swegen",
-        ]
+        # keys as in form, values as on variant_obj
+        compound_mirror_freq_items = {
+            "gnomad_frequency": "gnomad_frequency",
+            "local_obs": "local_obs_old",
+            "clingen_ngi": "clingen_ngi",
+            "swegen": "swegen",
+        }
 
         compound_mirror_lt_items = [
             "cadd_score",
         ]
+
         compound_mirror_in_items = [
             "region_annotations",
             "functional_annotations",
             "clinsig",
+            "svtype",
             "genetic_models",
         ]
 
@@ -492,16 +496,20 @@ def hide_compounds_query(store, variant_obj, query_form):
                         compound["is_dismissed"] = True
                         continue
 
-            for item in compound_mirror_freq_items:
-                compound_item = compound_var_obj.get(item)
+            for item in compound_mirror_freq_items.keys():
+                query_form_item = query_form.get(item)
+                if query_form_item is None:
+                    continue
+
+                compound_item_name = compound_mirror_freq_items[item]
+                compound_item = compound_var_obj.get(compound_item_name)
                 if compound_item is None:
                     LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
                     continue
-                query_form_item = query_form.get(item)
-                if query_form_item is not None:
-                    if compound_item >= query_form_item:
-                        compound["is_dismissed"] = True
-                        continue
+
+                if compound_item >= query_form_item:
+                    compound["is_dismissed"] = True
+                    continue
 
             for item in compound_mirror_in_items:
                 compound_items = compound_var_obj.get(item)
