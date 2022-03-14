@@ -368,42 +368,42 @@ def update_symbols_and_compounds(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
 
-        # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
-        if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
-            variant_obj["genes"] = []
-            for hgnc_id in variant_obj.get("hgnc_ids"):
-                variant_gene = {"hgnc_id": hgnc_id}
-                variant_obj["genes"].append(variant_gene)
+    # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
+    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
+        variant_obj["genes"] = []
+        for hgnc_id in variant_obj.get("hgnc_ids"):
+            variant_gene = {"hgnc_id": hgnc_id}
+            variant_obj["genes"].append(variant_gene)
 
-        # Update the hgnc symbols if they are incorrect
-        variant_genes = variant_obj.get("genes")
+    # Update the hgnc symbols if they are incorrect
+    variant_genes = variant_obj.get("genes")
 
-        if variant_genes is not None:
-            for gene_obj in variant_genes:
-                # If there is no hgnc id there is nothin we can do
-                if not gene_obj["hgnc_id"]:
+    if variant_genes is not None:
+        for gene_obj in variant_genes:
+            # If there is no hgnc id there is nothin we can do
+            if not gene_obj["hgnc_id"]:
+                continue
+            # Else we collect the gene object and check the id
+            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
+                hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
+                if not hgnc_gene:
                     continue
-                # Else we collect the gene object and check the id
-                if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
-                    hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                    if not hgnc_gene:
-                        continue
-                    has_changed = True
-                    gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                    # phenotypes may not exist for the hgnc_gene either, but try
-                    gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
-                add_gene_links(gene_obj, genome_build)
+                has_changed = True
+                gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
+                # phenotypes may not exist for the hgnc_gene either, but try
+                gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
+            add_gene_links(gene_obj, genome_build)
 
-        # We update the variant if some information was missing from loading
-        # Or if gene symbols in reference genes have changed
-        if update and has_changed:
-            try:
-                variant_obj = store.update_variant(variant_obj)
-            except DocumentTooLarge:
-                flash(
-                    f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
-                    "warning",
-                )
+    # We update the variant if some information was missing from loading
+    # Or if gene symbols in reference genes have changed
+    if update and has_changed:
+        try:
+            variant_obj = store.update_variant(variant_obj)
+        except DocumentTooLarge:
+            flash(
+                f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
+                "warning",
+            )
 
 
 def hide_compounds_query(variant_obj, query_form):
