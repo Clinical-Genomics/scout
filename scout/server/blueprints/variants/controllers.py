@@ -464,8 +464,8 @@ def hide_compounds_query(variant_obj, query_form):
         if query_form and query_form.get("compound_mirrors_filter"):
             LOG.debug("Compound mirror: compound is %s", compound)
             for item in compound_mirror_lt_items:
-                compund_item = compound.get(item)
-                if compund_item is None:
+                compound_item = compound.get(item)
+                if compound_item is None:
                     LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
                     continue
                 query_form_item = query_form.get(item)
@@ -474,8 +474,8 @@ def hide_compounds_query(variant_obj, query_form):
                         compound["is_dismissed"] = True
 
             for item in compound_mirror_gt_items:
-                compund_item = compound.get(item)
-                if compund_item is None:
+                compound_item = compound.get(item)
+                if compound_item is None:
                     LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
                     continue
                 query_form_item = query_form.get(item)
