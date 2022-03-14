@@ -438,12 +438,66 @@ def hide_compounds_query(variant_obj, query_form):
     """
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
-        if not rank_score:
+        if rank_score is None:
             continue
         if (
             query_form and query_form.get("compound_rank_score") is not None
         ) and rank_score <= query_form.get("compound_rank_score"):
             compound["is_dismissed"] = True
+
+        compound_mirror_gt_items = [
+            "gnomad_frequency",
+            "clingen_ngi",
+            "swegen",
+        ]
+
+        compound_mirror_lt_items = [
+            "cadd_score",
+        ]
+        compound_mirror_in_items = [
+            "region_annotations",
+            "functional_annotations",
+            "clinsig",
+            "genetic_models",
+        ]
+
+        if query_form and query_form.get("compound_mirrors_filter"):
+            LOG.debug("Compound mirror: compound is %s", compound)
+            for item in compound_mirror_lt_items:
+                compund_item = compound.get(item)
+                if compund_item is None:
+                    LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
+                    continue
+                query_form_item = query_form.get(item)
+                if query_form_item is not None:
+                    if compound_item < query_form_item:
+                        compound["is_dismissed"] = True
+
+            for item in compound_mirror_gt_items:
+                compund_item = compound.get(item)
+                if compund_item is None:
+                    LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
+                    continue
+                query_form_item = query_form.get(item)
+                if query_form_item is not None:
+                    if compound_item >= query_form_item:
+                        compound["is_dismissed"] = True
+
+            for item in compound_mirror_in_items:
+                compound_items = compound.get(item)
+                if not compound_items:
+                    LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
+                    continue
+                query_form_items = query_form.get(item)
+
+                if query_form_items:
+                    if set(compound_items).isdisjoint(set(query_form_items)):
+                        LOG.debug(
+                            "Shading variant since disjoint for %s since query_form_items is %s",
+                            item,
+                            query_form_items,
+                        )
+                        compound["is_dismissed"] = True
 
 
 def parse_variant(
@@ -483,8 +537,6 @@ def parse_variant(
     if update and (compounds_have_changed or genes_have_changed):
         update_variant_store(store, variant_obj)
 
-    hide_compounds_query(variant_obj, query_form)
-
     variant_obj["comments"] = store.events(
         institute_obj,
         case=case_obj,
@@ -506,6 +558,8 @@ def parse_variant(
         compounds = variant_obj.get("compounds", [])
         for compound_obj in compounds:
             compound_obj.update(predictions(compound_obj.get("genes", [])))
+
+    hide_compounds_query(variant_obj, query_form)
 
     classification = variant_obj.get("acmg_classification")
     if isinstance(classification, int):

@@ -95,6 +95,7 @@ class VariantFiltersForm(FlaskForm):
 
     cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
     compound_rank_score = IntegerField("Compound rank score")
+    compound_mirrors_filter = BooleanField("Mirror filter")
     cadd_inclusive = BooleanField("CADD inclusive")
     clinsig = NonValidatingSelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
 
