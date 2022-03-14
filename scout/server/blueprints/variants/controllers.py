@@ -338,9 +338,10 @@ def compounds_need_updating(compounds, dismissed):
     return False
 
 
-def update_compounds(variant_obj, case_dismissed_vars):
+def update_compounds(store, variant_obj, case_dismissed_vars):
     """Check if gene symbol or compound info needs updating and sort compounds.
     Args:
+        store(scout.adapter.MongoAdapter)
         variant_obj(scout.models.Variant)
         case_dismissed_variants(list): dismissed vars for this case
     Returns:
@@ -475,7 +476,7 @@ def parse_variant(
 
     compounds_have_changed = False
     if get_compounds:
-        compounds_have_changed = update_compounds(variant_obj, case_dismissed_vars)
+        compounds_have_changed = update_compounds(store, variant_obj, case_dismissed_vars)
 
     genes_have_changed = update_variant_genes(store, variant_obj, genome_build)
 
