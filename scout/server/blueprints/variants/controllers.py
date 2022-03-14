@@ -429,10 +429,11 @@ def update_variant_store(store, variant_obj):
         )
 
 
-def hide_compounds_query(variant_obj, query_form):
+def hide_compounds_query(store, variant_obj, query_form):
     """Check compound against current query form values.
     Check the query hide rank score, and dismiss compound from current view if its rank score is equal or lower.
     Args:
+        store(scout.adapter.MongoAdapter)
         variant_obj(scout.models.Variant)
         query_form(VariantFiltersForm)
     """
@@ -444,8 +445,9 @@ def hide_compounds_query(variant_obj, query_form):
             query_form and query_form.get("compound_rank_score") is not None
         ) and rank_score <= query_form.get("compound_rank_score"):
             compound["is_dismissed"] = True
+            continue
 
-        compound_mirror_gt_items = [
+        compound_mirror_freq_items = [
             "gnomad_frequency",
             "clingen_ngi",
             "swegen",
@@ -462,19 +464,35 @@ def hide_compounds_query(variant_obj, query_form):
         ]
 
         if query_form and query_form.get("compound_mirrors_filter"):
-            LOG.debug("Compound mirror: compound is %s", compound)
+            compound_var_obj = store.variant(compound.get("variant"))
+
+            LOG.debug(
+                "Compound mirror: compound is %s, compound_var_obj %s", compound, compound_var_obj
+            )
+
             for item in compound_mirror_lt_items:
-                compound_item = compound.get(item)
+                compound_item = compound_var_obj.get(item)
                 if compound_item is None:
-                    LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
+                    LOG.debug(
+                        "Shading %s since it has has no value for %s",
+                        compound.get("display_name"),
+                        item,
+                    )
+                    compound["is_dismissed"] = True
                     continue
                 query_form_item = query_form.get(item)
                 if query_form_item is not None:
                     if compound_item < query_form_item:
+                        LOG.debug(
+                            "Shading %s since it has has too low value for %s",
+                            compound.get("display_name"),
+                            item,
+                        )
                         compound["is_dismissed"] = True
+                        continue
 
-            for item in compound_mirror_gt_items:
-                compound_item = compound.get(item)
+            for item in compound_mirror_freq_items:
+                compound_item = compound_var_obj.get(item)
                 if compound_item is None:
                     LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
                     continue
@@ -482,9 +500,10 @@ def hide_compounds_query(variant_obj, query_form):
                 if query_form_item is not None:
                     if compound_item >= query_form_item:
                         compound["is_dismissed"] = True
+                        continue
 
             for item in compound_mirror_in_items:
-                compound_items = compound.get(item)
+                compound_items = compound_var_obj.get(item)
                 if not compound_items:
                     LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
                     continue
@@ -498,6 +517,7 @@ def hide_compounds_query(variant_obj, query_form):
                             query_form_items,
                         )
                         compound["is_dismissed"] = True
+                        continue
 
 
 def parse_variant(
@@ -559,7 +579,7 @@ def parse_variant(
         for compound_obj in compounds:
             compound_obj.update(predictions(compound_obj.get("genes", [])))
 
-    hide_compounds_query(variant_obj, query_form)
+    hide_compounds_query(store, variant_obj, query_form)
 
     classification = variant_obj.get("acmg_classification")
     if isinstance(classification, int):
