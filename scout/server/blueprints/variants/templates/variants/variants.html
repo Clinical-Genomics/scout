@@ -146,12 +146,15 @@
   {% endfor %}
 
   {% if variant.compounds %}
-    {% for compound in variant.compounds if compound.is_dismissed %}
-    {% else %}
-      <a href="#" class="badge badge-primary text-white" data-toggle="popover" data-placement="left"
-      data-html="true" data-trigger="hover click"
-      data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
+    {% set ns=namespace(show_compounds=false) %}
+    {% for compound in variant.compounds if not compound.is_dismissed %}
+      {% set ns.show_compounds = true %}
     {% endfor %}
+    {% if ns.show_compounds %}
+      <a href="#" class="badge badge-primary text-white" data-toggle="popover" data-placement="left"
+        data-html="true" data-trigger="hover click"
+        data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
+    {% endif %}
   {% endif %}
   {% if variant.mosaic_tags %}
     <span class="badge badge-warning">mosaic</span>

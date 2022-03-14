@@ -338,32 +338,22 @@ def compounds_need_updating(compounds, dismissed):
     return False
 
 
-def parse_variant(
-    store,
-    institute_obj,
-    case_obj,
-    variant_obj,
-    update=False,
-    genome_build="37",
-    get_compounds=True,
-    case_dismissed_vars=[],
-    query_form=None,
+def update_symbols_and_compounds(
+    store, variant_obj, update, genome_build, get_compounds, case_dismissed_vars
 ):
-    """Parse information about variants.
-    - Adds information about compounds
-    - Updates the information about compounds if necessary and 'update=True'
+    """Check if gene symbol or compound info needs updating and sort compounds.
+    Update variants in db store if anything changed, and function is called with update=True.
     Args:
         store(scout.adapter.MongoAdapter)
-        institute_obj(scout.models.Institute)
-        case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
-        update(bool): If variant should be updated in database
-        get_compounds(bool): if compounds should be added to added to the returned variant object
+        update(boolean): upsert only if this is set true
         genome_build(str)
-        case_dismissed_vars(list): list of dismissed variants for this case
-        query_form(dict): query form for additional compounds filtering
+        get_compounds(bool): if compounds should be added to added to the returned variant object
+        case_dismissed_variants(list): dismissed vars for this case
     """
+    # boolean, set to true if variants have changed and need db upserting
     has_changed = False
+
     compounds = variant_obj.get("compounds", [])
 
     if compounds and get_compounds:
@@ -378,49 +368,93 @@ def parse_variant(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
 
-        # check compound against current query rank score
-        for compound in variant_obj["compounds"]:
-            if (query_form and query_form.get("compound_rank_score") is not None) and (
-                compound.get("rank_score") < query_form.get("compound_rank_score")
-            ):
-                compound["is_dismissed"] = True
+        # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
+        if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
+            variant_obj["genes"] = []
+            for hgnc_id in variant_obj.get("hgnc_ids"):
+                variant_gene = {"hgnc_id": hgnc_id}
+                variant_obj["genes"].append(variant_gene)
 
-    # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
-    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
-        variant_obj["genes"] = []
-        for hgnc_id in variant_obj.get("hgnc_ids"):
-            variant_gene = {"hgnc_id": hgnc_id}
-            variant_obj["genes"].append(variant_gene)
+        # Update the hgnc symbols if they are incorrect
+        variant_genes = variant_obj.get("genes")
 
-    # Update the hgnc symbols if they are incorrect
-    variant_genes = variant_obj.get("genes")
-
-    if variant_genes is not None:
-        for gene_obj in variant_genes:
-            # If there is no hgnc id there is nothin we can do
-            if not gene_obj["hgnc_id"]:
-                continue
-            # Else we collect the gene object and check the id
-            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
-                hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
-                if not hgnc_gene:
+        if variant_genes is not None:
+            for gene_obj in variant_genes:
+                # If there is no hgnc id there is nothin we can do
+                if not gene_obj["hgnc_id"]:
                     continue
-                has_changed = True
-                gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
-                # phenotypes may not exist for the hgnc_gene either, but try
-                gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
-            add_gene_links(gene_obj, genome_build)
+                # Else we collect the gene object and check the id
+                if gene_obj.get("hgnc_symbol") is None or gene_obj.get("phenotypes") is None:
+                    hgnc_gene = store.hgnc_gene(gene_obj["hgnc_id"], build=genome_build)
+                    if not hgnc_gene:
+                        continue
+                    has_changed = True
+                    gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]
+                    # phenotypes may not exist for the hgnc_gene either, but try
+                    gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
+                add_gene_links(gene_obj, genome_build)
 
-    # We update the variant if some information was missing from loading
-    # Or if symbold in reference genes have changed
-    if update and has_changed:
-        try:
-            variant_obj = store.update_variant(variant_obj)
-        except DocumentTooLarge:
-            flash(
-                f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
-                "warning",
-            )
+        # We update the variant if some information was missing from loading
+        # Or if gene symbols in reference genes have changed
+        if update and has_changed:
+            try:
+                variant_obj = store.update_variant(variant_obj)
+            except DocumentTooLarge:
+                flash(
+                    f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
+                    "warning",
+                )
+
+
+def hide_compounds_query(variant_obj, query_form):
+    """Check compound against current query form values.
+    Check the query hide rank score, and dismiss compound from current view if its rank score is equal or lower.
+    variant_obj(scout.models.Variant)
+    query_form(VariantFiltersForm)
+    """
+    for compound in variant_obj.get("compounds", []):
+        rank_score = compound.get("rank_score")
+        if not rank_score:
+            continue
+        if (
+            query_form and query_form.get("compound_rank_score") is not None
+        ) and rank_score <= query_form.get("compound_rank_score"):
+            compound["is_dismissed"] = True
+
+
+def parse_variant(
+    store,
+    institute_obj,
+    case_obj,
+    variant_obj,
+    update=False,
+    genome_build="37",
+    get_compounds=True,
+    case_dismissed_vars=[],
+    query_form=None,
+):
+    """Parse information about variants.
+    - Adds information about compounds and genes
+    - Updates some information about compounds if necessary and 'update=True'
+    - Hide compound variants if query form filter indicates so.
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_obj(scout.models.Institute)
+        case_obj(scout.models.Case)
+        variant_obj(scout.models.Variant)
+        update(bool): If variant should be updated in database
+        get_compounds(bool): if compounds should be added to added to the returned variant object
+        genome_build(str)
+        case_dismissed_vars(list): list of dismissed variants for this case
+        query_form(dict): query form for additional compounds filtering
+    """
+
+    update_symbols_and_compounds(
+        store, variant_obj, update, genome_build, get_compounds, case_dismissed_vars
+    )
+
+    hide_compounds_query(variant_obj, query_form)
 
     variant_obj["comments"] = store.events(
         institute_obj,
@@ -433,13 +467,16 @@ def parse_variant(
         variant_obj, user_institutes(store, current_user)
     )
 
+    variant_genes = variant_obj.get("genes")
     if variant_genes:
         variant_obj.update(predictions(variant_genes))
         if variant_obj.get("category") == "cancer":
             variant_obj.update(get_variant_info(variant_genes))
 
-    for compound_obj in compounds:
-        compound_obj.update(predictions(compound_obj.get("genes", [])))
+    if get_compounds:
+        compounds = variant_obj.get("compounds", [])
+        for compound_obj in compounds:
+            compound_obj.update(predictions(compound_obj.get("genes", [])))
 
     classification = variant_obj.get("acmg_classification")
     if isinstance(classification, int):

@@ -282,7 +282,7 @@
     </div>
     <div class="col-2 offset-3">
       <div id="hidecompounds" class="collapse">
-        {{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds below this score as if dismissed") }}
+        {{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds at this score or below as if dismissed") }}
         {{ form.compound_rank_score(class="ml-1 form-control", onchange="this.form.submit()") }}
       </div>
     </div>
