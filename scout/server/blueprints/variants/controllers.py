@@ -471,17 +471,18 @@ def hide_compounds_query(store, variant_obj, query_form):
             )
 
             for item in compound_mirror_lt_items:
-                compound_item = compound_var_obj.get(item)
-                if compound_item is None:
-                    LOG.debug(
-                        "Shading %s since it has has no value for %s",
-                        compound.get("display_name"),
-                        item,
-                    )
-                    compound["is_dismissed"] = True
-                    continue
                 query_form_item = query_form.get(item)
                 if query_form_item is not None:
+                    compound_item = compound_var_obj.get(item)
+                    if compound_item is None:
+                        LOG.debug(
+                            "Shading %s since it has has no value for %s",
+                            compound.get("display_name"),
+                            item,
+                        )
+                        compound["is_dismissed"] = True
+                        continue
+
                     if compound_item < query_form_item:
                         LOG.debug(
                             "Shading %s since it has has too low value for %s",
