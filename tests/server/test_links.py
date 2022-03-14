@@ -30,7 +30,7 @@ def test_marrvel_link_build_38():
     # GIVEN a variant in genome build 38:
     variant_obj_38 = {"chromosome": "X", "position": 1039265, "reference": "T", "alternative": "C"}
 
-    # THAN can be lifted over to build 37:
+    # THAT can be lifted over to build 37:
     url = f"http://grch37.rest.ensembl.org/map/human/GRCh38/{variant_obj_38['chromosome']}:{variant_obj_38['position']}..{variant_obj_38['position']}/GRCh37?content-type=application/json"
 
     liftover_mappings = {
