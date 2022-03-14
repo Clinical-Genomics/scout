@@ -1,8 +1,69 @@
 """Tests for scout server links"""
 
+import responses
 from flask import url_for
 
-from scout.server.links import add_gene_links, alamut_link, cbioportal, mycancergenome, snp_links
+from scout.server.links import (
+    add_gene_links,
+    alamut_link,
+    cbioportal,
+    marrvel_link,
+    mycancergenome,
+    snp_links,
+)
+
+
+def test_marrvel_link_build_37(variant_obj):
+    """Test creating a MARRVEL link for a variant in build 37"""
+    # GIVEN a variant object of genome build 37:
+    m_link = marrvel_link(variant_obj, 37)
+    # THEN the Marrvel link should contain the original variant coordinates
+    assert (
+        m_link
+        == f"http://marrvel.org/human/variant/{variant_obj['chromosome']}:{variant_obj['position']} {variant_obj['reference']}>{variant_obj['alternative']}"
+    )
+
+
+@responses.activate
+def test_marrvel_link_build_38():
+    """Test creating a MARRVEL link for a variant in build 38"""
+    # GIVEN a variant in genome build 38:
+    variant_obj_38 = {"chromosome": "X", "position": 1039265, "reference": "T", "alternative": "C"}
+
+    # THAN can be lifted over to build 37:
+    url = f"http://grch37.rest.ensembl.org/map/human/GRCh38/{variant_obj_38['chromosome']}:{variant_obj_38['position']}..{variant_obj_38['position']}/GRCh37?content-type=application/json"
+
+    liftover_mappings = {
+        "mappings": [
+            {
+                "original": {
+                    "assembly": "GRCh38",
+                    "seq_region_name": variant_obj_38["chromosome"],
+                    "start": variant_obj_38["position"],
+                    "end": variant_obj_38["position"] + 100,
+                },
+                "mapped": {
+                    "assembly": "GRCh37",
+                    "seq_region_name": variant_obj_38["chromosome"],
+                    "start": 1000000,
+                    "end": 1000100,
+                },
+            }
+        ]
+    }
+    responses.add(
+        responses.GET,
+        url,
+        json=liftover_mappings,
+        status=200,
+    )
+    # WHEN MARRVEL link is created
+    m_link = marrvel_link(variant_obj_38, 38)
+    # THEN it should contain the variant in build 37 coordinates
+    assert (
+        m_link
+        == f'http://marrvel.org/human/variant/{liftover_mappings["mappings"][0]["mapped"]["seq_region_name"]}:{liftover_mappings["mappings"][0]["mapped"]["start"]} T>C'
+    )
 
 
 def test_alamut_link(app, institute_obj, variant_obj):
