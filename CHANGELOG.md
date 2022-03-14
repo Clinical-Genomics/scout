@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.50.1]
 ### Changed
 - Simplified code of scout/adapter/mongo/variant
+- Updated deprecated Codecov GitHub action to v.2
 ### Fixed
 - Show matching causative STR_repid for legacy str variants (pre Stranger hgnc_id)
 
