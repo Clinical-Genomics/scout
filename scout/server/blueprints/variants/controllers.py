@@ -338,25 +338,18 @@ def compounds_need_updating(compounds, dismissed):
     return False
 
 
-def update_symbols_and_compounds(
-    store, variant_obj, update, genome_build, get_compounds, case_dismissed_vars
-):
+def update_compounds(variant_obj, case_dismissed_vars):
     """Check if gene symbol or compound info needs updating and sort compounds.
-    Update variants in db store if anything changed, and function is called with update=True.
     Args:
-        store(scout.adapter.MongoAdapter)
         variant_obj(scout.models.Variant)
-        update(boolean): upsert only if this is set true
-        genome_build(str)
-        get_compounds(bool): if compounds should be added to added to the returned variant object
         case_dismissed_variants(list): dismissed vars for this case
+    Returns:
+        has_changed(boolean)
     """
-    # boolean, set to true if variants have changed and need db upserting
     has_changed = False
-
     compounds = variant_obj.get("compounds", [])
 
-    if compounds and get_compounds:
+    if compounds:
         # Check if we need to update compound information
         if compounds_need_updating(compounds, case_dismissed_vars):
             new_compounds = store.update_variant_compounds(variant_obj)
@@ -368,15 +361,32 @@ def update_symbols_and_compounds(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
 
-    # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
-    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
-        variant_obj["genes"] = []
-        for hgnc_id in variant_obj.get("hgnc_ids"):
-            variant_gene = {"hgnc_id": hgnc_id}
-            variant_obj["genes"].append(variant_gene)
+    return has_changed
+
+
+def update_variant_genes(store, variant_obj, genome_build):
+    """Check if variant gene symbols or phenotype needs updating.
+    We update the variant if some information was missing from loading.
+    Or if gene symbols in reference genes have changed.
+    Args:
+        store(scout.adapter.MongoAdapter)
+        variant_obj(scout.models.Variant)
+        genome_build(str)
+    Returns:
+        has_changed(boolean)
+    """
+    has_changed = False
 
     # Update the hgnc symbols if they are incorrect
     variant_genes = variant_obj.get("genes")
+
+    # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
+    if not variant_genes and variant_obj.get("hgnc_ids"):
+        variant_obj["genes"] = []
+        for hgnc_id in variant_obj.get("hgnc_ids"):
+            has_changed = True
+            variant_gene = {"hgnc_id": hgnc_id}
+            variant_obj["genes"].append(variant_gene)
 
     if variant_genes is not None:
         for gene_obj in variant_genes:
@@ -394,23 +404,36 @@ def update_symbols_and_compounds(
                 gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
             add_gene_links(gene_obj, genome_build)
 
-    # We update the variant if some information was missing from loading
-    # Or if gene symbols in reference genes have changed
-    if update and has_changed:
-        try:
-            variant_obj = store.update_variant(variant_obj)
-        except DocumentTooLarge:
-            flash(
-                f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
-                "warning",
-            )
+    return has_changed
+
+
+def update_variant_store(store, variant_obj):
+    """
+    Update variants in db store if anything changed.
+    Args:
+        store(scout.adapter.MongoAdapter)
+        variant_obj(scout.models.Variant)
+
+        update(boolean): upsert only if this is set true
+
+        get_compounds(bool): if compounds should be added to added to the returned variant object
+
+    """
+    try:
+        variant_obj = store.update_variant(variant_obj)
+    except DocumentTooLarge:
+        flash(
+            f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
+            "warning",
+        )
 
 
 def hide_compounds_query(variant_obj, query_form):
     """Check compound against current query form values.
     Check the query hide rank score, and dismiss compound from current view if its rank score is equal or lower.
-    variant_obj(scout.models.Variant)
-    query_form(VariantFiltersForm)
+    Args:
+        variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
     """
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
@@ -450,9 +473,14 @@ def parse_variant(
         query_form(dict): query form for additional compounds filtering
     """
 
-    update_symbols_and_compounds(
-        store, variant_obj, update, genome_build, get_compounds, case_dismissed_vars
-    )
+    compounds_have_changed = False
+    if get_compounds:
+        compounds_have_changed = update_compounds(variant_obj, case_dismissed_vars)
+
+    genes_have_changed = update_variant_genes(store, variant_obj, genome_build)
+
+    if update and (compounds_have_changed or genes_have_changed):
+        update_variant_store(store, variant_obj)
 
     hide_compounds_query(variant_obj, query_form)
 
