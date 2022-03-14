@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified code of scout/adapter/mongo/variant
 ### Fixed
 - Show matching causative STR_repid for legacy str variants (pre Stranger hgnc_id)
+- Marrvel link for variants in genome build 38 (using liftover to build 37)
 
 ## [4.50]
 ### Added
