@@ -342,7 +342,7 @@ def marrvel_link(build, variant_id):
     ref = variant_obj["reference"]
     alt = variant_obj["alternative"]
 
-    if build == 38:  # liftover is necessary before returning link
+    if build == "38":  # liftover is necessary before returning link
         client = EnsemblRestApiClient()
         mapped_coords = client.liftover(
             build,
