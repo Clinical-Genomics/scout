@@ -2,7 +2,6 @@ from flask import current_app
 
 from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1
-from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 SHALLOW_REFERENCE_STR_LOCI = ["ARX", "HOXA13"]
 
@@ -413,34 +412,8 @@ def get_variant_links(institute_obj, variant_obj, build=None):
         spidex_human=spidex_human(variant_obj),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
-        marrvel_link=marrvel_link(variant_obj, build),
     )
     return links
-
-
-def marrvel_link(variant_obj, build):
-    """Create link to Marrvel (http://marrvel.org/) for a variant"""
-
-    url_template = "http://marrvel.org/human/variant/{}:{} {}>{}"
-    chrom = variant_obj["chromosome"]
-    start = variant_obj["position"]
-    ref = variant_obj["reference"]
-    alt = variant_obj["alternative"]
-
-    if build == 38:  # liftover is necessary before returning link
-        client = EnsemblRestApiClient()
-        mapped_coords = client.liftover(
-            build,
-            chrom,
-            start,
-        )
-        if mapped_coords:
-            chrom = mapped_coords[0]["mapped"].get("seq_region_name")
-            start = mapped_coords[0]["mapped"].get("start")
-        else:
-            return
-
-    return url_template.format(chrom, start, ref, alt)
 
 
 def str_source_link(variant_obj):
