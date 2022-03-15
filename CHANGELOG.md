@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Updated deprecated Codecov GitHub action to v.2
 - Simplified code of scout/adapter/mongo/variant
+### Fixed
+- Marrvel link for variants in genome build 38 (using liftover to build 37)
 
 ## [4.50.1]
 ### Fixed
