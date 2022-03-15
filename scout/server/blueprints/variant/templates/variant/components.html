@@ -265,9 +265,7 @@
             <a href="{{ gene.gnomad_str_link}}" class="btn btn-outline-secondary" target="_blank">GnomAD STR</a>
           {% endif %}
           <a href="{{ gene.panelapp_link }}" class="btn btn-outline-secondary" target="_blank">PanelApp</a>
-          {% if variant.marrvel_link %}
-            <a href="{{variant.marrvel_link}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
-          {% endif %}
+          <a href="{{ url_for('variant.marrvel_link', build=case.genome_build, variant_id=variant._id)}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
       </div>
     {% endfor %}
   </div>

@@ -18,6 +18,7 @@ from scout.server.blueprints.variant.verification_controllers import (
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, public_endpoint, templated
 from scout.utils.acmg import get_acmg
+from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 
@@ -328,3 +329,35 @@ def verify(institute_id, case_name, variant_id, order):
         flash("No verification recipients added to institute.", "danger")
 
     return redirect(request.referrer)
+
+
+@variant_bp.route("/marrvel/<build>/<variant_id>", methods=["GET"])
+def marrvel_link(build, variant_id):
+    """Redirect to MARRVEL when user clicks on the relative button on variant page"""
+    variant_obj = store.variant(document_id=variant_id)
+    build = "38" if "38" in str(build) else "37"
+
+    url_template = "http://marrvel.org/human/variant/{}:{} {}>{}"
+    chrom = variant_obj["chromosome"]
+    start = variant_obj["position"]
+    ref = variant_obj["reference"]
+    alt = variant_obj["alternative"]
+
+    if build == 38:  # liftover is necessary before returning link
+        client = EnsemblRestApiClient()
+        mapped_coords = client.liftover(
+            build,
+            chrom,
+            start,
+        )
+        if mapped_coords:
+            chrom = mapped_coords[0]["mapped"].get("seq_region_name")
+            start = mapped_coords[0]["mapped"].get("start")
+        else:
+            flash(
+                "MARRVEL requires variant coordinates in genome build 37, but variant liftover failed",
+                "warning",
+            )
+            return redirect(request.referrer)
+
+    return redirect(url_template.format(chrom, start, ref, alt), code=302)
