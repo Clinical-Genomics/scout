@@ -55,11 +55,11 @@ def test_marrvel_link_38(app, case_obj):
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
 
-        # WHEN user clicks on MARRVEL link for a variant in build 37
+        # WHEN user clicks on MARRVEL link for a variant in build 38
         resp = client.get(
             url_for(
                 "variant.marrvel_link",
-                build="37",
+                build="38",
                 variant_id=test_variant["_id"],
             )
         )
