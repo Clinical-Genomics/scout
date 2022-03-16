@@ -124,12 +124,14 @@
   <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
     <!-- general hidden fields required to submit POST request to IGV viewer -->
     <input type="hidden" name="build" value="{{case.genome_build}}">
-    <input type="hidden" name="contig" value="{{variant.chromosome}}">
-    <input type="hidden" name="start" value="{{variant.position - 50}}">
-    <input type="hidden" name="stop" value="{{variant.position + 50}}">
+    {% if variant %}
+      <input type="hidden" name="contig" value="{{variant.chromosome}}">
+      <input type="hidden" name="start" value="{{variant.position - 50}}">
+      <input type="hidden" name="stop" value="{{variant.position + 50}}">
+    {% endif %}
     <!-- end of general hidden form fields -->
     {% set aln = namespace(sample_names=[],mt_bams=[], mt_bais=[], bam_files=[], bai_files=[]) %}
-    {% if variant.chromosome in ["MT","M"] %}
+    {% if variant and variant.chromosome in ["MT","M"] %}
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
             {% for grouped_case in case_group %}
