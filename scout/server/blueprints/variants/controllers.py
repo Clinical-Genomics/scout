@@ -447,32 +447,14 @@ def hide_compounds_query(store, variant_obj, query_form):
             compound["is_dismissed"] = True
             continue
 
-        # keys as in form, values as on variant_obj
-        compound_mirror_freq_items = {
-            "gnomad_frequency": "gnomad_frequency",
-            "local_obs": "local_obs_old",
-            "clingen_ngi": "clingen_ngi",
-            "swegen": "swegen",
-        }
-
-        compound_mirror_gt_items = ["position"]
-
-        compound_mirror_lt_items = ["cadd_score", "end"]
-
-        compound_mirror_in_items = [
-            "region_annotations",
-            "functional_annotations",
-            "clinsig",
-            "svtype",
-            "genetic_models",
-        ]
-
         if query_form and query_form.get("compound_mirrors_filter"):
             compound_var_obj = store.variant(compound.get("variant"))
 
             LOG.debug(
                 "Compound mirror: compound is %s, compound_var_obj %s", compound, compound_var_obj
             )
+
+            compound_mirror_lt_items = ["cadd_score", "end"]
 
             for item in compound_mirror_lt_items:
                 query_form_item = query_form.get(item)
@@ -496,6 +478,8 @@ def hide_compounds_query(store, variant_obj, query_form):
                         compound["is_dismissed"] = True
                         continue
 
+            compound_mirror_gt_items = ["position"]
+
             for item in compound_mirror_gt_items:
                 query_form_item = query_form.get(item)
                 if query_form_item is not None:
@@ -518,12 +502,19 @@ def hide_compounds_query(store, variant_obj, query_form):
                         compound["is_dismissed"] = True
                         continue
 
-            for item in compound_mirror_freq_items.keys():
+            # keys as in form, values as on variant_obj
+            compound_mirror_freq_items = {
+                "gnomad_frequency": "gnomad_frequency",
+                "local_obs": "local_obs_old",
+                "clingen_ngi": "clingen_ngi",
+                "swegen": "swegen",
+            }
+
+            for item, compound_item_name in compound_mirror_freq_items.items():
                 query_form_item = query_form.get(item)
                 if query_form_item is None:
                     continue
 
-                compound_item_name = compound_mirror_freq_items[item]
                 compound_item = compound_var_obj.get(compound_item_name)
                 if compound_item is None:
                     LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
@@ -532,6 +523,14 @@ def hide_compounds_query(store, variant_obj, query_form):
                 if compound_item >= query_form_item:
                     compound["is_dismissed"] = True
                     continue
+
+            compound_mirror_in_items = [
+                "region_annotations",
+                "functional_annotations",
+                "clinsig",
+                "svtype",
+                "genetic_models",
+            ]
 
             for item in compound_mirror_in_items:
                 compound_items = compound_var_obj.get(item)
@@ -549,6 +548,8 @@ def hide_compounds_query(store, variant_obj, query_form):
                         )
                         compound["is_dismissed"] = True
                         continue
+
+            query_form_item = query_form.get(item)
 
 
 def parse_variant(
