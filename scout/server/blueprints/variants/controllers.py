@@ -21,6 +21,7 @@ from scout.constants import (
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
+    SPIDEX_HUMAN,
     VARIANT_FILTERS,
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
@@ -549,7 +550,25 @@ def hide_compounds_query(store, variant_obj, query_form):
                         compound["is_dismissed"] = True
                         continue
 
-            query_form_item = query_form.get(item)
+            spidex_human = query_form.get("spidex_human")
+            if spidex_human:
+                compound_spidex = compound_var_obj.get("spidex")
+                if compound_spidex is None:
+                    LOG.debug("Compound %s has no value for spidex", compound.get("display_name"))
+                else:
+                    keep = False
+                    for level in SPIDEX_HUMAN:
+                        if level in spidex_human:
+                            if (
+                                compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
+                                and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
+                            ) or (
+                                compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
+                                and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
+                            ):
+                                keep = True
+                    if not keep:
+                        compound["is_dismissed"] = True
 
 
 def parse_variant(
