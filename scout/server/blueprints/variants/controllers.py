@@ -433,6 +433,7 @@ def update_variant_store(store, variant_obj):
 def hide_compounds_query(store, variant_obj, query_form):
     """Check compound against current query form values.
     Check the query hide rank score, and dismiss compound from current view if its rank score is equal or lower.
+    If compound follow filter is selected,
     Args:
         store(scout.adapter.MongoAdapter)
         variant_obj(scout.models.Variant)
@@ -448,7 +449,7 @@ def hide_compounds_query(store, variant_obj, query_form):
             compound["is_dismissed"] = True
             continue
 
-        if query_form and query_form.get("compound_mirrors_filter"):
+        if query_form and query_form.get("compound_follow_filter"):
             compound_var_obj = store.variant(compound.get("variant"))
 
             LOG.debug(
