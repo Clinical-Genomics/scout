@@ -429,14 +429,6 @@ def update_variant_store(store, variant_obj):
             "warning",
         )
 
-    # keys as in form, values as on variant_obj
-    compound_mirror_freq_items = {
-        "gnomad_frequency": "gnomad_frequency",
-        "local_obs": "local_obs_old",
-        "clingen_ngi": "clingen_ngi",
-        "swegen": "swegen",
-    }
-
 
 def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
@@ -449,7 +441,15 @@ def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
         query_form(VariantFiltersForm)
     """
 
-    for item, compound_item_name in compound_mirror_freq_items.items():
+    # keys as in form, values as on variant_obj
+    compound_follow_freq_items = {
+        "gnomad_frequency": "gnomad_frequency",
+        "local_obs": "local_obs_old",
+        "clingen_ngi": "clingen_ngi",
+        "swegen": "swegen",
+    }
+
+    for item, compound_item_name in compound_follow_freq_items.items():
         query_form_item = query_form.get(item)
         if query_form_item is None:
             continue

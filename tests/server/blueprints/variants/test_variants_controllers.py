@@ -62,9 +62,91 @@ def test_hide_compounds_follow_filter(app, variant_obj):
         "case_id": variant_obj["case_id"],
         "chromosome": variant_obj["chromosome"],
         "position": variant_obj["position"] + 3,
+        "end": variant_obj["position"] + 3,
         "reference": "A",
         "alternative": "G",
         "cadd_score": test_cadd,
+        "spidex": -1.5,
+        "region_annotations": ["exonic"],
+        "local_obs_old": 10,
+    }
+    store.variant_collection.insert_one(compound_variant_obj)
+
+    compound_variant_dict = {
+        "variant": "a_compound",
+        "is_dismissed": False,
+    }
+
+    # GIVEN a variant with the other variant as an only compound
+    variant_obj["compounds"] = [compound_variant_dict]
+
+    # CADD
+    # WHEN asking for hiding compounds with higher cadd score threshold
+    query_form = {"cadd_score": test_cadd + 1, "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears dismissed
+    assert compounds[0]["is_dismissed"]
+
+    # POSITION
+    # WHEN setting it back to visible
+    compound_variant_dict["is_dismissed"] = False
+
+    # WHEN asking for hiding compounds with position in the range
+    query_form = {
+        "position": variant_obj["position"] - 1,
+        "end": variant_obj["position"] + 5,
+        "compound_follow_filter": True,
+    }
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears dismissed
+    assert compounds[0]["is_dismissed"]
+
+    # FREQ
+    # WHEN setting it back to visible
+    compound_variant_dict["is_dismissed"] = False
+
+    # WHEN asking for hiding compounds with more counts
+    query_form = {"local_obs": 5, "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears dismissed
+    assert compounds[0]["is_dismissed"]
+
+
+def test_hide_compounds_follow_filter_spidex(app, variant_obj):
+    """Test hiding compounds from view given hide compounds follow filter options"""
+
+    # GIVEN a variant
+    test_cadd = 15
+    compound_variant_obj = {
+        "_id": "a_compound",
+        "case_id": variant_obj["case_id"],
+        "chromosome": variant_obj["chromosome"],
+        "position": variant_obj["position"] + 3,
+        "end": variant_obj["position"] + 3,
+        "reference": "A",
+        "alternative": "G",
+        "cadd_score": test_cadd,
+        "spidex": -1.5,
+        "region_annotation": "exonic",
+        "local_obs_old": 10,
     }
     store.variant_collection.insert_one(compound_variant_obj)
 
@@ -77,7 +159,48 @@ def test_hide_compounds_follow_filter(app, variant_obj):
     variant_obj["compounds"] = [compound_variant_dict]
 
     # WHEN asking for hiding compounds with higher rank score threshold
-    query_form = {"cadd_score": test_cadd + 1, "compound_follow_filter": True}
+    query_form = {"spidex_human": "medium", "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears dismissed
+    assert compounds[0]["is_dismissed"]
+
+
+def test_hide_compounds_follow_filter_region(app, variant_obj):
+    """Test hiding compounds from view given hide compounds follow filter options"""
+
+    # GIVEN a variant
+    test_cadd = 15
+    compound_variant_obj = {
+        "_id": "a_compound",
+        "case_id": variant_obj["case_id"],
+        "chromosome": variant_obj["chromosome"],
+        "position": variant_obj["position"] + 3,
+        "end": variant_obj["position"] + 3,
+        "reference": "A",
+        "alternative": "G",
+        "cadd_score": test_cadd,
+        "spidex": -1.5,
+        "region_annotation": "exonic",
+        "local_obs_old": 10,
+    }
+    store.variant_collection.insert_one(compound_variant_obj)
+
+    compound_variant_dict = {
+        "variant": "a_compound",
+        "is_dismissed": False,
+    }
+
+    # GIVEN a variant with the other variant as an only compound
+    variant_obj["compounds"] = [compound_variant_dict]
+
+    # WHEN asking for hiding compounds with higher rank score threshold
+    query_form = {"region_annotation": ["exonic"], "compound_follow_filter": True}
 
     # WHEN calling the function
     hide_compounds_query(store, variant_obj, query_form)
