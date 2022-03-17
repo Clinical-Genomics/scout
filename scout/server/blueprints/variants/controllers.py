@@ -439,16 +439,20 @@ def hide_compounds_query(store, variant_obj, query_form):
         variant_obj(scout.models.Variant)
         query_form(VariantFiltersForm)
     """
+
+    if not query_form:
+        return
+
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
 
-        if (query_form and query_form.get("compound_rank_score") is not None) and (
+        if query_form.get("compound_rank_score") is not None and (
             rank_score and rank_score <= query_form.get("compound_rank_score")
         ):
             compound["is_dismissed"] = True
             continue
 
-        if query_form and query_form.get("compound_follow_filter"):
+        if query_form.get("compound_follow_filter"):
             compound_var_obj = store.variant(compound.get("variant"))
 
             compound_mirror_lt_items = ["cadd_score", "end"]
@@ -457,11 +461,7 @@ def hide_compounds_query(store, variant_obj, query_form):
                 query_form_item = query_form.get(item)
                 if query_form_item is not None:
                     compound_item = compound_var_obj.get(item)
-                    if compound_item is None:
-                        compound["is_dismissed"] = True
-                        continue
-
-                    if compound_item < query_form_item:
+                    if compound_item is None or compound_item < query_form_item:
                         compound["is_dismissed"] = True
                         continue
 
@@ -471,11 +471,7 @@ def hide_compounds_query(store, variant_obj, query_form):
                 query_form_item = query_form.get(item)
                 if query_form_item is not None:
                     compound_item = compound_var_obj.get(item)
-                    if compound_item is None:
-                        compound["is_dismissed"] = True
-                        continue
-
-                    if compound_item > query_form_item:
+                    if compound_item is None or compound_item > query_form_item:
                         compound["is_dismissed"] = True
                         continue
 
@@ -512,8 +508,8 @@ def hide_compounds_query(store, variant_obj, query_form):
                 compound_items = compound_var_obj.get(item)
                 if not compound_items:
                     continue
-                query_form_items = query_form.get(item)
 
+                query_form_items = query_form.get(item)
                 if query_form_items:
                     if set(compound_items).isdisjoint(set(query_form_items)):
                         compound["is_dismissed"] = True
