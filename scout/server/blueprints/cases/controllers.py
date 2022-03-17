@@ -102,7 +102,7 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     return html_body_content
 
 
-def _populate_case_group(store, case_obj, case_groups, case_group_label):
+def _populate_case_groups(store, case_obj, case_groups, case_group_label):
     """Case groups allow display of information about user linked cases together on one case.
     Notably variantS lists show shared annotations and alignment views show all alignments
     available for the group.
