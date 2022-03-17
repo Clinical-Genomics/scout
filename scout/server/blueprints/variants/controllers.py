@@ -429,34 +429,6 @@ def update_variant_store(store, variant_obj):
             "warning",
         )
 
-
-def compound_follow_filter(compound, compound_var_obj, query_form):
-    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
-
-    compound(dict)
-    compound_variant_obj(scout.models.Variant)
-    query_form(VariantFiltersForm)
-    """
-    compound_mirror_lt_items = ["cadd_score", "end"]
-
-    for item in compound_mirror_lt_items:
-        query_form_item = query_form.get(item)
-        if query_form_item is not None:
-            compound_item = compound_var_obj.get(item)
-            if compound_item is None or compound_item < query_form_item:
-                compound["is_dismissed"] = True
-                continue
-
-    compound_mirror_gt_items = ["position"]
-
-    for item in compound_mirror_gt_items:
-        query_form_item = query_form.get(item)
-        if query_form_item is not None:
-            compound_item = compound_var_obj.get(item)
-            if compound_item is None or compound_item > query_form_item:
-                compound["is_dismissed"] = True
-                continue
-
     # keys as in form, values as on variant_obj
     compound_mirror_freq_items = {
         "gnomad_frequency": "gnomad_frequency",
@@ -464,6 +436,18 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
         "clingen_ngi": "clingen_ngi",
         "swegen": "swegen",
     }
+
+
+def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the freq items
+    are filtered the same way.
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    """
 
     for item, compound_item_name in compound_mirror_freq_items.items():
         query_form_item = query_form.get(item)
@@ -476,17 +460,80 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
 
         if compound_item >= query_form_item:
             compound["is_dismissed"] = True
-            continue
+            return True
 
-    compound_mirror_in_items = [
+    return False
+
+
+def _compound_follow_filter_lt(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    compound_follow_lt_items = ["cadd_score", "end"]
+
+    for item in compound_follow_lt_items:
+        query_form_item = query_form.get(item)
+        if query_form_item is not None:
+            compound_item = compound_var_obj.get(item)
+            if compound_item is None or compound_item < query_form_item:
+                compound["is_dismissed"] = True
+                return True
+
+    return False
+
+
+def _compound_follow_filter_gt(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+
+    compound_follow_gt_items = ["position"]
+
+    for item in compound_follow_gt_items:
+        query_form_item = query_form.get(item)
+        if query_form_item is not None:
+            compound_item = compound_var_obj.get(item)
+            if compound_item is None or compound_item > query_form_item:
+                compound["is_dismissed"] = True
+                return True
+
+    return False
+
+
+def _compound_follow_filter_in(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the ones with
+    multiple categories such as sv_type or clin_sig.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    compound_follow_in_items = [
         "region_annotations",
         "functional_annotations",
         "clinsig",
         "svtype",
         "genetic_models",
     ]
-
-    for item in compound_mirror_in_items:
+    for item in compound_follow_in_items:
         compound_items = compound_var_obj.get(item)
         if not compound_items:
             continue
@@ -497,6 +544,21 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
                 compound["is_dismissed"] = True
                 continue
 
+
+def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some filter options that are rather unique, like the leveled spidex one. SPIDEX score levels are symmetric
+    around 0, with different level ranges, so that e.g. the intervals [-1, -2] and [1, 2] are both medium.
+    The spidex score on the variant object is a scalar. The user selects one or more levels such as "medium" to filter in
+    the query.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
     spidex_human = query_form.get("spidex_human")
     if spidex_human:
         compound_spidex = compound_var_obj.get("spidex")
@@ -514,6 +576,33 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
             )
             if not keep:
                 compound["is_dismissed"] = True
+
+
+def compound_follow_filter(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the freq items
+    are filtered the same way.
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    """
+
+    if _compound_follow_filter_lt(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_gt(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_freq(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_in(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
+        return
 
 
 def hide_compounds_query(store, variant_obj, query_form):
