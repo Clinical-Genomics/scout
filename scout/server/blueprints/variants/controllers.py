@@ -430,10 +430,96 @@ def update_variant_store(store, variant_obj):
         )
 
 
+def compound_follow_filter(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    compound(dict)
+    compound_variant_obj(scout.models.Variant)
+    query_form(VariantFiltersForm)
+    """
+    compound_mirror_lt_items = ["cadd_score", "end"]
+
+    for item in compound_mirror_lt_items:
+        query_form_item = query_form.get(item)
+        if query_form_item is not None:
+            compound_item = compound_var_obj.get(item)
+            if compound_item is None or compound_item < query_form_item:
+                compound["is_dismissed"] = True
+                continue
+
+    compound_mirror_gt_items = ["position"]
+
+    for item in compound_mirror_gt_items:
+        query_form_item = query_form.get(item)
+        if query_form_item is not None:
+            compound_item = compound_var_obj.get(item)
+            if compound_item is None or compound_item > query_form_item:
+                compound["is_dismissed"] = True
+                continue
+
+    # keys as in form, values as on variant_obj
+    compound_mirror_freq_items = {
+        "gnomad_frequency": "gnomad_frequency",
+        "local_obs": "local_obs_old",
+        "clingen_ngi": "clingen_ngi",
+        "swegen": "swegen",
+    }
+
+    for item, compound_item_name in compound_mirror_freq_items.items():
+        query_form_item = query_form.get(item)
+        if query_form_item is None:
+            continue
+
+        compound_item = compound_var_obj.get(compound_item_name)
+        if compound_item is None:
+            continue
+
+        if compound_item >= query_form_item:
+            compound["is_dismissed"] = True
+            continue
+
+    compound_mirror_in_items = [
+        "region_annotations",
+        "functional_annotations",
+        "clinsig",
+        "svtype",
+        "genetic_models",
+    ]
+
+    for item in compound_mirror_in_items:
+        compound_items = compound_var_obj.get(item)
+        if not compound_items:
+            continue
+
+        query_form_items = query_form.get(item)
+        if query_form_items:
+            if set(compound_items).isdisjoint(set(query_form_items)):
+                compound["is_dismissed"] = True
+                continue
+
+    spidex_human = query_form.get("spidex_human")
+    if spidex_human:
+        compound_spidex = compound_var_obj.get("spidex")
+        if compound_spidex is not None:
+            keep = False
+            for level in SPIDEX_HUMAN:
+                if level in spidex_human:
+                    if (
+                        compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
+                        and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
+                    ) or (
+                        compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
+                        and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
+                    ):
+                        keep = True
+            if not keep:
+                compound["is_dismissed"] = True
+
+
 def hide_compounds_query(store, variant_obj, query_form):
     """Check compound against current query form values.
     Check the query hide rank score, and dismiss compound from current view if its rank score is equal or lower.
-    If compound follow filter is selected,
+    If compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
     Args:
         store(scout.adapter.MongoAdapter)
         variant_obj(scout.models.Variant)
@@ -455,83 +541,7 @@ def hide_compounds_query(store, variant_obj, query_form):
         if query_form.get("compound_follow_filter"):
             compound_var_obj = store.variant(compound.get("variant"))
 
-            compound_mirror_lt_items = ["cadd_score", "end"]
-
-            for item in compound_mirror_lt_items:
-                query_form_item = query_form.get(item)
-                if query_form_item is not None:
-                    compound_item = compound_var_obj.get(item)
-                    if compound_item is None or compound_item < query_form_item:
-                        compound["is_dismissed"] = True
-                        continue
-
-            compound_mirror_gt_items = ["position"]
-
-            for item in compound_mirror_gt_items:
-                query_form_item = query_form.get(item)
-                if query_form_item is not None:
-                    compound_item = compound_var_obj.get(item)
-                    if compound_item is None or compound_item > query_form_item:
-                        compound["is_dismissed"] = True
-                        continue
-
-            # keys as in form, values as on variant_obj
-            compound_mirror_freq_items = {
-                "gnomad_frequency": "gnomad_frequency",
-                "local_obs": "local_obs_old",
-                "clingen_ngi": "clingen_ngi",
-                "swegen": "swegen",
-            }
-
-            for item, compound_item_name in compound_mirror_freq_items.items():
-                query_form_item = query_form.get(item)
-                if query_form_item is None:
-                    continue
-
-                compound_item = compound_var_obj.get(compound_item_name)
-                if compound_item is None:
-                    continue
-
-                if compound_item >= query_form_item:
-                    compound["is_dismissed"] = True
-                    continue
-
-            compound_mirror_in_items = [
-                "region_annotations",
-                "functional_annotations",
-                "clinsig",
-                "svtype",
-                "genetic_models",
-            ]
-
-            for item in compound_mirror_in_items:
-                compound_items = compound_var_obj.get(item)
-                if not compound_items:
-                    continue
-
-                query_form_items = query_form.get(item)
-                if query_form_items:
-                    if set(compound_items).isdisjoint(set(query_form_items)):
-                        compound["is_dismissed"] = True
-                        continue
-
-            spidex_human = query_form.get("spidex_human")
-            if spidex_human:
-                compound_spidex = compound_var_obj.get("spidex")
-                if compound_spidex is not None:
-                    keep = False
-                    for level in SPIDEX_HUMAN:
-                        if level in spidex_human:
-                            if (
-                                compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
-                                and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
-                            ) or (
-                                compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
-                                and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
-                            ):
-                                keep = True
-                    if not keep:
-                        compound["is_dismissed"] = True
+            compound_follow_filter(compound, compound_var_obj, query_form)
 
 
 def parse_variant(
