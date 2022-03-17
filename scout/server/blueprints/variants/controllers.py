@@ -441,20 +441,15 @@ def hide_compounds_query(store, variant_obj, query_form):
     """
     for compound in variant_obj.get("compounds", []):
         rank_score = compound.get("rank_score")
-        if rank_score is None:
-            continue
-        if (
-            query_form and query_form.get("compound_rank_score") is not None
-        ) and rank_score <= query_form.get("compound_rank_score"):
+
+        if (query_form and query_form.get("compound_rank_score") is not None) and (
+            rank_score and rank_score <= query_form.get("compound_rank_score")
+        ):
             compound["is_dismissed"] = True
             continue
 
         if query_form and query_form.get("compound_follow_filter"):
             compound_var_obj = store.variant(compound.get("variant"))
-
-            LOG.debug(
-                "Compound mirror: compound is %s, compound_var_obj %s", compound, compound_var_obj
-            )
 
             compound_mirror_lt_items = ["cadd_score", "end"]
 
@@ -463,20 +458,10 @@ def hide_compounds_query(store, variant_obj, query_form):
                 if query_form_item is not None:
                     compound_item = compound_var_obj.get(item)
                     if compound_item is None:
-                        LOG.debug(
-                            "Shading %s since it has has no value for %s",
-                            compound.get("display_name"),
-                            item,
-                        )
                         compound["is_dismissed"] = True
                         continue
 
                     if compound_item < query_form_item:
-                        LOG.debug(
-                            "Shading %s since it has has too low value for %s",
-                            compound.get("display_name"),
-                            item,
-                        )
                         compound["is_dismissed"] = True
                         continue
 
@@ -487,20 +472,10 @@ def hide_compounds_query(store, variant_obj, query_form):
                 if query_form_item is not None:
                     compound_item = compound_var_obj.get(item)
                     if compound_item is None:
-                        LOG.debug(
-                            "Shading %s since it has has no value for %s",
-                            compound.get("display_name"),
-                            item,
-                        )
                         compound["is_dismissed"] = True
                         continue
 
                     if compound_item > query_form_item:
-                        LOG.debug(
-                            "Shading %s since it has has too low value for %s",
-                            compound.get("display_name"),
-                            item,
-                        )
                         compound["is_dismissed"] = True
                         continue
 
@@ -519,7 +494,6 @@ def hide_compounds_query(store, variant_obj, query_form):
 
                 compound_item = compound_var_obj.get(compound_item_name)
                 if compound_item is None:
-                    LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
                     continue
 
                 if compound_item >= query_form_item:
@@ -537,26 +511,18 @@ def hide_compounds_query(store, variant_obj, query_form):
             for item in compound_mirror_in_items:
                 compound_items = compound_var_obj.get(item)
                 if not compound_items:
-                    LOG.debug("Compound %s has no value for %s", compound.get("display_name"), item)
                     continue
                 query_form_items = query_form.get(item)
 
                 if query_form_items:
                     if set(compound_items).isdisjoint(set(query_form_items)):
-                        LOG.debug(
-                            "Shading variant since disjoint for %s since query_form_items is %s",
-                            item,
-                            query_form_items,
-                        )
                         compound["is_dismissed"] = True
                         continue
 
             spidex_human = query_form.get("spidex_human")
             if spidex_human:
                 compound_spidex = compound_var_obj.get("spidex")
-                if compound_spidex is None:
-                    LOG.debug("Compound %s has no value for spidex", compound.get("display_name"))
-                else:
+                if compound_spidex is not None:
                     keep = False
                     for level in SPIDEX_HUMAN:
                         if level in spidex_human:

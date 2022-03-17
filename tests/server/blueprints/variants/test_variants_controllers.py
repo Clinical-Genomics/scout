@@ -2,7 +2,6 @@ import copy
 import logging
 
 from bson.objectid import ObjectId
-from flask import url_for
 from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField
 
@@ -10,6 +9,7 @@ from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
     compounds_need_updating,
     gene_panel_choices,
+    hide_compounds_query,
     match_gene_txs_variant_txs,
     populate_chrom_choices,
     sv_variants,
@@ -50,6 +50,86 @@ def test_compounds_need_updating():
     ]
     # THEN the function that checks if the compounds need updating should return False
     assert compounds_need_updating(compounds, dismissed_variants) is False
+
+
+def test_hide_compounds_follow_filter(app, variant_obj):
+    """Test hiding compounds from view given hide compounds follow filter options"""
+
+    # GIVEN a variant
+    test_cadd = 15
+    compound_variant_obj = {
+        "_id": "a_compound",
+        "case_id": variant_obj["case_id"],
+        "chromosome": variant_obj["chromosome"],
+        "position": variant_obj["position"] + 3,
+        "reference": "A",
+        "alternative": "G",
+        "cadd_score": test_cadd,
+    }
+    store.variant_collection.insert_one(compound_variant_obj)
+
+    compound_variant_dict = {
+        "variant": "a_compound",
+        "is_dismissed": False,
+    }
+
+    # GIVEN a variant with the other variant as an only compound
+    variant_obj["compounds"] = [compound_variant_dict]
+
+    # WHEN asking for hiding compounds with higher rank score threshold
+    query_form = {"cadd_score": test_cadd + 1, "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears dismissed
+    assert compounds[0]["is_dismissed"]
+
+
+def test_hide_compounds_query_rank(app, variant_obj):
+    """Test hiding compounds from view given a compound rank score filter option"""
+
+    # GIVEN a variant
+    test_rank_score = 4
+    compound_variant_obj = {
+        "_id": "a_compound",
+        "case_id": variant_obj["case_id"],
+        "chromosome": variant_obj["chromosome"],
+        "position": variant_obj["position"] + 3,
+        "reference": "A",
+        "alternative": "G",
+        "rank_score": test_rank_score,
+        "is_dismissed": False,
+    }
+    store.variant_collection.insert_one(compound_variant_obj)
+
+    # GIVEN a variant with the other as an only compound
+    variant_obj["compounds"] = [compound_variant_obj]
+
+    # WHEN asking for a lower score threshold
+    query_form = {"compound_rank_score": test_rank_score - 1}
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound is still not dismissed
+    assert compounds[0]["is_dismissed"] is False
+
+    # WHEN asking for hiding compounds with higher rank score threshold
+    query_form = {"compound_rank_score": test_rank_score + 1}
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears dismissed
+    assert compounds[0]["is_dismissed"]
 
 
 def test_populate_chrom_choices(app):
