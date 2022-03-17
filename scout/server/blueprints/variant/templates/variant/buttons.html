@@ -151,7 +151,7 @@
         <input type="hidden" name="sample" value="{{aln.sample_names|join(',')}}">
         <input type="hidden" name="mt_bam" value="{{aln.mt_bams|join(',')}}">
         <input type="hidden" name="mt_bai" value="{{aln.mt_bais|join(',')}}">
-        <button class="btn btn-sm btn-secondary" name="align" value="mt_bam" type=submit>IGV viewer</button>
+        <button class="btn btn-sm btn-secondary text-white" name="align" value="mt_bam" type=submit title="Launch an IGV.js viewer">IGV viewer</button>
       {% else %}
         <span class="text-muted">MT BAM file(s) missing</span>
       {% endif %}
@@ -187,7 +187,7 @@
       {% if case.upd_sites_beds %}
         <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
       {% endif %}
-      <button class="btn btn-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
+      <button class="btn btn-secondary btn-sm form-control" name="align" value="bam" type="submit" title="Launch an IGV.js viewer">IGV viewer</button>
     {% else %}
       <span class="text-muted">BAM file(s) missing</span>
     {% endif %}
