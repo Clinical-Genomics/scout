@@ -501,17 +501,17 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
     if spidex_human:
         compound_spidex = compound_var_obj.get("spidex")
         if compound_spidex is not None:
-            keep = False
-            for level in SPIDEX_HUMAN:
-                if level in spidex_human:
-                    if (
-                        compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
-                        and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
-                    ) or (
-                        compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
-                        and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
-                    ):
-                        keep = True
+            keep = any(
+                (
+                    compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
+                    and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
+                )
+                or (
+                    compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
+                    and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
+                )
+                for level in SPIDEX_HUMAN
+            )
             if not keep:
                 compound["is_dismissed"] = True
 
