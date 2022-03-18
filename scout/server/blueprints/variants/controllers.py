@@ -618,7 +618,9 @@ def _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
         if compound_clnsig:
             for compound_clnsig_item in compound_clnsig:
                 clnsig_value = compound_clnsig_item.get("value")
-                if clnsig_value in query_rank or str_re.match(clnsig_value):
+                if clnsig_value in query_rank or (
+                    isinstance(clnsig_value, str) and str_re.match(clnsig_value)
+                ):
                     return False
 
         compound["is_dismissed"] = True
