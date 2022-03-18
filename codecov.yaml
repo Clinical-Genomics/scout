@@ -1,0 +1,17 @@
+coverage:
+  status:
+    patch: false
+    project:
+      default:
+        # basic
+        target: auto
+        threshold: 0.3%
+        base: auto
+        paths:
+          - "scout"
+       # advanced settings
+        branches:
+          - main
+        if_ci_failed: error #success, failure, error, ignore
+        informational: false
+        only_pulls: false
