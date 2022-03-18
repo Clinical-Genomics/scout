@@ -66,8 +66,6 @@ def test_hide_compounds_follow_filter(app, variant_obj):
         "reference": "A",
         "alternative": "G",
         "cadd_score": test_cadd,
-        "spidex": -1.5,
-        "region_annotations": ["exonic"],
         "local_obs_old": 10,
     }
     store.variant_collection.insert_one(compound_variant_obj)
@@ -134,7 +132,6 @@ def test_hide_compounds_follow_filter_spidex(app, variant_obj):
     """Test hiding compounds from view given hide compounds follow filter options"""
 
     # GIVEN a variant
-    test_cadd = 15
     compound_variant_obj = {
         "_id": "a_compound",
         "case_id": variant_obj["case_id"],
@@ -143,10 +140,7 @@ def test_hide_compounds_follow_filter_spidex(app, variant_obj):
         "end": variant_obj["position"] + 3,
         "reference": "A",
         "alternative": "G",
-        "cadd_score": test_cadd,
         "spidex": -1.5,
-        "region_annotation": "exonic",
-        "local_obs_old": 10,
     }
     store.variant_collection.insert_one(compound_variant_obj)
 
@@ -186,7 +180,6 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
         "alternative": "G",
         "cadd_score": test_cadd,
         "spidex": -1.5,
-        "region_annotations": ["exonic"],
         "local_obs_old": 10,
     }
     store.variant_collection.insert_one(compound_variant_obj)
@@ -194,6 +187,7 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
     compound_variant_dict = {
         "variant": "a_compound",
         "is_dismissed": False,
+        "region_annotations": ["exonic"],
     }
 
     # GIVEN a variant with the other variant as an only compound
@@ -223,6 +217,9 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
 
     # THEN the only compound now appears hidden
     assert compounds[0]["is_dismissed"]
+
+    # WHEN setting it back to visible
+    compound_variant_dict["is_dismissed"] = False
 
 
 def test_hide_compounds_query_rank(app, variant_obj):

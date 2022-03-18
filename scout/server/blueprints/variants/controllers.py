@@ -527,8 +527,6 @@ def _compound_follow_filter_in(compound, compound_var_obj, query_form):
     Returns boolean, true if the compound was hidden.
     """
     compound_follow_in_items = [
-        "region_annotations",
-        "functional_annotations",
         "clinsig",
         "svtype",
         "genetic_models",
@@ -536,12 +534,49 @@ def _compound_follow_filter_in(compound, compound_var_obj, query_form):
     for item in compound_follow_in_items:
         query_form_items = query_form.get(item)
         if query_form_items:
+
             compound_items = compound_var_obj.get(item)
+            LOG.info(
+                "item %s compound items %s query_form items %s",
+                item,
+                compound_items,
+                query_form_items,
+            )
             if not compound_items:
                 compound["is_dismissed"] = True
                 return True
 
-            print("compound items ", compound_items, " query_form items ", query_form_items)
+            if set(compound_items).isdisjoint(set(query_form_items)):
+                compound["is_dismissed"] = True
+                return True
+    return False
+
+
+def _compound_follow_filter_in_compound(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the ones with
+    multiple categories such as region and functional annotations. These are transferred to the compound dict itself
+    upon creation, from the compound_var_obj genes and transcripts.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    compound_follow_in_items = [
+        "region_annotations",
+        "functional_annotations",
+    ]
+    for item in compound_follow_in_items:
+        query_form_items = query_form.get(item)
+        if query_form_items:
+            compound_items = compound.get(item)
+            if not compound_items:
+                compound["is_dismissed"] = True
+                return True
+
             if set(compound_items).isdisjoint(set(query_form_items)):
                 compound["is_dismissed"] = True
                 return True
@@ -605,6 +640,9 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
         return
 
     if _compound_follow_filter_in(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_in_compound(compound, compound_var_obj, query_form):
         return
 
     if _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
