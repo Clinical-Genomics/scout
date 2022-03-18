@@ -249,7 +249,7 @@ def case_append_alignments(case_obj):
         append_safe(
             case_obj,
             "sample_names",
-            case_obj["display_name"] + " - " + individual.get("display_name"),
+            case_obj.get("display_name", "") + " - " + individual.get("display_name", ""),
         )
         for setting in unwrap_settings:
             file_path = individual.get(setting["path"])

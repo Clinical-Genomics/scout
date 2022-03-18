@@ -55,6 +55,7 @@
                             sourceType: "{{ custTrack.sourceType }}",
                             url: "{{ custTrack.url|replace('%2F','/') }}",
                             displayMode: "{{ custTrack.displayMode }}",
+                            visibilityWindow: {{ custTrack.visibilityWindow }},
                             order: Number.MIN_VALUE,
                             {% if custTrack.name == "Genes" %}
                                 indexURL: "{{ custTrack.indexURL|replace('%2F','/') }}",

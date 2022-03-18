@@ -124,12 +124,14 @@
   <form role="form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
     <!-- general hidden fields required to submit POST request to IGV viewer -->
     <input type="hidden" name="build" value="{{case.genome_build}}">
-    <input type="hidden" name="contig" value="{{variant.chromosome}}">
-    <input type="hidden" name="start" value="{{variant.position - 50}}">
-    <input type="hidden" name="stop" value="{{variant.position + 50}}">
+    {% if variant %}
+      <input type="hidden" name="contig" value="{{variant.chromosome}}">
+      <input type="hidden" name="start" value="{{variant.position - 50}}">
+      <input type="hidden" name="stop" value="{{variant.position + 50}}">
+    {% endif %}
     <!-- end of general hidden form fields -->
     {% set aln = namespace(sample_names=[],mt_bams=[], mt_bais=[], bam_files=[], bai_files=[]) %}
-    {% if variant.chromosome in ["MT","M"] %}
+    {% if variant and variant.chromosome in ["MT","M"] %}
       {% if case_groups %}
         {% for group_id, case_group in case_groups.items() %}
             {% for grouped_case in case_group %}
@@ -149,7 +151,7 @@
         <input type="hidden" name="sample" value="{{aln.sample_names|join(',')}}">
         <input type="hidden" name="mt_bam" value="{{aln.mt_bams|join(',')}}">
         <input type="hidden" name="mt_bai" value="{{aln.mt_bais|join(',')}}">
-        <button class="btn btn-sm btn-secondary" name="align" value="mt_bam" type=submit>IGV viewer</button>
+        <button class="btn btn-sm btn-secondary text-white" name="align" value="mt_bam" type=submit title="Launch an IGV.js viewer">IGV viewer</button>
       {% else %}
         <span class="text-muted">MT BAM file(s) missing</span>
       {% endif %}
@@ -185,7 +187,7 @@
       {% if case.upd_sites_beds %}
         <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
       {% endif %}
-      <button class="btn btn-secondary btn-sm" name="align" value="bam" type="submit">IGV viewer</button>
+      <button class="btn btn-secondary btn-sm form-control" name="align" value="bam" type="submit" title="Launch an IGV.js viewer">IGV viewer</button>
     {% else %}
       <span class="text-muted">BAM file(s) missing</span>
     {% endif %}
