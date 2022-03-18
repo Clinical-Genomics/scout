@@ -534,15 +534,18 @@ def _compound_follow_filter_in(compound, compound_var_obj, query_form):
         "genetic_models",
     ]
     for item in compound_follow_in_items:
-        compound_items = compound_var_obj.get(item)
-        if not compound_items:
-            continue
-
         query_form_items = query_form.get(item)
         if query_form_items:
+            compound_items = compound_var_obj.get(item)
+            if not compound_items:
+                compound["is_dismissed"] = True
+                return True
+
+            print("compound items ", compound_items, " query_form items ", query_form_items)
             if set(compound_items).isdisjoint(set(query_form_items)):
                 compound["is_dismissed"] = True
-                continue
+                return True
+    return False
 
 
 def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
@@ -563,18 +566,21 @@ def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
     if spidex_human:
         compound_spidex = compound_var_obj.get("spidex")
         if compound_spidex is not None:
-            keep = any(
-                (
-                    compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
-                    and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
-                )
-                or (
-                    compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
-                    and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
+            hide = any(
+                level in spidex_human
+                and (
+                    (
+                        compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
+                        and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
+                    )
+                    or (
+                        compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
+                        and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
+                    )
                 )
                 for level in SPIDEX_HUMAN
             )
-            if not keep:
+            if hide:
                 compound["is_dismissed"] = True
 
 

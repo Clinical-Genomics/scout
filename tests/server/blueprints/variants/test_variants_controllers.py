@@ -159,7 +159,7 @@ def test_hide_compounds_follow_filter_spidex(app, variant_obj):
     variant_obj["compounds"] = [compound_variant_dict]
 
     # WHEN asking for hiding compounds with higher rank score threshold
-    query_form = {"spidex_human": "medium", "compound_follow_filter": True}
+    query_form = {"spidex_human": ["medium"], "compound_follow_filter": True}
 
     # WHEN calling the function
     hide_compounds_query(store, variant_obj, query_form)
@@ -186,7 +186,7 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
         "alternative": "G",
         "cadd_score": test_cadd,
         "spidex": -1.5,
-        "region_annotation": "exonic",
+        "region_annotations": ["exonic"],
         "local_obs_old": 10,
     }
     store.variant_collection.insert_one(compound_variant_obj)
@@ -199,8 +199,9 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
     # GIVEN a variant with the other variant as an only compound
     variant_obj["compounds"] = [compound_variant_dict]
 
-    # WHEN asking for hiding compounds with higher rank score threshold
-    query_form = {"region_annotation": ["exonic"], "compound_follow_filter": True}
+    print("variant obj", variant_obj)
+    # WHEN asking for hiding compounds that do match a region annotation
+    query_form = {"region_annotations": ["exonic"], "compound_follow_filter": True}
 
     # WHEN calling the function
     hide_compounds_query(store, variant_obj, query_form)
@@ -208,7 +209,19 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
     # WHEN checking its compounds
     compounds = variant_obj.get("compounds")
 
-    # THEN the only compound now appears dismissed
+    # THEN the only compound now appears included
+    assert compounds[0]["is_dismissed"] is False
+
+    # but WHEN asking for hiding compounds that do not match a region annotation
+    query_form = {"region_annotations": ["intronic"], "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears hidden
     assert compounds[0]["is_dismissed"]
 
 
