@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os.path
+import re
 from datetime import date
 
 import bson
@@ -18,6 +19,7 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
+    CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
@@ -514,6 +516,9 @@ def _compound_follow_filter_gt(compound, compound_var_obj, query_form):
     return False
 
 
+#        "genetic_models",
+
+
 def _compound_follow_filter_in(compound, compound_var_obj, query_form):
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
@@ -526,19 +531,20 @@ def _compound_follow_filter_in(compound, compound_var_obj, query_form):
         query_form(VariantFiltersForm)
     Returns boolean, true if the compound was hidden.
     """
-    compound_follow_in_items = [
-        "clinsig",
-        "svtype",
-        "genetic_models",
-    ]
-    for item in compound_follow_in_items:
+
+    # keys as in form, values as on variant_obj
+    compound_follow_in_items = {
+        "svtype": "sub_category",
+    }
+    for item, compound_item_name in compound_follow_in_items.items():
         query_form_items = query_form.get(item)
         if query_form_items:
 
-            compound_items = compound_var_obj.get(item)
+            compound_items = compound_var_obj.get(compound_item_name)
             LOG.info(
-                "item %s compound items %s query_form items %s",
+                "item %s compound item %s compound items %s query_form items %s",
                 item,
+                compound_item_name,
                 compound_items,
                 query_form_items,
             )
@@ -580,6 +586,44 @@ def _compound_follow_filter_in_compound(compound, compound_var_obj, query_form):
             if set(compound_items).isdisjoint(set(query_form_items)):
                 compound["is_dismissed"] = True
                 return True
+    return False
+
+
+def _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some filter options that are rather unique, like the ClinVar one.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    query_rank = []
+    query_str_rank = []
+
+    clinsig = query_form.get("clinsig")
+    if clinsig:
+        for item in clinsig:
+            query_rank.append(int(item))
+            # also search for human readable clinsig values
+            query_rank.append(CLINSIG_MAP[int(item)])
+            query_str_rank.append(CLINSIG_MAP[int(item)])
+
+        str_re = re.compile("|".join(query_str_rank))
+
+        compound_clnsig = compound_var_obj.get("clnsig")
+        LOG.debug("compound_var_obj %s", compound_var_obj)
+        if compound_clnsig:
+            for compound_clnsig_item in compound_clnsig:
+                clnsig_value = compound_clnsig_item.get("value")
+                if clnsig_value in query_rank or str_re.match(clnsig_value):
+                    return False
+
+        compound["is_dismissed"] = True
+        return True
+
     return False
 
 
@@ -643,6 +687,9 @@ def compound_follow_filter(compound, compound_var_obj, query_form):
         return
 
     if _compound_follow_filter_in_compound(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
         return
 
     if _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
