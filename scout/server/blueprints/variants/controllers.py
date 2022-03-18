@@ -615,6 +615,7 @@ def hide_compounds_query(store, variant_obj, query_form):
     """Check compound against current query form values.
     Check the query hide rank score, and dismiss compound from current view if its rank score is equal or lower.
     If compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+    If a hiding compounds was engaged, non_loaded variants are considered of small interest to the users and also shaded.
     Args:
         store(scout.adapter.MongoAdapter)
         variant_obj(scout.models.Variant)
@@ -628,13 +629,17 @@ def hide_compounds_query(store, variant_obj, query_form):
         rank_score = compound.get("rank_score")
 
         if query_form.get("compound_rank_score") is not None and (
-            rank_score and rank_score <= query_form.get("compound_rank_score")
+            rank_score is None
+            or (rank_score and rank_score <= query_form.get("compound_rank_score"))
         ):
             compound["is_dismissed"] = True
             continue
 
         if query_form.get("compound_follow_filter"):
             compound_var_obj = store.variant(compound.get("variant"))
+            if not compound_var_obj:
+                compound["is_dismissed"] = True
+                continue
 
             compound_follow_filter(compound, compound_var_obj, query_form)
 
