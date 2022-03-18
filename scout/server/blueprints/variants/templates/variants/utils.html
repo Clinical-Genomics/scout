@@ -39,6 +39,12 @@
       var the_form = document.forms['filters_form'];
       the_form.submit();
     };
+
+    $(document).ready(function(){
+      if(document.getElementById('compound_follow_filter').checked || document.getElementById('compound_rank_score').value) {
+        $('#hidecompounds').collapse('show');
+      }
+    });
   </script>
 {% endmacro %}
 
@@ -47,7 +53,7 @@
     {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
       {% if gt.alt_frequency and gt.alt_frequency < 0.9 and gt.alt_frequency != -1 %}
         <a data-toggle="tooltip" data-html="true" title="<div>Heteroplasmy: {{ (100*gt.alt_frequency)|round(3) }}%</div>">
-        <span class="badge badge-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span>
+          <span class="badge badge-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span></a>
       {% endif %}
     {% endfor %}
   {% endfor %}
@@ -289,7 +295,7 @@
       <div id="hidecompounds" class="collapse form-group row">
         <div class="col-4">{{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds at this score or below as if dismissed") }}</div>
         <div class="col-3">{{ form.compound_rank_score(class="form-control", placeholder="example: 10", onchange="this.form.submit()") }}</div>
-        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ml-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by the essentially the same filter as the main variant. Frequency, CADD, SPIDEX, position, genetic models and variant categories shade and hide, but chromosome and gene panel do not.") }}</div>
+        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ml-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by essentially the same filter as the main variant. Frequency, CADD, SPIDEX, position, genetic models and variant categories shade and hide, but chromosome and gene panel do not. Not loaded compounds cannot be evaluated and instead become shaded.") }}</div>
       </div>
     </div>
     <div class="col-2">
@@ -771,7 +777,7 @@
 
 
 {% macro modal_prompt_filter_name(form) %}
-<div class="modal fade" id="filterNameModal" tabindex=""-1" role="dialog"
+<div class="modal fade" id="filterNameModal" tabindex="-1" role="dialog"
   aria-hidden="true" aria-labelledby="filterNameModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
