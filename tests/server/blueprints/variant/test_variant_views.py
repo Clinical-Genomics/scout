@@ -1,10 +1,70 @@
 # -*- coding: utf-8 -*-
 from urllib.parse import urlencode
 
+import responses
 from flask import current_app, url_for
 from flask_login import current_user
 
 from scout.server.extensions import store
+
+
+@responses.activate
+def test_marrvel_link_38(app, case_obj):
+    """Test the function that redirects to MARRVEL for a variant in build 37"""
+
+    # GIVEN a variant in genome build 38:
+    test_variant = {
+        "_id": "a_variant",
+        "case_id": case_obj["_id"],
+        "chromosome": "X",
+        "position": 1039265,
+        "reference": "T",
+        "alternative": "C",
+    }
+    store.variant_collection.insert_one(test_variant)
+
+    # GIVEN that the variant can be lifted over to build 37
+    url = f"http://grch37.rest.ensembl.org/map/human/GRCh38/{test_variant['chromosome']}:{test_variant['position']}..{test_variant['position']}/GRCh37?content-type=application/json"
+
+    liftover_mappings = {
+        "mappings": [
+            {
+                "original": {
+                    "assembly": "GRCh38",
+                    "seq_region_name": test_variant["chromosome"],
+                    "start": test_variant["position"],
+                    "end": test_variant["position"] + 100,
+                },
+                "mapped": {
+                    "assembly": "GRCh37",
+                    "seq_region_name": test_variant["chromosome"],
+                    "start": 1000000,
+                    "end": 1000100,
+                },
+            }
+        ]
+    }
+    responses.add(
+        responses.GET,
+        url,
+        json=liftover_mappings,
+        status=200,
+    )
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN user clicks on MARRVEL link for a variant in build 38
+        resp = client.get(
+            url_for(
+                "variant.marrvel_link",
+                build="38",
+                variant_id=test_variant["_id"],
+            )
+        )
+        # THEN page should redirect to MARRVEL
+        assert resp.status_code == 302
 
 
 def test_acmg(app):
