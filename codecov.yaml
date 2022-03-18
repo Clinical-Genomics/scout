@@ -7,8 +7,6 @@ coverage:
         target: auto
         threshold: 0.3%
         base: auto
-        flags:
-          - unit
         paths:
           - "scout"
        # advanced settings
