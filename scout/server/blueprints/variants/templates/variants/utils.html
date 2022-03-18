@@ -244,17 +244,21 @@
 </div>
 <div class="form-group">
   <div class="row">
-    <div class="col-1">
-      {{ form.gnomad_frequency.label(class="control-label") }}
-      {{ form.gnomad_frequency(class="form-control") }}
-    </div>
-    <div class="col-1">
-      {{ form.local_obs.label(class="control-label") }}
-      {{ form.local_obs(class="form-control") }}
-    </div>
-    <div class="col-2">
-      {{ form.chrom.label(class="control-label") }}
-      {{ form.chrom(class="selectpicker", data_actions_box="true") }}
+    <div class="col-4">
+      <div class ="row">
+        <div class="col-4">
+          {{ form.gnomad_frequency.label(class="control-label") }}
+          {{ form.gnomad_frequency(class="form-control") }}
+        </div>
+        <div class="col-4">
+          {{ form.local_obs.label(class="control-label") }}
+          {{ form.local_obs(class="form-control") }}
+        </div>
+        <div class="col-4">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="selectpicker", data_actions_box="true") }}
+        </div>
+      </div>
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.start) }}
@@ -285,7 +289,7 @@
       <div id="hidecompounds" class="collapse form-group row">
         <div class="col-4">{{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds at this score or below as if dismissed") }}</div>
         <div class="col-3">{{ form.compound_rank_score(class="form-control", placeholder="example: 10", onchange="this.form.submit()") }}</div>
-        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ml-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by frequency and category filter") }}</div>
+        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ml-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by the essentially the same filter as the main variant. Frequency, CADD, SPIDEX, position, genetic models and variant categories shade and hide, but chromosome and gene panel do not.") }}</div>
       </div>
     </div>
     <div class="col-2">
