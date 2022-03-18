@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update IGV.js to v2.11.2
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
+- Remove flags from codecov config file
 
 ## [4.50.1]
 ### Fixed
