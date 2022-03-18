@@ -7,9 +7,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Config file containing codecov settings for pull requests
+- Add an IGV.js direct link button from case page
 ### Changed
 - Updated deprecated Codecov GitHub action to v.2
 - Simplified code of scout/adapter/mongo/variant
+- Update IGV.js to v2.11.2
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
