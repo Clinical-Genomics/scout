@@ -140,7 +140,7 @@ def test_hide_compounds_follow_filter_spidex(app, variant_obj):
         "end": variant_obj["position"] + 3,
         "reference": "A",
         "alternative": "G",
-        "spidex": -1.5,
+        "spidex": -1.5,  # medium
     }
     store.variant_collection.insert_one(compound_variant_obj)
 
@@ -153,6 +153,24 @@ def test_hide_compounds_follow_filter_spidex(app, variant_obj):
     variant_obj["compounds"] = [compound_variant_dict]
 
     # WHEN asking for hiding compounds with higher rank score threshold
+    query_form = {"spidex_human": ["high"], "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound appears dismissed
+    assert compounds[0]["is_dismissed"]
+
+    # WHEN setting it back to visible
+    compound_variant_dict["is_dismissed"] = False
+
+    # GIVEN a variant with the other variant as an only compound
+    variant_obj["compounds"] = [compound_variant_dict]
+
+    # WHEN asking for hiding compounds within the spidex score interval
     query_form = {"spidex_human": ["medium"], "compound_follow_filter": True}
 
     # WHEN calling the function
@@ -161,8 +179,26 @@ def test_hide_compounds_follow_filter_spidex(app, variant_obj):
     # WHEN checking its compounds
     compounds = variant_obj.get("compounds")
 
-    # THEN the only compound now appears dismissed
-    assert compounds[0]["is_dismissed"]
+    # THEN the only compound does not appear dismissed
+    assert not compounds[0]["is_dismissed"]
+
+    # WHEN setting it back to visible
+    compound_variant_dict["is_dismissed"] = False
+
+    # GIVEN a variant with the other variant as an only compound
+    variant_obj["compounds"] = [compound_variant_dict]
+
+    # WHEN asking for hiding compounds within a spidex score interval with both the containing and the higher level
+    query_form = {"spidex_human": ["medium", "high"], "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound again appears not dismissed
+    assert not compounds[0]["is_dismissed"]
 
 
 def test_hide_compounds_follow_filter_region(app, variant_obj):

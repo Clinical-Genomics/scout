@@ -516,9 +516,6 @@ def _compound_follow_filter_gt(compound, compound_var_obj, query_form):
     return False
 
 
-#        "genetic_models",
-
-
 def _compound_follow_filter_in(compound, compound_var_obj, query_form):
     """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
 
@@ -647,7 +644,7 @@ def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
     if spidex_human:
         compound_spidex = compound_var_obj.get("spidex")
         if compound_spidex is not None:
-            hide = any(
+            keep = any(
                 level in spidex_human
                 and (
                     (
@@ -661,8 +658,11 @@ def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
                 )
                 for level in SPIDEX_HUMAN
             )
-            if hide:
+            if not keep:
                 compound["is_dismissed"] = True
+                return True
+
+    return False
 
 
 def compound_follow_filter(compound, compound_var_obj, query_form):
