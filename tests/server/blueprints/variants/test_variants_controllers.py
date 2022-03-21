@@ -258,6 +258,97 @@ def test_hide_compounds_follow_filter_region(app, variant_obj):
     compound_variant_dict["is_dismissed"] = False
 
 
+def test_hide_compounds_follow_filter_in(app, variant_obj):
+    """Test hiding compounds from view given hide compounds follow filter options"""
+
+    # GIVEN a variant
+    compound_variant_obj = {
+        "_id": "a_compound",
+        "case_id": variant_obj["case_id"],
+        "chromosome": variant_obj["chromosome"],
+        "position": variant_obj["position"] + 3,
+        "end": variant_obj["position"] + 3,
+        "reference": "A",
+        "alternative": "G",
+        "category": "sv",
+        "sub_category": "del",
+    }
+    store.variant_collection.insert_one(compound_variant_obj)
+
+    compound_variant_dict = {
+        "variant": "a_compound",
+        "is_dismissed": False,
+    }
+
+    # GIVEN a variant with the other variant as an only compound
+    variant_obj["compounds"] = [compound_variant_dict]
+
+    print("variant obj", variant_obj)
+
+    # WHEN asking for hiding compounds that do match a subtype annotation
+    query_form = {"svtype": ["dup", "del"], "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears included
+    assert compounds[0]["is_dismissed"] is False
+
+    # WHEN asking for hiding compounds that do not match a subtype annotation
+    query_form = {"svtype": ["inv"], "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound now appears dismissed
+    assert compounds[0]["is_dismissed"]
+
+
+def test_hide_compounds_follow_filter_clnsig(app, variant_obj):
+    """Test hiding compounds from view given hide compounds follow filter options"""
+
+    # GIVEN a variant
+    compound_variant_obj = {
+        "_id": "a_compound",
+        "case_id": variant_obj["case_id"],
+        "chromosome": variant_obj["chromosome"],
+        "position": variant_obj["position"] + 3,
+        "end": variant_obj["position"] + 3,
+        "reference": "A",
+        "alternative": "G",
+        "clnsig": [{"value": "Pathogenic", "accession": "RCV00123456.7", "revstat": "single"}],
+    }
+    store.variant_collection.insert_one(compound_variant_obj)
+
+    compound_variant_dict = {
+        "variant": "a_compound",
+        "is_dismissed": False,
+    }
+
+    # GIVEN a variant with the other variant as an only compound
+    variant_obj["compounds"] = [compound_variant_dict]
+
+    print("variant obj", variant_obj)
+
+    # WHEN asking for hiding compounds that do match a ClinVar annotation
+    query_form = {"clinsig": [4, 5], "compound_follow_filter": True}
+
+    # WHEN calling the function
+    hide_compounds_query(store, variant_obj, query_form)
+
+    # WHEN checking its compounds
+    compounds = variant_obj.get("compounds")
+
+    # THEN the only compound appears included
+    assert compounds[0]["is_dismissed"] is False
+
+
 def test_hide_compounds_query_rank(app, variant_obj):
     """Test hiding compounds from view given a compound rank score filter option"""
 

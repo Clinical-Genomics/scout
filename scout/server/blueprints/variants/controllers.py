@@ -536,8 +536,9 @@ def _compound_follow_filter_in(compound, compound_var_obj, query_form):
     for item, compound_item_name in compound_follow_in_items.items():
         query_form_items = query_form.get(item)
         if query_form_items:
+            compound_items = []
+            compound_items.append(compound_var_obj.get(compound_item_name))
 
-            compound_items = compound_var_obj.get(compound_item_name)
             LOG.info(
                 "item %s compound item %s compound items %s query_form items %s",
                 item,
@@ -547,10 +548,12 @@ def _compound_follow_filter_in(compound, compound_var_obj, query_form):
             )
             if not compound_items:
                 compound["is_dismissed"] = True
+                LOG.info("dismissing it!")
                 return True
 
             if set(compound_items).isdisjoint(set(query_form_items)):
                 compound["is_dismissed"] = True
+                LOG.info("dismissing it disjoint!")
                 return True
     return False
 
