@@ -7,7 +7,7 @@ from flask import Blueprint, Response, abort, flash, redirect, render_template, 
 from flask_login import current_user
 
 from scout.server.extensions import store
-from scout.server.utils import user_institutes
+from scout.server.utils import institute_and_case, user_institutes
 
 from . import controllers
 from .partial import send_file_partial
@@ -86,8 +86,13 @@ def sashimi_igv(institute_id, case_name, variant_id):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """
-    if institute_id in current_user.institutes or current_user.is_admin:
-        display_obj = controllers.make_sashimi_tracks(institute_id, case_name, variant_id)
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    if (
+        current_user.is_admin
+        or institute_id in current_user.institutes
+        or list(set(current_user.institutes) & set(case_obj.get("collaborators", [])))
+    ):
+        display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
         return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
     else:
         flash(
@@ -112,10 +117,13 @@ def igv(institute_id, case_name, variant_id, chrom=None, start=None, stop=None):
     Returns:
         a string, corresponging to the HTML rendering of the IGV alignments page
     """
-    if institute_id in current_user.institutes or current_user.is_admin:
-        display_obj = controllers.make_igv_tracks(
-            institute_id, case_name, variant_id, chrom, start, stop
-        )
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    if (
+        current_user.is_admin
+        or institute_id in current_user.institutes
+        or list(set(current_user.institutes) & set(case_obj.get("collaborators", [])))
+    ):
+        display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
         return render_template("alignviewers/igv_viewer.html", **display_obj)
     else:
         flash(

@@ -14,12 +14,12 @@ LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
-def make_igv_tracks(institute_id, case_name, variant_id, chrom=None, start=None, stop=None):
+def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     """Create a dictionary containing the required tracks for displaying IGV tracks for case or a group of cases
 
     Accepts:
         institute_id(str): institute _id
-        case_name(str): case display name
+        case_obj(dict): a case dictionary
         variant_id(str): _id of a variant
         chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
         start(int/None): start of the genomic interval to be displayed
@@ -32,9 +32,7 @@ def make_igv_tracks(institute_id, case_name, variant_id, chrom=None, start=None,
     variant_obj = store.variant(document_id=variant_id)
     if variant_obj is None:
         chrom = "All"
-    _, case_obj = institute_and_case(store, institute_id, case_name)
     case_append_alignments(case_obj)
-
     # Set genome build for displaying alignments:
     chromosome = chrom or variant_obj.get("chromosome")
     chromosome = chromosome.replace("MT", "M")
@@ -63,15 +61,15 @@ def make_igv_tracks(institute_id, case_name, variant_id, chrom=None, start=None,
 
     display_obj["display_center_guide"] = True
 
+    LOG.warning(display_obj)
     return display_obj
 
 
-def make_sashimi_tracks(institute_id, case_name, variant_id):
+def make_sashimi_tracks(case_name, variant_id):
     """Create a dictionary containing the required tracks for a splice junction plot
 
     Accepts:
-        institute_id(str): institute _id
-        case_name(str): case display name
+        case_obj(dict): a case dictionary
         variant_id(str) _id of a variant
     Returns:
         display_obj(dict): A display object containing case name, list of genes, lucus and tracks
@@ -79,7 +77,6 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
     build = "38"  # This feature is only available for RNA tracks in build 38
 
     variant_obj = store.variant(document_id=variant_id)
-    _, case_obj = institute_and_case(store, institute_id, case_name)
 
     # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
     locus_start_coords = []
