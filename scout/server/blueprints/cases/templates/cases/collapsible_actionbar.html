@@ -168,6 +168,8 @@
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank">
       <button role="submit" class="btn btn-xs form-control btn-secondary">IGV viewer</button>
     </form>
+  {% else %}
+    <span class="text-muted">BAM file(s) missing</span>
   {% endif %}
 </div>
 {% endmacro %}

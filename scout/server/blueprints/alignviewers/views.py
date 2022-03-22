@@ -103,6 +103,10 @@ def sashimi_igv(institute_id, case_name, variant_id):
 
 
 @alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>", methods=["GET"])
+@alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>/<variant_id>", methods=["GET"])
+@alignviewers_bp.route(
+    "/igv-viewer/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>", methods=["GET"]
+)
 def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=None):
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
 
