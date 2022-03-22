@@ -86,8 +86,8 @@ def sashimi_igv(institute_id, case_name, variant_id):
     return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
-@alignviewers_bp.route("/<institute_id>/<case_name>/<variant_id>", methods=["GET"])
-def igv():
+@alignviewers_bp.route("/igv_viewer/<institute_id>/<case_name>/<variant_id>", methods=["GET"])
+def igv(institute_id, case_name, variant_id):
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
 
     Accepts:
@@ -97,7 +97,6 @@ def igv():
     Returns:
         a string, corresponging to the HTML rendering of the IGV alignments page
     """
-
     return f"Case:{case_name} - Variant:{variant_id}"
 
     """

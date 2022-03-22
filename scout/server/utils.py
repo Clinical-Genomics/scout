@@ -201,7 +201,6 @@ def case_append_alignments(case_obj):
             file_path = individual.get(setting["path"])
             LOG.debug("filepath %s: ", file_path)
             if not (file_path and os.path.exists(file_path)):
-                LOG.debug("%s: no bam/cram file found", individual["individual_id"])
                 continue
             append_safe(case_obj, setting["append_to"], file_path)
             if not setting["index"] == "no_index":
