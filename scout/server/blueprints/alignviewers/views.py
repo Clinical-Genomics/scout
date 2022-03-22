@@ -94,12 +94,12 @@ def sashimi_igv(institute_id, case_name, variant_id):
     ):
         display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
         return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
-    else:
-        flash(
-            f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
-            "warning",
-        )
-        return redirect(request.referrer)
+
+    flash(
+        f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
+        "warning",
+    )
+    return redirect(request.referrer)
 
 
 @alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>", methods=["GET"])
@@ -129,9 +129,9 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     ):
         display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
         return render_template("alignviewers/igv_viewer.html", **display_obj)
-    else:
-        flash(
-            f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
-            "warning",
-        )
-        return redirect(request.referrer)
+
+    flash(
+        f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
+        "warning",
+    )
+    return redirect(request.referrer)
