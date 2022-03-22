@@ -207,7 +207,7 @@ VARIANT_FILTERS = {
 SPIDEX_HUMAN = {
     "low": {"neg": [-1, 0], "pos": [0, 1]},
     "medium": {"neg": [-2, -1], "pos": [1, 2]},
-    "high": {"neg": [-2, -float("inf")], "pos": [2, float("inf")]},
+    "high": {"neg": [-float("inf"), -2], "pos": [2, float("inf")]},
 }
 
 SPLICEAI_LIMITS = {
