@@ -188,8 +188,8 @@ def set_sample_tracks(display_obj, case_obj, chromosome):
     """
     sample_tracks = []
 
-    track_items = "mt_bams" if chromosome == "M" else "bams"
-    track_index_items = "mt_bais" if track_items == "mt_bams" else "bais"
+    track_items = "mt_bams" if chromosome == "M" else "bam_files"
+    track_index_items = "mt_bais" if track_items == "mt_bams" else "bai_files"
 
     if None in [
         case_obj.get("sample_names"),

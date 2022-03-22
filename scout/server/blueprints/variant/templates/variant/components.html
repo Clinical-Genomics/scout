@@ -63,7 +63,7 @@
 {% macro alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks=False) %}
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
-          {% if variant and variant.chromosome in ["MT","M"] or case.bam_files %}
+          {% if variant.chromosome in ["MT","M"] and case.mt_bams or case.bam_files %}
             <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a></span>
           {% else %}
             <span class="text-muted">BAM file(s) missing</span>
