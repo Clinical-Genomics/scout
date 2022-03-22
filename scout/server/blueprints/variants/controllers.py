@@ -594,6 +594,8 @@ def _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
 
     There are some filter options that are rather unique, like the ClinVar one.
 
+    If clinsig_confident_always_returned is checked, variants are currently never dismissed on ClinSig alone.
+
     Args:
         compound(dict)
         compound_variant_obj(scout.models.Variant)
@@ -602,6 +604,10 @@ def _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
     """
     query_rank = []
     query_str_rank = []
+
+    clinsig_always_returned = query_form.get("clinsig_confident_always_returned")
+    if clinsig_always_returned:
+        return False
 
     clinsig = query_form.get("clinsig")
     if clinsig:
