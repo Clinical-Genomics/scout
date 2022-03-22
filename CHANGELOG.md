@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Config file containing codecov settings for pull requests
 - Add an IGV.js direct link button from case page
 - Security policy file
+- Hide/shade compound variants based on rank score on variantS from filter
 ### Changed
 - Updated deprecated Codecov GitHub action to v.2
 - Simplified code of scout/adapter/mongo/variant
@@ -18,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
+- Fixed filter bug with high negative SPIDEX scores
 
 ## [4.50.1]
 ### Fixed
