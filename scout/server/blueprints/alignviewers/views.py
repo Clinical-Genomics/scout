@@ -91,13 +91,14 @@ def igv(institute_id, case_name, variant_id):
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
 
     Accepts:
-        case(str): case _id
-        variant(str): variant _id or None
+        institute_id(str): _id of an institute
+        case_name(str): dislay_name of a case
+        variant_id(str): variant _id or None
 
     Returns:
         a string, corresponging to the HTML rendering of the IGV alignments page
     """
-    return f"Case:{case_name} - Variant:{variant_id}"
+    return f"Institute:{institute_id} Case:{case_name} - Variant:{variant_id}"
 
     """
     # Set genome build for displaying alignments:
