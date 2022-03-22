@@ -102,14 +102,14 @@ def sashimi_igv(institute_id, case_name, variant_id):
         return redirect(request.referrer)
 
 
-@alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>/<variant_id>", methods=["GET"])
-def igv(institute_id, case_name, variant_id, chrom=None, start=None, stop=None):
+@alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>", methods=["GET"])
+def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=None):
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
 
     Accepts:
         institute_id(str): _id of an institute
         case_name(str): dislay_name of a case
-        variant_id(str): variant _id or None
+        variant_id(str/None): variant _id or None
         chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
         start(int/None): start of the genomic interval to be displayed
         stop(int/None): stop of the genomic interval to be displayed

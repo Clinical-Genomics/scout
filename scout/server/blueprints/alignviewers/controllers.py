@@ -32,10 +32,17 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     variant_obj = store.variant(document_id=variant_id)
     if variant_obj is None:
         chrom = "All"
+    else:
+        # Set display locus
+        start = start or variant_obj["position"]
+        stop = stop or variant_obj["end"]
+        display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
+
     case_append_alignments(case_obj)
     # Set genome build for displaying alignments:
     chromosome = chrom or variant_obj.get("chromosome")
     chromosome = chromosome.replace("MT", "M")
+    LOG.warning(f"chromosome:{chromosome}")
     if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "M":
         build = "38"
     else:
@@ -43,11 +50,6 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
 
     # Set general tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
     set_common_tracks(display_obj, build)
-
-    # Set display loqus
-    start = start or variant_obj["position"]
-    stop = stop or variant_obj["end"]
-    display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
 
     # Set up bam/cram alignments for case samples:
     set_sample_tracks(display_obj, case_obj, chromosome)
@@ -194,6 +196,7 @@ def set_sample_tracks(display_obj, case_obj, chromosome):
         case_obj.get(track_items),
         case_obj.get(track_index_items),
     ]:
+        display_obj["sample_tracks"] = []
         return
 
     for count, sample in enumerate(case_obj.get("sample_names")):
