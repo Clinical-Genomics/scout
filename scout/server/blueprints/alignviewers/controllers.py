@@ -14,6 +14,47 @@ LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
+def make_igv_tracks(institute_id, case_name, variant_id, chrom=None, start=None, stop=None):
+    """Create a dictionary containing the required tracks for displaying IGV tracks for case or a group of cases
+
+    Accepts:
+        institute_id(str): institute _id
+        case_name(str): case display name
+        variant_id(str): _id of a variant
+        chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
+        start(int/None): start of the genomic interval to be displayed
+        stop(int/None): stop of the genomic interval to be displayed
+
+    Returns:
+        display_obj(dict): A display object containing case name, list of genes, lucus and tracks
+    """
+    display_obj = {}
+    variant_obj = store.variant(document_id=variant_id)
+    if variant_obj is None:
+        chrom = "All"
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    # Set genome build for displaying alignments:
+    chromosome = chrom or variant_obj.get("chromosome")
+    chromosome = chromosome.replace("MT", "M")
+    if "38" in str(case_obj.get("genome_build", "37")) or chromosome == "M":
+        build = "38"
+    else:
+        build = "37"
+
+    # Set general tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
+    set_common_tracks(display_obj, build)
+
+    # Set display loqus
+    start = start or variant_obj["position"]
+    stop = stop or variant_obj["end"]
+    display_obj["loqus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
+
+    # Set sample tracks from case indoviduals and individuals from cases in the same case group
+    set_sample_tracks(display_obj, case_obj, chromosome)
+
+    return display_obj
+
+
 def make_sashimi_tracks(institute_id, case_name, variant_id):
     """Create a dictionary containing the required tracks for a splice junction plot
 
@@ -97,7 +138,7 @@ def make_sashimi_tracks(institute_id, case_name, variant_id):
     return display_obj
 
 
-def make_igv_tracks(name, file_list):
+def set_tracks(name, file_list):
     """Return a dict according to IGV track format."""
     track_list = []
     for track in file_list:
@@ -127,12 +168,16 @@ def set_common_tracks(display_obj, build):
             display_obj["custom_tracks"].append(track)
 
 
-def set_sample_tracks(display_obj, form):
+def set_sample_tracks(display_obj, case_obj, chromosome):
     """Set up individual-specific alignment tracks (bam/cram files)
 
     Args:
-        display_obj(dict) dictionary containing all tracks info
-        form(dict) flask request form dictionary
+        display_obj(dict): dictionary containing all tracks info
+        case_obj(dict):
+        chromosome(str) [1-22],X,Y,M or "All"
+    """
+    sample_tracks = []
+
     """
     samples = form.get("sample").split(",")
     sample_tracks = []
@@ -159,6 +204,7 @@ def set_sample_tracks(display_obj, form):
                 }
             )
         counter += 1
+    """
     display_obj["sample_tracks"] = sample_tracks
 
 
@@ -170,9 +216,10 @@ def set_case_specific_tracks(display_obj, form):
         form(dict) flask request form dictionary
     """
     for track, label in CASE_SPECIFIC_TRACKS.items():
-        if form.get(track):
-            track_info = make_igv_tracks(label, form.get(track).split(","))
-            display_obj[track] = track_info
+        if form.get(track) is None:
+            continue
+        track_info = set_tracks(label, form.get(track).split(","))
+        display_obj[track] = track_info
 
 
 def set_cloud_public_tracks(display_obj, build):

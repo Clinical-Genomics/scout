@@ -64,7 +64,7 @@
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
           {% if variant and variant.chromosome in ["MT","M"] or case.bam_files %}
-            <span><a class="btn btn-secondary btn-sm text-white" href="{{ url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case.get['display_name'], variant_id=variant['_id']) }}">IGV viewer</a></span>
+            <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a></span>
           {% else %}
             <span class="text-muted">BAM file(s) missing</span>
           {% endif %}

@@ -3,7 +3,11 @@ import logging
 import os.path
 
 import requests
-from flask import Blueprint, Response, abort, render_template, request, send_file
+from flask import Blueprint, Response, abort, flash, redirect, render_template, request, send_file
+from flask_login import current_user
+
+from scout.server.extensions import store
+from scout.server.utils import user_institutes
 
 from . import controllers
 from .partial import send_file_partial
@@ -82,46 +86,45 @@ def sashimi_igv(institute_id, case_name, variant_id):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """
-    display_obj = controllers.make_sashimi_tracks(institute_id, case_name, variant_id)
-    return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
+    if institute_id in current_user.institutes or current_user.is_admin:
+        display_obj = controllers.make_sashimi_tracks(institute_id, case_name, variant_id)
+        return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
+    else:
+        flash(
+            f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
+            "warning",
+        )
+        return redirect(request.referrer)
 
 
-@alignviewers_bp.route("/igv_viewer/<institute_id>/<case_name>/<variant_id>", methods=["GET"])
-def igv(institute_id, case_name, variant_id):
+@alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>/<variant_id>", methods=["GET"])
+def igv(institute_id, case_name, variant_id, chrom=None, start=None, stop=None):
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
 
     Accepts:
         institute_id(str): _id of an institute
         case_name(str): dislay_name of a case
         variant_id(str): variant _id or None
+        chrom(str/None): requested chromosome [1-22], X, Y, M
+        start(int/None): start of the genomic interval to be displayed
+        stop(int/None): stop of the genomic interval to be displayed
 
     Returns:
         a string, corresponging to the HTML rendering of the IGV alignments page
     """
-    return f"Institute:{institute_id} Case:{case_name} - Variant:{variant_id}"
+    if institute_id in current_user.institutes or current_user.is_admin:
+        display_obj = controllers.make_igv_tracks(
+            institute_id, case_name, variant_id, chrom, start, stop
+        )
+        return f"{display_obj}"
+    else:
+        flash(
+            f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
+            "warning",
+        )
+        return redirect(request.referrer)
 
     """
-    # Set genome build for displaying alignments:
-    # Genome build is 37 if request.form.get("build") is 37 and chr != MT
-    # Genome build is 38 if request.form.get("build") is 38 or if chrom == MT
-    chromosome_build = request.form.get("build")
-    chrom = request.form.get("contig")
-    if chrom == "MT":
-        chrom = "M"
-    if chromosome_build in ["GRCh38", "38"] or chrom == "M":
-        chromosome_build = "38"
-    else:
-        chromosome_build = "37"
-
-    start = request.form.get("start")
-    stop = request.form.get("stop")
-    locus = "chr{0}:{1}-{2}".format(chrom, start, stop)
-
-    display_obj = {}  # Initialize the dictionary containing all tracks info
-
-    # General tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
-    controllers.set_common_tracks(display_obj, chromosome_build)
-
     # Set up bam/cram alignments for case samples:
     controllers.set_sample_tracks(display_obj, request.form)
 
