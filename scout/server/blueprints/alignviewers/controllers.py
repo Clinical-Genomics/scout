@@ -7,7 +7,7 @@ from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import cloud_tracks, store
-from scout.server.utils import institute_and_case
+from scout.server.utils import case_append_alignments, institute_and_case
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -33,6 +33,8 @@ def make_igv_tracks(institute_id, case_name, variant_id, chrom=None, start=None,
     if variant_obj is None:
         chrom = "All"
     _, case_obj = institute_and_case(store, institute_id, case_name)
+    case_append_alignments(case_obj)
+
     # Set genome build for displaying alignments:
     chromosome = chrom or variant_obj.get("chromosome")
     chromosome = chromosome.replace("MT", "M")
@@ -47,10 +49,19 @@ def make_igv_tracks(institute_id, case_name, variant_id, chrom=None, start=None,
     # Set display loqus
     start = start or variant_obj["position"]
     stop = stop or variant_obj["end"]
-    display_obj["loqus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
+    display_obj["locus"] = "chr{0}:{1}-{2}".format(chromosome, start, stop)
 
-    # Set sample tracks from case indoviduals and individuals from cases in the same case group
+    # Set up bam/cram alignments for case samples:
     set_sample_tracks(display_obj, case_obj, chromosome)
+
+    # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
+    if chrom != "M":
+        set_case_specific_tracks(display_obj, case_obj)
+
+    # Set up custom cloud public tracks, if available
+    set_cloud_public_tracks(display_obj, build)
+
+    display_obj["display_center_guide"] = True
 
     return display_obj
 
@@ -178,37 +189,30 @@ def set_sample_tracks(display_obj, case_obj, chromosome):
     """
     sample_tracks = []
 
-    """
-    samples = form.get("sample").split(",")
-    sample_tracks = []
-    bam_files = None
-    bai_files = None
-    if form.get("align") == "mt_bam":
-        bam_files = form.get("mt_bam").split(",")
-        bai_files = form.get("mt_bai").split(",")
-    elif form.get("align") == "bam":
-        bam_files = form.get("bam").split(",")
-        bai_files = form.get("bai").split(",")
+    track_items = "mt_bams" if chromosome == "M" else "bams"
+    track_index_items = "mt_bais" if track_items == "mt_bams" else "bais"
 
-    counter = 0
-    for sample in samples:
-        # some samples might not have an associated bam file, take care if this
-        if len(bam_files) > counter and bam_files[counter]:
-            sample_tracks.append(
-                {
-                    "name": sample,
-                    "url": bam_files[counter],
-                    "format": bam_files[counter].split(".")[-1],  # "bam" or "cram"
-                    "indexURL": bai_files[counter],
-                    "height": 700,
-                }
-            )
-        counter += 1
-    """
+    if None in [
+        case_obj.get("sample_names"),
+        case_obj.get(track_items),
+        case_obj.get(track_index_items),
+    ]:
+        return
+
+    for count, sample in enumerate(case_obj.get("sample_names")):
+        sample_tracks.append(
+            {
+                "name": sample,
+                "url": case_obj[track_items][count],
+                "indexURL": case_obj[track_index_items][count],
+                "format": case_obj[track_items][count].split(".")[-1],  # "bam" or "cram"
+                "height": 700,
+            }
+        )
     display_obj["sample_tracks"] = sample_tracks
 
 
-def set_case_specific_tracks(display_obj, form):
+def set_case_specific_tracks(display_obj, case_obj):
     """Set up tracks from files that might be present or not at the case level
         (rhocall files, tiddit coverage files, upd regions and sites files)
     Args:
@@ -216,9 +220,9 @@ def set_case_specific_tracks(display_obj, form):
         form(dict) flask request form dictionary
     """
     for track, label in CASE_SPECIFIC_TRACKS.items():
-        if form.get(track) is None:
+        if case_obj.get(track) is None:
             continue
-        track_info = set_tracks(label, form.get(track).split(","))
+        track_info = set_tracks(label, case_obj.get(track).split(","))
         display_obj[track] = track_info
 
 

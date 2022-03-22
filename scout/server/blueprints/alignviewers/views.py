@@ -105,7 +105,7 @@ def igv(institute_id, case_name, variant_id, chrom=None, start=None, stop=None):
         institute_id(str): _id of an institute
         case_name(str): dislay_name of a case
         variant_id(str): variant _id or None
-        chrom(str/None): requested chromosome [1-22], X, Y, M
+        chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
         start(int/None): start of the genomic interval to be displayed
         stop(int/None): stop of the genomic interval to be displayed
 
@@ -116,26 +116,10 @@ def igv(institute_id, case_name, variant_id, chrom=None, start=None, stop=None):
         display_obj = controllers.make_igv_tracks(
             institute_id, case_name, variant_id, chrom, start, stop
         )
-        return f"{display_obj}"
+        return render_template("alignviewers/igv_viewer.html", **display_obj)
     else:
         flash(
             f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
             "warning",
         )
         return redirect(request.referrer)
-
-    """
-    # Set up bam/cram alignments for case samples:
-    controllers.set_sample_tracks(display_obj, request.form)
-
-    # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
-    if chrom != "M":
-        controllers.set_case_specific_tracks(display_obj, request.form)
-
-    # Set up custom cloud public tracks, if available
-    controllers.set_cloud_public_tracks(display_obj, chromosome_build)
-
-    display_obj["display_center_guide"] = True
-
-    return render_template("alignviewers/igv_viewer.html", locus=locus, **display_obj)
-    """
