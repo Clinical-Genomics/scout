@@ -336,12 +336,11 @@
     {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
       {% set chromograph.available = true %}
       <div class="panel-heading">
-        <h5 class="panel-title">
           <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
             <i class="fa"></i>
             Images {{i.display_name}}
           </a>
-        </h5>
+        (<a href = "https://clinical-genomics.github.io/scout/user-guide/cases#Cytogenomics">legend</a>)
       </div>
       <div id="collapse_{{i.individual_id}}" style="width:100%" class="panel-collapse collapse in">
         <div class="panel-body">
@@ -361,11 +360,12 @@
     {% for section_name in case.custom_images %}
       <div id="{{section_name}}-accordion" class="accordion">
         <div class="panel-heading">
-          <h5 class="panel-title">
+          <div class="panel-title">
             <a class="accordion-toggle" data-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
-              <i class="fa"></i>{{ section_name }} images
+              <i class="fa"></i>
+              {{ section_name }} images
             </a>
-          </h5>
+          </div>
         <div>
         <div id="collapse_{{ section_name }}" class="panel-collapse collapse pl-3">
           <div class="panel-body">
