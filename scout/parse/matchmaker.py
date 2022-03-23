@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-import json
 import logging
 
 LOG = logging.getLogger(__name__)
