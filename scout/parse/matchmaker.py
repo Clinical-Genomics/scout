@@ -52,6 +52,8 @@ def omim_terms(store, case_obj):
     case_disorders = case_obj.get("diagnosis_phenotypes")  # array of OMIM terms
     if case_disorders:
         for disorder in case_disorders:
+            if isinstance(disorder, dict):
+                disorder = disorder.get("disease_nr")
             omim_term = store.disease_term(disorder)
             if omim_term is None:
                 LOG.warning(f"Disease term {disorder} could not be found in database.")
