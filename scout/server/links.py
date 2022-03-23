@@ -373,7 +373,7 @@ def iarctp53(hgnc_symbol):
     if hgnc_symbol != "TP53":
         return None
 
-    link = "https://p53.iarc.fr/TP53GeneVariations.aspx"
+    link = "https://tp53.isb-cgc.org/"
 
     return link
 
