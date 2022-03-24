@@ -32,7 +32,7 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     variant_obj = store.variant(document_id=variant_id)
 
     if variant_obj:
-        # Set display loqus
+        # Set display locus
         start = start or variant_obj["position"]
         stop = stop or variant_obj["end"]
 
@@ -75,7 +75,6 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
 
     display_obj["display_center_guide"] = True
 
-    LOG.warning(display_obj)
     return display_obj
 
 
