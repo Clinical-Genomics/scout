@@ -39,6 +39,12 @@
       var the_form = document.forms['filters_form'];
       the_form.submit();
     };
+
+    $(document).ready(function(){
+      if(document.getElementById('compound_follow_filter').checked || document.getElementById('compound_rank_score').value) {
+        $('#hidecompounds').collapse('show');
+      }
+    });
   </script>
 {% endmacro %}
 
@@ -47,7 +53,7 @@
     {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
       {% if gt.alt_frequency and gt.alt_frequency < 0.9 and gt.alt_frequency != -1 %}
         <a data-toggle="tooltip" data-html="true" title="<div>Heteroplasmy: {{ (100*gt.alt_frequency)|round(3) }}%</div>">
-        <span class="badge badge-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span>
+          <span class="badge badge-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span></a>
       {% endif %}
     {% endfor %}
   {% endfor %}
@@ -201,10 +207,6 @@
       {{ form.genetic_models.label(class="control-label") }}
       {{ form.genetic_models(class="selectpicker") }}
     </div>
-    <div class="col-2">
-      {{ form.clinvar_tag() }}
-      {{ form.clinvar_tag.label(class="ml-2") }}
-    </div>
   </div>
 </div>
 <div class="form-group">
@@ -236,25 +238,33 @@
       {{ form.clinsig.label(class="control-label") }}
       {{ form.clinsig(class="selectpicker") }}
     </div>
-    <div class="col-2">
+    <div class="col-1">
       {{ form.clinsig_confident_always_returned.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Always show selected CLINSIG entries with trusted revision status levels.") }}
       <div>{{ form.clinsig_confident_always_returned() }}</div>
+    </div>
+    <div class="col-1">
+      {{ form.clinvar_tag() }}
+      {{ form.clinvar_tag.label(class="ml-2") }}
     </div>
   </div>
 </div>
 <div class="form-group">
   <div class="row">
-    <div class="col-1">
-      {{ form.gnomad_frequency.label(class="control-label") }}
-      {{ form.gnomad_frequency(class="form-control") }}
-    </div>
-    <div class="col-1">
-      {{ form.local_obs.label(class="control-label") }}
-      {{ form.local_obs(class="form-control") }}
-    </div>
-    <div class="col-2">
-      {{ form.chrom.label(class="control-label") }}
-      {{ form.chrom(class="selectpicker", data_actions_box="true") }}
+    <div class="col-4">
+      <div class ="row">
+        <div class="col-4">
+          {{ form.gnomad_frequency.label(class="control-label") }}
+          {{ form.gnomad_frequency(class="form-control") }}
+        </div>
+        <div class="col-4">
+          {{ form.local_obs.label(class="control-label") }}
+          {{ form.local_obs(class="form-control") }}
+        </div>
+        <div class="col-4">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="selectpicker", data_actions_box="true") }}
+        </div>
+      </div>
     </div>
     <div class="col-2">
       {{ wtf.form_field(form.start) }}
@@ -271,16 +281,30 @@
   </div>
   <div class="row">
     <div class="col-2">
-      <a class="btn btn-secondary btn-sm" data-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
+      <a class="btn btn-secondary btn-sm form-control" data-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
         String coordinates
       </a>
     </div>
-    <div class="col-3 offset-1">
-      <div id="stringcoords" class="collapse">
-        {{ wtf.form_field(form.chrom_pos) }}
+    <div class="col-4">
+      <div id="stringcoords" class="collapse form-group row">
+        <div class="col-4">{{ form.chrom_pos.label(class="control-label") }}</div>
+        <div class="col-8">{{ form.chrom_pos(class="form-control") }}</div>
       </div>
     </div>
+    <div class="col-4">
+      <div id="hidecompounds" class="collapse form-group row">
+        <div class="col-4">{{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds at this score or below as if dismissed") }}</div>
+        <div class="col-3">{{ form.compound_rank_score(class="form-control", placeholder="example: 10", onchange="this.form.submit()") }}</div>
+        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ml-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by essentially the same filter as the main variant. CADD, CLINSIG, Frequency, function, position, region, SPIDEX, and variant type shade and hide, but chromosome, gene panel, and inheritance model do not. Checkbox ClinVar hits is not considered. Checkbox Always show CLNSIG disables ClinVar shading for the compound. Not loaded compounds cannot be evaluated and instead become shaded.") }}</div>
+      </div>
+    </div>
+    <div class="col-2">
+      <a class="btn btn-secondary btn-sm form-control" data-toggle="collapse" href="#hidecompounds" aria-expanded="false" aria-controls="hidecompounds">
+        Hide compounds
+      </a>
+    </div>
   </div>
+
 </div>
 <div class="form-group">
   <div class="row justify-content-between" style="margin-top:20px;">
@@ -753,7 +777,7 @@
 
 
 {% macro modal_prompt_filter_name(form) %}
-<div class="modal fade" id="filterNameModal" tabindex=""-1" role="dialog"
+<div class="modal fade" id="filterNameModal" tabindex="-1" role="dialog"
   aria-hidden="true" aria-labelledby="filterNameModalLabel">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
