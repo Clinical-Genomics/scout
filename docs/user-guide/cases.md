@@ -35,7 +35,7 @@ Rank model version shows which rank model that has been used to rank the variant
 
 The "Activity" feed is a reverse chronological list of events and comments related to the case. Examples of events include comments, status updates, assignments, Sanger sequencing orders etc.
 
-### Cytogenomics
+### Cytogenomics <a name="Cytogenomics"></a>
 The case page contains three (admin configuration optional) cytogenomics applications: [Gens](https://github.com/Clinical-Genomics-Lund/gens), [Chromograph](https://github.com/mikaell/chromograph) and [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure).
 Gens integration is available via the "View CN profile" button on the case page as well as the "Copy number profile" links under SV variant summary on each SV variant page.
 Chromograph integration can be found under the Images cards on the case page. Chromograph will display ideograms, genome coverage from [TIDDIT](https://github.com/SciLifeLab/TIDDIT) (orange graph), autozygosity from [rhocall][rhocall] (gray bars) and UPD calls from [UPD.py](https://github.com/bjhall/upd). UPD calls are colored deep red for maternal UPD candidate regions,
