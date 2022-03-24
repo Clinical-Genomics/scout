@@ -3,7 +3,6 @@ import responses
 from flask import url_for
 from flask_login import current_user
 
-from scout.commands.update.individual import individual as ind_cmd
 from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import cloud_tracks, store
 
