@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add an IGV.js direct link button from case page
 - Security policy file
 - Hide/shade compound variants based on rank score on variantS from filter
+- Chromograph legend documentation direct link
 ### Changed
 - Updated deprecated Codecov GitHub action to v.2
 - Simplified code of scout/adapter/mongo/variant
