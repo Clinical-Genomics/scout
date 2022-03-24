@@ -1,6 +1,7 @@
 import datetime
 import logging
 import os.path
+import re
 from datetime import date
 
 import bson
@@ -18,9 +19,11 @@ from scout.constants import (
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
+    CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
+    SPIDEX_HUMAN,
     VARIANT_FILTERS,
 )
 from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
@@ -53,7 +56,16 @@ def populate_chrom_choices(form, case_obj):
     form.chrom.choices = [(chrom, chrom) for chrom in chromosomes]
 
 
-def variants(store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50):
+def variants(
+    store,
+    institute_obj,
+    case_obj,
+    variants_query,
+    variant_count,
+    page=1,
+    per_page=50,
+    query_form=None,
+):
     """Pre-process list of variants."""
 
     skip_count = per_page * max(page - 1, 0)
@@ -110,6 +122,7 @@ def variants(store, institute_obj, case_obj, variants_query, variant_count, page
                 update=True,
                 genome_build=genome_build,
                 case_dismissed_vars=case_dismissed_vars,
+                query_form=query_form,
             )
         )
 
@@ -328,33 +341,19 @@ def compounds_need_updating(compounds, dismissed):
     return False
 
 
-def parse_variant(
-    store,
-    institute_obj,
-    case_obj,
-    variant_obj,
-    update=False,
-    genome_build="37",
-    get_compounds=True,
-    case_dismissed_vars=[],
-):
-    """Parse information about variants.
-    - Adds information about compounds
-    - Updates the information about compounds if necessary and 'update=True'
+def update_compounds(store, variant_obj, case_dismissed_vars):
+    """Check if gene symbol or compound info needs updating and sort compounds.
     Args:
         store(scout.adapter.MongoAdapter)
-        institute_obj(scout.models.Institute)
-        case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
-        update(bool): If variant should be updated in database
-        get_compounds(bool): if compounds should be added to added to the returned variant object
-        genome_build(str)
-        case_dismissed_vars(list): list of dismissed variants for this case
+        case_dismissed_variants(list): dismissed vars for this case
+    Returns:
+        has_changed(boolean)
     """
     has_changed = False
     compounds = variant_obj.get("compounds", [])
 
-    if compounds and get_compounds:
+    if compounds:
         # Check if we need to update compound information
         if compounds_need_updating(compounds, case_dismissed_vars):
             new_compounds = store.update_variant_compounds(variant_obj)
@@ -366,15 +365,32 @@ def parse_variant(
             variant_obj["compounds"], key=lambda compound: -compound["combined_score"]
         )
 
-    # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
-    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
-        variant_obj["genes"] = []
-        for hgnc_id in variant_obj.get("hgnc_ids"):
-            variant_gene = {"hgnc_id": hgnc_id}
-            variant_obj["genes"].append(variant_gene)
+    return has_changed
+
+
+def update_variant_genes(store, variant_obj, genome_build):
+    """Check if variant gene symbols or phenotype needs updating.
+    We update the variant if some information was missing from loading.
+    Or if gene symbols in reference genes have changed.
+    Args:
+        store(scout.adapter.MongoAdapter)
+        variant_obj(scout.models.Variant)
+        genome_build(str)
+    Returns:
+        has_changed(boolean)
+    """
+    has_changed = False
 
     # Update the hgnc symbols if they are incorrect
     variant_genes = variant_obj.get("genes")
+
+    # use hgnc_ids to populate variant genes if missing, e.g. for STR variants
+    if not variant_genes and variant_obj.get("hgnc_ids"):
+        variant_obj["genes"] = []
+        for hgnc_id in variant_obj.get("hgnc_ids"):
+            has_changed = True
+            variant_gene = {"hgnc_id": hgnc_id}
+            variant_obj["genes"].append(variant_gene)
 
     if variant_genes is not None:
         for gene_obj in variant_genes:
@@ -392,16 +408,373 @@ def parse_variant(
                 gene_obj["phenotypes"] = hgnc_gene.get("phenotypes")
             add_gene_links(gene_obj, genome_build)
 
-    # We update the variant if some information was missing from loading
-    # Or if symbold in reference genes have changed
-    if update and has_changed:
-        try:
-            variant_obj = store.update_variant(variant_obj)
-        except DocumentTooLarge:
-            flash(
-                f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
-                "warning",
+    return has_changed
+
+
+def update_variant_store(store, variant_obj):
+    """
+    Update variants in db store if anything changed.
+    Args:
+        store(scout.adapter.MongoAdapter)
+        variant_obj(scout.models.Variant)
+
+        update(boolean): upsert only if this is set true
+
+        get_compounds(bool): if compounds should be added to added to the returned variant object
+
+    """
+    try:
+        variant_obj = store.update_variant(variant_obj)
+    except DocumentTooLarge:
+        flash(
+            f"An error occurred while updating info for variant: {variant_obj['_id']} (pymongo_errors.DocumentTooLarge: {len(bson.BSON.encode(variant_obj))})",
+            "warning",
+        )
+
+
+def _compound_follow_filter_freq(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the freq items
+    are filtered the same way.
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    """
+
+    # keys as in form, values as on variant_obj
+    compound_follow_freq_items = {
+        "gnomad_frequency": "gnomad_frequency",
+        "local_obs": "local_obs_old",
+        "clingen_ngi": "clingen_ngi",
+        "swegen": "swegen",
+    }
+
+    for item, compound_item_name in compound_follow_freq_items.items():
+        query_form_item = query_form.get(item)
+        if query_form_item is None:
+            continue
+
+        compound_item = compound_var_obj.get(compound_item_name)
+        if compound_item is None:
+            continue
+
+        if compound_item >= query_form_item:
+            compound["is_dismissed"] = True
+            return True
+
+    return False
+
+
+def _compound_follow_filter_lt(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    compound_follow_lt_items = ["cadd_score", "end"]
+
+    for item in compound_follow_lt_items:
+        query_form_item = query_form.get(item)
+        if query_form_item is not None:
+            compound_item = compound_var_obj.get(item)
+            if compound_item is None or compound_item < query_form_item:
+                compound["is_dismissed"] = True
+                return True
+
+    return False
+
+
+def _compound_follow_filter_gt(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the positions.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+
+    compound_follow_gt_items = ["position"]
+
+    for item in compound_follow_gt_items:
+        query_form_item = query_form.get(item)
+        if query_form_item is not None:
+            compound_item = compound_var_obj.get(item)
+            if compound_item is None or compound_item > query_form_item:
+                compound["is_dismissed"] = True
+                return True
+
+    return False
+
+
+def _compound_follow_filter_in(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the ones with
+    multiple categories such as sv_type or clin_sig.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+
+    # keys as in form, values as on variant_obj
+    compound_follow_in_items = {
+        "svtype": "sub_category",
+    }
+    for item, compound_item_name in compound_follow_in_items.items():
+        query_form_items = query_form.get(item)
+        if query_form_items:
+            compound_items = []
+            compound_items.append(compound_var_obj.get(compound_item_name))
+
+            LOG.info(
+                "item %s compound item %s compound items %s query_form items %s",
+                item,
+                compound_item_name,
+                compound_items,
+                query_form_items,
             )
+            if not compound_items:
+                compound["is_dismissed"] = True
+                LOG.info("dismissing it!")
+                return True
+
+            if set(compound_items).isdisjoint(set(query_form_items)):
+                compound["is_dismissed"] = True
+                LOG.info("dismissing it disjoint!")
+                return True
+    return False
+
+
+def _compound_follow_filter_in_compound(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the ones with
+    multiple categories such as region and functional annotations. These are transferred to the compound dict itself
+    upon creation, from the compound_var_obj genes and transcripts.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    compound_follow_in_items = [
+        "region_annotations",
+        "functional_annotations",
+    ]
+    for item in compound_follow_in_items:
+        query_form_items = query_form.get(item)
+        if query_form_items:
+            compound_items = compound.get(item)
+            if not compound_items:
+                compound["is_dismissed"] = True
+                return True
+
+            if set(compound_items).isdisjoint(set(query_form_items)):
+                compound["is_dismissed"] = True
+                return True
+    return False
+
+
+def _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some filter options that are rather unique, like the ClinVar one.
+
+    If clinsig_confident_always_returned is checked, variants are currently never dismissed on ClinSig alone.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    query_rank = []
+    query_str_rank = []
+
+    clinsig_always_returned = query_form.get("clinsig_confident_always_returned")
+    if clinsig_always_returned:
+        return False
+
+    clinsig = query_form.get("clinsig")
+    if clinsig:
+        for item in clinsig:
+            query_rank.append(int(item))
+            # also search for human readable clinsig values
+            query_rank.append(CLINSIG_MAP[int(item)])
+            query_str_rank.append(CLINSIG_MAP[int(item)])
+
+        str_re = re.compile("|".join(query_str_rank))
+
+        compound_clnsig = compound_var_obj.get("clnsig")
+        LOG.debug("compound_var_obj %s", compound_var_obj)
+        if compound_clnsig:
+            for compound_clnsig_item in compound_clnsig:
+                clnsig_value = compound_clnsig_item.get("value")
+                if clnsig_value in query_rank or (
+                    isinstance(clnsig_value, str) and str_re.match(clnsig_value)
+                ):
+                    return False
+
+        compound["is_dismissed"] = True
+        return True
+
+    return False
+
+
+def _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some filter options that are rather unique, like the leveled spidex one. SPIDEX score levels are symmetric
+    around 0, with different level ranges, so that e.g. the intervals [-1, -2] and [1, 2] are both medium.
+    The spidex score on the variant object is a scalar. The user selects one or more levels such as "medium" to filter in
+    the query.
+
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    Returns boolean, true if the compound was hidden.
+    """
+    spidex_human = query_form.get("spidex_human")
+    if spidex_human:
+        compound_spidex = compound_var_obj.get("spidex")
+        if compound_spidex is not None:
+            keep = any(
+                level in spidex_human
+                and (
+                    (
+                        compound_spidex > SPIDEX_HUMAN[level]["neg"][0]
+                        and compound_spidex < SPIDEX_HUMAN[level]["neg"][1]
+                    )
+                    or (
+                        compound_spidex > SPIDEX_HUMAN[level]["pos"][0]
+                        and compound_spidex < SPIDEX_HUMAN[level]["pos"][1]
+                    )
+                )
+                for level in SPIDEX_HUMAN
+            )
+            if not keep:
+                compound["is_dismissed"] = True
+                return True
+
+    return False
+
+
+def compound_follow_filter(compound, compound_var_obj, query_form):
+    """When compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+
+    There are some similarities between how the query options are filtered that we can reuse, e.g. the freq items
+    are filtered the same way.
+    Args:
+        compound(dict)
+        compound_variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    """
+
+    if _compound_follow_filter_lt(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_gt(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_freq(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_in(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_in_compound(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
+        return
+
+    if _compound_follow_filter_spidex(compound, compound_var_obj, query_form):
+        return
+
+
+def hide_compounds_query(store, variant_obj, query_form):
+    """Check compound against current query form values.
+    Check the query hide rank score, and dismiss compound from current view if its rank score is equal or lower.
+    If compound follow filter is selected, apply relevant settings from the query filter onto dismissing compounds.
+    If a hiding compounds was engaged, non_loaded variants are considered of small interest to the users and also shaded.
+    Args:
+        store(scout.adapter.MongoAdapter)
+        variant_obj(scout.models.Variant)
+        query_form(VariantFiltersForm)
+    """
+
+    if not query_form:
+        return
+
+    for compound in variant_obj.get("compounds", []):
+        rank_score = compound.get("rank_score")
+
+        if query_form.get("compound_rank_score") is not None and (
+            rank_score is None or rank_score <= query_form.get("compound_rank_score")
+        ):
+            compound["is_dismissed"] = True
+            continue
+
+        if query_form.get("compound_follow_filter"):
+            compound_var_obj = store.variant(compound.get("variant"))
+            if not compound_var_obj:
+                compound["is_dismissed"] = True
+                continue
+
+            compound_follow_filter(compound, compound_var_obj, query_form)
+
+
+def parse_variant(
+    store,
+    institute_obj,
+    case_obj,
+    variant_obj,
+    update=False,
+    genome_build="37",
+    get_compounds=True,
+    case_dismissed_vars=[],
+    query_form=None,
+):
+    """Parse information about variants.
+    - Adds information about compounds and genes
+    - Updates some information about compounds if necessary and 'update=True'
+    - Hide compound variants if query form filter indicates so.
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        institute_obj(scout.models.Institute)
+        case_obj(scout.models.Case)
+        variant_obj(scout.models.Variant)
+        update(bool): If variant should be updated in database
+        get_compounds(bool): if compounds should be added to added to the returned variant object
+        genome_build(str)
+        case_dismissed_vars(list): list of dismissed variants for this case
+        query_form(dict): query form for additional compounds filtering
+    """
+
+    compounds_have_changed = False
+    if get_compounds:
+        compounds_have_changed = update_compounds(store, variant_obj, case_dismissed_vars)
+
+    genes_have_changed = update_variant_genes(store, variant_obj, genome_build)
+
+    if update and (compounds_have_changed or genes_have_changed):
+        update_variant_store(store, variant_obj)
 
     variant_obj["comments"] = store.events(
         institute_obj,
@@ -414,13 +787,18 @@ def parse_variant(
         variant_obj, user_institutes(store, current_user)
     )
 
+    variant_genes = variant_obj.get("genes")
     if variant_genes:
         variant_obj.update(predictions(variant_genes))
         if variant_obj.get("category") == "cancer":
             variant_obj.update(get_variant_info(variant_genes))
 
-    for compound_obj in compounds:
-        compound_obj.update(predictions(compound_obj.get("genes", [])))
+    if get_compounds:
+        compounds = variant_obj.get("compounds", [])
+        for compound_obj in compounds:
+            compound_obj.update(predictions(compound_obj.get("genes", [])))
+
+    hide_compounds_query(store, variant_obj, query_form)
 
     classification = variant_obj.get("acmg_classification")
     if isinstance(classification, int):
