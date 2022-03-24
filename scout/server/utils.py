@@ -166,8 +166,8 @@ def case_has_alignments(case_obj):
         case_obj(scout.models.Case)
     """
     case_obj["bam_files"] = False  # Availability of alignments for autosomal chromosomes
-    for ind in case_obj.get(individuals):
-        if ind.get("bam_file"):
+    for ind in case_obj.get("individuals"):
+        if ind.get("bam_file") and ind.get("bam_file") != "":
             case_obj["bam_files"] = True
             return
 
@@ -179,8 +179,8 @@ def case_has_mt_alignments(case_obj):
         case_obj(scout.models.Case)
     """
     case_obj["mt_bams"] = False  # Availability of alignments for MT chromosome
-    for ind in case_obj.get(individuals):
-        if ind.get("mt_bam"):
+    for ind in case_obj.get("individuals"):
+        if ind.get("mt_bam") and ind.get("mt_bam") != "":
             case_obj["mt_bams"] = True
             return
 
