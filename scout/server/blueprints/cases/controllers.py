@@ -41,7 +41,7 @@ from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, pars
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
-from scout.server.utils import institute_and_case
+from scout.server.utils import case_has_alignments, case_has_mt_alignments, institute_and_case
 from scout.utils.scout_requests import delete_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
@@ -154,6 +154,10 @@ def case(store, institute_obj, case_obj):
         case_obj["individual_ids"].append(individual["individual_id"])
 
     case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
+
+    # Provide basic info on alignment files availability for this case
+    case_has_alignments(case_obj)
+    case_has_mt_alignments(case_obj)
 
     case_groups = {}
     case_group_label = {}

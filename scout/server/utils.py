@@ -136,8 +136,6 @@ def variant_case(store, case_obj, variant_obj):
         variant_obj(scout.models.Variant)
     """
 
-    case_append_alignments(case_obj)
-
     chrom = None
     starts = []
     ends = []
@@ -159,6 +157,32 @@ def variant_case(store, case_obj, variant_obj):
         case_obj["region_vcf_file"] = vcf_path
     except FileNotFoundError as err:
         LOG.warning(err)
+
+
+def case_has_alignments(case_obj):
+    """Add info on bam/cram files availability to a case dictionary
+
+    Args:
+        case_obj(scout.models.Case)
+    """
+    case_obj["bam_files"] = False  # Availability of alignments for autosomal chromosomes
+    for ind in case_obj.get(individuals):
+        if ind.get("bam_file"):
+            case_obj["bam_files"] = True
+            return
+
+
+def case_has_mt_alignments():
+    """Add info on MT bam files availability to a case dictionary
+
+    Args:
+        case_obj(scout.models.Case)
+    """
+    case_obj["mt_bams"] = False  # Availability of alignments for MT chromosome
+    for ind in case_obj.get(individuals):
+        if ind.get("mt_bam"):
+            case_obj["mt_bams"] = True
+            return
 
 
 def case_append_alignments(case_obj):

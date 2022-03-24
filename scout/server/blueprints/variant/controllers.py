@@ -238,6 +238,10 @@ def variant(
     if add_case:
         variant_case(store, case_obj, variant_obj)
 
+    # Provide basic info on alignment files availability for this case
+    case_has_alignments(case_obj)
+    case_has_mt_alignments(case_obj)
+
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:

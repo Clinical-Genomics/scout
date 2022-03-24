@@ -196,6 +196,10 @@ def str_variants(
 
     return_view_data = {}
 
+    # Provide basic info on alignment files availability for this case
+    case_has_alignments(case_obj)
+    case_has_mt_alignments(case_obj)
+
     return_view_data.update(
         variants(
             store,
