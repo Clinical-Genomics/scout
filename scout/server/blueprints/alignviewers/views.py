@@ -3,7 +3,7 @@ import logging
 import os.path
 
 import requests
-from flask import Blueprint, Response, abort, flash, redirect, render_template, request, send_file
+from flask import Blueprint, Response, abort, render_template, request, send_file
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -80,32 +80,24 @@ def unindexed_remote_static():
 
 
 @alignviewers_bp.route(
-    "/igv-splice-junctions/<institute_id>/<case_name>/<variant_id>", methods=["GET"]
+    "/<institute_id>/<case_name>/<variant_id>/igv-splice-junctions", methods=["GET"]
 )
 def sashimi_igv(institute_id, case_name, variant_id):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """
-    _, case_obj = institute_and_case(store, institute_id, case_name)
-    if (
-        current_user.is_admin
-        or institute_id in current_user.institutes
-        or list(set(current_user.institutes) & set(case_obj.get("collaborators", [])))
-    ):
-        display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
-        return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function takes care of checking if user is authorized to see resource
 
-    flash(
-        f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
-        "warning",
-    )
-    return redirect(request.referrer)
+    display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
+    return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
-@alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>", methods=["GET"])
-@alignviewers_bp.route("/igv-viewer/<institute_id>/<case_name>/<variant_id>", methods=["GET"])
+@alignviewers_bp.route("/<institute_id>/<case_name>/igv", methods=["GET"])
+@alignviewers_bp.route("/<institute_id>/<case_name>/<variant_id>/igv", methods=["GET"])
 @alignviewers_bp.route(
-    "/igv-viewer/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>", methods=["GET"]
+    "/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>/igv", methods=["GET"]
 )
 def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=None):
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
@@ -121,17 +113,9 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     Returns:
         a string, corresponging to the HTML rendering of the IGV alignments page
     """
-    _, case_obj = institute_and_case(store, institute_id, case_name)
-    if (
-        current_user.is_admin
-        or institute_id in current_user.institutes
-        or list(set(current_user.institutes) & set(case_obj.get("collaborators", [])))
-    ):
-        display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
-        return render_template("alignviewers/igv_viewer.html", **display_obj)
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function takes care of checking if user is authorized to see resource
 
-    flash(
-        f"Current user doesn't have access to institute `{institute_id}`, case `{case_name}`",
-        "warning",
-    )
-    return redirect(request.referrer)
+    display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
+    return render_template("alignviewers/igv_viewer.html", **display_obj)
