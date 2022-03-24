@@ -489,8 +489,8 @@ def test_build_spidex_high(adapter):
                     "$or": [
                         {
                             "$and": [
-                                {"spidex": {"$gt": -2}},
-                                {"spidex": {"$lt": -float("inf")}},
+                                {"spidex": {"$gt": -float("inf")}},
+                                {"spidex": {"$lt": -2}},
                             ]
                         },
                         {
