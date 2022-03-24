@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove flags from codecov config file
 - Fixed filter bug with high negative SPIDEX scores
 - Renamed button and modified link to IACR TP53, that has been moved to the US NCI: `https://tp53.isb-cgc.org/`
+- Parsing new format of OMIM case info when exporting patients to Matchmaker
 
 ## [4.50.1]
 ### Fixed
