@@ -17,9 +17,9 @@ CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     """Create a dictionary containing the required tracks for displaying IGV tracks for case or a group of cases
 
-    Accepts:
+    Args:
         institute_id(str): institute _id
-        case_obj(dict): a case dictionary
+        case_obj(scout.models.Case)
         variant_id(str): _id of a variant
         chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
         start(int/None): start of the genomic interval to be displayed
@@ -71,8 +71,8 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
 def make_sashimi_tracks(case_obj, variant_id):
     """Create a dictionary containing the required tracks for a splice junction plot
 
-    Accepts:
-        case_obj(dict): a case dictionary
+    Args:
+        case_obj(scout.models.Case)
         variant_id(str) _id of a variant
     Returns:
         display_obj(dict): A display object containing case name, list of genes, lucus and tracks
@@ -184,7 +184,7 @@ def set_sample_tracks(display_obj, case_obj, chromosome):
 
     Args:
         display_obj(dict): dictionary containing all tracks info
-        case_obj(dict):
+        case_obj(scout.models.Case):
         chromosome(str) [1-22],X,Y,M or "All"
     """
     sample_tracks = []

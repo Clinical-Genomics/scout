@@ -23,12 +23,7 @@ from scout.parse.clinvar import set_submission_objects
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import get_variant_links
-from scout.server.utils import (
-    case_append_alignments,
-    institute_and_case,
-    user_institutes,
-    variant_case,
-)
+from scout.server.utils import institute_and_case, user_institutes, variant_case
 from scout.utils.scout_requests import fetch_refseq_version
 
 from .utils import (
@@ -243,14 +238,6 @@ def variant(
     if add_case:
         variant_case(store, case_obj, variant_obj)
 
-    # Fetch ids for grouped cases and prepare alignment display
-    case_groups = {}
-    if case_obj.get("group"):
-        for group in case_obj.get("group"):
-            case_groups[group] = list(store.cases(group=group))
-            for grouped_case in case_groups[group]:
-                case_append_alignments(grouped_case)
-
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
     for event in events:
@@ -360,7 +347,6 @@ def variant(
     return {
         "institute": institute_obj,
         "case": case_obj,
-        "case_groups": case_groups,
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,

@@ -34,7 +34,7 @@ from scout.server.blueprints.variant.utils import (
     update_representative_gene,
 )
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
-from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
+from scout.server.utils import institute_and_case, user_institutes
 
 from .forms import CancerFiltersForm  # noqa: F401
 from .forms import (
@@ -202,18 +202,6 @@ def str_variants(
     """Pre-process list of STR variants."""
 
     return_view_data = {}
-
-    # case bam_files for quick access to alignment view.
-    case_append_alignments(case_obj)
-
-    # Fetch ids for grouped cases and prepare alignment display
-    case_groups = {}
-    if case_obj.get("group"):
-        for group in case_obj.get("group"):
-            case_groups[group] = list(store.cases(group=group))
-            for grouped_case in case_groups[group]:
-                case_append_alignments(grouped_case)
-        return_view_data["case_groups"] = case_groups
 
     return_view_data.update(
         variants(
