@@ -25,9 +25,7 @@ def test_make_sashimi_tracks_variant_38(app, case_obj):
         assert resp.status_code == 200
 
         # THEN it should return the expected data
-        display_obj = controllers.make_sashimi_tracks(
-            case_obj["owner"], case_obj["display_name"], test_variant["_id"]
-        )
+        display_obj = controllers.make_sashimi_tracks(case_obj, test_variant["_id"])
         assert display_obj["case"] == case_obj["display_name"]
         assert display_obj["locus"]
         assert display_obj["tracks"][0]["name"]
