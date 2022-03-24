@@ -94,11 +94,13 @@ def sashimi_igv(institute_id, case_name, variant_id):
     return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
-@alignviewers_bp.route("/<institute_id>/<case_name>/igv", methods=["GET"])
-@alignviewers_bp.route("/<institute_id>/<case_name>/<variant_id>/igv", methods=["GET"])
+@alignviewers_bp.route("/<institute_id>/<case_name>/igv", methods=["GET"])  # from case page
+@alignviewers_bp.route(
+    "/<institute_id>/<case_name>/<variant_id>/igv", methods=["GET"]
+)  # from SNV and STR variant page
 @alignviewers_bp.route(
     "/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>/igv", methods=["GET"]
-)
+)  # from SV variant page, where you have to pass breakpoints coordinates
 def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=None):
     """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
 
