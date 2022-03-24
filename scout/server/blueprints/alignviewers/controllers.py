@@ -51,7 +51,7 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     # Set general tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
     set_common_tracks(display_obj, build)
 
-    # Build tracks for main case and all connected case (cases grouped with main case)
+    # Build tracks for main case and all connected cases (cases grouped with main case)
     grouped_cases = []
     for group in case_obj.get("group", []):
         group_cases = list(store.cases(group=group))

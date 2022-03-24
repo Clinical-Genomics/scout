@@ -23,7 +23,13 @@ from scout.parse.clinvar import set_submission_objects
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import get_variant_links
-from scout.server.utils import institute_and_case, user_institutes, variant_case
+from scout.server.utils import (
+    case_has_alignments,
+    case_has_mt_alignments,
+    institute_and_case,
+    user_institutes,
+    variant_case,
+)
 from scout.utils.scout_requests import fetch_refseq_version
 
 from .utils import (
