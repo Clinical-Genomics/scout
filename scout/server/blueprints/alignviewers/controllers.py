@@ -30,7 +30,6 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     """
     display_obj = {}
     variant_obj = store.variant(document_id=variant_id)
-    case_append_alignments(case_obj)
 
     if variant_obj:
         # Set display loqus
@@ -52,8 +51,20 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     # Set general tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
     set_common_tracks(display_obj, build)
 
-    # Set up bam/cram alignments for case samples:
-    set_sample_tracks(display_obj, case_obj, chromosome)
+    # Build tracks for main case and all connected case (cases grouped with main case)
+    grouped_cases = []
+    for group in case_obj.get("group", []):
+        group_cases = list(store.cases(group=group))
+        for case in group_cases:
+            case_append_alignments(case)  # Add track data to connected case dictionary
+            grouped_cases.append(case)
+
+    if not grouped_cases:  # Display case individuals tracks only
+        case_append_alignments(case_obj)  # Add track data to main case dictionary
+        grouped_cases.append(case_obj)
+
+    # Set up bam/cram alignments for case group samples:
+    set_sample_tracks(display_obj, grouped_cases, chromosome)
 
     # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
     if chrom != "M":
@@ -179,12 +190,12 @@ def set_common_tracks(display_obj, build):
             display_obj["custom_tracks"].append(track)
 
 
-def set_sample_tracks(display_obj, case_obj, chromosome):
+def set_sample_tracks(display_obj, case_groups, chromosome):
     """Set up individual-specific alignment tracks (bam/cram files)
 
     Args:
         display_obj(dict): dictionary containing all tracks info
-        case_obj(scout.models.Case):
+        case_groups(list): a list of case dictionaries
         chromosome(str) [1-22],X,Y,M or "All"
     """
     sample_tracks = []
@@ -192,25 +203,27 @@ def set_sample_tracks(display_obj, case_obj, chromosome):
     track_items = "mt_bams" if chromosome == "M" else "bam_files"
     track_index_items = "mt_bais" if track_items == "mt_bams" else "bai_files"
 
-    if None in [
-        case_obj.get("sample_names"),
-        case_obj.get(track_items),
-        case_obj.get(track_index_items),
-    ]:
-        display_obj["sample_tracks"] = []
-        return
+    # Loop over a group of cases and add tracks for every individual of of every case
+    for case in case_groups:
+        if None in [
+            case.get("sample_names"),
+            case.get(track_items),
+            case.get(track_index_items),
+        ]:
+            case["sample_tracks"] = []
+            return
 
-    for count, sample in enumerate(case_obj.get("sample_names")):
-        sample_tracks.append(
-            {
-                "name": sample,
-                "url": case_obj[track_items][count],
-                "indexURL": case_obj[track_index_items][count],
-                "format": case_obj[track_items][count].split(".")[-1],  # "bam" or "cram"
-                "height": 700,
-            }
-        )
-    display_obj["sample_tracks"] = sample_tracks
+        for count, sample in enumerate(case.get("sample_names")):
+            sample_tracks.append(
+                {
+                    "name": sample,
+                    "url": case[track_items][count],
+                    "indexURL": case[track_index_items][count],
+                    "format": case[track_items][count].split(".")[-1],  # "bam" or "cram"
+                    "height": 700,
+                }
+            )
+        display_obj["sample_tracks"] = sample_tracks
 
 
 def set_case_specific_tracks(display_obj, case_obj):
