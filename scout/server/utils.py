@@ -172,7 +172,7 @@ def case_has_alignments(case_obj):
             return
 
 
-def case_has_mt_alignments():
+def case_has_mt_alignments(case_obj):
     """Add info on MT bam files availability to a case dictionary
 
     Args:
