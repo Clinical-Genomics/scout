@@ -36,7 +36,7 @@ from scout.server.blueprints.variant.utils import (
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
 
-from .forms import CancerFiltersForm  # noqa: F401
+from .forms import CancerFiltersForm  # noqa: F401; noqa: F401
 from .forms import (
     FILTERSFORMCLASS,
     CancerSvFiltersForm,
@@ -1230,7 +1230,7 @@ def gene_panel_choices(store, institute_obj, case_obj):
             panel_option = (panel["panel_name"], panel["display_name"])
             panel_list.append(panel_option)
 
-    panel_list = panel_list.sort(key=lambda t: t[1])
+    panel_list.sort(key=lambda t: t[1])
 
     institute_choices = institute_obj.get("gene_panels", {})
 
@@ -1241,8 +1241,10 @@ def gene_panel_choices(store, institute_obj, case_obj):
         if panel_option not in panel_list:
             institute_panel_list.append(panel_option)
 
-    institute_panel_list = institute_panel_list.sort(key=lambda t: t[1])
-    panel_list.append(institute_panel_list)
+    institute_panel_list.sort(key=lambda t: t[1])
+    if institute_panel_list:
+        panel_list.append(institute_panel_list)
+
     # Add HPO panel
     panel_list.append(("hpo", "HPO"))
     return panel_list
