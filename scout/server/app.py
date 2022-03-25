@@ -95,7 +95,6 @@ def create_app(config_file=None, config=None):
 def configure_extensions(app):
     """Configure Flask extensions."""
 
-    extensions.toolbar.init_app(app)
     extensions.bootstrap.init_app(app)
     extensions.mongo.init_app(app)
     extensions.store.init_app(app)
@@ -177,7 +176,7 @@ def register_filters(app):
         Return:
             str: humanized string of the decimal number
         """
-        min_number = 10**-ndigits
+        min_number = 10 ** -ndigits
         if isinstance(number, str):
             number = None
         if number is None:
