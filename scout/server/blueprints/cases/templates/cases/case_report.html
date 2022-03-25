@@ -1156,7 +1156,7 @@
       </tbody>
     </table>
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
-      {% if variant.genes and variant.genes|length <= 3 %}
+      {% if variant.genes and variant.genes|length <= 5 %}
         <thead>
           <tr>
             <th>Affected gene(s)</th>
@@ -1191,7 +1191,7 @@
         </tbody>
       {% elif variant.genes %} <!-- more than 3 genes in this SV -->
         <thead>
-          <th>Affected gene(s)</th>
+          <th>{% variant.genes|length %} Affected gene(s)</th>
         </thead>
         <tbody>
           <td>
