@@ -1230,10 +1230,13 @@ def gene_panel_choices(store, institute_obj, case_obj):
             panel_option = (panel["panel_name"], panel["display_name"])
             panel_list.append(panel_option)
 
+    panel_list = panel_list.sort(key=lambda t: t[1])
+
     institute_choices = institute_obj.get("gene_panels", {})
 
-    for panel_name, display_name in institute_choices.items():
+    for panel_name, display_name in institute_choices.items().sort(key=lambda t: t[1]):
         panel_option = (panel_name, display_name)
+
         if panel_option not in panel_list:
             panel_list.append(panel_option)
 
