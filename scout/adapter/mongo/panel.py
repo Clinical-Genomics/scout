@@ -522,11 +522,9 @@ class PanelHandler:
 
     def latest_panels(self, institute_id, include_hidden=False):
         """Return the latest version of each panel."""
-        panel_names = sorted(
-            self.gene_panels(institute_id=institute_id, include_hidden=include_hidden).distinct(
-                "panel_name"
-            )
-        )
+        panel_names = self.gene_panels(
+            institute_id=institute_id, include_hidden=include_hidden
+        ).distinct("panel_name")
         for panel_name in panel_names:
             panel_obj = self.gene_panel(panel_name)
             yield panel_obj
