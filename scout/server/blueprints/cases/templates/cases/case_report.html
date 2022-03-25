@@ -1156,17 +1156,17 @@
       </tbody>
     </table>
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
-      <thead>
-        <tr>
-          <th>Affected gene(s)</th>
-          <th>Description</th>
-          <th>Region annotation</th>
-          <th>Transcript - HGVS - Protein</th>
-          <th>OMIM phenotypes [inheritance]</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% if variant.genes %}
+      {% if variant.genes and variant.genes|length <= 3 %}
+        <thead>
+          <tr>
+            <th>Affected gene(s)</th>
+            <th>Description</th>
+            <th>Region annotation</th>
+            <th>Transcript - HGVS - Protein</th>
+            <th>OMIM phenotypes [inheritance]</th>
+          </tr>
+        </thead>
+        <tbody>
           {% for gene in variant.genes %}
             <tr>
               <td>
@@ -1188,11 +1188,22 @@
               </td>
             </tr>
           {% endfor %}
-        {% endif %}
-      </tbody>
+        </tbody>
+      {% elif variant.genes %} <!-- more than 3 genes in this SV -->
+        <thead>
+          <th>Affected gene(s)</th>
+        </thead>
+        <tbody>
+          <td>
+            {% for gene in variant.genes|sort(attribute='common.hgnc_symbol') %} <!-- Display all genes sorted by symbol -->
+              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
+              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+              </a>&nbsp;
+            {% endfor %}
+          </td>
+        </tbody>
+      {% endif %}
     </table>
-
-
     {% if variant.comments | count_cursor > 0  %}
       <br>
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
