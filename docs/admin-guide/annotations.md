@@ -86,7 +86,8 @@ The [PolyPhen][polyphen] prediction for how a variation affects the protein.
 
 The [SpliceAI][spliceai] prediction for how a variant affects splicing.
 SpliceAI transcript delta score, defined as max of all transcipt delta scores DS, can be interpreted as a probabilty of
-splicing being affected for the current transcript. The DS and DP pairs describe probability and relative position scores.
+splicing being affected for the current transcript. [Jaganathan 2019][jaganathan2019] consider thresholds 0.2 (high recall), 0.5 (recommended), and 0.8 (high precision).
+The DS and DP pairs describe probability and relative position scores, with negative position values being upstream.
 E.g. donor gain DS_DG 0.08 at DP_DG -31, acceptor loss DS_AL 0.58 at DP_AL -2.
 
 - Key `CSQ` - `SpliceAI_pred_DS_AG`, `SpliceAI_pred_DP_AG`, `SpliceAI_pred_DS_AL`, `SpliceAI_pred_DP_AL`,
@@ -162,5 +163,6 @@ What variants is this variant in Autosomal Recessive Compound with?
 [sift]: http://sift.jcvi.org
 [polyphen]: http://genetics.bwh.harvard.edu/pph2/dokuwiki/
 [spliceai]: https://github.com/Illumina/SpliceAI
+[jaganathan2019]: https://doi.org/10.1016/j.cell.2018.12.015
 
 [rank_score_test]: https://github.com/Clinical-Genomics/scout/blob/master/tests/parse/test_parse_rank_score.py
