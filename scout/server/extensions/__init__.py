@@ -2,7 +2,6 @@
 
 from authlib.integrations.flask_client import OAuth
 from flask_bootstrap import Bootstrap
-from flask_debugtoolbar import DebugToolbarExtension
 from flask_login import LoginManager
 from flask_mail import Mail
 
@@ -16,7 +15,6 @@ from .matchmaker_extension import MatchMaker
 from .mongo_extension import MongoDB
 from .rerunner_extension import RerunnerError, RerunnerService
 
-toolbar = DebugToolbarExtension()
 bootstrap = Bootstrap()
 store = MongoAdapter()
 login_manager = LoginManager()
