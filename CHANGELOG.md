@@ -21,7 +21,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed filter bug with high negative SPIDEX scores
 - Renamed button and modified link to IACR TP53, that has been moved to the US NCI: `https://tp53.isb-cgc.org/`
 - Parsing new format of OMIM case info when exporting patients to Matchmaker
+- Remove flask-debugtoolbar lib dependency that is using deprecated code and causes app to crash after new release of Jinja2 (3.1)
 - List gene names densely in general report for SVs that contain more than 3 genes
+
 
 ## [4.50.1]
 ### Fixed
