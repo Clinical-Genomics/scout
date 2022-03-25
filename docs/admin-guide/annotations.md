@@ -86,7 +86,7 @@ The [PolyPhen][polyphen] prediction for how a variation affects the protein.
 
 The [SpliceAI][spliceai] prediction for how a variant affects splicing.
 SpliceAI transcript delta score, defined as max of all transcipt delta scores DS, can be interpreted as a probabilty of
-splicing being affected for the current transcript. [Jaganathan 2019][jaganathan2019] consider thresholds 0.2 (high recall), 0.5 (recommended), and 0.8 (high precision).
+splicing being affected for the current transcript. [Jaganathan 2019][jaganathan2019] consider thresholds 0.2 high recall, 0.5 recommended, and 0.8 high precision.
 The DS and DP pairs describe probability and relative position scores, with negative position values being upstream.
 E.g. donor gain DS_DG 0.08 at DP_DG -31, acceptor loss DS_AL 0.58 at DP_AL -2.
 
