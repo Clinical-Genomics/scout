@@ -55,7 +55,7 @@ def get_date(date, date_format=None):
 def pretty_date(time=False):
     """Get a datetime object or a int() Epoch timestamp and return a
     pretty string like 'an hour ago', 'Yesterday', '3 months ago',
-    'just now', etc """
+    'just now', etc"""
     now = datetime.datetime.now()
     if type(time) is int:
         diff = now - datetime.datetime.fromtimestamp(time)
@@ -67,7 +67,7 @@ def pretty_date(time=False):
     day_diff = diff.days
 
     if day_diff < 0:
-        return ''
+        return ""
 
     if day_diff == 0:
         if second_diff < 10:
