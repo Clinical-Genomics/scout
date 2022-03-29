@@ -55,14 +55,14 @@ def _parse_images_cnf(images):
     """
     parsed_images = []
     for image in images:
-        img = image["path"]
-        if "{" in img and "}" in img:
+        img_path = image["path"]
+        if "{" in img_path and "}" in img_path:
+            LOG.debug("path: {}".format(img_path))
             for match in _glob_wildcard(image["path"]):
                 # replace wildcard variable name with match
-                replaced_info = {
-                    key: val.replace("{%s}" % match["variable_name"], match["match"])
-                    for key, val in image.items()
-                }
+                LOG.debug("match: {}".format(match))
+                replaced_info = _replace_wildcard_with_match(match, image)
+                LOG.debug("replace_info: {}".format(replaced_info))
                 # read image data
                 try:
                     parsed_images.append(
@@ -76,13 +76,20 @@ def _parse_images_cnf(images):
                 except ValueError as err:
                     LOG.warning(str(err))
         else:
-            image["path"] = Path(img)
+            image["path"] = Path(img_path)
             # skip entries that are not recognized as image on suffix
             try:
                 parsed_images.append(_read_image(image))
             except ValueError as err:
                 LOG.warning(str(err))
     return parsed_images
+
+def _replace_wildcard_with_match(match, image):
+    """Replace match"""
+    return {
+        key: val.replace("{%s}" % match["variable_name"], match["match"])
+        for key, val in image.items()
+    }
 
 
 def _read_image(image):
@@ -97,6 +104,7 @@ def _read_image(image):
     Returns:
         image_obj: stored image information
     """
+    LOG.debug("IMAGE: {}".format(image))
     # load image file to memory
     VALID_IMAGE_SUFFIXES = ["gif", "svg", "png", "jpg", "jpeg"]
     path = image["path"]
@@ -668,6 +676,7 @@ def parse_case(config):
 
     if config.get("custom_images"):
         case_data["custom_images"] = parse_custom_images(config)
+    LOG.debug("CUSTOM_IMAGES: {}".format(case_data["custom_images"]))
 
     # add the pedigree figure, this is a xml file which is dumped in the db
     if "madeline" in config:
