@@ -1197,7 +1197,7 @@
           <td>
             {% for gene in variant.genes|sort(attribute='common.hgnc_symbol') %} <!-- Display all genes sorted by symbol -->
               <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-              {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+              <i>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</i>
               </a>&nbsp;
             {% endfor %}
           </td>
