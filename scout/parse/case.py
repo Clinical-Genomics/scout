@@ -84,6 +84,7 @@ def _parse_images_cnf(images):
                 LOG.warning(str(err))
     return parsed_images
 
+
 def _replace_wildcard_with_match(match, image):
     """Replace match"""
     return {
