@@ -31,7 +31,8 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "cadd_score",
     "genetic_models",
     "acmg_classification",
-    "genes",
+    "genes",  # This is a list of dictionaries with gene info
+    "hgnc_symbols",  # This is a list of gene symbols (strings)
     "comments",
     "category",
     "dismiss_variant",
