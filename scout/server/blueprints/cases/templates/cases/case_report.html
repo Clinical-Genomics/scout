@@ -791,7 +791,7 @@
 {% macro dismissed_gene_list(variant) %}
   {% if variant.genes %}
     {% if variant.genes|length > 3%}
-      {{ variant.genes|length }}&nbsp;genes
+      {{ variant.hgnc_symbols|length }}&nbsp;genes
     {% else %}
       {% for gene in variant.genes %}
        <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}&nbsp;<span class="badge badge-secondary">{{gene.region_annotation}}</span></a><br>
@@ -1191,15 +1191,11 @@
         </tbody>
       {% elif variant.genes %} <!-- more than 5 genes in this SV -->
         <thead>
-          <th>{{ variant.genes|length }} affected gene(s)</th>
+          <th>{{ variant.hgnc_symbols|length }} affected gene(s)</th>
         </thead>
         <tbody>
           <td>
-            {% for gene in variant.genes|sort(attribute='common.hgnc_symbol') %} <!-- Display all genes sorted by symbol -->
-              <a href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">
-              <i>{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}</i>
-              </a>&nbsp;
-            {% endfor %}
+            {{variant.hgnc_symbols|sort|join(" ")}}
           </td>
         </tbody>
       {% endif %}
