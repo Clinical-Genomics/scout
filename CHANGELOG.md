@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix deprecated `safe_str_cmp` import from `werkzeug.security` by freezing Werkzeug lib to v2.0 until Flask_login v.0.6 with bugfix is released
 - List gene names densely in general report for SVs that contain more than 3 genes
 - Show transcript ids on refseq genes on hg19 in IGV.js, using refgene source
+- Display correct number of genes in general report for SVs that contain more than 32 genes
 
 ## [4.50.1]
 ### Fixed
