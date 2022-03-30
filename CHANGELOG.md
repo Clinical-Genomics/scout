@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.51]
 ### Added
 - Config file containing codecov settings for pull requests
 - Add an IGV.js direct link button from case page
