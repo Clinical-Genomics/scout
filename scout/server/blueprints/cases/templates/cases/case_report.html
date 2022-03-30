@@ -1195,9 +1195,7 @@
         </thead>
         <tbody>
           <td>
-            {% for symbol in variant.hgnc_symbols|sort %}
-              <div>{{ symbol }}</div>&nbsp
-            {% endfor %}
+            {{variant.hgnc_symbols|sort|join(" ")}}
           </td>
         </tbody>
       {% endif %}
