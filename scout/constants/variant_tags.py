@@ -32,6 +32,7 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "genetic_models",
     "acmg_classification",
     "genes",
+    "hgnc_symbols",
     "comments",
     "category",
     "dismiss_variant",
