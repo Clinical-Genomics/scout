@@ -103,7 +103,7 @@ def login():
 def authorized():
     """Google auth callback function"""
     token = oauth_client.google.authorize_access_token()
-    google_user = oauth_client.google.parse_id_token(token)
+    google_user = oauth_client.google.parse_id_token(token, None)
     session["email"] = google_user.get("email").lower()
     session["name"] = google_user.get("name")
     session["locale"] = google_user.get("locale")

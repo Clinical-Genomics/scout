@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - List gene names densely in general report for SVs that contain more than 3 genes
 - Show transcript ids on refseq genes on hg19 in IGV.js, using refgene source
 - Display correct number of genes in general report for SVs that contain more than 32 genes
+- Broken Google login
 
 ## [4.50.1]
 ### Fixed
