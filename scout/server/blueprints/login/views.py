@@ -4,7 +4,6 @@ from datetime import datetime
 
 from flask import (
     Blueprint,
-    abort,
     current_app,
     flash,
     redirect,
@@ -15,11 +14,11 @@ from flask import (
 )
 from flask_login import login_user, logout_user
 
-from scout.server.extensions import ldap_manager, login_manager, oauth_client, store
+from scout.server.extensions import login_manager, oauth_client, store
 from scout.server.utils import public_endpoint
 
 from . import controllers
-from .models import LdapUser, LoginUser
+from .models import LoginUser
 
 LOG = logging.getLogger(__name__)
 
