@@ -10,6 +10,7 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "position",
     "end",
     "end_chrom",
+    "callers",
     "cytoband_start",
     "cytoband_end",
     "reference",
