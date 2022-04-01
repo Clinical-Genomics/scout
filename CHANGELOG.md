@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.51]
 ### Added
 - Config file containing codecov settings for pull requests
 - Add an IGV.js direct link button from case page
@@ -22,7 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
 - Fixed filter bug with high negative SPIDEX scores
-- Renamed button and modified link to IACR TP53, that has been moved to the US NCI: `https://tp53.isb-cgc.org/`
+- Renamed IARC TP53 button to to `TP53 Database`, modified also link since IARC has been moved to the US NCI: `https://tp53.isb-cgc.org/`
 - Parsing new format of OMIM case info when exporting patients to Matchmaker
 - Remove flask-debugtoolbar lib dependency that is using deprecated code and causes app to crash after new release of Jinja2 (3.1)
 - Variant page crashing for cases with old OMIM terms structure (a list of integers instead of dictionary)
