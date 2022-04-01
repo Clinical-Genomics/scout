@@ -537,9 +537,13 @@
             </td>
             <td>
               {% if variant.panels%}
-                {% for panel_id in variant.panels %}
-                  <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a>
-                {% endfor %}
+                {% if variant.panels|length <= 3 %}
+                  {% for panel_id in variant.panels %}
+                   <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+                  {% endfor %}
+                {% else %}
+                  {{ variant.panels|length }} panels
+                {% endif %}
               {% endif %}
             </td>
           </tr>
@@ -1018,9 +1022,13 @@
           {% endif %}
           <td>
             {% if variant.panels %}
-              {% for panel_id in variant.panels %}
-                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
-              {% endfor %}
+              {% if variant.panels|length <= 3 %}
+                {% for panel_id in variant.panels %}
+                  <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+                {% endfor %}
+              {% else %}
+                {{ variant.panels|length }} panels
+              {% endif %}
             {% endif %}
           </td>
           <td>
@@ -1271,9 +1279,13 @@
           {% endif %}
           <td>
             {% if variant.panels %}
-              {% for panel_id in variant.panels %}
-                <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
-              {% endfor %}
+              {% if variant.panels|length <= 3 %}
+                {% for panel_id in variant.panels %}
+                  <a href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge badge-secondary">{{ panel_id }}</a><br>
+                {% endfor %}
+              {% else %}
+                {{ variant.panels|length }} panels
+              {% endif %}
             {% endif %}
           </td>
         </tr>
