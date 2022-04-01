@@ -74,7 +74,7 @@ custom_images:
       width: 500
       height: 100
       path: scout/demo/images/custom_images/640x480_one.png
-    - title: A SVG image
+    - title: An SVG image
       str_repid: AFF2
       description: Another very good description
       path: scout/demo/images/custom_images/640x480_three.svg
@@ -94,7 +94,7 @@ custom_images:
         width: 500
         path: scout/demo/images/custom_images/640x480_two.jpg
     section_two:
-      - title: A SVG image
+      - title: An SVG image
         description: Another very good description
         path: scout/demo/images/custom_images/640x480_three.svg
 
