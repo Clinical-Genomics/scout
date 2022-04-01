@@ -77,7 +77,7 @@
           </div>
           <div class="col-xs-6 col-sm-6 col-md-12">
             <div class="form-group text-center">
-              <button class="btn btn-lg btn-info" data-toggle="modal" value="submit">Add variants to Clinvar submission</button>
+              <button class="btn btn-lg btn-info" data-bs-toggle="modal" value="submit">Add variants to Clinvar submission</button>
             </div>
           </div>
       </form>
@@ -386,7 +386,7 @@
           {% endif %}
           <!--end of SV fields-->
 
-          <a href="#more_variant_{{pinned._id}}" data-toggle="collapse">More optional fields</a><hr>
+          <a href="#more_variant_{{pinned._id}}" data-bs-toggle="collapse">More optional fields</a><hr>
           <div id="more_variant_{{pinned._id}}" class="collapse">
             <table class="table table-fixed">
               <tbody>
@@ -446,7 +446,7 @@
               <div class="form-group" id="cdata_checkbox_{{pinned._id}}" >
                 <div class="col-12 card">
                   <div class="form-check">
-                    <label data-toggle="collapse" class="form-check-label" class="form-check-input" data-bs-target="#casedata_{{pinned._id}}" aria-expanded="false" aria-controls="collapseOne">
+                    <label data-bs-toggle="collapse" class="form-check-label" class="form-check-input" data-bs-target="#casedata_{{pinned._id}}" aria-expanded="false" aria-controls="collapseOne">
                       <input type="checkbox" class="form-check-input" name="casedata_{{pinned._id}}" id="_{{pinned._id}}"/>Submit case data for this variant
                     </label>
                   </div>

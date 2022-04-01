@@ -25,9 +25,9 @@
             </select>
           </div>
           <hr>
-          <p><a href="#mme_form" data-toggle="collapse">Modify submission</a></p>
+          <p><a href="#mme_form" data-bs-toggle="collapse">Modify submission</a></p>
         {% else %} <!-- display option to submit case to Matchmaker -->
-          <p>This case is not yet in Matchmaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
+          <p>This case is not yet in Matchmaker!&nbsp;<a href="#mme_form" data-bs-toggle="collapse">Submission form</a></p>
         {% endif %}
         <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
             <div id="mme_form" class="collapse">
@@ -106,7 +106,7 @@
               </div>
               <div>
                 <br>
-                <button class="btn btn-secondary mx-auto d-block" data-toggle="modal" type="submit">
+                <button class="btn btn-secondary mx-auto d-block" data-bs-toggle="modal" type="submit">
                   {% if case.mme_submission %}
                     Update case
                   {% else %}
@@ -577,7 +577,7 @@
   <div class="card panel-default" >
     <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
       that have been marked as causative in another case for this insitute">
-      <strong><a data-toggle="collapse" href="#matchingCausatives" class="text-white">Matching causatives from other cases ({{other_causatives|length}})</a></strong>
+      <strong><a data-bs-toggle="collapse" href="#matchingCausatives" class="text-white">Matching causatives from other cases ({{other_causatives|length}})</a></strong>
     </div>
     <ul class="list-group collapse" id="matchingCausatives">
       {% for variant in other_causatives %}
@@ -624,7 +624,7 @@
   <div class="card panel-default">
     <div data-toggle='tooltip' class="panel-heading" title="Any variants in this case
       that have been marked as managed">
-      <strong><a data-toggle="collapse" href="#matchingManaged" class="text-white">Managed variants ({{managed_variants|length}})</a></strong>
+      <strong><a data-bs-toggle="collapse" href="#matchingManaged" class="text-white">Managed variants ({{managed_variants|length}})</a></strong>
     </div>
     <ul class="list-group">
       {% for variant in managed_variants %}
