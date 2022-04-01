@@ -101,8 +101,8 @@
                 {% endif%}
               </span>
             </td>
-            <td><span class="badge badge-secondary">{{ variant.category|upper }}</span></td>
-            <td><a href="#"><span class="badge badge-pill badge-secondary">
+            <td><span class="badge bg-secondary">{{ variant.category|upper }}</span></td>
+            <td><a href="#"><span class="badge rounded-pill bg-secondary">
               {{ variant.rank_score }}
               {% if variant.category == 'sv' %}
                 (v. {{case.sv_rank_model_version or 'na'}})
@@ -115,20 +115,20 @@
                 {%- for ind in case.individuals -%}
                   {%- if sample.sample_id == ind.individual_id -%}
                     {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
-                    <span data-toggle='tooltip' data-container='body' title="{{allele_depths}}" class="badge badge-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}}</span>
+                    <span data-toggle='tooltip' data-container='body' title="{{allele_depths}}" class="badge bg-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}}</span>
                   {%- endif -%}
                 {%- endfor -%}
               {%- endfor -%}
             </td>
             <td>{% for model in variant.genetic_models %}
-              <span class="badge badge-info">{{model}}</span>
+              <span class="badge bg-info">{{model}}</span>
               {% endfor %}
             </td>
             <td>
               <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
                 style="text-decoration: none; color: #000;">ACMG:
                 {% if 'acmg_classification' in variant %}
-                <span class="badge badge-{{acmg_map[variant.acmg_classification].color}}">{{acmg_map[variant.acmg_classification].short}}</span>
+                <span class="badge bg-{{acmg_map[variant.acmg_classification].color}}">{{acmg_map[variant.acmg_classification].short}}</span>
                 {% else %}
                 -
                 {% endif %}
@@ -143,9 +143,9 @@
             </td>
             <td>
               {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
-                <span class="badge badge-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
+                <span class="badge bg-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
               {% endif %}
-              <span class="badge badge-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
+              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }} pull-right">
                 {{ case.status }}
               </span>
             </td>

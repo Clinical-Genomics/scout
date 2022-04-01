@@ -37,7 +37,7 @@
           {{ panel.display_name }}
         </span>
         {% if panel.hidden %}
-          <span class="badge badge-danger">Removed</span>
+          <span class="badge bg-danger">Removed</span>
         {% endif %}
       </li>
       <li class="list-group-item">
@@ -202,11 +202,11 @@
             {{ gene.symbol }}
           </span>
           {% if gene.action == 'add' %}
-            <span class="badge badge-primary badge-pill float-right">{{ gene.action-}}ed</span>
+            <span class="badge bg-primary rounded-pill float-right">{{ gene.action-}}ed</span>
           {% elif gene.action == 'delete' %}
-            <span class="badge badge-danger badge-pill float-right">{{ gene.action-}}d</span>
+            <span class="badge bg-danger rounded-pill float-right">{{ gene.action-}}d</span>
           {% else %}
-            <span class="badge badge-secondary badge-pill float-right">{{ gene.action-}}ed</span>
+            <span class="badge bg-secondary rounded-pill float-right">{{ gene.action-}}ed</span>
           {% endif %}
         </li>
       {% else %}

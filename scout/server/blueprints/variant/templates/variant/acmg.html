@@ -24,7 +24,7 @@
           {% else %}
             <h4>
               {{ evaluation.classification.label }}
-              <span class="badge badge-info">{{ evaluation.classification.short }}</span>
+              <span class="badge bg-info">{{ evaluation.classification.short }}</span>
             </h4>
             By {{ evaluation.user_name }} on {{ evaluation.created_at.date() }}
           {% endif %}
@@ -50,7 +50,7 @@
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
                       <div data-toggle="tooltip" data-placement="top" title="{{ criterion.description }}">
-                        <span class="badge badge-info mr-1">{{ criterion_code }}</span>
+                        <span class="badge bg-info mr-1">{{ criterion_code }}</span>
                         {{ criterion.short }}
                       </div>
                       <div>

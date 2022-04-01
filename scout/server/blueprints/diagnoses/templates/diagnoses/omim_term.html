@@ -25,7 +25,7 @@
         <li class="list-group-item">
           genes:
           {% for gene in genes_complete %}
-            <span class="badge badge-secondary">{{gene.hgnc_symbol}}</span>
+            <span class="badge bg-secondary">{{gene.hgnc_symbol}}</span>
           {% else %}
             -
           {% endfor %}
@@ -33,7 +33,7 @@
         <li class="list-group-item">
           inheritance:
             {% for model in inheritance %}
-              <span class="badge badge-info">{{model}}</span>
+              <span class="badge bg-info">{{model}}</span>
             {% else %}
               -
             {% endfor%}

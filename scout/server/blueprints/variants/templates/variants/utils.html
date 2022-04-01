@@ -53,7 +53,7 @@
     {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
       {% if gt.alt_frequency and gt.alt_frequency < 0.9 and gt.alt_frequency != -1 %}
         <a data-toggle="tooltip" data-html="true" title="<div>Heteroplasmy: {{ (100*gt.alt_frequency)|round(3) }}%</div>">
-          <span class="badge badge-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span></a>
+          <span class="badge bg-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span></a>
       {% endif %}
     {% endfor %}
   {% endfor %}

@@ -283,14 +283,14 @@
             <td>
               Matches OMIM inhert.
               {% if variant.is_matching_inheritance %}
-                <span class="badge badge-success float-right">Yes</span>
+                <span class="badge bg-success float-right">Yes</span>
               {% else %}
-                <div class="badge badge-warning float-right">No</div>
+                <div class="badge bg-warning float-right">No</div>
               {% endif %}
             </td>
             <td>
               Frequency
-              <div class="badge badge-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-right">
+              <div class="badge bg-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-right">
                 {{ variant.frequency }}
               </div>
             </td>
@@ -402,7 +402,7 @@
         <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
           {{ data.classification.label }}
         </a>
-        <span class="badge badge-info">{{ data.classification.short }}</span>
+        <span class="badge bg-info">{{ data.classification.short }}</span>
       </span>
       <span>
         {% if not current_variant %}

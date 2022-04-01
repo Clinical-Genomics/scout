@@ -99,31 +99,31 @@
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
-        <span class="badge badge-primary">
+        <span class="badge bg-primary">
           {% for item in case.individuals %}
             <i class="fa fa-user"></i>
           {% endfor %}
         </span>
       {% endif %}
       {% for user in case.assignees %}
-        <span class="badge badge-secondary">{{ user.name }}</span>
+        <span class="badge bg-secondary">{{ user.name }}</span>
       {% endfor %}
       {% if case.needs_check %}
-        <span class="badge badge-warning">decipher</span>
+        <span class="badge bg-warning">decipher</span>
       {% endif %}
     </td>
     <td>
-      <span class="badge badge-primary">{{ case.status }}</span>
+      <span class="badge bg-primary">{{ case.status }}</span>
       {% if case.is_migrated %}
-        <span class="badge badge-primary">migrated</span>
+        <span class="badge bg-primary">migrated</span>
       {% endif %}
     </td>
     <td class="d-flex justify-content-between align-items-center">
       {{ case.analysis_date.date() }}
       {% if case.rerun_requested %}
-          <span class="badge badge-secondary">rerun pending</span>
+          <span class="badge bg-secondary">rerun pending</span>
       {% elif case.is_rerun %}
-        <span class="badge badge-secondary">rerun</span>
+        <span class="badge bg-secondary">rerun</span>
       {% endif %}
     </td>
     <td>
@@ -161,7 +161,7 @@
           {% set badge_class = 'default' %}
         {% endif %}
 
-        <span class="badge badge-{{ badge_class }}">
+        <span class="badge bg-{{ badge_class }}">
           {{ analysis_type|upper }}
         </span>
       {% endfor %}

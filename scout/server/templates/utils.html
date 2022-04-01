@@ -14,13 +14,13 @@
       	    <strong> {{ comment.user_name }} </strong>
       	    on {{ comment.created_at.date() }}
       	    {% if comment.level == 'global' %}
-                    <span class='badge badge-info'>GLOBAL</span>
+                    <span class='badge bg-info'>GLOBAL</span>
             {% endif %}
             {% if comment.created_at < case.updated_at %}
-              <span class='badge badge-warning'>OLD</span>
+              <span class='badge bg-warning'>OLD</span>
             {% endif %}
       	    {% if comment.created_at < comment.updated_at %}
-              <span class='badge badge-secondary'>edited</span>
+              <span class='badge bg-secondary'>edited</span>
             {% endif %}
       	  </small>
       	</td>
@@ -49,13 +49,13 @@
                 <strong>{{ comment.user_name }}</strong>
                 on {{ comment.created_at.date() }}
                 {% if comment.level == 'global' %}
-                  <span class="badge badge-info">GLOBAL</span>
+                  <span class="badge bg-info">GLOBAL</span>
                 {% endif %}
                 {% if comment.created_at < case.updated_at %}
-                  <span class="badge badge-warning">OLD</span>
+                  <span class="badge bg-warning">OLD</span>
                 {% endif %}
                 {% if comment.created_at < comment.updated_at %}
-                  <span class='badge badge-secondary'>edited</span>
+                  <span class='badge bg-secondary'>edited</span>
                 {% endif %}
                 {% if comment.user_id == current_user.email %}
                   <button class="btn btn-link btn-sm" type="submit" name="remove"><i class="fa fa-remove"></i></button>

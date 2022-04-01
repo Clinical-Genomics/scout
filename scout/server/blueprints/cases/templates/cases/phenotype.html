@@ -61,8 +61,8 @@
             </a>
             {% if diagnosis.disease_id in omim_terms %}
               <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[diagnosis.disease_id].disease_nr)}}">
-                <span class="badge badge-secondary badge-pill text-white">genes:{{omim_terms[diagnosis.disease_id].genes|length}}</span>
-                <span class="badge badge-info badge-pill text-white">hpo:{{omim_terms[diagnosis.disease_id].hpo_terms|length}}</span>
+                <span class="badge bg-secondary rounded-pill text-white">genes:{{omim_terms[diagnosis.disease_id].genes|length}}</span>
+                <span class="badge bg-info rounded-pill text-white">hpo:{{omim_terms[diagnosis.disease_id].hpo_terms|length}}</span>
               </a>
             {% endif %}
           {% elif diagnosis.disease_id %}
@@ -135,7 +135,7 @@
         {% for hpo_term in case.phenotype_groups %}
         <span class="d-flex align-items-center">
           {{ hpo_term.feature }}&nbsp;
-          <span class="badge badge-sm badge-info">
+          <span class="badge badge-sm bg-info">
             <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
               {{ hpo_term.phenotype_id }}
             </a>
@@ -176,7 +176,7 @@
     <div class="row d-flex justify-content-between">
       <div class="flex-fill">
         {{ hpo_term.feature }}
-        <span class="badge badge-info">
+        <span class="badge bg-info">
           <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
             {{ hpo_term.phenotype_id }}
           </a>
@@ -269,7 +269,7 @@
     <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
            {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
     {{ hpo_term.feature }}
-    <span class="badge badge-info">
+    <span class="badge bg-info">
       <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
         {{ hpo_term.phenotype_id }}
       </a>

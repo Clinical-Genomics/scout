@@ -158,9 +158,9 @@
       {% set label_class = 'danger' %}
     {% endif %}
   {% endif %}
-  <div class="badge badge-{{ label_class }}">{{ variant.rank_score }}</div>
+  <div class="badge bg-{{ label_class }}">{{ variant.rank_score }}</div>
   {% for filter in variant.filters %}
-    <div data-toggle="tooltip" data-placement="top" title="{{ filter.description }}" class="badge badge-{{ filter.label_class }}">{{ filter.label }}</div>
+    <div data-toggle="tooltip" data-placement="top" title="{{ filter.description }}" class="badge bg-{{ filter.label_class }}">{{ filter.label }}</div>
   {% endfor %}
 {% endmacro %}
 

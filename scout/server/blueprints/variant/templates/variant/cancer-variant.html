@@ -223,7 +223,7 @@
         {% set primary_transcript = tmp_gene_info[1] %}
         {% set nr_genes = variant.genes | length %}
         <a target="_blank" href="{{ url_for('genes.gene', hgnc_id=primary_gene.hgnc_id) }}" data-toggle="tooltip" title="Preferred gene for variant {% if nr_genes > 1 %} out of {{ nr_genes }} {% endif %}- shows conceptually highest impact change. See Severity card and Transcripts table below for more details."><h5 class="card-title">
-          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }} {% if nr_genes > 1 %} <span class="badge badge-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
+          {{ primary_gene.hgnc_symbol }}; {{ primary_gene.description }} {% if nr_genes > 1 %} <span class="badge bg-info">+ {{ nr_genes-1 }} genes</span>{% endif %}
         </h5></a>
       {% endif %}
       <ul class="list-group list-group-flush" style="margin-bottom: 1rem">

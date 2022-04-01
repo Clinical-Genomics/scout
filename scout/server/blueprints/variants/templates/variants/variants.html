@@ -142,7 +142,7 @@
 
 {% macro cell_models(variant) %}
   {% for model in (variant.genetic_models or []) %}
-    <span class="badge badge-secondary">{{ model }}</span>
+    <span class="badge bg-secondary">{{ model }}</span>
   {% endfor %}
 
   {% if variant.compounds %}
@@ -151,19 +151,19 @@
       {% set ns.show_compounds = true %}
     {% endfor %}
     {% if ns.show_compounds %}
-      <a href="#" class="badge badge-primary text-white" data-toggle="popover" data-placement="left"
+      <a href="#" class="badge bg-primary text-white" data-toggle="popover" data-placement="left"
         data-html="true" data-trigger="hover click"
         data-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
     {% endif %}
   {% endif %}
   {% if variant.mosaic_tags %}
-    <span class="badge badge-warning">mosaic</span>
+    <span class="badge bg-warning">mosaic</span>
   {% endif %}
 {% endmacro %}
 
 {% macro overlapping_cell(variant) %}
   {% if variant.overlapping %}
-  <a href="#" class="badge badge-warning" data-toggle="popover" data-placement="left"
+  <a href="#" class="badge bg-warning" data-toggle="popover" data-placement="left"
     data-html="true" data-trigger="hover click"
     data-content="{{ svs_table(institute, case, variant.overlapping[:20]) }}">Overlapping SVs</a>
   {% else %}

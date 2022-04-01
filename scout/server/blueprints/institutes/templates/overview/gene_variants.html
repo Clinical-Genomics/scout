@@ -90,12 +90,12 @@
       {{ variant.case_display_name}}
     </a>
     :
-    <span class="badge badge-info">{{ variant.rank_score|int }}</span>
+    <span class="badge bg-info">{{ variant.rank_score|int }}</span>
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}
   <div>
-    <div class="badge badge-primary badge-pill" data-toggle="tooltip" data-placement="left" data-html="true" title="
+    <div class="badge bg-primary rounded-pill" data-toggle="tooltip" data-placement="left" data-html="true" title="
     <div class='text-left'>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>

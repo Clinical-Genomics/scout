@@ -41,7 +41,7 @@
         <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
           {{ data.classification.label }}
         </a>
-        <span class="badge badge-info">{{ data.classification.short }}</span>
+        <span class="badge bg-info">{{ data.classification.short }}</span>
       </span>
       <span>
         {% if not current_variant %}
@@ -158,7 +158,7 @@
             {{ other_variant.case_display_name }}
           </a>&nbsp;
           {% if other_variant.partial %}
-            <span class="badge badge-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
+            <span class="badge bg-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
           {% endif %}
         {% endfor %}
       </div> <!--end of card body-->

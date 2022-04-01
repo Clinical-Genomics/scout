@@ -3,7 +3,7 @@
     <div class="panel-heading">
       GT call
       {% if variant.is_par %}
-        <span class="badge badge-info">PAR</span>
+        <span class="badge bg-info">PAR</span>
       {% endif %}
     </div>
     <div class="card-body">
@@ -98,7 +98,7 @@
     </div>
     <div class="panel-footer">
       {% for name, caller in variant.callers %}
-        <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
+        <span class="badge bg-secondary">{{ name }}: {{ caller }}</span>
       {% endfor %}
     </div>
     </div>
@@ -128,7 +128,7 @@
             </td>
             <td>
               {% if value %}
-                <span class="badge badge-secondary">{{ value|human_decimal }}</span>
+                <span class="badge bg-secondary">{{ value|human_decimal }}</span>
               {% else %}
                 -
               {% endif %}

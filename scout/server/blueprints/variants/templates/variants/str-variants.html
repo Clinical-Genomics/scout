@@ -170,7 +170,7 @@
 {% endblock %}
 
 {% macro str_status(variant) %}
-<a class="badge badge-secondary text-white"
+<a class="badge bg-secondary text-white"
   data-toggle="popover"
   data-html="true"
   data-trigger="hover click"
@@ -228,7 +228,7 @@
   title="">{{ variant.str_repid }}
   </a>
   {% for gene in variant.genes %}
-    <span class="badge badge-secondary"><a href="{{ gene.stripy_link }}" class="text-white">S</a></span>
-    <span class="badge badge-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white">G</a></span>
+    <span class="badge bg-secondary"><a href="{{ gene.stripy_link }}" class="text-white">S</a></span>
+    <span class="badge bg-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white">G</a></span>
   {% endfor %}
 {% endmacro %}

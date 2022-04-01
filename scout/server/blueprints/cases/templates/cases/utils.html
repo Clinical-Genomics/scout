@@ -71,10 +71,10 @@
                     <div style="max-height:200px; overflow-y: scroll;"">
                       {% for var in suspects %}
                         {% if var.category == "snv" %} <!-- Share either gene names or variant details for SNVs -->
-                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge badge-success">SNV</span><br>
+                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
                         {% elif var.category == "sv" %} <!-- Share only gene names from SVs -->
                           {% for gene in var.genes %}
-                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge badge-warning">SV</span><br>
+                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge bg-warning">SV</span><br>
                           {% endfor %}
                         {% endif %}
                       {% endfor %}
@@ -266,13 +266,13 @@
       {% if transcript.refseq_identifiers and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or transcript.is_primary %}
         <li>{{transcript.transcript_id}}, RefSeq:[{{ transcript.refseq_identifiers|join(", ") or "-" }}], {{ (transcript.coding_sequence_name or '')|truncate(20, True) }},  {{ (transcript.protein_sequence_name or '')|truncate(20, True) }}
           {% if transcript.is_canonical %}
-            <span class="badge badge-pill badge-info" title="canonical">C</span>
+            <span class="badge rounded-pill bg-info" title="canonical">C</span>
           {% endif %}
           {% if transcript.is_disease_associated %}
-            <span class="badge badge-pill badge-danger" title="disease_associated">D</span>
+            <span class="badge rounded-pill bg-danger" title="disease_associated">D</span>
           {% endif %}
           {% if transcript.is_primary %}
-            <span class="badge badge-pill badge-primary" title="primary_ref_transcript">hgnc primary:{{transcript.refseq_id}}</span>
+            <span class="badge rounded-pill bg-primary" title="primary_ref_transcript">hgnc primary:{{transcript.refseq_id}}</span>
           {% endif %}
         </li>
       {% endif %}
@@ -338,9 +338,9 @@
 
 {% macro variant_validation_badge(variant) %}
   {% if variant.validation in ['True positive','False positive'] %}
-    <span class="badge badge-success">Validated</span>
+    <span class="badge bg-success">Validated</span>
   {% elif variant.sanger_ordered %}
-    <span class="badge badge-default">Verification ordered</span>
+    <span class="badge bg-default">Verification ordered</span>
   {% endif %}
 {% endmacro %}
 
@@ -440,7 +440,7 @@
                 </div>
                 <div class="col-8">
                   {% for omim in variant_phenotypes.omim_terms %}
-                    <span class="badge badge-sm badge-secondary">
+                    <span class="badge badge-sm bg-secondary">
                       <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim|replace('OMIM:','')}}">
                         {{omim}}
                       </a>
@@ -455,7 +455,7 @@
                 <div class="col-8">
                   {% for hpo in variant_phenotypes.hpo_terms %}
                     <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
-                      <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
+                      <span class="badge badge-sm bg-info">{{hpo.phenotype_id}}</span>
                     </a>
                   {% endfor %}
                 </div>
@@ -537,7 +537,7 @@
                     {{ variant_validation_badge(variant) }}
                     {{ tumor_allele_freq(variant) }}
                     {% if variant.mosaic_tags %}
-                      <span class="badge badge-info">mosaic</span>
+                      <span class="badge bg-info">mosaic</span>
                     {% endif %}
                   </div>
                 </div>
@@ -612,7 +612,7 @@
             {% else %}
               <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a>
             {% endif %}
-              <span class="badge badge-dark">{{submission_data.clinsig}}</span>
+              <span class="badge bg-dark">{{submission_data.clinsig}}</span>
           </li>
         {% endfor %}
       </ul>

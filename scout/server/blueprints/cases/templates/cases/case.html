@@ -279,7 +279,7 @@
 
           <div class="col-12">
             {% for grouped_case in case_group %}
-              <span class="badge badge-pill badge-light">
+              <span class="badge rounded-pill bg-light">
                 <a href="{{ url_for('cases.case', institute_id=grouped_case.owner, case_name=grouped_case.display_name) }}">{{ grouped_case.display_name }}</a>
                   <span>
                     <a href="{{ url_for('cases.remove_case_group', institute_id=institute._id, case_name=grouped_case.display_name, case_group=group_id) }}" class="btn btn-link btn-sm">
