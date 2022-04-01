@@ -84,26 +84,19 @@ def sma(institute_id, case_name):
     return dict(format="html", **data)
 
 
-@cases_bp.route("/beacon-add-variants", methods=["POST"])
-def beacon_add_variants():
+@cases_bp.route("/<institute_id>/<case_name>/beacon_add_variants", methods=["POST"])
+def beacon_add_variants(institute_id, case_name):
     """Submit case variants to Beacon"""
-
-    beacon.add_variants(request.form)
+    result = beacon.add_variants(store, institute_id, case_name, request.form)
     return redirect(request.referrer)
 
 
-def beacon_add_dataset():
-    """Submit create a new beacon dataset with a controlled dictionary"""
-
-    beacon.add_dataset(request.form)
-    return redirect(request.referrer)
-
-
-@cases_bp.route("/beacon_remove/<case_id>", methods=["GET"])
-def beacon_remove_variants(case_id):
+@cases_bp.route("/<institute_id>/<case_name>/beacon_remove", methods=["GET"])
+def beacon_remove_variants(institute_id, case_name):
     """Remove all variants from a case from Beacon"""
 
-    beacon.beacon_remove_variants(case_id)
+    result = beacon.remove_variants(institute_id, case_name, request.form)
+    flash(result)
     return redirect(request.referrer)
 
 

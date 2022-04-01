@@ -149,7 +149,7 @@
 {% endmacro %}
 
 {% macro beacon_modal(case) %}
-<form method="POST" action="{{url_for('cases.beacon_add_variants')}}">
+<form method="POST" action="{{url_for('cases.beacon_add_variants', institute_id=case['owner'], case_name=case['_id'])}}">
 <div class="modal fade" id="beacon_modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -239,7 +239,7 @@
       <div class="modal-footer d-flex justify-content-around">
         <div>
           {% if case.beacon %}
-            <a href="{{url_for('cases.beacon_remove_variants', case_id=case._id)}}" class="btn btn-danger text-white">Remove all case variants from Beacon</a>
+            <a href="{{url_for('cases.beacon_remove_variants', institute_id=case['owner'], case_name=case['_id'] )}}" class="btn btn-danger text-white">Remove all case variants from Beacon</a>
           {% else %}
             <button type="submit" class="btn btn-primary">Add variants to beacon</button>
           {% endif %}

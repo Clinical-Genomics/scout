@@ -60,8 +60,8 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 BEACON_URL = "http://localhost:6000/apiv1.0"
 BEACON_ENDPOINTS = {
     "add_variants": "add",
-    "add_dataset": "remove_variants",
     "remove_variants": "delete",
+    "add_dataset": "add_dataset",
 }
 BEACON_TOKEN = "DEMO"
 
