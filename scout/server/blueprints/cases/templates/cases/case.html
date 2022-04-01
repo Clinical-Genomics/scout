@@ -579,11 +579,16 @@ function toggleClickableButtons(button, select_field) {
 
 
 // Hide submenus
-$('#body-row .collapse').collapse('hide');
+var bodyRowCollapsible = document.getElementById('body-row');
+var bsCollapse = new bootstrap.Collapse(bodyRowCollapsible, {
+  toggle: false
+})
 
-$('.collapse').on('shown.bs.collapse', function(){
+bodyRowCollapsible.addEventListener('shown.bs.collapse', function () {
   $(this).parent().find(".fa fa-plus").removeClass("fa fa-plus").addClass("fa fa-minus");
-  }).on('hidden.bs.collapse', function(){
+});
+
+bodyRowCollapsible.addEventListener('hidden.bs.collapse', function () {
   $(this).parent().find(".fa fa-minus").removeClass("fa fa-minus").addClass("fa fa-plus");
 });
 
