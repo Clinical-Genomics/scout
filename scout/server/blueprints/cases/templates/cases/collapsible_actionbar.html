@@ -413,7 +413,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Request research list</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -422,7 +422,7 @@
             <p>You also confirm that you have the <strong>relevant consent</strong>.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Confirm</button>
           </div>
         </div>
@@ -439,7 +439,7 @@
             <p>Cancel request to upload research variants?</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Confirm</button>
           </div>
         </div>
@@ -457,7 +457,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Request rerun</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -465,7 +465,7 @@
             <p>Please confirm that you want to <strong>rerun {{ case.display_name }}</strong>. This will <strong>replace current variants</strong> with updated information.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Confirm</button>
           </div>
         </div>
@@ -480,7 +480,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Request reanalysis</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="toggleEditMetadata()">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="toggleEditMetadata()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -490,7 +490,7 @@
       <div class="modal-footer">
         <form action="{{ url_for('cases.reanalysis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <input type="hidden" name="sample_metadata" id="reanalysis-data-container" value="" />
-          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="toggleEditMetadata()">Close</button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal" onclick="toggleEditMetadata()">Close</button>
           <button type="submit" value="{{ case.display_name }}" class="btn btn-primary">Confirm</button>
         </form>
       </div>
@@ -505,7 +505,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="confirmInactivateLabel">Confirm inactivate case</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -535,7 +535,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="archiveCaseLabel">Confirm archive case</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -544,7 +544,7 @@
         You will have to request a FULL rerun to continue evaluating e.g. research variants.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <form method="POST"
           action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
           <button type="submit" class="btn btn-primary" value="archived" name="status">Archive</button>

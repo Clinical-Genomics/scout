@@ -193,7 +193,7 @@
                 </ul>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -220,7 +220,7 @@
 
       {% if sanger_unevaluated %}
         <div class="container alert alert-info alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           {% if sanger_unevaluated|length > 1%}
           You have <strong>{{ sanger_unevaluated|length }}</strong> cases with Sanger validations to evaluate!
           {% else %}
@@ -255,7 +255,7 @@
                   </ul>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
