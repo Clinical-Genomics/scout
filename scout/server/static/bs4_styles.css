@@ -1,18 +1,3 @@
-:root {
-  --bg-color: #eee;
-}
-
-.bg-primary {
-  background-color: #A8D0E6 !important;
-}
-
-.bg-warning {
-  background-color: #F8E9A1 !important;
-}
-
-.bg-danger-light {
-    background-color: #f7bebc;
-}
 
 .btn-custom-select {
   width: 100%;
@@ -57,7 +42,6 @@ table.dataTable {margin-bottom: 0}
 
 /* Custom navbar theme */
 .navbar{
-  background-color:#1181B2;
   padding: 0;
   height: 50px;
 }
@@ -65,7 +49,6 @@ table.dataTable {margin-bottom: 0}
 .navbar-inverse, .navbar-nav > li > a{
   color:white;
   font-size:16px;
-  background-color:#1181B2;
 }
 
 .float-top-secondary {
@@ -75,22 +58,11 @@ table.dataTable {margin-bottom: 0}
 	right: 0;
 	padding: 1rem;
 	z-index: 99;
-	background-color: #1181B2;
-	border-bottom: 1px solid rgb(0, 153, 172);
-}
-
-.navbar-brand > li > a{
-  color:white;
+	border-bottom: 1px solid;
 }
 
 /*.navbar-nav > li > a:hover,*/
 /*.navbar-nav > li > a:focus,*/
-
- .navbar-nav>.active, .navbar-default,
- .navbar-inverse>.active, .navbar-nav li.active > a {
-  color:white;
-  background-color: #343a40 !important;
-}
 
 .dropdown {
   margin-top: 0;
@@ -98,19 +70,15 @@ table.dataTable {margin-bottom: 0}
 
 .panel-default {
 	margin-top: 15px;
-  background-color: #f6f6f6 !important;
 }
 
 .panel-default > .panel-heading {
 	padding: 5px 10px;
 	font-weight: 500;
-	color: #DDEDF4;
-  background: #1181B2;
 }
 
 .card {
   border-radius: 15px;
-  background: #f6f6f6;
 }
 
 .card-title {
@@ -149,24 +117,10 @@ li.nav-item {
   height: 50px;
 }
 
-a:visited {
-	/* purple */
-	color: #551A8B;
-}
-
-.odd {
-   background-color: #f2f2f2;
-}
-
 /* Introduce small space in between list elements */
 body {
 	background-color: var(--bg-color);
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-}
-
-.bg-success {
-	/* light green */
-	background-color: #dff0d8 !important;
 }
 
 .rank-shield {
@@ -179,31 +133,6 @@ body {
     font-size  : .875rem;
     line-height  : .4;
     border-radius : .2rem;
-}
-
-.badge-primary {
-  background-color: #1181B2;
-}
-
-/* Override primary button colors */
-.btn-primary {
-  background-image: -webkit-linear-gradient(top, #337ab7 0%, #265a88 100%);
-  background-image: -o-linear-gradient(top, #337ab7 0%, #265a88 100%);
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#337ab7), to(#265a88));
-  background-image: linear-gradient(to bottom, #337ab7 0%, #265a88 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff265a88', GradientType=0);
-  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
-  background-repeat: repeat-x;
-  border-color: #245580;
-}
-
-.btn-primary.active {
-  background-color: #265a88;
-  border-color: #245580;
-}
-
-.bg-info-light {
-  background-color: #b8d9e3;
 }
 
 /* sidebar-related stuff */
@@ -242,15 +171,12 @@ body {
 
 /* Separators */
 .sidebar-separator-title {
-    background-color: #333;
     height: 35px;
 }
 .sidebar-separator {
-    background-color: #333 !important;
     height: 25px;
 }
 .logo-separator {
-    background-color: #333;
     height: 60px;
 }
 
@@ -291,8 +217,7 @@ input[type="checkbox"].ios8-switch + label:before {
     width: 40px; /* x*5 */
     height: 24px; /* x*3 */
     border-radius: 16px; /* x*2 */
-    background: #fff;
-    border: 1px solid #d9d9d9;
+    border: 1px solid;
     -webkit-transition: all 0.3s;
     transition: all 0.3s;
 }
@@ -306,33 +231,21 @@ input[type="checkbox"].ios8-switch + label:after {
     height: 24px; /* x*3 */
     border-radius: 16px; /* x*2 */
     background: #fff;
-    border: 1px solid #d9d9d9;
+    border: 1px solid;
     -webkit-transition: all 0.3s;
     transition: all 0.3s;
 }
 input[type="checkbox"].ios8-switch + label:hover:after {
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    box-shadow: 0 0 5px;
 }
 input[type="checkbox"].ios8-switch:checked + label:after {
     margin-left: 16px;
-}
-input[type="checkbox"].ios8-switch:checked + label:before {
-    background: #55D069;
 }
 /* end of CHECKBOX ios8-switch*/
 
 option {
   width: 100%;
 }
-
-.list-group-item {
-  background: #f6f6f6;
-}
-
-.nav .nav-item, .nav > .active > a {
-  background-color: #f6f6f6 !important;
-}
-
 
 .panel-btn  a:before {
    font-family: 'Glyphicons Halflings';
