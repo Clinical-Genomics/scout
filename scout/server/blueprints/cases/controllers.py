@@ -16,6 +16,7 @@ from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
 from scout.constants import (
+    CALLERS,
     CANCER_PHENOTYPE_MAP,
     CASE_REPORT_CASE_FEATURES,
     CASE_REPORT_CASE_IND_FEATURES,
@@ -425,6 +426,14 @@ def case_report_variants(store, case_obj, institute_obj, data):
             for feat in VARIANT_REPORT_VARIANT_FEATURES:
                 filtered_var_obj[feat] = var_obj.get(feat)
 
+            variant_category = var_obj["category"]
+
+            for var_cat, var_callers in CALLERS.items():
+                if var_cat == variant_category:
+                    for caller in var_callers:
+                        caller_id = caller.get("id")
+                        filtered_var_obj[caller_id] = var_obj.get(caller_id)
+
             decorated_info = variant_decorator(
                 store=store,
                 institute_id=institute_obj["_id"],
@@ -434,7 +443,7 @@ def case_report_variants(store, case_obj, institute_obj, data):
                 add_case=False,
                 add_other=False,
                 get_overlapping=False,
-                variant_type=var_obj["category"],
+                variant_type=variant_category,
                 institute_obj=institute_obj,
                 case_obj=case_obj,
             )
