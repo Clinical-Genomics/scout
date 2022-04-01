@@ -16,11 +16,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 <link rel="stylesheet" href="{{ url_for('cases.static', filename='case_styles.css') }}"></link>
 <style>
-  [data-toggle="collapse"] .fa:before {
+  [data-bs-toggle="collapse"] .fa:before {
     content: "\f139";
   }
 
-  [data-toggle="collapse"].collapsed .fa:before {
+  [data-bs-toggle="collapse"].collapsed .fa:before {
     content: "\f13a";
   }
 </style>
@@ -361,7 +361,7 @@
       <div id="{{section_name}}-accordion" class="accordion">
         <div class="panel-heading">
           <div class="panel-title">
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
+            <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
               <i class="fa"></i>
               {{ section_name }} images
             </a>
@@ -596,7 +596,7 @@ bodyRowCollapsible.addEventListener('hidden.bs.collapse', function () {
 $('#collapse-icon').addClass('fa-angle-double-left');
 
 // Collapse click
-$('[data-toggle=sidebar-collapse]').click(function() {
+$('[data-bs-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
 </script>
