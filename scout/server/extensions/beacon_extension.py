@@ -5,25 +5,32 @@ import json
 
 from werkzeug.datastructures import Headers
 
-from scout.utils import scout_requests
+# from scout.utils import scout_requests
 
 
 class Beacon:
     """Interface to cgbeacon2 server instance, reachable via REST API"""
 
     def __init__(self):
-        self.add_url = None
+        self.add_variants_url = None
         self.add_dataset_url = None
+        self.delete_variants_url = None
         self.token = None
 
     def init_app(self, app):
         """Initialize the beacon extension and make its parametars available to the app."""
-        self.add_url = app.config.get("MME_URL")
-        self.add_dataset_url = app.config.get("MME_URL")
-        self.token = app.config.get("MME_URL")
+        endpoints = app.config.get("BEACON_ENDPOINTS")
+        beacon_url = app.config.get("BEACON_URL")
 
+        self.add_variants_url = "/".join([beacon_url, endpoints.get("add_variants")])
+        self.add_dataset_url = "/".join([beacon_url, endpoints.get("add_dataset")])
+        self.delete_variants_url = "/".join([beacon_url, endpoints.get("remove_variants")])
+        self.token = app.config.get("BEACON_TOKEN")
+
+
+"""
     def request(self, url, data):
-        """Send a request to MatchMaker and return its response
+        Send a request to MatchMaker and return its response
 
         Args:
             url(str): could be either "beacon-host/add" or "beacon-host/add_dataset"
@@ -31,7 +38,7 @@ class Beacon:
 
         Returns:
             json_response(dict): beacon server response
-        """
+
         headers = Headers()
         headers = {"X-Auth-Token": self.token}
 
@@ -39,7 +46,7 @@ class Beacon:
         return json_response
 
 
-"""
+
 def prepare_beacon_req_params():
     Prepares URL and Headers for sending a request to the beacon server.
 

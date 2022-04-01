@@ -123,8 +123,18 @@ def configure_extensions(app):
             app.config.get("MME_TOKEN"),
         ]
     ):
-        LOG.info("MatchMaker Exchange enabled")
+        LOG.info("Matchmaker Exchange extension enabled")
         extensions.matchmaker.init_app(app)
+
+    if all(
+        [
+            app.config.get("BEACON_URL"),
+            app.config.get("BEACON_ENDPOINTS"),
+            app.config.get("BEACON_TOKEN"),
+        ]
+    ):
+        LOG.info("Beacon extension enabled")
+        extensions.beacon.init_app(app)
 
     if app.config.get("RERUNNER_API_ENTRYPOINT") and app.config.get("RERUNNER_API_KEY"):
         LOG.info("Rerunner service enabled")
