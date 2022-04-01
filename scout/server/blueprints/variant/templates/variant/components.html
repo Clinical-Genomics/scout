@@ -192,7 +192,7 @@
       <div class="card-body mt-1 ml-3 mb-1 d-flex align-items-center" style="padding: 0;">
         Matching tiered:&nbsp;
         {% for tier, tiered_info in matching_tiered.items() %}
-          <a class="btn btn-{{tiered_info.label}} btn-xs" data-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+          <a class="btn btn-{{tiered_info.label}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">
             {{tier}} ({{tiered_info.links|length}}x)
           </a>
           <div class="collapse" id="collapse_{{tier}}">

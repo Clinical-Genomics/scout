@@ -121,9 +121,9 @@
         <div class="card ">
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
-              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
-              <a class="nav-item nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
+              <a class="nav-item nav-link active" id="nav-genes-tab" data-bs-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-item nav-link" id="nav-transcripts-tab" data-bs-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-item nav-link" id="nav-proteins-tab" data-bs-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
             </div>
 
           </nav>
@@ -303,7 +303,7 @@
       }
     }
 
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
       .columns.adjust()
     });

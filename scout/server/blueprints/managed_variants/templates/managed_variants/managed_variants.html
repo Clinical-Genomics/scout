@@ -31,7 +31,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-toggle="collapse" data-parent="#accordion_add" href="#collapseAdd">
+            <a data-bs-toggle="collapse" data-parent="#accordion_add" href="#collapseAdd">
                 Add variant
             </a>
           </h5>
@@ -50,7 +50,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-toggle="collapse" data-parent="#accordion_load" href="#collapseLoad">
+            <a data-bs-toggle="collapse" data-parent="#accordion_load" href="#collapseLoad">
                 Load variants
             </a>
           </h5>
@@ -70,7 +70,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+            <a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
                 Filters
             </a>
           </h5>
@@ -112,7 +112,7 @@
             {{ variant.description }}
             <div class="float-right">
               <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant.managed_variant_id) }}">
-                  <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
+                  <button id="{{variant._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
                     <span class="fa fa-pencil-square-o"></span>
                   </button>
                   <button id="remove_{{variant._id}}" type="submit" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o"></span></button>

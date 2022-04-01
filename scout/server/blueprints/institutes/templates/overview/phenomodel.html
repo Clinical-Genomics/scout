@@ -58,8 +58,8 @@
 <!--Code for adding a subpanel-->
 <div class="mb-3">
   <div class="d-flex justify-content-center">
-    <div class="btn-group btn-group-toggle" data-toggle="buttons" >
-      <button class="btn-secondary btn-sm" aria-hidden="true" data-toggle="modal" data-target="#preview">Preview</button>
+    <div class="btn-group btn-group-toggle" data-bs-toggle="buttons" >
+      <button class="btn-secondary btn-sm" aria-hidden="true" data-bs-toggle="modal" data-target="#preview">Preview</button>
       <button class="btn btn-primary btn-sm" onclick="showDiv('new_subpanel','add_terms')" {{ "disabled" if disable }}>Create a new phenotype subpanel</button>
       <button class="btn btn-primary btn-sm" onclick="showDiv('add_terms','new_subpanel')" {{ "disabled" if disable or not phenomodel.subpanels  }} }}>Add terms to an existing phenotype subpanel</button>
     </div>

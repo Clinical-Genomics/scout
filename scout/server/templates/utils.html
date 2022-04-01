@@ -59,7 +59,7 @@
                 {% endif %}
                 {% if comment.user_id == current_user.email %}
                   <button class="btn btn-link btn-sm" type="submit" name="remove"><i class="fa fa-remove"></i></button>
-                  <button class="btn btn-link btn-sm" type="button" data-toggle="modal" data-target="#editComment_{{loop.index}}"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-link btn-sm" type="button" data-bs-toggle="modal" data-target="#editComment_{{loop.index}}"><i class="fa fa-edit"></i></button>
                 {% endif %}
               </small>
             </form>

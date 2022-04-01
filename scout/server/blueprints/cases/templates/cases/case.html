@@ -235,7 +235,7 @@
            {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
           </div>
           <div class="col-2">
-            <button type="button" class="btn btn-secondary form-control" data-toggle="modal" data-target="#edit-synopsis">
+            <button type="button" class="btn btn-secondary form-control" data-bs-toggle="modal" data-bs-target="#edit-synopsis">
               Edit
             </button>
           </div>
@@ -272,7 +272,7 @@
               <input type="text" class="form-control" name="label" id="case_group_label-{{group_id}}" placeholder="{{ case_group_label[group_id] }}">
             </div>
             <button type="submit" class="btn btn-secondary btn-sm mb-2">Save label</button>
-            <button type="button" class="btn btn-secondary btn-sm mb-2 ml-3 text-right" data-toggle="modal" data-target="#add-case-group-{{group_id}}">
+            <button type="button" class="btn btn-secondary btn-sm mb-2 ml-3 text-right" data-bs-toggle="modal" data-bs-target="#add-case-group-{{group_id}}">
               <i class="fas fa-user-plus" data-toggle='tooltip' title="Add other case to this group"></i>
             </button>
           </form>
@@ -336,7 +336,7 @@
     {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
       {% set chromograph.available = true %}
       <div class="panel-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
+          <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
             <i class="fa"></i>
             Images {{i.display_name}}
           </a>

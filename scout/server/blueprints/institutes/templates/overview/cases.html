@@ -171,7 +171,7 @@
     </td>
     <td>
       {% if case.clinvar_variants %}
-        <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
+        <a href="#clinvar_{{case.display_name}}" data-bs-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
         <!-- Modal -->
         <div class="modal fade" id="clinvar_{{case.display_name}}" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -227,7 +227,7 @@
           You have <strong>1</strong> case with Sanger validations to evaluate!&nbsp;
           {% endif %}
           <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#evaluateModal">
+          <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#evaluateModal">
             evaluate
           </button>
 
