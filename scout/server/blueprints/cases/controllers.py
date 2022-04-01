@@ -428,11 +428,7 @@ def case_report_variants(store, case_obj, institute_obj, data):
 
             variant_category = var_obj["category"]
 
-            for var_cat, var_callers in CALLERS.items():
-                if var_cat == variant_category:
-                    for caller in var_callers:
-                        caller_id = caller.get("id")
-                        filtered_var_obj[caller_id] = var_obj.get(caller_id)
+            populate_individual_callers(filtered_var_obj, var_obj)
 
             decorated_info = variant_decorator(
                 store=store,
@@ -450,6 +446,24 @@ def case_report_variants(store, case_obj, institute_obj, data):
             decorated_variants.append(decorated_info["variant"])
         # Add the decorated variants to the case
         data["variants"][var_type] = decorated_variants
+
+
+def populate_individual_callers(filtered_var_obj, var_obj):
+    """Adds caller status for variant, for export/filtering.
+    Uses the CALLERS constant to copy fields appropriate for the variant category
+    from the rich store variant to the filtered display variant object.
+
+    Args:
+        filtered_var_obj: variant object to be exported/displayed
+        rich_var_obj: original richer variant object recently fetched from store
+
+    """
+    variant_category = var_obj["category"]
+    for var_cat, var_callers in CALLERS.items():
+        if var_cat == variant_category:
+            for caller in var_callers:
+                caller_id = caller.get("id")
+                filtered_var_obj[caller_id] = var_obj.get(caller_id)
 
 
 def case_report_content(store, institute_id, case_name):
