@@ -23,7 +23,7 @@ from flask import (
 from flask_login import current_user
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.extensions import mail, store
+from scout.server.extensions import beacon, mail, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
@@ -84,19 +84,26 @@ def sma(institute_id, case_name):
     return dict(format="html", **data)
 
 
-@cases_bp.route("/beacon_submit", methods=["POST"])
-def beacon_submit():
+@cases_bp.route("/beacon-add-variants", methods=["POST"])
+def beacon_add_variants():
     """Submit case variants to Beacon"""
 
-    controllers.beacon_add(request.form)
+    beacon.add_variants(request.form)
+    return redirect(request.referrer)
+
+
+def beacon_add_dataset():
+    """Submit create a new beacon dataset with a controlled dictionary"""
+
+    beacon.add_dataset(request.form)
     return redirect(request.referrer)
 
 
 @cases_bp.route("/beacon_remove/<case_id>", methods=["GET"])
-def beacon_remove(case_id):
+def beacon_remove_variants(case_id):
     """Remove all variants from a case from Beacon"""
 
-    controllers.beacon_remove(case_id)
+    beacon.beacon_remove_variants(case_id)
     return redirect(request.referrer)
 
 
