@@ -39,6 +39,8 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "category",
     "dismiss_variant",
     "variant_rank",
+    "sub_category",
+    "length",
     "str_repid",
     "str_display_ru",
     "str_ru",
