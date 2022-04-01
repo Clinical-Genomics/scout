@@ -40,6 +40,7 @@ VARIANT_REPORT_VARIANT_FEATURES = [
     "dismiss_variant",
     "variant_rank",
     "sub_category",
+    "end_chrom",
     "length",
     "str_repid",
     "str_display_ru",
