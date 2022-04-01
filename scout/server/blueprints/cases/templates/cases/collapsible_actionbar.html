@@ -199,7 +199,7 @@
           <div class="btn-group btn-group-justified">
             <div class="btn-group">
               {% if case.status != 'archived' %}
-                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#archive_modal">
+                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#archive_modal">
                   Archive
                 </button>
               {% else %}
@@ -229,7 +229,7 @@
         <form method="POST" action="{{ url_for('cases.assign', institute_id=institute._id,
           case_name=case.display_name, user_id=user._id) }}">
             {% if case.assignees|length == 1 and not case.status in ['inactive', 'prioritized'] %}
-              <button type="button" name="action" value="DELETE" class="btn btn-warning btn-xs form-control" data-toggle="modal" data-target="#confirm_inactivate">
+              <button type="button" name="action" value="DELETE" class="btn btn-warning btn-xs form-control" data-bs-toggle="modal" data-bs-target="#confirm_inactivate">
             {% else %}
               <button type="submit" name="action" value="DELETE" class="btn btn-warning btn-xs form-control">
             {% endif %}
@@ -263,11 +263,11 @@
   {% if case.research_requested %}
     <span class="d-flex align-items-center">
       <i class="text-white mt-1 ml-3">Research pending</i>
-      <button type="button" class="btn btn-danger btn-xs ml-3" data-toggle="modal" data-target="#cancel-research-modal"><i class="fa fa-hand-paper-o text-white"></i></button>
+      <button type="button" class="btn btn-danger btn-xs ml-3" data-bs-toggle="modal" data-bs-target="#cancel-research-modal"><i class="fa fa-hand-paper-o text-white"></i></button>
     </span>
   {% else %}
     <div id='submenu2' class="collapse">
-      <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+      <button type="button" class="btn btn-danger btn-sm form-control" data-bs-toggle="modal" data-bs-target="#research-modal">Request research</button>
     </div>
   {% endif %}
 {% endmacro %}
@@ -295,7 +295,7 @@
     {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
-    <button type="button" class="btn btn-warning btn-sm form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+    <button type="button" class="btn btn-warning btn-sm form-control" data-bs-toggle="modal" data-bs-target="#rerun-modal">Request rerun</button>
   </div>
 {% endif %}
 {% endmacro %}
@@ -359,7 +359,7 @@
   {% if "beacon_submitter" not in current_user.roles %}
     <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to the Beacon. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% else %}
-    <a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a data-bs-target="#beacon_modal" data-bs-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% endif %}
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fab fa-watchman-monitoring"></span>
@@ -375,7 +375,7 @@
   {% elif "suspects" not in case or case.suspects|length == 0 %}
     <a disabled="disabled" data-toggle="popover" data-content="No pinned variants for this case. Please pin at least a variant (SNV, SV) to share to the Matchmaker Exchange" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% else %}
-    <a data-target="#matchmaker_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a data-bs-target="#matchmaker_modal" data-bs-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% endif %}
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fas fa-people-arrows"></span>

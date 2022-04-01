@@ -113,8 +113,8 @@
         <div class="panel-heading">
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
-              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-item nav-link active" id="nav-genes-tab" data-bs-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-item nav-link" id="nav-transcripts-tab" data-bs-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
             </div>
           </nav>
         </div>
@@ -297,12 +297,12 @@
     {% if variant.validation in ['True positive', 'False positive']%}
       <p class="navbar-text">Validation: {{ variant.validation }}</p>
     {% else %}
-      <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#cancelVerifyModal">
+      <button class="btn btn-light navbar-btn" data-bs-toggle="modal" data-bs-target="#cancelVerifyModal">
         Verification pending...
       </button>
     {% endif %}
   {% else %}
-    <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#svVerifyModal">
+    <button class="btn btn-light navbar-btn" data-bs-toggle="modal" data-bs-target="#svVerifyModal">
       Verify
     </button>
   {% endif %}
@@ -432,6 +432,6 @@
     set_scrolly_table('genes_table')
     set_scrolly_table('transcripts_table')
     set_scrolly_table('overlapping_snvs_table')
-    
+
   </script>
 {% endblock %}

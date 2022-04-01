@@ -128,7 +128,7 @@
 {% macro modal_mme_delete(institute, case) %}
   <form id="mme_delete" method="POST" action="{{ url_for('cases.matchmaker_delete', institute_id=institute._id, case_name=case.display_name )}}">
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#mme_delete_confirm">
+    <button type="button" class="btn btn-danger form-control" data-bs-toggle="modal" data-bs-target="#mme_delete_confirm">
     Remove case from Matchmaker
     </button>
     <!-- Modal -->

@@ -147,11 +147,11 @@
               <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
               <td style="width:30%">{{model.admins|join(", ") or "-"}}</th>
               <td>
-                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-target="#deleteModal-{{model._id}}"><i class="fa fa-trash-o"></i></button>
+                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><i class="fa fa-trash-o"></i></button>
               </td>
               {% if model.admins|length == 0 or current_user.email in model.get("admins",[]) %}
                 <td>
-                  <button type="button" class="btn btn-primary btn-sm" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-target="#lockModal-{{model._id}}"><i class="fa {{ 'fa-lock' if model.admins|length > 0 else 'fa-unlock' }}"></i></button>
+                  <button type="button" class="btn btn-primary btn-sm" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#lockModal-{{model._id}}"><i class="fa {{ 'fa-lock' if model.admins|length > 0 else 'fa-unlock' }}"></i></button>
                 </td>
               {% endif %}
             </tr>
