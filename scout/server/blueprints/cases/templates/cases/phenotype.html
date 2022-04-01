@@ -3,7 +3,7 @@
 {% macro cohort_panel(case, institute, cohort_tags) %}
   <div class="card" id="cohorts">
     <div class="panel-heading">
-      <h6 class="mt-3 ml-3"><span class="fa fa-tag"></span>&nbsp;Cohort tag
+      <h6 class="mt-3 ms-3"><span class="fa fa-tag"></span>&nbsp;Cohort tag
     </div>
     <div class="card-body">
       {% for cohort_batch in case.cohorts|batch(5, '') -%}
@@ -53,7 +53,7 @@
   <div class="col-6">
   {% if "diagnosis_phenotypes" in case %}
     {% for diagnosis in case.diagnosis_phenotypes %}
-      <div class="row d-flex justify-content-between ml-3">
+      <div class="row d-flex justify-content-between ms-3">
         <div>
           {% if diagnosis.disease_id and diagnosis.description %}
             <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-toggle='tooltip' title="{{diagnosis.description}}">
@@ -77,7 +77,7 @@
         </div>
 
         <!--option to remove OMIM term for case-->
-        <span class="mr-3">
+        <span class="me-3">
           {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                 case_name=case.display_name, remove='yes'),
                        hidden_input=('omim_term', diagnosis.disease_id)) }}
@@ -104,7 +104,7 @@
 
 {% macro diagnosis_form(case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row ml-1" id="omim_assign">
+    <div class="row ms-1" id="omim_assign">
       <div class="col-4">
         <input name="omim_term" id="assign-omim-term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
             required placeholder="Search..." oninput="toggleClickableButtons('assign-omim-button', 'assign-omim-term');">
@@ -129,7 +129,7 @@
   <div class="card">
     <div class="panel-heading">
       <div class="panel-heading">
-        <h6 class="mt-3 ml-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype groups
+        <h6 class="mt-3 ms-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype groups
       </div>
     <div class="card-body">
         {% for hpo_term in case.phenotype_groups %}
@@ -221,7 +221,7 @@
 
       <!-- Display and remove added HPO terms -->
       <div class="row mt-3">
-        <div class="col-12 ml-3">
+        <div class="col-12 ms-3">
           {% for hpo_term in case.phenotype_terms %}
             {{ hpo_item(hpo_term, case) }}
           {% else %}
@@ -234,7 +234,7 @@
         <div class="row d-flex justify-content-between">
           <div class="col-11">
             <button class="btn btn-sm btn-secondary" type="submit" name="action" value="GENERATE">Create HPO panel</button>
-            <input class="ml-3" name="min_match" type="number" min="0" step="1" placeholder="Min matches" style="width:130px"/>
+            <input class="ms-3" name="min_match" type="number" min="0" step="1" placeholder="Min matches" style="width:130px"/>
             {% if config.PHENOMIZER_USERNAME %}
               <button class="btn btn-secondary btn-sm" type="submit" name="action" value="PHENOMIZER"
               {%if case.phenotype_terms|length == 0 %} disabled {%endif%}>Phenomizer</button>

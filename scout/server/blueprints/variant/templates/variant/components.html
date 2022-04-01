@@ -79,7 +79,7 @@
           {% if config.SQLALCHEMY_DATABASE_URI %}
             <div class="d-flex flex-wrap">
               {% for gene in variant.genes %}
-                <span class="ml-5">
+                <span class="ms-5">
                   <a target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
                     {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                   </a>
@@ -101,7 +101,7 @@
   <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
     <div class="d-flex justify-content-between">
       {% for option in ACMG_OPTIONS %}
-        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
+        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'me-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
           {{ option.short }}
         </button>
       {% endfor %}
@@ -148,7 +148,7 @@
 {% macro matching_variants(managed_variant, causatives, matching_tiered=None) %}
   {% if causatives %}
     <div class="card mt-3">
-      <div class="card-body mt-1 ml-3 mb-1" style="padding: 0;">
+      <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
         Matching causatives from other cases:&nbsp;
         {% for other_variant in causatives %}
           <a href="{{ url_for('variant.variant',
@@ -166,7 +166,7 @@
   {% endif %}
   {% if managed_variant %}
     <div class="card mt-3">
-      <div class="card-body mt-1 ml-3 mb-1">
+      <div class="card-body mt-1 ms-3 mb-1">
         Matching managed variant:
         <div class="row">
           <div class="col-2">
@@ -181,7 +181,7 @@
   {% endif %}
   {% if not managed_variant and not causatives %}
     <div class="card mt-3">
-      <div class="card-body mt-1 ml-1" style="padding: 0;">
+      <div class="card-body mt-1 ms-1" style="padding: 0;">
         <h6>No matching causative or managed variants</h6>
       </div> <!--end of card body-->
     </div><!--end of card-->
@@ -189,7 +189,7 @@
 
   {% if matching_tiered %}
     <div class="card">
-      <div class="card-body mt-1 ml-3 mb-1 d-flex align-items-center" style="padding: 0;">
+      <div class="card-body mt-1 ms-3 mb-1 d-flex align-items-center" style="padding: 0;">
         Matching tiered:&nbsp;
         {% for tier, tiered_info in matching_tiered.items() %}
           <a class="btn btn-{{tiered_info.label}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{tier}}" role="button" aria-expanded="false" aria-controls="collapseExample">

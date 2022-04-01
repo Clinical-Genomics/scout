@@ -84,7 +84,7 @@
 {% endmacro %}
 
 {% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
-<div class="row d-flex align-items-center mb-2 ml-1">
+<div class="row d-flex align-items-center mb-2 ms-1">
   <div class="col-2 ">Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
     <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
@@ -97,7 +97,7 @@
     <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
   </div>
   <div class="offset-2 col-2">
-      <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark pull-right mr-3">Reset all dismissed variants for this case</a>
+      <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark pull-right me-3">Reset all dismissed variants for this case</a>
   </div>
 </div>
 {% endmacro %}
@@ -131,7 +131,7 @@
                 {{ compound.display_name|truncate(20, True) }}
                 </a>
                 {% if 'suspects' in case and compound.variant in case.suspects %}
-                  <i class='fa fa-map-pin ml-1'></i>
+                  <i class='fa fa-map-pin ms-1'></i>
                 {% endif %}
               {% endif %}
           </td>
@@ -244,7 +244,7 @@
     </div>
     <div class="col-1">
       {{ form.clinvar_tag() }}
-      {{ form.clinvar_tag.label(class="ml-2") }}
+      {{ form.clinvar_tag.label(class="ms-2") }}
     </div>
   </div>
 </div>
@@ -295,7 +295,7 @@
       <div id="hidecompounds" class="collapse form-group row">
         <div class="col-4">{{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds at this score or below as if dismissed") }}</div>
         <div class="col-3">{{ form.compound_rank_score(class="form-control", placeholder="example: 10", onchange="this.form.submit()") }}</div>
-        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ml-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by essentially the same filter as the main variant. CADD, CLINSIG, Frequency, function, position, region, SPIDEX, and variant type shade and hide, but chromosome, gene panel, and inheritance model do not. Checkbox ClinVar hits is not considered. Checkbox Always show CLNSIG disables ClinVar shading for the compound. Not loaded compounds cannot be evaluated and instead become shaded.") }}</div>
+        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ms-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by essentially the same filter as the main variant. CADD, CLINSIG, Frequency, function, position, region, SPIDEX, and variant type shade and hide, but chromosome, gene panel, and inheritance model do not. Checkbox ClinVar hits is not considered. Checkbox Always show CLNSIG disables ClinVar shading for the compound. Not loaded compounds cannot be evaluated and instead become shaded.") }}</div>
       </div>
     </div>
     <div class="col-2">
@@ -559,15 +559,15 @@
         <div class="col-2">
           <div class="row form-inline">
             {{ form.mvl_tag() }}
-            {{ form.mvl_tag.label(class="ml-2") }}
+            {{ form.mvl_tag.label(class="ms-2") }}
           </div>
           <div class="row form-inline">
             {{ form.clinvar_tag() }}
-            {{ form.clinvar_tag.label(class="ml-2") }}
+            {{ form.clinvar_tag.label(class="ms-2") }}
           </div>
           <div class="row form-inline">
             {{ form.cosmic_tag() }}
-            {{ form.cosmic_tag.label(class="ml-2") }}
+            {{ form.cosmic_tag.label(class="ms-2") }}
           </div>
         </div>
       </div>

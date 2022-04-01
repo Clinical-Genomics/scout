@@ -36,7 +36,7 @@
 
 {% macro phenomodel_page() %}
 <div class="card mt-3">
-  <div style="padding: 0;" class="card-body mt-3 ml-3 mr-3">
+  <div style="padding: 0;" class="card-body mt-3 ms-3 me-3">
     <form action="#" method="POST">
         <input type="hidden" name="model_id" value="{{phenomodel._id}}">
       <div class="form-row">
@@ -50,7 +50,7 @@
           <button type="submit" value="update" name="update_model" class="btn btn-primary" {{ "disabled" if disable}}>Update</button
         </div>
       </div>
-      <h6 class="text-muted ml-3 mt-3">Created: {{phenomodel.created.strftime('%Y-%m-%d')}} - Updated: {{phenomodel.updated.strftime('%Y-%m-%d')}}</h6>
+      <h6 class="text-muted ms-3 mt-3">Created: {{phenomodel.created.strftime('%Y-%m-%d')}} - Updated: {{phenomodel.updated.strftime('%Y-%m-%d')}}</h6>
     </form>
   </div>
 </div>
@@ -68,7 +68,7 @@
     <div class="mb-3">
       <form action="#" id="new_subpanel_form" method="POST">
         {{ subpanel_form.csrf_token }}
-        <div class="form-row ml-3 mr-3 mt-3">
+        <div class="form-row ms-3 me-3 mt-3">
           <div class="col-5">
             {{ subpanel_form.title.label }}:
             {{ subpanel_form.title(class="form-control") }}
@@ -85,7 +85,7 @@
     </div>
   </div>
   <!--div containing form elements to add HPO terms or custom checkbox fields-->
-  <div class="mt-3 ml-3" id="add_terms" style="display:none;">
+  <div class="mt-3 ms-3" id="add_terms" style="display:none;">
     <div class="form-check form-check-inline mb-3">
       <input class="form-check-input" type="radio" name="checkType" id="checkTypeHpo" value="hpo" checked onchange="showDiv('hpoForm','omimForm')">
       <label class="form-check-label" for="hpo">
@@ -215,7 +215,7 @@
           </div><!-- End of are displaying subpanel checkboxes-->
           <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
             <div class="d-flex justify-content-between">
-              <text class="text-muted mb-1 ml-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
+              <text class="text-muted mb-1 ms-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
               <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}" {{ "disabled" if disable }}><i class="fa fa-times"></i> Remove panel</button>
             </div>
           </form>
@@ -282,7 +282,7 @@
               {% endfor %}
               <!--  end of loop over the checkbox groups of the model-->
               </div>
-            <text class="text-muted mb-1 ml-1" style="font-size:14px;">Updated: {{subpanel_obj.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
+            <text class="text-muted mb-1 ms-1" style="font-size:14px;">Updated: {{subpanel_obj.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
           </div><!--end of card-->
         {% endfor %}<!-- end of loop over the subpanels of the model-->
       </div>

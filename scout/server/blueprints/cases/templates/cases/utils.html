@@ -359,7 +359,7 @@
   <div class="card mt-3">
     <div data-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
       <div class="d-flex justify-content-between">
-        <h6><span class="fa fa-medkit ml-3 mt-2"></span>
+        <h6><span class="fa fa-medkit ms-3 mt-2"></span>
         {% if case.track == 'cancer' %}
           Clinically significant
         {% else %}
@@ -367,7 +367,7 @@
         {% endif %}
         </h6>
         {% if not case.causatives|length and not case.partial_causatives|length %}
-          <span class="text-muted mr-3 mt-2">No variants marked causative</span>
+          <span class="text-muted me-3 mt-2">No variants marked causative</span>
         {% endif %}
       </div>
     </div>
@@ -517,10 +517,10 @@
 {% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
   <div class="card mt-3">
     <div class="d-flex justify-content-between" data-toggle='tooltip' title="Displays all variants that has been pinned for this case">
-      <h6><span class="fa fa-map-pin ml-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
+      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
       </h6>
       {% if not suspects|length %}
-        <span class="text-muted mr-3 mt-2">No pinned variants</span>
+        <span class="text-muted me-3 mt-2">No pinned variants</span>
       {% endif %}
     </div>
     <div style="max-height:300px; overflow-y: scroll;">
@@ -597,10 +597,10 @@
 {% macro clinvar_panel(institute, case) %}
   <div class="card panel-default">
     <div class="d-flex justify-content-between" data-toggle='tooltip' title="Variants included in a ClinVar submission object in Scout">
-      <h6><span class="fa fa-map-pin ml-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }})
+      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }})
       </h6>
       {% if not case.clinvar_variants %}
-        <span class="text-muted mr-3 mt-2">No variants in ClinVar submissions </span>
+        <span class="text-muted me-3 mt-2">No variants in ClinVar submissions </span>
       {% endif %}
     </div>
     <div class="card">
