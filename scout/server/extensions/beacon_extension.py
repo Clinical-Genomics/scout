@@ -110,7 +110,7 @@ class Beacon:
                 update_case = True
             else:
                 flash(
-                    f"Error while submitting variant data to Beacon: {json_resp}",
+                    f"Error while submitting variant data to Beacon: {json_resp}. Request data:{base_data}",
                     "warning",
                 )
 
