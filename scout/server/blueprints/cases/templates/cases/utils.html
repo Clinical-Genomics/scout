@@ -239,7 +239,7 @@
       <div class="modal-footer d-flex justify-content-around">
         <div>
           {% if case.beacon %}
-            <a href="{{url_for('cases.beacon_remove_variants', institute_id=case.owner, case_name=case['_id'] )}}" class="btn btn-danger text-white">Remove all case variants from Beacon</a>
+            <a href="{{url_for('cases.beacon_remove_variants', institute_id=institute._id, case_name=case.display_name )}}" class="btn btn-danger text-white">Remove all case variants from Beacon</a>
           {% else %}
             <button type="submit" class="btn btn-primary">Add variants to beacon</button>
           {% endif %}

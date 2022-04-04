@@ -129,7 +129,6 @@ def configure_extensions(app):
     if all(
         [
             app.config.get("BEACON_URL"),
-            app.config.get("BEACON_ENDPOINTS"),
             app.config.get("BEACON_TOKEN"),
         ]
     ):

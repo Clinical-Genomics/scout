@@ -100,12 +100,8 @@ def beacon_remove_variants(institute_id, case_name):
     _, case_obj = institute_and_case(
         store, institute_id, case_name
     )  # This function checks if user has permissions to access the case
-    return "in progress"
-    """
-    result = beacon.remove_variants(store, case_obj, request.form)
-    flash(result)
+    beacon.remove_variants(store, institute_id, case_obj)
     return redirect(request.referrer)
-    """
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])

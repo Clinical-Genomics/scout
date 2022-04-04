@@ -58,11 +58,6 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # Beacon connection settings
 # - Tested with cgbeacon2 (https://github.com/Clinical-Genomics/cgbeacon2) -
 BEACON_URL = "http://localhost:6000/apiv1.0"
-BEACON_ENDPOINTS = {
-    "add_variants": "add",
-    "remove_variants": "delete",
-    "add_dataset": "add_dataset",
-}
 BEACON_TOKEN = "DEMO"
 
 # connection details for LoqusDB MongoDB database

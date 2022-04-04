@@ -8,7 +8,7 @@ from flask import flash
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.utils.scout_requests import post_request_json
+from scout.utils.scout_requests import delete_request_json, post_request_json
 
 
 class Beacon:
@@ -16,18 +16,16 @@ class Beacon:
 
     def __init__(self):
         self.add_variants_url = None
-        self.add_dataset_url = None
         self.delete_variants_url = None
         self.token = None
 
     def init_app(self, app):
         """Initialize the beacon extension and make its parametars available to the app."""
-        endpoints = app.config.get("BEACON_ENDPOINTS")
+        self.token = app.config.get("BEACON_TOKEN")
         beacon_url = app.config.get("BEACON_URL")
 
-        self.add_variants_url = "/".join([beacon_url, endpoints.get("add_variants")])
-        self.delete_variants_url = "/".join([beacon_url, endpoints.get("remove_variants")])
-        self.token = app.config.get("BEACON_TOKEN")
+        self.add_variants_url = "/".join([beacon_url, "add"])
+        self.delete_variants_url = "/".join([beacon_url, "delete"])
 
     def base_submission_data(self, store, case_obj, form):
         """Create data dictionary to be send as json data in a POST request to the beacon "add" endpoint
@@ -107,7 +105,7 @@ class Beacon:
             )
 
             if json_resp.get("status_code") == 200:
-                flash(f"Beacon answered:{json_resp}", "success")
+                flash(f"Beacon responded: {json_resp}", "success")
                 update_case = True
             else:
                 flash(
@@ -127,63 +125,37 @@ class Beacon:
                 {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
             )
 
-    def remove_variants(self, store, case_obj, form):
+    def remove_variants(self, store, institute_id, case_obj):
         """
         Removing all variants from a scout case from Beacon
 
         Args:
-            Args:
-                institute_id(str): the _id of an institute
-                case_name(str): display_name of a case
-                form(ImmutableMultiDict): request form submitted by user.
-
-        Returns:
-            a tuple(bool, string): first element is True if task was completed, otherwise it's fFlse.
-                Second element is the message to display for the user
-        _, case_obj = institute_and_case(store, institute_id, case_name)
-
-        # Check if user has rights to remove case from beacon
-        user_obj = store.user(current_user.email)
-        if "beacon_submitter" not in user_obj.get("roles", []):
-            return "You don't have permission to use the Beacon tool"
+            store(adapter.MongoAdapter)
+            institute_id(str): _id of an institute
+            case_obj(dict): scout.models.Case
         """
-        pass
+        # Check if user has rights to remove case from Beacon
+        user_obj = store.user(current_user.email)
 
+        if "beacon_submitter" not in user_obj.get("roles", []):
+            flash("You don't have permission to edit Beacon submissions from Scout", "warning")
 
-"""
-def beacon_remove(case_id):
-    Remove all variants from a case in Beacon by handling a POST request to the /apiv1.0/delete Beacon endpoint.
+        assembly = "GRCh37" if "37" in str(case_obj.get("genome_build", "37")) else "GRCh38"
 
-    Args:
-        case_id(str): A case _id
+        # Prepare data to be sent as json to Beacon delete endpoint
+        req_data = {
+            "dataset_id": "_".join([institute_id, assembly]),
+            "samples": case_obj.get("beacon", {}).get("samples", []),
+        }
+        headers = Headers()
+        headers = {"X-Auth-Token": self.token}
 
-    if prepare_beacon_req_params() is None:
-        flash(
-            "Please check config file. It should contain both BEACON_URL and BEACON_TOKEN",
-            "warning",
+        json_resp = delete_request_json(
+            url=self.delete_variants_url, headers=headers, data=req_data
         )
-        return
-    request_url, req_headers = prepare_beacon_req_params()
 
-    case_obj = store.case(case_id=case_id)
-    beacon_submission = case_obj.get("beacon")
-
-    if beacon_submission is None:
-        flash("Couldn't find a valid beacon submission for this case", "warning")
-        return
-
-    # Prepare beacon request data
-    assembly = "GRCh37" if "37" in str(case_obj["genome_build"]) else "GRCh38"
-    dataset_id = "_".join([case_obj["owner"], assembly])
-    samples = [sample for sample in beacon_submission.get("samples", [])]
-    data = {"dataset_id": dataset_id, "samples": samples}
-    resp = delete_request_json("/".join([request_url, "delete"]), req_headers, data)
-    flash_color = "success"
-    message = resp.get("content", {}).get("message")
-    if resp.get("status_code") == 200:
-        store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
-    else:
-        flash_color = "warning"
-    flash(f"Beacon responded:{message}", flash_color)
-
-"""
+        if json_resp.get("status_code") == 200:
+            flash(f"Beacon responded: {json_resp}", "success")
+            store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
+        else:
+            flash(f"Error trying to remove variants from Beacon: {json_resp}", "warning")
