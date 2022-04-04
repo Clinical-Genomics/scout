@@ -91,15 +91,17 @@ class Beacon:
         )  # create base dictionary to be used in add request. Lacks path to VCF file to extract variants from
 
         update_case = False  # if True, update case with Beacon submission in Scout database
-        # Loop over the list of VCF files selected by user (clinical SNVs file, clinical SVs, ..)
-        for vcf in form.get("vcf_files", []):
-            base_data["vcf_path"] = vcf  # add path to VCF file to request data
+        # Loop over the list of VCF files selected by user (clinical SNVs, research SNVs, clinical SVs ..)
+        for vcf_key in form.getlist("vcf_files"):
+            base_data["vcf_path"] = case_obj["vcf_files"].get(
+                vcf_key
+            )  # add path to VCF file to request data
 
             # Send add variants request to Beacon
             json_resp = self.request(url=self.add_variants_url, data=base_data)
 
             if json_resp.get("status_code") == 200:
-                flash(json_resp, "success")
+                flash(f"Beacon answered:{json_resp}", "success")
                 update_case = True
             else:
                 flash(
@@ -113,7 +115,7 @@ class Beacon:
                 "user": current_user.email,
                 "samples": base_data["samples"],
                 "panels": form.getlist("panels"),
-                "vcf_files": form.get("vcf_files"),
+                "vcf_files": form.getlist("vcf_files"),
             }
             store.case_collection.find_one_and_update(
                 {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
