@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Changed
+- Moved Beacon-related functions to a dedicated app extension
+### Fixed
+- Beacon remove variants
+
 ## [4.51]
 ### Added
 - Config file containing codecov settings for pull requests

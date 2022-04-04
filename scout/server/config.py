@@ -57,8 +57,8 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # Beacon connection settings
 # - Tested with cgbeacon2 (https://github.com/Clinical-Genomics/cgbeacon2) -
-BEACON_URL = "http://localhost:6000/apiv1.0"
-BEACON_TOKEN = "DEMO"
+# BEACON_URL = "http://localhost:6000/apiv1.0"
+# BEACON_TOKEN = "DEMO"
 
 # connection details for LoqusDB MongoDB database
 # Example with 2 instances of LoqusDB, one using a binary file and one instance connected via REST API
