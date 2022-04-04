@@ -148,8 +148,8 @@
   </form>
 {% endmacro %}
 
-{% macro beacon_modal(case) %}
-<form method="POST" action="{{url_for('cases.beacon_add_variants', institute_id=case['owner'], case_name=case['_id'])}}">
+{% macro beacon_modal(institute, case) %}
+<form method="POST" action="{{url_for('cases.beacon_add_variants', institute_id=institute._id, case_name=case.display_name)}}">
 <div class="modal fade" id="beacon_modal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -185,7 +185,7 @@
               <label class="form-check-label" for="vcfselect">
                 Variants type:
               </label>
-              <select multiple name="vcf_files" id="vcfselect" class="selectpicker" data-width="70%">>
+              <select multiple name="vcf_files" id="vcfselect" class="selectpicker w-auto">
                 {% for file, path in case.vcf_files.items() %}
                   {% if path and file in ["vcf_snv", "vcf_cancer", "vcf_snv_research", "vcf_cancer_research"] %} <!-- support for sharing SNVs for now -->
                     <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
@@ -199,7 +199,7 @@
               <label class="form-check-label" for="vcfselect">
                 Filter by panel:
               </label>
-              <select multiple name="panels" id="panelselect" class="selectpicker" data-width="70%">>
+              <select multiple name="panels" id="panelselect" class="selectpicker w-auto">
                 {% for panel in case.panels %}
                   <option value="{{panel.panel_id}}" {{ "selected" if panel.is_default }}>{{ panel.display_name|truncate(30, True) }} {{ panel.version }} ({{ panel.nr_genes }} genes)</option>
                 {% endfor %}
@@ -239,7 +239,7 @@
       <div class="modal-footer d-flex justify-content-around">
         <div>
           {% if case.beacon %}
-            <a href="{{url_for('cases.beacon_remove_variants', institute_id=case['owner'], case_name=case['_id'] )}}" class="btn btn-danger text-white">Remove all case variants from Beacon</a>
+            <a href="{{url_for('cases.beacon_remove_variants', institute_id=case.owner, case_name=case['_id'] )}}" class="btn btn-danger text-white">Remove all case variants from Beacon</a>
           {% else %}
             <button type="submit" class="btn btn-primary">Add variants to beacon</button>
           {% endif %}

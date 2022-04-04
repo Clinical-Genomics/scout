@@ -84,20 +84,28 @@ def sma(institute_id, case_name):
     return dict(format="html", **data)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/beacon_add_variants", methods=["POST"])
+@cases_bp.route("/beacon_add_variants/<institute_id>/<case_name>", methods=["POST"])
 def beacon_add_variants(institute_id, case_name):
     """Submit case variants to Beacon"""
-    result = beacon.add_variants(store, institute_id, case_name, request.form)
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function checks if user has permissions to access the case
+    beacon.add_variants(store, case_obj, request.form)
     return redirect(request.referrer)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/beacon_remove", methods=["GET"])
+@cases_bp.route("/beacon_remove_variants/<institute_id>/<case_name>", methods=["GET"])
 def beacon_remove_variants(institute_id, case_name):
     """Remove all variants from a case from Beacon"""
-
-    result = beacon.remove_variants(institute_id, case_name, request.form)
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function checks if user has permissions to access the case
+    return "in progress"
+    """
+    result = beacon.remove_variants(store, case_obj, request.form)
     flash(result)
     return redirect(request.referrer)
+    """
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mme_matches", methods=["GET", "POST"])

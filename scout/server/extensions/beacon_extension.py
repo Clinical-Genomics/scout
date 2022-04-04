@@ -3,15 +3,12 @@
 """
 import datetime
 import json
-import logging
 
+from flask import flash
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.server.utils import institute_and_case
-
-LOG = logging.getLogger(__name__)
-# from scout.utils import scout_requests
+from scout.utils.scout_requests import post_request_json
 
 
 class Beacon:
@@ -32,30 +29,31 @@ class Beacon:
         self.delete_variants_url = "/".join([beacon_url, endpoints.get("remove_variants")])
         self.token = app.config.get("BEACON_TOKEN")
 
-    def base_submission_data(self, case_obj, form):
+    def base_submission_data(self, store, case_obj, form):
         """Create data dictionary to be send as json data in a POST request to the beacon "add" endpoint
 
         Args:
+            store(adapter.MongoAdapter)
             case_obj(dict): scout.models.Case
             form(ImmutableMultiDict): request form submitted by user. Example:
                 [('case', 'internal_id'), ('samples', 'affected'), ('vcf_files', 'vcf_snv'), ('vcf_files', 'vcf_snv_research'), ('panels', '6246b25121d86882e127710c')]
 
         Returns:
-            data(dict): a dictionary with base info to be use as json data in beacon add request
+            data(dict): a dictionary with base info to be use as json data in beacon add request (lacks path to VCF file to extract variants from)
         """
         # Initialize key/values to be sent in request:
-        assembly = "GRCh37" if "37" in str(case_obj.get("genome_build"), "37") else "GRCh38"
+        assembly = "GRCh37" if "37" in str(case_obj.get("genome_build", "37")) else "GRCh38"
         dataset_id = "_".join([case_obj["owner"], case_obj.get("build", assembly)])
 
         samples = []
         if form.get("samples") == "affected":
-            individuals = [
+            samples = [
                 ind["individual_id"]
                 for ind in case_obj.get("individuals", [])
                 if ind["phenotype"] == 2
             ]
         else:
-            individuals = [ind["individual_id"] for ind in case_obj.get("individuals")]
+            samples = [ind["individual_id"] for ind in case_obj.get("individuals")]
 
         data = {
             "dataset_id": dataset_id,
@@ -72,39 +70,58 @@ class Beacon:
 
         return data
 
-    def add_variants(self, store, institute_id, case_name, form):
+    def add_variants(self, store, case_obj, form):
         """Adding variants from one of more individuals of case to Beacon
 
         Args:
-            institute_id(str): the _id of an institute
-            case_name(str): display_name of a case
+            store(adapter.MongoAdapter)
+            case_obj(dict): scout.models.Case
             form(ImmutableMultiDict): request form submitted by user. Example:
                 [('case', 'internal_id'), ('samples', 'affected'), ('vcf_files', 'vcf_snv'), ('vcf_files', 'vcf_snv_research'), ('panels', '6246b25121d86882e127710c')]
 
-        Returns:
-            a tuple(bool, string): first element is True if task was completed, otherwise it's fFlse.
-                Second element is the message to display for the user
         """
-        LOG.error("HERE BITCHES")
-        _, case_obj = institute_and_case(
-            store, institute_id, case_name
-        )  # This function checks if user has permissions to access the case
-
         # Check if user has rights to submit case to beacon
-        # user_obj = store.user(current_user.email)
-        LOG.error(case_obj)
-        """
+        user_obj = store.user(current_user.email)
+
         if "beacon_submitter" not in user_obj.get("roles", []):
-            return False, "You don't have permission to use the Beacon tool"
+            flash("You don't have permission to use the Beacon tool", "warning")
 
+        base_data = self.base_submission_data(
+            store, case_obj, form
+        )  # create base dictionary to be used in add request. Lacks path to VCF file to extract variants from
 
-        base_data = base_submission_data(
-            case_obj, form
-        )  # create base dictionary to be used in add request.
+        update_case = False  # if True, update case with Beacon submission in Scout database
+        # Loop over the list of VCF files selected by user (clinical SNVs file, clinical SVs, ..)
+        for vcf in form.get("vcf_files", []):
+            base_data["vcf_path"] = vcf  # add path to VCF file to request data
+
+            # Send add variants request to Beacon
+            json_resp = self.request(url=self.add_variants_url, data=base_data)
+
+            if json_resp.get("status_code") == 200:
+                flash(json_resp, "success")
+                update_case = True
+            else:
+                flash(
+                    f"Error while submitting variant data to Beacon: {json_resp}",
+                    "warning",
+                )
+
+        if update_case:
+            submission = {
+                "created_at": datetime.datetime.now(),
+                "user": current_user.email,
+                "samples": base_data["samples"],
+                "panels": form.getlist("panels"),
+                "vcf_files": form.get("vcf_files"),
+            }
+            store.case_collection.find_one_and_update(
+                {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
+            )
+
+    def remove_variants(self, store, case_obj, form):
         """
-
-    def remove_variants(self, institute_id, case_name, form):
-        """Removing all variants from a scout case from Beacon
+        Removing all variants from a scout case from Beacon
 
         Args:
             Args:
@@ -115,33 +132,35 @@ class Beacon:
         Returns:
             a tuple(bool, string): first element is True if task was completed, otherwise it's fFlse.
                 Second element is the message to display for the user
-        """
         _, case_obj = institute_and_case(store, institute_id, case_name)
 
         # Check if user has rights to remove case from beacon
         user_obj = store.user(current_user.email)
         if "beacon_submitter" not in user_obj.get("roles", []):
             return "You don't have permission to use the Beacon tool"
+        """
+        pass
 
-
-"""
     def request(self, url, data):
-        Send a request to MatchMaker and return its response
+        """
+        Send a request to the Beacon server and return its response
 
         Args:
             url(str): could be either "beacon-host/add" or "beacon-host/add_dataset"
             data(dict): data to be sent in request as json
 
         Returns:
-            json_response(dict): beacon server response
+            json_response(dict): Beacon server response
+        """
 
         headers = Headers()
         headers = {"X-Auth-Token": self.token}
 
-        json_response = scout_requests.post_request_json(url=url, headers=headers, data=data)
+        json_response = post_request_json(url=url, headers=headers, data=data)
         return json_response
 
 
+"""
 def beacon_remove(case_id):
     Remove all variants from a case in Beacon by handling a POST request to the /apiv1.0/delete Beacon endpoint.
 
