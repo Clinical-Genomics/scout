@@ -5,7 +5,7 @@ import uuid
 import pymongo
 import pytest
 from flask import request
-from flask_login import login_user, logout_user
+from flask_login import login_user
 
 from scout.adapter import MongoAdapter
 from scout.load.hgnc_gene import load_hgnc_genes
@@ -32,7 +32,7 @@ class LoqusdbMock:
     def case_count(self):
         return self.nr_cases
 
-    def get_variant(self, var_dict, loqusdb_id=None):
+    def get_variant(self, var_dict):
         var = self.variants.get(var_dict["_id"], {})
         var["total"] = self.nr_cases
         return var
