@@ -952,3 +952,47 @@ def test_omimterms(app, test_omim_term):
         # containing the OMIM term
         assert test_omim_term["_id"] in str(resp.data)
         assert resp.mimetype == "application/json"
+
+
+def test_beacon_add_variants(app, institute_obj, case_obj, mocker, mock_redirect):
+    """Test Beacon add variants endpoint"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    # GIVEN an app with an authenticated user
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # THE beacon_add_variants endpoint should work and return page redirect
+        data = {}
+        resp = client.post(
+            url_for(
+                "cases.beacon_add_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+        assert resp.status_code == 302
+
+
+def test_beacon_remove_variants(app, institute_obj, case_obj, mocker, mock_redirect):
+    """Test Beacon remove variants endpoint"""
+
+    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    # GIVEN an app with an authenticated user
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # THE beacon_add_variants endpoint should work and return page redirect
+        data = {}
+        resp = client.get(
+            url_for(
+                "cases.beacon_remove_variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+        assert resp.status_code == 302
