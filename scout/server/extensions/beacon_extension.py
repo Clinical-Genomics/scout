@@ -83,6 +83,7 @@ class Beacon:
 
         if "beacon_submitter" not in user_obj.get("roles", []):
             flash("You don't have permission to use the Beacon tool", "warning")
+            return
 
         base_data = self.base_submission_data(
             store, case_obj, form
