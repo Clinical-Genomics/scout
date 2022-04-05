@@ -90,7 +90,7 @@ async def beacon_add_variants(institute_id, case_name):
     _, case_obj = institute_and_case(
         store, institute_id, case_name
     )  # This function checks if user has permissions to access the case
-    beacon.add_variants(store, case_obj, request.form)
+    await beacon.add_variants(store, case_obj, request.form)
     return redirect(request.referrer)
 
 
