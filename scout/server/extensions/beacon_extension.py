@@ -100,6 +100,8 @@ class Beacon:
                 vcf_key
             )  # add path to VCF file to request data
 
+            flash(f"Sending request data to Beacon:{base_data}")
+
             # Send add variants request to Beacon
             json_resp = post_request_json(
                 url=self.add_variants_url, headers=headers, data=base_data

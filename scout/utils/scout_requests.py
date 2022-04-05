@@ -31,9 +31,9 @@ def post_request_json(url, data, headers=None):
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
         if headers:
-            resp = requests.post(url, headers=headers, json=data)
+            resp = requests.post(url, headers=headers, json=data, timeout=TIMEOUT)
         else:
-            resp = requests.post(url, json=data)
+            resp = requests.post(url, json=data, timeout=TIMEOUT)
         json_response["content"] = resp.json()
 
     except Exception as ex:
