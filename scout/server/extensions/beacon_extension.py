@@ -78,6 +78,8 @@ class Beacon:
                 [('case', 'internal_id'), ('samples', 'affected'), ('vcf_files', 'vcf_snv'), ('vcf_files', 'vcf_snv_research'), ('panels', '6246b25121d86882e127710c')]
 
         """
+        flash(form)
+
         # Check if user has rights to submit case to beacon
         user_obj = store.user(current_user.email)
 
@@ -99,8 +101,6 @@ class Beacon:
             base_data["vcf_path"] = case_obj["vcf_files"].get(
                 vcf_key
             )  # add path to VCF file to request data
-
-            flash(f"Sending request data to Beacon:{base_data}")
 
             # Send add variants request to Beacon
             json_resp = post_request_json(
