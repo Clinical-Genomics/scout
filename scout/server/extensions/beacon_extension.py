@@ -168,7 +168,9 @@ class Beacon:
             url=self.delete_variants_url, headers=headers, data=req_data
         )
 
-        if json_resp.get("status_code") == 200:
+        if json_resp.get("status_code") == 200 or "not found in the dataset" in json_resp.get(
+            "content", {}
+        ).get("message"):
             flash(f"Beacon responded: {json_resp}", "success")
             store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
         else:
