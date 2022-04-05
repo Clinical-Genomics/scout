@@ -96,7 +96,7 @@ class Beacon:
             store, case_obj, form
         )  # create base dictionary to be used in add request. Lacks path to VCF file to extract variants from
 
-        LOG.warning(f"after base_submission_data : {base_submission_data}")
+        LOG.warning(f"after base_submission_data : {base_data}")
 
         update_case = False  # if True, update case with Beacon submission in Scout database
 
