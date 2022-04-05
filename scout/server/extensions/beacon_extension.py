@@ -96,7 +96,7 @@ class Beacon:
             store, case_obj, form
         )  # create base dictionary to be used in add request. Lacks path to VCF file to extract variants from
 
-        LOG.warning(f"after base_submission_data : {base_data}")
+        LOG.warning(f"after base_submission_data")
 
         update_case = False  # if True, update case with Beacon submission in Scout database
 
@@ -113,6 +113,8 @@ class Beacon:
             json_resp = post_request_json(
                 url=self.add_variants_url, headers=headers, data=base_data
             )
+
+            LOG.warning(f"Beacon answered:{json_resp}")
 
             if json_resp.get("status_code") == 200:
                 flash(f"Beacon responded: {json_resp}", "success")
