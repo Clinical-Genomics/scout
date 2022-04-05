@@ -40,7 +40,7 @@ class Beacon:
             data(dict): a dictionary with base info to be use as json data in beacon add request (lacks path to VCF file to extract variants from)
         """
         # Initialize key/values to be sent in request:
-        assembly = "GRCh37" if "37" in str(case_obj.get("genome_build", "37")) else "GRCh38"
+        assembly = "GRCh38" if "38" in str(case_obj.get("genome_build", "37")) else "GRCh37"
         dataset_id = "_".join([case_obj["owner"], case_obj.get("build", assembly)])
 
         samples = []
