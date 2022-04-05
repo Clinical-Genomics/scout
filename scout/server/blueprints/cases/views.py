@@ -85,7 +85,7 @@ def sma(institute_id, case_name):
 
 
 @cases_bp.route("/beacon_add_variants/<institute_id>/<case_name>", methods=["POST"])
-def beacon_add_variants(institute_id, case_name):
+async def beacon_add_variants(institute_id, case_name):
     """Submit case variants to Beacon"""
     _, case_obj = institute_and_case(
         store, institute_id, case_name
