@@ -2,7 +2,6 @@
 
 werkzeug<=2.0
 Flask>=0.10
-aioflask
 Flask-Bootstrap
 Flask-CORS
 path.py

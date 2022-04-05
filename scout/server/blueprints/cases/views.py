@@ -85,12 +85,12 @@ def sma(institute_id, case_name):
 
 
 @cases_bp.route("/beacon_add_variants/<institute_id>/<case_name>", methods=["POST"])
-async def beacon_add_variants(institute_id, case_name):
+def beacon_add_variants(institute_id, case_name):
     """Submit case variants to Beacon"""
     _, case_obj = institute_and_case(
         store, institute_id, case_name
     )  # This function checks if user has permissions to access the case
-    await beacon.add_variants(store, case_obj, request.form)
+    beacon.add_variants(store, case_obj, request.form)
     return redirect(request.referrer)
 
 

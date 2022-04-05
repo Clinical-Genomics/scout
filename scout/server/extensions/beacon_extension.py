@@ -85,7 +85,7 @@ class Beacon:
 
         if "beacon_submitter" not in user_obj.get("roles", []):
             flash("You don't have permission to use the Beacon tool", "warning")
-            return False
+            return
 
         base_data = self.base_submission_data(
             store, case_obj, form
@@ -127,9 +127,6 @@ class Beacon:
             store.case_collection.find_one_and_update(
                 {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
             )
-            return True
-
-        return False
 
     def remove_variants(self, store, institute_id, case_obj):
         """
