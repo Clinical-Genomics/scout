@@ -5,11 +5,9 @@ This means add a default institute, a user and the internal definitions such as 
 transcripts, hpo terms etc
 
 """
-import datetime
 import logging
 
 import yaml
-from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 from scout.build import build_institute
 
