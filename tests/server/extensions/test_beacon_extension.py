@@ -52,12 +52,18 @@ def test_add_variants_unauthorized_user(app):
 
 
 @responses.activate
-def test_add_variants(app, user_obj, case_obj):
-    """Test add_variants function when user is authorized"""
+def test_add_variants_wrong_dataset(app, user_obj, case_obj):
+    """Testing add_variants function when no dataset corresponding to customer and
+    case genome build is available in Beacon"""
 
-    # GIVEN a mocked Beacon server
-    url = "http://localhost:6000/apiv1.0/add"
-    responses.add(responses.POST, url, json={"foo": "bar"}, status=202)
+    # GIVEN a mocked Beacon server info endpoint
+    url = "http://localhost:6000/apiv1.0/"
+    responses.add(
+        responses.GET,
+        url,
+        json={"datasets": [{"id": "custX_GRCh37"}, {"id": "custY_GRCh38"}]},
+        status=200,
+    )
 
     # GIVEN a user with beacon_submitter role
     store.user_collection.find_one_and_update(
@@ -73,7 +79,43 @@ def test_add_variants(app, user_obj, case_obj):
         form_data = ImmutableMultiDict({"case": "internal_id", "vcf_files": "vcf_snv"})
         beacon.add_variants(store, case_obj, form_data)
 
-        # THEN case will not be updated with submission data
+        # THEN case will NOT be updated with submission data
+        updated_case = store.case_collection.find_one()
+        assert "beacon" not in updated_case
+
+
+@responses.activate
+def test_add_variants(app, user_obj, case_obj):
+    """Test add_variants function when user is authorized"""
+
+    # GIVEN a mocked Beacon server add endpoint
+    url = "http://localhost:6000/apiv1.0/add"
+    responses.add(responses.POST, url, json={"foo": "bar"}, status=202)
+
+    # GIVEN a mocked Beacon server info endpoint
+    url = "http://localhost:6000/apiv1.0/"
+    responses.add(
+        responses.GET,
+        url,
+        json={"datasets": [{"id": "cust000_GRCh37"}]},
+        status=200,
+    )
+
+    # GIVEN a user with beacon_submitter role
+    store.user_collection.find_one_and_update(
+        {"_id": user_obj["email"]}, {"$set": {"roles": ["beacon_submitter"]}}
+    )
+
+    with app.test_client() as client:
+
+        # GIVEN that the user is logged in
+        client.get(url_for("auto_login"))
+
+        # WHEN user submits variants from a case to the Beacon
+        form_data = ImmutableMultiDict({"case": "internal_id", "vcf_files": "vcf_snv"})
+        beacon.add_variants(store, case_obj, form_data)
+
+        # THEN case will be updated with submission data
         updated_case = store.case_collection.find_one()
         assert "beacon" in updated_case
 

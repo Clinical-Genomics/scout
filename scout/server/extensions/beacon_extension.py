@@ -9,7 +9,7 @@ from flask import flash
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.utils.scout_requests import delete_request_json, post_request_json
+from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
 
@@ -25,10 +25,23 @@ class Beacon:
     def init_app(self, app):
         """Initialize the beacon extension and make its parametars available to the app."""
         self.token = app.config.get("BEACON_TOKEN")
-        beacon_url = app.config.get("BEACON_URL")
+        self.beacon_url = app.config.get("BEACON_URL")
 
-        self.add_variants_url = "/".join([beacon_url, "add"])
-        self.delete_variants_url = "/".join([beacon_url, "delete"])
+        self.add_variants_url = "/".join([self.beacon_url, "add"])
+        self.delete_variants_url = "/".join([self.beacon_url, "delete"])
+
+    def get_datasets(self):
+        """Makes a call to the Beacon's info endpoint (/) and extracts a complete list of available datasets
+        Returns:
+            datasets(list): list of dataset _ids. Example: ["cust002_GRCh37", "cust000_GRCh38", ..]
+        """
+        datasets = []
+        json_resp = get_request_json(url=f"{self.beacon_url}/")
+        if json_resp.get("status_code") == 200:
+            datasets = json_resp.get("content", {}).get("datasets", [])
+        else:
+            flash("Error retrieving Beacon's dataset list:{json_resp}")
+        return [dset["id"] for dset in datasets]
 
     def base_submission_data(self, store, case_obj, form):
         """Create data dictionary to be send as json data in a POST request to the beacon "add" endpoint
@@ -92,6 +105,13 @@ class Beacon:
         base_data = self.base_submission_data(
             store, case_obj, form
         )  # create base dictionary to be used in add request. Lacks path to VCF file to extract variants from
+
+        if base_data["dataset_id"] not in self.get_datasets():
+            flash(
+                f"In order to submit this sample, an admin needs to create a new Beacon dataset named '{base_data['dataset_id']}' first",
+                "warning",
+            )
+            return
 
         headers = Headers()
         headers = {"X-Auth-Token": self.token}
