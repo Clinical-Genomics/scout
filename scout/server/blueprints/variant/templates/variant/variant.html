@@ -323,7 +323,7 @@
         {% endif %}
       </ul>
       <table class="table table-bordered table-fixed table-sm">
-        <thead class="border-top">
+        <thead class="thead table-light border-top">
           <tr class="active">
             <th>Gene</th>
             <th>Region</th>
@@ -358,7 +358,7 @@
       {{ alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks) }}
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
-	<thead>
+	<thead class="thead table-light">
 	  <th>Custom annotation</th>
 	  <th>Value</th>
 	</thead>

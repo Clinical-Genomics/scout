@@ -110,7 +110,7 @@
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-bordered">
-          <thead class="thead-light">
+          <thead class="thead table-light">
             <tr>
               {% for result in variant.rank_score_results %}
                 <th><small>{{ result.category|replace('_', ' ') }}</small></th>
@@ -140,7 +140,7 @@
     <div class="card-body">
       <div class="table-responsive">
         <table class="table table-bordered">
-          <thead class="thead-light">
+          <thead class="thead table-light">
             <tr>
               <th>Variant</th>
               <th>Gene</th>
@@ -191,7 +191,7 @@
 {% macro genes_panel(variant) %}
   <div class="card panel-default">
     <table class="table table-bordered table-sm">
-      <thead>
+      <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
           <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
           <th>Ensembl ID <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ensembl ID'"></i></th>
@@ -224,7 +224,7 @@
 {% macro transcripts_panel(variant) %}
   <div class="card panel-default table-responsive fixed-panel">
     <table id="transcripts_panel_table" class="table table-bordered card-sm">
-      <thead>
+      <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
           <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
           <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
@@ -280,7 +280,7 @@
 {% macro proteins_panel(variant) %}
   <div class="panel panel-default table-responsive">
     <table id="proteins_panel_table" class="table table-bordered">
-      <thead>
+      <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
           <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
           <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
