@@ -93,10 +93,10 @@ class Beacon:
             store, case_obj, form
         )  # create base dictionary to be used in add request. Lacks path to VCF file to extract variants from
 
-        update_case = False  # if True, update case with Beacon submission in Scout database
-
         headers = Headers()
         headers = {"X-Auth-Token": self.token}
+
+        update_case = False  # if True, update case with Beacon submission in Scout database
 
         # Loop over the list of VCF files selected by user (clinical SNVs, research SNVs, clinical SVs ..)
         for vcf_key in form.getlist("vcf_files"):
@@ -110,10 +110,11 @@ class Beacon:
             )
 
             status_code = "warning"
-            # If Beacon acceppts request (status code 202):
+            # If Beacon accepts request (status code 202):
             if json_resp.get("status_code") == 202:
                 status_code = "success"
                 update_case = True
+
             flash(f"Beacon responded: {json_resp}", status_code)
 
         if update_case:
@@ -158,18 +159,14 @@ class Beacon:
         )
 
         update_case = False
+        status_code = "warning"
 
-        if json_resp.get("status_code") == 200:
-            flash(f"Beacon responded: {json_resp}", "success")
+        # If Beacon accepts request (status code 202):
+        if json_resp.get("status_code") == 202:
+            status_code = "success"
             update_case = True
-            store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
-        elif json_resp.get("content") and "not found in the dataset" in json_resp["content"].get(
-            "message"
-        ):
-            flash(f"Beacon responded: {json_resp['content']['message']}", "success")
-            update_case = True
-        else:
-            flash(f"Error trying to remove variants from Beacon: {json_resp}", "warning")
+
+        flash(f"Beacon responded: {json_resp}", status_code)
 
         if update_case:
             store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})

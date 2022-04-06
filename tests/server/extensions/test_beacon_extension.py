@@ -57,7 +57,7 @@ def test_add_variants(app, user_obj, case_obj):
 
     # GIVEN a mocked Beacon server
     url = "http://localhost:6000/apiv1.0/add"
-    responses.add(responses.POST, url, json={"foo": "bar"}, status=200)
+    responses.add(responses.POST, url, json={"foo": "bar"}, status=202)
 
     # GIVEN a user with beacon_submitter role
     store.user_collection.find_one_and_update(
@@ -83,7 +83,7 @@ def test_remove_variants(app, user_obj, institute_obj, case_obj):
     """Test remove_variants function when user is authorized to edit a beacon submission"""
 
     url = "http://localhost:6000/apiv1.0/delete"
-    responses.add(responses.DELETE, url, json={"foo": "bar"}, status=200)
+    responses.add(responses.DELETE, url, json={"foo": "bar"}, status=202)
 
     # GIVEN a case with Beacon submission data:
     store.case_collection.find_one_and_update(
