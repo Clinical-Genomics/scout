@@ -38,9 +38,9 @@
                       <div data-placement="top" title="hpo">
                         Include patient gender
                       </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
-                        <label for="sex"></label>
+                      <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
+                        <label class="form-check-label" for="sex"></label>
                       </div>
                     </div>
                   </li>
@@ -49,9 +49,9 @@
                       <div data-placement="top" title="hpo">
                         Include HPO terms
                       </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
-                        <label for="features"></label>
+                      <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
+                        <label class="form-check-label" for="features"></label>
                       </div>
                     </div>
                   </li>
@@ -60,9 +60,9 @@
                       <div data-placement="top" title="disorders">
                         Include OMIM diagnoses
                       </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
-                        <label for="disorders"></label>
+                      <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
+                        <label class="form-check-label" for="disorders"></label>
                       </div>
                     </div>
                   </li>

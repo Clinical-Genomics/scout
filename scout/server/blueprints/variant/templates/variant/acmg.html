@@ -53,9 +53,9 @@
                         <span class="badge bg-info me-1">{{ criterion_code }}</span>
                         {{ criterion.short }}
                       </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation }}>
-                        <label for="checkbox-{{ criterion_code }}"></label>
+                      <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="checkbox-{{ criterion_code }}" name="criteria" value="{{ criterion_code }}" {{ 'checked' if evaluation and criterion_code in evaluation.criteria }} {{ 'disabled' if evaluation }}>
+                        <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link) }} mt-2">
@@ -94,7 +94,7 @@
     $(function () {
       $('[data-toggle="tooltip"]').tooltip();
 
-      $('.ios8-switch').change(function(event) {
+      $('.form-switch').change(function(event) {
         var el = $('#comment-' + event.target.value);
         if (event.target.checked) {
           el.collapse('show');
