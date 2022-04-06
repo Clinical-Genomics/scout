@@ -371,7 +371,7 @@
           <div class="panel-body">
             {% for image in case.custom_images[section_name] %}
               <div class="pt-3">
-                <h6 class="font-weight-bold">{{ image.title }}</h6>
+                <h6 class="fw-bold">{{ image.title }}</h6>
                 <img src="data:image/{{image.format}};base64,{{image.data|safe}}" alt="{{ image.description }}" title="{{ image.description }}"
                     {% if image.width %}width="{{image.width}}"{% endif %}
                     {% if image.height %}height="{{image.height}}"{% endif %}

@@ -119,7 +119,7 @@
                   <option {% if ind.sex_human == "female" %} selected {% endif %} value="female">Female</option>
                   <option {% if not ind.sex_human in ["female", "male"] %} selected= {% endif %} value="unknown">Unknown</option>
                 </select>
-                <div class="sex-display" style="font-weight: bold;">
+                <div class="sex-display fw-bold">
                   {% if ind.sex_human in ['female','male'] %}
                     {% if ind.sex_human == 'female' %}
                       F
