@@ -39,7 +39,7 @@
               <td class="text-center">{{ sample.genotype_call }}</td>
               {% if sample.allele_depths %}
                   {% for number in sample.allele_depths %}
-                    <td class="text-right">
+                    <td class="text-end">
                       {% if number == -1 %}
                         <small>N/A</small>
                       {% else %}
@@ -48,8 +48,8 @@
                     </td>
                   {% endfor %}
               {% else %}
-                  <td class="text-right"><small>N/A</small></td>
-                  <td class="text-right"><small>N/A</small></td>
+                  <td class="text-end"><small>N/A</small></td>
+                  <td class="text-end"><small>N/A</small></td>
               {% endif %}
 
               {% if variant.category == "snv" and variant.chromosome in ["MT","M"] %}
@@ -70,9 +70,9 @@
                 {% else %}
                   {% set cancer_var.vaf = "N/A" %}
                 {% endif %}
-                <td class="text-right">{{ cancer_var.vaf }}</td>
+                <td class="text-end">{{ cancer_var.vaf }}</td>
               {% else %}
-                <td class="text-right">
+                <td class="text-end">
                 {% if variant.category == "sv" %}
                   {% if sample.genotype_quality not in ["None", None, "-1", -1] %}
                     {{ sample.genotype_quality }}

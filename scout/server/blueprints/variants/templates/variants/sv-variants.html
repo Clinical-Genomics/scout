@@ -101,15 +101,15 @@ onsubmit="return validateForm()">
   <tr>
   {% endif %}
     <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
-    <td class="text-left">
+    <td class="text-start">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td class="text-right">{{ variant.rank_score|int }}</td>
+    <td class="text-end">{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td class="text-right">{{ '-' if variant.length == 100000000000 else variant.length }}</td>
+    <td class="text-end">{{ '-' if variant.length == 100000000000 else variant.length }}</td>
     <td>
       {% if 'region_annotations' in variant %}
         {% for annotation in variant.region_annotations[:3] %}

@@ -60,7 +60,7 @@
       <h1>Samples</h1>
       <div>
         <canvas id="ngsType" height="150"></canvas><br>
-        <table class="table table-sm text-left">
+        <table class="table table-sm text-start">
           {% for group in analysis_types %}
             <tr>
               <td>Total {{ group.name|upper }} samples (not cases)</td>
@@ -74,7 +74,7 @@
       <h1>Cases</h1>
       <div>
           <canvas id="casesType" height="150"></canvas><br>
-          <table class="table table-sm text-left">
+          <table class="table table-sm text-start">
             {% for group in cases %}
               <tr>
                 <td>Cases {{ group.status|capitalize }}: {{ group.count }}</td>
@@ -88,7 +88,7 @@
       <h1>Pedigree info</h1>
       <div>
         <canvas id="pedigreeTypes" height="150"></canvas><br>
-        <table class="table table-sm text-left">
+        <table class="table table-sm text-start">
           {% for topic in pedigree %}
             <tr>
               <td>{{ topic.title }} Cases</td>
@@ -110,7 +110,7 @@
         <canvas id="cases-bar-horiz" height="100"></canvas>
     </div>
     <div class="col-md-4">
-      <table class="table table-sm text-left">
+      <table class="table table-sm text-start">
         {% for topic in overview %}
           <tr>
             <td>{{ topic.title }} Cases: {{ topic.count }}</td>
@@ -132,7 +132,7 @@
         <canvas id="var-validations" width="600" height="300"></canvas>
     </div>
     <div class="col-md-4">
-      <table class="table text-left">
+      <table class="table text-start">
         {% for topic in variants %}
         <tr>
           <td>{{ topic.title }} Cases: : {{ topic.count }}</td>

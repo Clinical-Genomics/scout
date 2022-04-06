@@ -77,8 +77,8 @@
                 <tr>
               {% endif %}
                 <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
-                <td class="text-left">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-                <td class="text-right">{{ variant.rank_score|int }}</td>
+                <td class="text-start">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+                <td class="text-end">{{ variant.rank_score|int }}</td>
                 <td>
                   {{ variant.chromosome }}
                   {% if variant.chromosome in ["MT","M"] %}
@@ -86,8 +86,8 @@
                   {% endif %}
 		            </td>
                 <td>{{ gene_cell(variant) }}</td>
-                <td class="text-right">{{ frequency_cell_general(variant) }}</td>
-                <td class="text-right">{{ cell_cadd(variant) }}</td>
+                <td class="text-end">{{ frequency_cell_general(variant) }}</td>
+                <td class="text-end">{{ cell_cadd(variant) }}</td>
                 <td>
                   {% for annotation in variant.region_annotations %}
                     <div>{{ annotation }}</div>
@@ -125,7 +125,7 @@
 
 {% macro cell_cadd(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-    <div class='text-left'>
+    <div class='text-start'>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
       <strong>PolyPhen</strong>

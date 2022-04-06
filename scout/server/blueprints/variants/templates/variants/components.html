@@ -82,7 +82,7 @@
 
 {% macro observed_cell_general(variant) %}
   <div data-toggle="tooltip" data-placement="right" data-html="true" title="
-    <div class='text-left'>
+    <div class='text-start'>
       <div>
         <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
       </div>
@@ -129,7 +129,7 @@
 
 {% macro frequency_cell_general(variant) %}
   <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-    <div class='text-left'>
+    <div class='text-start'>
       {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
         <div>
           <strong>gnomAD(MT) hom</strong>: {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency }}

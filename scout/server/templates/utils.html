@@ -43,7 +43,7 @@
     {% for comment in comments %}
       <div class="row ms-1 alert {% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
           <div class="col-7 text-break">{{ comment.content }}</div>
-          <div class="col-5 text-right">
+          <div class="col-5 text-end">
             <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id,_anchor='comments') }}">
               <small>
                 <strong>{{ comment.user_name }}</strong>

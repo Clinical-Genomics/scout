@@ -90,9 +90,9 @@
 	        {% endif %}
             <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
             <td>{{ str_locus_info(variant) }}</td>
-	          <td class="text-right">{{ variant.str_display_ru or variant.str_ru  }}</td>
-            <td class="text-right"><b>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</b></td>
-            <td class="text-right">{{ variant.str_ref }}</td>
+	          <td class="text-end">{{ variant.str_display_ru or variant.str_ru  }}</td>
+            <td class="text-end"><b>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</b></td>
+            <td class="text-end">{{ variant.str_ref }}</td>
             <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
@@ -203,7 +203,7 @@
   data-html="true"
   data-trigger="hover"
   data-content="
-  <div class='text-left'>
+  <div class='text-start'>
     {% if variant.str_disease %}
       <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
     {% else %}

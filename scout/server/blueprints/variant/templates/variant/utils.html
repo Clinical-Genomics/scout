@@ -120,7 +120,7 @@
           <tbody>
             <tr>
               {% for result in variant.rank_score_results %}
-                <td class="text-right">{{ result.score }}</td>
+                <td class="text-end">{{ result.score }}</td>
               {% endfor %}
             </tr>
           </tbody>
@@ -170,9 +170,9 @@
               </td>
               <td>{{ overlapping_variant.hgnc_symbols|join(', ')|truncate(40, True) }}</td>
               <td>{{ overlapping_variant.sub_category|upper }}</td>
-	            <td class="text-right">{{ variant.rank_score + overlapping_variant.rank_score }}</td>
-              <td class="text-right">{{ overlapping_variant.rank_score }}</td>
-              <td class="text-right">{{ overlapping_variant.length }}</td>
+	            <td class="text-end">{{ variant.rank_score + overlapping_variant.rank_score }}</td>
+              <td class="text-end">{{ overlapping_variant.rank_score }}</td>
+              <td class="text-end">{{ overlapping_variant.length }}</td>
               <td>{{ overlapping_variant.region_annotations|join(', ')|truncate(40, True) }}</td>
               <td>{{ overlapping_variant.functional_annotations|join(', ')|truncate(40, True) }}</td>
             </tr>
