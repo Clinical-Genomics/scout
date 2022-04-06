@@ -1,10 +1,10 @@
 {% extends "layout_bs4.html" %}
 
 {% block content_main %}
-<div class="container">
-  <div class="jumbotron mt-3 bg-white">
+<div class="container bg-light rounded-3 py-4" style="b">
+  <div class="container-fluid mt-3">
     <h1 class="display-4">Scout</h1>
-    <p class="lead">Analyze VCFs quicker and easier</p>
+    <p class="display-5 fw-bold">Analyze VCFs quicker and easier</p>
     <hr class="my-4">
     <p>
       Scout allows you to browse VCFs in a web browser, identify
@@ -50,34 +50,39 @@
       {% endif %}
     {% endif %}
   </div>
-  <main>
+  <div class="container bg-light rounded-3 py-4">
     {% if accred_badge %}
-      <div class="row justify-content-center align-items-center">
-        <img id="accred-badge" class="img-responsive center-block" width="120" src="{{ url_for('public.static', filename=accred_badge) }}">
+      <div class="d-flex  justify-content-center align-items-center">
+        <div class="row">
+          <div>
+            <img id="accred-badge" class="img-fluid mx-auto" width="120" src="{{ url_for('public.static', filename=accred_badge) }}">
+          </div>
+        </div>
       </div>
       <hr>
     {% endif %}
+
     <p class="pb-1 mb-0">Developed by:</p>
     <div class="row justify-content-center align-items-center">
       <div class="col-xs-12 col-sm-4">
-        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-scilifelab.png') }}">
+        <img class="img-fluid mx-auto" width="250" src="{{ url_for('public.static', filename='logo-scilifelab.png') }}">
+      </div>
+      <div class="col-xs-12 col-sm-4 p-3 bg-white rounded-3">
+        <img class="img-fluid mx-auto" width="250" src="{{ url_for('public.static', filename='logo-karolinska.png') }}">
       </div>
       <div class="col-xs-12 col-sm-4">
-        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-karolinska.png') }}">
-      </div>
-      <div class="col-xs-12 col-sm-4">
-        <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-lund-university-hospital.png') }}">
+        <img class="img-fluid mx-auto" width="250" src="{{ url_for('public.static', filename='logo-lund-university-hospital.png') }}">
       </div>
     </div>
     <p class="pb-1 pt-2">Collaborations:</p>
     <div class="row">
       <div class="col-xs-12 col-sm-3">
         <a href="https://genomicmedicine.se/" target="_blank">
-          <img class="img-responsive center-block" width="250" src="{{ url_for('public.static', filename='logo-gms.png') }}">
+          <img class="img-fluid mx-auto" width="250" src="{{ url_for('public.static', filename='logo-gms.png') }}">
         </a>
       </div>
     </div>
-  </main>
+  </div>
 </div>
 {% endblock %}
 
