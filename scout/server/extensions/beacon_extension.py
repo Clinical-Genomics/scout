@@ -81,7 +81,6 @@ class Beacon:
                 [('case', 'internal_id'), ('samples', 'affected'), ('vcf_files', 'vcf_snv'), ('vcf_files', 'vcf_snv_research'), ('panels', '6246b25121d86882e127710c')]
 
         """
-        LOG.warning("in beacon.add_variants")
 
         # Check if user has rights to submit case to beacon
         user_obj = store.user(current_user.email)
@@ -90,13 +89,9 @@ class Beacon:
             flash("You don't have permission to use the Beacon tool", "warning")
             return
 
-        LOG.warning("after beacon_submitter check")
-
         base_data = self.base_submission_data(
             store, case_obj, form
         )  # create base dictionary to be used in add request. Lacks path to VCF file to extract variants from
-
-        LOG.warning(f"after base_submission_data")
 
         update_case = False  # if True, update case with Beacon submission in Scout database
 
@@ -114,18 +109,12 @@ class Beacon:
                 url=self.add_variants_url, headers=headers, data=base_data
             )
 
-            LOG.warning(f"Beacon answered:{json_resp}")
-
-            if json_resp.get("status_code") == 200:
-                flash(f"Beacon responded: {json_resp}", "success")
+            status_code = "warning"
+            # If Beacon acceppts request (status code 202):
+            if json_resp.get("status_code") == 202:
+                status_code = "success"
                 update_case = True
-            else:
-                flash(
-                    f"Error while submitting variant data to Beacon: {json_resp}. Request data:{base_data}",
-                    "warning",
-                )
-
-        LOG.warning(f"after requests loop")
+            flash(f"Beacon responded: {json_resp}", status_code)
 
         if update_case:
             submission = {
@@ -138,8 +127,6 @@ class Beacon:
             store.case_collection.find_one_and_update(
                 {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
             )
-
-        LOG.warning(f"REACHED THE END!")
 
     def remove_variants(self, store, institute_id, case_obj):
         """
