@@ -196,52 +196,7 @@ body {
   text-align: right;
   padding-left: 10px;
 }
-/* end of sidebar-related stuff
-
-
-/* CHECKBOX ios8-switch*/
-input[type="checkbox"].ios8-switch {
-    position: absolute;
-    margin: 8px 0 0 16px;
-}
-input[type="checkbox"].ios8-switch + label {
-    position: relative;
-    padding: 15px 0 0 35px;
-}
-input[type="checkbox"].ios8-switch + label:before {
-    content: "";
-    position: absolute;
-    display: block;
-    left: 0;
-    top: 0;
-    width: 40px; /* x*5 */
-    height: 24px; /* x*3 */
-    border-radius: 16px; /* x*2 */
-    border: 1px solid;
-    -webkit-transition: all 0.3s;
-    transition: all 0.3s;
-}
-input[type="checkbox"].ios8-switch + label:after {
-    content: "";
-    position: absolute;
-    display: block;
-    left: 0;
-    top: 0;
-    width: 24px; /* x*3 */
-    height: 24px; /* x*3 */
-    border-radius: 16px; /* x*2 */
-    background: #fff;
-    border: 1px solid;
-    -webkit-transition: all 0.3s;
-    transition: all 0.3s;
-}
-input[type="checkbox"].ios8-switch + label:hover:after {
-    box-shadow: 0 0 5px;
-}
-input[type="checkbox"].ios8-switch:checked + label:after {
-    margin-left: 16px;
-}
-/* end of CHECKBOX ios8-switch*/
+/* end of sidebar-related stuff */
 
 option {
   width: 100%;

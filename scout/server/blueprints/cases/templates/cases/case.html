@@ -266,7 +266,7 @@
 
           <form class="form-inline" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
             <div class="input-group mb-2 me-2 sm-2">
-              <div class="input-group-prepend">
+              <div class="input-group">
                 <div class="input-group-text"><i class="fa fa-users"></i></div>
               </div>
               <input type="text" class="form-control" name="label" id="case_group_label-{{group_id}}" placeholder="{{ case_group_label[group_id] }}">
