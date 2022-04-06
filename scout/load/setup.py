@@ -217,7 +217,7 @@ def load_demo_cases(adapter):
         adapter(scout.adapter.MongoAdapter)
     """
     for path in [load_path, cancer_load_path]:
-        case_handle = get_file_handle(load_path)
+        case_handle = get_file_handle(path)
         case_data = yaml.load(case_handle, Loader=yaml.SafeLoader)
         config_data = parse_case_data(config=case_data)
         adapter.load_case(config_data)
