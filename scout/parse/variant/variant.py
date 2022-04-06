@@ -356,7 +356,13 @@ def parse_variant(
         parsed_variant["spidex"] = float(spidex)
 
     if len(parsed_transcripts) > 0:
-        parsed_variant["revel_score"] = parsed_transcripts[0].get("revel")
+        parsed_variant["revel_score"] = parsed_transcripts[0].get(
+            "revel"
+        )  # This is actually the value of REVEL_RANKSCORE
+
+        parsed_variant["revel"] = parsed_transcripts[0].get(
+            "revel_score"
+        )  # This is actually the value of REVEL_SCORE
 
     ###################### Add conservation ######################
     parsed_variant["conservation"] = parse_conservations(variant, parsed_transcripts)
