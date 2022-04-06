@@ -220,7 +220,7 @@
       <ul class="list-group">
         <li class="list-group-item">
           <a href="https://sift.bii.a-star.edu.sg/www/SIFT_help.html" target="_blank">SIFT</a>
-          <span class="float-right">
+          <span class="float-end">
             {% if variant.sift_predictions  %}
               {{ variant.sift_predictions|join(', ') }}</span>
             {% else %}
@@ -230,7 +230,7 @@
         </li>
         <li class="list-group-item">
           <a href="https://sites.google.com/site/revelgenomics/about" target="_blank">REVEL</a>
-          <span class="float-right">
+          <span class="float-end">
           {% if variant.revel_score  %}
              {{ variant.revel_score }}
           {% else %}
@@ -240,7 +240,7 @@
         </li>
         <li class="list-group-item">
           <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
-          <span class="float-right">
+          <span class="float-end">
           {% if variant.polyphen_predictions %}
             {{ variant.polyphen_predictions|join(', ') }}
           {% else %}
@@ -250,11 +250,11 @@
         </li>
         <li class="list-group-item">
           SPIDEX
-          <span class="float-right">{{ variant.spidex_human }}</span>
+          <span class="float-end">{{ variant.spidex_human }}</span>
         </li>
         <li class="list-group-item">
           <a href="https://doi.org/10.1016/j.cell.2018.12.015" target="_blank">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank">DS max</a>
-          <span class="float-right control-label" data-toggle="tooltip" data-html="true" data-placement="bottom"
+          <span class="float-end control-label" data-toggle="tooltip" data-html="true" data-placement="bottom"
               title="<strong>{% if variant.spliceai_scores %}
                  {% for entry in variant.spliceai_scores %}
                     SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
@@ -280,15 +280,15 @@
       <ul class="list-group">
         <li class="list-group-item">
           PHAST
-          <span class="float-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
+          <span class="float-end">{{ variant.phast_conservation|join(', ') or '-' }}</span>
         </li>
         <li class="list-group-item">
           GERP
-          <span class="float-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
+          <span class="float-end">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
         </li>
         <li class="list-group-item">
           phyloP
-          <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
+          <span class="float-end">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
         </li>
       </ul>
     </div>

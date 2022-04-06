@@ -46,7 +46,7 @@
       <ul class="list-group">
         <li class="list-group-item">
           Variant inheritance models
-          <span class="float-right">
+          <span class="float-end">
             {% for model in variant.genetic_models|sort %}
               <span class="badge bg-info">{{ model }}</span>
             {% else %}
@@ -68,11 +68,11 @@
           <tr>
             <td>
               Length
-              <span class="float-right">{{ variant.azlength }}</span>
+              <span class="float-end">{{ variant.azlength }}</span>
             </td>
             <td>
               Qual
-              <span class="float-right">{{ variant.azqual }}</span>
+              <span class="float-end">{{ variant.azqual }}</span>
             </td>
           </tr>
         </tbody>

@@ -283,14 +283,14 @@
             <td>
               Matches OMIM inhert.
               {% if variant.is_matching_inheritance %}
-                <span class="badge bg-success float-right">Yes</span>
+                <span class="badge bg-success float-end">Yes</span>
               {% else %}
-                <div class="badge bg-warning float-right">No</div>
+                <div class="badge bg-warning float-end">No</div>
               {% endif %}
             </td>
             <td>
               Frequency
-              <div class="badge bg-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-right">
+              <div class="badge bg-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-end">
                 {{ variant.frequency }}
               </div>
             </td>
@@ -312,7 +312,7 @@
           {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
           <li class="list-group-item">
             SNP info
-            <span class="float-right">
+            <span class="float-end">
               {% for snp in dbsnp_ids %}
                 <a target="_blank" href="{{variant.snp_links[snp]}}">
                   {{ snp }}

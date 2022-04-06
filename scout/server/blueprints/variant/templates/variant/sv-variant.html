@@ -153,15 +153,15 @@
     <div class="panel-heading">Basics</div>
     <div class="card-body">
       <ul class="list-group">
-        <li class="list-group-item">Rank <span class="badge rounded-pill bg-secondary float-right">{{ variant.variant_rank }}</span></li>
+        <li class="list-group-item">Rank <span class="badge rounded-pill bg-secondary float-end">{{ variant.variant_rank }}</span></li>
         <li class="list-group-item">
           Rank score
-          <span class="badge rounded-pill bg-secondary float-right">{{ variant.rank_score }}</span>
+          <span class="badge rounded-pill bg-secondary float-end">{{ variant.rank_score }}</span>
         </li>
 
         <li class="list-group-item">
           Category
-          <span class="badge rounded-pill bg-secondary float-right">{{ variant.sub_category|upper }}</span>
+          <span class="badge rounded-pill bg-secondary float-end">{{ variant.sub_category|upper }}</span>
         </li>
 
         <div class="list-group-item">
@@ -199,7 +199,7 @@
         {% if gens_info.display %}
         <li class="list-group-item">
           Copy number profile
-          <div class="float-right">
+          <div class="float-end">
             {% for sample in variant.samples %}
               <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position-2000}}-{{variant.end+2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
             {% endfor %}
@@ -248,14 +248,14 @@
         {% endif %}
       <li class="list-group-item">
         <div class="row d-flex justify-content-between">
-          <div>Type</div><div class="float-right">{{ variant.sub_category|upper }}</div>
+          <div>Type</div><div class="float-end">{{ variant.sub_category|upper }}</div>
         </div>
       </li>
       {% if variant.custom %}
         {% for pair in variant.custom %}
         <li class="list-group-item">
           <div class="row d-flex justify-content-between">
-            <div>{{pair[0]}}</div><div class="float-right">{{pair[1]}}</div>
+            <div>{{pair[0]}}</div><div class="float-end">{{pair[1]}}</div>
           </div>
         </li>
         {% endfor %}
