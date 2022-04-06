@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
-- Demo cancer case gets loaded together demo RD case in demo instance
+- Demo cancer case gets loaded together with demo RD case in demo instance
 
 
 ## [4.51]
