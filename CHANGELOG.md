@@ -5,10 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
-##
+## Added
 - Dark mode, using browser/OS media preference
 ### Changed
 - Bootstrap upgraded to version 5
+### Added
+- Demo cancer case gets loaded together with demo RD case in demo instance
 
 ## [4.51]
 ### Added
