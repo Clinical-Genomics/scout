@@ -91,7 +91,7 @@ def test_parse_many_strs(str_variants, case_obj):
 def test_parse_revel(cyvcf2_variant, case_obj):
     ## GIVEN a variant with REVEL score in the CSQ entry
     csq_header = "ALLELE|CONSEQUENCE|REVEL_rankscore|REVEL_score"
-    csq_entry = "C|missense_variant|0.75|0.22"  # mimic a variant with transcripts
+    csq_entry = "C|missense_variant|0.75|0.22,C|missense_variant|0.75|0.22"  # mimic a variant with transcripts
 
     cyvcf2_variant.INFO["CSQ"] = csq_entry
 
