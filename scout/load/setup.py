@@ -5,17 +5,15 @@ This means add a default institute, a user and the internal definitions such as 
 transcripts, hpo terms etc
 
 """
-import datetime
 import logging
 
 import yaml
-from pymongo.errors import ConnectionFailure, ServerSelectionTimeoutError
 
 from scout.build import build_institute
 
 # Case files
 # Gene panel
-from scout.demo import load_path, panel_path
+from scout.demo import cancer_load_path, load_path, panel_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
@@ -188,20 +186,36 @@ def setup_scout(
 
     # If demo we load a gene panel and some case information
     if demo:
-        parsed_panel = parse_gene_panel(
-            path=panel_path,
-            institute="cust000",
-            panel_id="panel1",
-            version=1.0,
-            display_name="Test panel",
-        )
-        adapter.load_panel(parsed_panel)
-
-        case_handle = get_file_handle(load_path)
-        case_data = yaml.load(case_handle, Loader=yaml.SafeLoader)
-        config_data = parse_case_data(config=case_data)
-        adapter.load_case(config_data)
+        load_demo_panel(adapter)
+        load_demo_cases(adapter)
 
     LOG.info("Creating indexes")
     adapter.load_indexes()
     LOG.info("Scout instance setup successful")
+
+
+def load_demo_panel(adapter):
+    """Load demo gene panel
+    Args:
+        adapter(scout.adapter.MongoAdapter)
+    """
+    parsed_panel = parse_gene_panel(
+        path=panel_path,
+        institute="cust000",
+        panel_id="panel1",
+        version=1.0,
+        display_name="Test panel",
+    )
+    adapter.load_panel(parsed_panel)
+
+
+def load_demo_cases(adapter):
+    """Load one RD case and one cancer case for ad demo data for demo cust000
+    Args:
+        adapter(scout.adapter.MongoAdapter)
+    """
+    for path in [load_path, cancer_load_path]:
+        case_handle = get_file_handle(path)
+        case_data = yaml.load(case_handle, Loader=yaml.SafeLoader)
+        config_data = parse_case_data(config=case_data)
+        adapter.load_case(config_data)
