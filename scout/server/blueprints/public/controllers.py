@@ -4,6 +4,10 @@ from scout.constants import (VERBS_MAP)
 from scout.utils.date import pretty_date
 LOG = logging.getLogger(__name__)
 
+
+NOF_RECENT_EVENTS = 5
+
+
 """Controller module for first webview.
 
 
@@ -28,68 +32,20 @@ Case 3
 Requested rerun for the case
 
 
-
-
 """
 
-{
-    "acmg": "updated ACMG classification for",
-    "add_case": "added case",
-    "add_cohort": "updated cohort for",
-    "add_phenotype": "added HPO term for",
-    "archive": "archived",
-    "assign": "was assigned to",
-    "cancel_sanger": "cancelled sanger order for", 
-    "cancer_tier": "updated cancer tier for",
-    "check_case": "marked case as",
-    "comment": "commented on",
-    "comment_update": "updated a comment for",
-    "dismiss_variant": "dismissed variant for",
-    "filter_audit": "marked case audited with filter",
-    "filter_stash": "stored a filter for",
-    "manual_rank": "updated manual rank for",
-    "mark_causative": "marked causative for",
-    "mark_partial_causative": "mark partial causative for",
-    "mme_add": "exported to Matchmaker patient",
-    "mme_remove": "removed from Matchmaker patient",
-    "mosaic_tags": "updated mosaic tags for",
-    "open_research": "opened research mode for",
-    "pin": "pinned variant",
-    "remove_cohort": "removed cohort for",
-    "remove_phenotype": "removed HPO term for",
-    "remove_variants": "removed variants for",
-    "rerun": "requested rerun of",
-    "rerun_monitor": "requested rerun monitoring for",
-    "rerun_unmonitor": "disabled rerun monitoring for",
-    "reset_dismiss_all_variants": "reset all dismissed variants for",
-    "reset_dismiss_variant": "reset dismissed variant status for",
-    "reset_research": "canceled research mode request for",
-    "sanger": "ordered sanger sequencing for",
-    "share": "shared case with",
-    "status": "updated the status for",
-    "synopsis": "updated synopsis for",
-    "unassign": "was unassigned from",
-    "unmark_causative": "unmarked causative for",
-    "unmark_partial_causative": "unmarked partial causative for",
-    "unpin": "removed pinned variant",
-    "unshare": "revoked access for",
-    "update_case": "updated case",
-    "update_case_group_ids": "updated case group ids for",
-    "update_clinical_filter_hpo": "updated clinical filter HPO status for",
-    "update_default_panels": "updated default panels for",
-    "update_diagnosis": "updated diagnosis for",
-    "update_individual": "updated individuals for",
-    "update_sample": "updated sample data for",
-    "validate": "marked validation status for",
-}
-v
+
+
+def verb_index(verb):
+    """Return index of verb in VERBS_MAP"""
+    a, b = verb
+    return list(VERBS_MAP).index(a)
 
 
 def get_events_of_interest(store, user):
     """Read event database and compile a list of selected events of interest"""
     LOG.debug(f"User: {user.email}")
     event_list = get_events(user, store)
-
     
     LOG.debug(f"Events list: {event_list}")
     
@@ -100,26 +56,47 @@ def get_events_of_interest(store, user):
 def get_events(user, store):
     """ """
     events = list(store.user_events({'_id':user.email}))
+    distinct = list(store.distinct_user_events({'_id':user.email,}))
+    asorted_events = list(store.user_events({'_id':user.email}, case = "internal_id_2"))
     pairs = []
     
+    LOG.debug(f"DISTINCT: {distinct}")
+    LOG.debug(f"ASORTED: {asorted_events}")
     for event in events:
         pairs.append((event['verb'], event['category']))
 
-    pairs_ = count_pairs(pairs)
-    sorted = sorted(list(pairs), cmp = compare)
+    pairs_c = count_pairs(pairs)
+    LOG.debug(f"EVENTS: {events}")
+    order = sorted(pairs_c, key=verb_index)
+    best = get_best(order, pairs_c, 4)
+    LOG.debug(f"BEST: {best}")
+    event_strings = events_to_string(best)
+    return event_strings
 
-    return events
+def events_to_string(list_of_events):
+    """ List of tuples: [(Key, kombo), n_events]]"""
+    l = []
+    def possessive_s(n):
+        if n > 1:
+            return "s"
+        return ""
+
+    for event in list_of_events:
+        (verb, event_type), n = event
+        l.append(VERBS_MAP.get(verb) + " " + str(n) + " " + event_type + possessive_s(n))
+    return l
 
 
-def compare(verb_a, verb_b):
-    return verb_index(verb_a) > verb_index(verb_b)
-
-
-def verb_index(verb):
-    """Return index of verb in VERBS_MAP"""
-    retur list(VERBS_MAP).index(verb)
-
-    
+def get_best(order, all, n):
+    """Compile list of first n elements"""
+    i = 0
+    l = []
+    while i < n:
+        key = order[i]
+        l.append((key, all[key]))
+        i += 1
+    return l
+        
 
 def count_pairs(pairs):
     """Count tuples
@@ -141,7 +118,7 @@ def count_pairs(pairs):
         return count_pairs_aux(tail, acc)
 
     a = count_pairs_aux(pairs, {})
-    print(f"GOT: {a}")
+    LOG.debug(f"GOT: {a}")
     return a
     
 
