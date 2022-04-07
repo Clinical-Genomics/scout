@@ -80,6 +80,7 @@ def populate_beacon_form(institute_obj):
         institute_obj(dict) An institute object
     """
     beacon_form = BeaconDatasetForm()
+
     if current_user.is_admin is False:
         LOG.warning("User must be an admin to create a beacon dataset")
         return beacon_form
@@ -92,9 +93,24 @@ def populate_beacon_form(institute_obj):
         )
         return beacon_form
 
-    beacon_info = get_request_json(f"current_app.config('BEACON_URL')/")
-    LOG.error(beacon_info)
+    # Collect all dataset names present on the Beacon
+    beacon_dsets = []
+    beacon_info = get_request_json(f"{current_app.config.get('BEACON_URL')}/")
+    if beacon_info.get("status_code") == 200 and beacon_info.get("content"):
+        beacon_dsets = [dset["id"] for dset in beacon_info["content"].get("datasets", [])]
 
+    dset_options = []  # List of tuples containing dataset select options
+    for build in ["GRCh37", "GRCh38"]:
+        institute_build = "_".join([institute_obj["_id"], build])
+        if (
+            institute_build in beacon_dsets
+        ):  # If dataset doesn't already exist, add the option to create it
+            continue
+        dset_options.append(
+            (institute_build, f"{institute_obj['_id']} public dataset - Genome build {build}")
+        )
+
+    beacon_form.beacon_dataset.choices = dset_options
     return beacon_form
 
 

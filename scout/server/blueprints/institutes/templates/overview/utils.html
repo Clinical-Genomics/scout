@@ -132,8 +132,17 @@
 <form action="#" class="form-inline">
   <div class="card w-100">
     <div class="card-body">
-      {{beacon_form.beacon_dataset}}
-      {{beacon_form.beacon_submit_btn(class="btn-primary btn")}}
+      <div class="row">
+        <div class="col-3">
+          The following datasets could be created:
+        </div>
+        <div class="col-6">
+          {{beacon_form.beacon_dataset}}
+        </div>
+        <div class="col-1">
+          {{beacon_form.beacon_submit_btn(class="btn-primary btn")}}
+        </div>
+      </div>
     </div>
   </div>
 </form>
