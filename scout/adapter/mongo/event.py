@@ -184,7 +184,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         }
         return self.event_collection.find(query)
 
-    def user_events(self, user_obj=None, case = None):
+    def user_events(self, user_obj=None, case=None):
         """Fetch all events by a specific user."""
         query = dict(user_id=user_obj["_id"], case=case) if user_obj else dict()
         return self.event_collection.find(query)
@@ -509,14 +509,12 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         return new_comments
 
-
     def distinct_user_events(self, user_obj=None):
-        """Return set of cases ordered by 'updated_at' """
+        """Return set of cases ordered by 'updated_at'"""
         query = dict(user_id=user_obj["_id"]) if user_obj else dict()
 
-        return self.event_collection.find(query).sort("updated_at", pymongo.DESCENDING).distinct("case")
-    
-
-
-    
-    
+        return (
+            self.event_collection.find(query)
+            .sort("updated_at", pymongo.DESCENDING)
+            .distinct("case")
+        )
