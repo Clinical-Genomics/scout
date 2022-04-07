@@ -128,15 +128,15 @@
 </form>
 
 <!-- Display form to add a Beacon dataset if user is an andmin and if institute lacks one or more Beaocn datasets -->
-{% if current_user.is_admin %}
+{% if current_user.is_admin and config.BEACON_URL and config.BEACON_TOKEN %}
 <form action="#" class="form-inline">
   <div class="card w-100">
     <div class="card-body">
       <div class="row">
-        <div class="col-3">
-          The following datasets could be created:
+        <div class="col-4">
+          The following datasets could be created in Beacon for this institute:
         </div>
-        <div class="col-6">
+        <div class="col-5">
           {{beacon_form.beacon_dataset}}
         </div>
         <div class="col-1">
