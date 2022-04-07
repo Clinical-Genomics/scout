@@ -1,5 +1,5 @@
 {% extends "layout_bs4.html" %}
-{% from "overview/utils.html" import institute_settings %}
+{% from "overview/utils.html" import institute_settings, create_beacon_dataset %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
@@ -30,11 +30,17 @@
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
   <div class="col">
-    {{ institute_settings(form, institute, current_user, loqus_instances) }}
+    <div class="col-12">
+      {{ institute_settings(form, institute, current_user, loqus_instances) }} <!-- These are the institute general settings -->
+    </div>
+    {% if current_user.is_admin %}
+    <div class="col-12 mt-3">
+      {{ create_beacon_dataset(current_user, beacon_form) }}
+    </div>
+    {% endif %}
   </div>
   </div> <!-- end of div id body-row -->
 </div>
-
 {% endblock %}
 
 {% block scripts %}

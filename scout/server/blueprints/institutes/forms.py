@@ -33,7 +33,7 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
 
 
 class InstituteForm(FlaskForm):
-    """Instutute-specif settings"""
+    """Instutute-specific settings"""
 
     hpo_tuples = []
     for key in PHENOTYPE_GROUPS.keys():
@@ -86,6 +86,13 @@ class InstituteForm(FlaskForm):
     alamut_key = StringField("Alamut API key", validators=[validators.Optional()])
 
     submit_btn = SubmitField("Save settings")
+
+
+class BeaconDatasetForm(FlaskForm):
+    """A form that allows admins to create a new Beacon dataset for the institute with a controlled dictionary"""
+
+    beacon_dataset = SelectField("Select dataset to be created")
+    beacon_submit_btn = SubmitField("Create dataset")
 
 
 # make a base class or other utility with this instead..

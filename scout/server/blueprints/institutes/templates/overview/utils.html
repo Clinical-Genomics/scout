@@ -187,3 +187,15 @@
     </tbody>
   </table>
 {% endmacro %}
+
+{% macro create_beacon_dataset(current_user, form) %}
+<form action="#">
+  <div class="card mt-3">
+    <div>
+      {{ current_user }}<br>
+      {{ form.beacon_dataset }}
+      {{ form.beacon_submit_btn }}
+    </div>
+  </div>
+</form>
+{% endmacro %}

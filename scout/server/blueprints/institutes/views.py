@@ -13,7 +13,13 @@ from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
 
 from . import controllers
-from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
+from .forms import (
+    BeaconDatasetForm,
+    GeneVariantFiltersForm,
+    InstituteForm,
+    PhenoModelForm,
+    PhenoSubPanelForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -183,7 +189,9 @@ def institute_settings(institute_id):
         return redirect(request.referrer)
 
     institute_obj = store.institute(institute_id)
-    form = InstituteForm(request.form)
+    institute_form = InstituteForm(request.form)
+
+    beacon_form = BeaconDatasetForm()
 
     # if institute is to be updated
     if request.method == "POST" and form.validate_on_submit():
@@ -196,11 +204,12 @@ def institute_settings(institute_id):
 
     data = controllers.institute(store, institute_id)
     loqus_instances = loqusdb.loqus_ids if hasattr(loqusdb, "loqus_ids") else []
-    default_phenotypes = controllers.populate_institute_form(form, institute_obj)
+    default_phenotypes = controllers.populate_institute_form(institute_form, institute_obj)
 
     return render_template(
         "/overview/institute_settings.html",
-        form=form,
+        form=institute_form,
+        beacon_form=beacon_form,
         default_phenotypes=default_phenotypes,
         loqus_instances=loqus_instances,
         panel=1,
