@@ -13,13 +13,7 @@ from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
 
 from . import controllers
-from .forms import (
-    BeaconDatasetForm,
-    GeneVariantFiltersForm,
-    InstituteForm,
-    PhenoModelForm,
-    PhenoSubPanelForm,
-)
+from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
 
 LOG = logging.getLogger(__name__)
 
@@ -191,7 +185,7 @@ def institute_settings(institute_id):
     institute_obj = store.institute(institute_id)
     institute_form = InstituteForm(request.form)
 
-    beacon_form = BeaconDatasetForm()
+    beacon_form = controllers.populate_beacon_form(institute_obj)
 
     # if institute is to be updated
     if request.method == "POST" and form.validate_on_submit():
