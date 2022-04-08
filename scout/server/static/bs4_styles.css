@@ -51,6 +51,13 @@ table.dataTable {margin-bottom: 0}
   font-size:16px;
 }
 
+.navbar-nav > .active {
+  color:white;
+  font-weight:bold;
+  background-color: dimgray;
+}
+
+
 .float-top-secondary {
 	position: fixed;
 	top: 0;

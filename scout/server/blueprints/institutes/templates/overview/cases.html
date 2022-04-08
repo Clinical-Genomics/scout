@@ -14,8 +14,8 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
-  <li class="nav-item active">
-    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">Cases</a>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Cases</span>
   </li>
 {% endblock %}
 
