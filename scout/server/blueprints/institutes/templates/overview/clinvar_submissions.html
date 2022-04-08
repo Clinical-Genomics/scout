@@ -13,7 +13,7 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">Clinvar submissions</span>
   </li>
 {% endblock %}
@@ -99,10 +99,16 @@
             <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission</button></li>
           </ol>
         </nav>
-        <div class="form-inline mb-3">
-          <label for="clinvar_id">submission name</label>
-          <input type="text" class="form-control mx-sm-3" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
-          <button type="submit" class="btn btn-primary" name="update_submission" value="register_id">Update</button>
+        <div class="row form-group mb-3">
+          <div class="col-2">
+            <label for="clinvar_id" class="form-text">Submission name</label>
+          </div>
+          <div class="col-4">
+            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-primary form-control" name="update_submission" value="register_id">Update</button>
+          </div>
         </div>
       </form>
       <div> <!--variant data div -->
@@ -249,10 +255,10 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script type="text/javascript">
+  {{ super() }}
 
+  <script type="text/javascript">
+  
   $(function () {
       $('.casedata  div').hide();
       $('.vardata  div').hide();
