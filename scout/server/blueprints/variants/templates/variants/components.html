@@ -1,7 +1,7 @@
 {% macro gene_cell(variant) %}
   <div class="align-items-center">
     {% if variant.category == "cancer" or variant.category == "sv_cancer" %}
-      <a data-toggle="tooltip" data-html="true" title="
+      <a data-bs-toggle="tooltip" data-bs-html="true" title="
         <div>
           <div>
             <strong>{{ variant.first_rep_gene.hgnc_symbol }}</strong>: {{ variant.first_rep_gene.description }}
@@ -34,16 +34,17 @@
       {% if variant.panels|count > 0 %}
           <a
             class="badge bg-secondary text-white"
-            data-toggle="popover"
-            data-html="true"
-            data-trigger="hover click"
-            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-            title="">{{variant.panels|count}}
+            data-bs-toggle="popover"
+            data-bs-html="true"
+            data-bs-trigger="hover click"
+            title="Overlapping gene panels"
+            data-bs-content="{{variant.panels|join('<br>')|safe}}"
+            >{{variant.panels|count}}
           </a>
       {% endif %}
     {% else %}
       {% for gene in variant.genes %}
-        <a data-toggle="tooltip" data-html="true" title="
+        <a data-bs-toggle="tooltip" data-bs-html="true" title="
         <div>
           <div>
             <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
@@ -69,11 +70,11 @@
       {% if variant.panels|count > 0 %}
           <a
             class="badge bg-secondary text-white"
-            data-toggle="popover"
-            data-html="true"
-            data-trigger="hover click"
-            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-            title="">{{variant.panels|count}}
+            data-bs-toggle="popover"
+            data-bs-html="true"
+            data-bs-trigger="hover click"
+            data-bs-content="{{variant.panels|join('<br>')|safe}}"
+            title="Overlapping gene panels">{{variant.panels|count}}
           </a>
       {% endif %}
     {% endif %}
@@ -81,7 +82,7 @@
 {% endmacro %}
 
 {% macro observed_cell_general(variant) %}
-  <div data-toggle="tooltip" data-placement="right" data-html="true" title="
+  <div data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="
     <div class='text-start'>
       <div>
         <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
@@ -128,7 +129,7 @@
 {% endmacro %}
 
 {% macro frequency_cell_general(variant) %}
-  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+  <div data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
     <div class='text-start'>
       {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
         <div>
