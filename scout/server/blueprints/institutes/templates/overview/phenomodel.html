@@ -27,8 +27,8 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}">Advanced phenotype models </a>
   </li>
-  <li class="nav-item active">
-    <a class="nav-link" href="#">{{phenomodel.name}}</a>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">{{phenomodel.name}}</span>
   </li>
 {% endblock %}
 
@@ -39,7 +39,7 @@
   <div style="padding: 0;" class="card-body mt-3 ms-3 me-3">
     <form action="#" method="POST">
         <input type="hidden" name="model_id" value="{{phenomodel._id}}">
-      <div class="form-row">
+      <div class="row">
         <div class="col-4">
           {{ pheno_form.model_name(class="form-control", placeholder="Name") }}
         </div>
@@ -47,7 +47,7 @@
           {{ pheno_form.model_desc(class="form-control", placeholder="Description (optional)") }}
         </div>
         <div class="col-1">
-          <button type="submit" value="update" name="update_model" class="btn btn-primary" {{ "disabled" if disable}}>Update</button
+          <button type="submit" value="update" name="update_model" class="btn btn-primary" {{ "disabled" if disable}}>Update</button>
         </div>
       </div>
       <h6 class="text-muted ms-3 mt-3">Created: {{phenomodel.created.strftime('%Y-%m-%d')}} - Updated: {{phenomodel.updated.strftime('%Y-%m-%d')}}</h6>
@@ -154,7 +154,7 @@
         {% for subpanel_id, subpanel in phenomodel.subpanels.items() %}
         <option value="{{subpanel_id}}">{{subpanel.title}}</option>
         {% endfor %}
-      <select>
+      </select>
     {% endif %}
     </div>
     <div class="form-group col-2">

@@ -8,7 +8,6 @@
 {% block css %}
 {{ super() }}
   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.0/css/buttons.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
 {% endblock %}
@@ -21,8 +20,8 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
-  <li class="nav-item active">
-    <a class="nav-link" href="#">Advanced phenotype models </a>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Advanced phenotype models </span>
   </li>
 {% endblock %}
 
@@ -103,7 +102,7 @@
     <div class="card-body" style="padding-top:2px;">
       <h5 class="card-title">Create new phenotype model</h5>
       <form action="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}" method="POST">
-        <div class="form-row">
+        <div class="row">
           <div class="col-4">
             {{ pheno_form.model_name(class="form-control", placeholder="Name") }}
           </div>
@@ -123,7 +122,7 @@
   <div class="card mt-3">
     <div class="card-body" style="overflow-y: auto; height: 700px;">
       <table class="table table-sm" cellspacing="0">
-        <thead>
+        <thead class="thead bg-light">
           <tr>
             <th>Name</th>
             <th>Description</th>
