@@ -4,7 +4,7 @@
 
     <div class="table-responsive fixed-panel" style="max-height:400px; overflow-y: scroll;">
       <table id="panel-table" class="table" style="width:100%">
-        <thead>
+        <thead class="bg-light">
           <tr style="cursor: pointer; white-space: nowrap">
             <th>Panel <i class="fas fa-sort" data-toggle="tooltip" title="Sort by gene panel name"></i></th>
             <th>Version <i class="fas fa-sort" data-toggle="tooltip" title="Sort by panel version"></i></th>
@@ -13,7 +13,7 @@
         </thead>
         <tbody>
           {% for panel in case.panels %}
-            <tr {% if panel.is_default %} class="bg-info-light" {% endif %}>
+            <tr {% if panel.is_default %} class="bg-info" {% endif %}>
               <td>
                 <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
                   {{ panel.display_name|truncate(30, True) }}
@@ -22,7 +22,7 @@
                   {% endif %}
                 </a>
                 {% if panel.is_default %}
-                  <span class="badge bg-default pull-right">Default</span>
+                  <span class="badge bg-default float-end">Default</span>
                 {% endif %}
               </td>
               <td>{{ panel.version }} <small class="text-muted">({{ panel.updated_at.date() }})</small></td>
