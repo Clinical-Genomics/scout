@@ -27,7 +27,7 @@
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">SMN CN</span>
   </li>
 {% endblock %}
@@ -149,7 +149,7 @@
 {% macro pedigree_panel() %}
   <div class="card panel-default">
     <div class="panel-heading">Pedigree</div>
-    <div class="card-body text-center">
+    <div class="card-body bg-light text-center">
       {{ case.madeline_info|safe }}
     </div>
   </div>

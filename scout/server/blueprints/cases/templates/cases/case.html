@@ -36,7 +36,7 @@
       {{ institute.display_name }}
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">{{ case.display_name }}</span>
   </li>
 {% endblock %}
@@ -264,7 +264,7 @@
 
           {{ modal_add_to_group(group_id, case_group, case_group_label[group_id]) }}
 
-          <form class="form-inline" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
+          <form class="row" action="{{ url_for('cases.case_group_update_label', case_group=group_id)}}" method="POST">
             <div class="input-group mb-2 me-2 sm-2">
               <div class="input-group">
                 <div class="input-group-text"><i class="fa fa-users"></i></div>
@@ -344,7 +344,7 @@
       </div>
       <div id="collapse_{{i.individual_id}}" style="width:100%" class="panel-collapse collapse in">
         <div class="panel-body">
-          <div class="card-body" style="max-height: 80vh; overflow-y: scroll;">
+          <div class="card-body bg-white" style="max-height: 80vh; overflow-y: scroll;">
             <svg id={{"svg_"+i.individual_id}} class="img-fluid" width="1200" height="1700"></svg>
           </div>
         </div>
@@ -366,7 +366,7 @@
               {{ section_name }} images
             </a>
           </div>
-        <div>
+        </div>
         <div id="collapse_{{ section_name }}" class="panel-collapse collapse ps-3">
           <div class="panel-body">
             {% for image in case.custom_images[section_name] %}
