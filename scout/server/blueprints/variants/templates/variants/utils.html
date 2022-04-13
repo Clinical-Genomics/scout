@@ -66,11 +66,11 @@
     <div class="col-4">
       <div class="form-check d-flex justify-content-start">
         {{ form.hide_dismissed(class="form-check-input") }}
-        {{ form.hide_dismissed.label(class="form-check-label") }}
+        {{ form.hide_dismissed.label(class="form-check-label ms-2") }}
       </div>
       <div class="form-check d-flex justify-content-start">
         {{ form.show_unaffected(class="form-check-input") }}
-        {{ form.show_unaffected.label(class="form-check-label", **{'data-toggle': 'tooltip', 'title':'This filter applies only to cases with more than one sample. When this is unchecked, only variants that are predicted by callers to be present in an affected individual genotype are shown.'}) }}
+        {{ form.show_unaffected.label(class="form-check-label ms-2", **{'data-toggle': 'tooltip', 'title':'This filter applies only to cases with more than one sample. When this is unchecked, only variants that are predicted by callers to be present in an affected individual genotype are shown.'}) }}
       </div>
     </div>
     <div class="col-4 d-flex justify-content-center">
@@ -87,7 +87,7 @@
 <div class="row d-flex align-items-center mb-2 ms-1">
   <div class="col-2 ">Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
-    <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-width="100%" onchange="enableDismiss();">
+    <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
       {% for value, data in dismiss_variant_options.items() %}
         <option value="{{ value }}">{{ data.label }}</option>
       {% endfor %}
@@ -103,8 +103,8 @@
 {% endmacro %}
 
 {% macro compounds_table(institute, case, compounds) %}
-  <table class="table table-condensed table-bordered table-sm">
-    <thead class="thead table-light">
+  <table class='table table-condensed table-bordered table-sm'>
+    <thead class='thead table-light'>
       <tr>
         <th>Variant</th>
         <th>Combined score</th>
@@ -185,61 +185,57 @@
 
 {% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
-<div class="form-group">
   <div class="row">
     <div class="col-2">
-      {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
-      {{ form.gene_panels(class="selectpicker") }}
+      {{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
+      {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
-      {{ form.symbol_file.label(class="control-label", data_toggle="tooltip", data_placement="left", title="Load an HGNC gene symbol list file; a text file with one gene symbol starting each row. Extra columns separated with tab are ignored. Comment rows starting with # are ignored.") }}
+      {{ form.symbol_file.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Load an HGNC gene symbol list file; a text file with one gene symbol starting each row. Extra columns separated with tab are ignored. Comment rows starting with # are ignored.") }}
       {{ form.symbol_file(class="form-control-file") }}
     </div>
     <div class="col-2">
       {{ form.region_annotations.label(class="control-label") }}
-      {{ form.region_annotations(class="selectpicker") }}
+      {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
       {{ form.functional_annotations.label(class="control-label") }}
-      {{ form.functional_annotations(class="selectpicker") }}
+      {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
       {{ form.genetic_models.label(class="control-label") }}
-      {{ form.genetic_models(class="selectpicker") }}
+      {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
     </div>
   </div>
-</div>
-<div class="form-group">
-  <div class="row">
+  <div class="row mt-2">
     <div class="col-3">
       {{ form.hgnc_symbols.label(class="control-label") }}
       {{ form.hgnc_symbols(class="form-control") }}
     </div>
-    <div class="col-1 mt-3">
-      <div class="btn-group d-flex">
-        <a class="btn btn-outline-secondary btn-sm " href="{{ url_for('variants.variants', institute_id=institute._id,
+    <div class="col-1 d-flex align-items-end">
+        <a class="btn btn-outline-secondary" href="{{ url_for('variants.variants', institute_id=institute._id,
           case_name=case.display_name, variant_type=form.variant_type.data,
           gene_panels=['hpo']) }}">HPO gene list</a>
-      </div>
     </div>
     <div class="col-1">
       {{ form.cadd_score.label(class="control-label") }}
       {{ form.cadd_score(class="form-control") }}
     </div>
-    <div class="col-1">
-      {{ form.cadd_inclusive.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Include empty CADD") }}
-      <div>{{ form.cadd_inclusive() }}</div>
+    <div class="col-1 d-flex align-items-end">
+      <div class="form-check mb-2">
+      {{ form.cadd_inclusive.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Include empty CADD") }}
+      {{ form.cadd_inclusive(class="form-check-input", type="checkbox") }}</div>
     </div>
     <div class="col-2">
       {{ form.spidex_human.label(class="control-label") }}
-      {{ form.spidex_human(class="selectpicker") }}
+      {{ form.spidex_human(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-2">
       {{ form.clinsig.label(class="control-label") }}
-      {{ form.clinsig(class="selectpicker") }}
+      {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
     </div>
     <div class="col-1">
-      {{ form.clinsig_confident_always_returned.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Always show selected CLINSIG entries with trusted revision status levels.") }}
+      {{ form.clinsig_confident_always_returned.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Always show selected CLINSIG entries with trusted revision status levels.") }}
       <div>{{ form.clinsig_confident_always_returned() }}</div>
     </div>
     <div class="col-1">
@@ -247,9 +243,7 @@
       {{ form.clinvar_tag.label(class="ms-2") }}
     </div>
   </div>
-</div>
-<div class="form-group">
-  <div class="row">
+  <div class="row mt-2">
     <div class="col-4">
       <div class ="row">
         <div class="col-4">
@@ -262,7 +256,7 @@
         </div>
         <div class="col-4">
           {{ form.chrom.label(class="control-label") }}
-          {{ form.chrom(class="selectpicker", data_actions_box="true") }}
+          {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
         </div>
       </div>
     </div>
@@ -279,7 +273,7 @@
       {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
-  <div class="row">
+  <div class="row mt-2">
     <div class="col-2">
       <a class="btn btn-secondary btn-sm form-control" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
         String coordinates
@@ -295,7 +289,7 @@
       <div id="hidecompounds" class="collapse form-group row">
         <div class="col-4">{{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds at this score or below as if dismissed") }}</div>
         <div class="col-3">{{ form.compound_rank_score(class="form-control", placeholder="example: 10", onchange="this.form.submit()") }}</div>
-        <div class="col-5 form-inline">{{ form.compound_follow_filter(class="form-control", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="control-label ms-1", data_toggle="tooltip", data_placement="top", title="Shade compounds as if dismissed by essentially the same filter as the main variant. CADD, CLINSIG, Frequency, function, position, region, SPIDEX, and variant type shade and hide, but chromosome, gene panel, and inheritance model do not. Checkbox ClinVar hits is not considered. Checkbox Always show CLNSIG disables ClinVar shading for the compound. Not loaded compounds cannot be evaluated and instead become shaded.") }}</div>
+        <div class="col-5"><div class="form-check">{{ form.compound_follow_filter(class="form-check-input", type="checkbox", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="form-check-label ms-1", data_bs_toggle="tooltip", data_bs_placement="top", title="Shade compounds as if dismissed by essentially the same filter as the main variant. CADD, CLINSIG, Frequency, function, position, region, SPIDEX, and variant type shade and hide, but chromosome, gene panel, and inheritance model do not. Checkbox ClinVar hits is not considered. Checkbox Always show CLNSIG disables ClinVar shading for the compound. Not loaded compounds cannot be evaluated and instead become shaded.") }}</div></div>
       </div>
     </div>
     <div class="col-2">
@@ -304,9 +298,6 @@
       </a>
     </div>
   </div>
-
-</div>
-<div class="form-group">
   <div class="row justify-content-between" style="margin-top:20px;">
       <div class="col-4">
         {{ form.filter_variants(class="btn btn-primary form-control") }}
@@ -318,8 +309,6 @@
         {{ form.export(class="btn btn-warning form-control") }}
       </div>
   </div>
-</div>
-<div class="form-group">
   <div class="row justify-content-between" style="margin-top:20px;">
     <div class="col-6 text-start">
       <a href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name,
@@ -332,7 +321,6 @@
       {{ stash_filter_buttons(form, institute, case) }}
     </div>
   </div>
-</div>
 {% endmacro %}
 
 {% macro str_filters(form, institute, case, filters) %}
@@ -858,7 +846,7 @@
                         variant_id=variant._id) }}" target='_blank'>
   {% endif %}
 
-  {{ variant.variant_rank }}&nbsp;</a>
+  {{ variant.variant_rank }}</a>&nbsp;
 
   {{ evaluations_badge(variant) }}
   {{ research_assessments_badge(variant) }}
