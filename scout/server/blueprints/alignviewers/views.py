@@ -4,6 +4,10 @@ import os.path
 
 import requests
 from flask import Blueprint, Response, abort, render_template, request, send_file
+from flask_login import current_user
+
+from scout.server.extensions import store
+from scout.server.utils import institute_and_case, user_institutes
 
 from . import controllers
 from .partial import send_file_partial
@@ -76,51 +80,44 @@ def unindexed_remote_static():
 
 
 @alignviewers_bp.route(
-    "/igv-splice-junctions/<institute_id>/<case_name>/<variant_id>", methods=["GET"]
+    "/<institute_id>/<case_name>/<variant_id>/igv-splice-junctions", methods=["GET"]
 )
 def sashimi_igv(institute_id, case_name, variant_id):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """
-    display_obj = controllers.make_sashimi_tracks(institute_id, case_name, variant_id)
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function takes care of checking if user is authorized to see resource
+
+    display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
     return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
-@alignviewers_bp.route("/igv", methods=["POST"])
-def igv():
-    """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)"""
+@alignviewers_bp.route("/<institute_id>/<case_name>/igv", methods=["GET"])  # from case page
+@alignviewers_bp.route(
+    "/<institute_id>/<case_name>/<variant_id>/igv", methods=["GET"]
+)  # from SNV and STR variant page
+@alignviewers_bp.route(
+    "/<institute_id>/<case_name>/<variant_id>/<chrom>/<start>/<stop>/igv", methods=["GET"]
+)  # from SV variant page, where you have to pass breakpoints coordinates
+def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=None):
+    """Visualize BAM alignments using igv.js (https://github.com/igvteam/igv.js)
 
-    # Set genome build for displaying alignments:
-    # Genome build is 37 if request.form.get("build") is 37 and chr != MT
-    # Genome build is 38 if request.form.get("build") is 38 or if chrom == MT
-    chromosome_build = request.form.get("build")
-    chrom = request.form.get("contig")
-    if chrom == "MT":
-        chrom = "M"
-    if chromosome_build in ["GRCh38", "38"] or chrom == "M":
-        chromosome_build = "38"
-    else:
-        chromosome_build = "37"
+    Args:
+        institute_id(str): _id of an institute
+        case_name(str): dislay_name of a case
+        variant_id(str/None): variant _id or None
+        chrom(str/None): requested chromosome [1-22], X, Y, [M-MT]
+        start(int/None): start of the genomic interval to be displayed
+        stop(int/None): stop of the genomic interval to be displayed
 
-    start = request.form.get("start")
-    stop = request.form.get("stop")
-    locus = "chr{0}:{1}-{2}".format(chrom, start, stop)
+    Returns:
+        a string, corresponging to the HTML rendering of the IGV alignments page
+    """
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function takes care of checking if user is authorized to see resource
 
-    display_obj = {}  # Initialize the dictionary containing all tracks info
-
-    # General tracks (Genes, Clinvar and ClinVar SNVs are shown according to user preferences)
-    controllers.set_common_tracks(display_obj, chromosome_build)
-
-    # Set up bam/cram alignments for case samples:
-    controllers.set_sample_tracks(display_obj, request.form)
-
-    # When chrom != MT, set up case-specific tracks (might be present according to the pipeline)
-    if chrom != "M":
-        controllers.set_case_specific_tracks(display_obj, request.form)
-
-    # Set up custom cloud public tracks, if available
-    controllers.set_cloud_public_tracks(display_obj, chromosome_build)
-
-    display_obj["display_center_guide"] = True
-
-    return render_template("alignviewers/igv_viewer.html", locus=locus, **display_obj)
+    display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
+    return render_template("alignviewers/igv_viewer.html", **display_obj)
