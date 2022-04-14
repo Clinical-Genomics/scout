@@ -1,5 +1,3 @@
-{% from "variant/buttons.html" import igv_button %}
-
 {% macro action_bar(institute, case, collaborators, current_user) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
@@ -167,7 +165,13 @@
   </div>
 </div>
 <div href="#" class="bg-dark list-group-item d-inline-block text-white">
-    {{ igv_button(case,None,case_groups) }}
+  {% if case.bam_files %}
+    <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank">
+      <button role="submit" class="btn btn-xs form-control btn-secondary">IGV viewer</button>
+    </form>
+  {% else %}
+    <span class="text-muted">BAM file(s) missing</span>
+  {% endif %}
 </div>
 {% endmacro %}
 

@@ -207,21 +207,21 @@
         </li>
         {% endif %}
         <li class="list-group-item">
-          <div class="row d-flex justify-content-between">
+          <div class="row d-flex align-items-center">
             <div>Breakpoint 1</div>
             {{ sv_alignments(variant, case, "start") }}
           </div>
         </li>
         <li class="list-group-item">
-          <div class="row d-flex justify-content-between">
+          <div class="row d-flex align-items-center">
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
           </div>
         </li>
         <li class="list-group-item">
-          <div class="row d-flex justify-content-between">
+          <div class="row d-flex align-items-center">
           <div>Cytoband</div>
-            <div>
+            <div class="offset-9">
               {% if variant.end_chrom == variant.chromosome %}
                 {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
               {% else %}
@@ -231,7 +231,7 @@
           </div>
         </li>
         <li class="list-group-item">
-          <div class="row d-flex justify-content-between">
+          <div class="row d-flex align-items-center">
             <div>Length</div>
             {{ sv_alignments(variant, case, "length") }}
           </div>
