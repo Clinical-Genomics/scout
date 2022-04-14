@@ -38,7 +38,7 @@
               {% for event in event_list[0:7] %}
               <tr>
                 <td><a href={{event.link}}>{{event.case}}</td>
-                <td>{{event.verb}} {{event.subject}} ({{event.updated_at}})</td>
+                <td>{{event.human_readable}} </td>
               </tr>        
               {% endfor %}
             </TBODY>
