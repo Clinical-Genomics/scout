@@ -28,14 +28,16 @@ public_bp = Blueprint(
 def index():
     """Show the static landing page."""
     LOG.debug("***HOME")
+    event_list = []
     badge_name = current_app.config.get("ACCREDITATION_BADGE")
     if badge_name and not Path(public_bp.static_folder, badge_name).is_file():
         LOG.warning(f'No file with name "{badge_name}" in {public_bp.static_folder}')
         badge_name = None
 
-    data = controllers.get_events_of_interest(store, current_user)
+    if current_user.is_authenticated:
+        event_list = controllers.get_events_of_interest(store, current_user)
     return render_template(
-        "public/index.html", version=__version__, accred_badge=badge_name, event_list=data
+        "public/index.html", version=__version__, accred_badge=badge_name, event_list=event_list
     )
 
 
