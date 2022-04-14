@@ -1247,7 +1247,6 @@ class CaseHandler(object):
         LOG.info("Verification status updated for {} variants".format(n_status_updated))
         return updated_variants
 
-
     def unique_cases_by_date(self, user_obj=None):
         """Return set of events, unique by cases and ordered with 'updated_at'."""
         query = dict(user_id=user_obj["_id"]) if user_obj else dict()
@@ -1257,7 +1256,6 @@ class CaseHandler(object):
             .sort("updated_at", pymongo.DESCENDING)
             .distinct("case")
         )
-
 
 
 def get_variantid(variant_obj, family_id):
