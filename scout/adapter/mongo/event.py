@@ -509,12 +509,3 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         return new_comments
 
-    def distinct_user_case(self, user_obj=None):
-        """Return set of cases ordered by 'updated_at'"""
-        query = dict(user_id=user_obj["_id"]) if user_obj else dict()
-
-        return (
-            self.event_collection.find(query)
-            .sort("updated_at", pymongo.DESCENDING)
-            .distinct("case")
-        )
