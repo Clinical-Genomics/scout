@@ -508,4 +508,3 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 new_comments += 1
 
         return new_comments
-
