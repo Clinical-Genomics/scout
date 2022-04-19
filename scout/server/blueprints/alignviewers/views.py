@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from os.path import splitext
 
 import requests
 from flask import Blueprint, Response, abort, render_template, request
@@ -21,9 +22,9 @@ alignviewers_bp = Blueprint(
 
 LOG = logging.getLogger(__name__)
 
-ALIGN_EXTENSIONS = ["bam", "bai", "cram", "crai"]
-ANNO_EXTENSIONS = ["bed", "bed.gz", "bigBed", "gz.tbi"]
-WIG_EXTENSIONS = ["bigWig"]
+ALIGN_EXTENSIONS = [".bam", ".bai", ".cram", ".crai"]
+ANNO_EXTENSIONS = [".bed", ".gz", ".bigBed", ".tbi"]
+WIG_EXTENSIONS = [".bigWig"]
 
 
 @alignviewers_bp.route("/remote/cors/<path:remote_url>", methods=["OPTIONS", "GET"])
@@ -66,7 +67,8 @@ def remote_cors(remote_url):
 def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get("file") or "."
-    file_extension = extension = file_path.split(".", 1)[1]
+    _, file_extension = splitext(file_path)
+    LOG.error(file_extension)
 
     # Check that user is logged in or that file extension is valid
     if (
