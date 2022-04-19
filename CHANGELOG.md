@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
+### Changed
+- Verify user before redirecting to IGV alignments and sashimi plots
+- Build case IGV tracks starting from case and variant objects instead of passing all params in a form
 
 ## [4.51]
 ### Added
@@ -21,8 +24,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified code of scout/adapter/mongo/variant
 - Update IGV.js to v2.11.2
 - Show summary number of variant gene panels on general report if more than 3
-- Verify user before redirecting to IGV alignments and sashimi plots
-- Build case IGV tracks starting from case and variant objects instead of passing all params in a form
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
