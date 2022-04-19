@@ -62,6 +62,10 @@ def remote_cors(remote_url):
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
+    # Check that user is logged in
+    if current_user.is_authenticated is False:
+        return abort(403)
+
     file_path = request.args.get("file") or ""
     range_header = request.headers.get("Range", None)
     if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
@@ -73,6 +77,10 @@ def remote_static():
 
 @alignviewers_bp.route("/remote/static/unindexed", methods=["OPTIONS", "GET"])
 def unindexed_remote_static():
+    # Check that user is logged in
+    if current_user.is_authenticated is False:
+        return abort(403)
+
     file_path = request.args.get("file")
     base_name = os.path.basename(file_path)
     resp = send_file(file_path, attachment_filename=base_name)
