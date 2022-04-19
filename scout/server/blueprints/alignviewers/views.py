@@ -22,6 +22,10 @@ alignviewers_bp = Blueprint(
 
 LOG = logging.getLogger(__name__)
 
+ALIGN_EXTENSIONS = ["bam", "bai", "cram", "crai"]
+ANNO_EXTENSIONS = ["bed", "bed.gz", "bigBed", "gz.tbi"]
+WIG_EXTENSIONS = ["bigWig"]
+
 
 @alignviewers_bp.route("/remote/cors/<path:remote_url>", methods=["OPTIONS", "GET"])
 def remote_cors(remote_url):
@@ -62,29 +66,24 @@ def remote_cors(remote_url):
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
-    # Check that user is logged in
-    if current_user.is_authenticated is False:
+    file_path = request.args.get("file") or "."
+    file_extension = extension = file_path.split(".", 1)[1]
+
+    # Check that user is logged in or that file extension is valid
+    if (
+        current_user.is_authenticated is False
+        or file_extension not in ALIGN_EXTENSIONS + ANNO_EXTENSIONS + WIG_EXTENSIONS
+    ):
         return abort(403)
 
-    file_path = request.args.get("file") or ""
+    file_extension = extension = file_path.split(".", 1)[1]
+    LOG.error(file_extension)
     range_header = request.headers.get("Range", None)
-    if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
+    if file_extension in ALIGN_EXTENSIONS and range_header is False:
         return abort(500)
 
     new_resp = send_file_partial(file_path)
     return new_resp
-
-
-@alignviewers_bp.route("/remote/static/unindexed", methods=["OPTIONS", "GET"])
-def unindexed_remote_static():
-    # Check that user is logged in
-    if current_user.is_authenticated is False:
-        return abort(403)
-
-    file_path = request.args.get("file")
-    base_name = os.path.basename(file_path)
-    resp = send_file(file_path, attachment_filename=base_name)
-    return resp
 
 
 @alignviewers_bp.route(
