@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import click
-import pymongo
 from pymongo import MongoClient
-from tabulate import tabulate
 
 CASES_WITH_DIA = {
     "diagnosis_phenotypes": {"$exists": True, "$ne": []}
