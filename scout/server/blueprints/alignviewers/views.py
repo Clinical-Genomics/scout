@@ -7,7 +7,7 @@ from flask import Blueprint, Response, abort, render_template, request, send_fil
 from flask_login import current_user
 
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, user_institutes
+from scout.server.utils import institute_and_case
 
 from . import controllers
 from .partial import send_file_partial
