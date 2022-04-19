@@ -16,11 +16,11 @@ SELECT_FIELDS = {
 
 
 @click.command()
-@click.option("--db_uri", required=True, help="mongodb://user:password@db_url:db_port/db_name")
+@click.option("--db-uri", required=True, help="mongodb://user:password@db_url:db_port")
+@click.option("--db-name", required=True, help="db name")
 @click.option("--fix", help="Use this flag to fix the OMIM format in old cases", is_flag=True)
-def omim_case_fix_format(db_uri, fix):
+def omim_case_fix_format(db_uri, db_name, fix):
     try:
-        db_name = db_uri.split("/")[-1]  # get database name from connection string
         client = MongoClient(db_uri)
         db = client[db_name]
         # test connection
@@ -36,6 +36,7 @@ def omim_case_fix_format(db_uri, fix):
         click.echo(f"Total number of cases with old diagnosis format:{len(cases_with_old_dia)}")
 
         for i, case in enumerate(cases_with_old_dia):
+            click.echo(f"n:{i}\t{case['owner']}\t{case['display_name']}")
             old_dia = case["diagnosis_phenotypes"]
             new_dia = []
 
@@ -58,10 +59,7 @@ def omim_case_fix_format(db_uri, fix):
                 db.case.find_one_and_update(
                     {"_id": case["_id"]}, {"$set": {"diagnosis_phenotypes": new_dia}}
                 )
-
-            click.echo(
-                f"\nn:{i}\t{case['owner']}\t{case['display_name']}\told dia:{old_dia}--->new dia:{new_dia}"
-            )
+            click.echo(f"old dia:{old_dia}--->new dia:{new_dia}\n")
 
     except Exception as err:
         click.echo("Error {}".format(err))
