@@ -76,8 +76,6 @@ def remote_static():
     ):
         return abort(403)
 
-    file_extension = extension = file_path.split(".", 1)[1]
-    LOG.error(file_extension)
     range_header = request.headers.get("Range", None)
     if file_extension in ALIGN_EXTENSIONS and range_header is False:
         return abort(500)
