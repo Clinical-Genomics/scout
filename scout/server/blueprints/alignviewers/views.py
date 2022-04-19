@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
-import os.path
 
 import requests
-from flask import Blueprint, Response, abort, render_template, request, send_file
+from flask import Blueprint, Response, abort, render_template, request
 from flask_login import current_user
 
 from scout.server.extensions import store
