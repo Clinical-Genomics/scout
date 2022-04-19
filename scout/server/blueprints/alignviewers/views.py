@@ -68,7 +68,6 @@ def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get("file") or "."
     _, file_extension = splitext(file_path)
-    LOG.error(file_extension)
 
     # Check that user is logged in or that file extension is valid
     if (
