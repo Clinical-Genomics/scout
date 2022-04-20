@@ -43,6 +43,9 @@ def parse_transcripts(raw_transcripts):
         if entry.get("REVEL_RANKSCORE"):
             transcript["revel"] = float(entry.get("REVEL_RANKSCORE"))
 
+        if entry.get("REVEL_SCORE"):
+            transcript["revel_score"] = float(entry.get("REVEL_SCORE"))
+
         parse_transcripts_spliceai(transcript, entry)
 
         ##  SWISSPROT ##
