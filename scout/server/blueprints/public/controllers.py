@@ -110,9 +110,7 @@ def events_to_string(list_of_events):
         if tautology(verb, event_type):
             l.append(VERBS_MAP.get(verb) + " X" + str(n))
         else:
-            l.append(
-                VERBS_MAP.get(verb) + " " + str(n) + " " + event_type + possessive_s(n)
-            )
+            l.append(VERBS_MAP.get(verb) + " " + str(n) + " " + event_type + possessive_s(n))
     return reduce(lambda a, b: a + ", " + b, l)
 
 
