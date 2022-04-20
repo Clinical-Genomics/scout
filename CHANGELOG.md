@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
+- Frontpage now shows a user's most recent events
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form
