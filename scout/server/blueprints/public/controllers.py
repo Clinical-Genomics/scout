@@ -1,5 +1,6 @@
 import logging
 from functools import reduce
+
 from scout.constants import VERBS_MAP
 
 LOG = logging.getLogger(__name__)

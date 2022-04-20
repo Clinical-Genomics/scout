@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
+
+from scout import __version__
 from scout.server.blueprints.public.controllers import (
     events_to_string,
     get_important_events,
@@ -7,7 +9,7 @@ from scout.server.blueprints.public.controllers import (
     verb_index,
 )
 
-from scout import __version__
+
 
 
 def test_verb_index():
