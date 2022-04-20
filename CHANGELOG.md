@@ -15,6 +15,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Unfreeze Werkzeug lib since Flask_login v.0.6 with bugfix has been released
 - Removed unused `server.blueprints.alignviewers.unindexed_remote_static` endpoint
 - Controlled dictionary of file extensions served by `server.blueprints.alignviewers.remote_static` endpoint
+### Fixed
+- Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 
 ## [4.51]
 ### Added
