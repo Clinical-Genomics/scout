@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
+### Fixed
+- Removed cursor timeout param in cases find adapter function to avoid many code warnings
 
 
 ## [4.51]
