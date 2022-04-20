@@ -220,7 +220,7 @@ def panel_export(panel_id):
     )
     return send_file(
         bytes_file,
-        attachment_filename=file_name,
+        download_name=file_name,
         mimetype="application/pdf",
         as_attachment=True,
     )

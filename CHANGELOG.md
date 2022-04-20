@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Unfreeze Werkzeug lib since Flask_login v.0.6 with bugfix has been released
 - Moved Beacon-related functions to a dedicated app extension
 ### Fixed
+- Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Beacon remove variants
 
 ## [4.51]

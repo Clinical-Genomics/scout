@@ -75,7 +75,7 @@ def remote_static():
 def unindexed_remote_static():
     file_path = request.args.get("file")
     base_name = os.path.basename(file_path)
-    resp = send_file(file_path, attachment_filename=base_name)
+    resp = send_file(file_path, download_name=base_name)
     return resp
 
 
