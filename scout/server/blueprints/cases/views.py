@@ -244,7 +244,7 @@ def pdf_case_report(institute_id, case_name):
     )
     return send_file(
         bytes_file,
-        attachment_filename=file_name,
+        download_name=file_name,
         mimetype="application/pdf",
         as_attachment=True,
     )
@@ -268,7 +268,7 @@ def mt_report(institute_id, case_name):
             data,
             mimetype="application/zip",
             as_attachment=True,
-            attachment_filename="_".join(["scout", case_name, "MT_report", today]) + ".zip",
+            download_name="_".join(["scout", case_name, "MT_report", today]) + ".zip",
             cache_timeout=0,
         )
 
@@ -698,7 +698,7 @@ def delivery_report(institute_id, case_name):
             )
             return send_file(
                 bytes_file,
-                attachment_filename=file_name,
+                download_name=file_name,
                 mimetype="application/pdf",
                 as_attachment=True,
             )
@@ -767,7 +767,7 @@ def coverage_qc_report(institute_id, case_name):
                 )
                 return send_file(
                     bytes_file,
-                    attachment_filename=file_name,
+                    download_name=file_name,
                     mimetype="application/pdf",
                     as_attachment=True,
                 )
@@ -960,7 +960,7 @@ def download_hpo_genes(institute_id, case_name, category):
     )
     return send_file(
         bytes_file,
-        attachment_filename=file_name,
+        download_name=file_name,
         mimetype="application/pdf",
         as_attachment=True,
     )
@@ -976,12 +976,12 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     outdir = os.path.abspath(os.path.dirname(vcf2cytosure))
     filename = os.path.basename(vcf2cytosure)
-    attachment_filename = ".".join(
+    download_name = ".".join(
         [display_name, case_obj["display_name"], case_obj["_id"], "vcf2cytosure.cgh"]
     )
     LOG.debug("Attempt to deliver file {0} from dir {1}".format(attachment_filename, outdir))
     return send_from_directory(
-        outdir, filename, attachment_filename=attachment_filename, as_attachment=True
+        outdir, filename, download_name=attachment_filename, as_attachment=True
     )
 
 
