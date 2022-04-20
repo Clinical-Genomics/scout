@@ -980,9 +980,7 @@ def vcf2cytosure(institute_id, case_name, individual_id):
         [display_name, case_obj["display_name"], case_obj["_id"], "vcf2cytosure.cgh"]
     )
     LOG.debug("Attempt to deliver file {0} from dir {1}".format(attachment_filename, outdir))
-    return send_from_directory(
-        outdir, filename, download_name=attachment_filename, as_attachment=True
-    )
+    return send_from_directory(outdir, filename, download_name=download_name, as_attachment=True)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/multiqc")
