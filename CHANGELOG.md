@@ -7,6 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
+### Changed
+- Verify user before redirecting to IGV alignments and sashimi plots
+- Build case IGV tracks starting from case and variant objects instead of passing all params in a form
+- Unfreeze Werkzeug lib since Flask_login v.0.6 with bugfix has been released
 
 
 ## [4.51]
@@ -21,8 +25,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified code of scout/adapter/mongo/variant
 - Update IGV.js to v2.11.2
 - Show summary number of variant gene panels on general report if more than 3
-- Verify user before redirecting to IGV alignments and sashimi plots
-- Build case IGV tracks starting from case and variant objects instead of passing all params in a form
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
