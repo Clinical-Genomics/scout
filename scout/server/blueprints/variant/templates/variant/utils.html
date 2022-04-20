@@ -313,91 +313,44 @@
 {% endmacro %}
 
 {% macro sv_alignments(variant, case, zoom)%}
-    <div>
-      {% if zoom == "start" %}
-        {{ variant.chromosome }}:{{ variant.position }}
-      {% elif zoom == "end" %}
-        {{ variant.end_chrom }}:{{ variant.end }}
-      {% elif zoom == "length" %}
-        {{ '-' if variant.length == 100000000000 else variant.length }}
-      {% endif %}
-      <form role="form" name="bp1_form" action="{{ url_for('alignviewers.igv') }}" target="_blank" method="POST">
-        {% if case.mt_bams or case.bam_files %}
-        <!-- general hidden fields required to submit POST request to IGV viewer -->
-          <input type="hidden" name="sample" value="{{case.sample_names|join(',')}}">
-          <input type="hidden" name="build" value="{{case.genome_build}}">
-
-          <input type="hidden" name="contig" value="{% if zoom in ["start", "length"] %}{{ variant.chromosome }}{% elif zoom == "end" %}{{ variant.end_chrom }}{% endif %}">
-          {% set initial_view = namespace(start=0, end=1) %}
-
-          {% set initial_view.start = variant.position - 500 %}
-          {% set initial_view.end = variant.end + 500 %}
-
-          {% if zoom == "start" %}
-            {% set initial_view.end = variant.position + 500 %}
-          {% elif zoom == "end" %}
-            {% set initial_view.start = variant.end - 500 %}
-          {% endif %}
-
-          {% if initial_view.start<0 %}
-            {% set initial_view.start = 0 %}
-          {% endif %}
-
-          {% if initial_view.end<1 %}
-            {% set initial_view.end = 1 %}
-          {% endif %}
-
-          <input type="hidden" name="start" value="{{ initial_view.start}}">
-          <input type="hidden" name="stop" value="{{ initial_view.end }}">
-        {% endif %}
-
-        {% if variant.is_mitochondrial and case.mt_bams %}
-          <input type="hidden" name="mt_bam" value="{{case.mt_bams|join(',')}}">
-          <input type="hidden" name="mt_bai" value="{{case.mt_bais|join(',')}}">
-          - Alignment:
-          <button class="btn btn-outline-secondary btn-sm" name="align" value="mt_bam" type=submit>IGV</button>
-        {% elif case.bam_files %}
-          - Alignment:
-          <input type="hidden" name="bam" value="{{case.bam_files|join(',')}}">
-          <input type="hidden" name="bai" value="{{case.bai_files|join(',')}}">
-          {% if case.rhocall_beds %}
-            <input type="hidden" name="rhocall_bed" value="{{case.rhocall_beds|join(',')}}">
-            <input type="hidden" name="rhocall_wig" value="{{case.rhocall_wigs|join(',')}}">
-          {% endif %}
-          {% if case.tiddit_coverage_wigs %}
-            <input type="hidden" name="tiddit_coverage_wig" value="{{case.tiddit_coverage_wigs|join(',')}}">
-          {% endif %}
-          {% if case.upd_regions_beds %}
-            <input type="hidden" name="upd_regions_bed" value="{{case.upd_regions_beds|join(',')}}">
-          {% endif %}
-          {% if case.upd_sites_beds %}
-            <input type="hidden" name="upd_sites_bed" value="{{case.upd_sites_beds|join(',')}}">
-          {% endif %}
-          {% if zoom == "length" and variant.chromosome != variant.end_chrom %}
-            - Complex rearrangement: check breakpoint alignments.
-          {% else %}
-            <button class="btn btn-outline-secondary btn-sm" name="align" value="bam" type=submit>IGV</button>
-          {% endif %}
-        {% else %}
-          - BAM file(s) missing
-        {% endif %}
-
-        <!--Define build variable to be used in the UCSC link-->
-        {% set build = "hg19" %}
-        {% if case.genome_build == 38 or variant.chromosome == "MT" %}
-          {% set build = "hg38" %}
-        {% endif %}
-
-        {% if zoom == "length" and variant.chromosome == variant.end_chrom %}
-          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-        {% elif zoom == "start" %}
-          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-        {% elif zoom == "end" %}
-          - <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
-        {% endif %}
-      </form>
-
+  {% set align_start = variant.position - 500 if variant.position > 500 else 0 %}
+  {% set align_end = variant.end + 500 %}
+  {% set chrom = variant.chromosome %}
+    <div class="col-4 offset-1">
+    {% if zoom == "start" %}
+      {% set align_end = variant.position + 500 %}
+      {{variant.chromosome}}:{{variant.position}}
+    {% elif zoom == "end" %}
+      {% set align_start = variant.end - 500 %}
+      {% set chrom = variant.end_chrom %}
+      {{variant.end_chrom}}:{{variant.end}}
+    {% elif zoom == "length" %}
+      {{ '-' if variant.length == 100000000000 else variant.length }}
+    {% endif %}
     </div>
+    <div class="col-3">
+    {% if variant.is_mitochondrial and case.mt_bams or case.bam_files %}
+      <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name'], variant_id=variant['_id'], chrom=chrom, start=align_start, stop=align_end) }}" target="_blank">IGV viewer</a></span>
+    {% else %}
+      - BAM file(s) missing
+    {% endif %}
+    </div>
+    <div class="col-1">
+      <!--Define build variable to be used in the UCSC link-->
+      {% set build = "hg19" %}
+      {% if case.genome_build == 38 or variant.chromosome == "MT" %}
+        {% set build = "hg38" %}
+      {% endif %}
+
+      {% if zoom == "length" and variant.chromosome == variant.end_chrom %}
+        <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+      {% elif zoom == "start" %}
+        <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+      {% elif zoom == "end" %}
+        <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+      {% endif %}
+    </div>
+
 {% endmacro %}
 
 {% macro pin_button(variant, case, institute) %}
