@@ -979,7 +979,7 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     download_name = ".".join(
         [display_name, case_obj["display_name"], case_obj["_id"], "vcf2cytosure.cgh"]
     )
-    LOG.debug("Attempt to deliver file {0} from dir {1}".format(attachment_filename, outdir))
+    LOG.debug("Attempt to deliver file {0} from dir {1}".format(download_name, outdir))
     return send_from_directory(outdir, filename, download_name=download_name, as_attachment=True)
 
 
