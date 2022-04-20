@@ -3,7 +3,7 @@ from functools import reduce
 from scout.constants import VERBS_MAP
 
 LOG = logging.getLogger(__name__)
-NOF_RECENT_EVENTS = 4
+NOF_RECENT_EVENTS = 3
 
 
 """Controller module for first webview.
