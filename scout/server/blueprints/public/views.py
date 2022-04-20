@@ -3,12 +3,11 @@ import logging
 from pathlib import Path
 
 from flask import Blueprint, current_app, render_template, send_from_directory
-
 from flask_login import current_user
 
 from scout import __version__
-from scout.server.utils import public_endpoint
 from scout.server.extensions import store
+from scout.server.utils import public_endpoint
 
 from . import controllers
 
