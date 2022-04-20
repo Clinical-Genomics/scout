@@ -191,7 +191,7 @@ def test_query_biomart_38_xml(ensembl_biomart_xml_query):
         b"ACTR3\tENST00000478928\n"
         b"[success]"
     )
-    responses.add(responses.GET, url, body=response, status=200, stream=True)
+    responses.add(responses.GET, url, body=response, status=200)
     # WHEN querying ensembl
     client = ensembl_rest_clients.EnsemblBiomartClient(
         build=build, xml=ensembl_biomart_xml_query, header=False
@@ -237,7 +237,7 @@ datasetConfigVersion = "0.6" completionStamp = "1">\
         b"ACTR3\tENST00000478928\n"
         b"[success]"
     )
-    responses.add(responses.GET, url, body=response, status=200, stream=True)
+    responses.add(responses.GET, url, body=response, status=200)
     # WHEN querying ensembl
     client = ensembl_rest_clients.EnsemblBiomartClient(
         build="38", filters=filters, attributes=attributes, header=False
