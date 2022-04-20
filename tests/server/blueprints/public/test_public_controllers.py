@@ -10,8 +10,6 @@ from scout.server.blueprints.public.controllers import (
 )
 
 
-
-
 def test_verb_index():
     # GIVEN a subset of VERBS_MACRO
     verbs_map = {
