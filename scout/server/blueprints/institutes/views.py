@@ -3,7 +3,17 @@ import json
 import logging
 
 from bson import ObjectId
-from flask import Blueprint, Response, flash, jsonify, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    Response,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
@@ -11,6 +21,7 @@ from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVA
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
+from scout.utils.scout_requests import post_request_json
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
@@ -171,6 +182,7 @@ def gene_variants(institute_id):
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
+# MOST OF THE CONTENT OF THIS ENDPOINT WILL BE REMOVED AND INCLUDED INTO THE BEACON EXTENSION UNDER SERVER/EXTENSIONS
 @blueprint.route("/overview/<institute_id>/add_dataset", methods=["POST"])
 def add_dataset(institute_id):
     """Add a dataset to Beacon for a given institute"""
@@ -180,7 +192,25 @@ def add_dataset(institute_id):
             "warning",
         )
         return redirect(request.referrer)
-    flash(request.form)
+
+    dataset_id = request.form.get("beacon_dataset")
+    institute_obj = store.institute(institute_id)
+    genome_build = dataset_id.split("_")[1]
+
+    dataset_obj = {
+        "_id": dataset_id,
+        "name": dataset_id,
+        "description": f"Scout dataset. Institute:{institute_obj.get('display_name')} - genome build:{genome_build}",
+        "assembly_id": genome_build,
+        "authlevel": "public",
+        "version": "v1.0",
+    }
+    req_url = "/".join([current_app.config.get("BEACON_URL"), "add_dataset"])
+    req_headers = Headers()
+    req_headers = {"X-Auth-Token": current_app.config.get("BEACON_TOKEN")}
+    json_response = post_request_json(url=req_url, headers=req_headers, data=dataset_obj)
+
+    flash(json_response)
     return redirect(request.referrer)
 
 
