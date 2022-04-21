@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-import urllib.request
 
 from configobj import ConfigObj
+
+from scout.utils.scout_requests import get_request
 
 LOG = logging.getLogger(__name__)
 
@@ -10,7 +11,7 @@ LOG = logging.getLogger(__name__)
 class RankModelHandler(object):
     def fetch_rank_model(self, rank_model_url):
         try:
-            return urllib.request.urlopen(rank_model_url, timeout=20)
+            return get_request(rank_model_url)
         except:
             return None
 
