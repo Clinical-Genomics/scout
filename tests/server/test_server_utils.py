@@ -6,7 +6,40 @@ import pytest
 from flask import url_for
 
 from scout.server.links import get_variant_links
-from scout.server.utils import append_safe, find_index, html_to_pdf_file, variant_case
+from scout.server.utils import (
+    append_safe,
+    case_has_alignments,
+    case_has_mt_alignments,
+    find_index,
+    html_to_pdf_file,
+    variant_case,
+)
+
+
+def test_case_has_alignments(case_obj):
+    """Test function that adds info on availability of autosomal alignment files for a case"""
+
+    # GIVEN a case with no autosomal alignment files
+    for ind in case_obj["individuals"]:
+        assert ind["bam_file"] == ""
+
+    # THEN case_has_alignments should assign bam_files = False to a case
+    assert case_obj.get("bam_files") is None
+    case_has_alignments(case_obj)
+    assert case_obj["bam_files"] is False
+
+
+def test_case_has_mt_alignments(case_obj):
+    """Test function that adds info on availability of MT alignment files for a case"""
+
+    # GIVEN a case with MT alignment files
+    for ind in case_obj["individuals"]:
+        assert ind["mt_bam"]
+
+    # THEN case_has_alignments should assign mt_bams = True to a case
+    assert case_obj.get("mt_bams") is None
+    case_has_mt_alignments(case_obj)
+    assert case_obj["mt_bams"] is True
 
 
 def test_html_to_pdf_file():
