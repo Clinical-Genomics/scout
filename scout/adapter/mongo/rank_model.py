@@ -12,13 +12,13 @@ class RankModelHandler(object):
     def fetch_rank_model(self, rank_model_url):
         try:
             return get_request(rank_model_url)
-        except:
+        except Exception as ex:
             return None
 
     def parse_rank_model(self, response):
         try:
             return ConfigObj(response).dict()
-        except:
+        except Exception as ex:
             return None
 
     def add_rank_model(self, rank_model_url):
