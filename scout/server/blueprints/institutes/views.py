@@ -171,6 +171,19 @@ def gene_variants(institute_id):
     return dict(institute=institute_obj, form=form, page=page, **data)
 
 
+@blueprint.route("/overview/<institute_id>/add_dataset", methods=["POST"])
+def add_dataset(institute_id):
+    """Add a dataset to Beacon for a given institute"""
+    if current_user.is_admin is False:
+        flash(
+            "Only an admin can create a new Beacon dataset",
+            "warning",
+        )
+        return redirect(request.referrer)
+    flash(request.form)
+    return redirect(request.referrer)
+
+
 @blueprint.route("/overview/<institute_id>/settings", methods=["GET", "POST"])
 def institute_settings(institute_id):
     """Show institute settings page"""
