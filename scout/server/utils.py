@@ -165,7 +165,7 @@ def rank_score(variant, rank_model):
 
     try:
         return sorted(get_rank_score_results(rank_model), key=lambda k: k["category"].casefold())
-    except:
+    except Exception as ex:
         return []
 
 
