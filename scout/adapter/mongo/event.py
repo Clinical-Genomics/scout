@@ -186,7 +186,12 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
     def user_events(self, user_obj=None, case=None):
         """Fetch all events by a specific user."""
-        query = dict(user_id=user_obj["_id"], case=case) if user_obj else dict()
+
+        query = dict()
+        if user_obj:
+            query["user_id"] = user_obj["_id"]
+        if case:
+            query["case"] = case
         return self.event_collection.find(query)
 
     def add_phenotype(
