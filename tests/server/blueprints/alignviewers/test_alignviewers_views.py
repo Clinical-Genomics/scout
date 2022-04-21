@@ -39,7 +39,7 @@ def test_test_remote_static_wrong_format(app):
 
 
 def test_remote_static(app):
-    """Test endpoint that serves unindexed files as a logged user"""
+    """Test endpoint that serves files as a logged user"""
     # GIVEN a running demo app
     with app.test_client() as client:
         # GIVEN that user is logged in
