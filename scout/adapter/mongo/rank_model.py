@@ -1,25 +1,27 @@
 # -*- coding: utf-8 -*-
 import logging
+from io import StringIO
 
+import requests
 from configobj import ConfigObj
 
-from scout.utils.scout_requests import get_request
-
 LOG = logging.getLogger(__name__)
+TIMEUT = 20
 
 
 class RankModelHandler(object):
     def fetch_rank_model(self, rank_model_url):
         try:
-            return get_request(rank_model_url)
+            response = requests.get(rank_model_url, timeout=TIMEUT)
+            return StringIO(response.text)
         except Exception as ex:
-            return None
+            LOG.warning(ex)
 
     def parse_rank_model(self, response):
         try:
             return ConfigObj(response).dict()
         except Exception as ex:
-            return None
+            LOG.error(ex)
 
     def add_rank_model(self, rank_model_url):
         """Fetch a rank model from remote.
@@ -31,6 +33,7 @@ class RankModelHandler(object):
             rank_model(dict): a copy of what was inserted, or empty if failed
         """
         response = self.fetch_rank_model(rank_model_url)
+
         config = self.parse_rank_model(response)
 
         if config:

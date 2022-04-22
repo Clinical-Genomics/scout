@@ -355,11 +355,6 @@ def variant(
 
     tx_overview(variant_obj)
 
-    # retrive rank ranges for the variant
-    rank_model_version = case_obj.get("rank_model_version")
-    rank_model = store.rank_model(rank_model_version)
-    rank_score_results = rank_score(variant_obj, rank_model)
-
     return {
         "institute": institute_obj,
         "case": case_obj,
@@ -378,8 +373,28 @@ def variant(
         "splice_junctions_tracks": has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
-        "rank_score_results": rank_score_results,
+        "rank_score_results": variant_rank_scores(store, case_obj, variant_obj),
     }
+
+
+def variant_rank_scores(store, case_obj, variant_obj):
+    """Retrive rank score values and ranges for the variant
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(dict)
+        variant_obj(dict)
+
+    Returns:
+        rank_score_results(list)
+    """
+    if variant_obj.get("category") == "sv":
+        rank_model_version = case_obj.get("sv_rank_model_version")
+    else:  # snv, cancer
+        rank_model_version = case_obj.get("rank_model_version")
+    rank_model = store.rank_model(rank_model_version)
+    rank_score_results = rank_score(variant_obj, rank_model)
+    return rank_score_results
 
 
 def observations(store, loqusdb, case_obj, variant_obj):
