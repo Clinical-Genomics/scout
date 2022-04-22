@@ -11,8 +11,7 @@
                 <tr>
                   {% for rank in rank_score_results %}
                   <th class="rank_score_results_heading">
-                    <span class="rank_score_results_category">{{ rank.category }}</span>
-                    <span class="rank_score_results_abbr" title="{{ rank.category }}">{{ rank.category_abbreviation }}</span>
+                    <span class="rank_score_results_category">{{ rank.category }} {{rank.category_abbreviation if rank.category_abbreviation != rank.category}}</span>
                   </th>
                   {% endfor %}
                 </tr>
