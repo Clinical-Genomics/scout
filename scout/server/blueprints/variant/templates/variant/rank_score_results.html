@@ -11,14 +11,14 @@
                 <tr>
                   {% for rank in rank_score_results %}
                   <th class="text-center">
-                    <span>{{ rank.category }}<br>{{rank.category_abbreviation if rank.category_abbreviation != rank.category}}</span>
+                    <span>{{ rank.category }}</span>
                   </th>
                   {% endfor %}
                 </tr>
                 <tr>
                   {% for rank in rank_score_results %}
                   <th class="text-center" title="range: {{ rank.min }} to {{ rank.max }}">
-                    <span>range: </span>{{ rank.min or "-" }} to {{ rank.max or "-" }}
+                    <p class="font-weight-light small">range: {{ rank.min or "-" }} to {{ rank.max or "-" }}</p>
                   </th>
                   {% endfor %}
                 </tr>
