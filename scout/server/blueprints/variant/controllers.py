@@ -404,6 +404,7 @@ def variant_rank_scores(store, case_obj, variant_obj):
         )
         rank_score_results = store.get_rank_score_ranges(variant_obj, rank_model)
 
+    # If rank score and ranges can't be calculated using an oline model, but variant contains rank model values, display these
     if rank_score_results == [] and variant_obj.get("rank_score_results"):
         rank_score_results = variant_obj.get("rank_score_results")
     return rank_score_results
