@@ -403,7 +403,7 @@ def variant_rank_scores(store, case_obj, variant_obj):
             rm_link_prefix, rank_model_version, rm_file_extension
         )
         rank_score_results = store.get_rank_score_ranges(variant_obj, rank_model)
-    elif variant_obj.get("rank_score_results"):
+    if rank_score_results == [] and variant_obj.get("rank_score_results"):
         rank_score_results = variant_obj.get("rank_score_results")
     return rank_score_results
 
