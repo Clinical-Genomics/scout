@@ -387,7 +387,7 @@ def variant_rank_scores(store, case_obj, variant_obj):
     Returns:
         rank_score_results(list)
     """
-    rank_score_results = None
+    rank_score_results = []
     rm_link_prefix = None
     rm_file_extension = None
     if variant_obj.get("category") == "sv":
@@ -403,6 +403,7 @@ def variant_rank_scores(store, case_obj, variant_obj):
             rm_link_prefix, rank_model_version, rm_file_extension
         )
         rank_score_results = store.get_rank_score_ranges(variant_obj, rank_model)
+
     if rank_score_results == [] and variant_obj.get("rank_score_results"):
         rank_score_results = variant_obj.get("rank_score_results")
     return rank_score_results
