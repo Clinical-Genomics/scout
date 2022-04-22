@@ -134,5 +134,5 @@ class RankModelHandler(object):
         try:
             appo = get_rank_score_results(rank_model)
             return sorted(appo, key=lambda k: k["category"].casefold())
-        except:
+        except Exception as ex:
             return []
