@@ -2,7 +2,7 @@ import logging
 from base64 import b64encode
 from datetime import date
 
-from flask import flash, url_for
+from flask import current_app, flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -27,7 +27,6 @@ from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
     institute_and_case,
-    rank_score,
     user_institutes,
     variant_case,
 )
@@ -388,12 +387,25 @@ def variant_rank_scores(store, case_obj, variant_obj):
     Returns:
         rank_score_results(list)
     """
+    rank_score_results = None
+    rm_link_prefix = None
+    rm_file_extension = None
     if variant_obj.get("category") == "sv":
         rank_model_version = case_obj.get("sv_rank_model_version")
+        rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
+        rm_file_extension = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX")
     else:  # snv, cancer
         rank_model_version = case_obj.get("rank_model_version")
-    rank_model = store.rank_model(rank_model_version)
-    rank_score_results = rank_score(variant_obj, rank_model)
+        rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
+        rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
+    if all([rank_model_version, rm_link_prefix, rm_file_extension]):
+        rank_model = store.rank_model_from_url(
+            rm_link_prefix, rank_model_version, rm_file_extension
+        )
+        rank_score_results = store.get_rank_score_ranges(variant_obj, rank_model)
+        flash(rank_score_results)
+    else:
+        flash("NOPE!")
     return rank_score_results
 
 

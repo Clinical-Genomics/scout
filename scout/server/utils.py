@@ -115,60 +115,6 @@ def institute_and_case(store, institute_id, case_name=None):
     return institute_obj
 
 
-def rank_score(variant, rank_model):
-    """Calculate rank ranges for the variant and its corresponding rank model."""
-
-    def get_scores(field):
-        return [
-            int(v.get("score"))
-            for v in field.values()
-            if isinstance(v, dict) and isinstance(int(v.get("score")), (int))
-        ]
-
-    def get_category_abbr(category_name):
-        category_names = category_name.split(" ")
-
-        return (
-            "".join([x[0].upper() for x in category_names])
-            if len(category_names) > 1
-            else category_name
-        )
-
-    def get_rank(model, info_fields, variant, category):
-        fields = [f for f in info_fields if f.get("category") == category]
-        scores = [get_scores(field) for field in fields]
-        flattend_scores = [n for v in scores for n in v]
-        # finds the already pre-calculated score
-        rank_score = next(
-            (r for r in variant.get("rank_score_results") if r.get("category") == category), {}
-        )
-
-        category_name = category.replace("_", " ").title()
-
-        return {
-            "category": category_name,
-            "category_abbreviation": get_category_abbr(category_name),
-            "score": rank_score.get("score"),
-            "min": min(flattend_scores),
-            "max": max(flattend_scores),
-        }
-
-    def get_rank_score_results(rank_model):
-        info_fields = [
-            v for v in rank_model.values() if isinstance(v, dict) and v.get("field") == "INFO"
-        ]
-
-        return [
-            get_rank(rank_model, info_fields, variant, category)
-            for category in rank_model["Categories"].keys()
-        ]
-
-    try:
-        return sorted(get_rank_score_results(rank_model), key=lambda k: k["category"].casefold())
-    except Exception as ex:
-        return []
-
-
 def user_institutes(store, login_user):
     """Preprocess institute objects."""
     if login_user.is_admin:
