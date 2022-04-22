@@ -10,15 +10,15 @@
               <thead class="thead-light">
                 <tr>
                   {% for rank in rank_score_results %}
-                  <th class="rank_score_results_heading">
-                    <span class="rank_score_results_category">{{ rank.category }} {{rank.category_abbreviation if rank.category_abbreviation != rank.category}}</span>
+                  <th class="text-center">
+                    <span>{{ rank.category }}<br>{{rank.category_abbreviation if rank.category_abbreviation != rank.category}}</span>
                   </th>
                   {% endfor %}
                 </tr>
                 <tr>
                   {% for rank in rank_score_results %}
-                  <th class="rank_score_results_sub_heading" title="range: {{ rank.min }} to {{ rank.max }}">
-                    <span class="rank_score_results_range">range: </span>{{ rank.min or "-" }} to {{ rank.max or "-" }}
+                  <th class="text-center" title="range: {{ rank.min }} to {{ rank.max }}">
+                    <span>range: </span>{{ rank.min or "-" }} to {{ rank.max or "-" }}
                   </th>
                   {% endfor %}
                 </tr>
