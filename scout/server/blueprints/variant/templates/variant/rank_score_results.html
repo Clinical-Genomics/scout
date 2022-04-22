@@ -19,7 +19,7 @@
                 <tr>
                   {% for rank in rank_score_results %}
                   <th class="rank_score_results_sub_heading" title="range: {{ rank.min }} to {{ rank.max }}">
-                    <span class="rank_score_results_range">range: </span>{{ rank.min }} to {{ rank.max }}
+                    <span class="rank_score_results_range">range: </span>{{ rank.min or "-" }} to {{ rank.max or "-" }}
                   </th>
                   {% endfor %}
                 </tr>
