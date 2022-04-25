@@ -97,7 +97,11 @@ class RankModelHandler(object):
         """
         info = []
         for _, item in rank_model.items():
-            if isinstance(item, dict) is False or item.get("category") != category:
+            if (
+                isinstance(item, dict) is False
+                or not item.get("category")
+                or item.get("category").casefold() != category.casefold()
+            ):
                 continue
             rank_info = {
                 "key": item.get("info_key"),
