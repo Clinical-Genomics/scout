@@ -1,6 +1,5 @@
 import copy
 import logging
-from pprint import pprint as pp
 
 from flask import current_app, url_for
 from flask_login import current_user
