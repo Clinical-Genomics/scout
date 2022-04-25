@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Controlled dictionary of file extensions served by `server.blueprints.alignviewers.remote_static` endpoint
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
+- Removed cursor timeout param in cases find adapter function to avoid many code warnings
 
 ## [4.51]
 ### Added
