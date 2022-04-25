@@ -1,3 +1,15 @@
+{% macro rank_tooltip(model_ranges) %}
+  {% for range in model_ranges %}
+    <span><strong>{{range.key if range.key}} - {{range.description}}</strong></span><br>
+    <ul>
+    {% for key, value in range.score_ranges.items() %}
+      <li>{{key}}:{{value}}</li>
+    {% endfor %}
+    </ul>
+  {% endfor %}
+{% endmacro %}
+
+
 {% macro rankscore_panel(rank_score_results) %}
 <div class="row">
   <div class="col-12">
@@ -11,14 +23,7 @@
                 <tr>
                   {% for rank in rank_score_results %}
                   <th class="text-center">
-                    <span>{{ rank.category }}</span>
-                  </th>
-                  {% endfor %}
-                </tr>
-                <tr>
-                  {% for rank in rank_score_results %}
-                  <th class="text-center" title="range: {{ rank.min }} to {{ rank.max }}">
-                    <p class="font-weight-light small">range: {{ rank.min or "-" }} to {{ rank.max or "-" }}</p>
+                    <span>{{ rank.category.replace("_"," ") }} {% if rank.model_ranges %} <span class="badge badge-pill badge-info" data-html="true" data-toggle="popover" data-trigger="hover" data-content="{{rank_tooltip(rank.model_ranges)|safe}}">?</span> {% endif %}</span>
                   </th>
                   {% endfor %}
                 </tr>

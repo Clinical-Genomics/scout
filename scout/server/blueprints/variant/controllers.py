@@ -388,8 +388,15 @@ def variant_rank_scores(store, case_obj, variant_obj):
         rank_score_results(list)
     """
     rank_score_results = []
+
+    if variant_obj.get(
+        "rank_score_results"
+    ):  # Retrieve rank score results saved in variant document
+        rank_score_results = variant_obj.get("rank_score_results")
+
     rm_link_prefix = None
     rm_file_extension = None
+
     if variant_obj.get("category") == "sv":
         rank_model_version = case_obj.get("sv_rank_model_version")
         rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
@@ -398,15 +405,19 @@ def variant_rank_scores(store, case_obj, variant_obj):
         rank_model_version = case_obj.get("rank_model_version")
         rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
         rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
-    if all([rank_model_version, rm_link_prefix, rm_file_extension]):
+    if all(
+        [rank_model_version, rm_link_prefix, rm_file_extension]
+    ):  # Try to retrieve rank model param ranges to display on variant page
+
         rank_model = store.rank_model_from_url(
             rm_link_prefix, rank_model_version, rm_file_extension
         )
-        rank_score_results = store.get_rank_score_ranges(variant_obj, rank_model)
+        # Loop over each rank score category and collect model explanation to display on variant page
+        for score in rank_score_results:
+            category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
+            LOG.warning(category)
+            score["model_ranges"] = store.get_ranges_info(rank_model, score.get("category"))
 
-    # If rank score and ranges can't be calculated using an oline model, but variant contains rank model values, display these
-    if rank_score_results == [] and variant_obj.get("rank_score_results"):
-        rank_score_results = variant_obj.get("rank_score_results")
     return rank_score_results
 
 

@@ -84,55 +84,29 @@ class RankModelHandler(object):
 
         return rank_model
 
-    def get_rank_score_ranges(self, variant, rank_model):
-        """Calculate rank ranges for the variant and its corresponding rank model."""
+    def get_ranges_info(self, rank_model, category):
+        """Extract Rank model params value ranges from a database model.
+        These numbers will be used to describe model scores on variant page.
 
-        def get_scores(field):
-            return [
-                int(v.get("score"))
-                for v in field.values()
-                if isinstance(v, dict) and isinstance(int(v.get("score")), (int))
-            ]
+        Args:
+            rank_model(dict)
+            category(string) examples: "Variant_call_quality_filter", "Deleteriousness" ..
 
-        def get_category_abbr(category_name):
-            category_names = category_name.split(" ")
-
-            return (
-                "".join([x[0].upper() for x in category_names])
-                if len(category_names) > 1
-                else category_name
-            )
-
-        def get_rank(model, info_fields, variant, category):
-            fields = [f for f in info_fields if f.get("category") == category]
-            scores = [get_scores(field) for field in fields]
-            flattend_scores = [n for v in scores for n in v]
-
-            # finds the already pre-calculated score
-            rank_score = next(
-                (r for r in variant.get("rank_score_results") if r.get("category") == category), {}
-            )
-            category_name = category.replace("_", " ").title()
-            return {
-                "category": category_name,
-                "category_abbreviation": get_category_abbr(category_name),
-                "score": rank_score.get("score"),
-                "min": min(flattend_scores) if flattend_scores else "n.a",
-                "max": max(flattend_scores) if flattend_scores else "n.a",
+        Returns:
+            info(list) example:
+        """
+        info = []
+        for _, item in rank_model.items():
+            if isinstance(item, dict) is False or item.get("category") != category:
+                continue
+            rank_info = {
+                "key": item.get("info_key"),
+                "description": item.get("description"),
+                "score_ranges": {},
             }
+            for key, value in item.items():
+                if isinstance(value, dict) and "score" in value:
+                    rank_info["score_ranges"][key] = value
+            info.append(rank_info)
 
-        def get_rank_score_results(rank_model):
-            info_fields = [
-                v for v in rank_model.values() if isinstance(v, dict) and v.get("field") == "INFO"
-            ]
-
-            return [
-                get_rank(rank_model, info_fields, variant, category)
-                for category in rank_model["Categories"].keys()
-            ]
-
-        try:
-            appo = get_rank_score_results(rank_model)
-            return sorted(appo, key=lambda k: k["category"].casefold())
-        except Exception as ex:
-            return []
+        return info
