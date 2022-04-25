@@ -414,9 +414,10 @@ def variant_rank_scores(store, case_obj, variant_obj):
         )
         # Loop over each rank score category and collect model explanation to display on variant page
         for score in rank_score_results:
-            category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
-            LOG.warning(category)
-            score["model_ranges"] = store.get_ranges_info(rank_model, score.get("category"))
+            category = score.get(
+                "category"
+            ).lower()  # examples: Splicing, Consequence, Deleteriousness
+            score["model_ranges"] = store.get_ranges_info(rank_model, category)
 
     return rank_score_results
 
