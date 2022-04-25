@@ -21,7 +21,7 @@ def get_events_of_interest(store, user):
         store: scout.adapter.MongoAdapter
         user: store.user
     Returns:
-        events_of_interest: list of dicts{'Case', 'link', 'human_readable'}
+        events_of_interest: list of dicts{'case', 'link', 'human_readable'}
         -where human_readable is a list of strings refering to users recent events of interest
     """
     events_of_interest = []
@@ -94,8 +94,7 @@ def get_important_events(all_events):
 def events_to_string(list_of_events):
     """List of tuples: [(Key, kombo), n_events]
 
-
-    Returns:"""
+    Returns: string: describing events"""
     l = []
 
     def possessive_s(n):
