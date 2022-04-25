@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings
+- Removed stream argument deprecation warning in tests
 
 ## [4.51]
 ### Added
