@@ -389,7 +389,7 @@ class CaseHandler(object):
         if order:
             return self.case_collection.find(query)
 
-        return self.case_collection.find(query, no_cursor_timeout=True).sort("updated_at", -1)
+        return self.case_collection.find(query).sort("updated_at", -1)
 
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.
