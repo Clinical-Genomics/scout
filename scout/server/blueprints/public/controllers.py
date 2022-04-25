@@ -49,7 +49,7 @@ def recent_cases(user, store):
 
 def events_in_case(store, user, case):
     """Return a list of events associated with a user's specific case"""
-    return list(store.user_events({"_id": user.email}, case=case))
+    return list(store.user_events_by_case({"_id": user.email}, case=case))
 
 
 def compile_important_events(event_list):
