@@ -93,7 +93,7 @@ class RankModelHandler(object):
             category(string) examples: "Variant_call_quality_filter", "Deleteriousness" ..
 
         Returns:
-            info(list) example:
+            info(list): list of dictionaries containing "key", "description" and "score_ranges" key/values
         """
         info = []
         for _, item in rank_model.items():
