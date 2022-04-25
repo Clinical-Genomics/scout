@@ -1,7 +1,3 @@
-from scout.server.app import create_app
-from scout.server.extensions import store
-
-
 def test_rank_model_from_url_snv(adapter, case_obj):
     """Test parsing and saving a SNV rank model object from a remote config file"""
 
