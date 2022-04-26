@@ -1243,7 +1243,7 @@ def gene_panel_choices(store, institute_obj, case_obj):
 
     institute_panel_list.sort(key=lambda t: t[1])
     if institute_panel_list:
-        panel_list.append(institute_panel_list)
+        panel_list.extend(institute_panel_list)
 
     # Add HPO panel
     panel_list.append(("hpo", "HPO"))
