@@ -30,6 +30,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified code of scout/adapter/mongo/variant
 - Update IGV.js to v2.11.2
 - Show summary number of variant gene panels on general report if more than 3
+- Sort gene panels by name (panelS and variant page)
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
