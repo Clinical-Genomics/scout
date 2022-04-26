@@ -41,8 +41,15 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import CancerFiltersForm  # noqa: F401
-from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
+from .forms import (  # noqa: F401; noqa: F401
+    FILTERSFORMCLASS,
+    CancerFiltersForm,
+    CancerSvFiltersForm,
+    FiltersForm,
+    StrFiltersForm,
+    SvFiltersForm,
+    VariantFiltersForm,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -1220,12 +1227,20 @@ def gene_panel_choices(store, institute_obj, case_obj):
             panel_option = (panel["panel_name"], panel["display_name"])
             panel_list.append(panel_option)
 
+    panel_list.sort(key=lambda t: t[1])
+
     institute_choices = institute_obj.get("gene_panels", {})
 
+    institute_panel_list = []
     for panel_name, display_name in institute_choices.items():
         panel_option = (panel_name, display_name)
+
         if panel_option not in panel_list:
-            panel_list.append(panel_option)
+            institute_panel_list.append(panel_option)
+
+    institute_panel_list.sort(key=lambda t: t[1])
+    if institute_panel_list:
+        panel_list.extend(institute_panel_list)
 
     # Add HPO panel
     panel_list.append(("hpo", "HPO"))

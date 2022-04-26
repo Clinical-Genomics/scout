@@ -92,7 +92,7 @@
             <th width="10%"></th>
           </tr>
         </thead>
-      {% for panel in panels %}
+      {% for panel in panels|sort(attribute="display_name",case_sensitive=False) %}
         <!--create table for each panel-->
         <tbody>
           <tr>
