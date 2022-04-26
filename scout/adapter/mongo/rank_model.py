@@ -131,6 +131,16 @@ class RankModelHandler(object):
         return info
 
     def range_span(self, info):
+        """Determine max and min score range for each rank model category.
+
+        Args:
+          info(list): list of dictionaries containing "max", "min", "key", "description" and "score_ranges" key/values
+                      One item for e.g. each caller or data source in the rank model category.
+                      Also has "category_aggregation" set for each info item, but those should be the same for the whole
+                      category.
+        Returns:
+          (range_min, range_max) tuples
+        """
 
         category_aggregation = info[0].get("category_aggregation")
         range_max = 0
