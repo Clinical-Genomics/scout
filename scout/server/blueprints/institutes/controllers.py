@@ -150,7 +150,8 @@ def populate_institute_form(form, institute_obj):
     panel_set = set()
     for panel in available_panels:
         panel_set.add((panel["panel_name"], panel["display_name"]))
-    form.gene_panels.choices = list(panel_set)
+    form.gene_panels.choices = list(panel_set).sort(key=lambda t: t[1])
+
     return default_phenotypes
 
 
