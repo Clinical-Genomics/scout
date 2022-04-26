@@ -167,7 +167,7 @@
 
         <div class="list-group-item">
           <strong>Gene panels:</strong><br>
-          {% for panel_id in variant.panels %}
+          {% for panel_id in variant.panels|sort(case_sensitive=False) %}
             <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
           {% endfor %}
         </div>
@@ -383,7 +383,7 @@
   </div>
   <div class="list-group-item">
     <strong>Gene panels</strong>:
-    {{ variant.panels|join(', ') }}
+    {{ variant.panels|sort|join(', ') }}
   </div>
   <div class="list-group-item disabled"><strong>GT call</strong></div>
   {% for individual in variant.samples %}

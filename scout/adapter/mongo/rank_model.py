@@ -113,6 +113,7 @@ class RankModelHandler(object):
             rank_info = {
                 "key": item.get("info_key"),
                 "description": item.get("description"),
+                "aggregation_mode": item.get("record_rule"),
                 "score_ranges": {},
                 "category_aggregation": category_aggregation,
             }

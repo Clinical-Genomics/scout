@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings
 - Removed stream argument deprecation warning in tests
+- Handle `no intervals found` warning in load_region test
 
 ## [4.51]
 ### Added
@@ -30,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified code of scout/adapter/mongo/variant
 - Update IGV.js to v2.11.2
 - Show summary number of variant gene panels on general report if more than 3
+- Sort gene panels by name (panelS and variant page)
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
