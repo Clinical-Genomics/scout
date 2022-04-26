@@ -1,4 +1,7 @@
 {% macro rank_tooltip(model_ranges) %}
+  {% if model_ranges %}
+    <span>Category aggregation rule:&nbsp;<strong>{{model_ranges[0].category_aggregation}}</strong></span><br>
+  {% endif %}
   {% for range in model_ranges %}
     <span><strong>{{range.key if range.key}} - {{range.description}}</strong></span><br>
     Value aggregation rule:&nbsp;<strong>{{range.aggregation_mode}}</strong><br>
