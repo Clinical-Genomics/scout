@@ -121,7 +121,7 @@ class RankModelHandler(object):
             for key, value in item.items():
                 if isinstance(value, dict) and "score" in value:
                     rank_info["score_ranges"][key] = value
-                    component_scores.append(value["score"])
+                    component_scores.append(int(value["score"]))
 
             rank_info["max"] = max(component_scores)
             rank_info["min"] = min(component_scores)
