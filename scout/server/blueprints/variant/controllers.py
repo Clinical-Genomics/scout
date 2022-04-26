@@ -416,6 +416,7 @@ def variant_rank_scores(store, case_obj, variant_obj):
         for score in rank_score_results:
             category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
             score["model_ranges"] = store.get_ranges_info(rank_model, category)
+            (score["min"], score["max"]) = store.range_span(score["model_ranges"])
 
     return rank_score_results
 
