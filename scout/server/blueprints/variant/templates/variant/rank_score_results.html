@@ -1,6 +1,7 @@
 {% macro rank_tooltip(model_ranges) %}
   {% for range in model_ranges %}
     <span><strong>{{range.key if range.key}} - {{range.description}}</strong></span><br>
+    Value aggregation rule:&nbsp;<strong>{{range.aggregation_mode}}</strong><br>
     <ul>
     {% for key, value in range.score_ranges.items() %}
       <li>{{key}}:{{value}}</li>
