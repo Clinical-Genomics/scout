@@ -97,9 +97,10 @@ class RankModelHandler(object):
         """
         rank_model_categories = rank_model.get("Categories")
 
+        category_aggregation = None
         if category in rank_model_categories:
             model_category = rank_model_categories.get(category)
-            category_aggregation = model_category.get("category_aggregation")
+            category_aggregation = model_category.get("category_aggregation", None)
 
         info = []
         for _, item in rank_model.items():
@@ -141,6 +142,8 @@ class RankModelHandler(object):
         Returns:
           (range_min, range_max) tuples
         """
+        if not info:
+            return ("N/A", "N/A")
 
         category_aggregation = info[0].get("category_aggregation")
         range_max = 0
@@ -150,8 +153,7 @@ class RankModelHandler(object):
             for component in info:
                 range_max = range_max + int(component["max"])
                 range_min = range_min + int(component["min"])
-
-        if category_aggregation in ["max", "min"]:
+        if not category_aggregation or category_aggregation in ["max", "min"]:
             range_max = max([component["max"] for component in info])
             range_min = min([component["min"] for component in info])
 
