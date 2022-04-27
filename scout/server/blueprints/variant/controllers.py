@@ -413,12 +413,11 @@ def variant_rank_scores(store, case_obj, variant_obj):
             rm_link_prefix, rank_model_version, rm_file_extension
         )
         # Loop over each rank score category and collect model explanation to display on variant page
-        for score in rank_score_results:
-            category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
-            if rank_model is None:
-                continue
-            score["model_ranges"] = store.get_ranges_info(rank_model, category)
-            (score["min"], score["max"]) = store.range_span(score["model_ranges"])
+        if rank_model:
+            for score in rank_score_results:
+                category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
+                score["model_ranges"] = store.get_ranges_info(rank_model, category)
+                (score["min"], score["max"]) = store.range_span(score["model_ranges"])
 
     return rank_score_results
 
