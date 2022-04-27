@@ -27,7 +27,7 @@
                 <tr>
                   {% for rank in rank_score_results %}
                   <th class="text-center">
-                    <span>{{ rank.category.replace("_"," ") }} {% if rank.model_ranges %} <span class="badge badge-pill badge-info" data-html="true" data-toggle="popover" data-trigger="hover" data-content="{{rank_tooltip(rank.model_ranges)|safe}}">?</span> {% endif %}</span>
+                    <span>{{ rank.category.replace("_"," ")|capitalize }} {% if rank.model_ranges %} <span class="badge badge-pill badge-info" data-html="true" data-toggle="popover" data-trigger="hover" data-content="{{rank_tooltip(rank.model_ranges)|safe}}">?</span> {% endif %}</span>
                   </th>
                   {% endfor %}
                 </tr>
