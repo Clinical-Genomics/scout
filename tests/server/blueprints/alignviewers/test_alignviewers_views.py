@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-from flask import url_for
+from flask import session, url_for
 
 from scout.server.extensions import store
 
@@ -20,8 +20,8 @@ def test_remote_static_no_auth(app):
         assert resp.status_code == 403
 
 
-def test_test_remote_static_wrong_format(app):
-    """Test endpoint that serves alignment files with wrong file extension"""
+def test_test_remote_static_not_in_session(app):
+    """Test endpoint that serves alignment files that are not saved in the session"""
 
     # GIVEN a running demo app
     with app.test_client() as client:
@@ -40,17 +40,24 @@ def test_test_remote_static_wrong_format(app):
 
 def test_remote_static(app):
     """Test endpoint that serves files as a logged user"""
+    # GIVEN a file on disk
+    file = "../demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz"
+
     # GIVEN a running demo app
     with app.test_client() as client:
         # GIVEN that user is logged in
         client.get(url_for("auto_login"))
+        with client.session_transaction() as session:
+            # GIVEN that resource file exists in user session
+            session["igv_tracks"] = [file]
+
+        # THEN the resource should be available to the user
         resp = client.get(
             url_for(
                 "alignviewers.remote_static",
-                file="../demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz",
+                file=file,
             )
         )
-        # THEN endpoint should return success
         assert resp.status_code == 200
 
 
