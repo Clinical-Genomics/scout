@@ -2,7 +2,7 @@ import logging
 from base64 import b64encode
 from datetime import date
 
-from flask import flash, url_for
+from flask import current_app, flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -24,7 +24,8 @@ from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import get_variant_links
 from scout.server.utils import (
-    case_append_alignments,
+    case_has_alignments,
+    case_has_mt_alignments,
     institute_and_case,
     user_institutes,
     variant_case,
@@ -243,13 +244,9 @@ def variant(
     if add_case:
         variant_case(store, case_obj, variant_obj)
 
-    # Fetch ids for grouped cases and prepare alignment display
-    case_groups = {}
-    if case_obj.get("group"):
-        for group in case_obj.get("group"):
-            case_groups[group] = list(store.cases(group=group))
-            for grouped_case in case_groups[group]:
-                case_append_alignments(grouped_case)
+    # Provide basic info on alignment files availability for this case
+    case_has_alignments(case_obj)
+    case_has_mt_alignments(case_obj)
 
     # Collect all the events for the variant
     events = list(store.events(institute_obj, case=case_obj, variant_id=variant_id))
@@ -360,7 +357,6 @@ def variant(
     return {
         "institute": institute_obj,
         "case": case_obj,
-        "case_groups": case_groups,
         "variant": variant_obj,
         variant_category: True,
         "causatives": other_causatives,
@@ -376,7 +372,54 @@ def variant(
         "splice_junctions_tracks": has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
+        "rank_score_results": variant_rank_scores(store, case_obj, variant_obj),
     }
+
+
+def variant_rank_scores(store, case_obj, variant_obj):
+    """Retrive rank score values and ranges for the variant
+
+    Args:
+        store(scout.adapter.MongoAdapter)
+        case_obj(dict)
+        variant_obj(dict)
+
+    Returns:
+        rank_score_results(list)
+    """
+    rank_score_results = []
+
+    if variant_obj.get(
+        "rank_score_results"
+    ):  # Retrieve rank score results saved in variant document
+        rank_score_results = variant_obj.get("rank_score_results")
+
+    rm_link_prefix = None
+    rm_file_extension = None
+
+    if variant_obj.get("category") == "sv":
+        rank_model_version = case_obj.get("sv_rank_model_version")
+        rm_link_prefix = current_app.config.get("SV_RANK_MODEL_LINK_PREFIX")
+        rm_file_extension = current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX")
+    else:  # snv, cancer
+        rank_model_version = case_obj.get("rank_model_version")
+        rm_link_prefix = current_app.config.get("RANK_MODEL_LINK_PREFIX")
+        rm_file_extension = current_app.config.get("RANK_MODEL_LINK_POSTFIX")
+    if all(
+        [rank_model_version, rm_link_prefix, rm_file_extension]
+    ):  # Try to retrieve rank model param ranges to display on variant page
+
+        rank_model = store.rank_model_from_url(
+            rm_link_prefix, rank_model_version, rm_file_extension
+        )
+        # Loop over each rank score category and collect model explanation to display on variant page
+        if rank_model:
+            for score in rank_score_results:
+                category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
+                score["model_ranges"] = store.get_ranges_info(rank_model, category)
+                (score["min"], score["max"]) = store.range_span(score["model_ranges"])
+
+    return rank_score_results
 
 
 def observations(store, loqusdb, case_obj, variant_obj):

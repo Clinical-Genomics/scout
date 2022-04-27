@@ -1,7 +1,6 @@
 # Everything needed in production
-
-werkzeug<=2.0
-Flask>=0.10
+werkzeug
+Flask>=2.0
 Flask-Bootstrap
 Flask-CORS
 path.py
@@ -31,6 +30,7 @@ flask-ldapconn
 
 # Parsing
 cyvcf2
+configobj
 ped_parser
 pydantic
 PyYaml>=5.1

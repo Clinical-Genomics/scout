@@ -1,7 +1,7 @@
 {% from "variant/buttons.html" import variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button %}
 {% from "variants/utils.html" import compounds_table %}
 {% from "variant/variant_details.html" import severity_list %}
-{% from "variant/buttons.html" import igv_button, splice_junctions_button %}
+{% from "variant/buttons.html" import splice_junctions_button %}
 {% from "variant/utils.html" import igv_track_selection  %}
 
 {% macro clinsig_table(variant) %}
@@ -60,12 +60,14 @@
   </li>
 {% endmacro %}
 
-{% macro alignments(institute, case, variant, current_user, case_groups, config, igv_tracks, splice_junctions_tracks=False) %}
+{% macro alignments(institute, case, variant, current_user, config, igv_tracks, splice_junctions_tracks=False) %}
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
-          <div>
-            {{ igv_button(case, variant, case_groups) }}
-          </div>
+          {% if variant.chromosome in ["MT","M"] and case.mt_bams or case.bam_files %}
+            <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a></span>
+          {% else %}
+            <span class="text-muted">BAM file(s) missing</span>
+          {% endif %}
           {% if splice_junctions_tracks %}
             <div>
               {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}

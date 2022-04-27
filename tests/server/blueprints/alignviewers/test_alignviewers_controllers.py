@@ -3,7 +3,6 @@ import responses
 from flask import url_for
 from flask_login import current_user
 
-from scout.commands.update.individual import individual as ind_cmd
 from scout.server.blueprints.alignviewers import controllers
 from scout.server.extensions import cloud_tracks, store
 
@@ -25,9 +24,7 @@ def test_make_sashimi_tracks_variant_38(app, case_obj):
         assert resp.status_code == 200
 
         # THEN it should return the expected data
-        display_obj = controllers.make_sashimi_tracks(
-            case_obj["owner"], case_obj["display_name"], test_variant["_id"]
-        )
+        display_obj = controllers.make_sashimi_tracks(case_obj, test_variant["_id"])
         assert display_obj["case"] == case_obj["display_name"]
         assert display_obj["locus"]
         assert display_obj["tracks"][0]["name"]
@@ -60,9 +57,7 @@ def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_response
         assert resp.status_code == 200
 
         # THEN it should return the expected data
-        display_obj = controllers.make_sashimi_tracks(
-            case_obj["owner"], case_obj["display_name"], test_variant["_id"]
-        )
+        display_obj = controllers.make_sashimi_tracks(case_obj, test_variant["_id"])
         assert display_obj["case"] == case_obj["display_name"]
         assert display_obj["locus"]
         assert display_obj["tracks"][0]["name"]
@@ -98,44 +93,21 @@ def test_set_cloud_public_tracks(app):
         assert display_obj["cloud_public_tracks"] == patched_track["37"]
 
 
-def test_make_igv_tracks():
-    """Test function that creates custom track dictionaries"""
+def test_make_igv_tracks(app, case_obj, variant_obj):
+    """Test function that creates igv track dictionaries"""
 
-    # GIVEN a test track with 2 files
-    file_list = ["sample_1_file", "sample_2_file"]
-    track_list = controllers.make_igv_tracks("test_track", file_list)
+    # GIVEN a user that is logged in the app
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
 
-    # The function should return a track list with 2 dictionaries
-    assert len(track_list) == 2
-    # Containing the expected info
-    for track in track_list:
-        assert track["name"] == "test_track"
-        assert track["url"] in file_list
+        display_obj = controllers.make_igv_tracks(case_obj, variant_obj["_id"], "MT", 100, 101)
 
-
-def test_sample_tracks():
-    """Test the function that creates case individual tracks"""
-
-    # GIVEN a case with 3 samples alignments
-    sample_names = ["sample1", "sample2", "sample3"]
-    sample_bams = ["bam1", "bam2", "bam3"]
-
-    form_data = {
-        "sample": ",".join(sample_names),
-        "align": "bam",
-        "bam": ",".join(sample_bams),
-        "bai": "bai1,bai2,bai3",
-    }
-
-    display_obj = {}
-    # WHEN the set_sample_tracks function is invoked:
-    controllers.set_sample_tracks(display_obj, form_data)
-    # THEN it should return 3 tracks
-    assert len(display_obj["sample_tracks"]) == 3
-    # Containing the expected fields
-    for track in display_obj["sample_tracks"]:
-        assert track["name"] in sample_names
-        assert track["url"] in sample_bams
+        # The function should return a track list with the expected tracks
+        assert display_obj["locus"] == "chrM:100-101"
+        assert display_obj["display_center_guide"] == True
+        assert display_obj["reference_track"]
+        assert display_obj["custom_tracks"]
+        assert len(display_obj["sample_tracks"]) == 3  # 3 individuals in demo case
 
 
 def set_case_specific_tracks():

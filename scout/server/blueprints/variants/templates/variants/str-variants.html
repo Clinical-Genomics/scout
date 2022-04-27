@@ -65,7 +65,7 @@
           <th title="Status">Status</th>
           <th title="GT">Genotype</th>
           <th title="Chromosome">Chr.</th>
-          <th title="Position">Position</th>
+          <th title="Position" style="width:20%">Position</th>
         </tr>
       </thead>
       <tbody>
@@ -105,7 +105,11 @@
             <td>
               {{ variant.position }}
               {{ reviewer_button(case,variant,case_groups,institute._id) }}
-              {{ igv_button(case,variant,case_groups) }}
+              {% if case.bam_files %}
+                <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a></span>
+              {% else %}
+                <span class="text-muted">BAM file(s) missing</span>
+              {% endif %}
             </td>
         </tr>
         {% else %}

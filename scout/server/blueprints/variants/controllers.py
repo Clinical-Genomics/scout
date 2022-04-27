@@ -35,11 +35,16 @@ from scout.server.blueprints.variant.utils import (
     update_representative_gene,
 )
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
-from scout.server.utils import case_append_alignments, institute_and_case, user_institutes
+from scout.server.utils import (
+    case_has_alignments,
+    case_has_mt_alignments,
+    institute_and_case,
+    user_institutes,
+)
 
-from .forms import CancerFiltersForm  # noqa: F401
-from .forms import (
+from .forms import (  # noqa: F401; noqa: F401
     FILTERSFORMCLASS,
+    CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
     StrFiltersForm,
@@ -223,17 +228,9 @@ def str_variants(
 
     return_view_data = {}
 
-    # case bam_files for quick access to alignment view.
-    case_append_alignments(case_obj)
-
-    # Fetch ids for grouped cases and prepare alignment display
-    case_groups = {}
-    if case_obj.get("group"):
-        for group in case_obj.get("group"):
-            case_groups[group] = list(store.cases(group=group))
-            for grouped_case in case_groups[group]:
-                case_append_alignments(grouped_case)
-        return_view_data["case_groups"] = case_groups
+    # Provide basic info on alignment files availability for this case
+    case_has_alignments(case_obj)
+    case_has_mt_alignments(case_obj)
 
     return_view_data.update(
         variants(
@@ -1250,12 +1247,20 @@ def gene_panel_choices(store, institute_obj, case_obj):
             panel_option = (panel["panel_name"], panel["display_name"])
             panel_list.append(panel_option)
 
+    panel_list.sort(key=lambda t: t[1])
+
     institute_choices = institute_obj.get("gene_panels", {})
 
+    institute_panel_list = []
     for panel_name, display_name in institute_choices.items():
         panel_option = (panel_name, display_name)
+
         if panel_option not in panel_list:
-            panel_list.append(panel_option)
+            institute_panel_list.append(panel_option)
+
+    institute_panel_list.sort(key=lambda t: t[1])
+    if institute_panel_list:
+        panel_list.extend(institute_panel_list)
 
     # Add HPO panel
     panel_list.append(("hpo", "HPO"))

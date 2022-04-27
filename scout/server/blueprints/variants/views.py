@@ -589,7 +589,7 @@ def download_verified():
             data,
             mimetype="application/zip",
             as_attachment=True,
-            attachment_filename="_".join(["scout", "verified_variants", today]) + ".zip",
+            download_name="_".join(["scout", "verified_variants", today]) + ".zip",
             cache_timeout=0,
         )
 

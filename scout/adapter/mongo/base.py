@@ -48,6 +48,7 @@ from .omim import DiagnosisHandler
 from .panel import PanelHandler
 from .phenomodel import PhenoModelHandler
 from .query import QueryHandler
+from .rank_model import RankModelHandler
 from .transcript import TranscriptHandler
 from .user import UserHandler
 from .variant import VariantHandler
@@ -76,6 +77,7 @@ class MongoAdapter(
     ManagedVariantHandler,
     CytobandHandler,
     PhenoModelHandler,
+    RankModelHandler,
 ):
 
     """Adapter for communication with a Mongo database."""
@@ -108,6 +110,7 @@ class MongoAdapter(
         self.institute_collection = database.institute
         self.managed_variant_collection = database.managed_variant
         self.panel_collection = database.gene_panel
+        self.rank_model_collection = database.rank_model
         self.phenomodel_collection = database.phenomodel
         self.transcript_collection = database.transcript
         self.user_collection = database.user
