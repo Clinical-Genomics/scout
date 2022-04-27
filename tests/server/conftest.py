@@ -82,7 +82,6 @@ def app(real_database_name, real_variant_database, user_obj):
     """A test app containing the endpoints of the real app"""
     app = create_app(
         config=dict(
-            SECRET_KEY="TESTING",
             TESTING=True,
             DEBUG=True,
             MONGO_DBNAME=real_database_name,
