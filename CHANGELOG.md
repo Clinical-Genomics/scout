@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form
 - Unfreeze Werkzeug lib since Flask_login v.0.6 with bugfix has been released
 - Removed unused `server.blueprints.alignviewers.unindexed_remote_static` endpoint
-- Controlled dictionary of file extensions served by `server.blueprints.alignviewers.remote_static` endpoint
+- User sessions to check files served by `server.blueprints.alignviewers.remote_static` endpoint
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings

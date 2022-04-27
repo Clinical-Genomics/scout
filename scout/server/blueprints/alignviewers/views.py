@@ -3,7 +3,7 @@ import logging
 from os.path import splitext
 
 import requests
-from flask import Blueprint, Response, abort, render_template, request
+from flask import Blueprint, Response, abort, render_template, request, session
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -22,10 +22,6 @@ alignviewers_bp = Blueprint(
 
 LOG = logging.getLogger(__name__)
 
-ALIGN_EXTENSIONS = [".bam", ".bai", ".cram", ".crai"]
-ANNO_EXTENSIONS = [".bed", ".gz", ".bigBed", ".tbi"]
-WIG_EXTENSIONS = [".bigWig"]
-
 
 @alignviewers_bp.route("/remote/cors/<path:remote_url>", methods=["OPTIONS", "GET"])
 def remote_cors(remote_url):
@@ -36,8 +32,6 @@ def remote_cors(remote_url):
     Based on code from answers to this thread:
         https://stackoverflow.com/questions/6656363/proxying-to-another-web-service-with-flask/
     """
-    LOG.debug("Got request: %s", request)
-
     resp = requests.request(
         method=request.method,
         url=remote_url,
@@ -67,17 +61,16 @@ def remote_cors(remote_url):
 def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get("file") or "."
+
     _, file_extension = splitext(file_path)
 
     # Check that user is logged in or that file extension is valid
-    if (
-        current_user.is_authenticated is False
-        or file_extension not in ALIGN_EXTENSIONS + ANNO_EXTENSIONS + WIG_EXTENSIONS
-    ):
+    if current_user.is_authenticated is False or file_path not in session.get("igv_tracks"):
+        LOG.warning(f"{file_path} not in {session.get('igv_tracks')}")
         return abort(403)
 
     range_header = request.headers.get("Range", None)
-    if file_extension in ALIGN_EXTENSIONS and range_header is False:
+    if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
         return abort(500)
 
     new_resp = send_file_partial(file_path)
@@ -96,6 +89,7 @@ def sashimi_igv(institute_id, case_name, variant_id):
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
+    controllers.set_session_tracks(display_obj)
     return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
@@ -125,4 +119,5 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
+    controllers.set_session_tracks(display_obj)
     return render_template("alignviewers/igv_viewer.html", **display_obj)

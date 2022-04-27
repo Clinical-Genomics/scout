@@ -2,7 +2,7 @@
 import logging
 import os.path
 
-from flask import flash
+from flask import flash, session
 from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
@@ -12,6 +12,23 @@ from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
+
+
+def set_session_tracks(display_obj):
+    """Save igv tracks as a session object. This way it's easy to verify that a user is requesting one of these files from remote_static view endpoint
+
+    Args:
+        display_obj(dict): A display object containing case name, list of genes, lucus and tracks
+    """
+    LOG.error(display_obj)
+    session_tracks = list(display_obj.get("reference_track", {}).values())
+    for key, track_items in display_obj.items():
+        if key not in ["tracks", "custom_tracks", "sample_tracks"]:
+            continue
+        for track_item in track_items:
+            session_tracks += list(track_item.values())
+
+    session["igv_tracks"] = session_tracks
 
 
 def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
