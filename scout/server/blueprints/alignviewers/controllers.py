@@ -20,7 +20,6 @@ def set_session_tracks(display_obj):
     Args:
         display_obj(dict): A display object containing case name, list of genes, lucus and tracks
     """
-    LOG.error(display_obj)
     session_tracks = list(display_obj.get("reference_track", {}).values())
     for key, track_items in display_obj.items():
         if key not in ["tracks", "custom_tracks", "sample_tracks"]:

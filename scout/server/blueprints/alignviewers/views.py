@@ -66,7 +66,7 @@ def remote_static():
 
     # Check that user is logged in or that file extension is valid
     if current_user.is_authenticated is False or file_path not in session.get("igv_tracks"):
-        LOG.warning(f"{file_path} not in {session.get('igv_tracks')}")
+        LOG.warning(f"{file_path} not in {session.get('igv_tracks', [])}")
         return abort(403)
 
     range_header = request.headers.get("Range", None)
