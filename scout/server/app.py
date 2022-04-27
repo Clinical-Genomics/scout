@@ -4,7 +4,7 @@ import os
 from datetime import timedelta
 
 import coloredlogs
-from flask import Flask, current_app, redirect, request, session, url_for
+from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
 from flask_cors import CORS
 from flask_login import current_user
