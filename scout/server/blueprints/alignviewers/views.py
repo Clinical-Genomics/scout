@@ -65,7 +65,7 @@ def remote_static():
     _, file_extension = splitext(file_path)
 
     # Check that user is logged in or that file extension is valid
-    if current_user.is_authenticated is False or file_path not in session.get("igv_tracks"):
+    if current_user.is_authenticated is False or file_path not in session.get("igv_tracks", []):
         LOG.warning(f"{file_path} not in {session.get('igv_tracks', [])}")
         return abort(403)
 
