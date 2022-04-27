@@ -1,0 +1,53 @@
+{% macro rank_tooltip(model_ranges) %}
+  {% if model_ranges %}
+    <span>Category aggregation rule:&nbsp;<strong>{{model_ranges[0].category_aggregation}}</strong></span><br>
+  {% endif %}
+  {% for range in model_ranges %}
+    <span><strong>{{range.key if range.key}} - {{range.description}}</strong></span><br>
+    Value aggregation rule:&nbsp;<strong>{{range.aggregation_mode}}</strong><br>
+    <ul>
+    {% for key, value in range.score_ranges.items() %}
+      <li>{{key}}:{{value}}</li>
+    {% endfor %}
+    </ul>
+  {% endfor %}
+{% endmacro %}
+
+
+{% macro rankscore_panel(rank_score_results) %}
+<div class="row">
+  <div class="col-12">
+    <div class="card panel-default">
+      <div class="panel-heading">Rank score results</div>
+      <div class="card-body">
+        {% if rank_score_results %}
+          <div class="table-responsive">
+            <table class="table table-bordered" >
+              <thead class="thead-light">
+                <tr>
+                  {% for rank in rank_score_results %}
+                  <th class="text-center">
+                    <span>{{ rank.category.replace("_"," ")|capitalize }} {% if rank.model_ranges %} <span class="badge badge-pill badge-info" data-html="true" data-toggle="popover" data-trigger="hover" data-content="{{rank_tooltip(rank.model_ranges)|safe}}">?</span> {% endif %}</span>
+                  </th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  {% for rank in rank_score_results %}
+                    <td class="text-right"><small>{{ rank.min }} < </small><strong>{{ rank.score }}</strong><small> < {{ rank.max }}</small></td>
+                  {% endfor %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+        <div class="alert alert-warning">
+          Rank score results could not be calculated. Please try again later.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
