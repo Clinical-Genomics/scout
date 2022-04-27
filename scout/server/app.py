@@ -95,7 +95,6 @@ def create_app(config_file=None, config=None):
                 # combine visited URL (convert byte string query string to unicode!)
                 next_url = "{}?{}".format(request.path, request.query_string.decode())
                 login_url = url_for("public.index", next=next_url)
-                LOG.error("HERE BITCHES")
                 return redirect(login_url)
 
     return app
