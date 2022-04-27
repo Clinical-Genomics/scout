@@ -1,21 +1,56 @@
 import copy
 import logging
-from pprint import pprint as pp
 
 from flask import current_app, url_for
 from flask_login import current_user
 
 from scout.constants import IGV_TRACKS
+from scout.server.app import create_app
 from scout.server.blueprints.variant.controllers import (
     get_igv_tracks,
     has_rna_tracks,
     observations,
     tx_overview,
     variant,
+    variant_rank_scores,
 )
 from scout.server.extensions import cloud_tracks, loqusdb, store
 
 LOG = logging.getLogger(__name__)
+
+
+def test_variant_rank_scores(case_obj, variant_obj):
+    """Test the function that retrieves variant rank scores and info regrding the rank score model applied"""
+
+    # GIVEN a case with SNV variants with rank score model
+    assert case_obj["rank_model_version"]
+    # GIVEN a snv variant
+    assert variant_obj["category"] == "snv"
+    # GIVEN that the variant has rank scores:
+    variant_obj["rank_score_results"] = [
+        {"category": "Splicing", "score": 0},
+        {"category": "Inheritance_Models", "score": -12},
+        {"category": "Consequence", "score": 1},
+    ]
+
+    # GIVEN a test app containing config params to retrieve a genetic model
+    test_app = create_app(
+        config=dict(
+            TESTING=True,
+            DEBUG=True,
+            MONGO_DBNAME="TEST_DB",
+            DEBUG_TB_ENABLED=False,
+            LOGIN_DISABLED=True,
+            RANK_MODEL_LINK_PREFIX="https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/rank_model_-v",
+            RANK_MODEL_LINK_POSTFIX="-.ini",
+        )
+    )
+    with test_app.app_context():
+        # THEN the rank score results of the variant should be returned by the function
+        rank_score_results = variant_rank_scores(store, case_obj, variant_obj)
+        assert isinstance(rank_score_results, list)
+        # WITH the relative model ranges values
+        assert rank_score_results[0]["model_ranges"]
 
 
 def test_tx_overview(app):
