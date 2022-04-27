@@ -112,6 +112,8 @@ def rerunner_app(user_obj):
             SERVER_NAME="test",
             RERUNNER_API_ENTRYPOINT="http://rerunner:5001/v1.0/rerun",
             RERUNNER_API_KEY="test_key",
+            REMEMBER_COOKIE_NAME="remember_me",
+            SESSION_TIMEOUT_MINUTES=10,
         )
     )
 
