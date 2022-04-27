@@ -8,11 +8,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
+- Rank score results now show the ranking range
 - Script to convert old OMIM case format (list of integers) to new format (list of dictionaries)
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form
 - Unfreeze Werkzeug lib since Flask_login v.0.6 with bugfix has been released
+- Sort gene panels by name (panelS and variant page)
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings
@@ -31,7 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplified code of scout/adapter/mongo/variant
 - Update IGV.js to v2.11.2
 - Show summary number of variant gene panels on general report if more than 3
-- Sort gene panels by name (panelS and variant page)
 ### Fixed
 - Marrvel link for variants in genome build 38 (using liftover to build 37)
 - Remove flags from codecov config file
