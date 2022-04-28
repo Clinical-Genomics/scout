@@ -1,6 +1,7 @@
 """Code for flask app"""
 import logging
 import os
+from datetime import timedelta
 
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
@@ -48,6 +49,7 @@ except ImportError:
 
 def create_app(config_file=None, config=None):
     """Flask app factory function."""
+
     app = Flask(__name__)
     CORS(app)
     app.jinja_env.add_extension("jinja2.ext.do")
@@ -59,6 +61,12 @@ def create_app(config_file=None, config=None):
         app.config.update((k, v) for k, v in config.items() if v is not None)
     if config_file:  # Params from an optional .py config file provided by the user
         app.config.from_pyfile(config_file)
+
+    session_timeout_minutes = app.config.get("SESSION_TIMEOUT_MINUTES")
+    if session_timeout_minutes:
+        session_duration = timedelta(minutes=session_timeout_minutes)
+        app.config["PERMANENT_SESSION_LIFETIME"] = session_duration
+        app.config["REMEMBER_COOKIE_DURATION"] = session_duration
 
     app.config["JSON_SORT_KEYS"] = False
     current_log_level = LOG.getEffectiveLevel()
