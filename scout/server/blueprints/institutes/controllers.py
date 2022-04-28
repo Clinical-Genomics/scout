@@ -63,16 +63,6 @@ def causatives(institute_obj, request):
         update_representative_gene(variant_obj, variant_obj.get("genes", []))
         if variant_obj["case_id"] not in all_cases:
             case_obj = store.case(variant_obj["case_id"])
-            """
-            parse_variant(
-                store,
-                institute_obj,
-                case_obj,
-                variant_obj,
-                True,
-                str(case_obj.get("genome_build", "37")),
-            )
-            """
             all_cases[variant_obj["case_id"]] = case_obj
         else:
             case_obj = all_cases[variant_obj["case_id"]]
