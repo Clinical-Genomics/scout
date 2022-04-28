@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form
 - Unfreeze Werkzeug lib since Flask_login v.0.6 with bugfix has been released
 - Sort gene panels by name (panelS and variant page)
-- Removed redundant database index `case_id,category,variant_rank` since there is already the index `case_id,category,rank_score`
+- Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings
