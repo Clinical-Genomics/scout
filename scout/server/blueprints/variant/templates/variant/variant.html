@@ -487,7 +487,6 @@
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
 
-
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
@@ -495,16 +494,15 @@
 
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-     return new bootstrap.Popover(popoverTriggerEl, {sanitizeFn: function (content) {
-            return DOMPurify.sanitize(content)
-          },
-          container: 'body'})
+      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body'})
     })
 
     $('select[multiple]').selectpicker({
         width: '100%'
       });
-    });
 
     $('.js-copy').click(function() {
       var text = $(this).attr('data-copy');
