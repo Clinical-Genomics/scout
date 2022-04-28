@@ -28,7 +28,8 @@ class LoqusdbMock:
     def case_count(self):
         return self.nr_cases
 
-    def get_variant(self, var_dict):
+    def get_variant(self, var_dict, loqusdb_id="None"):
+        loqus_instance = self.loqusdb_settings.get(loqusdb_id)
         var = self.variants.get(var_dict["_id"], {})
         var["total"] = self.nr_cases
         return var
