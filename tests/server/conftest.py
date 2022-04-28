@@ -2,14 +2,10 @@
 import logging
 import uuid
 
-import pymongo
 import pytest
 from flask import request
-from flask_login import login_user, logout_user
+from flask_login import login_user
 
-from scout.adapter import MongoAdapter
-from scout.load.hgnc_gene import load_hgnc_genes
-from scout.load.hpo import load_hpo
 from scout.server.app import create_app
 from scout.server.blueprints.login.models import LoginUser
 
@@ -32,7 +28,8 @@ class LoqusdbMock:
     def case_count(self):
         return self.nr_cases
 
-    def get_variant(self, var_dict, loqusdb_id=None):
+    def get_variant(self, var_dict, loqusdb_id="test"):
+        loqus_instance = self.loqusdb_settings.get(loqusdb_id)
         var = self.variants.get(var_dict["_id"], {})
         var["total"] = self.nr_cases
         return var
@@ -80,6 +77,7 @@ def loqusdb():
 @pytest.fixture
 def app(real_database_name, real_variant_database, user_obj):
     """A test app containing the endpoints of the real app"""
+
     app = create_app(
         config=dict(
             TESTING=True,
@@ -112,6 +110,8 @@ def rerunner_app(user_obj):
             SERVER_NAME="test",
             RERUNNER_API_ENTRYPOINT="http://rerunner:5001/v1.0/rerun",
             RERUNNER_API_KEY="test_key",
+            REMEMBER_COOKIE_NAME="remember_me",
+            SESSION_TIMEOUT_MINUTES=10,
         )
     )
 

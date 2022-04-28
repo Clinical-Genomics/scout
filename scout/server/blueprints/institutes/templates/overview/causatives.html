@@ -68,15 +68,16 @@
         <thead class="thead table-light">
           <tr>
             <th>Gene</th>
-            <th>Variant Name</th>
+            <th>Variant</th>
             <th>Change</th>
+            <th>HGVS[c]</th>
+            <th>HGVS[p]</th>
             <th>Category</th>
             <th data-toggle='tooltip' data-container='body' title="score(model version)">Rank score</th>
             <th data-toggle='tooltip' data-container='body' title="ref/alt-GQ">Zygosity</th>
             <th>Inheritance</th>
             <th>ACMG</th>
-            <th>Case Name</th>
-            <th>Case Status</th>
+            <th>Case</th>
           </tr>
         </thead>
         <tbody>
@@ -94,7 +95,8 @@
                 variant_id=variant._id) }}" data-toggle='tooltip' data-container='body' title="{{ variant.display_name }}">{{ variant.display_name|truncate(10, True) }}
               </a>
             </td>
-            <td><span class="text-muted" style="display: inline-block; margin-left: 10px;" data-toggle='tooltip' data-container='body' title="{{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}">
+            <td>
+              <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-toggle='tooltip' data-container='body' title="{{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}">
                 {% if group_variant.category in 'str' %}
                     {{ group_variant.alternative|truncate(10, True) | replace("<", " ") | replace(">", "")}}
                 {% else %}
@@ -102,8 +104,27 @@
                 {% endif%}
               </span>
             </td>
+            <td>
+              {% if variant.first_rep_gene and variant.first_rep_gene.hgvs_identifier %}
+                <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-toggle='tooltip' data-container='body' title="{{ variant.first_rep_gene.hgvs_identifier }}">
+                  {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
+                </span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>
+              {% if variant.first_rep_gene and variant.first_rep_gene.hgvsp_identifier %}
+                <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-toggle='tooltip' data-container='body' title="{{ variant.first_rep_gene.hgvsp_identifier }}">
+                  {{variant.first_rep_gene.hgvsp_identifier|truncate(15, True)}}
+                </span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
             <td><span class="badge bg-secondary">{{ variant.category|upper }}</span></td>
             <td><a href="#"><span class="badge rounded-pill bg-secondary">
+
               {{ variant.rank_score }}
               {% if variant.category == 'sv' %}
                 (v. {{case.sv_rank_model_version or 'na'}})
@@ -127,7 +148,7 @@
             </td>
             <td>
               <a href="#" data-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
-                style="text-decoration: none; color: #000;">ACMG:
+                style="text-decoration: none; color: #000;">
                 {% if 'acmg_classification' in variant %}
                 <span class="badge bg-{{acmg_map[variant.acmg_classification].color}}">{{acmg_map[variant.acmg_classification].short}}</span>
                 {% else %}
@@ -135,18 +156,17 @@
                 {% endif %}
               </a>
             </td>
-            <td>
+            <td >
               <a href="{{ url_for('cases.case',
                                         institute_id=institute._id,
                                         case_name=case.display_name) }}">
                 {{ case.display_name }}
               </a>
-            </td>
-            <td>
               {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
                 <span class="badge bg-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
               {% endif %}
-              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }}">
+
+              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }} me-1">
                 {{ case.status }}
               </span>
             </td>
@@ -159,4 +179,3 @@
   </div>
 </div>
 {% endmacro %}
-
