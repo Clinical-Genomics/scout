@@ -113,7 +113,7 @@
     {% endif %}
     <div class="card-body">
       <div class="table-responsive">
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="overlapping_table">
           <thead class="thead table-light">
             <tr>
               <th>Variant</th>
@@ -164,7 +164,7 @@
 
 {% macro genes_panel(variant) %}
   <div class="card panel-default">
-    <table class="table table-bordered table-sm">
+    <table class="table table-bordered table-sm" id="genes_panel_table">
       <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
           <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
