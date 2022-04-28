@@ -16,7 +16,7 @@ from scout.constants import (
     PHENOTYPE_GROUPS,
 )
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variant.utils import predictions
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
@@ -60,8 +60,19 @@ def causatives(institute_obj, request):
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:
+        update_representative_gene(variant_obj, variant_obj.get("genes", []))
         if variant_obj["case_id"] not in all_cases:
             case_obj = store.case(variant_obj["case_id"])
+            """
+            parse_variant(
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                True,
+                str(case_obj.get("genome_build", "37")),
+            )
+            """
             all_cases[variant_obj["case_id"]] = case_obj
         else:
             case_obj = all_cases[variant_obj["case_id"]]
