@@ -17,7 +17,7 @@ from flask import (
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
@@ -70,39 +70,7 @@ def cases(institute_id):
 @templated("overview/causatives.html")
 def causatives(institute_id):
     institute_obj = institute_and_case(store, institute_id)
-    query = request.args.get("query", "")
-    hgnc_id = None
-    if "|" in query:
-        # filter accepts an array of IDs. Provide an array with one ID element
-        try:
-            hgnc_id = [int(query.split(" | ", 1)[0])]
-        except ValueError:
-            flash("Provided gene info could not be parsed!", "warning")
-
-    variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
-    if variants:
-        variants = sorted(
-            variants,
-            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
-        )
-
-    all_variants = {}
-    all_cases = {}
-    for variant_obj in variants:
-        if variant_obj["case_id"] not in all_cases:
-            case_obj = store.case(variant_obj["case_id"])
-            all_cases[variant_obj["case_id"]] = case_obj
-        else:
-            case_obj = all_cases[variant_obj["case_id"]]
-
-        if variant_obj["variant_id"] not in all_variants:
-            all_variants[variant_obj["variant_id"]] = []
-
-        all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
-
-    acmg_map = {key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()}
-
-    return dict(institute=institute_obj, variant_groups=all_variants, acmg_map=acmg_map)
+    return controllers.causatives(institute_obj, request)
 
 
 @blueprint.route("/<institute_id>/filters", methods=["GET"])
