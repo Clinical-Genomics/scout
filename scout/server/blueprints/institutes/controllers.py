@@ -8,7 +8,13 @@ from flask import flash
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
-from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CASE_SEARCH_TERMS,
+    CASE_STATUSES,
+    PHENOTYPE_GROUPS,
+)
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variant.utils import predictions
 from scout.server.extensions import store
@@ -22,6 +28,55 @@ LOG = logging.getLogger(__name__)
 
 # Do not assume all cases have a valid track set
 TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
+
+
+def causatives(institute_obj, request):
+    """Create content to be displayed on institute causatives page
+
+    Args:
+        institute_obj(dict) An institute object
+        request(flask.request) request sent by user's browser
+
+    Returns:
+        data(dict)
+    """
+    # Retrieve variants grouped by case
+    query = request.args.get("query", "")
+    hgnc_id = None
+    if "|" in query:
+        # filter accepts an array of IDs. Provide an array with one ID element
+        try:
+            hgnc_id = [int(query.split(" | ", 1)[0])]
+        except ValueError:
+            flash("Provided gene info could not be parsed!", "warning")
+
+    variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
+    if variants:
+        variants = sorted(
+            variants,
+            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
+        )
+
+    all_variants = {}
+    all_cases = {}
+    for variant_obj in variants:
+        if variant_obj["case_id"] not in all_cases:
+            case_obj = store.case(variant_obj["case_id"])
+            all_cases[variant_obj["case_id"]] = case_obj
+        else:
+            case_obj = all_cases[variant_obj["case_id"]]
+
+        if variant_obj["variant_id"] not in all_variants:
+            all_variants[variant_obj["variant_id"]] = []
+
+        all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
+
+    data = dict(
+        institute=institute_obj,
+        variant_groups=all_variants,
+        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
+    )
+    return data
 
 
 def institutes():
