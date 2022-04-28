@@ -60,7 +60,8 @@ def causatives(institute_obj, request):
     all_variants = {}
     all_cases = {}
     for variant_obj in variants:
-        update_representative_gene(variant_obj, variant_obj.get("genes", []))
+        if variant_obj["category"] in ["snv", "cancer"]:
+            update_representative_gene(variant_obj, variant_obj.get("genes", []))
         if variant_obj["case_id"] not in all_cases:
             case_obj = store.case(variant_obj["case_id"])
             all_cases[variant_obj["case_id"]] = case_obj
