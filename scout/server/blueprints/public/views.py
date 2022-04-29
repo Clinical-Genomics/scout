@@ -2,7 +2,7 @@
 import logging
 from pathlib import Path
 
-from flask import Blueprint, current_app, render_template, send_from_directory
+from flask import Blueprint, current_app, render_template, send_from_directory, url_for, session, request
 from flask_login import current_user
 
 from scout import __version__
@@ -35,7 +35,7 @@ def index():
     if current_user.is_authenticated:
         event_list = controllers.get_events_of_interest(store, current_user)
     return render_template(
-        "public/index.html", version=__version__, accred_badge=badge_name, event_list=event_list
+        "public/index.html", version=__version__, accred_badge=badge_name, event_list=event_list,
     )
 
 

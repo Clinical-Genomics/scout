@@ -61,6 +61,6 @@ def test_events_to_string():
     # VERBS_MAP macro, the correct and enumerated events are
     # found
     events_string = events_to_string(test)
-    assert "was assigned to 1 variant" in events_string
-    assert "pinned variant X3" in events_string
-    assert "pinned variant 1 case" in events_string
+    assert "Was assigned to 1 variant" in events_string
+    assert "Pinned variant X3" in events_string
+    assert "Pinned variant 1 case" in events_string
