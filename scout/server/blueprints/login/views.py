@@ -129,8 +129,7 @@ def users():
 
 def perform_login(user_dict):
     if login_user(user_dict, remember=True):
-        flash("you logged in as: {}".format(user_dict.name), "success")
         next_url = session.pop("next_url", None)
-        return redirect(request.args.get("next") or next_url or url_for("cases.index"))
+        return redirect(url_for("public.index"))
     flash("sorry, you could not log in", "warning")
     return redirect(url_for("public.index"))
