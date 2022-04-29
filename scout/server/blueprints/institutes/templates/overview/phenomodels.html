@@ -138,13 +138,13 @@
           {% for model in phenomodels %}
             <tr>
               <td>
-                <a href="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=model._id) }}">{{model.name}}</button></a>
+                <a href="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=model._id) }}">{{model.name}}</a>
               </td>
               <td>{{model.description}}</td>
               <td>{{model.subpanels|length if model.subpanels else '0'}}</td>
               <td>{{model.created.strftime('%Y-%m-%d')}}</td>
               <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
-              <td style="width:30%">{{model.admins|join(", ") or "-"}}</th>
+              <td style="width:30%">{{model.admins|join(", ") or "-"}}</td>
               <td>
                 <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><i class="fa fa-trash-o"></i></button>
               </td>
