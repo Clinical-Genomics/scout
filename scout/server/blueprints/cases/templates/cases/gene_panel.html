@@ -43,7 +43,7 @@
         </div>
         <div class="row">
           <div class="col-8">
-            <select name="panel_ids" class="selectpicker" multiple="multiple">
+            <select name="panel_ids" class="selectpicker" multiple="multiple" data-style="btn-secondary">
               {% for panel in case.panels %}
                 <option value="{{ panel.panel_id }}" {% if panel.is_default %} selected {% endif %}>{{ panel.display_name }}</option>
               {% endfor %}

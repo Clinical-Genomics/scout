@@ -22,7 +22,7 @@
             <div class="row">
               <div class="col-md-4">
                 {{ form.disease_associated_transcripts.label(class="control-label") }}<br>
-                <select name="disease_associated_transcripts" multiple class="selectpicker">
+                <select name="disease_associated_transcripts" multiple class="selectpicker" data-style="btn-secondary">
                   {% for opt in form.disease_associated_transcripts.choices %}
                     <option value="{{opt[0]}}" {{ "selected" if 'previous' in opt[1] }}>{{opt[1]}}</option>
                   {% endfor %}
@@ -43,7 +43,7 @@
             <div class="row">
               <div class="col-md-4">
                 {{ form.inheritance_models.label(class="control-label") }}<br>
-                {{ form.inheritance_models(class="selectpicker", data_width="100%") }}
+                {{ form.inheritance_models(class="selectpicker", data_style="btn-secondary", data_width="100%") }}
               </div>
               <div class="col-md-4">
                 {{ form.custom_inheritance_models.label(class="control-label") }}

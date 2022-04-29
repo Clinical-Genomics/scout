@@ -6,7 +6,7 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">Users</span>
   </li>
 {% endblock %}
@@ -16,7 +16,7 @@
   <div class="card panel-default">
     <div class="card-body">
       <table class="table table-bordered table-hover mt-3">
-        <thead>
+        <thead class="table-light thead">
           <tr>
             <th>Name</th>
             <th>Email</th>

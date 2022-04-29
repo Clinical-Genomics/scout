@@ -60,7 +60,7 @@
           <div class="form-row mt-3 d-flex justify-content-between">
             <div class="form-group col-md-6">
               {{ form.gene_panels.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Select gene panels that will be available for variants filtering.") }}
-              <select multiple="multiple" name="gene_panels" class="selectpicker">
+              <select multiple="multiple" name="gene_panels" class="selectpicker" data-style="btn-secondary">
                 {% for choice in form.gene_panels.choices or [] %}
                   <option value="{{choice[0]}}" {% if institute.gene_panels and choice[0] in institute.gene_panels.keys() %} selected {% endif %}>{{choice[1]}}</option>
                 {% endfor %}
@@ -68,7 +68,7 @@
             </div>
             <div class="form-group col-md-6">
               {{ form.pheno_groups.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
-              <select multiple="multiple" name="pheno_groups" class="selectpicker">
+              <select multiple="multiple" name="pheno_groups" class="selectpicker" data-style="btn-secondary">
                 {% for choice in form.pheno_groups.choices or [] %}
                   <option value="{{choice[0]}}" {% if institute.phenotype_groups and choice[0].split(' ,')[0] in institute.phenotype_groups  %} selected {% endif %}>{{choice[1]}}</option>
                 {% endfor %}
@@ -90,7 +90,7 @@
           <div class="form-row mt-3 d-flex justify-content-center">
             <div class="col-md-4 align-self-center">
               {{ form.institutes.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Allow case sharing only with preselected institutes.") }}
-              <select multiple="multiple" class="selectpicker" name="institutes">
+              <select multiple="multiple" class="selectpicker" name="institutes" data-style="btn-secondary">
               {% for choice in form.institutes.choices %}
                 <option value="{{choice[0]}}" {% if choice[0] in institute.get("collaborators", []) %} selected {% endif %}>{{choice[1]}}</option>
               {% endfor %}
@@ -100,7 +100,7 @@
               <!-- Admins can modify loqusdb settings -->
               <div class="col-md-4">
                 {{ form.loqusdb_id.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="LoqudDB id" ) }}<br>
-                <select class="selectpicker" name="loqusdb_id">
+                <select class="selectpicker" name="loqusdb_id" data-style="btn-secondary">
                   {% for instance in loqus_instances %}
                     <option value="{{instance}}" {% if institute.loqusdb_id == instance %} selected {% endif %}>{{instance}}</option>
                   {% endfor %}
@@ -134,7 +134,7 @@
   <div>
   <h5 class="card-title"><a href="{{ url_for('overview.cases', institute_id=institute.internal_id) }}"> {{ institute.display_name }}</a>
   {%- if current_user.is_admin or institute.internal_id in current_user.institutes %}
-    <button class="float-start btn-primary btn-sm" type="submit" class="btn btn-primary btn-sm" title="settings">settings</button>
+    <button class="float-end btn-primary btn-sm" type="submit" class="btn btn-primary btn-sm" title="settings">settings</button>
   {%- endif -%}
   </h5>
   </div>

@@ -56,7 +56,7 @@
               <p><strong>Phenomodel {{model.name}} is {{ "locked" if model.admins|length > 0 else "unlocked" }}.</strong></p>
               You will be able to modify this model in the future.<br>
               Select other users allowed to modify this model once it's locked:
-              <select multiple="multiple" name="user_admins" id="user_admins" class="selectpicker" data-width="100%" size="5">
+              <select multiple="multiple" name="user_admins" id="user_admins" class="selectpicker" data-style="btn-secondary" data-width="100%" size="5">
                 {% for coll in collaborators %}
                   <option value="{{coll[0]}}" {{"selected" if coll[0] in model.admins }}>{{coll[1]}} ({{coll[2]}})</option>
                 {% endfor %}
