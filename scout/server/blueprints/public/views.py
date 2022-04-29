@@ -26,7 +26,6 @@ public_bp = Blueprint(
 @public_endpoint
 def index():
     """Show the static landing page."""
-    LOG.debug("***HOME")
     event_list = []
     badge_name = current_app.config.get("ACCREDITATION_BADGE")
     if badge_name and not Path(public_bp.static_folder, badge_name).is_file():

@@ -10,8 +10,8 @@ NOF_RECENT_EVENTS = 3
 """Controller module for first webview.
 
 Requires: Python 3.7 or greater.
-Reason: Implementation relies on normal dicts able to maintain
-internal order.
+Reason: Implementation relies on dicts being able to maintain internal order.
+This was previously only supported in OrderedDict().
 """
 
 
@@ -22,7 +22,8 @@ def get_events_of_interest(store, user):
         user: store.user
     Returns:
         events_of_interest: list of dicts{'case', 'link', 'human_readable'}
-        -where human_readable is a list of strings refering to users recent events of interest
+        -where human_readable is a list of strings refering to users recent
+         events of interest
     """
     events_of_interest = []
     events_per_case = []
@@ -43,18 +44,21 @@ def get_events_of_interest(store, user):
 
 
 def recent_cases(user, store):
-    """Return a list of recent cases order in increasing age. A case may appear only once."""
+    """Return a list of recent cases order in increasing age. A case
+    may appear only once."""
     return list(store.unique_cases_by_date({"_id": user.email}))
 
 
 def events_in_case(store, user, case):
-    """Return a list of events associated with a user's specific case"""
+    """Return a list of events associated with a user's specific case."""
     return list(store.user_events_by_case({"_id": user.email}, case))
 
 
 def compile_important_events(event_list):
-    """Compile a string of recent events, ordered by importance, together with the sum of the events occurences.
-    Importance is determined by placement in the macro VERBS_MAP.
+    """Compile a string of recent events, ordered by importance, together
+    with the sum of the events occurences. Importance is determined by
+    placement in the macro VERBS_MAP.
+
         Args:
             event_list
         Returns:
@@ -65,9 +69,7 @@ def compile_important_events(event_list):
         pairs.append((event["verb"], event["category"]))
 
     event_sum_list = sum_occurrences(pairs)
-    LOG.debug(f"EVENTS: {event_sum_list}")
     top_events = get_important_events(event_sum_list)
-    LOG.debug(f"BEST: {top_events}")
     return events_to_string(top_events)
 
 
@@ -81,6 +83,7 @@ def get_important_events(all_events):
     Returns:
         tuple_list: (verb, count)
     """
+
     events_by_importance = sorted(all_events, key=verb_index)
     i = 0
     l = []
@@ -92,26 +95,41 @@ def get_important_events(all_events):
 
 
 def events_to_string(list_of_events):
-    """List of tuples: [(Key, kombo), n_events]
+    """Convert a list of event tuples to a readable string.
 
-    Returns: string: describing events"""
+    Args:
+        list_of_events: [((key, event_type), n_events)]
+
+    Returns:
+       string: a description of events, example:
+       'Commented on 1 case. Pinned variant X3'
+    """
     l = []
 
+    LOG.debug("LIST: {}".format(list_of_events))
+
     def possessive_s(n):
+        """Return a possessive 's' to append if n is >1. This is used
+        to make grammatically corrected strings."""
         if n > 1:
             return "s"
         return ""
 
-    def tautology(verb, event):
+    def is_repeated_verb(verb, event):
+        """When the 'verb' is repeated in 'event' it would return
+        strange sentences in a stylistic sence. This function is used
+        to detect such a verb-event combination"""
         return event in VERBS_MAP.get(verb)
 
     for event in list_of_events:
         (verb, event_type), n = event
-        if tautology(verb, event_type):
-            l.append(VERBS_MAP.get(verb) + " X" + str(n))
+        if is_repeated_verb(verb, event_type):
+            l.append(VERBS_MAP.get(verb).capitalize() + " X" + str(n))
         else:
-            l.append(VERBS_MAP.get(verb) + " " + str(n) + " " + event_type + possessive_s(n))
-    return reduce(lambda a, b: a + ", " + b, l)
+            l.append(
+                VERBS_MAP.get(verb).capitalize() + " " + str(n) + " " + event_type + possessive_s(n)
+            )
+    return reduce(lambda a, b: a + ". " + b, l)
 
 
 def sum_occurrences(pairs):
@@ -120,18 +138,19 @@ def sum_occurrences(pairs):
         pairs list of tuples (verb, category)
 
     Returns:
-        Dict where each key is a tuple(verb, type), the value is numnber of occurances {('pin', 'variant'): 1,
+        Dict where each key is a tuple(verb, type), the value is numnber
+        of occurances {('pin', 'variant'): 1,
     """
 
-    def sum_occurrences_aux(pairs, acc):
+    def sum_occurrences_aux(pairs, accumulator):
         if pairs == []:
-            return acc
+            return accumulator
         head, *tail = pairs
-        if head in acc:
-            acc[head] += 1
+        if head in accumulator:
+            accumulator[head] += 1
         else:
-            acc[head] = 1
-        return sum_occurrences_aux(tail, acc)
+            accumulator[head] = 1
+        return sum_occurrences_aux(tail, accumulator)
 
     return sum_occurrences_aux(pairs, {})
 
