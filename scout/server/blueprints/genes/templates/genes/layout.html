@@ -4,11 +4,15 @@
   <div class="container-float">
     <div class="card mt-3">
       <div class="card-body">
-        <form class="form-inline" action="{{ url_for('genes.genes') }}">
-          <label for="query">Search for genes</label>
-          <div class="form-group">
-            <input name="query" class="typeahead form-control mx-sm-5" data-provide="typeahead" autocomplete="off" placeholder="Search...">
-            <button class="btn btn-outline-secondary form-control">Search</button>
+        <form action="{{ url_for('genes.genes') }}">
+          <div class="row">
+            <div class="col-7">
+               <div class="input-group">
+                <label class="input-group-text" for="query">Search for genes</label>
+                <input name="query" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search...">
+                <button class="btn btn-outline-secondary form-control">Search</button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
