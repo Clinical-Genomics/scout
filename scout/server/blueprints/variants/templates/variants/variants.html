@@ -185,6 +185,12 @@
       {{ update_stash_filter_button_status(current_user, filters) }}
     }
 
+    $(document).ready(function(){
+      if(document.getElementById('compound_follow_filter').checked || document.getElementById('compound_rank_score').value) {
+        $('#hidecompounds').collapse('show');
+      }
+    });
+
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
     return new bootstrap.Popover(popoverTriggerEl, {
