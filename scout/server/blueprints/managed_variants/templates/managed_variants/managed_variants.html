@@ -18,7 +18,7 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-   <li class="nav-item active">
+   <li class="nav-item active d-flex align-items-center">
      <span class="navbar-text">Managed variants</span>
    </li>
 {% endblock %}
@@ -31,7 +31,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-bs-toggle="collapse" data-parent="#accordion_add" href="#collapseAdd">
+            <a data-bs-toggle="collapse" data-bs-parent="#accordion_add" href="#collapseAdd">
                 Add variant
             </a>
           </h5>
@@ -50,7 +50,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-bs-toggle="collapse" data-parent="#accordion_load" href="#collapseLoad">
+            <a data-bs-toggle="collapse" data-bs-parent="#accordion_load" href="#collapseLoad">
                 Load variants
             </a>
           </h5>
@@ -122,7 +122,7 @@
         </tr>
         <tr>
         {{ modify_variant(variant) }}
-        </div>
+        </tr>
       {% endfor %}
     </tbody>
   </table>
@@ -158,7 +158,6 @@
            <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
          </div>
       </td>
-
   </form>
 {% endmacro %}
 
@@ -221,10 +220,10 @@
     {{ filters_form.csrf_token }}
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(filters_form.category, class="selectpicker")}}
+        {{ wtf.form_field(filters_form.category, class="selectpicker", data_style="btn-secondary")}}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.sub_category, class="selectpicker")}}
+        {{ wtf.form_field(filters_form.sub_category, class="selectpicker", data_style="btn-secondary")}}
       </div>
       <div class="col-4">
         {{ wtf.form_field(filters_form.description) }}
@@ -274,16 +273,21 @@
     populateSubTypeSelect('modify_variant')
   })
 
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip();
-    $('[data-toggle="popover"]').popover({
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl, {
       container: 'body',
-    });
-
-    $('table').stickyTableHeaders({
-      fixedOffset: $(".navbar-fixed-top")
-    });
+    })
   })
+
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+
+  $('table').stickyTableHeaders({
+    fixedOffset: $(".navbar-fixed-top")
+  });
 
   var subcategoryOptions = {{ subcategory_choices|safe }}; // add form
 
@@ -292,7 +296,6 @@
   var chromSelect = document.forms["filters_form"].elements["chromosome"]; // filter form chromosome
   var start_coord_field = document.forms["filters_form"].elements["position"]; // filter form start coord
   var end_coord_field = document.forms["filters_form"].elements["end"]; // filter form end coord
-
 
   // clear option elements from any given select
   function clearSelect(selectElem){
