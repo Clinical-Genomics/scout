@@ -100,7 +100,7 @@ def sashimi_igv(institute_id, case_name, variant_id):
 
     @response.call_on_close
     @copy_current_request_context
-    def clear_session_traks():
+    def clear_session_tracks():
         session.pop("igv_tracks", None)  # clean up igv session tracks
 
     return response
