@@ -105,9 +105,7 @@ def sashimi_igv(institute_id, case_name, variant_id):
     @copy_current_request_context
     def clear_session_traks():
         session.pop("igv_tracks", None)  # clean up igv session tracks
-        LOG.warning(f'after response---->{session.get("igv_tracks")}')
 
-    LOG.warning(f'before response---->{session.get("igv_tracks")}')
     return response
 
 
@@ -145,7 +143,5 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     @copy_current_request_context
     def clear_session_traks():
         session.pop("igv_tracks", None)  # clean up igv session tracks
-        LOG.warning(f'after response---->{session.get("igv_tracks")}')
 
-    LOG.warning(f'1---->{session.get("igv_tracks")}')
     return response
