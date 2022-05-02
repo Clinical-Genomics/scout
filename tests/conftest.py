@@ -1523,28 +1523,6 @@ def genemap_handle(request, genemap_file):
 
 
 #############################################################
-###################### Beacon Fixtures ######################
-#############################################################
-
-
-@pytest.fixture(scope="function")
-def mocked_beacon():
-    """A success response from a mocked Beacon server"""
-
-    class MockBeaconResponse:
-        def __init__(self):
-            self.status_code = 200
-            self.url = "http://beacon_url"
-            self.token = "xyz"
-
-        def json(self):
-            return {"message": "OK"}
-
-    resp = MockBeaconResponse()
-    return resp
-
-
-#############################################################
 #################### MatchMaker Fixtures ####################
 #############################################################
 
