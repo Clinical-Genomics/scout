@@ -22,11 +22,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Sort gene panels by name (panelS and variant page)
 - Removed unused `server.blueprints.alignviewers.unindexed_remote_static` endpoint
 - User sessions to check files served by `server.blueprints.alignviewers.remote_static` endpoint
+- Moved Beacon-related functions to a dedicated app extension
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings
 - Removed stream argument deprecation warning in tests
 - Handle `no intervals found` warning in load_region test
+- Beacon remove variants
 
 ## [4.51]
 ### Added
