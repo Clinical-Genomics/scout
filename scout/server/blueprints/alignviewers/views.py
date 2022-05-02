@@ -7,7 +7,6 @@ from flask import (
     Blueprint,
     Response,
     abort,
-    after_this_request,
     copy_current_request_context,
     render_template,
     request,
