@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Rank score results now show the ranking range
 - cDNA and protein changes displayed on institute causatives pages
 - Optional SESSION_TIMEOUT_MINUTES configuration in app config files 
+- Script to convert old OMIM case format (list of integers) to new format (list of dictionaries)
 - Dark mode, using browser/OS media preference
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
