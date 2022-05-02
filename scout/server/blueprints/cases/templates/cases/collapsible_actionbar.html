@@ -367,7 +367,7 @@
   {% endif %}
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fab fa-watchman-monitoring"></span>
-      <span class="menu-collapsed ms-3">Share to Beacon</span>
+      <span class="menu-collapsed ms-3">{% if case.beacon %}Beacon submission {% else %} Share to Beacon {% endif %}</span>
       <span class="submenu-icon ms-auto"></span>
     </div>
   </a>
