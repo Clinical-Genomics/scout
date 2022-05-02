@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
 - Rank score results now show the ranking range
 - cDNA and protein changes displayed on institute causatives pages
+- Optional SESSION_TIMEOUT_MINUTES configuration in app config files 
+- Script to convert old OMIM case format (list of integers) to new format (list of dictionaries)
 - Optional SESSION_TIMEOUT_MINUTES configuration in app config files
 - Admin users can create missing beacon datasets from the institute's settings page
 ### Changed
