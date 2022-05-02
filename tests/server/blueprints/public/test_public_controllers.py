@@ -13,15 +13,20 @@ from scout.server.blueprints.public.controllers import (
 def test_verb_index():
     # GIVEN a subset of VERBS_MACRO
     verbs_map = {
-        "assign": "was assigned to",
-        "unassign": "was unassigned from",
+        "mark_causative": "marked causative for",
+        "update_diagnosis": "updated diagnosis for",
+        "rerun": "requested rerun of",
         "status": "updated the status for",
         "comment": "commented on",
+        "comment_update": "updated a comment for",
+        "pin": "pinned variant",
+        "assign": "was assigned to",
+
     }
 
     # THEN calling `verb_index` will return the correct index
-    assert verb_index(("assign", "sadf")) == 0
-    assert verb_index(("status", "sadf")) == 2
+    assert verb_index(("assign", "sadf")) == 7
+    assert verb_index(("status", "sadf")) == 3
 
 
 def test_sum_occurences():
@@ -43,14 +48,15 @@ def test_sum_occurences():
 
 def test_get_important_events():
     # GIVEN a dict where keys are verb-tuples
-    test = {("pin", "variant"): 3, ("pin", "case"): 1, ("assign", "variant"): 1}
+    test = {("pin", "case"): 1, ("assign", "variant"): 1, ("pin", "variant"): 3, }
 
     # WHEN calling `get_important_events(...)`
     importants = get_important_events(test)
 
     # THEN the result is ordered according to VERBS_MAP
     (key, _value) = importants[0]
-    assert list(test)[2] == key
+    print(importants)
+    assert list(test)[0] == key
 
 
 def test_events_to_string():
