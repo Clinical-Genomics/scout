@@ -43,7 +43,10 @@ def index():
     if current_user.is_authenticated:
         event_list = controllers.get_events_of_interest(store, current_user)
     return render_template(
-        "public/index.html", version=__version__, accred_badge=badge_name, event_list=event_list,
+        "public/index.html",
+        version=__version__,
+        accred_badge=badge_name,
+        event_list=event_list,
     )
 
 
