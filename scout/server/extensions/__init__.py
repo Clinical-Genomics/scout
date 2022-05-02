@@ -8,6 +8,7 @@ from flask_mail import Mail
 from scout.adapter import MongoAdapter
 from scout.utils.cloud_resources import AlignTrackHandler
 
+from .beacon_extension import Beacon
 from .gens_extension import GensViewer
 from .ldap_extension import LdapManager
 from .loqus_extension import LoqusDB
@@ -26,4 +27,5 @@ mongo = MongoDB()
 gens = GensViewer()
 rerunner = RerunnerService()
 matchmaker = MatchMaker()
+beacon = Beacon()
 cloud_tracks = AlignTrackHandler()

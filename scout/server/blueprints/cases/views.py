@@ -23,7 +23,7 @@ from flask import (
 from flask_login import current_user
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.extensions import mail, store
+from scout.server.extensions import beacon, mail, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
@@ -84,19 +84,23 @@ def sma(institute_id, case_name):
     return dict(format="html", **data)
 
 
-@cases_bp.route("/beacon_submit", methods=["POST"])
-def beacon_submit():
+@cases_bp.route("/beacon_add_variants/<institute_id>/<case_name>", methods=["POST"])
+def beacon_add_variants(institute_id, case_name):
     """Submit case variants to Beacon"""
-
-    controllers.beacon_add(request.form)
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function checks if user has permissions to access the case
+    beacon.add_variants(store, case_obj, request.form)
     return redirect(request.referrer)
 
 
-@cases_bp.route("/beacon_remove/<case_id>", methods=["GET"])
-def beacon_remove(case_id):
+@cases_bp.route("/beacon_remove_variants/<institute_id>/<case_name>", methods=["GET"])
+def beacon_remove_variants(institute_id, case_name):
     """Remove all variants from a case from Beacon"""
-
-    controllers.beacon_remove(case_id)
+    _, case_obj = institute_and_case(
+        store, institute_id, case_name
+    )  # This function checks if user has permissions to access the case
+    beacon.remove_variants(store, institute_id, case_obj)
     return redirect(request.referrer)
 
 
