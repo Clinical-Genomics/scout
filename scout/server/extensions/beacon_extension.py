@@ -44,7 +44,7 @@ class Beacon:
         return [dset["id"] for dset in datasets]
 
     def base_submission_data(self, store, case_obj, form):
-        """Create data dictionary to be send as json data in a POST request to the beacon "add" endpoint
+        """Create data dictionary to be sent as json data in a POST request to the beacon "add" endpoint
 
         Args:
             store(adapter.MongoAdapter)
@@ -99,7 +99,10 @@ class Beacon:
         user_obj = store.user(current_user.email)
 
         if "beacon_submitter" not in user_obj.get("roles", []):
-            flash("You don't have permission to use the Beacon tool", "warning")
+            flash(
+                "You don't have permission to use this tool yet. Please write to support and ask your institute primary contact to approve you as a Beacon submitter",
+                "warning",
+            )
             return
 
         base_data = self.base_submission_data(
