@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from os.path import splitext
 
 import requests
 from flask import (
@@ -69,8 +68,6 @@ def remote_cors(remote_url):
 def remote_static():
     """Stream *large* static files with special requirements."""
     file_path = request.args.get("file") or "."
-
-    _, file_extension = splitext(file_path)
 
     # Check that user is logged in or that file extension is valid
     if current_user.is_authenticated is False or file_path not in session.get("igv_tracks", []):
