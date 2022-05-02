@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
 import logging
-import os.path
 
 import requests
-from flask import Blueprint, Response, abort, render_template, request, send_file
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    copy_current_request_context,
+    render_template,
+    request,
+    session,
+)
 from flask_login import current_user
 
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, user_institutes
+from scout.server.utils import institute_and_case
 
 from . import controllers
 from .partial import send_file_partial
@@ -32,8 +39,6 @@ def remote_cors(remote_url):
     Based on code from answers to this thread:
         https://stackoverflow.com/questions/6656363/proxying-to-another-web-service-with-flask/
     """
-    LOG.debug("Got request: %s", request)
-
     resp = requests.request(
         method=request.method,
         url=remote_url,
@@ -62,21 +67,19 @@ def remote_cors(remote_url):
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
-    file_path = request.args.get("file") or ""
+    file_path = request.args.get("file") or "."
+
+    # Check that user is logged in or that file extension is valid
+    if current_user.is_authenticated is False or file_path not in session.get("igv_tracks", []):
+        LOG.warning(f"{file_path} not in {session.get('igv_tracks', [])}")
+        return abort(403)
+
     range_header = request.headers.get("Range", None)
     if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
         return abort(500)
 
     new_resp = send_file_partial(file_path)
     return new_resp
-
-
-@alignviewers_bp.route("/remote/static/unindexed", methods=["OPTIONS", "GET"])
-def unindexed_remote_static():
-    file_path = request.args.get("file")
-    base_name = os.path.basename(file_path)
-    resp = send_file(file_path, download_name=base_name)
-    return resp
 
 
 @alignviewers_bp.route(
@@ -91,7 +94,16 @@ def sashimi_igv(institute_id, case_name, variant_id):
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
-    return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
+    controllers.set_session_tracks(display_obj)
+
+    response = Response(render_template("alignviewers/igv_sashimi_viewer.html", **display_obj))
+
+    @response.call_on_close
+    @copy_current_request_context
+    def clear_session_tracks():
+        session.pop("igv_tracks", None)  # clean up igv session tracks
+
+    return response
 
 
 @alignviewers_bp.route("/<institute_id>/<case_name>/igv", methods=["GET"])  # from case page
@@ -120,4 +132,13 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     )  # This function takes care of checking if user is authorized to see resource
 
     display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
-    return render_template("alignviewers/igv_viewer.html", **display_obj)
+    controllers.set_session_tracks(display_obj)
+
+    response = Response(render_template("alignviewers/igv_viewer.html", **display_obj))
+
+    @response.call_on_close
+    @copy_current_request_context
+    def clear_session_tracks():
+        session.pop("igv_tracks", None)  # clean up igv session tracks
+
+    return response
