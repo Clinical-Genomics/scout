@@ -12,11 +12,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - cDNA and protein changes displayed on institute causatives pages
 - Optional SESSION_TIMEOUT_MINUTES configuration in app config files
 - Script to convert old OMIM case format (list of integers) to new format (list of dictionaries)
+- Additional check for user logged in status before serving alignment files
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form
 - Unfreeze Werkzeug lib since Flask_login v.0.6 with bugfix has been released
 - Sort gene panels by name (panelS and variant page)
+- Removed unused `server.blueprints.alignviewers.unindexed_remote_static` endpoint
+- User sessions to check files served by `server.blueprints.alignviewers.remote_static` endpoint
 - Audit Filter now also loads filter displaying the variants for it
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
