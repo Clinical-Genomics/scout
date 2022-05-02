@@ -1,9 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
+import time
 from os.path import splitext
 
 import requests
-from flask import Blueprint, Response, abort, render_template, request, session
+from flask import (
+    Blueprint,
+    Response,
+    abort,
+    after_this_request,
+    copy_current_request_context,
+    render_template,
+    request,
+    session,
+)
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -90,6 +100,18 @@ def sashimi_igv(institute_id, case_name, variant_id):
 
     display_obj = controllers.make_sashimi_tracks(case_obj, variant_id)
     controllers.set_session_tracks(display_obj)
+
+    @after_this_request
+    def add_close_action(response):
+        @response.call_on_close
+        @copy_current_request_context
+        def clear_session_traks():
+            session.pop("igv_tracks", None)  # clean up igv session tracks
+            LOG.warning(f'after response---->{session.get("igv_tracks")}')
+
+        return response
+
+    LOG.warning(f'before response---->{session.get("igv_tracks")}')
     return render_template("alignviewers/igv_sashimi_viewer.html", **display_obj)
 
 
@@ -120,4 +142,16 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
 
     display_obj = controllers.make_igv_tracks(case_obj, variant_id, chrom, start, stop)
     controllers.set_session_tracks(display_obj)
+
+    @after_this_request
+    def add_close_action(response):
+        @response.call_on_close
+        @copy_current_request_context
+        def clear_session_traks():
+            session.pop("igv_tracks", None)  # clean up igv session tracks
+            LOG.warning(f'2---->{session.get("igv_tracks")}')
+
+        return response
+
+    LOG.warning(f'1---->{session.get("igv_tracks")}')
     return render_template("alignviewers/igv_viewer.html", **display_obj)
