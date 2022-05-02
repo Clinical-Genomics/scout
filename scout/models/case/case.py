@@ -1,15 +1,7 @@
 from __future__ import absolute_import
 
 import logging
-import os
 from datetime import datetime
-
-from scout.constants import ANALYSIS_TYPES
-from scout.models import PhenotypeTerm
-from scout.models.panel import GenePanel
-
-from . import STATUS
-from .individual import Individual
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +51,7 @@ case = dict(
     created_at=datetime,
     delivery_report=str,  # delivery report is a path to html file
     diagnosis_genes=list,  # List of references to genes
-    diagnosis_phenotypes=list,  # List of references to diseases
+    diagnosis_phenotypes=list,  # List of dictionaries with OMIM disease data
     display_name=str,  # required. This is the case name that will be shown in scout.
     dynamic_gene_list=list,  # List of genes
     gene_fusion_report=str,  # Path to the gene fusions report file
