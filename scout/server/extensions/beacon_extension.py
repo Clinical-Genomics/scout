@@ -95,14 +95,13 @@ class Beacon:
         """
         genome_build = dataset_id.split("_")[1]
         dataset_obj = {
-            "_id": dataset_id,
+            "id": dataset_id,
             "name": dataset_id,
             "description": f"Scout dataset. Institute:{institute_obj.get('display_name')} - genome build:{genome_build}",
-            "assembly_id": genome_build,
+            "build": genome_build,
             "authlevel": "public",  # Standard publuc dataset, this can be fixed later
             "version": "v1.0",
         }
-        flash(dataset_obj)
         headers = Headers()
         headers = {"X-Auth-Token": self.token}
         json_resp = post_request_json(url=self.add_dataset_url, headers=headers, data=dataset_obj)
