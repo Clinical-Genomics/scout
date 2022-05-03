@@ -41,7 +41,7 @@ class Beacon:
         if json_resp.get("status_code") == 200:
             datasets = json_resp.get("content", {}).get("datasets", [])
         else:
-            flash("Error retrieving Beacon's dataset list:{json_resp}")
+            flash("Error retrieving Beacon's dataset list:{json_resp}", "warning")
         return [dset["id"] for dset in datasets]
 
     def base_submission_data(self, store, case_obj, form):

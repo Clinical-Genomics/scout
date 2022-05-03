@@ -152,7 +152,7 @@ def gene_variants(institute_id):
 
 # MOST OF THE CONTENT OF THIS ENDPOINT WILL BE REMOVED AND INCLUDED INTO THE BEACON EXTENSION UNDER SERVER/EXTENSIONS
 @blueprint.route("/overview/<institute_id>/add_beacon_dataset", methods=["POST"])
-def add_dataset(institute_id):
+def add_beacon_dataset(institute_id):
     """Add a dataset to Beacon for a given institute"""
     if current_user.is_admin is False:
         flash(
