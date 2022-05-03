@@ -102,6 +102,7 @@ class Beacon:
             "authlevel": "public",  # Standard publuc dataset, this can be fixed later
             "version": "v1.0",
         }
+        flash(dataset_obj)
         headers = Headers()
         headers = {"X-Auth-Token": self.token}
         json_resp = post_request_json(url=self.add_dataset_url, headers=headers, data=dataset_obj)
