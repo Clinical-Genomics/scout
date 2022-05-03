@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
 - Rank score results now show the ranking range
 - cDNA and protein changes displayed on institute causatives pages
-- Optional SESSION_TIMEOUT_MINUTES configuration in app config files 
+- Optional SESSION_TIMEOUT_MINUTES configuration in app config files
 - Script to convert old OMIM case format (list of integers) to new format (list of dictionaries)
 - Additional check for user logged in status before serving alignment files
 ### Changed
@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused `server.blueprints.alignviewers.unindexed_remote_static` endpoint
 - User sessions to check files served by `server.blueprints.alignviewers.remote_static` endpoint
 - Moved Beacon-related functions to a dedicated app extension
+- Audit Filter now also loads filter displaying the variants for it
 - Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
