@@ -34,7 +34,7 @@
 {% endblock %}
 
 {% block content_main %}
-  <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}" onsubmit="return validateForm()">
+  <form method="POST" id="filters_form" action="{{url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name)}}" enctype="multipart/form-data" onsubmit="return validateForm()">
   <div class="container-float">
     {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
