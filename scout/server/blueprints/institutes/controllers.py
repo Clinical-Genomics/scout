@@ -17,7 +17,7 @@ from scout.constants import (
 )
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
-from scout.server.extensions import store
+from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
 from scout.utils.scout_requests import get_request_json
@@ -152,11 +152,8 @@ def populate_beacon_form(institute_obj):
         )
         return beacon_form
 
-    # Collect all dataset names present on the Beacon
-    beacon_dsets = []
-    beacon_info = get_request_json(f"{current_app.config.get('BEACON_URL')}/")
-    if beacon_info.get("status_code") == 200 and beacon_info.get("content"):
-        beacon_dsets = [dset["id"] for dset in beacon_info["content"].get("datasets", [])]
+    # Collect all dataset IDs names present on the Beacon
+    beacon_dsets = beacon.get_datasets()
 
     dset_options = []  # List of tuples containing dataset select options
     for build in ["GRCh37", "GRCh38"]:
