@@ -129,7 +129,7 @@
 
 <!-- Display form to add a Beacon dataset if user is an andmin and if institute lacks one or more Beaocn datasets -->
 {% if current_user.is_admin and config.BEACON_URL and config.BEACON_TOKEN %}
-<form action="{{ url_for('overview.add_dataset', institute_id=institute._id) }}" class="form-inline" method="post">
+<form action="{{ url_for('overview.add_beacon_dataset', institute_id=institute._id) }}" class="form-inline" method="post">
   <div class="card w-100">
     <div class="card-body">
       <div class="row">

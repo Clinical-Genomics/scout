@@ -148,7 +148,7 @@ def populate_beacon_form(institute_obj):
         [current_app.config.get("BEACON_URL") and current_app.config.get("BEACON_TOKEN")]
     ):  # Send a request to the beacon to collect the existing datasets
         LOG.warning(
-            "Both BEACON URL and BEACON TOKEN params are required in Scout settings to create a new Beacon dataset"
+            "Both BEACON_URL and BEACON_TOKEN params are required in Scout configuration file to create a new Beacon dataset"
         )
         return beacon_form
 

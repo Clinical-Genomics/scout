@@ -27,6 +27,7 @@ class Beacon:
         self.token = app.config.get("BEACON_TOKEN")
         self.beacon_url = app.config.get("BEACON_URL")
 
+        self.add_dataset_url = "/".join([self.beacon_url, "add_dataset"])
         self.add_variants_url = "/".join([self.beacon_url, "add"])
         self.delete_variants_url = "/".join([self.beacon_url, "delete"])
 
@@ -53,7 +54,7 @@ class Beacon:
                 [('case', 'internal_id'), ('samples', 'affected'), ('vcf_files', 'vcf_snv'), ('vcf_files', 'vcf_snv_research'), ('panels', '6246b25121d86882e127710c')]
 
         Returns:
-            data(dict): a dictionary with base info to be use as json data in beacon add request (lacks path to VCF file to extract variants from)
+            data(dict): a dictionary with base info to be used as json data in beacon add request (lacks path to VCF file to extract variants from)
         """
         # Initialize key/values to be sent in request:
         assembly = "GRCh38" if "38" in str(case_obj.get("genome_build", "37")) else "GRCh37"
@@ -83,6 +84,34 @@ class Beacon:
             data["genes"] = {"ids": list(gene_ids), "id_type": "HGNC"}
 
         return data
+
+    def add_dataset(self, store, institute_obj, dataset_id):
+        """Add a missing dataset for an institute
+
+        Args:
+            store(adapter.MongoAdapter)
+            institute_obj(dict): scout.models.Institute
+            dataset_it(str): a string like this "<institute_id>_<genome_build>". Example: cust000_GRCh38
+        """
+        genome_build = dataset_id.split("_")[1]
+        dataset_obj = {
+            "_id": dataset_id,
+            "name": dataset_id,
+            "description": f"Scout dataset. Institute:{institute_obj.get('display_name')} - genome build:{genome_build}",
+            "assembly_id": genome_build,
+            "authlevel": "public",  # Standard publuc dataset, this can be fixed later
+            "version": "v1.0",
+        }
+        headers = Headers()
+        headers = {"X-Auth-Token": self.token}
+        json_resp = post_request_json(url=self.add_dataset_url, headers=headers, data=dataset_obj)
+        status_code = "warning"
+
+        if json_resp.get("status_code") == 200:  # If dataset was created successfully
+            status_code = "success"
+            update_case = True
+
+        flash(f"Beacon responded: {json_resp}", status_code)
 
     def add_variants(self, store, case_obj, form):
         """Adding variants from one of more individuals of case to Beacon

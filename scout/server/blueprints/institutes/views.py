@@ -19,7 +19,7 @@ from werkzeug.datastructures import Headers
 
 from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
-from scout.server.extensions import loqusdb, store
+from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
 from scout.utils.scout_requests import post_request_json
 
@@ -151,7 +151,7 @@ def gene_variants(institute_id):
 
 
 # MOST OF THE CONTENT OF THIS ENDPOINT WILL BE REMOVED AND INCLUDED INTO THE BEACON EXTENSION UNDER SERVER/EXTENSIONS
-@blueprint.route("/overview/<institute_id>/add_dataset", methods=["POST"])
+@blueprint.route("/overview/<institute_id>/add_beacon_dataset", methods=["POST"])
 def add_dataset(institute_id):
     """Add a dataset to Beacon for a given institute"""
     if current_user.is_admin is False:
@@ -163,22 +163,8 @@ def add_dataset(institute_id):
 
     dataset_id = request.form.get("beacon_dataset")
     institute_obj = store.institute(institute_id)
-    genome_build = dataset_id.split("_")[1]
 
-    dataset_obj = {
-        "_id": dataset_id,
-        "name": dataset_id,
-        "description": f"Scout dataset. Institute:{institute_obj.get('display_name')} - genome build:{genome_build}",
-        "assembly_id": genome_build,
-        "authlevel": "public",
-        "version": "v1.0",
-    }
-    req_url = "/".join([current_app.config.get("BEACON_URL"), "add_dataset"])
-    req_headers = Headers()
-    req_headers = {"X-Auth-Token": current_app.config.get("BEACON_TOKEN")}
-    json_response = post_request_json(url=req_url, headers=req_headers, data=dataset_obj)
-
-    flash(json_response)
+    beacon.add_dataset(store, institute_obj, dataset_id)
     return redirect(request.referrer)
 
 
