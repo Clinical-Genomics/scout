@@ -26,8 +26,7 @@ def document_generated(document_id):
     """
     if isinstance(document_id, ObjectId):
         return document_id.generation_time
-    else:
-        LOG.error(f"Could not retrieve generation date for Object {document_id}")
+    LOG.error(f"Could not retrieve generation date for Object {document_id}")
 
 
 def html_to_pdf_file(

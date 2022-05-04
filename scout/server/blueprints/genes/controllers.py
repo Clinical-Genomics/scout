@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint as pp
-
-from flask import redirect, url_for
+from flask import flash, redirect, url_for
 
 from scout.server.links import add_gene_links, add_tx_links, omim
 from scout.server.utils import document_generated
