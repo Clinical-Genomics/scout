@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Optional SESSION_TIMEOUT_MINUTES configuration in app config files
 - Script to convert old OMIM case format (list of integers) to new format (list of dictionaries)
 - Additional check for user logged in status before serving alignment files
+- Download .cgh files from cancer samples table on cancer case page
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form

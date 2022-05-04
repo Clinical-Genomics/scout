@@ -19,6 +19,8 @@
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Measure of tumor purity">Tumor Purity</th>
             <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+             title="Downloadable CytoSure file">CGH</th>
+            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
              title="Tissue origin for the sample">Tissue</th>
             <th style="width: 5%"></th>
           </tr>
@@ -46,6 +48,16 @@
               {% else %}
                 <td>N/A</td>
               {% endif %}
+              <td>
+                {% if ind.vcf2cytosure %}
+                <a href="{{ url_for('cases.vcf2cytosure', institute_id=institute._id,
+                      case_name=case.display_name, individual_id=ind.individual_id) }}" download class="btn">
+                  <i class="fa fa-download"></i>
+                </a>
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
               <td>
                 <select class="form-control col-6" name="tissue_type.{{ind.individual_id}}">
                   {% for key,tissue in tissues.items() %}
@@ -163,17 +175,18 @@
                 {% else %}
                   N/A
                 {% endif %}
-                <td>
-                  <select id="tissue-selection" class="form-control-sm col-10" name="tissue_{{ind.individual_id}}">
-                    {% for key,tissue in tissues.items() %}
-                      <option value="{{tissue}}" {{ 'selected' if ind.tissue_type == tissue }}>{{tissue}}</option>
-                    {% endfor %}
-                  </select>
-                </td>
-                <td>
-                  <button class="btn btn-secondary btn-sm form-control" name="update_ind"
-                    type="submit" value="{{ ind.individual_id }}">Save</button>
-                </td>
+              </td>
+              <td>
+                <select id="tissue-selection" class="form-control-sm col-10" name="tissue_{{ind.individual_id}}">
+                  {% for key,tissue in tissues.items() %}
+                    <option value="{{tissue}}" {{ 'selected' if ind.tissue_type == tissue }}>{{tissue}}</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <button class="btn btn-secondary btn-sm form-control" name="update_ind"
+                  type="submit" value="{{ ind.individual_id }}">Save</button>
+              </td>
             </tr>
           {% endfor %}
         </tbody>
