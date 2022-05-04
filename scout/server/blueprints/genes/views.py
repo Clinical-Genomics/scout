@@ -2,7 +2,7 @@
 from flask import Blueprint, abort, flash, jsonify, redirect, request, url_for
 
 from scout.server.extensions import store
-from scout.server.utils import objectid_generated, public_endpoint, templated
+from scout.server.utils import document_generated, public_endpoint, templated
 
 from . import controllers
 
@@ -23,7 +23,7 @@ def genes():
     if hgnc_id:
         return redirect(url_for(".gene", hgnc_id=hgnc_id))
     gene_q = list(store.all_genes(limit=20))
-    last_updated = objectid_generated(gene_q[0]["_id"] if gene_q else None)
+    last_updated = document_generated(gene_q[0]["_id"] if gene_q else None)
     return dict(genes=gene_q, last_updated=last_updated)
 
 

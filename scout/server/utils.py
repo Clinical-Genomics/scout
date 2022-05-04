@@ -15,8 +15,8 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
-def objectid_generated(document_id):
-    """Returns the timestamp a certain document was generated
+def document_generated(document_id):
+    """Returns the generation time of a certain MongodDB document
 
     Args:
         document_id (bson.objectid.ObjectId)
