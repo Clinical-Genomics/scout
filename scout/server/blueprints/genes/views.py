@@ -2,7 +2,7 @@
 from flask import Blueprint, abort, flash, jsonify, redirect, request, url_for
 
 from scout.server.extensions import store
-from scout.server.utils import document_generated, public_endpoint, templated
+from scout.server.utils import public_endpoint, templated
 
 from . import controllers
 
@@ -14,17 +14,8 @@ genes_bp = Blueprint("genes", __name__, template_folder="templates")
 def genes():
     """Render seach box for genes."""
     query = request.args.get("query", "")
-    hgnc_id = None
-    if "|" in query:
-        try:
-            hgnc_id = int(query.split(" | ", 1)[0])
-        except ValueError:
-            flash("Provided gene info could not be parsed!", "warning")
-    if hgnc_id:
-        return redirect(url_for(".gene", hgnc_id=hgnc_id))
-    gene_q = list(store.all_genes(limit=20))
-    last_updated = document_generated(gene_q[0]["_id"] if gene_q else None)
-    return dict(genes=gene_q, last_updated=last_updated)
+    data = controllers.genes(store, query)
+    return data
 
 
 @genes_bp.route("/genes/<int:hgnc_id>")
