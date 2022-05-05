@@ -22,7 +22,7 @@ def set_session_tracks(display_obj):
     """
     session_tracks = list(display_obj.get("reference_track", {}).values())
     for key, track_items in display_obj.items():
-        if key not in ["tracks", "custom_tracks", "sample_tracks"]:
+        if key not in ["tracks", "custom_tracks", "sample_tracks", "cloud_public_tracks"]:
             continue
         for track_item in track_items:
             session_tracks += list(track_item.values())
