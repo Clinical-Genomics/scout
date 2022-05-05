@@ -89,6 +89,8 @@ def app(real_database_name, real_variant_database, user_obj):
             MME_URL="test_matchmaker.com",
             MME_ACCEPTS="application/vnd.ga4gh.matchmaker.v1.0+json",
             MME_TOKEN=str(uuid.uuid4()),
+            BEACON_URL="http://localhost:6000/apiv1.0",
+            BEACON_TOKEN="DEMO",
         )
     )
 

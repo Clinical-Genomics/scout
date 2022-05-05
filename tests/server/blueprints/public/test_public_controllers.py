@@ -21,7 +21,6 @@ def test_verb_index():
         "comment_update": "updated a comment for",
         "pin": "pinned variant",
         "assign": "was assigned to",
-
     }
 
     # THEN calling `verb_index` will return the correct index
@@ -48,7 +47,11 @@ def test_sum_occurences():
 
 def test_get_important_events():
     # GIVEN a dict where keys are verb-tuples
-    test = {("pin", "case"): 1, ("assign", "variant"): 1, ("pin", "variant"): 3, }
+    test = {
+        ("pin", "case"): 1,
+        ("assign", "variant"): 1,
+        ("pin", "variant"): 3,
+    }
 
     # WHEN calling `get_important_events(...)`
     importants = get_important_events(test)
