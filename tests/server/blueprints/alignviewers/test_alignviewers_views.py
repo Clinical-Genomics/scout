@@ -47,8 +47,9 @@ def test_remote_static(app):
     with app.test_client() as client:
         # GIVEN that user is logged in
         client.get(url_for("auto_login"))
+
+        # GIVEN that resource file exists in user session
         with client.session_transaction() as session:
-            # GIVEN that resource file exists in user session
             session["igv_tracks"] = [file]
 
         # THEN the resource should be available to the user
@@ -61,20 +62,41 @@ def test_remote_static(app):
         assert resp.status_code == 200
 
 
-def test_remote_cors(app):
+def test_remote_cors_wrong_resource(app):
     """Test endpoint that serves as a proxy to the actual remote track on the cloud"""
-    cloud_track_url = "http://google.com"
+    # GIVEN a resource not present in session["igv_tracks"]
+    an_url = "http://google.com"
 
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
+    # GIVEN a running demo app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
 
         # WHEN the remote cors endpoint is invoked with an url
+        resp = client.get(url_for("alignviewers.remote_cors", remote_url=an_url))
+
+        # THEN it should return forbidden (403)
+        assert resp.status_code == 403
+
+
+def test_remote_cors(app):
+    """Test endpoint that serves as a proxy to the actual remote track on the cloud"""
+    # GIVEN an igv track on the cloud
+    cloud_track_url = "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/25777460/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz.tbi"
+
+    # GIVEN a running demo app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # GIVEN that resource url exists in user session
+        with client.session_transaction() as session:
+            session["igv_tracks"] = [cloud_track_url]
+
+        # WHEN the remote cors endpoint is invoked with cloud_track_url
         resp = client.get(url_for("alignviewers.remote_cors", remote_url=cloud_track_url))
-        # THEN it should return success response
+
+        # THEN response should be successful
         assert resp.status_code == 200
 
 
