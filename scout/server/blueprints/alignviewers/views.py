@@ -39,6 +39,10 @@ def remote_cors(remote_url):
     Based on code from answers to this thread:
         https://stackoverflow.com/questions/6656363/proxying-to-another-web-service-with-flask/
     """
+    # Check that user is logged in or that file extension is valid
+    if controllers.check_session_tracks(remote_url) is False:
+        return abort(403)
+
     resp = requests.request(
         method=request.method,
         url=remote_url,
@@ -70,8 +74,7 @@ def remote_static():
     file_path = request.args.get("file") or "."
 
     # Check that user is logged in or that file extension is valid
-    if current_user.is_authenticated is False or file_path not in session.get("igv_tracks", []):
-        LOG.warning(f"{file_path} not in {session.get('igv_tracks', [])}")
+    if controllers.check_session_tracks(file_path) is False:
         return abort(403)
 
     range_header = request.headers.get("Range", None)
