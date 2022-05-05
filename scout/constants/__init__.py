@@ -23,6 +23,7 @@ from .case_tags import (
     SAMPLE_SOURCE,
     SEX_MAP,
     VERBS_MAP,
+    EVENTS_MAP
 )
 from .clinvar import (
     CASEDATA_HEADER,
