@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed stream argument deprecation warning in tests
 - Handle `no intervals found` warning in load_region test
 - Beacon remove variants
+- Protect remote_cors function in alignviewers view from Server-Side Request Forgery (SSRF)
 
 ## [4.51]
 ### Added
