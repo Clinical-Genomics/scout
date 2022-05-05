@@ -1,7 +1,7 @@
 import logging
 from functools import reduce
 
-from scout.constants import VERBS_MAP
+from scout.constants import EVENTS_MAP
 
 LOG = logging.getLogger(__name__)
 NOF_RECENT_EVENTS = 3
@@ -57,7 +57,7 @@ def events_in_case(store, user, case):
 def compile_important_events(event_list):
     """Compile a string of recent events, ordered by importance, together
     with the sum of the events occurences. Importance is determined by
-    placement in the macro VERBS_MAP.
+    placement in the macro EVENTS_MAP.
 
         Args:
             event_list
@@ -74,7 +74,7 @@ def compile_important_events(event_list):
 
 
 def get_important_events(all_events):
-    """Sort tuple list accourding to macro VERBS_MAP and return
+    """Sort tuple list accourding to macro EVENTS_MAP and return
     a list of length(NOF_RECENT_EVENTS).
 
     Args:
@@ -108,7 +108,7 @@ def events_to_string(list_of_events):
 
     LOG.debug("LIST: {}".format(list_of_events))
 
-    def possessive_s(n):
+    def plural_s(n):
         """Return a possessive 's' to append if n is >1. This is used
         to make grammatically corrected strings."""
         if n > 1:
@@ -119,16 +119,15 @@ def events_to_string(list_of_events):
         """When the 'verb' is repeated in 'event' it would return
         strange sentences in a stylistic sence. This function is used
         to detect such a verb-event combination"""
-        return event in VERBS_MAP.get(verb)
+        return event in EVENTS_MAP.get(verb)
 
     for event in list_of_events:
         (verb, event_type), n = event
-        if is_repeated_verb(verb, event_type):
-            l.append(VERBS_MAP.get(verb).capitalize() + " X" + str(n))
-        else:
-            l.append(
-                VERBS_MAP.get(verb).capitalize() + " " + str(n) + " " + event_type + possessive_s(n)
-            )
+        sentence = EVENTS_MAP.get(verb)       
+        sentence2 = sentence.replace("nof", str(n))
+        sentence3 = sentence2.replace("event_type", event_type+plural_s(n))
+        LOG.debug("SSS"+sentence3)
+        l.append(sentence3)
     return reduce(lambda a, b: a + ". " + b, l)
 
 
@@ -156,6 +155,6 @@ def sum_occurrences(pairs):
 
 
 def verb_index(verb):
-    """Return index of verb in VERBS_MAP"""
+    """Return index of verb in EVENTS_MAP"""
     main, _rest = verb
-    return list(VERBS_MAP).index(main)
+    return list(EVENTS_MAP).index(main)
