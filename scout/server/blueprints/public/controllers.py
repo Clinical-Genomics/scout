@@ -123,10 +123,10 @@ def events_to_string(list_of_events):
 
     for event in list_of_events:
         (verb, event_type), n = event
-        sentence = EVENTS_MAP.get(verb)       
+        sentence = EVENTS_MAP.get(verb)
         sentence2 = sentence.replace("nof", str(n))
-        sentence3 = sentence2.replace("event_type", event_type+plural_s(n))
-        LOG.debug("SSS"+sentence3)
+        sentence3 = sentence2.replace("event_type", event_type + plural_s(n))
+        LOG.debug("SSS" + sentence3)
         l.append(sentence3)
     return reduce(lambda a, b: a + ". " + b, l)
 

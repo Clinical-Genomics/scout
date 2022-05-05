@@ -181,7 +181,6 @@ CASE_SEARCH_TERMS = {
 }
 
 
-
 EVENTS_MAP = {
     "mark_causative": f"Marked nof event_type causative",
     "update_diagnosis": f"Updated diagnosis",
