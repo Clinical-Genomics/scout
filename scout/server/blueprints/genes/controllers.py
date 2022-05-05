@@ -23,10 +23,11 @@ def genes(store, query):
     if hgnc_id:
         return redirect(url_for(".gene", hgnc_id=hgnc_id))
 
-    nr_genes = store.nr_genes()
+    nr_genes_37 = store.nr_genes(build="37")
+    nr_genes_38 = store.nr_genes(build="38")
     genes_subset = list(store.all_genes(add_transcripts=False, limit=20))
     last_updated = document_generated(genes_subset[0]["_id"] if genes_subset else None)
-    return dict(genes=genes_subset, last_updated=last_updated, nr_genes=nr_genes)
+    return dict(genes=genes_subset, last_updated=last_updated, nr_genes=(nr_genes_37, nr_genes_38))
 
 
 def gene(store, hgnc_id):
