@@ -17,13 +17,13 @@ from .case_tags import (
     CASE_SEARCH_TERMS,
     CASE_STATUSES,
     CUSTOM_CASE_REPORTS,
+    EVENTS_MAP,
     PHENOTYPE_MAP,
     REV_PHENOTYPE_MAP,
     REV_SEX_MAP,
     SAMPLE_SOURCE,
     SEX_MAP,
     VERBS_MAP,
-    EVENTS_MAP,
 )
 from .clinvar import (
     CASEDATA_HEADER,
