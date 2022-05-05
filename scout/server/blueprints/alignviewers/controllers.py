@@ -14,6 +14,25 @@ LOG = logging.getLogger(__name__)
 CUSTOM_TRACK_NAMES = ["Genes", "ClinVar", "ClinVar CNVs"]
 
 
+def check_session_tracks(resource):
+    """Make sure that a user requesting a resource is authenticated and resource is in session IGV tracks
+
+    Args:
+        resource(str): a resource on the server or on a remote URL
+
+    Returns
+        True is user has access to resource else False
+    """
+    # Check that user is logged in or that file extension is valid
+    if current_user.is_authenticated is False:
+        LOG.warning("Unauthenticated user requesting resource via remote_static")
+        return False
+    if resource not in session.get("igv_tracks", []):
+        LOG.warning(f"{resource} not in {session.get('igv_tracks', [])}")
+        return False
+    return True
+
+
 def set_session_tracks(display_obj):
     """Save igv tracks as a session object. This way it's easy to verify that a user is requesting one of these files from remote_static view endpoint
 
