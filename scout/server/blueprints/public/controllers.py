@@ -2,6 +2,7 @@ import logging
 from functools import reduce
 
 from scout.constants import EVENTS_MAP
+from scout.utils.date import pretty_date
 
 LOG = logging.getLogger(__name__)
 NOF_RECENT_EVENTS = 3
@@ -14,6 +15,19 @@ Reason: Implementation relies on dicts being able to maintain internal order.
 This was previously only supported in OrderedDict().
 """
 
+class CompactEvent():
+    def __init__(self, verb, event_type, date):
+        self.verb = verb
+        self.event_type = event_type
+        self.date = date
+        self.count = 1
+
+    def increment(self):
+        self.count = self.count+1
+        return self
+        
+    def __repr__(self):
+        return self.verb + ":" + self.event_type + ":" + pretty_date(self.date)
 
 def get_events_of_interest(store, user):
     """Read event database and compile a list of selected events of interest
@@ -28,14 +42,15 @@ def get_events_of_interest(store, user):
     events_of_interest = []
     events_per_case = []
     cases = recent_cases(user, store)
-
+    LOG.debug("recent: {}".format(cases))
     for case in cases:
         event_list = events_in_case(store, user, case)
+        LOG.debug("event_list: {}".format(event_list))
         events_per_case.append(event_list)
 
     for event_list in events_per_case:
         event = {}
-        event["human_readable"] = compile_important_events(event_list)
+        event["human_readable"] = compile_latest_events(event_list)
         head, *_tail = event_list
         event["link"] = head["link"]
         event["case"] = head["case"]
@@ -51,7 +66,35 @@ def recent_cases(user, store):
 
 def events_in_case(store, user, case):
     """Return a list of events associated with a user's specific case."""
+
+    # TODO: sort by 'updated_at'
     return list(store.user_events_by_case({"_id": user.email}, case))
+
+
+def compile_latest_events(event_list):
+    def compile_latest_events_aux(event_list, acc):
+        """helper function"""
+        if event_list == []:
+            return acc
+        head, *tail = event_list
+        LOG.debug("acc: {}".format(acc))
+        if len(acc) >=1 and head['verb'] == acc[0].verb and head['category'] == acc[0].event_type:
+            try:
+                compact_event = acc.pop()
+                acc.append(compact_event.increment())
+            except IndexError:
+                compact_event = CompactEvent(head['verb'], head['category'], head['updated_at'])
+                acc.append(compact_event)
+        else:
+            compact_event = CompactEvent(head['verb'], head['category'], head['updated_at'])
+            acc.append(compact_event)
+        return compile_latest_events_aux(tail, acc)
+        
+    myevents = compile_latest_events_aux(event_list, [])
+    LOG.debug('myevents: {}'.format(myevents))
+    
+    return events_to_string(myevents[0:3])
+
 
 
 def compile_important_events(event_list):
@@ -121,13 +164,14 @@ def events_to_string(list_of_events):
         to detect such a verb-event combination"""
         return event in EVENTS_MAP.get(verb)
 
-    for event in list_of_events:
-        (verb, event_type), n = event
-        sentence = EVENTS_MAP.get(verb)
-        sentence2 = sentence.replace("nof", str(n))
-        sentence3 = sentence2.replace("event_type", event_type + plural_s(n))
-        LOG.debug("SSS" + sentence3)
-        l.append(sentence3)
+    for compact_event in list_of_events:
+        
+        sentence = EVENTS_MAP.get(compact_event.verb)
+        sentence2 = sentence.replace("nof", str(compact_event.count))
+        sentence3 = sentence2.replace("event_type", compact_event.event_type + plural_s(compact_event.count))
+        sentence4 = sentence3 + " (" +pretty_date(compact_event.date) + ")"
+        LOG.debug("GOT:" + sentence4)
+        l.append(sentence4)
     return reduce(lambda a, b: a + ". " + b, l)
 
 

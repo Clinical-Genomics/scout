@@ -195,7 +195,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         query = dict()
         query["user_id"] = user_obj["_id"]
         query["case"] = case
-        return self.event_collection.find(query)
+        return self.event_collection.find(query).sort("updated_at", pymongo.DESCENDING)
 
     def add_phenotype(
         self,
