@@ -15,7 +15,8 @@ Reason: Implementation relies on dicts being able to maintain internal order.
 This was previously only supported in OrderedDict().
 """
 
-class CompactEvent():
+
+class CompactEvent:
     def __init__(self, verb, event_type, date):
         self.verb = verb
         self.event_type = event_type
@@ -23,11 +24,12 @@ class CompactEvent():
         self.count = 1
 
     def increment(self):
-        self.count = self.count+1
+        self.count = self.count + 1
         return self
-        
+
     def __repr__(self):
         return self.verb + ":" + self.event_type + ":" + pretty_date(self.date)
+
 
 def get_events_of_interest(store, user):
     """Read event database and compile a list of selected events of interest
@@ -78,23 +80,22 @@ def compile_latest_events(event_list):
             return acc
         head, *tail = event_list
         LOG.debug("acc: {}".format(acc))
-        if len(acc) >=1 and head['verb'] == acc[0].verb and head['category'] == acc[0].event_type:
+        if len(acc) >= 1 and head["verb"] == acc[0].verb and head["category"] == acc[0].event_type:
             try:
                 compact_event = acc.pop()
                 acc.append(compact_event.increment())
             except IndexError:
-                compact_event = CompactEvent(head['verb'], head['category'], head['updated_at'])
+                compact_event = CompactEvent(head["verb"], head["category"], head["updated_at"])
                 acc.append(compact_event)
         else:
-            compact_event = CompactEvent(head['verb'], head['category'], head['updated_at'])
+            compact_event = CompactEvent(head["verb"], head["category"], head["updated_at"])
             acc.append(compact_event)
         return compile_latest_events_aux(tail, acc)
-        
-    myevents = compile_latest_events_aux(event_list, [])
-    LOG.debug('myevents: {}'.format(myevents))
-    
-    return events_to_string(myevents[0:3])
 
+    myevents = compile_latest_events_aux(event_list, [])
+    LOG.debug("myevents: {}".format(myevents))
+
+    return events_to_string(myevents[0:3])
 
 
 def compile_important_events(event_list):
@@ -165,11 +166,13 @@ def events_to_string(list_of_events):
         return event in EVENTS_MAP.get(verb)
 
     for compact_event in list_of_events:
-        
+
         sentence = EVENTS_MAP.get(compact_event.verb)
         sentence2 = sentence.replace("nof", str(compact_event.count))
-        sentence3 = sentence2.replace("event_type", compact_event.event_type + plural_s(compact_event.count))
-        sentence4 = sentence3 + " (" +pretty_date(compact_event.date) + ")"
+        sentence3 = sentence2.replace(
+            "event_type", compact_event.event_type + plural_s(compact_event.count)
+        )
+        sentence4 = sentence3 + " (" + pretty_date(compact_event.date) + ")"
         LOG.debug("GOT:" + sentence4)
         l.append(sentence4)
     return reduce(lambda a, b: a + ". " + b, l)
