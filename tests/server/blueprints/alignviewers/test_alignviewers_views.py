@@ -89,14 +89,14 @@ def test_remote_cors(app):
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
 
-        # GIVEN that resource file exists in user session
+        # GIVEN that resource url exists in user session
         with client.session_transaction() as session:
             session["igv_tracks"] = [cloud_track_url]
 
-        # WHEN the remote cors endpoint is invoked with an url
+        # WHEN the remote cors endpoint is invoked with cloud_track_url
         resp = client.get(url_for("alignviewers.remote_cors", remote_url=cloud_track_url))
 
-        # THEN it should return forbidden (403)
+        # THEN response should be successful
         assert resp.status_code == 200
 
 
