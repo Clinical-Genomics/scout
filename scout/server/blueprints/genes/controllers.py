@@ -1,7 +1,33 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint as pp
+from flask import flash, redirect, url_for
 
 from scout.server.links import add_gene_links, add_tx_links, omim
+from scout.server.utils import document_generated
+
+
+def genes(store, query):
+    """Creates content for the genes template
+
+    Args:
+        store (scout.adapter.MongoAdapter)
+        query (string)
+    Returns:
+        data (dict)
+    """
+    hgnc_id = None
+    if "|" in query:
+        try:
+            hgnc_id = int(query.split(" | ", 1)[0])
+        except ValueError:
+            flash("Provided gene info could not be parsed!", "warning")
+    if hgnc_id:
+        return redirect(url_for(".gene", hgnc_id=hgnc_id))
+
+    nr_genes_37 = store.nr_genes(build="37")
+    nr_genes_38 = store.nr_genes(build="38")
+    genes_subset = list(store.all_genes(add_transcripts=False, limit=20))
+    last_updated = document_generated(genes_subset[0]["_id"] if genes_subset else None)
+    return dict(genes=genes_subset, last_updated=last_updated, nr_genes=(nr_genes_37, nr_genes_38))
 
 
 def gene(store, hgnc_id):

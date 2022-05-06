@@ -14,16 +14,8 @@ genes_bp = Blueprint("genes", __name__, template_folder="templates")
 def genes():
     """Render seach box for genes."""
     query = request.args.get("query", "")
-    hgnc_id = None
-    if "|" in query:
-        try:
-            hgnc_id = int(query.split(" | ", 1)[0])
-        except ValueError:
-            flash("Provided gene info could not be parsed!", "warning")
-    if hgnc_id:
-        return redirect(url_for(".gene", hgnc_id=hgnc_id))
-    gene_q = store.all_genes(limit=20)
-    return dict(genes=gene_q)
+    data = controllers.genes(store, query)
+    return data
 
 
 @genes_bp.route("/genes/<int:hgnc_id>")
