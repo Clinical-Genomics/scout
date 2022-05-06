@@ -15,6 +15,20 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
+def document_generated(document_id):
+    """Returns the generation time of a certain MongodDB document
+
+    Args:
+        document_id (bson.objectid.ObjectId)
+
+    Returns:
+        document_id.generation_time (datetime.datetime) or None if document_id is not of type ObjectId
+    """
+    if isinstance(document_id, ObjectId):
+        return document_id.generation_time
+    LOG.error(f"Could not retrieve generation date for Object {document_id}")
+
+
 def html_to_pdf_file(
     html_string, orientation, dpi=96, margins=["1.5cm", "1cm", "1cm", "1cm"], zoom=1
 ):

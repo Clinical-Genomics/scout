@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Script to convert old OMIM case format (list of integers) to new format (list of dictionaries)
 - Additional check for user logged in status before serving alignment files
 - Download .cgh files from cancer samples table on cancer case page
+- Number of documents and date of last update on genes page
 - Dark mode, using browser/OS media preference
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
