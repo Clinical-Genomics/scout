@@ -1,8 +1,10 @@
 """Tests for server utils"""
 import tempfile
+from datetime import datetime
 from io import BytesIO
 
 import pytest
+from bson.objectid import ObjectId
 from flask import url_for
 
 from scout.server.links import get_variant_links
@@ -10,10 +12,29 @@ from scout.server.utils import (
     append_safe,
     case_has_alignments,
     case_has_mt_alignments,
+    document_generated,
     find_index,
     html_to_pdf_file,
     variant_case,
 )
+
+
+def test_objectid_generated_valid_objid():
+    """Test the function that returns the timestamp of a certain Mongo ObjectId for a document"""
+    # GIVEN a database document  ObjectId
+    objid = ObjectId("6270e450615e1675f40b5ce4")
+
+    # THEN document_generated should return a timestamp
+    assert isinstance(document_generated(objid), datetime)
+
+
+def test_objectid_generated_none():
+    """Test the function that returns the timestamp of a MondoDB ObjectId when the ObjectId has wrong type"""
+
+    # GIVEN an id of different type than ObjectId
+    objid = None
+    # THEN document_generated should return None
+    assert document_generated(objid) is None
 
 
 def test_case_has_alignments(case_obj):
