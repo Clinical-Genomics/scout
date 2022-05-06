@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Handle `no intervals found` warning in load_region test
 - Beacon remove variants
 - Protect remote_cors function in alignviewers view from Server-Side Request Forgery (SSRF)
+- Check creation date of last document in gene collection to display when genes collection was updated last
 
 ## [4.51]
 ### Added
