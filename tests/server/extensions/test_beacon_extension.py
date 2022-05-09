@@ -27,6 +27,24 @@ def test_beacon_create_app():
         assert beacon.token
 
 
+@responses.activate
+def test_add_dataset(app, institute_obj):
+    """Test the function that sends a POST request to the Beacon with the info to create a new dataset"""
+
+    # GIVEN a mocked Beacon server dataset add endpoint
+    url = "http://localhost:6000/apiv1.0/add_dataset"
+    responses.add(
+        responses.POST,
+        url,
+        json={"message": "Dataset collection was successfully updated"},
+        status=200,
+    )
+    # invoking add_dataset function with expected params
+    resp_code = beacon.add_dataset(institute_obj, "cust000_GRCh37")
+    # Should return a success response code (200)
+    assert resp_code == 200
+
+
 def test_add_variants_unauthorized_user(app):
     """Test add_variants function when user has not a beacon_submitter role"""
 

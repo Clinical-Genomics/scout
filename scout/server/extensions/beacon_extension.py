@@ -88,7 +88,6 @@ class Beacon:
         """Add a missing dataset for an institute
 
         Args:
-            store(adapter.MongoAdapter)
             institute_obj(dict): scout.models.Institute
             dataset_it(str): a string like this "<institute_id>_<genome_build>". Example: cust000_GRCh38
         """
@@ -103,12 +102,14 @@ class Beacon:
         }
         headers = {"X-Auth-Token": self.token}
         json_resp = post_request_json(url=self.add_dataset_url, headers=headers, data=dataset_obj)
-        status_code = "warning"
+
+        flash_code = "warning"
 
         if json_resp.get("status_code") == 200:  # If dataset was created successfully
-            status_code = "success"
+            flash_code = "success"
 
-        flash(f"Beacon responded: {json_resp}", status_code)
+        flash(f"Beacon responded: {json_resp}", flash_code)
+        return json_resp.get("status_code")
 
     def add_variants(self, store, case_obj, form):
         """Adding variants from one of more individuals of case to Beacon
