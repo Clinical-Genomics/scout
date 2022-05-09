@@ -2,7 +2,7 @@ import logging
 import ssl
 
 from flask_ldapconn import LDAPConn
-from ldap3 import ALL, SYNC, Connection, Server, Tls
+from ldap3 import ALL, SYNC, Server, Tls
 
 LOG = logging.getLogger(__name__)
 
