@@ -4,8 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## []
-## Added
+### Added
+- Dark mode, using browser/OS media preference
+### Changed
+- Bootstrap upgraded to version 5
+
+## [4.52]
+### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
 - Rank score results now show the ranking range
@@ -15,7 +22,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Additional check for user logged in status before serving alignment files
 - Download .cgh files from cancer samples table on cancer case page
 - Number of documents and date of last update on genes page
-- Dark mode, using browser/OS media preference
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form
@@ -25,7 +31,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - User sessions to check files served by `server.blueprints.alignviewers.remote_static` endpoint
 - Moved Beacon-related functions to a dedicated app extension
 - Audit Filter now also loads filter displaying the variants for it
-- Bootstrap upgraded to version 5
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings
@@ -33,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Handle `no intervals found` warning in load_region test
 - Beacon remove variants
 - Protect remote_cors function in alignviewers view from Server-Side Request Forgery (SSRF)
+- Check creation date of last document in gene collection to display when genes collection was updated last
 
 ## [4.51]
 ### Added
