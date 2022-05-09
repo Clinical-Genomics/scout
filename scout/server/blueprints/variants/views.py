@@ -352,7 +352,7 @@ def cancer_variants(institute_id, case_name):
         page = int(Markup.escape(request.form.get("page", "1")))
 
     else:
-        page = int(Markup.escape(request.form.get("page", "1")))
+        page = int(Markup.escape(request.args.get("page", "1")))
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
