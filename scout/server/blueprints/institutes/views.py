@@ -164,7 +164,7 @@ def add_beacon_dataset(institute_id):
     dataset_id = request.form.get("beacon_dataset")
     institute_obj = store.institute(institute_id)
 
-    beacon.add_dataset(store, institute_obj, dataset_id)
+    beacon.add_dataset(institute_obj, dataset_id)
     return redirect(request.referrer)
 
 

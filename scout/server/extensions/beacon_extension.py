@@ -7,7 +7,6 @@ import logging
 
 from flask import flash
 from flask_login import current_user
-from werkzeug.datastructures import Headers
 
 from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
 
@@ -85,7 +84,7 @@ class Beacon:
 
         return data
 
-    def add_dataset(self, store, institute_obj, dataset_id):
+    def add_dataset(self, institute_obj, dataset_id):
         """Add a missing dataset for an institute
 
         Args:
@@ -102,14 +101,12 @@ class Beacon:
             "authlevel": "public",  # Standard publuc dataset, this can be fixed later
             "version": "v1.0",
         }
-        headers = Headers()
         headers = {"X-Auth-Token": self.token}
         json_resp = post_request_json(url=self.add_dataset_url, headers=headers, data=dataset_obj)
         status_code = "warning"
 
         if json_resp.get("status_code") == 200:  # If dataset was created successfully
             status_code = "success"
-            update_case = True
 
         flash(f"Beacon responded: {json_resp}", status_code)
 
@@ -145,7 +142,6 @@ class Beacon:
             )
             return
 
-        headers = Headers()
         headers = {"X-Auth-Token": self.token}
 
         update_case = False  # if True, update case with Beacon submission in Scout database
