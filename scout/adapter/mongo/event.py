@@ -190,7 +190,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return self.event_collection.find(query)
 
     def user_events_by_case(self, user_obj, case):
-        """Fetch all events by a specific user and case."""
+        """Fetch all events by a specific user and case sorted by updated_at."""
 
         query = dict()
         query["user_id"] = user_obj["_id"]
