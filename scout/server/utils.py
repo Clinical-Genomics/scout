@@ -15,6 +15,26 @@ from flask_login import current_user
 LOG = logging.getLogger(__name__)
 
 
+def sanitize_param(param, type, whitelist=[]):
+    """Makes sure a user-provided parameter that is potentially tainted is not propagated through the app
+
+    Args:
+        param(str): a parameter provided by user in a POST or GET request
+        type(int or str): if int, then param will be converted to int before being returned
+        whitelist(list): list of allowed values for param
+
+    Return:
+        param(int, str or None)
+    """
+    try:
+        if type == int:
+            param = int(param)
+        if whitelist and param not in whitelist:
+            return
+    except ValueError as err:
+        LOG.warning("could not sanitize param provided by user")
+
+
 def document_generated(document_id):
     """Returns the generation time of a certain MongodDB document
 
