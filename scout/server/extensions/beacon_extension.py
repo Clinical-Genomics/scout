@@ -143,7 +143,6 @@ class Beacon:
             return
 
         headers = {"X-Auth-Token": self.token}
-
         update_case = False  # if True, update case with Beacon submission in Scout database
 
         # Loop over the list of VCF files selected by user (clinical SNVs, research SNVs, clinical SVs ..)
@@ -199,7 +198,6 @@ class Beacon:
             "dataset_id": "_".join([institute_id, assembly]),
             "samples": case_obj.get("beacon", {}).get("samples", []),
         }
-        headers = Headers()
         headers = {"X-Auth-Token": self.token}
 
         json_resp = delete_request_json(
