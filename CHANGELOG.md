@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.52]
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Handle `no intervals found` warning in load_region test
 - Beacon remove variants
 - Protect remote_cors function in alignviewers view from Server-Side Request Forgery (SSRF)
+- Check creation date of last document in gene collection to display when genes collection was updated last
 
 ## [4.51]
 ### Added
