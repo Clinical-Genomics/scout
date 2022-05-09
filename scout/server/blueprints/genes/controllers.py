@@ -26,7 +26,8 @@ def genes(store, query):
     nr_genes_37 = store.nr_genes(build="37")
     nr_genes_38 = store.nr_genes(build="38")
     genes_subset = list(store.all_genes(add_transcripts=False, limit=20))
-    last_updated = document_generated(genes_subset[0]["_id"] if genes_subset else None)
+    last_inserted_gene = store.hgnc_collection.find({}).sort("_id", -1).limit(1)
+    last_updated = document_generated(last_inserted_gene[0]["_id"] if last_inserted_gene else None)
     return dict(genes=genes_subset, last_updated=last_updated, nr_genes=(nr_genes_37, nr_genes_38))
 
 
