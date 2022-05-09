@@ -8,9 +8,8 @@ from scout import __version__
 from scout.server.blueprints.public.controllers import (
     CompactEvent,
     events_to_string,
-    get_compact_events,                           
+    get_compact_events,
 )
-
 
 
 def test_get_compact_events(real_variant_database, institute_obj, case_obj, user_obj, variant_obj):
