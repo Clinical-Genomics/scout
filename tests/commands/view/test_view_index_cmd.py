@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
-from scout.server.extensions import store
 
 
 def test_view_index(mock_app):
