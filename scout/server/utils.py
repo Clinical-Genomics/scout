@@ -33,6 +33,9 @@ def sanitize_param(param, type, whitelist=[]):
             return
     except ValueError as err:
         LOG.warning("could not sanitize param provided by user")
+        return
+
+    return param
 
 
 def document_generated(document_id):
