@@ -164,8 +164,13 @@ def variant_update(institute_id, case_name, variant_id):
     user_obj = store.user(current_user.email)
     link = request.referrer
 
-    manual_rank = Markup.escape(request.form.get("manual_rank"))
-    cancer_tier = Markup.escape(request.form.get("cancer_tier"))
+    manual_rank = (
+        Markup.escape(request.form.get("manual_rank")) if request.form.get("manual_rank") else None
+    )
+    cancer_tier = (
+        Markup.escape(request.form.get("cancer_tier")) if request.form.get("cancer_tier") else None
+    )
+
     if manual_rank:
         try:
             new_manual_rank = int(manual_rank) if manual_rank != "-1" else None
