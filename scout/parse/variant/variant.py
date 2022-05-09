@@ -113,7 +113,7 @@ def parse_variant(
         parsed_variant["filters"] = ["PASS"]
 
     # Add the dbsnp ids
-    if "rs" in variant.ID:
+    if variant.ID and "rs" in variant.ID:
         parsed_variant["dbsnp_id"] = variant.ID
 
     # This is the id of other position in translocations
