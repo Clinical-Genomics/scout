@@ -46,7 +46,7 @@ def reset_dismissed(institute_id, case_name):
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = int(Markup.escape(request.form.get("page", 1)))
+    page = int(Markup.escape(request.form.get("page", "1")))
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get("variant_type", "clinical")
@@ -153,7 +153,7 @@ def variants(institute_id, case_name):
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
-    page = int(Markup.escape(request.form.get("page", 1)))
+    page = int(Markup.escape(request.form.get("page", "1")))
     variant_type = request.args.get("variant_type", "clinical")
     category = "str"
 
@@ -234,7 +234,7 @@ def str_variants(institute_id, case_name):
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
 
-    page = int(Markup.escape(request.form.get("page", 1)))
+    page = int(Markup.escape(request.form.get("page", "1")))
     variant_type = request.args.get("variant_type", "clinical")
     category = "sv"
     # Define case and institute objects
@@ -349,10 +349,10 @@ def cancer_variants(institute_id, case_name):
                     expand_search=True,
                 )
             )
-        page = int(Markup.escape(request.form.get("page", 1)))
+        page = int(Markup.escape(request.form.get("page", "1")))
 
     else:
-        page = int(Markup.escape(request.form.get("page", 1)))
+        page = int(Markup.escape(request.form.get("page", "1")))
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
@@ -418,7 +418,7 @@ def cancer_variants(institute_id, case_name):
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
 
-    page = int(Markup.escape(request.form.get("page", 1)))
+    page = int(Markup.escape(request.form.get("page", "1")))
     variant_type = request.args.get("variant_type", "clinical")
     category = "cancer_sv"
     # Define case and institute objects
