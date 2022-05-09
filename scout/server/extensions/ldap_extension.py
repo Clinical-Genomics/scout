@@ -28,7 +28,7 @@ class LdapManager(LDAPConn):
 
         app.config.setdefault("LDAP_USE_SSL", False)
         app.config.setdefault("LDAP_USE_TLS", True)
-        app.config.setdefault("LDAP_TLS_VERSION", ssl.PROTOCOL_TLSv1)
+        app.config.setdefault("LDAP_TLS_VERSION", ssl.PROTOCOL_TLSv1_2)
         app.config.setdefault("LDAP_REQUIRE_CERT", ssl.CERT_REQUIRED)
 
         app.config.setdefault("LDAP_CLIENT_PRIVATE_KEY", None)
