@@ -42,7 +42,6 @@ class CompactEvent:
 
     def __repr__(self):
         return (
-
             self.verb + ":" + self.event_type + ":" + str(self.count) + ":" + pretty_date(self.date)
         )
 
