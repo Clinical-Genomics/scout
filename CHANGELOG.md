@@ -6,6 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.52]
 ### Added
+- Admin users can create missing beacon datasets from the institute's settings page
+
+## [4.52]
+### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
 - Parse REVEL_score alongside REVEL_rankscore from csq field and display it on SNV variant page
 - Rank score results now show the ranking range
@@ -15,7 +19,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Additional check for user logged in status before serving alignment files
 - Download .cgh files from cancer samples table on cancer case page
 - Number of documents and date of last update on genes page
-- Admin users can create missing beacon datasets from the institute's settings page
 ### Changed
 - Verify user before redirecting to IGV alignments and sashimi plots
 - Build case IGV tracks starting from case and variant objects instead of passing all params in a form
