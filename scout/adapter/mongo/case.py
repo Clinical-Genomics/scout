@@ -65,12 +65,12 @@ class CaseHandler(object):
     def _set_similar_phenotype_query(self, query, query_field, query_term, institute_id):
         """Adds query parameters when search is performed by case or phenotype similarity
 
-                Args:
-                    query(dict): cases search query
-                    query_field(str) example:"status"
-                    query_term(str) example:"active"
-                    name_query(dict) args provided by users in cases filter search
-                    institute_id(str): institute to search cases for
+        Args:
+            query(dict): cases search query
+            query_field(str) example:"status"
+            query_term(str) example:"active"
+            name_query(dict) args provided by users in cases filter search
+            institute_id(str): institute to search cases for
         """
         hpo_terms = []
         order = None
