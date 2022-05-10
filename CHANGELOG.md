@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 ### Fixed
+- Vulnerabilities flagged by SonarCloud
 - Successful parse of FOUND_IN should avoid GATK caller default
 
 ## [4.52]
