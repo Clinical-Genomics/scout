@@ -422,6 +422,42 @@ def variant_rank_scores(store, case_obj, variant_obj):
     return rank_score_results
 
 
+def set_loqus_query(variant_obj):
+    """Create a loqusDB query based on the variant's characteristics
+
+    Args:
+        variant_obj(scout.models.Variant)
+    Returns:
+        loqus_query(dict)
+    """
+    chrom = variant_obj["chromosome"]
+    end_chrom = variant_obj.get("end_chrom", chrom)
+    pos = variant_obj["position"]
+    end = variant_obj["end"]
+    ref = variant_obj["reference"]
+    alt = variant_obj["alternative"]
+    var_case_id = variant_obj["case_id"]
+    var_type = variant_obj.get("variant_type", "clinical")
+    category = variant_obj["category"]
+    if category == "cancer":
+        category = "snv"
+    if category == "cancer_sv":
+        category = "sv"
+
+    composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
+    loqus_query = {
+        "_id": composite_id,
+        "chrom": chrom,
+        "end_chrom": end_chrom,
+        "pos": pos,
+        "end": end,
+        "length": variant_obj.get("length", 0),
+        "variant_type": variant_obj.get("sub_category", "").upper(),
+        "category": category,
+    }
+    return loqus_query
+
+
 def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant.
 
@@ -444,80 +480,66 @@ def observations(store, loqusdb, case_obj, variant_obj):
     Returns:
         obs_data(dict)
     """
-    LOG.error(loqusdb)
+    obs_data = {}
 
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
-    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
-    if loqusdb.loqusdb_settings[loqusdb_id]["version"] is None:
-        flash("Could not connect to the preselected loqusdb instance", "danger")
-        return {
-            "total": "N/A",
-        }
 
-    chrom = variant_obj["chromosome"]
-    end_chrom = variant_obj.get("end_chrom", chrom)
-    pos = variant_obj["position"]
-    end = variant_obj["end"]
-    ref = variant_obj["reference"]
-    alt = variant_obj["alternative"]
-    var_case_id = variant_obj["case_id"]
-    var_type = variant_obj.get("variant_type", "clinical")
-    category = variant_obj["category"]
-    if category == "cancer":
-        category = "snv"
-    if category == "cancer_sv":
-        category = "sv"
+    institute_loqus_ids = institute_obj.get("loqusdb_id", [])
 
-    composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
-    variant_query = {
-        "_id": composite_id,
-        "chrom": chrom,
-        "end_chrom": end_chrom,
-        "pos": pos,
-        "end": end,
-        "length": variant_obj.get("length", 0),
-        "variant_type": variant_obj.get("sub_category", "").upper(),
-        "category": category,
-    }
-    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
+    # institute_obj.get("loqusdb_id") was a string initially because only one instance of loqus could be associated to a institute
+    if isinstance(institute_loqus_ids, str):
+        institute_loqus_ids = [institute_loqus_ids]
 
-    if not obs_data:
-        obs_data["total"] = loqusdb.case_count(variant_category=category, loqusdb_id=loqusdb_id)
-        if obs_data["total"]:
-            obs_data["observations"] = 0
-        return obs_data
+    # Compose variant query to submit to one or more loqusdb instances
+    loqus_query = set_loqus_query(variant_obj)
 
-    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
-
-    obs_data["cases"] = []
-    for i, case_id in enumerate(obs_data.get("families", [])):
-        if i > 10:
-            break
-        if case_id == var_case_id:
+    for loqus_id in institute_loqus_ids:  # Loop over all loqusdb instances of an institute
+        obs_data[loqus_id] = None
+        loqus_settings = loqusdb.loqusdb_settings.get(loqus_id)
+        if loqus_settings is None:  # An instance might have been renamed or removed
+            flash(f"Could not connect to the preselected loqusdb '{loqus_id}' instance", "warning")
+            obs_data[loqus_id]["total"] = "N/A"
             continue
-        # other case might belong to same institute, collaborators or other institutes
-        other_case = store.case(case_id)
-        if not other_case:
-            # Case could have been removed
-            LOG.debug("Case %s could not be found in database", case_id)
-            continue
-        other_institutes = set([other_case.get("owner")])
-        other_institutes.update(set(other_case.get("collaborators", [])))
+        obs_data[loqus_id] = loqusdb.get_variant(
+            loqus_query, loqusdb_id=loqus_id
+        )  # collect observation on that loqus instance
 
-        if user_institutes_ids.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
+        if not obs_data[loqus_id]:  # data is an empty dictionary
+            # Collect count of variants in variant's case
+            obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
+            if obs_data[loqus_id]["total"]:
+                obs_data[loqus_id]["observations"] = 0
             continue
 
-        other_variant = store.variant(
-            case_id=other_case["_id"], document_id=variant_obj["variant_id"]
-        )
+        obs_data[loqus_id]["cases"] = []
+        for i, case_id in enumerate(obs_data[loqus_id].get("families", [])):
+            if i > 10:
+                break
+            if case_id == variant_obj["case_id"]:
+                continue
+            # other case might belong to same institute, collaborators or other institutes
+            other_case = store.case(case_id)
+            if not other_case:
+                # Case could have been removed
+                LOG.debug("Case %s could not be found in database", case_id)
+                continue
+            other_institutes = set([other_case.get("owner")])
+            other_institutes.update(set(other_case.get("collaborators", [])))
 
-        # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
-        if other_variant is None and category == "sv":
-            other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
+            if user_institutes_ids.isdisjoint(other_institutes):
+                # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
+                continue
 
-        obs_data["cases"].append(dict(case=other_case, variant=other_variant))
+            other_variant = store.variant(
+                case_id=other_case["_id"], document_id=variant_obj["variant_id"]
+            )
+
+            # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
+            if other_variant is None and category == "sv":
+                other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
+
+            obs_data[loqus_id]["cases"].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
 
