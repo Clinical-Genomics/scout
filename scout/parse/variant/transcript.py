@@ -261,7 +261,7 @@ def get_dbsnp_list(entry):
             for variant_id in variant_ids.split("&"):
                 if variant_id.startswith("rs"):
                     dbsnp_list.add(variant_id)
-    return dbsnp_list
+    return list(dbsnp_list)
 
 
 def get_cosmic_list(entry):
