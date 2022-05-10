@@ -259,7 +259,9 @@ def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # create a temp folder to write excel files into
-    temp_excel_dir = os.path.join(cases_bp.static_folder, "_".join([case_name, "mt_reports"]))
+    temp_excel_dir = os.path.join(
+        cases_bp.static_folder, "_".join([case_obj["display_name"], "mt_reports"])
+    )
     os.makedirs(temp_excel_dir, exist_ok=True)
 
     if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
