@@ -508,7 +508,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if not obs_data[loqus_id]:  # data is an empty dictionary
             # Collect count of variants in variant's case
             obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
-            if obs_data[loqus_id]["total"]:
+            if obs_data[loqus_id].get("total"):
                 obs_data[loqus_id]["observations"] = 0
             continue
 
