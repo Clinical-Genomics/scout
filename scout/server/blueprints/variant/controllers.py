@@ -444,6 +444,8 @@ def observations(store, loqusdb, case_obj, variant_obj):
     Returns:
         obs_data(dict)
     """
+    LOG.error(loqusdb)
+
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
     loqusdb_id = institute_obj.get("loqusdb_id") or "default"
