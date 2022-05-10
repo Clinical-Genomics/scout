@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.52
+### Fixed
+- Vulnerabilities flagged by SonarCloud
+
 ## [4.52]
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance
