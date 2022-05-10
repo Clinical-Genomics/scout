@@ -263,6 +263,7 @@ def get_dbsnp_list(entry):
                     dbsnp_list.add(variant_id)
     return dbsnp_list
 
+
 def get_cosmic_list(entry):
     """Get COSMIC -Catalogue Of Somatic Mutations In Cancer- if present in entry."""
     cosmic_list = []
