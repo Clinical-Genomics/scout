@@ -28,7 +28,7 @@ def check_session_tracks(resource):
         LOG.warning("Unauthenticated user requesting resource via remote_static")
         return False
     if resource not in session.get("igv_tracks", []):
-        LOG.warning(f"{resource} not in {session.get('igv_tracks', [])}")
+        LOG.warning(f"Requested resource to be displayed in IGV not in session's IGV tracks")
         return False
     return True
 

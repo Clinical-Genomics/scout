@@ -9,6 +9,7 @@ from flask_babel import Babel
 from flask_cors import CORS
 from flask_login import current_user
 from flaskext.markdown import Markdown
+from markupsafe import Markup
 
 from . import extensions
 from .blueprints import (
@@ -297,7 +298,7 @@ def configure_coverage(app):
         accept_languages = current_app.config.get("ACCEPT_LANGUAGES", ["en"])
 
         # first check request args
-        session_language = request.args.get("lang")
+        session_language = Markup.escape(request.args.get("lang"))
         if session_language in accept_languages:
             current_app.logger.info("using session language: %s", session_language)
             return session_language
