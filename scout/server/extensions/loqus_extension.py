@@ -148,6 +148,36 @@ class LoqusDB:
         LOG.debug("version: {}".format(version))
         return version
 
+    def set_loqus_query(self, variant_obj, category):
+        """Create a loqusDB query based on the variant's characteristics
+
+        Args:
+            variant_obj(scout.models.Variant)
+            category(str)
+        Returns:
+            loqus_query(dict)
+        """
+        chrom = variant_obj["chromosome"]
+        end_chrom = variant_obj.get("end_chrom", chrom)
+        pos = variant_obj["position"]
+        end = variant_obj["end"]
+        ref = variant_obj["reference"]
+        alt = variant_obj["alternative"]
+        var_type = variant_obj.get("variant_type", "clinical")
+
+        composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
+        loqus_query = {
+            "_id": composite_id,
+            "chrom": chrom,
+            "end_chrom": end_chrom,
+            "pos": pos,
+            "end": end,
+            "length": variant_obj.get("length", 0),
+            "variant_type": variant_obj.get("sub_category", "").upper(),
+            "category": category,
+        }
+        return loqus_query
+
     def case_count(self, variant_category, loqusdb_id="default"):
         """Returns number of cases in loqus instance
 
