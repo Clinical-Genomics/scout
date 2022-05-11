@@ -61,7 +61,7 @@ class LoqusDB:
         cgf_as_dict = {}
         for setting in cfg:
             cfg_id = setting.get("id") or "default"
-            cgf_as_dict[setting.get("id") or "default"] = setting
+            cgf_as_dict[cfg_id] = setting
 
         self.loqusdb_settings = cgf_as_dict
 
