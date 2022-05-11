@@ -454,6 +454,48 @@ def set_loqus_query(variant_obj, category):
     return loqus_query
 
 
+def get_loqusdb_obs_cases(variant_obj, obs_families=[]):
+    """Get a list of cases where variant observations occurred.
+    These are only the cases the user has access to.
+
+    Args:
+        variant_obj(scout.models.Variant) it's the variant the loqusdb stats are computer for
+        obs_families(list). List of all cases in loqusdb where variant occurred
+
+    """
+    obs_cases = []
+    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
+    for i, case_id in enumerate(obs_families):
+        if len(obs_cases) > 10:
+            break
+        if case_id == variant_obj["case_id"]:
+            continue
+        # other case might belong to same institute, collaborators or other institutes
+        other_case = store.case(case_id)
+        if not other_case:
+            # Case could have been removed
+            LOG.debug("Case %s could not be found in database", case_id)
+            continue
+        other_institutes = set([other_case.get("owner")])
+        other_institutes.update(set(other_case.get("collaborators", [])))
+
+        if user_institutes_ids.isdisjoint(other_institutes):
+            # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
+            continue
+
+        other_variant = store.variant(
+            case_id=other_case["_id"], document_id=variant_obj["variant_id"]
+        )
+
+        # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
+        if other_variant is None and category == "sv":
+            other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
+
+        obs_cases.append(dict(case=other_case, variant=other_variant))
+
+    return obs_cases
+
+
 def observations(store, loqusdb, case_obj, variant_obj):
     """Query observations for a variant.
 
@@ -479,7 +521,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
     obs_data = {}
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
-    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
 
     inst_loqus_ids = institute_obj.get("loqusdb_id", [])
 
@@ -513,34 +554,10 @@ def observations(store, loqusdb, case_obj, variant_obj):
                 obs_data[loqus_id]["observations"] = 0
             continue
 
+        # collect cases where observations occurred
+        obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(obs_data)
+
         obs_data[loqus_id]["cases"] = []
-        for i, case_id in enumerate(obs_data[loqus_id].get("families", [])):
-            if i > 10:
-                break
-            if case_id == variant_obj["case_id"]:
-                continue
-            # other case might belong to same institute, collaborators or other institutes
-            other_case = store.case(case_id)
-            if not other_case:
-                # Case could have been removed
-                LOG.debug("Case %s could not be found in database", case_id)
-                continue
-            other_institutes = set([other_case.get("owner")])
-            other_institutes.update(set(other_case.get("collaborators", [])))
-
-            if user_institutes_ids.isdisjoint(other_institutes):
-                # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
-                continue
-
-            other_variant = store.variant(
-                case_id=other_case["_id"], document_id=variant_obj["variant_id"]
-            )
-
-            # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
-            if other_variant is None and category == "sv":
-                other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
-
-            obs_data[loqus_id]["cases"].append(dict(case=other_case, variant=other_variant))
 
     return obs_data
 
