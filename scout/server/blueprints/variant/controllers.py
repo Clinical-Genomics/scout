@@ -437,7 +437,6 @@ def set_loqus_query(variant_obj, category):
     end = variant_obj["end"]
     ref = variant_obj["reference"]
     alt = variant_obj["alternative"]
-    var_case_id = variant_obj["case_id"]
     var_type = variant_obj.get("variant_type", "clinical")
 
     composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
@@ -562,8 +561,6 @@ def observations(store, loqusdb, case_obj, variant_obj):
         obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
             store, variant_obj, category, obs_data[loqus_id].get("families", [])
         )
-
-        obs_data[loqus_id]["cases"] = []
 
     return obs_data
 
