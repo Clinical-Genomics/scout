@@ -102,7 +102,7 @@
                 {{ form.loqusdb_id.label(class="control-label", data_toggle="tooltip", data_placement="top", title="LoqudDB id" ) }}<br>
                 <select multiple class="selectpicker" name="loqusdb_id">
                   {% for instance in loqus_instances %}
-                    <option value="{{instance}}" {% if institute.loqusdb_id == instance %} selected {% endif %}>{{instance}}</option>
+                    <option value="{{instance}}" {% if instance in institute.loqusdb_id %} selected {% endif %}>{{instance}}</option>
                   {% endfor %}
                 </select>
               </div>

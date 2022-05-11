@@ -485,17 +485,17 @@ def observations(store, loqusdb, case_obj, variant_obj):
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
 
-    institute_loqus_ids = institute_obj.get("loqusdb_id", [])
+    inst_loqus_ids = institute_obj.get("loqusdb_id", [])
 
     # institute_obj.get("loqusdb_id") was a string initially because only one instance of loqus could be associated to a institute
-    if isinstance(institute_loqus_ids, str):
-        institute_loqus_ids = [institute_loqus_ids]
+    if isinstance(inst_loqus_ids, str):
+        inst_loqus_ids = [inst_loqus_ids]
 
     # Compose variant query to submit to one or more loqusdb instances
     loqus_query = set_loqus_query(variant_obj)
 
-    for loqus_id in institute_loqus_ids:  # Loop over all loqusdb instances of an institute
-        obs_data[loqus_id] = None
+    for loqus_id in inst_loqus_ids:  # Loop over all loqusdb instances of an institute
+        obs_data[loqus_id] = {}
         loqus_settings = loqusdb.loqusdb_settings.get(loqus_id)
         if loqus_settings is None:  # An instance might have been renamed or removed
             flash(f"Could not connect to the preselected loqusdb '{loqus_id}' instance", "warning")

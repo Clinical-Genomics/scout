@@ -38,7 +38,6 @@ class InstituteHandler(object):
         internal_id,
         sanger_recipient=None,
         sanger_recipients=None,
-        loqusdb_id=None,
         coverage_cutoff=None,
         frequency_cutoff=None,
         display_name=None,
@@ -58,7 +57,6 @@ class InstituteHandler(object):
             internal_id(str): The internal institute id
             sanger_recipient(str): Email adress to add for sanger order
             sanger_recipients(list): A list of sanger recipients email addresses
-            loqusdb_id(str): identify loqusdb setting to use
             coverage_cutoff(int): Update coverage cutoff
             frequency_cutoff(float): New frequency cutoff
             display_name(str): New display name
