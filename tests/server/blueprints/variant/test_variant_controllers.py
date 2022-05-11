@@ -113,10 +113,16 @@ def test_get_igv_tracks():
     assert "test track" in igv_tracks
 
 
-def test_observations_controller_non_existing(app, case_obj, loqusdb):
+def test_observations_controller_non_existing(app, institute_obj, case_obj, loqusdb):
     ## GIVEN a database and a loqusdb mock without the variant
     var_obj = store.variant_collection.find_one()
     assert var_obj
+
+    # GIVEN that the institute has a test loqusdb id associated
+    loqus_id = list(loqusdb.loqusdb_settings.keys())[0]
+    store.institute_collection.find_one_and_update(
+        {"_id": institute_obj["_id"]}, {"$set": {"loqusdb_id": loqus_id}}
+    )
 
     ## WHEN updating the case_id for the variant
     var_obj["case_id"] = "internal_id2"
@@ -127,11 +133,9 @@ def test_observations_controller_non_existing(app, case_obj, loqusdb):
         data = observations(store, loqusdb, case_obj, var_obj)
 
     ## THEN assert that the number of cases is still returned
-    assert data["total"] == loqusdb.nr_cases
-    ## THEN assert the cases variable is in data
-    assert "cases" in data
-    ## THEN assert there are no case information returned
-    assert data["cases"] == []
+    assert data[loqus_id]["total"] == loqusdb.nr_cases
+    ## THEN assert the cases variable is in data but it's an empty list
+    assert data[loqus_id]["cases"] == []
 
 
 def test_observations_controller_snv(app, case_obj, loqusdb):

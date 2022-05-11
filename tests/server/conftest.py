@@ -17,7 +17,7 @@ class LoqusdbMock:
         self.nr_cases = 130
         self.variants = {"1_169898014_T_C": {"families": ["vitalmouse"]}}
         self.loqusdb_settings = {
-            "default": {
+            "test": {
                 "api_url": "http://127.0.0.1:9000",
                 "instance_type": "api",
                 "id": "default",
