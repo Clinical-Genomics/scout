@@ -454,14 +454,18 @@ def set_loqus_query(variant_obj, category):
     return loqus_query
 
 
-def get_loqusdb_obs_cases(variant_obj, obs_families=[]):
+def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
     """Get a list of cases where variant observations occurred.
     These are only the cases the user has access to.
 
     Args:
+        store (scout.adapter.MongoAdapter)
         variant_obj(scout.models.Variant) it's the variant the loqusdb stats are computer for
+        category(str)
         obs_families(list). List of all cases in loqusdb where variant occurred
 
+    Returns:
+        obs_cases(list).
     """
     obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
@@ -555,7 +559,9 @@ def observations(store, loqusdb, case_obj, variant_obj):
             continue
 
         # collect cases where observations occurred
-        obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(obs_data)
+        obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
+            store, variant_obj, category, obs_data[loqus_id].get("families", [])
+        )
 
         obs_data[loqus_id]["cases"] = []
 
