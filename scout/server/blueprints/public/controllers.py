@@ -76,12 +76,26 @@ def get_events_of_interest(store, user):
 
 def recent_cases(user, store):
     """Return a list of recent cases order in increasing age. A case
-    may appear only once."""
+    may appear only once.
+
+    Args:
+        user: store.user
+        store: scout.adapter.MongoAdapter
+    Returns:
+        list of store.case._id
+    """
     return list(store.unique_cases_by_date({"_id": user.email}))
 
 
 def events_in_case(store, user, case):
-    """Return a list of events associated with a user's specific case."""
+    """Return a list of events associated with a user's specific case.
+    Args:
+        store: scout.adapter.MongoAdapter
+        user: store.user
+        case: case._id
+    Returns:
+        list of store.event
+    """
     return list(store.user_events_by_case({"_id": user.email}, case))
 
 
