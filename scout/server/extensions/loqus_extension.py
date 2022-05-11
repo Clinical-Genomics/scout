@@ -58,9 +58,12 @@ class LoqusDB:
         Args:
             cgf(list): list of dictionaries probably containing containing key/values "binary_path" and "config_path"
         """
+        cgf_as_dict = {}
         for setting in cfg:
             cfg_id = setting.get("id") or "default"
-            self.loqusdb_settings[cfg_id] = setting
+            cgf_as_dict[setting.get("id") or "default"] = setting
+
+        self.loqusdb_settings = cgf_as_dict
 
     def init_app(self, app):
         """Initialize LoqusDB from Flask app and check that settings are valid."""
