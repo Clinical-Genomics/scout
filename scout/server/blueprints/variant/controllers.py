@@ -542,6 +542,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
     for loqus_id in inst_loqus_ids:  # Loop over all loqusdb instances of an institute
         obs_data[loqus_id] = {}
         loqus_settings = loqusdb.loqusdb_settings.get(loqus_id)
+
         if loqus_settings is None:  # An instance might have been renamed or removed
             flash(f"Could not connect to the preselected loqusdb '{loqus_id}' instance", "warning")
             obs_data[loqus_id]["total"] = "N/A"

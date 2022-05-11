@@ -138,14 +138,19 @@ def test_observations_controller_non_existing(app, institute_obj, case_obj, loqu
     assert data[loqus_id]["cases"] == []
 
 
-def test_observations_controller_snv(app, case_obj, loqusdb):
+def test_observations_controller_snv(app, case_obj, institute_obj, loqusdb):
     """Testing observation controller to retrieve observations for one SNV variant"""
     # GIVEN a database with a case with a specific SNV variant
     case_obj = store.case_collection.find_one()
     var_obj = store.variant_collection.find_one()
     assert var_obj
-
     loqusdb._add_variant(var_obj)
+
+    # GIVEN that the institute has a test loqusdb id associated
+    loqus_id = list(loqusdb.loqusdb_settings.keys())[0]
+    store.institute_collection.find_one_and_update(
+        {"_id": institute_obj["_id"]}, {"$set": {"loqusdb_id": loqus_id}}
+    )
 
     # WHEN the same variant is in another case
     var_obj["case_id"] = "internal_id2"
@@ -155,12 +160,12 @@ def test_observations_controller_snv(app, case_obj, loqusdb):
         data = observations(store, loqusdb, case_obj, var_obj)
 
         ## THEN loqus should return the occurrence from the first case
-        assert case_obj["_id"] in data["families"]
-        assert data["cases"][0]["case"] == case_obj
-        assert data["cases"][0]["variant"]["_id"] == var_obj["_id"]
+        assert case_obj["_id"] in data[loqus_id]["families"]
+        assert data[loqus_id]["cases"][0]["case"] == case_obj
+        assert data[loqus_id]["cases"][0]["variant"]["_id"] == var_obj["_id"]
 
 
-def test_observations_controller_sv(app, sv_variant_obj, loqusdb):
+def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdb):
     """Testing observations controller to retrieve observations for one SV variant.
     Test that SV variant similar to a given one from another case is returned
     """
@@ -168,6 +173,12 @@ def test_observations_controller_sv(app, sv_variant_obj, loqusdb):
     case_obj = store.case_collection.find_one()
     store.variant_collection.insert_one(sv_variant_obj)
     loqusdb._add_variant(sv_variant_obj)
+
+    # GIVEN that the institute has a test loqusdb id associated
+    loqus_id = list(loqusdb.loqusdb_settings.keys())[0]
+    store.institute_collection.find_one_and_update(
+        {"_id": institute_obj["_id"]}, {"$set": {"loqusdb_id": loqus_id}}
+    )
 
     # WHEN the same variant is in another case
     sv_variant_obj["case_id"] = "internal_id2"
@@ -180,9 +191,9 @@ def test_observations_controller_sv(app, sv_variant_obj, loqusdb):
         data = observations(store, loqusdb, case_obj, sv_variant_obj)
 
         ## THEN loqus should return the occurrence from the first case
-        assert case_obj["_id"] in data["families"]
-        assert data["cases"][0]["case"] == case_obj
-        assert data["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
+        assert case_obj["_id"] in data[loqus_id]["families"]
+        assert data[loqus_id]["cases"][0]["case"] == case_obj
+        assert data[loqus_id]["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
 
 
 def test_case_variant_check_causatives(app, real_variant_database):
