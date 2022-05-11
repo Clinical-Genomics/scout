@@ -422,11 +422,12 @@ def variant_rank_scores(store, case_obj, variant_obj):
     return rank_score_results
 
 
-def set_loqus_query(variant_obj):
+def set_loqus_query(variant_obj, category):
     """Create a loqusDB query based on the variant's characteristics
 
     Args:
         variant_obj(scout.models.Variant)
+        category(str)
     Returns:
         loqus_query(dict)
     """
@@ -438,11 +439,6 @@ def set_loqus_query(variant_obj):
     alt = variant_obj["alternative"]
     var_case_id = variant_obj["case_id"]
     var_type = variant_obj.get("variant_type", "clinical")
-    category = variant_obj["category"]
-    if category == "cancer":
-        category = "snv"
-    if category == "cancer_sv":
-        category = "sv"
 
     composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
     loqus_query = {
@@ -478,12 +474,12 @@ def observations(store, loqusdb, case_obj, variant_obj):
         variant_obj (scout.models.Variant)
 
     Returns:
-        obs_data(dict)
+        obs_data(dict) with loqusdb id as key and observations stats as value
     """
     obs_data = {}
-
     institute_id = variant_obj["institute"]
     institute_obj = store.institute(institute_id)
+    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
 
     inst_loqus_ids = institute_obj.get("loqusdb_id", [])
 
@@ -492,7 +488,12 @@ def observations(store, loqusdb, case_obj, variant_obj):
         inst_loqus_ids = [inst_loqus_ids]
 
     # Compose variant query to submit to one or more loqusdb instances
-    loqus_query = set_loqus_query(variant_obj)
+    category = variant_obj["category"]
+    if category == "cancer":
+        category = "snv"
+    if category == "cancer_sv":
+        category = "sv"
+    loqus_query = set_loqus_query(variant_obj, categpry)
 
     for loqus_id in inst_loqus_ids:  # Loop over all loqusdb instances of an institute
         obs_data[loqus_id] = {}
