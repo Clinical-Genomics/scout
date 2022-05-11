@@ -493,7 +493,7 @@ def observations(store, loqusdb, case_obj, variant_obj):
         category = "snv"
     if category == "cancer_sv":
         category = "sv"
-    loqus_query = set_loqus_query(variant_obj, categpry)
+    loqus_query = set_loqus_query(variant_obj, category)
 
     for loqus_id in inst_loqus_ids:  # Loop over all loqusdb instances of an institute
         obs_data[loqus_id] = {}
