@@ -163,7 +163,6 @@ class LoqusDB:
         end = variant_obj["end"]
         ref = variant_obj["reference"]
         alt = variant_obj["alternative"]
-        var_type = variant_obj.get("variant_type", "clinical")
 
         composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
         loqus_query = {
