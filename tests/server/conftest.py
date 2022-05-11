@@ -28,6 +28,18 @@ class LoqusdbMock:
     def case_count(self):
         return self.nr_cases
 
+    def set_loqus_query(self, variant_obj, category):
+        return {
+            "_id": "7_124491972_C_A",
+            "chrom": "7",
+            "end_chrom": "7",
+            "pos": 124491972,
+            "end": 124491972,
+            "length": 1,
+            "variant_type": "snv",
+            "category": "snv",
+        }
+
     def get_variant(self, var_dict, loqusdb_id="test"):
         loqus_instance = self.loqusdb_settings.get(loqusdb_id)
         var = self.variants.get(var_dict["_id"], {})
