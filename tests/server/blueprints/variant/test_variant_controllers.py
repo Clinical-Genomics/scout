@@ -138,12 +138,13 @@ def test_observations_controller_non_existing(app, institute_obj, case_obj, loqu
     assert data[loqus_id]["cases"] == []
 
 
-def test_observations_controller_snv(app, case_obj, institute_obj, loqusdb):
+def test_observations_controller_snv(app, institute_obj, loqusdb):
     """Testing observation controller to retrieve observations for one SNV variant"""
-    # GIVEN a database with a case with a specific SNV variant
+
     case_obj = store.case_collection.find_one()
+    # GIVEN a database with a case with a specific SNV variant
     var_obj = store.variant_collection.find_one()
-    assert var_obj
+    assert var_obj["category"] == "snv"
     loqusdb._add_variant(var_obj)
 
     # GIVEN that the institute has a test loqusdb id associated
@@ -169,8 +170,8 @@ def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdb)
     """Testing observations controller to retrieve observations for one SV variant.
     Test that SV variant similar to a given one from another case is returned
     """
-    # GIVEN a database with a case with a specific SV variant
     case_obj = store.case_collection.find_one()
+    # GIVEN a database with a case with a specific SV variant
     store.variant_collection.insert_one(sv_variant_obj)
     loqusdb._add_variant(sv_variant_obj)
 
