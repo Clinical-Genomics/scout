@@ -145,23 +145,27 @@
   <div class="card panel-default">
     <div class="panel-heading d-flex justify-content-between">
       <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
-      <span data-toggle="tooltip" title="Nr of observations is the total number of occurrences in the loqusdb instance. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
+      <span data-toggle="tooltip" title="Nr of observations is the total number of occurrences in the loqusdb instances. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
     </div>
     <div class="card-body">
       <table class="table">
         <thead class="thead-light">
           <tr>
+            <th scope="col">ID</th>
             <th scope="col">Nr obs.</th>
             <th scope="col">Nr homo.</th>
             <th scope="col">Total nr.</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>{{ observations.observations|default('N/A') }}</td>
-            <td>{{ observations.homozygote|default('N/A') }}</td>
-            <td>{{ observations.total }}</td>
-          </tr>
+          {% for loqusid,obs in observations.items() %}
+            <tr>
+              <td>{{ loqusid }}</td>
+              <td>{{ obs.observations|default('N/A') }}</td>
+              <td>{{ obs.homozygote|default('N/A') }}</td>
+              <td>{{ obs.total|default('N/A') }}</td>
+            </tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
