@@ -251,15 +251,20 @@ def get_sift_prediction(entry):
 
 
 def get_dbsnp_list(entry):
-    """Get dbSNP -the NCBI database of genetic variation- data if present in entry."""
-    dbsnp_list = []
-    variant_ids = entry.get("EXISTING_VARIATION")
+    """Get dbSNP -the NCBI database of genetic variation- data if present in entry.
+    The naming has varied over VEP version; early have EXISTING_VARIATION,
+    later RS_DBSNPNNN, but they are expected to converge as RS_DBSNP.
+    """
+    dbsnp_list = set()
+    dbsnp_keys = ["EXISTING_VARIATION", "RS_DBSNP150", "RS_DBSNP"]
 
-    if variant_ids:
-        for variant_id in variant_ids.split("&"):
-            if variant_id.startswith("rs"):
-                dbsnp_list.append(variant_id)
-    return dbsnp_list
+    for key in dbsnp_keys:
+        variant_ids = entry.get(key)
+        if variant_ids:
+            for variant_id in variant_ids.split("&"):
+                if variant_id.startswith("rs"):
+                    dbsnp_list.add(variant_id)
+    return list(dbsnp_list)
 
 
 def get_cosmic_list(entry):
