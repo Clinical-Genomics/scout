@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Changed
+- Point Alamut API key docs link to new API version
 ### Fixed
 - Vulnerabilities flagged by SonarCloud
 - Successful parse of FOUND_IN should avoid GATK caller default
