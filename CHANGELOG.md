@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Point Alamut API key docs link to new API version
 - Removed MarkupSafe from the dependencies
 ### Fixed
+- Reintroduced loading of SVs for demo case 643595
 - All vulnerabilities flagged by SonarCloud
 
 ## [4.52]
