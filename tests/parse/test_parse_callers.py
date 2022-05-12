@@ -119,6 +119,18 @@ def test_parse_sv_callers_filterin_tiddit(cyvcf2_variant):
     assert callers["manta"] == "Pass"
 
 
+def test_parse_callers(one_vep104_annotated_variant):
+    variant = one_vep104_annotated_variant
+
+    assert variant.INFO["FOUND_IN"] == "deepvariant"
+
+    # WHEN parsing the caller info
+    callers = parse_callers(variant, category="snv")
+    # THEN the deep variant caller should be found, but not GATK
+    assert callers["deepvariant"] == "Pass"
+    assert callers["gatk"] == None
+
+
 @pytest.mark.parametrize("category", ["snv", "sv", "cancer"])
 def test_parse_callers_all(cyvcf2_variant, category):
     # GIVEN all callers called a cancer variant
