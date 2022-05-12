@@ -72,6 +72,43 @@ def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_d
     assert isinstance(variant["clnsig"][0]["revstat"], str)  # str
 
 
+def test_load_vep104_parsed_variant(
+    one_vep104_annotated_variant, real_populated_database, case_obj
+):
+    """test first parsing and then loading a vep v97 annotated variant"""
+
+    # GIVEN a MIP 11 / VEP 104 variant annotated using the following CSQ entry fields
+    csq_header = "Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|CANONICAL|TSL|APPRIS|CCDS|ENSP|SWISSPROT|TREMBL|UNIPARC|UNIPROT_ISOFORM|REFSEQ_MATCH|SOURCE|REFSEQ_OFFSET|GIVEN_REF|USED_REF|BAM_EDIT|SIFT|PolyPhen|DOMAINS|HGVS_OFFSET|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|TRANSCRIPTION_FACTORS|SpliceAI_pred_DP_AG|SpliceAI_pred_DP_AL|SpliceAI_pred_DP_DG|SpliceAI_pred_DP_DL|SpliceAI_pred_DS_AG|SpliceAI_pred_DS_AL|SpliceAI_pred_DS_DG|SpliceAI_pred_DS_DL|SpliceAI_pred_SYMBOL|LoFtool|GERP++_NR|GERP++_RS|REVEL_rankscore|REVEL_score|phastCons100way_vertebrate|phyloP100way_vertebrate|rs_dbSNP150|MES-NCSS_downstream_acceptor|MES-NCSS_downstream_donor|MES-NCSS_upstream_acceptor|MES-NCSS_upstream_donor|MES-SWA_acceptor_alt|MES-SWA_acceptor_diff|MES-SWA_acceptor_ref|MES-SWA_acceptor_ref_comp|MES-SWA_donor_alt|MES-SWA_donor_diff|MES-SWA_donor_ref|MES-SWA_donor_ref_comp|MaxEntScan_alt|MaxEntScan_diff|MaxEntScan_ref|ExACpLI|CLINVAR|CLINVAR_CLNSIG|CLINVAR_CLNVID|CLINVAR_CLNREVSTAT|genomic_superdups_frac_match"
+
+    header = [word.upper() for word in csq_header.split("|")]
+
+    # WHEN parsed using
+    parsed_vep104_annotated_variant = parse_variant(
+        variant=one_vep104_annotated_variant, vep_header=header, case=case_obj
+    )
+
+    # GIVEN a database without any variants
+    adapter = real_populated_database
+    assert adapter.variant_collection.find_one() is None
+
+    # WHEN loading the variant into the database
+    adapter.load_variant(variant_obj=parsed_vep104_annotated_variant)
+
+    # THEN the variant is loaded with the fields correctly parsed
+    # revel score
+    variant = adapter.variant_collection.find_one()
+    assert isinstance(variant["revel_score"], float)
+
+    # ClinVar fields
+    assert isinstance(variant["clnsig"][0]["accession"], int)
+    assert variant["clnsig"][0]["value"] in REV_CLINSIG_MAP  # can be str or int
+    assert isinstance(variant["clnsig"][0]["revstat"], str)  # str
+
+    # dbSNP
+    assert isinstance(variant["dbsnp_id"], str)
+    assert "rs" in variant["dbsnp_id"]
+
+
 def test_load_cancer_SV_variant(
     one_cancer_manta_SV_variant, real_populated_database, cancer_case_obj
 ):
