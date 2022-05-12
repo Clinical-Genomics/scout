@@ -4,7 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.52
+
+## []
+### Added
+### Changed
+- Point Alamut API key docs link to new API version
 ### Fixed
 - Vulnerabilities flagged by SonarCloud
 
