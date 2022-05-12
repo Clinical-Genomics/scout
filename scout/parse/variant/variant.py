@@ -113,7 +113,8 @@ def parse_variant(
         parsed_variant["filters"] = ["PASS"]
 
     # Add the dbsnp ids
-    parsed_variant["dbsnp_id"] = variant.ID
+    if variant.ID and "rs" in variant.ID:
+        parsed_variant["dbsnp_id"] = variant.ID
 
     # This is the id of other position in translocations
     # (only for specific svs)
@@ -282,6 +283,7 @@ def parse_variant(
     cosmic_ids = set()
     for parsed_transcript in parse_transcripts(raw_transcripts):
         parsed_transcripts.append(parsed_transcript)
+
         for dbsnp in parsed_transcript.get("dbsnp", []):
             dbsnp_ids.add(dbsnp)
         for cosmic in parsed_transcript.get("cosmic", []):
@@ -294,7 +296,7 @@ def parse_variant(
         for cosmic_id in cosmic_tag.split("&"):
             cosmic_ids.add(cosmic_id)
 
-    if dbsnp_ids and not parsed_variant["dbsnp_id"]:
+    if dbsnp_ids and not parsed_variant.get("dbsnp_id"):
         parsed_variant["dbsnp_id"] = ";".join(dbsnp_ids)
 
     if cosmic_ids:
