@@ -71,7 +71,10 @@ def test_load_vep97_parsed_variant(one_vep97_annotated_variant, real_populated_d
     assert variant["clnsig"][0]["value"] in REV_CLINSIG_MAP  # can be str or int
     assert isinstance(variant["clnsig"][0]["revstat"], str)  # str
 
-def test_load_vep104_parsed_variant(one_vep104_annotated_variant, real_populated_database, case_obj):
+
+def test_load_vep104_parsed_variant(
+    one_vep104_annotated_variant, real_populated_database, case_obj
+):
     """test first parsing and then loading a vep v97 annotated variant"""
 
     # GIVEN a MIP 11 / VEP 104 variant annotated using the following CSQ entry fields
@@ -104,6 +107,7 @@ def test_load_vep104_parsed_variant(one_vep104_annotated_variant, real_populated
     # dbSNP
     assert isinstance(variant["dbsnp_id"], str)
     assert "rs" in variant["dbsnp_id"]
+
 
 def test_load_cancer_SV_variant(
     one_cancer_manta_SV_variant, real_populated_database, cancer_case_obj
