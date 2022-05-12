@@ -4,10 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.52
+## []
 ### Added
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
+### Changed
+- Point Alamut API key docs link to new API version
 ### Fixed
 - Vulnerabilities flagged by SonarCloud
 
