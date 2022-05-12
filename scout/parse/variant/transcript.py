@@ -251,7 +251,10 @@ def get_sift_prediction(entry):
 
 
 def get_dbsnp_list(entry):
-    """Get dbSNP -the NCBI database of genetic variation- data if present in entry."""
+    """Get dbSNP -the NCBI database of genetic variation- data if present in entry.
+    The naming has varied over VEP version; early have EXISTING_VARIATION,
+    later RS_DBSNPNNN, but they are expected to converge as RS_DBSNP.
+    """
     dbsnp_list = set()
     dbsnp_keys = ["EXISTING_VARIATION", "RS_DBSNP150", "RS_DBSNP"]
 
