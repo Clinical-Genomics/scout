@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Dark mode, using browser/OS media preference
 ### Changed
+- Point Alamut API key docs link to new API version
 - Bootstrap upgraded to version 5
 ### Fixed
 - Vulnerabilities flagged by SonarCloud
