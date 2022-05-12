@@ -31,6 +31,7 @@ from scout.demo import (
     panel_path,
     ped_path,
     vep_97_annotated_path,
+    vep_104_annotated_path,
 )
 
 # These are the reduced data files
@@ -1013,6 +1014,13 @@ def one_vep97_annotated_variant(request, vep_97_annotated_variant_clinical_file)
     variant = next(variant_parser)
     return variant
 
+@pytest.fixture(scope="function")
+def one_vep104_annotated_variant(request, vep_104_annotated_variant_clinical_file):
+    LOG.info("Return one parsed variant")
+    variant_parser = VCF(vep_104_annotated_variant_clinical_file)
+
+    variant = next(variant_parser)
+    return variant
 
 @pytest.fixture(scope="function")
 def one_cancer_manta_SV_variant(request, vep_94_manta_annotated_SV_variants_file):
@@ -1312,6 +1320,13 @@ def variant_clinical_file(request):
     """Get the path to a variant file"""
     print("")
     return clinical_snv_path
+
+
+@pytest.fixture(scope="function")
+def vep_104_annotated_variant_clinical_file(request):
+    """Get a path to a VCF file annotated with VEP 104 MIP11, with CSQ.rs_dbSNP150 dbsnp_id.
+    """
+    return vep_104_annotated_path
 
 
 @pytest.fixture(scope="function")
