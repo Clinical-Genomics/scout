@@ -41,7 +41,9 @@ def parse_callers(variant, category="snv"):
             called_by = info.split("|")[0]
             callers[called_by] = "Pass"
 
-    if category == "snv" and not raw_info or other_info:
+    if raw_info or other_info:
+        return callers
+    if category == "snv":
         # cyvcf2 FILTER is None if VCF file column FILTER is "PASS"
         filter_status = "Pass"
         if variant.FILTER is not None:

@@ -8,9 +8,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 - Point Alamut API key docs link to new API version
+- Parse dbSNP id from ID only if it says "rs", else use VEP CSQ fields
 - Removed MarkupSafe from the dependencies
 ### Fixed
 - Reintroduced loading of SVs for demo case 643595
+- Successful parse of FOUND_IN should avoid GATK caller default
 - All vulnerabilities flagged by SonarCloud
 
 ## [4.52]
