@@ -12,7 +12,6 @@ coloredlogs<=14.0
 query_phenomizer
 Flask-Babel
 livereload
-MarkupSafe
 python-dateutil
 pymongo>=3.7,<4.0
 pathlib
@@ -42,7 +41,6 @@ anytree
 
 # chanjo-report
 python-dateutil
-
 
 # Required by scripts
 tabulate
