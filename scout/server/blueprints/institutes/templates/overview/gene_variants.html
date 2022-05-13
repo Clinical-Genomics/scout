@@ -79,9 +79,9 @@
         {% endfor %}
 </tbody>
     </table>
+    {{pagination_hidden_div(page)}}
     {{ pagination_footer(more_variants, page) }}
   </div>
-  {{pagination_hidden_div(page)}}
 </form>
 {% endmacro %}
 
