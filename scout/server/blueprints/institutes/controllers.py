@@ -437,7 +437,6 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = pymongo_cursor.skip(skip_count).limit(per_page)
-    my_institutes = set(inst["_id"] for inst in user_institutes(store, current_user))
     variants = []
 
     for variant_obj in variant_res:
@@ -445,7 +444,6 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
         if not variant_case_obj:
             # A variant with missing case was encountered
-            variant_obj["case_display_name"] = f"Case id '{variant_obj['case_id']}' (removed)"
             variants.append(variant_obj)
             continue
 
