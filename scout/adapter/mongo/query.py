@@ -109,9 +109,7 @@ class QueryHandler(object):
         LOG.debug("Building a mongo query for %s" % query)
 
         mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
-
         mongo_variant_query["variant_type"] = {"$in": variant_type}
-
         mongo_variant_query["category"] = category
 
         select_cases = None
@@ -128,7 +126,7 @@ class QueryHandler(object):
             mongo_case_query["cohorts"] = {"$in": query["cohorts"]}
 
         if mongo_case_query != {} or institute_ids:
-            mongo_case_query["collaborators"]: {"$in": institute_ids}
+            mongo_case_query["collaborators"] = {"$in": institute_ids}
             LOG.debug("Search cases for selection set, using query {0}".format(mongo_case_query))
             select_case_objs = self.case_collection.find(mongo_case_query)
             select_cases = [case_id.get("_id") for case_id in select_case_objs]
