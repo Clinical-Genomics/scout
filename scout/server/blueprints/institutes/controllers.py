@@ -445,8 +445,7 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
         if not variant_case_obj:
             # A variant with missing case was encountered
-            flash("missing case")
-            variant_obj["case_display_name"] = f"Case id {case_id} (removed)"
+            variant_obj["case_display_name"] = f"Case id '{variant_obj['case_id']}' (removed)"
             variants.append(variant_obj)
             continue
 
