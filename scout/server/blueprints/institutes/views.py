@@ -125,6 +125,7 @@ def gene_variants(institute_id):
             query=form.data,
             institute_ids=[inst["_id"] for inst in user_institutes(store, current_user)],
             category="snv",
+            nr_of_variants=-1,
             variant_type=variant_type,
         )
         result_size = len(list(variants_query.clone()))
