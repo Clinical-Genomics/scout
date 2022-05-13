@@ -132,25 +132,7 @@ class QueryHandler(object):
             select_cases = [case_id.get("_id") for case_id in select_case_objs]
 
         if query.get("similar_case"):
-            select_cases = []
-            similar_case_display_name = query["similar_case"][0]
-            for institute_id in institute_ids:
-                case_obj = self.case(
-                    display_name=similar_case_display_name, institute_id=institute_id
-                )
-                if case_obj is None:
-                    continue
-                LOG.debug("Search for cases similar to %s", case_obj.get("display_name"))
-
-                hpo_terms = []
-                for term in case_obj.get("phenotype_terms", []):
-                    hpo_terms.append(term.get("phenotype_id"))
-
-                similar_cases = (
-                    self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"]) or []
-                )
-                LOG.debug("Similar cases: %s", similar_cases)
-                select_cases += [similar[0] for similar in similar_cases]
+            select_cases = self._get_similar_cases(query, institute_ids)
 
         if (
             select_cases is not None
@@ -163,6 +145,34 @@ class QueryHandler(object):
         LOG.debug("Querying %s" % mongo_variant_query)
 
         return mongo_variant_query
+
+    def _get_similar_cases(self, query, institute_ids):
+        """Get a list of cases similar to the given one
+        Args:
+            query(dict): A query dictionary for the database, from a query form.
+            institute_ids: a list of institute _ids
+
+        Returns:
+            select_cases(list): a list of case dictionaries
+        """
+        select_cases = []
+        similar_case_display_name = query["similar_case"][0]
+        for institute_id in institute_ids:
+            case_obj = self.case(display_name=similar_case_display_name, institute_id=institute_id)
+            if case_obj is None:
+                continue
+            LOG.debug("Search for cases similar to %s", case_obj.get("display_name"))
+
+            hpo_terms = []
+            for term in case_obj.get("phenotype_terms", []):
+                hpo_terms.append(term.get("phenotype_id"))
+
+            similar_cases = (
+                self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"]) or []
+            )
+            LOG.debug("Similar cases: %s", similar_cases)
+            select_cases += [similar[0] for similar in similar_cases]
+        return select_cases
 
     def build_query(
         self, case_id, query=None, variant_ids=None, category="snv", build="37"
