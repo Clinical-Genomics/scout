@@ -123,7 +123,7 @@ def gene_variants(institute_id):
 
         variants_query = store.gene_variants(
             query=form.data,
-            institute_ids=list(user_institutes(store, current_user)),
+            institute_ids=[inst["_id"] for inst in user_institutes(store, current_user)],
             category="snv",
             variant_type=variant_type,
         )
