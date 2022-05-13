@@ -5,6 +5,7 @@ import logging
 from bson import ObjectId
 from flask import Blueprint, Response, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user
+from pymongo import DESCENDING
 from werkzeug.datastructures import Headers
 
 from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER
@@ -121,15 +122,20 @@ def gene_variants(institute_id):
             flash("Provided gene symbols could not be used in variants' search", "warning")
             return redirect(request.referrer)
 
-        variants_query = store.gene_variants(
+        variants_query = store.build_variant_query(
             query=form.data,
             institute_ids=[inst["_id"] for inst in user_institutes(store, current_user)],
             category="snv",
-            nr_of_variants=-1,
             variant_type=variant_type,
-        )
-        result_size = len(list(variants_query.clone()))
-        data = controllers.gene_variants(store, variants_query, result_size, page)
+        )  # This is the actual query dictionary, not the cursor with results
+
+        results = store.variant_collection.find(variants_query).sort(
+            [("rank_score", DESCENDING)]
+        )  # query results
+        result_size = store.variant_collection.count_documents(variants_query)
+        data = controllers.gene_variants(
+            store, results, result_size, page
+        )  # decorated variant results, max 50 in a page
 
     return dict(institute=institute_obj, form=form, page=page, result_size=result_size, **data)
 

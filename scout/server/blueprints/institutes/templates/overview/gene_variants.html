@@ -86,17 +86,13 @@
 {% endmacro %}
 
 {% macro cell_rank(variant) %}
-  {% if variant.case_display_name %}
-    <a
-       href="{{ url_for('variant.variant', institute_id=variant.institute,
-            case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
-      {{ variant.case_display_name}}
-    </a>
-    :
-    <span class="badge badge-info">{{ variant.rank_score|int }}</span>
-  {% else %}
-    Case id '{{variant.case_id}}' (removed): <span class="badge badge-info">{{ variant.rank_score|int }}</span>
-  {% endif %}
+  <a
+     href="{{ url_for('variant.variant', institute_id=variant.institute,
+          case_name=variant.case_display_name, variant_id=variant._id) }}" target="_blank">
+    {{ variant.case_display_name}}
+  </a>
+  :
+  <span class="badge badge-info">{{ variant.rank_score|int }}</span>
 {% endmacro %}
 
 {% macro cell_cadd(variant) %}

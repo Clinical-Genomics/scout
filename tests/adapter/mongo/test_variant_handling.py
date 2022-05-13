@@ -31,49 +31,6 @@ def test_variant(real_variant_database, variant_objs, case_obj):
     assert variant_c == variant_a
 
 
-def test_query_all_gene_variants(real_variant_database):
-    """ "Test querying gene variants using gene symbol."""
-    adapter = real_variant_database
-
-    ## GIVEN a populated database with variants in a certain gene
-    hgnc_id = 3233
-    gene_obj = adapter.hgnc_gene(hgnc_id)
-    assert gene_obj
-    # and a valid gene_symbol
-    gene_symbol = gene_obj["hgnc_symbol"]
-    assert gene_symbol
-
-    # direct query fpr
-    res = adapter.variant_collection.find(
-        {
-            "$and": [
-                {"hgnc_symbols": gene_symbol},
-                {"rank_score": {"$gte": 5}},
-                {"category": "snv"},
-                {"variant_type": "clinical"},
-            ]
-        }
-    )
-    nr_high_ranked_variants_in_gene = sum(1 for i in res)
-    LOG.info(
-        "Number of high ranked variants in %s: %s",
-        gene_symbol,
-        nr_high_ranked_variants_in_gene,
-    )
-
-    assert nr_high_ranked_variants_in_gene > 0
-
-    # GIVEN a query on the correct format, corresponding to web form input
-    gene_variants_query = {}
-    gene_variants_query["rank_score"] = 5
-    gene_variants_query["hgnc_symbols"] = [gene_symbol]
-
-    # THEN the same number of variants should be returned by the query function
-    result_cursor = adapter.gene_variants(query=gene_variants_query, nr_of_variants=-1)
-    result = sum(1 for i in result_cursor)
-    assert result == nr_high_ranked_variants_in_gene
-
-
 def test_load_variants(real_populated_database, variant_objs, case_obj):
     """Test to load variants into a mongo database"""
     adapter = real_populated_database
