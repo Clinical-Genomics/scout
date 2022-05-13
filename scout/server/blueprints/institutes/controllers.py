@@ -446,17 +446,12 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         if not variant_case_obj:
             # A variant with missing case was encountered
             flash("missing case")
+            variant_obj["case_display_name"] = f"Case id {case_id} (removed)"
+            variants.append(variant_obj)
             continue
+
         case_display_name = variant_case_obj.get("display_name")
         variant_obj["case_display_name"] = case_display_name
-
-        # hide other institutes for now
-        other_institutes = set([variant_case_obj.get("owner")])
-        other_institutes.update(set(variant_case_obj.get("collaborators", [])))
-        if my_institutes.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
-            flash("other institute")
-            continue
 
         genome_build = get_genome_build(variant_case_obj)
         variant_genes = variant_obj.get("genes")
@@ -482,8 +477,6 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
 
             # populate variant predictions for display
             variant_obj.update(predictions(variant_genes))
-        else:
-            flash("variant genes are none")
 
         variants.append(variant_obj)
 
