@@ -2,7 +2,7 @@
 {% from "variants/components.html" import gene_cell, frequency_cell_general %}
 {% from "utils.html" import comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from "variants/utils.html" import pagination_footer %}
+{% from "variants/utils.html" import pagination_footer, pagination_hidden_div %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -81,6 +81,7 @@
     </table>
     {{ pagination_footer(more_variants, page) }}
   </div>
+  {{pagination_hidden_div(page)}}
 </form>
 {% endmacro %}
 
