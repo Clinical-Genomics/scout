@@ -2,6 +2,7 @@
 {% from "variants/components.html" import gene_cell, frequency_cell_general %}
 {% from "utils.html" import comments_table %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "variants/utils.html" import pagination_footer %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - All SNVs and INDELs
@@ -78,7 +79,7 @@
         {% endfor %}
 </tbody>
     </table>
-    {{ footer() }}
+    {{ pagination_footer(more_variants, page) }}
   </div>
 </form>
 {% endmacro %}
@@ -104,26 +105,6 @@
     </div>
     ">
     {{ variant.cadd_score }}
-  </div>
-{% endmacro %}
-
-{% macro footer() %}
-  <div class="container-fluid">
-    <div class="form-group text-center">
-      {% if more_variants %}
-        <div class="row">
-	  <div class="col-xs-6">
-             <button name="page" type="submit" class="btn btn-default" value={{ page + 1 }}>Next page</button>
-	  </div>
-	  <div class="col-xs-6">
-            <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
-	  </div>
-	</div>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-        <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
-      {% endif %}
-    </div>
   </div>
 {% endmacro %}
 
@@ -170,6 +151,12 @@
           </div>
         </div>
       </div>
+      {% if result_size %}
+        <div class="row justify-content-center mt-3">
+          Showing {{variants|length}}/{{result_size}} variants
+        </div>
+      {% endif %}
+
 {% endmacro %}
 
 

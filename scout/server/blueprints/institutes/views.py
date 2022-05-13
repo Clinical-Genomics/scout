@@ -100,7 +100,7 @@ def lock_filter(institute_id, filter_id):
 def gene_variants(institute_id):
     """Display a list of SNV variants."""
     page = int(request.form.get("page", 1))
-
+    result_size = None
     institute_obj = institute_and_case(store, institute_id)
 
     data = {}
@@ -136,7 +136,7 @@ def gene_variants(institute_id):
         )
         data = controllers.gene_variants(store, variants_query, result_size, page)
 
-    return dict(institute=institute_obj, form=form, page=page, **data)
+    return dict(institute=institute_obj, form=form, page=page, result_size=result_size, **data)
 
 
 @blueprint.route("/overview/<institute_id>/settings", methods=["GET", "POST"])

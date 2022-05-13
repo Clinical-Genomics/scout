@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Better pagination and number of variants retuned by queries in `Search SNVs and INDELs` page
 ### Changed
 ### Fixed
 
