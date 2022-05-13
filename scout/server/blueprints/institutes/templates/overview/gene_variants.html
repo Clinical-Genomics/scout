@@ -49,7 +49,7 @@
 </thead>
 <tbody>
         {% for variant in variants %}
-          {% if variant.dismiss_variant or case_display_name not in variant %}
+          {% if variant.dismiss_variant or "case_display_name" not in variant %}
             <tr class="dismiss">
     {% else %}
       <tr>
