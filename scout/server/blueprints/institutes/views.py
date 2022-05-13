@@ -10,7 +10,7 @@ from werkzeug.datastructures import Headers
 from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import loqusdb, store
-from scout.server.utils import institute_and_case, jsonconverter, templated
+from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
@@ -123,17 +123,11 @@ def gene_variants(institute_id):
 
         variants_query = store.gene_variants(
             query=form.data,
-            institute_id=institute_id,
+            institute_ids=list(user_institutes(store, current_user)),
             category="snv",
             variant_type=variant_type,
         )
-
-        result_size = store.count_gene_variants(
-            query=form.data,
-            institute_id=institute_id,
-            category="snv",
-            variant_type=variant_type,
-        )
+        result_size = len(list(variants_query.clone()))
         data = controllers.gene_variants(store, variants_query, result_size, page)
 
     return dict(institute=institute_obj, form=form, page=page, result_size=result_size, **data)

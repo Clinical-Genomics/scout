@@ -22,7 +22,7 @@ def test_build_gene_variant_query(adapter, case_obj, test_hpo_terms, institute_o
     symbol_query["hgnc_symbols"] = hgnc_symbols
     symbol_query["similar_case"] = [case_obj["display_name"]]
     gene_variant_query = adapter.build_variant_query(
-        query=symbol_query, institute_id=institute_obj["_id"]
+        query=symbol_query, institute_ids=[institute_obj["_id"]]
     )
 
     # THEN the query should be on the right format
