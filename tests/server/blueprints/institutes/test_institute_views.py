@@ -15,6 +15,37 @@ TEST_SUBPANEL = dict(
 )
 
 
+def test_gene_variants(app, user_obj, institute_obj):
+    """Test the page that returns all SNPs and INDELs given a gene provided by user"""
+
+    # GIVEN a form filled in by the user
+    form_data = {
+        "hgnc_symbols": "POT1",
+        "variant_type": [],  # This will set variant type to ["clinical"] in the endpoint function
+        "category": "snv",
+        "rank_score": 5,
+    }
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        resp = client.get(url_for("auto_login"))
+
+        # WHEN form is submitted by POST request
+        resp = client.post(
+            url_for(
+                "overview.gene_variants",
+                institute_id=institute_obj["internal_id"],
+            ),
+            data=form_data,
+        )
+        # THEN it should return a valid page
+        assert resp.status_code == 200
+
+        # containing the expected results
+        assert "POT1" in str(resp.data)
+
+
 def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
     """Test the view showing the available phenotype models for an institute, after sending POST request with new phenotype model data"""
 
