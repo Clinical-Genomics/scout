@@ -32,7 +32,7 @@ def test_gene_variants(app, user_obj, institute_obj):
         resp = client.get(url_for("auto_login"))
 
         # WHEN form is submitted by POST request
-        resp = client.post(
+        client.post(
             url_for(
                 "overview.gene_variants",
                 institute_id=institute_obj["internal_id"],
