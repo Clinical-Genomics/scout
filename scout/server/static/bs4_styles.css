@@ -273,7 +273,7 @@ body {
 /* end of sidebar-related stuff */
 
 /* Do not break text element across pages when exporting reports to PDF using wkhtmltopdf */
-table, tr, td, th, tbody, thead, tfoot {
+table, tr, td, th, tbody, thead, tfoot, div {
     page-break-inside: avoid !important;
 }
 
