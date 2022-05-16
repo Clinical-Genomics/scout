@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Create ClinVar submissions from pinned variants list in case page
 - Specifically select which pinned variants will be included in ClinVar submission documents
 ### Fixed
+- Remove load demo case command from docker-compose.yml
 
 ## [4.53]
 ### Added
