@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 ### Fixed
+- Remove load demo case command from docker-compose.yml
 - Text elements being split across pages in PDF reports
 
 ## [4.53]
