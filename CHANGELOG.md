@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display stats from multiple instances of loqusdb on variant page
 ### Changed
 ### Fixed
+- Remove load demo case command from docker-compose.yml
 
 ## [4.53]
 ### Added
