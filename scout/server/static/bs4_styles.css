@@ -270,8 +270,12 @@ body {
   text-align: right;
   padding-left: 10px;
 }
-/* end of sidebar-related stuff
+/* end of sidebar-related stuff */
 
+/* Do not break text element across pages when exporting reports to PDF using wkhtmltopdf */
+table, tr, td, th, tbody, thead, tfoot {
+    page-break-inside: avoid !important;
+}
 
 /* CHECKBOX ios8-switch*/
 input[type="checkbox"].ios8-switch {
