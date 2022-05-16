@@ -18,8 +18,7 @@ services:
     build: .
     container_name: scout-cli
     command: bash -c "
-      scout --host mongodb setup demo
-      && scout --host mongodb --demo load case scout/demo/cancer.load_config.yaml"
+      scout --host mongodb setup demo"
     volumes:
       - ./scout:/home/worker/app/scout
     networks:
