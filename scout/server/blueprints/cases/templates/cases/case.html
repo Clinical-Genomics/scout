@@ -83,8 +83,8 @@
       <div class="row">
         <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
         <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
-        {% if case.clinvar_variants %}
-          <div class="col">{{ clinvar_panel(institute, case) }}</div>
+        {% if case.clinvar_variants or case.suspects %}
+          <div class="col">{{ clinvar_panel(institute, case, suspects) }}</div>
         {% endif %}
         <!-- end of data sharing panels -->
       </div>
