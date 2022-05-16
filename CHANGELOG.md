@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Changed
+- Create ClinVar submissions from pinned variants list in case page
+- Specifically select which pinned variants will be included in ClinVar submission documents
 ### Fixed
 
 ## [4.53]

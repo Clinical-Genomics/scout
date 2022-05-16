@@ -304,7 +304,6 @@ def acmg():
 def clinvar_create(institute_id, case_name):
     """Create a ClinVar submission document in database for one or more variants from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    LOG.warning(request.form)
 
     if request.form.get(
         "submit_pinned"
