@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dark mode, using browser/OS media preference
 ### Changed
 ### Fixed
+- Remove load demo case command from docker-compose.yml
 
 ## [4.53]
 ### Added
