@@ -283,8 +283,6 @@ def test_clinvar_create(app, institute_obj, case_obj, variant_obj):
         # THEN ClinVar form page should be created correctly
         assert resp.status_code == 200
 
-    pinned_selected
-
 
 def test_clinvar_create_save_submission(app, institute_obj, case_obj, variant_obj):
     """Test function part that saves collected data from a ClinaVar form into the database"""
