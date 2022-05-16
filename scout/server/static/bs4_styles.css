@@ -273,8 +273,9 @@ body {
 /* end of sidebar-related stuff */
 
 /* Do not break text element across pages when exporting reports to PDF using wkhtmltopdf */
-table, tr, td, th, tbody, thead, tfoot, div {
-    page-break-inside: avoid !important;
+table, tr, td, th, div, a {
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 /* CHECKBOX ios8-switch*/
