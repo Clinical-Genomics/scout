@@ -542,50 +542,7 @@
       <table class="table table-sm">
         <tr>
           <td style="width=45%">
-            <table id="panel-table" class="table table-bordered table-sm" style="background-color: transparent">
-              <thead>
-                <tr>
-                  <th rowspan="2">Sample</th>
-                    <th rowspan="2">Genotype (GT)</th>
-                    <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-                    {% if cancer %}
-                      <th rowspan="2" title="Variant Allele Frequency">VAF</th>
-                    {% else %}
-                      <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
-                    {% endif %}
-                  </tr>
-                  <tr>
-                    <th>Reference</th>
-                    <th>Alternative</th>
-                  </tr>
-                </tr>
-              </thead>
-              <tbody>
-                {% for sample in variant.samples %}
-                  <tr {% if sample.display_name in affected %} class="table-danger" {% endif%}>
-                    <td>{{ sample.display_name }}</td>
-                    <td class="text-center">{{ sample.genotype_call }}</td>
-                    {% if sample.allele_depths %}
-                        {% for number in sample.allele_depths %}
-                          <td class="text-right">{{ number }}</td>
-                        {% endfor %}
-                    {% else %}
-                        <td class="text-right"><small>N/A</small></td>
-                        <td class="text-right"><small>N/A</small></td>
-                    {% endif %}
-                    {% if cancer %}
-                      {% if sample.read_depth and sample.allele_depths[1] != -1 %}
-                        <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
-                      {% else %}
-                        <td class="text-right">N/A</td>
-                      {% endif %}
-                    {% else %}
-                      <td class="text-right">{{ sample.genotype_quality }}</td>
-                    {% endif %}
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+            {{ genotype_table(variant) }}
           </td>
           <td style="width:3%"></td>
           <td>
@@ -1026,50 +983,7 @@
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
       <tr>
         <td>
-          <table id="panel-table" class="table table-bordered table-sm" style="background-color: transparent">
-            <thead>
-              <tr>
-                <th rowspan="2">Sample</th>
-                  <th rowspan="2">Genotype (GT)</th>
-                  <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
-                  {% if cancer %}
-                    <th rowspan="2" title="Variant Allele Frequency">VAF</th>
-                  {% else %}
-                    <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
-                  {% endif %}
-                </tr>
-                <tr>
-                  <th>Reference</th>
-                  <th>Alternative</th>
-                </tr>
-              </tr>
-            </thead>
-            <tbody>
-              {% for sample in variant.samples %}
-                <tr {% if sample.display_name in affected %} class="table-danger" {% endif %}>
-                  <td>{{ sample.display_name }}</td>
-                  <td class="text-center">{{ sample.genotype_call }}</td>
-                  {% if sample.allele_depths %}
-                      {% for number in sample.allele_depths %}
-                        <td class="text-right">{{ number }}</td>
-                      {% endfor %}
-                  {% else %}
-                      <td class="text-right"><small>N/A</small></td>
-                      <td class="text-right"><small>N/A</small></td>
-                  {% endif %}
-                  {% if cancer %}
-                    {% if sample.read_depth and sample.allele_depths[1] != -1 %}
-                      <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
-                    {% else %}
-                      <td class="text-right">N/A</td>
-                    {% endif %}
-                  {% else %}
-                    <td class="text-right">{{ sample.genotype_quality }}</td>
-                  {% endif %}
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          {{genotype_table(variant)}}
         </td>
         <td style="width:3%"></td>
         <td>
@@ -1263,7 +1177,7 @@
     </table>
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
       <tr>
-          <table id="panel-table" class="table table-bordered " style="background-color: transparent">
+          <tablE class="table table-bordered " style="background-color: transparent">
             <thead>
               <tr class="table-secondary">
                 <th rowspan="2">Sample</th>
@@ -1386,4 +1300,51 @@
     </h6>
   </div>
 {% endif %}
+{% endmacro %}
+
+{% macro genotype_table(variant) %}
+<table class="table table-bordered table-sm" style="background-color: transparent">
+  <thead>
+    <tr>
+      <th rowspan="2">Sample</th>
+        <th rowspan="2">Genotype (GT)</th>
+        <th colspan="2" title="Unfiltered count of reads that support a given allele.">Allele depth (AD)</th>
+        {% if cancer %}
+          <th rowspan="2" title="Variant Allele Frequency">VAF</th>
+        {% else %}
+          <th rowspan="2" title="Phred-scaled confidence that the true genotype is the one provided in GT (max=99).">Genotype quality (GQ)</th>
+        {% endif %}
+      </tr>
+      <tr>
+        <th>Reference</th>
+        <th>Alternative</th>
+      </tr>
+    </tr>
+  </thead>
+  <tbody>
+    {% for sample in variant.samples %}
+      <tr {% if sample.display_name in affected %} class="table-danger" {% endif%}>
+        <td>{{ sample.display_name }}</td>
+        <td class="text-center">{{ sample.genotype_call }}</td>
+        {% if sample.allele_depths %}
+            {% for number in sample.allele_depths %}
+              <td class="text-right">{{ number }}</td>
+            {% endfor %}
+        {% else %}
+            <td class="text-right"><small>N/A</small></td>
+            <td class="text-right"><small>N/A</small></td>
+        {% endif %}
+        {% if cancer %}
+          {% if sample.read_depth and sample.allele_depths[1] != -1 %}
+            <td class="text-right">{{ (sample.allele_depths[1]/sample.read_depth)|round(4) }}</td>
+          {% else %}
+            <td class="text-right">N/A</td>
+          {% endif %}
+        {% else %}
+          <td class="text-right">{{ sample.genotype_quality }}</td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endmacro %}
