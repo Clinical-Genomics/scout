@@ -485,17 +485,7 @@
             <span class="badge badge-info" title="sanger-status">Verification ordered</span>
           {% endif %}
       </div>
-      {% if variant.get('phenotypes') %}
-        <div class="row mt-3">
-          <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
-            OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
-            HPO terms:&nbsp;
-            {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
-              {{ hpo_term.phenotype_id}}({{hpo_term.feature}})&nbsp;
-            {%- endfor -%}
-          </h6>
-        </div>
-      {% endif %}
+      {{ variant_phenotypes(variant) }}
     </div>
     <div class="card-body">
       <table id="panel-table" class="table table-sm">
@@ -980,17 +970,7 @@
     # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
     &nbsp;<span class="badge badge-pill badge-warning">{{variant.sub_category|upper}}</span>
     </div>
-    {% if variant.get('phenotypes') %}
-      <div class="row mt-3">
-        <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
-          OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
-          HPO terms:&nbsp;
-          {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
-            {{ hpo_term.phenotype_id}}({{hpo_term.feature}})&nbsp;
-          {%- endfor -%}
-        </h6>
-      </div>
-    {% endif %}
+    {{ variant_phenotypes(variant) }}
   </div>
   <div class="card-body">
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
@@ -1238,17 +1218,7 @@
     # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.str_repid}}:{{ variant.alternative|replace("<", "")|replace(">", "") }} - {{variant.str_display_ru or variant.str_ru}} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
     &nbsp;<span class="badge badge-pill badge-info">{{variant.category | upper}}</span>
     </div>
-    {% if variant.get('phenotypes') %}
-      <div class="row mt-3">
-        <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
-          OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
-          HPO terms:&nbsp;
-          {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
-            {{ hpo_term.phenotype_id}}({{hpo_term.feature}})&nbsp;
-          {%- endfor -%}
-        </h6>
-      </div>
-    {% endif %}
+    {{ variant_phenotypes(variant) }}
   </div>
   <div class="card-body">
     <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent">
@@ -1402,4 +1372,18 @@
     {% endif %}
   </div>
 </div>
+{% endmacro %}
+
+{% macro variant_phenotypes(variant) %}
+{% if variant.get('phenotypes') %}
+  <div class="row mt-3">
+    <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
+      OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
+      HPO terms:&nbsp;
+      {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
+        {{ hpo_term.phenotype_id}}({{hpo_term.feature}})&nbsp;
+      {%- endfor -%}
+    </h6>
+  </div>
+{% endif %}
 {% endmacro %}
