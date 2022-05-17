@@ -194,7 +194,7 @@
                             {{term_obj.custom_name or term_obj.description}} ({{term_id}})
                           {% endif %}
                           <!--button to remove a checkbox group-->
-                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}" {{ "disabled" if disable }}><i class="fa fa-times"></i></button>
+                          <button type="submit" class="button btn btn-danger btn-xs"  style="float: right;" name="checkgroup_remove" value="{{term_id}}#{{subpanel_id}}" {{ "disabled" if disable }}><em class="fa fa-times"></em></button>
                         </form>
                       </div>
                       <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
@@ -216,7 +216,7 @@
           <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
             <div class="d-flex justify-content-between">
               <text class="text-muted mb-1 ms-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
-              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}" {{ "disabled" if disable }}><i class="fa fa-times"></i> Remove panel</button>
+              <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}" {{ "disabled" if disable }}><em class="fa fa-times"></em> Remove panel</button>
             </div>
           </form>
         </div><!-- end of card body-->

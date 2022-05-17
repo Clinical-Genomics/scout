@@ -138,7 +138,7 @@
             <div class="row">
                  <div class="col-sm-12 ms-3 mt-3">
                     <div class="panel-heading">
-                      <h6><i class="fa fa-user-md "></i>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank">OMIM</a>)</h6>
+                      <h6><em class="fa fa-user-md "></em>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank">OMIM</a>)</h6>
                      </div>
                  </div>
             </div>
@@ -228,7 +228,7 @@
 
 {% macro synopsis_panel() %}
   <div class="card">
-    <h6 data-bs-toggle='tooltip' class="panel-heading ms-3 mt-2" title="Free text field. Write a summary about the case! Markdown format"><i class="fa fa-id-card-o"></i>&nbsp;Synopsis</h6>
+    <h6 data-bs-toggle='tooltip' class="panel-heading ms-3 mt-2" title="Free text field. Write a summary about the case! Markdown format"><em class="fa fa-id-card-o"></em>&nbsp;Synopsis</h6>
       <div class="card-body">
         <div class="row">
           <div class="col-10">
@@ -249,7 +249,7 @@
     <div class="panel-heading" data-bs-toggle='tooltip' title="Group cases to share user variant assessments like comments, classification and dismissal. A case can be in multiple groups.">
       <h6 class="mt-3 ms-3">
         <span>
-          <i class="fa fa-users me-1"></i>Connected cases ({{case_groups|length}} groups)
+          <em class="fa fa-users me-1"></em>Connected cases ({{case_groups|length}} groups)
         </span>
         <span class="float-sm-right me-3" data-bs-toggle='tooltip' data-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}"><span class="fas fa-plus me-1"></span>New group</a></span>
       </h6>
@@ -268,14 +268,14 @@
             <div class="row">
               <div class="col-8">
                 <div class="input-group mb-2 me-2 ms-2">
-                  <div class="input-group-text"><i class="fa fa-users"></i></div>
+                  <div class="input-group-text"><em class="fa fa-users"></em></div>
                   <input type="text" class="form-control" name="label" id="case_group_label-{{group_id}}" placeholder="{{ case_group_label[group_id] }}">
                 </div>
               </div>
               <div class="col-4 d-flex align-content-center">
                 <button type="submit" class="btn btn-secondary btn-sm mb-2">Save label</button>
                 <button type="button" class="btn btn-secondary btn-sm mb-2 ms-3 text-end" data-bs-toggle="modal" data-bs-target="#add-case-group-{{group_id}}">
-                  <i class="fas fa-user-plus" data-bs-toggle='tooltip' title="Add other case to this group"></i>
+                  <em class="fas fa-user-plus" data-bs-toggle='tooltip' title="Add other case to this group"></em>
                 </button>
               </div>
             </div>
@@ -341,7 +341,7 @@
       {% set chromograph.available = true %}
       <div class="panel-heading">
           <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#accordion" href="#collapse_{{i.individual_id}}">
-            <i class="fa"></i>
+            <em class="fa"></em>
             Chromograph images {{i.display_name}}
           </a>
         (<a href = "https://clinical-genomics.github.io/scout/user-guide/cases#Cytogenomics" target="_blank">legend</a>)
@@ -366,7 +366,7 @@
         <div class="panel-heading">
           <div class="panel-title">
             <a class="accordion-toggle" data-bs-toggle="collapse" data-parent="#{{section_name}}-accordion" href="#collapse_{{ section_name }}">
-              <i class="fa"></i>
+              <em class="fa"></em>
               {{ section_name }} images
             </a>
           </div>
@@ -440,7 +440,7 @@
               name="{{ button_name if button_name }}"
               value="{{ button_value if button_value }}"
               type="submit">
-        <i class="fa fa-remove"></i>
+        <em class="fa fa-remove"></em>
       </button>
     </div>
   </form>

@@ -64,8 +64,8 @@
               <br><br>
             </div>
             <div class="modal-footer">
-              <button type="submit" name="lock" class="btn btn-primary"><i class="fa fa-lock"></i> Lock model except for selected users</button>
-              <button type="submit" name="unlock" class="btn btn-warning"><i class="fa fa-unlock"></i> Unlock model to all users</button>
+              <button type="submit" name="lock" class="btn btn-primary"><em class="fa fa-lock"></em> Lock model except for selected users</button>
+              <button type="submit" name="unlock" class="btn btn-warning"><em class="fa fa-unlock"></em> Unlock model to all users</button>
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Exit</button>
             </div>
           </div>
@@ -146,11 +146,11 @@
               <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
               <td style="width:30%">{{model.admins|join(", ") or "-"}}</td>
               <td>
-                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><i class="fa fa-trash-o"></i></button>
+                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><em class="fa fa-trash-o"></em></button>
               </td>
               {% if model.admins|length == 0 or current_user.email in model.get("admins",[]) %}
                 <td>
-                  <button type="button" class="btn btn-primary btn-sm" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#lockModal-{{model._id}}"><i class="fa {{ 'fa-lock' if model.admins|length > 0 else 'fa-unlock' }}"></i></button>
+                  <button type="button" class="btn btn-primary btn-sm" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#lockModal-{{model._id}}"><em class="fa {{ 'fa-lock' if model.admins|length > 0 else 'fa-unlock' }}"></em></button>
                 </td>
               {% endif %}
             </tr>

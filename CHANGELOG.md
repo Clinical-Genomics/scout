@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 ### Fixed
 - Remove load demo case command from docker-compose.yml
+- Bootstrap upgraded to version 5
 
 ## [4.53]
 ### Added
@@ -17,7 +18,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Point Alamut API key docs link to new API version
 - Parse dbSNP id from ID only if it says "rs", else use VEP CSQ fields
 - Removed MarkupSafe from the dependencies
-- Bootstrap upgraded to version 5
 ### Fixed
 - Reintroduced loading of SVs for demo case 643595
 - Successful parse of FOUND_IN should avoid GATK caller default

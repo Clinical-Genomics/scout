@@ -73,11 +73,11 @@
         </div>
         <div>
           <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
-                <i class="fa fa-link"></i></a>
+                <span class="fa fa-link"></span></a>
         </div>
         <div>
           <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}" download>
-                <i class="fa fa-file-pdf-o"></i></a>
+                <span class="fa fa-file-pdf-o"></span></a>
         </div>
       </div>
     </div>
@@ -86,9 +86,9 @@
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ms-2">MultiQC</span>
           {% if case.multiqc is existing %}
-            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><em class="fa fa-link"></em></a>
           {% else %}
-            <i class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></i>
+            <span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></span>
           {% endif %}
         </div>
       </div>
@@ -100,7 +100,7 @@
             <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
-                <i class="fa fa-link"></i></a>
+                <span class="fa fa-link"></span></a>
             </form>
         </div>
       </div>
@@ -112,7 +112,7 @@
           <span class="menu-collapsed ms-2">mtDNA report</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-file-excel-o"></span></a>
         </div>
       </div>
     </div>
@@ -237,7 +237,7 @@
             {% else %}
               <button type="submit" name="action" value="DELETE" class="btn btn-warning btn-xs form-control">
             {% endif %}
-                <i class="fa fa-remove"></i>
+                <span class="fa fa-remove"></span>
                   {{ user.name }}
               </button>
         </form>
@@ -247,7 +247,7 @@
                              case_name=case.display_name) }}"
           title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
           <button class="btn btn-light form-control btn-xs">
-            <i class="fa fa-heart"></i> Assign yourself</button>
+            <span class="fa fa-heart"></span> Assign yourself</button>
       </form>
     </span>
   </div>
@@ -266,8 +266,8 @@
 <!-- Submenu content -->
   {% if case.research_requested %}
     <span class="d-flex align-items-center">
-      <i class="text-white mt-1 ms-3">Research pending</i>
-      <button type="button" class="btn btn-danger btn-xs ms-3" data-bs-toggle="modal" data-bs-target="#cancel-research-modal"><i class="fa fa-hand-paper-o text-white"></i></button>
+      <em class="text-white mt-1 ms-3">Research pending</em>
+      <button type="button" class="btn btn-danger btn-xs ms-3" data-bs-toggle="modal" data-bs-target="#cancel-research-modal"><span class="fa fa-hand-paper-o text-white"></span></button>
     </span>
   {% else %}
     <div id='submenu2' class="collapse">
@@ -292,7 +292,7 @@
     </div>
   {% endif %}
   <span class="d-flex align-items-center">
-    <i class="text-white mt-1 ms-3">Rerun pending</i>
+    <em class="text-white mt-1 ms-3">Rerun pending</em>
   </span>
 {% else %}
   <div id='submenu3' class="collapse">
@@ -402,7 +402,7 @@
   <form method="POST"
             action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
         <button name="action" value="DELETE" class="btn btn-success form-control">
-          <i class="fa fa-check-square-o"></i>
+          <em class="fa fa-check-square-o"></em>
           Decipher Checked
         </button>
       </form>
@@ -570,16 +570,16 @@
       {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><i class="fa fa-link"></i></a>
+                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><em class="fa fa-link"></em></a>
         </div>
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><em class="fa fa-file-pdf-o"></em></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
-        <div><i class="fa fa-exclamation-circle ms-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></i></div>
+        <div><em class="fa fa-exclamation-circle ms-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></em></div>
       {% else %}
-        <div><i class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
+        <div><em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></em></div>
       {% endif %}
     </div>
   </div>
@@ -595,14 +595,14 @@
     {% if case.delivery_report is existing %}
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None) }}" target="_blank"><i class="fa fa-link"></i></a>
+                          case_name=case.display_name, date=None) }}" target="_blank"><em class="fa fa-link"></em></a>
       </div>
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                          case_name=case.display_name, date=None, format='pdf') }}" download><em class="fa fa-file-pdf-o"></em></a>
       </div>
     {% else %}
-      <div><i class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
+      <div><em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></em></div>
     {% endif %}
   </div>
 </div>
@@ -617,9 +617,9 @@
     <div>
       {% if case.cnv_report is existing %}
         <a href="{{ url_for('cases.cnv_report', institute_id=institute,
-                        case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+                        case_name=case.display_name, format='pdf') }}" target="_blank"><em class="fa fa-file-pdf-o"></em></a>
       {% else %}
-        <i class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></i>
+        <em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></em>
       {% endif %}
     </div>
   </div>
@@ -638,9 +638,9 @@
         <div>
           {% if case[report_type] is existing %}
             <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
-                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><em class="fa fa-file-pdf-o"></em></a>
           {% else %}
-            <i class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></i>
+            <em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></em>
           {% endif %}
         </div>
       </div>
@@ -659,14 +659,14 @@
     {% if case.coverage_qc_report is existing %}
       <div>
         <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                          case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+                          case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
       </div>
       <div>
         <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                          case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                          case_name=case.display_name, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
       </div>
     {% else %}
-         <div><i class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></i></div>
+         <div><em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></em></div>
     {% endif %}
   </div>
 </div>

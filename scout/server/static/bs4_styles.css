@@ -23,14 +23,21 @@ table.dataTable {margin-bottom: 0}
 
 /* dismiss table row */
 .dismiss {
-   background-color: #C9C9C9;
+   background-color: #818181;
 }
 
 /* causative table row */
-.causative {
-   background-color: #dff0d8;
+@media (prefers-color-scheme: dark) {
+	.causative {
+		background-color: #afc0a8;
+	}
 }
 
+@media (prefers-color-scheme: light) {
+	.causative {
+		background-color: #dff0d8;
+	}
+}
 /* Custom navbar theme */
 .navbar{
   height: 50px;
