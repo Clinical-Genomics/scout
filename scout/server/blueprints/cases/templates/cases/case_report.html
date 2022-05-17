@@ -992,7 +992,7 @@
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
             {% else %}
-              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom or variant.chromosome}}:{{variant.end}}
+              chr{{variant.chromosome}}:{{variant.position}}/chr{{variant.end_chrom or variant.chromosome}}:{{variant.end}}
             {% endif %}
           </td>
           {% if variant.cytoband_start and variant.cytoband_end %}
@@ -1239,7 +1239,7 @@
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
             {% else %}
-              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom or variant.chromosome}}:{{variant.end}}
+              chr{{variant.chromosome}}:{{variant.position}}/chr{{variant.end_chrom or variant.chromosome}}:{{variant.end}}
             {% endif %}
           </td>
           {% if variant.cytoband_start and variant.cytoband_end %}
