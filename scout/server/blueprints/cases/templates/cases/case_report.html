@@ -807,7 +807,7 @@
 {% endmacro %}
 
 {% macro dismissed_panel() %}
-  <div class="card border-danger mb-3" style="border-width: 5px;">
+  <div class="card border-danger mb-3" style="border-width: 5px; display: block;">
     <div class="card-header bg-danger text-black">
       <a name="dismissed_variants"><strong>Dismissed Variants</strong></a>
     </div>
@@ -1012,7 +1012,7 @@
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
             {% else %}
-              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom}}:{{variant.end}}
+              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom or variant.chromosome}}:{{variant.end}}
             {% endif %}
           </td>
           {% if variant.cytoband_start and variant.cytoband_end %}
@@ -1269,7 +1269,7 @@
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
             {% else %}
-              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom}}:{{variant.end}}
+              chr{{variant.chromosome}}:{{variant.position}}/{{'chr'+variant.end_chrom or variant.chromosome}}:{{variant.end}}
             {% endif %}
           </td>
           {% if variant.cytoband_start and variant.cytoband_end %}
