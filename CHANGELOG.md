@@ -9,8 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
 ### Changed
+- Improved HTML syntax in case report template
 ### Fixed
 - Remove load demo case command from docker-compose.yml
+- Text elements being split across pages in PDF reports
 
 ## [4.53]
 ### Added
