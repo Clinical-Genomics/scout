@@ -7,10 +7,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 ### Changed
+- Improved HTML syntax in case report template
 - Create ClinVar submissions from pinned variants list in case page
-- Specifically select which pinned variants will be included in ClinVar submission documents
+- Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
 - Remove load demo case command from docker-compose.yml
+- Text elements being split across pages in PDF reports
 
 ## [4.53]
 ### Added
