@@ -1,3 +1,9 @@
+@media print {
+  div {
+    break-inside: avoid;
+  }
+}
+
 .container {
   margin-top: 10px;
   width: 100%;
