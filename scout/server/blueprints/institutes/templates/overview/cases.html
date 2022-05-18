@@ -22,27 +22,27 @@
 
 {% macro search_form() %}
 <form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
-    <div class="form-row d-flex align-items-end">
-      <div class="form-group col-3">
+    <div class="row d-flex align-items-end">
+      <div class="col-3">
         {{ form.search_type.label(class="control-label") }}
         {{ form.search_type(class="form-control") }}
       </div>
-      <div class="form-group col-4">
+      <div class="col-4">
         {{ form.search_term.label(class="control-label") }}
         {{ form.search_term(class="form-control", placeholder='example:18201') }}
       </div>
-      <div class="form-group col-2">
+      <div class="col-2">
         {{ form.search(class="btn btn-primary form-control") }}
       </div>
-      <div class="form-group col-1 ms-2">
+      <div class="col-1 ms-2">
         {{ form.search_limit.label(class="control-label") }}
         {{ form.search_limit(class="form-control") }}
       </div>
-      <div class="form-group col-1 ms-2">
+      <div class="col-1 ms-2">
         {{ form.skip_assigned.label(class="control-label") }}
         {{ form.skip_assigned(class="form-control form-check-input") }}
       </div>
-      <div class="form-group col-1">
+      <div class="col-1">
         {{ form.is_research.label(class="control-label") }}
         {{ form.is_research(class="form-control form-check-input") }}
       </div>

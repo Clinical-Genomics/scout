@@ -59,7 +59,7 @@
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link) }} mt-2">
-                      <div class="form-group">
+                      <div class="row">
                         <textarea {{ 'disabled' if comment }} class="form-control"
                           name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
                       </div>

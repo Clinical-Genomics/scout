@@ -26,14 +26,13 @@
 
 {% macro dashboard_search_form() %}
 <div class="card">
-  <form class="mt-3 ms-3" id='form' class="form-horizontal" method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
+  <form class="mt-3 ms-3 form-horizontal" id='form' method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
       <input type="hidden" value="{{panel}}" name="panel" id="panel">
-      <div class="form-row align-items-center mb-3">
+      <div class="row align-items-center mb-3">
         <!--Search institute select-->
         <div class="col-2 ms-3">
           {{ dashboard_form.search_institute(class="form-control") }}
         </div>
-
         <!--Search type select field-->
         <div class="col-3 ms-3">
           {{ dashboard_form.search_type(class="form-control", id="search_type") }}
@@ -42,13 +41,11 @@
         <div class="col-4 ms-3">
           {{ dashboard_form.search_term(class="form-control", placeholder="Search term", id="search_term") }}
         </div>
-
         <!--Search term textfield-->
         <div class="col-1 ms-3">
           {{ dashboard_form.search(class="form-control") }}
         </div>
-
-      </div> <!--end of class="form-row align-items-center"-->
+      </div> <!--end of class="row align-items-center"-->
     </form>
   </div>
 {% endmacro %}

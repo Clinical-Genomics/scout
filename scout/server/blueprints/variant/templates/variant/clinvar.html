@@ -76,7 +76,7 @@
             {{ panel_variant('other_vars') }}
           </div>
           <div class="col-xs-6 col-sm-6 col-md-12">
-            <div class="form-group text-center">
+            <div class="text-center">
               <button class="btn btn-lg btn-info" data-bs-toggle="modal" value="submit">Add variants to Clinvar submission</button>
             </div>
           </div>
@@ -443,7 +443,7 @@
         {% if individual.phenotype == 2 %}
           {% for sample in pinned.samples %}
             {% if sample.display_name == individual.display_name and sample.genotype_call != '0/0' and sample.genotype_call != './.' %}
-              <div class="form-group" id="cdata_checkbox_{{pinned._id}}" >
+              <div class="row" id="cdata_checkbox_{{pinned._id}}" >
                 <div class="col-12 card">
                   <div class="form-check">
                     <label data-bs-toggle="collapse" class="form-check-label" class="form-check-input" data-bs-target="#casedata_{{pinned._id}}" aria-expanded="false" aria-controls="collapseOne">

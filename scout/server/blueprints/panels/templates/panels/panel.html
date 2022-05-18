@@ -47,7 +47,6 @@
 
       <div class="list-group-item">
         <form action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
-
           <div class="form-group">
               <label for="panel_description">Description</label>
               <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
@@ -216,17 +215,15 @@
     {% if panel.pending and not panel.is_archived %}
       <div class="card-footer">
         <form action="{{ url_for('panels.panel_update', panel_id=panel._id) }}" method="POST">
-          <div class="form-group">
-            <div class="row">
-              <div class="form-group col-sm-3">
-                <label class="col-form-label">Version</label>
-              </div>
-              <div class="form-group col-sm-3 text-center">
-                <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
-              </div>
-              <div class="form-group col-sm-6 text-center">
-                <button type="submit" class="btn btn-warning form-control" name="cancel_pending" value="cancel_pending">Cancel pending actions</button>
-              </div>
+          <div class="row">
+            <div class="form-group col-sm-3">
+              <label class="col-form-label">Version</label>
+            </div>
+            <div class="form-group col-sm-3 text-center">
+              <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
+            </div>
+            <div class="form-group col-sm-6 text-center">
+              <button type="submit" class="btn btn-warning form-control" name="cancel_pending" value="cancel_pending">Cancel pending actions</button>
             </div>
           </div>
           <button class="btn btn-primary form-control">Update panel</button>
