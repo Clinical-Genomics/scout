@@ -339,7 +339,7 @@ def cancer_variants(institute_id, case_name):
             # Flash a message with errors
             for field, err_list in form.errors.items():
                 for err in err_list:
-                    flash(f"Content of field '{field}' has not a valid format", "warning")
+                    flash(f"Content of field '{field}' does not have a valid format", "warning")
             # And do not submit the form
             return redirect(
                 url_for(

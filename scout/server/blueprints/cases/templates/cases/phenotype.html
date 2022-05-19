@@ -251,15 +251,15 @@
           </div>
         </div>
         <hr>
-        <div class="row d-flex justify-content-between mt-3">
+        <div class="row d-flex justify-content-between align-items-center mt-3">
           <div class="col-4">
-            <div data-toggle='tooltip' title="Manually add a gene (must have the same genome build as case analysis) to the dynamic HPO panel.
+            <div data-bs-toggle='tooltip' title="Manually add a gene (must have the same genome build as case analysis) to the dynamic HPO panel.
             To remove, use the HPO panel button to regenerate a list without them.">
                 Add gene to the dynamic panel
             </div>
           </div>
           <div class="col-4">
-            <input name="genes" pattern="^[0-9]+\s*\|\s*.*" class="typeahead_gene form-control" data-provide="typeahead" autocomplete="off" placeholder="Search..." style="width:130px">
+            <input name="genes" pattern="^[0-9]+\s*\|\s*.*" class="typeahead_gene form-control mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search..." style="width:130px">
           </div>
           <div class="col-4">
             <button class="btn btn-secondary btn-sm" type="submit" name="action" value="ADDGENE">Add gene</button>
