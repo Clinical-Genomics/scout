@@ -32,16 +32,43 @@ table.dataTable {margin-bottom: 0}
    background-color: #818181;
 }
 
-/* causative table row */
+
 @media (prefers-color-scheme: dark) {
+	a {
+		color: #778abf;
+		font-weight: bold;
+	}
+
+	.dismiss a {
+		color:white
+	}
+
+	/* causative table row dark */
 	.causative {
 		background-color: #afc0a8;
+	}
+	/* comments even-odd row dark */
+	.even {
+		background-color: #b6b6b6;
+		color: #ffffff;
+	}
+	.odd {
+		background-color: #95a8b0;
+		color: #ffffff;
 	}
 }
 
 @media (prefers-color-scheme: light) {
+	/* causative table row light */
 	.causative {
 		background-color: #dff0d8;
+	}
+	/* comments even-odd row light */
+	.even {
+		background-color: #f6f6f6
+	}
+	.odd {
+		background-color: #d5e8f0
 	}
 }
 
@@ -51,16 +78,17 @@ table.dataTable {margin-bottom: 0}
 }
 
 .navbar-nav > li > a{
-  color:white;
+  color:var(--bs-white);
   font-size:16px;
 }
 
 .navbar-nav > .active {
-  color:white;
   font-weight:bold;
-  background-color: dimgray;
+  background-color:var(--bs-secondary);
 }
-
+.navbar-nav > .active > .navbar-text {
+	color:var(--bs-white);
+}
 
 .float-top-secondary {
 	position: fixed;

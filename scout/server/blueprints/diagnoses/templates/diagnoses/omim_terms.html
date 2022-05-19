@@ -2,9 +2,9 @@
 
 {% block css %}
 {{ super() }}
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.0/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
 {% endblock %}
 
 {% block top_nav %}
@@ -36,7 +36,7 @@
               {% for omim in terms %}
                 <tr>
                   <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank">{{ omim.disease_nr }}</a></td>
-                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}"><i class="fa fa-link"></i></a></td>
+                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}"><span class="fa fa-link"></span></a></td>
                   <td>{{ omim.description }}</td>
                   <td><!-- inheritance-->
                     {% for model in omim.inheritance %}
@@ -60,12 +60,12 @@
 
 {% block scripts %}
 {{ super() }}
-  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.bootstrap5.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.js"></script>
 <script>
   $(document).ready(function() {
     $('#diagnoses_table').DataTable( {

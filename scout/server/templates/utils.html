@@ -38,8 +38,6 @@
   {% set comments = comments|list %}
   <h6 class="comments-title ms-3 mt-2"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
   <div class="list-group" style="max-height:200px; overflow-y: scroll;">
-    <style>.even { background-color: #f6f6f6 }</style>
-    <style>.odd { background-color: #d5e8f0 }</style>
     {% for comment in comments %}
       <div class="row ms-1 alert {% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
           <div class="col-7 text-break">{{ comment.content }}</div>
