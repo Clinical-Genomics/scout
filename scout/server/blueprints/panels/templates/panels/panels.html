@@ -57,7 +57,7 @@
             <label class="control-label col-form-label">Gene panel file</label>
           </div>
           <div class="col-sm-5 text-center">
-            <input type="file" name="panel_file" class="custom-file-input" required onchange="updateFileLabel('new_panel_label', this);">
+            <input type="file" name="panel_file" class="custom-file-input" required">
             <p class="mt-2 help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" target="_blank">gene panel file</a>?</p>
           </div>
           <div class="col-sm-5">
@@ -181,8 +181,7 @@
         </div>
       </div><!--end of col-->
       <div class="col-sm-7">
-        <input type="file" name="panel_file" class="custom-file-input" required onchange="updateFileLabel('file_label_{{panel_obj.display_name}}', this)">
-        <label id="file_label_{{panel_obj.display_name}}" class="custom-file-label" for="panel_file">Choose file</label><br>
+        <input type="file" name="panel_file" class="custom-file-input" required>
         <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version">gene panel file</a>?</p>
       </div><!--end of col-->
     </div><!--end of row-->
@@ -198,11 +197,6 @@
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript">
-
-function updateFileLabel(label, inputFile){
-  let fileName = inputFile.files[0].name;
-  document.getElementById(label).innerHTML = fileName;
-}
 
 $('.history_btn').on('click', function(){
     var bid = $(this)[0].id;
