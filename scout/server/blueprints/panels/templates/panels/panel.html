@@ -12,7 +12,7 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('panels.panels') }}">Gene Panels</a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">{{ panel.display_name }} {{ panel.version }}</span>
   </li>
 {% endblock %}
@@ -112,7 +112,7 @@
     <div class="panel-heading">Included genes</div>
     <div class="table-responsive">
       <table class="table table-bordered">
-        <thead>
+        <thead class="table-light thead">
           <tr>
             <th>Gene</th>
             <th>HGNC ID</th>

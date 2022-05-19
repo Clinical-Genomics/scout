@@ -9,7 +9,7 @@
   <li class="nav-item">
    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">Gene Panels</span>
   </li>
 {% endblock %}
@@ -31,7 +31,7 @@
 <div class="container-float">
   <div class="card mt-3">
     <div class="card-body">
-      <form class="form-horizontal" action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
+      <form action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
         <div class="row">
           <div class="col-sm-2">
             <label class="col-form-label">New panel</label>
@@ -52,14 +52,13 @@
               <input type="text" name="display_name" class="form-control" placeholder="Full name">
             </div>
         </div>
-        <div class="row">
+        <div class="mt-2 row">
           <div class="col-sm-2">
-            <label class="col-form-label">Gene panel file</label>
+            <label class="control-label col-form-label">Gene panel file</label>
           </div>
           <div class="col-sm-5 text-center">
             <input type="file" name="panel_file" class="custom-file-input" required onchange="updateFileLabel('new_panel_label', this);">
-            <label id="new_panel_label" class="custom-file-label" for="panel_file">Choose file</label><br>
-            <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" target="_blank">gene panel file</a>?</p>
+            <p class="mt-2 help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/panels/#uploading-a-new-gene-panel-version" target="_blank">gene panel file</a>?</p>
           </div>
           <div class="col-sm-5">
             <textarea class="form-control" id="description" name="description" rows="2" placeholder="Description (optional)"></textarea>
