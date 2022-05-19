@@ -165,7 +165,7 @@
       {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
     </div>
     <div class="card-footer">
-      <button type="button" class="btn btn-outline-secondary form-control" data-bs-toggle="modal" data-bs-target="#edit-synopsis">
+      <button type="button" class="btn btn-secondary form-control" data-bs-toggle="modal" data-bs-target="#edit-synopsis">
         Edit
       </button>
     </div>
@@ -187,7 +187,7 @@
           <textarea name="synopsis" class="form-control" cols="30" rows="10">{{ case.synopsis }}</textarea>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Save</button>
         </div>
         </div>

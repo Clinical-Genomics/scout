@@ -202,7 +202,7 @@
           Copy number profile
           <div class="float-end">
             {% for sample in variant.samples %}
-              <a class="btn btn-outline-dark" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
+              <a class="btn btn-secondary" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
             {% endfor %}
           </div>
         </li>
@@ -280,10 +280,10 @@
       <tbody>
         <tr>
           <td>
-            <a class="btn btn-outline-secondary form-control" href="{{variant.ensembl_link}}" target="_blank" rel="noopener">Ensembl</a>
+            <a class="btn btn-secondary form-control" href="{{variant.ensembl_link}}" target="_blank" rel="noopener">Ensembl</a>
           </td>
 	        <td>
-	          <a class="btn btn-outline-secondary form-control" href="{{variant.decipher_link}}" target="_blank" rel="noopener">DECIPHER</a>
+	          <a class="btn btn-secondary form-control" href="{{variant.decipher_link}}" target="_blank" rel="noopener">DECIPHER</a>
           </td>
         </tr>
       </tbody>

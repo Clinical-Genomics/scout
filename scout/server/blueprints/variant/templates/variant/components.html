@@ -126,13 +126,13 @@
       {% endif %}
       {{ acmg_form(institute, case, variant, ACMG_OPTIONS, variant.acmg_classification.code if variant.acmg_classification) }}
       <div class="mt-3">
-        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-outline-secondary form-control">Classify</a>
+        <a href="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" class="btn btn-secondary form-control">Classify</a>
         {% if case.suspects and variant._id in case.suspects and not variant.clinvar_clinsig %}
           <a href="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}"
-            class="btn btn-outline-secondary form-control" target="_blank">Submit to ClinVar</a>
+            class="btn btn-secondary form-control" target="_blank">Submit to ClinVar</a>
         {% endif %}
         {% if variant.clinvar_clinsig %}
-          <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-outline-secondary form-control">Modify clinvar submission</a>
+          <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="btn btn-secondary form-control">Modify clinvar submission</a>
         {% endif %}
       </div>
       {% if evaluations %} <!-- scrollable previous ACMG evaluations div-->
@@ -229,45 +229,45 @@
         External links: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
       </div>
       <div class="panel-body">
-          <a href="{{ gene.ensembl_link }}" class="btn btn-outline-secondary" target="_blank">Ensembl</a>
-          <a href="{{ gene.hpa_link }}" class="btn btn-outline-secondary" target="_blank">HPA</a>
-          <a href="{{ gene.string_link }}" class="btn btn-outline-secondary" target="_blank">STRING</a>
-          <a href="{{ gene.genemania_link }}" class="btn btn-outline-secondary" target="_blank">GENEMANIA</a>
-          <a href="{{ variant.ucsc_link }}" class="btn btn-outline-secondary" target="_blank">UCSC</a>
+          <a href="{{ gene.ensembl_link }}" class="btn btn-secondary" target="_blank">Ensembl</a>
+          <a href="{{ gene.hpa_link }}" class="btn btn-secondary" target="_blank">HPA</a>
+          <a href="{{ gene.string_link }}" class="btn btn-secondary" target="_blank">STRING</a>
+          <a href="{{ gene.genemania_link }}" class="btn btn-secondary" target="_blank">GENEMANIA</a>
+          <a href="{{ variant.ucsc_link }}" class="btn btn-secondary" target="_blank">UCSC</a>
           {% if gene.entrez_link %}
-            <a href="{{ gene.entrez_link }}" class="btn btn-outline-secondary" target="_blank">Entrez</a>
+            <a href="{{ gene.entrez_link }}" class="btn btn-secondary" target="_blank">Entrez</a>
           {% endif %}
-          <a href="http://tools.genes.toronto.edu/" class="btn btn-outline-secondary" target="_blank">SPANR</a>
-          <a href="{{ gene.reactome_link }}" class="btn btn-outline-secondary" target="_blank">Reactome</a>
-          <a href="{{ gene.expression_atlas_link }}" class="btn btn-outline-secondary" target="_blank">Expr. Atlas</a>
-          <a href="{{ gene.clingen_link }}" class="btn btn-outline-secondary" target="_blank">ClinGen</a>
+          <a href="http://tools.genes.toronto.edu/" class="btn btn-secondary" target="_blank">SPANR</a>
+          <a href="{{ gene.reactome_link }}" class="btn btn-secondary" target="_blank">Reactome</a>
+          <a href="{{ gene.expression_atlas_link }}" class="btn btn-secondary" target="_blank">Expr. Atlas</a>
+          <a href="{{ gene.clingen_link }}" class="btn btn-secondary" target="_blank">ClinGen</a>
           {% if variant.alamut_link %}
-            <a href="{{ variant.alamut_link }}" class="btn btn-outline-secondary" target="_blank">Alamut</a>
+            <a href="{{ variant.alamut_link }}" class="btn btn-secondary" target="_blank">Alamut</a>
           {% endif %}
-          <a href="{{ gene.ppaint_link }}" class="btn btn-outline-secondary" target="_blank">Protein Paint</a>
+          <a href="{{ gene.ppaint_link }}" class="btn btn-secondary" target="_blank">Protein Paint</a>
           {% if variant.is_mitochondrial %}
-            <a href="{{ variant.mitomap_link }}" class="btn btn-outline-secondary" target="_blank">MitoMap</a>
+            <a href="{{ variant.mitomap_link }}" class="btn btn-secondary" target="_blank">MitoMap</a>
           {% endif %}
           {% if variant.hmtvar_variant_id %}
-            <a href="{{ variant.hmtvar_link }}" class="btn btn-outline-secondary" target="_blank">HmtVar</a>
+            <a href="{{ variant.hmtvar_link }}" class="btn btn-secondary" target="_blank">HmtVar</a>
           {% endif %}
           {% if gene.tp53_link %}
-            <a href="{{ gene.tp53_link }}" class="btn btn-outline-secondary" target="_blank">MutanTP53</a>
+            <a href="{{ gene.tp53_link }}" class="btn btn-secondary" target="_blank">MutanTP53</a>
           {% endif %}
           {% if gene.iarctp53_link %}
-            <a href="{{ gene.iarctp53_link }}" class="btn btn-outline-secondary" target="_blank">TP53 Database</a>
+            <a href="{{ gene.iarctp53_link }}" class="btn btn-secondary" target="_blank">TP53 Database</a>
           {% endif %}
           {% if cancer %}
-            <a href="{{ gene.cbioportal_link }}" class="btn btn-outline-secondary" target="_blank">cBioPortal</a>
-            <a href="{{ gene.oncokb_link }}" class="btn btn-outline-secondary" target="_blank">OncoKB</a>
-            <a href="{{ gene.civic_link }}" class="btn btn-outline-secondary" target="_blank">CIViC</a>
+            <a href="{{ gene.cbioportal_link }}" class="btn btn-secondary" target="_blank">cBioPortal</a>
+            <a href="{{ gene.oncokb_link }}" class="btn btn-secondary" target="_blank">OncoKB</a>
+            <a href="{{ gene.civic_link }}" class="btn btn-secondary" target="_blank">CIViC</a>
           {% endif %}
           {% if str %}
-            <a href="{{ gene.stripy_link }}" class="btn btn-outline-secondary" target="_blank">STRipy</a>
-            <a href="{{ gene.gnomad_str_link}}" class="btn btn-outline-secondary" target="_blank">GnomAD STR</a>
+            <a href="{{ gene.stripy_link }}" class="btn btn-secondary" target="_blank">STRipy</a>
+            <a href="{{ gene.gnomad_str_link}}" class="btn btn-secondary" target="_blank">GnomAD STR</a>
           {% endif %}
-          <a href="{{ gene.panelapp_link }}" class="btn btn-outline-secondary" target="_blank">PanelApp</a>
-          <a href="{{ url_for('variant.marrvel_link', build=case.genome_build or '37', variant_id=variant._id)}}" class="btn btn-outline-secondary" target="_blank">MARRVEL</a>
+          <a href="{{ gene.panelapp_link }}" class="btn btn-secondary" target="_blank">PanelApp</a>
+          <a href="{{ url_for('variant.marrvel_link', build=case.genome_build or '37', variant_id=variant._id)}}" class="btn btn-secondary" target="_blank">MARRVEL</a>
       </div>
     {% endfor %}
   </div>

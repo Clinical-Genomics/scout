@@ -323,7 +323,7 @@
           <input type="text" name="other_case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10"></input>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Add case</button>
         </div>
         </div>
@@ -419,7 +419,7 @@
           <textarea name="synopsis" class="form-control" cols="30" rows="10">{{ case.synopsis }}</textarea>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-primary">Save</button>
         </div>
         </div>
@@ -576,14 +576,14 @@ function toggleClickableButtons(button, select_field) {
     const selection = document.getElementById(select_field)
 
     if (selection.value.length > 0) {
-       document.getElementById(button).classList.remove('btn-outline-secondary');
+       document.getElementById(button).classList.remove('btn-secondary');
        document.getElementById(button).classList.remove('no-hover');
        document.getElementById(button).classList.add('btn-secondary');
     }
     else {
        document.getElementById(button).classList.remove('btn-secondary');
        document.getElementById(button).classList.add('no-hover');
-       document.getElementById(button).classList.add('btn-outline-secondary');
+       document.getElementById(button).classList.add('btn-secondary');
     }
   }
 

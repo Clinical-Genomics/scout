@@ -52,7 +52,7 @@
               <textarea class="form-control" id="panel_description" name="panel_description" rows="3" style="background-color: white;" readonly>{{panel.description}}</textarea>
           </div>
           <div class="btn-group">
-            <button type="button" name="edit" value="edit" class="btn btn-sm btn-outline-secondary" onclick="editDescription()">
+            <button type="button" name="edit" value="edit" class="btn btn-sm btn-secondary" onclick="editDescription()">
               Edit
             </button>
             <button type="submit" name="update_description" value="update_description" class="btn btn-sm btn-primary">
@@ -145,7 +145,7 @@
               <td>{{ gene.comment }}</td>
               <td>
                 {% if not panel.is_archived %}
-                  <a class="btn btn-outline-secondary btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
+                  <a class="btn btn-secondary btn-xs" href="{{ url_for('panels.gene_edit', panel_id=panel._id, hgnc_id=gene.hgnc_id) }}">Edit</a>
                   <form class="float-end" action="{{ url_for('panels.panel', panel_id=panel._id) }}" method="POST">
                     <input type="hidden" name="hgnc_id" value="{{ gene.hgnc_id }}">
                     <button name="action" type="submit" value="delete" class="btn btn-danger btn-xs">Delete</button>
@@ -172,7 +172,7 @@
                 <input name="hgnc_id" class="typeahead form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for gene...">
               </div>
               <div class="col-sm-4">
-                <button type="submit" name="action" value="add" class="btn btn-outline-secondary form-control">
+                <button type="submit" name="action" value="add" class="btn btn-secondary form-control">
                   Add gene
                 </button>
               </div>
