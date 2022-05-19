@@ -27,7 +27,7 @@
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">{{ form.variant_type.data|capitalize }} STRs</span>
   </li>
 {% endblock %}
@@ -54,7 +54,7 @@
   </form>
   <div class="card mt-3">
     <table class="table table-bordered table-hover" style="table-layout: fixed">
-      <thead>
+      <thead class="thead table-light">
         <tr>
           <th style="width:8%" title="Index">Index</th>
           <th title="Repeat ID">Repeat locus</th>
@@ -155,15 +155,23 @@
       width: '100%'
     });
 
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('[data-toggle="popover"]').popover({
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl, {
         sanitizeFn: function (content) {
           return DOMPurify.sanitize(content)
         },
         container: 'body',
-      });
+      })
+    })
 
+    $(function () {
       $('table').stickyTableHeaders({
         fixedOffset: $(".navbar-fixed-top")
       });
@@ -200,12 +208,12 @@
 {% macro str_locus_info(variant) %}
   <a
   href="{{ variant.str_source_link }}"
-  class="link text-black"
+  class="link"
   target="_blank"
-  data-toggle="popover"
-  data-html="true"
-  data-trigger="hover"
-  data-content="
+  data-bs-toggle="popover"
+  data-bs-html="true"
+  data-bs-trigger="hover"
+  data-bs-content="
   <div class='text-start'>
     {% if variant.str_disease %}
       <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
