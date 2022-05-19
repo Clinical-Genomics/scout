@@ -93,7 +93,7 @@
 
 
 {% macro case_row(case) %}
-  <tr class="{% if case.status == 'solved' %} bg-success{% endif %}">
+  <tr class="{% if case.status == 'solved' %}causative{% endif %}">
     <td>
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}

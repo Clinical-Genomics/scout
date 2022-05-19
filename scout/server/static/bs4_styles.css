@@ -27,11 +27,15 @@ table.dataTable {margin-bottom: 0}
   border-bottom-right-radius: 15px;
 }
 
+/* affected, archived and similar accents */
+.bg-danger-light {
+    background-color: var(--bs-info);
+}
+
 /* dismiss table row */
 .dismiss {
    background-color: #818181;
 }
-
 
 @media (prefers-color-scheme: dark) {
 	a {
@@ -40,29 +44,38 @@ table.dataTable {margin-bottom: 0}
 	}
 
 	.dismiss a {
-		color:white
+		color:var(--bs-white)
 	}
 
-	/* causative table row dark */
+	/* causative table row dark  #afc0a8*/
 	.causative {
-		background-color: #afc0a8;
+		background-color:var(--bs-success);
 	}
+
+	.causative a {
+		color:var(--bs-white);
+	}
+
 	/* comments even-odd row dark */
 	.even {
 		background-color: #b6b6b6;
-		color: #ffffff;
+		color:var(--bs-white);
 	}
 	.odd {
 		background-color: #95a8b0;
-		color: #ffffff;
+		color:var(--bs-white);
 	}
 }
 
 @media (prefers-color-scheme: light) {
-	/* causative table row light */
+	/* causative table row light  #dff0d8*/
 	.causative {
-		background-color: #dff0d8;
+		background-color:var(--bs-success);
 	}
+	.causative a {
+		color:var(--bs-white);
+	}
+
 	/* comments even-odd row light */
 	.even {
 		background-color: #f6f6f6
