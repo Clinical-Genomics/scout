@@ -11,7 +11,7 @@
             {% for cohort in cohort_batch %}
               {% if cohort %}
                 <div class="col">
-                  <div class="badge d-flex align-items-center">{{cohort}}
+                  <div class="badge bg-light text-dark d-flex align-items-center">{{cohort}}
                     <span class="float-end">
                       {{ remove_form(url_for('cases.cohorts', institute_id=institute._id,
                                        case_name=case.display_name, remove='yes'),
@@ -111,7 +111,7 @@
 
 {% macro diagnosis_form(case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="row ms-1" id="omim_assign">
+    <div class="row ms-1 me-1" id="omim_assign">
       <div class="col-4">
         <input name="omim_term" id="assign-omim-term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
             required placeholder="Search..." oninput="toggleClickableButtons('assign-omim-button', 'assign-omim-term');">
@@ -126,7 +126,7 @@
         </select>
       </div>
       <div class="col-5">
-        <button class="btn no-hover btn-secondary btn-sm form-control" type="submit" id="assign-omim-button">Assign Diagnosis</button>
+        <button class="ms-3 btn no-hover btn-secondary form-control" type="submit" id="assign-omim-button">Assign Diagnosis</button>
       </div>
     </div>
   </form>
@@ -202,7 +202,7 @@
 
     <!-- Add new HPO terms to case/individuals -->
     <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
-      <div class="row">
+      <div class="row ms-1 me-1">
         <div class="col-4">
           <input name="hpo_term" id="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search..." oninput="toggleClickableButtons('assign-phenotype-button', 'hpo_term');">
         </div>
@@ -216,7 +216,7 @@
           </select>
         </div>
         <div class="col-5">
-          <button class="btn no-hover btn-secondary btn-sm form-control"  id="assign-phenotype-button">Assign Phenotype</button>
+          <button class="ms-3 btn no-hover btn-secondary form-control"  id="assign-phenotype-button">Assign Phenotype</button>
         </div>
       </div>
     </form>
