@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 
-{% from "variants/components.html" import gene_cell, frequency_cell_general, observed_cell_general %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general %}
 {% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge, other_tiered_variants %}
 
@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block css %}
-{{ super() }}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  {{ super() }}
+  {{ external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -50,7 +50,7 @@
 
   <div class="card mt-3">
     <table class="table table-hover table-bordered" style="table-layout:fixed">
-      <thead>
+      <thead class="thead thead-light sticky-top sticky-offset">
             <tr>
               <th style="width:2%"></th>
               <th title="Gene">Gene</th>
@@ -181,9 +181,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  {{ external_scripts() }}
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
   <script type="text/javascript">

@@ -1,10 +1,9 @@
 {% extends "layout_bs4.html" %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
 
 {% block css %}
 {{ super() }}
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.0/css/dataTables.bootstrap5.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css">
+  {{ db_table_external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -25,7 +24,7 @@
             The search didn't return any OMIM term
           {% else %}
             <table id="diagnoses_table" class="table table-sm">
-              <thead class="table-light thead">
+              <thead class="table-light thead sticky-top sticky-offset">
                 <th>OMIM term</th>
                 <th></th>
                 <th>Phenotype description</th>
@@ -60,12 +59,7 @@
 
 {% block scripts %}
 {{ super() }}
-  <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.js"></script>
+{{ db_table_external_scripts() }}
 <script>
   $(document).ready(function() {
     $('#diagnoses_table').DataTable( {

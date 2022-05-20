@@ -17,7 +17,7 @@
 {% endblock head %}
 
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg nav-pills navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg nav-pills navbar-dark bg-primary sticky-top">
       <div class="container-fluid">
         <a class="navbar-brand" href="{{ url_for('cases.index') }}">
           <img src="{{ url_for('public.static', filename='scout-logo.png') }}" width="30" height="30" class="d-inline-block align-top" alt=""><font color="white">Scout</font></a>
@@ -41,8 +41,8 @@
                 <a class="dropdown-item" href="{{ url_for('overview.institutes') }}">Institutes</a>
                 <a class="dropdown-item" href="{{ url_for('dashboard.index') }}">Dashboard</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="https://clinical-genomics.github.io/scout" target='_blank'>User guide</a>
-                <a class="dropdown-item" href="https://github.com/Clinical-Genomics/scout/issues" target='_blank'>Open issues</a>
+                <a class="dropdown-item" href="https://clinical-genomics.github.io/scout" referrerpolicy="no-referrer" target='_blank'>User guide</a>
+                <a class="dropdown-item" href="https://github.com/Clinical-Genomics/scout/issues" referrerpolicy="no-referrer" target='_blank'>Open issues</a>
               </div>
             </li>
             {% block top_nav %}{% endblock %}

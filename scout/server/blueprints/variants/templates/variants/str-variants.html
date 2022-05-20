@@ -1,6 +1,6 @@
 {% extends "layout_bs4.html" %}
 {% from "utils.html" import comments_table, pedigree_panel %}
-{% from "variants/components.html" import gene_cell, frequency_cell_general %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general %}
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filter_script_main %}
 
 {% block title %}
@@ -9,7 +9,7 @@
 
 {% block css %}
 {{ super() }}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  {{ external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -54,7 +54,7 @@
   </form>
   <div class="card mt-3">
     <table class="table table-bordered table-hover" style="table-layout: fixed">
-      <thead class="thead table-light">
+      <thead class="thead table-light sticky-top sticky-offset">
         <tr>
           <th style="width:8%" title="Index">Index</th>
           <th title="Repeat ID">Repeat locus</th>
@@ -135,9 +135,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  {{ external_scripts() }}
   <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
@@ -160,7 +158,6 @@
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
-
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
     return new bootstrap.Popover(popoverTriggerEl, {
@@ -170,12 +167,6 @@
         container: 'body',
       })
     })
-
-    $(function () {
-      $('table').stickyTableHeaders({
-        fixedOffset: $(".navbar-fixed-top")
-      });
-    });
 
   </script>
 {% endblock %}

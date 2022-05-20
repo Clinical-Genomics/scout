@@ -1,14 +1,14 @@
 {% extends "layout_bs4.html" %}
 {% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt %}
-{% from "variants/components.html" import gene_cell, frequency_cell_general %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell  %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
 {% endblock %}
 
 {% block css %}
-{{ super() }}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  {{ super() }}
+  {{ external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -52,7 +52,7 @@
      </div>
      <div class="card mt-3">
        <table class="table table-hover table-bordered" style="table-layout: fixed">
-         <thead class="thead table-light">
+         <thead class="thead table-light sticky-top sticky-offset">
             <tr>
               <th style="width:3%"></th>
               <th style="width:12%" title="Rank position">Rank</th>
@@ -124,7 +124,7 @@
 {% endblock %}
 
 {% macro cell_cadd(variant) %}
-  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
+  <div data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
     <div class='text-start'>
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
@@ -173,9 +173,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  {{ external_scripts() }}
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
   <script type="text/javascript">
@@ -214,17 +212,9 @@
       {{ update_stash_filter_button_status(current_user, filters) }}
     });
 
-    $(function () {
-      $('table').stickyTableHeaders({
-        fixedOffset: $(".navbar-fixed-top")
-      });
-
-      document.getElementById('symbol_file').onchange = function() {
-        var the_form = document.forms['filters_form'];
-        the_form.submit();
-      };
-    });
-
-
+    document.getElementById('symbol_file').onchange = function() {
+      var the_form = document.forms['filters_form'];
+      the_form.submit();
+    };
    </script>
 {% endblock %}

@@ -173,3 +173,18 @@
     </div>
   </div>
 {% endmacro %}
+
+{% macro db_table_external_stylesheets() %}
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.12.0/css/dataTables.bootstrap5.min.css" integrity="sha512-r9doM4NDlA2Cr0R56ielwMfkzL8miUuqbwNV4G1detiqlX58aTINapm2g2CoASFYedwgn3ulX6xmcDmRS0bmzw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" integrity="sha512-tnmsL7vm/5wo8jsDSW4033D6dW3xn8qyIDZTIssv/3YKyLU3pMg5IZB0k88RGmZPlyyUoK7EEghuaoXZIinDXA==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css" integrity="sha512-VX0h3jcn1Oc0lFy0aRxuq6U/tTk/6Ryurar5O3Az2DHLA1mpURv2Zgzl5MJJ5weChE7rdlsiB/ka5rUstkTN8g==" crossorigin="anonymous">
+  {% endmacro %}
+
+{% macro db_table_external_scripts() %}
+  <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js" integrity="sha512-QT3oEXamRhx0x+SRDcgisygyWze0UicgNLFM9Dj5QfJuu2TVyw7xRQfmB0g7Z5/TgCdYKNW15QumLBGWoPefYg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js" integrity="sha512-0zVs73boVJk7Mlo/06K7cX+GWqW4xv0waiKkfXPGEhQ3Ww3UznkFlywBKIx4XetI/StJwac4bUNoeBGJY3Yugw==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.js" integrity="sha512-BSdPiqLbAJOVF1Q+rleIJJIio/8Ihf1zXxfYMinSHMpKdRWX634Mi4Rt8LRYfn0k5nbSlFO7Y7klzNCG8tokFQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.js" integrity="sha512-ZA1gDCJI+Hul95Y1tSRi3D/GfWRRX11oJH+QqtjnpzJLBDmU9DsO2db5oL3Gn7LezkSL/XWCL5v04ZiCy/RpKQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+{% endmacro %}
