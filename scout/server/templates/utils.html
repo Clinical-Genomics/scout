@@ -36,7 +36,7 @@
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
 <div class="card">
   {% set comments = comments|list %}
-  <h6 class="comments-title ms-3 mt-2"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
+  <h6 class="comments-title ms-3 mt-2"><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
   <div class="list-group" style="max-height:200px; overflow-y: scroll;">
     {% for comment in comments %}
       <div class="row ms-1 alert {% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
@@ -66,29 +66,31 @@
         {{ edit_comment(institute, case, current_user, comment, loop.index) }}
     {% endfor %}
   </div> <!-- end of <div class="list-group" -->
-    <div class="card-footer">
-      <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id, _anchor='comments') }}" method="POST">
-        <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-        <div class="row">
+  <div class="card-footer">
+    <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id, _anchor='comments') }}" method="POST">
+      <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      <div class="row">
+        <div class="col">
           <textarea class="form-control" name="content" placeholder="Leave a comment"></textarea>
         </div>
-        <div class="row">
-          {% if variant_id %}
-            <div class="col-sm-6">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="level" value="global">
-                  Comment globally
-                </label>
-              </div>
+      </div>
+      <div class="row mt-3">
+        {% if variant_id %}
+          <div class="col-sm-6">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="level" id="check-level" value="global">
+              <label class="form-check-label" for="check-level">
+                Comment globally
+              </label>
             </div>
-          {% endif %}
-          <div class="col-sm-{{ 6 if variant_id else 12 }}">
-            <button class="btn btn-secondary form-control" type="submit">Comment</button>
           </div>
+        {% endif %}
+        <div class="col-sm-{{ 6 if variant_id else 12 }}">
+          <button class="btn btn-secondary form-control" type="submit">Comment</button>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 
