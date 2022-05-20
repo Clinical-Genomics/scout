@@ -111,7 +111,7 @@
   <div class="card panel-default mt-3">
     <div class="panel-heading">Included genes</div>
     <div class="table-responsive">
-      <table class="table table-bordered">
+      <table class="table table-bordered" aria-label="Included genes">
         <thead class="table-light thead">
           <tr>
             <th>Gene</th>
@@ -235,7 +235,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha512-HWlJyU4ut5HkEj0QsK/IxBCY55n5ZpskyjVlAoV9Z7XQwwkqXoYdCIC93/htL3Gu5H3R4an/S0h2NXfbZk3g7w==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 
   <script>
     function editDescription() {
