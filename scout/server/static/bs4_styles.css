@@ -64,11 +64,6 @@ table.dataTable {margin-bottom: 0}
 		color:var(--bs-white);
 	}
 
-	/* dismiss table row */
-	.dismiss {
-   		background-color: #818181;
-	}
-
 	/* comments even-odd row dark */
 	.even {
 		background-color: #b6b6b6;
