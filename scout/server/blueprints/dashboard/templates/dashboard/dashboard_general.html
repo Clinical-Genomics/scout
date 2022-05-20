@@ -57,7 +57,7 @@
       <h1>Samples</h1>
       <div>
         <canvas id="ngsType" height="150"></canvas><br>
-        <table class="table table-sm text-start">
+        <table class="table table-sm text-start" aria-label="Total case count per preparation type">
           {% for group in analysis_types %}
             <tr>
               <td>Total {{ group.name|upper }} samples (not cases)</td>
@@ -71,7 +71,7 @@
       <h1>Cases</h1>
       <div>
           <canvas id="casesType" height="150"></canvas><br>
-          <table class="table table-sm text-start">
+          <table class="table table-sm text-start" aria-label="Case counts grouped by status">
             {% for group in cases %}
               <tr>
                 <td>Cases {{ group.status|capitalize }}: {{ group.count }}</td>
@@ -85,7 +85,7 @@
       <h1>Pedigree info</h1>
       <div>
         <canvas id="pedigreeTypes" height="150"></canvas><br>
-        <table class="table table-sm text-start">
+        <table class="table table-sm text-start" aria-label="Fraction of cases grouped by pedigree type">
           {% for topic in pedigree %}
             <tr>
               <td>{{ topic.title }} Cases</td>
@@ -107,7 +107,7 @@
         <canvas id="cases-bar-horiz" height="100"></canvas>
     </div>
     <div class="col-md-4">
-      <table class="table table-sm text-start">
+      <table class="table table-sm text-start" aria-label="Cases grouped after interactions">
         {% for topic in overview %}
           <tr>
             <td>{{ topic.title }} Cases: {{ topic.count }}</td>
@@ -129,7 +129,7 @@
         <canvas id="var-validations" width="600" height="300"></canvas>
     </div>
     <div class="col-md-4">
-      <table class="table text-start">
+      <table class="table text-start" aria-label="Cases grouped by validation events">
         {% for topic in variants %}
         <tr>
           <td>{{ topic.title }} Cases: : {{ topic.count }}</td>
@@ -152,7 +152,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
 
