@@ -166,8 +166,8 @@
 {% endmacro %}
 
 {% macro users_table(users) %}
-  <table class="table table-striped table-sm">
-    <thead class="thead bg-light">
+  <table class="table table-striped table-sm" aria-label="Users">
+    <thead class="thead bg-light sticky-top sticky-offset">
       <th scope="col">#</th>
       <th scope="col">name</th>
       <th scope="col">email</th>
