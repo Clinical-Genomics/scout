@@ -80,6 +80,12 @@ table.dataTable {margin-bottom: 0}
 	.odd a {
 		color:var(--bs-white);
 	}
+
+	/* links on the STR variantS page end up on different backgrounds */
+	.str-link a{
+		color:var(--bs-white);
+	}
+
 }
 
 @media (prefers-color-scheme: light) {
@@ -114,7 +120,13 @@ table.dataTable {margin-bottom: 0}
 	.odd {
 		background-color: #d5e8f0
 	}
+
+	/* links on the STR variantS page end up on different backgrounds */
+	.str-link a{
+		color:var(--bs-black);
+	}
 }
+
 
 /* Custom navbar theme */
 .navbar{

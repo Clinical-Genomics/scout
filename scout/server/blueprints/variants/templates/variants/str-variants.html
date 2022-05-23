@@ -87,8 +87,8 @@
 	        {% else %}
 	            <tr>
 	        {% endif %}
-            <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-            <td>{{ str_locus_info(variant) }}</td>
+            <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+            <td class="str-link">{{ str_locus_info(variant) }}</td>
 	          <td class="text-end">{{ variant.str_display_ru or variant.str_ru  }}</td>
             <td class="text-end"><b>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</b></td>
             <td class="text-end">{{ variant.str_ref }}</td>
