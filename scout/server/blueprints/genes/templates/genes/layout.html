@@ -1,5 +1,12 @@
 {% extends "layout.html" %}
 
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+{% endblock %}
+
 {% block content_main %}
   <div class="container-float">
     <div class="card mt-3">

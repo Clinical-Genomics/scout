@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% from "cases/institutes_sidebar.html" import institutes_actionbar %}
 
 {% block title %}
   {{ super() }} - Institutes
@@ -14,20 +15,26 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="container-fluid" style="margin-top:20px">
-    <ul class="list-group">
-      {% for institute, case_count in institutes %}
-        <li class="list-group-item align-items-center">
-          <a href="{{ url_for('overview.cases', institute_id=institute._id) }}">
-            {{ institute.display_name }}
-          </a>
-          {% if current_user.is_admin %}
-            <span class="text-muted">({{ institute._id }})</span>
-          {% endif %}
-            <span class="badge bg-secondary rounded-pill float-end">{{ case_count }} cases </span>
-        </li>
-      {% endfor %}
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ institutes_actionbar() }} <!-- This is the sidebar -->
+    <div class="col">
+      <div class="container-fluid" style="margin-top:20px">
+        <ul class="list-group">
+          {% for institute, case_count in institutes %}
+            <li class="list-group-item align-items-center">
+              <a href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+                {{ institute.display_name }}
+              </a>
+              {% if current_user.is_admin %}
+                <span class="text-muted">({{ institute._id }})</span>
+              {% endif %}
+                <span class="badge bg-secondary rounded-pill float-end">{{ case_count }} cases </span>
+            </li>
+          {% endfor %}
 
-    </ul>
+        </ul>
+      </div>
+    </div>
   </div>
+
 {% endblock %}

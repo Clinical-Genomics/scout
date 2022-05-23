@@ -1,5 +1,15 @@
 {% extends "layout.html" %}
 
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Dashboard</span>
+  </li>
+{% endblock %}
+
 {% block content_main %}
   <div class="container-float mt-3">
       <ul class="nav nav-tabs nav-justified">

@@ -1,71 +1,71 @@
 {% macro institute_actionbar(institute, highlight) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
-  <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
-      <!-- Bootstrap List Group -->
-      <ul class="list-group">
-          <!-- cases menu item -->
-          <a href="{{ url_for('overview.cases', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-sitemap me-3"></span>
-                  <span class="menu-collapsed">Cases</span>
-              </div>
-          </a>
+  <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its items can be kept on the Navbar 'Menu' -->
+    <!-- Bootstrap List Group -->
+    <ul class="list-group">
+      <!-- cases menu item -->
+      <a href="{{ url_for('cases.index', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-sitemap me-3"></span>
+              <span class="menu-collapsed">Home</span>
+          </div>
+      </a>
 
-          <!-- causatives menu item-->
-          <a href="{{ url_for('overview.causatives', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-bullseye me-3"></span>
-                  <span class="menu-collapsed">Causatives</span>
-              </div>
-          </a>
+      <!-- causatives menu item-->
+      <a href="{{ url_for('overview.causatives', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-bullseye me-3"></span>
+              <span class="menu-collapsed">Causatives</span>
+          </div>
+      </a>
 
-          <!-- snvs and indeld menu item -->
-          <a href="{{ url_for('overview.gene_variants', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start h-100">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-search me-3"></span>
-                  <span class="menu-collapsed">Search SNVs and INDELs</span>
-              </div>
-          </a>
+      <!-- snvs and indeld menu item -->
+      <a href="{{ url_for('overview.gene_variants', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start h-100">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-search me-3"></span>
+              <span class="menu-collapsed">Search SNVs and INDELs</span>
+          </div>
+      </a>
 
-          <!-- users menu item-->
-          <a href="{{ url_for('overview.institute_users', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-users me-3"></span>
-                  <span class="menu-collapsed">Users</span>
-              </div>
-          </a>
+      <!-- users menu item-->
+      <a href="{{ url_for('overview.institute_users', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-users me-3"></span>
+              <span class="menu-collapsed">Users</span>
+          </div>
+      </a>
 
-          <!-- ClinVar data menu item -->
-          <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fas fa-file-medical me-3"></span>
-                  <span class="menu-collapsed">ClinVar submissions</span>
-              </div>
-          </a>
+      <!-- ClinVar data menu item -->
+      <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fas fa-file-medical me-3"></span>
+              <span class="menu-collapsed">ClinVar submissions</span>
+          </div>
+      </a>
 
-        <!-- Variant filters -->
-          <a href="{{ url_for('overview.filters', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-filter me-3"></span>
-                  <span class="menu-collapsed">Filters</span>
-              </div>
-          </a>
+    <!-- Variant filters -->
+      <a href="{{ url_for('overview.filters', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-filter me-3"></span>
+              <span class="menu-collapsed">Filters</span>
+          </div>
+      </a>
 
-          <!-- Advanced phenotypes -->
-          <a href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-stethoscope me-3"></span>
-                  <span class="menu-collapsed">Phenomodels</span>
-              </div>
-          </a>
+      <!-- Advanced phenotypes -->
+      <a href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-stethoscope me-3"></span>
+              <span class="menu-collapsed">Phenomodels</span>
+          </div>
+      </a>
 
-          <!-- general settings menu item -->
-          <a href="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-wrench me-3"></span>
-                  <span class="menu-collapsed">Settings</span>
-              </div>
-          </a>
-      </ul><!-- List Group END-->
+      <!-- general settings menu item -->
+      <a href="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-wrench me-3"></span>
+              <span class="menu-collapsed">Settings</span>
+          </div>
+      </a>
+    </ul><!-- List Group END-->
   </div><!-- sidebar-container END -->
 {% endmacro %}
