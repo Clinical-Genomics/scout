@@ -76,6 +76,10 @@ table.dataTable {margin-bottom: 0}
 }
 
 @media (prefers-color-scheme: light) {
+	:root {
+    --bg-color: #eee;
+	}
+
 	/* causative table row light  #dff0d8*/
 	.causative {
 		background-color:var(--bs-success);
@@ -244,6 +248,7 @@ body {
 /* Separators */
 .sidebar-separator-title {
     height: 35px;
+
 }
 .sidebar-separator {
     height: 25px;

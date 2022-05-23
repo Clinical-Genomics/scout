@@ -15,7 +15,7 @@
           {{ analysis_date(case) }}
           {{ genome_build(case, case_groups) }}
           {{ rank_model(case) }}
-          <li class="list-group-item sidebar-separator menu-collapsed"></li>
+          <li class="list-group-item bg-dark sidebar-separator menu-collapsed"></li>
           {{ status(institute, case) }}
           {{ assign(institute, case) }}
           {% if not (case.is_archived or case.is_research) %}
@@ -86,7 +86,7 @@
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ms-2">MultiQC</span>
           {% if case.multiqc is existing %}
-            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><em class="fa fa-link"></em></a>
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
           {% else %}
             <span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></span>
           {% endif %}
@@ -402,7 +402,7 @@
   <form method="POST"
             action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
         <button name="action" value="DELETE" class="btn btn-success form-control">
-          <em class="fa fa-check-square-o"></em>
+          <span class="fa fa-check-square-o"></span>
           Decipher Checked
         </button>
       </form>
@@ -570,16 +570,16 @@
       {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><em class="fa fa-link"></em></a>
+                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><span class="fa fa-link"></span></a>
         </div>
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><em class="fa fa-file-pdf-o"></em></a>
+                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
-        <div><em class="fa fa-exclamation-circle ms-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></em></div>
+        <div><span class="fa fa-exclamation-circle ms-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>
       {% else %}
-        <div><em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></em></div>
+        <div><span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
       {% endif %}
     </div>
   </div>
@@ -595,14 +595,14 @@
     {% if case.delivery_report is existing %}
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None) }}" target="_blank"><em class="fa fa-link"></em></a>
+                          case_name=case.display_name, date=None) }}" target="_blank"><span class="fa fa-link"></span></a>
       </div>
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None, format='pdf') }}" download><em class="fa fa-file-pdf-o"></em></a>
+                          case_name=case.display_name, date=None, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
       </div>
     {% else %}
-      <div><em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></em></div>
+      <div><span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
     {% endif %}
   </div>
 </div>
@@ -617,9 +617,9 @@
     <div>
       {% if case.cnv_report is existing %}
         <a href="{{ url_for('cases.cnv_report', institute_id=institute,
-                        case_name=case.display_name, format='pdf') }}" target="_blank"><em class="fa fa-file-pdf-o"></em></a>
+                        case_name=case.display_name, format='pdf') }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
       {% else %}
-        <em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></em>
+        <span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></span>
       {% endif %}
     </div>
   </div>
@@ -638,9 +638,9 @@
         <div>
           {% if case[report_type] is existing %}
             <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
-                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><em class="fa fa-file-pdf-o"></em></a>
+                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
           {% else %}
-            <em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></em>
+            <span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></span>
           {% endif %}
         </div>
       </div>
@@ -666,7 +666,7 @@
                           case_name=case.display_name, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
       </div>
     {% else %}
-         <div><em class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></em></div>
+         <div><span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></span></div>
     {% endif %}
   </div>
 </div>

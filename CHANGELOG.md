@@ -14,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Text elements being split across pages in PDF reports
 - Made login password field of type `password` in LDAP login form
 - Bootstrap upgraded to version 5
+- Fix some Sourcery and SonarCloud suggestions
+- 
 
 ## [4.53]
 ### Added
