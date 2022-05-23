@@ -46,7 +46,7 @@ table.dataTable {margin-bottom: 0}
 	/* dismiss table row */
 	.dismiss {
 		color:var(--bs-black);
-   		background-color:var(--bs-gray-200);
+   		background-color:var(--bs-gray-500);
 	}
 	.dismiss a {
 		color:var(--bs-black);
@@ -71,6 +71,13 @@ table.dataTable {margin-bottom: 0}
 	}
 	.odd {
 		background-color: #95a8b0;
+		color:var(--bs-white);
+	}
+
+	.even a {
+		color:var(--bs-white);
+	}
+	.odd a {
 		color:var(--bs-white);
 	}
 }
