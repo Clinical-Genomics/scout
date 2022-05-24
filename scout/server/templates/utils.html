@@ -14,13 +14,13 @@
       	    <strong> {{ comment.user_name }} </strong>
       	    on {{ comment.created_at.date() }}
       	    {% if comment.level == 'global' %}
-                    <span class='badge badge-info'>GLOBAL</span>
+                    <span class='badge bg-info'>GLOBAL</span>
             {% endif %}
             {% if comment.created_at < case.updated_at %}
-              <span class='badge badge-warning'>OLD</span>
+              <span class='badge bg-warning'>OLD</span>
             {% endif %}
       	    {% if comment.created_at < comment.updated_at %}
-              <span class='badge badge-secondary'>edited</span>
+              <span class='badge bg-secondary'>edited</span>
             {% endif %}
       	  </small>
       	</td>
@@ -36,30 +36,28 @@
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
 <div class="card">
   {% set comments = comments|list %}
-  <h6 class="comments-title ml-3 mt-2"></i><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
+  <h6 class="comments-title ms-3 mt-2"><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
   <div class="list-group" style="max-height:200px; overflow-y: scroll;">
-    <style>.even { background-color: #f6f6f6 }</style>
-    <style>.odd { background-color: #d5e8f0 }</style>
     {% for comment in comments %}
-      <div class="row ml-1 alert {% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
+      <div class="row ms-1 alert {% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
           <div class="col-7 text-break">{{ comment.content }}</div>
-          <div class="col-5 text-right">
+          <div class="col-5 text-end">
             <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id,_anchor='comments') }}">
               <small>
                 <strong>{{ comment.user_name }}</strong>
                 on {{ comment.created_at.date() }}
                 {% if comment.level == 'global' %}
-                  <span class="badge badge-info">GLOBAL</span>
+                  <span class="badge bg-info">GLOBAL</span>
                 {% endif %}
                 {% if comment.created_at < case.updated_at %}
-                  <span class="badge badge-warning">OLD</span>
+                  <span class="badge bg-warning">OLD</span>
                 {% endif %}
                 {% if comment.created_at < comment.updated_at %}
-                  <span class='badge badge-secondary'>edited</span>
+                  <span class='badge bg-secondary'>edited</span>
                 {% endif %}
                 {% if comment.user_id == current_user.email %}
                   <button class="btn btn-link btn-sm" type="submit" name="remove"><i class="fa fa-remove"></i></button>
-                  <button class="btn btn-link btn-sm" type="button" data-toggle="modal" data-target="#editComment_{{loop.index}}"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-link btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#editComment_{{loop.index}}"><i class="fa fa-edit"></i></button>
                 {% endif %}
               </small>
             </form>
@@ -68,29 +66,31 @@
         {{ edit_comment(institute, case, current_user, comment, loop.index) }}
     {% endfor %}
   </div> <!-- end of <div class="list-group" -->
-    <div class="card-footer">
-      <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id, _anchor='comments') }}" method="POST">
-        <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
-        <div class="form-group">
+  <div class="card-footer">
+    <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id, _anchor='comments') }}" method="POST">
+      <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      <div class="row">
+        <div class="col">
           <textarea class="form-control" name="content" placeholder="Leave a comment"></textarea>
         </div>
-        <div class="row">
-          {% if variant_id %}
-            <div class="col-sm-6">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" name="level" value="global">
-                  Comment globally
-                </label>
-              </div>
+      </div>
+      <div class="row mt-3">
+        {% if variant_id %}
+          <div class="col-sm-6">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="level" id="check-level" value="global">
+              <label class="form-check-label" for="check-level">
+                Comment globally
+              </label>
             </div>
-          {% endif %}
-          <div class="col-sm-{{ 6 if variant_id else 12 }}">
-            <button class="btn btn-secondary form-control" type="submit">Comment</button>
           </div>
+        {% endif %}
+        <div class="col-sm-{{ 6 if variant_id else 12 }}">
+          <button class="btn btn-secondary form-control" type="submit">Comment</button>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 
@@ -104,12 +104,12 @@
   <div class="modal-content">
     <div class="modal-header">
       <h5 class="modal-title">Edit comment</h5>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
+      <div class="row">
         <label for="commentContent">Comment content</label>
         <textarea class="form-control" name="updatedContent" id="commentContent" required="required">{{comment.content}}</textarea>
       </div>
@@ -127,7 +127,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       <button type="submit" class="btn btn-primary" name="edit">Save changes</button>
     </div>
   </div>
@@ -159,7 +159,7 @@
 {% endmacro %}
 
 {% macro pedigree_panel(case) %}
-  <div class="card panel-default">
+  <div class="card bg-light panel-default">
     <div>
       <div class="table-responsive">
       {% if case.individuals|length == 1 %}
@@ -172,4 +172,19 @@
       </div>
     </div>
   </div>
+{% endmacro %}
+
+{% macro db_table_external_stylesheets() %}
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.12.0/css/dataTables.bootstrap5.min.css" integrity="sha512-r9doM4NDlA2Cr0R56ielwMfkzL8miUuqbwNV4G1detiqlX58aTINapm2g2CoASFYedwgn3ulX6xmcDmRS0bmzw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" integrity="sha512-tnmsL7vm/5wo8jsDSW4033D6dW3xn8qyIDZTIssv/3YKyLU3pMg5IZB0k88RGmZPlyyUoK7EEghuaoXZIinDXA==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.min.css" integrity="sha512-VX0h3jcn1Oc0lFy0aRxuq6U/tTk/6Ryurar5O3Az2DHLA1mpURv2Zgzl5MJJ5weChE7rdlsiB/ka5rUstkTN8g==" crossorigin="anonymous">
+  {% endmacro %}
+
+{% macro db_table_external_scripts() %}
+  <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js" integrity="sha512-QT3oEXamRhx0x+SRDcgisygyWze0UicgNLFM9Dj5QfJuu2TVyw7xRQfmB0g7Z5/TgCdYKNW15QumLBGWoPefYg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js" integrity="sha512-0zVs73boVJk7Mlo/06K7cX+GWqW4xv0waiKkfXPGEhQ3Ww3UznkFlywBKIx4XetI/StJwac4bUNoeBGJY3Yugw==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.js" integrity="sha512-BSdPiqLbAJOVF1Q+rleIJJIio/8Ihf1zXxfYMinSHMpKdRWX634Mi4Rt8LRYfn0k5nbSlFO7Y7klzNCG8tokFQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.js" integrity="sha512-ZA1gDCJI+Hul95Y1tSRi3D/GfWRRX11oJH+QqtjnpzJLBDmU9DsO2db5oL3Gn7LezkSL/XWCL5v04ZiCy/RpKQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 {% endmacro %}

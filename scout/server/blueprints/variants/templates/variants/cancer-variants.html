@@ -1,6 +1,6 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 
-{% from "variants/components.html" import gene_cell, frequency_cell_general, observed_cell_general %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general %}
 {% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
 {% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge, other_tiered_variants %}
 
@@ -9,8 +9,8 @@
 {% endblock %}
 
 {% block css %}
-{{ super() }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  {{ super() }}
+  {{ external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -28,7 +28,7 @@
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active  d-flex align-items-center">
     <span class="navbar-text">{{ variant_type|capitalize }} somatic variants</span>
   </li>
 {% endblock %}
@@ -39,7 +39,7 @@
     {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
       <div class="card-header">
-        <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+        <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
       </div>
       <!--Expand filters form if filters were used in a previous POST request or the previous POST request form was not validated-->
       <div class="card-body panel-collapse collapse {{ 'show' if request.args.get('expand_search') == "True" or expand_search is sameas true }}" id="collapseFilters" >
@@ -50,7 +50,7 @@
 
   <div class="card mt-3">
     <table class="table table-hover table-bordered" style="table-layout:fixed">
-      <thead>
+      <thead class="thead table-light">
             <tr>
               <th style="width:2%"></th>
               <th title="Gene">Gene</th>
@@ -62,8 +62,8 @@
               <th title="Observed" style="width:7%">Observed</th>
               <th title="Variant type">Type</th>
               <th title="Functional consequence annotation" style="width:18%">Consequence</th>
-              <th data-toggle="tooltip" data-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
-              <th data-toggle="tooltip" data-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
+              <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
+              <th data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
             </tr>
       </thead>
       <tbody>
@@ -108,7 +108,7 @@
             </td>
             <td>{{ score_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
-            <td class="text-right">{{ frequency_cell_general(variant) }}</td>
+            <td class="text-end">{{ frequency_cell_general(variant) }}</td>
             <td>{{ observed_cell_general(variant) }}</td>
             <td>{{ variant.sub_category }}</td>
             <td>
@@ -158,9 +158,9 @@
       {% set label_class = 'danger' %}
     {% endif %}
   {% endif %}
-  <div class="badge badge-{{ label_class }}">{{ variant.rank_score }}</div>
+  <div class="badge bg-{{ label_class }}">{{ variant.rank_score }}</div>
   {% for filter in variant.filters %}
-    <div data-toggle="tooltip" data-placement="top" title="{{ filter.description }}" class="badge badge-{{ filter.label_class }}">{{ filter.label }}</div>
+    <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ filter.description }}" class="badge bg-{{ filter.label_class }}">{{ filter.label }}</div>
   {% endfor %}
 {% endmacro %}
 
@@ -181,9 +181,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
+  {{ external_scripts() }}
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
   <script type="text/javascript">
@@ -201,14 +199,20 @@
       {{ update_stash_filter_button_status(current_user, filters) }}
     });
 
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('[data-toggle="popover"]').popover({
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl, {
         sanitizeFn: function (content) {
           return DOMPurify.sanitize(content)
         },
         container: 'body',
-      });
+      })
     })
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
   </script>
 {% endblock %}

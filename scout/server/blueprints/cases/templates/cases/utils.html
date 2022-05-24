@@ -6,7 +6,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Matchmaker Exchange patient submission</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div> <!-- end of modal title -->
@@ -25,9 +25,9 @@
             </select>
           </div>
           <hr>
-          <p><a href="#mme_form" data-toggle="collapse">Modify submission</a></p>
+          <p><a href="#mme_form" data-bs-toggle="collapse">Modify submission</a></p>
         {% else %} <!-- display option to submit case to Matchmaker -->
-          <p>This case is not yet in Matchmaker!&nbsp;<a href="#mme_form" data-toggle="collapse">Submission form</a></p>
+          <p>This case is not yet in Matchmaker!&nbsp;<a href="#mme_form" data-bs-toggle="collapse">Submission form</a></p>
         {% endif %}
         <form id="mme_submit" method="POST" action="{{ url_for('cases.matchmaker_add', institute_id=institute._id, case_name=case.display_name )}}" >
             <div id="mme_form" class="collapse">
@@ -35,34 +35,34 @@
                 <ul class="list-group w-75">
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="hpo">
+                      <div data-bs-placement="top" title="hpo">
                         Include patient gender
                       </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
-                        <label for="sex"></label>
+                      <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="sex" name="sex" {% if not case.mme_submission or case.mme_submission.sex %}checked{% endif %}>
+                        <label class="form-check-label" for="sex"></label>
                       </div>
                     </div>
                   </li>
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="hpo">
+                      <div data-bs-placement="top" title="hpo">
                         Include HPO terms
                       </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
-                        <label for="features"></label>
+                      <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="features" name="features" {% if not case.mme_submission or case.mme_submission.features %}checked{% endif %}>
+                        <label class="form-check-label" for="features"></label>
                       </div>
                     </div>
                   </li>
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="disorders">
+                      <div data-bs-placement="top" title="disorders">
                         Include OMIM diagnoses
                       </div>
-                      <div>
-                        <input type="checkbox" class="ios8-switch" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
-                        <label for="disorders"></label>
+                      <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="disorders" name="disorders" {% if not case.mme_submission or case.mme_submission.disorders %}checked{% endif %}>
+                        <label class="form-check-label" for="disorders"></label>
                       </div>
                     </div>
                   </li>
@@ -71,10 +71,10 @@
                     <div style="max-height:200px; overflow-y: scroll;"">
                       {% for var in suspects %}
                         {% if var.category == "snv" %} <!-- Share either gene names or variant details for SNVs -->
-                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge badge-success">SNV</span><br>
+                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
                         {% elif var.category == "sv" %} <!-- Share only gene names from SVs -->
                           {% for gene in var.genes %}
-                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge badge-warning">SV</span><br>
+                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge bg-warning">SV</span><br>
                           {% endfor %}
                         {% endif %}
                       {% endfor %}
@@ -83,7 +83,7 @@
                   <li class="list-group-item">
                     <div class="row">
                       <div class="col-6">
-                        <div data-placement="top" id="share_variants">
+                        <div data-bs-placement="top" id="share_variants">
                           Share variant details for SNVs and gene names for SVs
                         </div>
                         <div>
@@ -92,7 +92,7 @@
                         </div>
                       </div>
                       <div class="col-6">
-                        <div data-placement="top" id="share_genes">
+                        <div data-bs-placement="top" id="share_genes">
                           Share only gene names from all selected variants
                         </div>
                         <div>
@@ -106,7 +106,7 @@
               </div>
               <div>
                 <br>
-                <button class="btn btn-secondary mx-auto d-block" data-toggle="modal" type="submit">
+                <button class="btn btn-secondary mx-auto d-block" data-bs-toggle="modal" type="submit">
                   {% if case.mme_submission %}
                     Update case
                   {% else %}
@@ -128,7 +128,7 @@
 {% macro modal_mme_delete(institute, case) %}
   <form id="mme_delete" method="POST" action="{{ url_for('cases.matchmaker_delete', institute_id=institute._id, case_name=case.display_name )}}">
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-danger form-control" data-toggle="modal" data-target="#mme_delete_confirm">
+    <button type="button" class="btn btn-danger form-control" data-bs-toggle="modal" data-bs-target="#mme_delete_confirm">
     Remove case from Matchmaker
     </button>
     <!-- Modal -->
@@ -139,7 +139,7 @@
           Confirm delete case from Matchmaker?
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-danger">Delete</button>
         </div>
       </div>
@@ -155,7 +155,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Beacon submission</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -185,7 +185,7 @@
               <label class="form-check-label" for="vcfselect">
                 Variants type:
               </label>
-              <select multiple name="vcf_files" id="vcfselect" class="selectpicker w-auto">
+              <select multiple name="vcf_files" id="vcfselect" class="selectpicker w-auto" data-style="btn-secondary">
                 {% for file, path in case.vcf_files.items() %}
                   {% if path and file in ["vcf_snv", "vcf_cancer", "vcf_snv_research", "vcf_cancer_research"] %} <!-- support for sharing SNVs for now -->
                     <option value="{{file}}" {{ "selected" if "research" not in file }}>{{file|replace("vcf_", "")|replace("_", " ")|upper}}</option>
@@ -199,7 +199,7 @@
               <label class="form-check-label" for="vcfselect">
                 Filter by panel:
               </label>
-              <select multiple name="panels" id="panelselect" class="selectpicker w-auto">
+              <select multiple name="panels" id="panelselect" class="selectpicker w-auto" data-style="btn-secondary">
                 {% for panel in case.panels %}
                   <option value="{{panel.panel_id}}" {{ "selected" if panel.is_default }}>{{ panel.display_name|truncate(30, True) }} {{ panel.version }} ({{ panel.nr_genes }} genes)</option>
                 {% endfor %}
@@ -243,7 +243,7 @@
           {% else %}
             <button type="submit" class="btn btn-primary">Add variants to beacon</button>
           {% endif %}
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
@@ -266,13 +266,13 @@
       {% if transcript.refseq_identifiers and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or transcript.is_primary %}
         <li>{{transcript.transcript_id}}, RefSeq:[{{ transcript.refseq_identifiers|join(", ") or "-" }}], {{ (transcript.coding_sequence_name or '')|truncate(20, True) }},  {{ (transcript.protein_sequence_name or '')|truncate(20, True) }}
           {% if transcript.is_canonical %}
-            <span class="badge badge-pill badge-info" title="canonical">C</span>
+            <span class="badge rounded-pill bg-info" title="canonical">C</span>
           {% endif %}
           {% if transcript.is_disease_associated %}
-            <span class="badge badge-pill badge-danger" title="disease_associated">D</span>
+            <span class="badge rounded-pill bg-danger" title="disease_associated">D</span>
           {% endif %}
           {% if transcript.is_primary %}
-            <span class="badge badge-pill badge-primary" title="primary_ref_transcript">hgnc primary:{{transcript.refseq_id}}</span>
+            <span class="badge rounded-pill bg-primary" title="primary_ref_transcript">hgnc primary:{{transcript.refseq_id}}</span>
           {% endif %}
         </li>
       {% endif %}
@@ -338,9 +338,9 @@
 
 {% macro variant_validation_badge(variant) %}
   {% if variant.validation in ['True positive','False positive'] %}
-    <span class="badge badge-success">Validated</span>
+    <span class="badge bg-success">Validated</span>
   {% elif variant.sanger_ordered %}
-    <span class="badge badge-default">Verification ordered</span>
+    <span class="badge bg-default">Verification ordered</span>
   {% endif %}
 {% endmacro %}
 
@@ -357,9 +357,9 @@
 {% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) %}
   {% set already_displayed_variant_ids = [] %}
   <div class="card mt-3">
-    <div data-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
+    <div data-bs-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
       <div class="d-flex justify-content-between">
-        <h6><span class="fa fa-medkit ml-3 mt-2"></span>
+        <h6><span class="fa fa-medkit ms-3 mt-2"></span>
         {% if case.track == 'cancer' %}
           Clinically significant
         {% else %}
@@ -367,7 +367,7 @@
         {% endif %}
         </h6>
         {% if not case.causatives|length and not case.partial_causatives|length %}
-          <span class="text-muted mr-3 mt-2">No variants marked causative</span>
+          <span class="text-muted me-3 mt-2">No variants marked causative</span>
         {% endif %}
       </div>
     </div>
@@ -440,7 +440,7 @@
                 </div>
                 <div class="col-8">
                   {% for omim in variant_phenotypes.omim_terms %}
-                    <span class="badge badge-sm badge-secondary">
+                    <span class="badge badge-sm bg-secondary">
                       <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim|replace('OMIM:','')}}">
                         {{omim}}
                       </a>
@@ -455,7 +455,7 @@
                 <div class="col-8">
                   {% for hpo in variant_phenotypes.hpo_terms %}
                     <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
-                      <span class="badge badge-sm badge-info">{{hpo.phenotype_id}}</span>
+                      <span class="badge badge-sm bg-info">{{hpo.phenotype_id}}</span>
                     </a>
                   {% endfor %}
                 </div>
@@ -508,7 +508,7 @@
 
 {% macro allele_div(allele, type) %}
   {% if 'alt_freq' in allele %}
-    <div class="col-1.5" data-toggle="tooltip" data-placement="top" title="{{ type }} alternative AF ">
+    <div class="col-1.5" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ type }} alternative AF ">
       <div style="padding: 0 15px">{{ allele.alt_freq|round(4) }}</div>
     </div>
   {% endif %}
@@ -516,11 +516,11 @@
 
 {% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
   <div class="card mt-3">
-    <div class="d-flex justify-content-between" data-toggle='tooltip' title="Displays all variants that has been pinned for this case">
-      <h6><span class="fa fa-map-pin ml-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
+    <div class="d-flex justify-content-between" data-bs-toggle='tooltip' title="Displays all variants that has been pinned for this case">
+      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
       </h6>
       {% if not suspects|length %}
-        <span class="text-muted mr-3 mt-2">No pinned variants</span>
+        <span class="text-muted me-3 mt-2">No pinned variants</span>
       {% endif %}
     </div>
     <div style="max-height:300px; overflow-y: scroll;">
@@ -537,7 +537,7 @@
                     {{ variant_validation_badge(variant) }}
                     {{ tumor_allele_freq(variant) }}
                     {% if variant.mosaic_tags %}
-                      <span class="badge badge-info">mosaic</span>
+                      <span class="badge bg-info">mosaic</span>
                     {% endif %}
                   </div>
                 </div>
@@ -575,9 +575,9 @@
 
 {% macro matching_causatives(other_causatives, institute, case) %}
   <div class="card panel-default" >
-    <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
+    <div data-bs-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
       that have been marked as causative in another case for this insitute">
-      <strong><a data-toggle="collapse" href="#matchingCausatives" class="text-white">Matching causatives from other cases ({{other_causatives|length}})</a></strong>
+      <strong><a data-bs-toggle="collapse" href="#matchingCausatives" class="text-white">Matching causatives from other cases ({{other_causatives|length}})</a></strong>
     </div>
     <ul class="list-group collapse" id="matchingCausatives">
       {% for variant in other_causatives %}
@@ -596,11 +596,11 @@
 
 {% macro clinvar_panel(institute, case) %}
   <div class="card panel-default">
-    <div class="d-flex justify-content-between" data-toggle='tooltip' title="Variants included in a ClinVar submission object in Scout">
-      <h6><span class="fa fa-map-pin ml-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }})
+    <div class="d-flex justify-content-between" data-bs-toggle='tooltip' title="Variants included in a ClinVar submission object in Scout">
+      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }})
       </h6>
       {% if not case.clinvar_variants %}
-        <span class="text-muted mr-3 mt-2">No variants in ClinVar submissions </span>
+        <span class="text-muted me-3 mt-2">No variants in ClinVar submissions </span>
       {% endif %}
     </div>
     <div class="card">
@@ -612,7 +612,7 @@
             {% else %}
               <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a>
             {% endif %}
-              <span class="badge badge-dark">{{submission_data.clinsig}}</span>
+              <span class="badge bg-dark">{{submission_data.clinsig}}</span>
           </li>
         {% endfor %}
       </ul>
@@ -622,9 +622,9 @@
 
 {% macro matching_managed_variants(managed_variants, institute, case) %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Any variants in this case
+    <div data-bs-toggle='tooltip' class="panel-heading" title="Any variants in this case
       that have been marked as managed">
-      <strong><a data-toggle="collapse" href="#matchingManaged" class="text-white">Managed variants ({{managed_variants|length}})</a></strong>
+      <strong><a data-bs-toggle="collapse" href="#matchingManaged" class="text-white">Managed variants ({{managed_variants|length}})</a></strong>
     </div>
     <ul class="list-group">
       {% for variant in managed_variants %}
@@ -649,7 +649,7 @@
              name="{{ hidden_input[0] }}"
              value="{{ hidden_input[1] }}">
     {% endif %}
-    <div class="pull-right">
+    <div class="pull-end">
       <button class="btn btn-link btn-sm"
               name="{{ button_name if button_name }}"
               value="{{ button_value if button_value }}"

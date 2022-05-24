@@ -109,7 +109,7 @@ custom_images:
         width: <string> 500px
         path: <string> scout/demo/images/custom_images/640x480_two.jpg [mandatory]
     group_two:
-      - title: <string> A SVG image [mandatory]
+      - title: <string> An SVG image [mandatory]
         description: <string> Another very good description
         path: <string> scout/demo/images/custom_images/640x480_three.svg [mandatory]
   str:

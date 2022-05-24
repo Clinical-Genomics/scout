@@ -1,0 +1,310 @@
+@media print {
+  div {
+    break-inside: avoid;
+  }
+}
+
+.container {
+  margin-top: 10px;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.container-float {
+  width: 100%;
+}
+
+.container_spaced {
+  margin-top: 10px;
+  width: 100%;
+}
+
+table.dataTable {margin-bottom: 0}
+
+.dataTables_scrollBody {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+/* offset navbar for page with additional top-sticky headers */
+.sticky-offset {
+	 top: 50px;
+}
+
+/* affected, archived and similar accents */
+.bg-danger-light {
+    background-color: var(--bs-info);
+}
+
+@media (prefers-color-scheme: dark) {
+	a {
+		color: #778abf;
+		font-weight: bold;
+	}
+
+	/* dismiss table row */
+	.dismiss {
+		color:var(--bs-black);
+   		background-color:var(--bs-gray-500);
+	}
+	.dismiss a {
+		color:var(--bs-black);
+	}
+	.dismiss .text-muted {
+		color:var(--bs-gray-dark) !important;
+	}
+
+	/* causative table row dark  #afc0a8*/
+	.causative {
+		background-color:var(--bs-success);
+	}
+
+	.causative a {
+		color:var(--bs-white);
+	}
+
+	/* comments even-odd row dark */
+	.even {
+		background-color: #b6b6b6;
+		color:var(--bs-white);
+	}
+	.odd {
+		background-color: #95a8b0;
+		color:var(--bs-white);
+	}
+
+	.even a {
+		color:var(--bs-white);
+	}
+	.odd a {
+		color:var(--bs-white);
+	}
+
+	/* links on the STR variantS page end up on different backgrounds */
+	.str-link a{
+		color:var(--bs-white);
+	}
+
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+    --bg-color: #eee;
+	}
+
+	/* causative table row light  #dff0d8*/
+	.causative {
+		background-color:var(--bs-success);
+	}
+	.causative a {
+		color:var(--bs-white);
+	}
+
+	/* dismiss table row */
+	.dismiss {
+		color:var(--bs-black);
+   		background-color:var(--bs-gray-400);
+	}
+	.dismiss a {
+		color:var(--bs-black);
+	}
+	.dismiss .text-muted {
+		color:var(--bs-gray-dark) !important;
+	}
+
+	/* comments even-odd row light */
+	.even {
+		background-color: #dddddd
+	}
+	.odd {
+		background-color: #d5e8f0
+	}
+
+	/* links on the STR variantS page end up on different backgrounds */
+	.str-link a{
+		color:var(--bs-black);
+	}
+}
+
+
+/* Custom navbar theme */
+.navbar{
+  height: 50px;
+}
+
+.navbar-nav > li > a{
+  color:var(--bs-white);
+  font-size:16px;
+}
+
+.navbar-nav > .active {
+  font-weight:bold;
+  background-color:var(--bs-secondary);
+}
+.navbar-nav > .active > .navbar-text {
+	color:var(--bs-white);
+}
+
+.float-top-secondary {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 1rem;
+	z-index: 99;
+	border-bottom: 1px solid;
+}
+
+/*.navbar-nav > li > a:hover,*/
+/*.navbar-nav > li > a:focus,*/
+
+.dropdown {
+  margin-top: 0;
+}
+
+.panel-default {
+	margin-top: 15px;
+}
+
+.panel-default > .panel-heading {
+	padding: 5px 10px;
+	font-weight: 500;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+.card-title {
+  padding: 15px;
+  border-radius: 15px;
+}
+
+.card-subtitle {
+  padding-left: 15px;
+}
+
+.ul {
+  padding: 0;
+  list-style: none;
+  font-size: 0;
+}
+
+.list-scroll  {
+  overflow: scroll;
+  max-height: 430px;
+}
+
+.popover {
+    max-width: 60%;
+    pointer-events: none;
+}
+
+.popover-content > table {
+  margin-bottom: 0;
+}
+
+li.nav-item {
+  font-size: 16px;
+  display: inline-block;
+  padding: 5px 15px;
+  height: 50px;
+}
+
+/* Introduce small space in between list elements */
+body {
+	background-color: var(--bg-color);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.rank-shield {
+	height: 50px;
+}
+
+/* define extra small buttons since the property is missing in Boostrap 4 */
+.btn-xs {
+    padding  : .25rem .4rem;
+    font-size  : .875rem;
+    line-height  : .4;
+    border-radius : .2rem;
+}
+
+/* sidebar-related stuff */
+#body-row {
+    margin-left:0;
+    margin-right:0;
+}
+#sidebar-container {
+    min-height: 100vh;
+    background-color: #333;
+    padding: 0;
+}
+
+/* Sidebar sizes when expanded and expanded */
+.sidebar-expanded {
+    width: 230px;
+}
+.sidebar-collapsed {
+    width: 60px;
+}
+
+/* Menu item*/
+#sidebar-container .list-group a {
+    height: 50px;
+    color: white;
+}
+
+/* Submenu item*/
+#sidebar-container .list-group .sidebar-submenu a {
+    height: 45px;
+    padding-left: 30px;
+}
+.sidebar-submenu {
+    font-size: 0.9rem;
+}
+
+/* Separators */
+.sidebar-separator-title {
+    height: 35px;
+
+}
+.sidebar-separator {
+    height: 25px;
+}
+.logo-separator {
+    height: 60px;
+}
+
+/* Closed submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
+  content: " \f0d7";
+  font-family: FontAwesome;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+/* Opened submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
+  content: " \f0da";
+  font-family: FontAwesome;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+/* end of sidebar-related stuff */
+
+option {
+  width: 100%;
+}
+
+.panel-btn  a:before {
+   font-family: 'Glyphicons Halflings';
+   content: "\e114";
+   float: right;
+   transition: all 0.5s;
+}
+
+.dropdown-menu {
+  max-height: 425px !important;
+}
