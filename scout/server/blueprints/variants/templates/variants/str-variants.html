@@ -79,7 +79,7 @@
           {% elif 'causatives' in case and variant._id in case.causatives %}
              <tr class="causative">
           {% elif variant.str_status == 'normal' %}
-              <tr class="odd">
+              <tr class="{% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
           {% elif variant.str_status == 'full_mutation' %}
               <tr class="bg-danger">
           {% elif variant.str_status == 'pre_mutation' %}

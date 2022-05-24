@@ -115,7 +115,7 @@ table.dataTable {margin-bottom: 0}
 
 	/* comments even-odd row light */
 	.even {
-		background-color: #f6f6f6
+		background-color: #dddddd
 	}
 	.odd {
 		background-color: #d5e8f0
