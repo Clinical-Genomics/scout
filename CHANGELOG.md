@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Dark mode, using browser/OS media preference
 ### Changed
 - Improved HTML syntax in case report template
 ### Fixed
@@ -13,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Text elements being split across pages in PDF reports
 - Made login password field of type `password` in LDAP login form
 - Gene panels HTML select in institute's settings page
+- Bootstrap upgraded to version 5
+- Fix some Sourcery and SonarCloud suggestions
 - Escape special characters in case search on institute and dashboard pages
 
 ## [4.53]
