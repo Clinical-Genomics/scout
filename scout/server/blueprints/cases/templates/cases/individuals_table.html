@@ -6,21 +6,21 @@
       <table class="table table-sm">
         <thead>
           <tr>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Sample display name">Sample</th>
             <th class="col-xs-2" title="Tumor Type">Tumor Type</th>
             <th class="col-xs-1" title="Phenotype">Phenotype</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Type of sequencing (e.g panel, wes)">Sequencing</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Measure of the tumor mutational burden">TMB</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Measure of microsatellite instability">MSI</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Measure of tumor purity">Tumor Purity</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Downloadable CytoSure file">CGH</th>
-            <th data-toggle='tooltip' data-container='body' class="col-xs-1"
+            <th data-bs-toggle='tooltip' data-bs-container='body' class="col-xs-1"
              title="Tissue origin for the sample">Tissue</th>
             <th style="width: 5%"></th>
           </tr>
@@ -39,11 +39,18 @@
               <td>{{ ind.tmb or 'N/A' }}</td>
               <td>{{ ind.msi or 'N/A' }}</td>
               {% if ind.phenotype_human == "tumor" %}
-                <td><input name="tumor_purity.{{ind.individual_id}}" type="number" step="0.01" min="0.1" max=1
-                  class="form-control col-7" value="{{ind.tumor_purity}}">
+                <td>
+                  <div class="row">
                   {% if not ind.tumor_purity or ind.tumor_purity|float < 0.2 %}
-                    &nbsp;&nbsp; <i class="fa fa-exclamation" data-toggle='tooltip' data-container='body' title="Low or missing tumor purity"></i>
+                  <div class="col-1">
+                    <div class="badge bg-danger rounded-pill">
+                      <span class="fa fa-exclamation " data-bs-toggle='tooltip' data-bs-container='body' title="Low or missing tumor purity"></span>
+                    </div>
+                  </div>
                   {% endif %}
+                  <div class="col-11"><input name="tumor_purity.{{ind.individual_id}}" type="number" step="0.01" min="0.1" max=1
+                  class="form-control col-7" value="{{ind.tumor_purity}}"></div>
+                </div>
                 </td>
               {% else %}
                 <td>N/A</td>
@@ -98,15 +105,15 @@
       <table id="individuals-table" class="table table-sm">
         <thead>
           <tr>
-            <th data-toggle='tooltip' data-container='body' style="width: 20%" title="Display name of sample">Sample</th>
-            <th data-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
-            <th data-toggle='tooltip' style="width: 12%" title="Age at sampling">Age</th>
-            <th data-toggle='tooltip' style="width: 10%" title="Phenotype of sample">Phenotype</th>
-            <th data-toggle='tooltip' data-container='body' title="Type of sequencing (e.g wes, wgs)" style="width: 10%">Sequencing</th>
-            <th data-toggle='tooltip' data-container='body' title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
-            <th data-toggle='tooltip' data-container='body' title="If parenthood is confirmed by peddy" style="width: 10%">Kinship</th>
-            <th data-toggle='tooltip' data-container='body' title="Downloadable CytoSure file" style="width: 5%">CGH</th>
-            <th data-toggle='tooltip' data-container='body' title="Tissue origin for the sample" style="width: 13%">Tissue</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body' style="width: 20%" title="Display name of sample">Sample</th>
+            <th data-bs-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
+            <th data-bs-toggle='tooltip' style="width: 12%" title="Age at sampling">Age</th>
+            <th data-bs-toggle='tooltip' style="width: 10%" title="Phenotype of sample">Phenotype</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body' title="Type of sequencing (e.g wes, wgs)" style="width: 10%">Sequencing</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body' title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body' title="If parenthood is confirmed by peddy" style="width: 10%">Kinship</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body' title="Downloadable CytoSure file" style="width: 5%">CGH</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body' title="Tissue origin for the sample" style="width: 13%">Tissue</th>
             <th style="width: 5%"></th>
           </tr>
         </thead>

@@ -251,7 +251,7 @@
         <span>
           <em class="fa fa-users me-1"></em>Connected cases ({{case_groups|length}} groups)
         </span>
-        <span class="float-sm-right me-3" data-bs-toggle='tooltip' data-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}"><span class="fas fa-plus me-1"></span>New group</a></span>
+        <span class="float-sm-right me-3" data-bs-toggle='tooltip' data-bs-placement="right" title="Create a new group containing case {{case.display_name}}"><a href="{{ url_for('cases.add_case_group',institute_id=institute._id, case_name=case.display_name) }}"><span class="fas fa-plus me-1"></span>New group</a></span>
       </h6>
     </div>
     <div class="card-body">

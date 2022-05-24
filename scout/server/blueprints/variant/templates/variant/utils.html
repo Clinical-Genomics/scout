@@ -15,7 +15,7 @@
             <div class="row">
               <div class="col d-flex">
                   <div class="d-flex justify-content-between align-items-center">
-                    <div data-placement="top">
+                    <div data-bs-placement="top">
                       Variant explains phenotype partially (partial causative)&nbsp;&nbsp;
                     </div>
                     <br>
@@ -167,9 +167,9 @@
     <table class="table table-bordered table-sm" id="genes_panel_table">
       <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
-          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
-          <th>Ensembl ID <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ensembl ID'"></i></th>
-          <th>Description <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'description'"></i></th>
+          <th>Gene <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'gene'"></i></th>
+          <th>Ensembl ID <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'ensembl ID'"></i></th>
+          <th>Description <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'description'"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -200,16 +200,16 @@
     <table id="transcripts_panel_table" class="table table-bordered card-sm">
       <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
-          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
-          <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
-          <th>RefSeq <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'refSeq'"></i></th>
-          <th>Biotype <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'biotype'"></i></th>
-          <th>Mutation type <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'mutation type'"></i></th>
-          <th>Strand <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'strand'"></i></th>
-          <th>Exon <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'exon'"></i></th>
-          <th>Intron <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'intron'"></i></th>
-          <th>cDNA <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'cDNA'"></i></th>
-          <th>Amino acid <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'amino acid'"></i></th>
+          <th>Gene <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'gene'"></i></th>
+          <th>Transcript <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'transcript'"></i></th>
+          <th>RefSeq <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'refSeq'"></i></th>
+          <th>Biotype <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'biotype'"></i></th>
+          <th>Mutation type <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'mutation type'"></i></th>
+          <th>Strand <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'strand'"></i></th>
+          <th>Exon <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'exon'"></i></th>
+          <th>Intron <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'intron'"></i></th>
+          <th>cDNA <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'cDNA'"></i></th>
+          <th>Amino acid <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'amino acid'"></i></th>
         </tr>
       </thead>
       <tbody>
@@ -233,7 +233,7 @@
                 {{ transcript.refseq_identifiers|join(',') }}
               </td>
               <td>{{ transcript.biotype or '' }}</td>
-              <td data-toggle="tooltip" data-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
+              <td data-bs-toggle="tooltip" data-bs-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
                 {{ transcript.functional_annotations
                       |join(', ')
                       |truncate(20, True) }}
@@ -256,15 +256,15 @@
     <table id="proteins_panel_table" class="table table-bordered">
       <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
-          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
-          <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
-          <th>Protein <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'protein'"></i></th>
-          <th>SWISS PROT <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'SWISS PROT'"></i></th>
-          <th>Sift <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Sift'"></i></th>
-          <th>Polyphen <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Polyphen'"></i></th>
-          <th>Pfam <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Pfam'"></i></th>
-          <th>ProSite <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ProSite'"></i></th>
-          <th>Smart <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Smart'"></i></th>
+          <th>Gene <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'gene'"></i></th>
+          <th>Transcript <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'transcript'"></i></th>
+          <th>Protein <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'protein'"></i></th>
+          <th>SWISS PROT <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'SWISS PROT'"></i></th>
+          <th>Sift <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Sift'"></i></th>
+          <th>Polyphen <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Polyphen'"></i></th>
+          <th>Pfam <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Pfam'"></i></th>
+          <th>ProSite <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'ProSite'"></i></th>
+          <th>Smart <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Smart'"></i></th>
         </tr>
       </thead>
       <tbody>

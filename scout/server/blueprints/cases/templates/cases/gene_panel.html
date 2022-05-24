@@ -6,9 +6,9 @@
       <table id="panel-table" class="table" style="width:100%">
         <thead class="table-light thead">
           <tr style="cursor: pointer; white-space: nowrap">
-            <th>Panel <i class="fas fa-sort" data-toggle="tooltip" title="Sort by gene panel name"></i></th>
-            <th>Version <i class="fas fa-sort" data-toggle="tooltip" title="Sort by panel version"></i></th>
-            <th>Genes <i class="fas fa-sort" data-toggle="tooltip" title="Sort by number of genes"></i></th>
+            <th>Panel <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by gene panel name"></i></th>
+            <th>Version <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by panel version"></i></th>
+            <th>Genes <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by number of genes"></i></th>
           </tr>
         </thead>
         <tbody>
@@ -85,7 +85,7 @@
     <div>
       <h6 class="ms-3 mt-3"><span class="fas fa-clipboard-list"></span>&nbsp;HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
         {%- if case.dynamic_panel_phenotypes %},
-        <span data-toggle="tooltip" data-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
+        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
             {{ case.dynamic_panel_phenotypes|length }} phenotypes</span>
         {% endif %})
         {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
@@ -135,7 +135,7 @@
               <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
                 <div class="form-check form-switch">
                   <input type="checkbox" class="form-check-input" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
-                  <label for="hpo_clinical_filter" class="form-check-label"><span data-placement="top" data-toggle='tooltip'
+                  <label for="hpo_clinical_filter" class="form-check-label"><span data-bs-placement="top" data-bs-toggle='tooltip'
                   title="Toggle on to use dynamic (HPO) panel instead of default gene panel for searching with clinical filter.">Use HPO list for clinical filter</span></label>
                 </div>
               </form>

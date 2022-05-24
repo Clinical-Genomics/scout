@@ -63,7 +63,7 @@
       <div class="row d-flex justify-content-between ms-3">
         <div>
           {% if diagnosis.disease_id and diagnosis.description %}
-            <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-toggle='tooltip' title="{{diagnosis.description}}">
+            <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
               {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
             {% if diagnosis.disease_id in omim_terms %}
@@ -102,7 +102,7 @@
   {% for feature_ind in feature.individuals %}
     {% for case_ind in case.individuals %}
       {% if feature_ind.individual_name == case_ind.display_name%}
-        <i data-toggle='tooltip' title="{{feature_ind.individual_name}}" class="fa fa-user {% if case_ind.phenotype == 2 %} text-danger {% endif %}"></i>
+        <span data-bs-toggle='tooltip' title="{{feature_ind.individual_name}}" class="fa fa-user {% if case_ind.phenotype == 2 %} text-danger {% endif %}"></span>
       {% endif %}
     {% endfor %}
   {% endfor %}
@@ -247,7 +247,7 @@
             {% endif %}
           </div>
           <div class="col-1">
-            <button data-toggle='tooltip' title="Remove selected HPO terms" class="btn btn-danger btn fa fa-trash float-end" type="submit" name="action" value="DELETE"></button>
+            <button data-bs-toggle='tooltip' title="Remove selected HPO terms" class="btn btn-danger btn fa fa-trash float-end" type="submit" name="action" value="DELETE"></button>
           </div>
         </div>
         <hr>

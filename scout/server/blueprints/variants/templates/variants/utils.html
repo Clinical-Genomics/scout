@@ -47,7 +47,7 @@
   {% for ind in individuals if ind.phenotype == 2 %}
     {% for gt in samples|selectattr("sample_id", "equalto", ind.individual_id) %}
       {% if gt.alt_frequency and gt.alt_frequency < 0.9 and gt.alt_frequency != -1 %}
-        <a data-toggle="tooltip" data-html="true" title="<div>Heteroplasmy: {{ (100*gt.alt_frequency)|round(3) }}%</div>">
+        <a data-bs-toggle="tooltip" data-bs-html="true" title="<div>Heteroplasmy: {{ (100*gt.alt_frequency)|round(3) }}%</div>">
           <span class="badge bg-warning">{{ (100*gt.alt_frequency)|round(1) }}%</span></a>
       {% endif %}
     {% endfor %}
@@ -780,7 +780,7 @@
     <div class="btn-group col-6" role="group">
       {{ form.load_filter(class="btn btn-secondary", title="Load selected filter", data_toggle="tooltip", data_placement="top", disabled=form.filters.choices|length==0) }}
       {{ form.audit_filter(class="btn btn-secondary bg-info", title="Note selected filter audited for this case. Filter name, user and date will then show up on general report.", data_toggle="tooltip", data_placement="top", disabled=form.filters.choices|length==0) }}
-      <button name="lock_filter" type="submit" value="Lock filter" class="btn btn-primary btn-sm" id="lock_filter" data-toggle="tooltip" data-placement="top" title="Lock filter and make you owner. Unlock if you own it." disabled="{{form.filters.choices|length==0}}">
+      <button name="lock_filter" type="submit" value="Lock filter" class="btn btn-primary btn-sm" id="lock_filter" data-bs-toggle="tooltip" data-bs-placement="top" title="Lock filter and make you owner. Unlock if you own it." disabled="{{form.filters.choices|length==0}}">
               <span id="stash_filter_padlock" class="fa fa-lock-open"></span></button>
       {{ form.delete_filter(class="btn btn-secondary bg-danger", data_toggle="tooltip", data_placement="top",
         id="stash_filter_delete", title="Delete selected filter for this institute.", disabled=form.filters.choices|length==0) }}

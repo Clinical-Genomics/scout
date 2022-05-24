@@ -200,7 +200,7 @@
                          </td>
                          <td style="width: 35%">
                            {% for feature in match_result.patient.features %}
-                             <span data-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge bg-info">{{feature.label}}({{feature.id}})</span>
+                             <span data-bs-toggle="tooltip" title="{{feature.label or 'description not available'}}" class="badge bg-info">{{feature.label}}({{feature.id}})</span>
                            {% else %}
                            <p class="text-center">-</p>
                            {% endfor %}

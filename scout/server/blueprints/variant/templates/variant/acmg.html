@@ -49,7 +49,7 @@
 
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-toggle="tooltip" data-placement="top" title="{{ criterion.description }}">
+                      <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description }}">
                         <span class="badge bg-info me-1">{{ criterion_code }}</span>
                         {{ criterion.short }}
                       </div>
@@ -92,7 +92,7 @@
 
   <script>
     $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
+      $('[data-bs-toggle="tooltip"]').tooltip();
 
       $('.form-switch').change(function(event) {
         var el = $('#comment-' + event.target.value);

@@ -75,7 +75,7 @@
           {% endif %}
           {% if variant.alamut_link %}
             <div>
-              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
             </div>
           {% endif %}
           {% if config.SQLALCHEMY_DATABASE_URI %}
@@ -160,7 +160,7 @@
             {{ other_variant.case_display_name }}
           </a>&nbsp;
           {% if other_variant.partial %}
-            <span class="badge bg-warning" data-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
+            <span class="badge bg-warning" data-bs-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
           {% endif %}
         {% endfor %}
       </div> <!--end of card body-->

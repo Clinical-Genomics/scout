@@ -48,7 +48,7 @@
               {{ panel.display_name|truncate(18, True) }}
             </a>
             {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
-              <a><span class="badge rounded-pill badge-sm bg-warning" data-toggle="popover" data-placement="left" data-html="true" data-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
+              <a><span class="badge rounded-pill badge-sm bg-warning" data-bs-toggle="popover" data-bs-placement="left" data-bs-html="true" data-bs-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
             {% endif %}
           </span>
         </div>
@@ -88,7 +88,7 @@
           {% if case.multiqc is existing %}
             <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
           {% else %}
-            <span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></span>
+            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></span>
           {% endif %}
         </div>
       </div>
@@ -308,7 +308,7 @@
 {% macro rerun_monitor_interact(institute, case) %}
   <div class="ms-3 mt-1">
     <form action="{{ url_for('cases.rerun_monitor', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-toggle="tooltip" title="A new analysis will start when relevant parts of the workflow are updated"> Activate monitoring</span>
+      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-bs-toggle="tooltip" title="A new analysis will start when relevant parts of the workflow are updated"> Activate monitoring</span>
     </form>
   </div>
 {% endmacro %}
@@ -361,7 +361,7 @@
 
 {% macro beacon_share(institute, case, current_user) %}
   {% if "beacon_submitter" not in current_user.roles %}
-    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to the Beacon. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-bs-toggle="popover" data-bs-content="You don't have the permission to submit data to the Beacon. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% else %}
     <a data-bs-target="#beacon_modal" data-bs-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% endif %}
@@ -375,9 +375,9 @@
 
 {% macro matchmaker_share(institute, case, current_user) %}
   {% if "mme_submitter" not in current_user.roles %}
-    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to Matchmaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-bs-toggle="popover" data-bs-content="You don't have the permission to submit data to Matchmaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% elif "suspects" not in case or case.suspects|length == 0 %}
-    <a disabled="disabled" data-toggle="popover" data-content="No pinned variants for this case. Please pin at least a variant (SNV, SV) to share to the Matchmaker Exchange" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-bs-toggle="popover" data-bs-content="No pinned variants for this case. Please pin at least a variant (SNV, SV) to share to the Matchmaker Exchange" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% else %}
     <a data-bs-target="#matchmaker_modal" data-bs-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% endif %}
@@ -577,9 +577,9 @@
                             case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
-        <div><span class="fa fa-exclamation-circle ms-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>
+        <div><span class="fa fa-exclamation-circle ms-1" data-bs-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>
       {% else %}
-        <div><span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
+        <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
       {% endif %}
     </div>
   </div>
@@ -602,7 +602,7 @@
                           case_name=case.display_name, date=None, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
       </div>
     {% else %}
-      <div><span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
+      <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
     {% endif %}
   </div>
 </div>
@@ -619,7 +619,7 @@
         <a href="{{ url_for('cases.cnv_report', institute_id=institute,
                         case_name=case.display_name, format='pdf') }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
       {% else %}
-        <span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></span>
+        <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></span>
       {% endif %}
     </div>
   </div>
@@ -640,7 +640,7 @@
             <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
                             case_name=case.display_name, report_type=report_type) }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
           {% else %}
-            <span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></span>
+            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></span>
           {% endif %}
         </div>
       </div>
@@ -666,7 +666,7 @@
                           case_name=case.display_name, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
       </div>
     {% else %}
-         <div><span class="fa fa-exclamation-triangle ms-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></span></div>
+         <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></span></div>
     {% endif %}
   </div>
 </div>

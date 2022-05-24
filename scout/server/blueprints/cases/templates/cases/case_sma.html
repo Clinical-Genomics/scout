@@ -82,25 +82,25 @@
       <table class="table table-sm">
         <thead>
           <tr>
-            <th data-toggle='tooltip' data-container='body' style="width: 20%"
+            <th data-bs-toggle='tooltip' data-bs-container='body' style="width: 20%"
              title="Display name of sample">Sample</th>
-            <th data-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
-            <th data-toggle='tooltip' style="width: 5%" title="Phenotype of sample">Phenotype</th>
-            <th data-toggle='tooltip' data-toggle='tooltip' data-container='body'
+            <th data-bs-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
+            <th data-bs-toggle='tooltip' style="width: 5%" title="Phenotype of sample">Phenotype</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body'
               style="width: 5%" title="SMA affected status prediction">SMA</th>
-              <th data-toggle='tooltip' data-toggle='tooltip' data-container='body'
+              <th data-bs-toggle='tooltip' data-bs-container='body'
                 style="width: 5%" title="SMA carrier status prediction">Carrier</th>
-            <th data-toggle='tooltip' data-container='body'
+            <th data-bs-toggle='tooltip' data-bs-container='body'
              title="SMN1 Estimated Copy Number (None means no-call)" style="width: 5%">SMN1 CN</th>
-             <th data-toggle='tooltip' data-container='body'
+             <th data-bs-toggle='tooltip' data-bs-container='body'
               title="SMN2 Estimated Copy Number" style="width: 5%">SMN2 CN</th>
-              <th data-toggle='tooltip' data-container='body'
+              <th data-bs-toggle='tooltip' data-bs-container='body'
                title="SMN2Δ7–8 (SMN2 with deletion of Exon 7-8) Estimated Copy Number" style="width: 10%">SMN2Δ7–8_CN</th>
-               <th data-toggle='tooltip' data-container='body'
+               <th data-bs-toggle='tooltip' data-bs-container='body'
                 title="g.27134T>G_CN Estimated Copy Number - an SNP associated with 2+0 silent carrier" style="width: 10%">g.27134T>G CN</th>
-            <th data-toggle='tooltip' data-container='body'
+            <th data-bs-toggle='tooltip' data-bs-container='body'
              title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
-             <th data-toggle='tooltip' data-container='body'
+             <th data-bs-toggle='tooltip' data-bs-container='body'
               title="Tissue origin for the sample" style="width: 15%">Tissue</th>
           </tr>
         </thead>
@@ -157,7 +157,7 @@
 
 {% macro synopsis_panel() %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about
+    <div data-bs-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about
      the case! Markdown format">
       Synopsis
     </div>
@@ -205,7 +205,7 @@
 <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" crossorigin="anonymous"></script>
 
 <script>
- $('#panel-table').DataTable({
+  $('#panel-table').DataTable({
     scrollY: 350,
     scrollCollapse: true,
     paging: false,
@@ -216,9 +216,12 @@
 </script>
 
 <script>
-$(function () {
-      $('[data-toggle="tooltip"]').tooltip();
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
 
+    $(function () {
       $('select[multiple]').multiselect({
         buttonWidth: '100%'
       });

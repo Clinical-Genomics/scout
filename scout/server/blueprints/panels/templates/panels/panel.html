@@ -184,7 +184,7 @@
     <ul class="list-group"style="max-height:300px; overflow-y: scroll;">
       {% for gene in panel.pending %}
         <li class="list-group-item">
-          <span data-toggle="tooltip" data-placement="right" data-html="true" title="
+          <span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="
             <div class='text-left'>
               <strong>Transcripts</strong>:
               {{ gene.info.disease_associated_transcripts|join(',') }} <br>
@@ -238,6 +238,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha512-HWlJyU4ut5HkEj0QsK/IxBCY55n5ZpskyjVlAoV9Z7XQwwkqXoYdCIC93/htL3Gu5H3R4an/S0h2NXfbZk3g7w==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 
   <script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+     return new bootstrap.Popover(popoverTriggerEl, {sanitizeFn: function (content) {
+            return DOMPurify.sanitize(content)
+          },
+          container: 'body'})
+    });
+
     function editDescription() {
       document.getElementById("panel_description").readOnly = false
     }
@@ -252,7 +265,6 @@
         source: getTerms,
         minLength: 2,
       });
-      $('[data-toggle="tooltip"]').tooltip();
     })
   </script>
 {% endblock %}

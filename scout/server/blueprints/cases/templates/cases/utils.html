@@ -35,7 +35,7 @@
                 <ul class="list-group w-75">
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="hpo">
+                      <div data-bs-placement="top" title="hpo">
                         Include patient gender
                       </div>
                       <div class="form-check form-switch">
@@ -46,7 +46,7 @@
                   </li>
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="hpo">
+                      <div data-bs-placement="top" title="hpo">
                         Include HPO terms
                       </div>
                       <div class="form-check form-switch">
@@ -57,7 +57,7 @@
                   </li>
                   <li class="list-group-item">
                     <div class="d-flex justify-content-between">
-                      <div data-placement="top" title="disorders">
+                      <div data-bs-placement="top" title="disorders">
                         Include OMIM diagnoses
                       </div>
                       <div class="form-check form-switch">
@@ -83,7 +83,7 @@
                   <li class="list-group-item">
                     <div class="row">
                       <div class="col-6">
-                        <div data-placement="top" id="share_variants">
+                        <div data-bs-placement="top" id="share_variants">
                           Share variant details for SNVs and gene names for SVs
                         </div>
                         <div>
@@ -92,7 +92,7 @@
                         </div>
                       </div>
                       <div class="col-6">
-                        <div data-placement="top" id="share_genes">
+                        <div data-bs-placement="top" id="share_genes">
                           Share only gene names from all selected variants
                         </div>
                         <div>
@@ -357,7 +357,7 @@
 {% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) %}
   {% set already_displayed_variant_ids = [] %}
   <div class="card mt-3">
-    <div data-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
+    <div data-bs-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
       <div class="d-flex justify-content-between">
         <h6><span class="fa fa-medkit ms-3 mt-2"></span>
         {% if case.track == 'cancer' %}
@@ -508,7 +508,7 @@
 
 {% macro allele_div(allele, type) %}
   {% if 'alt_freq' in allele %}
-    <div class="col-1.5" data-toggle="tooltip" data-placement="top" title="{{ type }} alternative AF ">
+    <div class="col-1.5" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ type }} alternative AF ">
       <div style="padding: 0 15px">{{ allele.alt_freq|round(4) }}</div>
     </div>
   {% endif %}
@@ -516,7 +516,7 @@
 
 {% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
   <div class="card mt-3">
-    <div class="d-flex justify-content-between" data-toggle='tooltip' title="Displays all variants that has been pinned for this case">
+    <div class="d-flex justify-content-between" data-bs-toggle='tooltip' title="Displays all variants that has been pinned for this case">
       <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
       </h6>
       {% if not suspects|length %}
@@ -575,7 +575,7 @@
 
 {% macro matching_causatives(other_causatives, institute, case) %}
   <div class="card panel-default" >
-    <div data-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
+    <div data-bs-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
       that have been marked as causative in another case for this insitute">
       <strong><a data-bs-toggle="collapse" href="#matchingCausatives" class="text-white">Matching causatives from other cases ({{other_causatives|length}})</a></strong>
     </div>
@@ -596,7 +596,7 @@
 
 {% macro clinvar_panel(institute, case) %}
   <div class="card panel-default">
-    <div class="d-flex justify-content-between" data-toggle='tooltip' title="Variants included in a ClinVar submission object in Scout">
+    <div class="d-flex justify-content-between" data-bs-toggle='tooltip' title="Variants included in a ClinVar submission object in Scout">
       <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }})
       </h6>
       {% if not case.clinvar_variants %}
@@ -622,7 +622,7 @@
 
 {% macro matching_managed_variants(managed_variants, institute, case) %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Any variants in this case
+    <div data-bs-toggle='tooltip' class="panel-heading" title="Any variants in this case
       that have been marked as managed">
       <strong><a data-bs-toggle="collapse" href="#matchingManaged" class="text-white">Managed variants ({{managed_variants|length}})</a></strong>
     </div>

@@ -173,10 +173,10 @@
 
 {% macro str_status(variant) %}
 <a class="badge bg-secondary text-white"
-  data-toggle="popover"
-  data-html="true"
+  data-bs-toggle="popover"
+  data-bs-html="true"
   data-trigger="hover click"
-  data-content="{% if variant.str_normal_max %}
+  data-bs-content="{% if variant.str_normal_max %}
     <table>
       <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
       <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
