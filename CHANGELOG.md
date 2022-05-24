@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 - Improved HTML syntax in case report template
+- Modified message displayed when variant rank stats could not be calculated
 ### Fixed
 - Remove load demo case command from docker-compose.yml
 - Text elements being split across pages in PDF reports
