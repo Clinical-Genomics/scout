@@ -115,8 +115,8 @@
         <div class="panel-heading">
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <a class="nav-item nav-link active" id="nav-genes-tab" data-bs-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
-              <a class="nav-item nav-link" id="nav-transcripts-tab" data-bs-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-link active" id="nav-genes-tab" data-bs-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-link" id="nav-transcripts-tab" data-bs-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
             </div>
           </nav>
         </div>
@@ -406,33 +406,6 @@
   {{ super() }}
   {{ external_scripts() }}
   <script>
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
-    })
-
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body'})
-    })
-
-    function set_scrolly_table(table_id) {
-    if (document.getElementById(table_id).rows.length > 5) {
-      $('#' + table_id).DataTable({
-        scrollY: 350,
-        stripeClasses: [],
-        scrollCollapse: true,
-        paging: false,
-        searching: false,
-        ordering: true,
-        info: false})
-      }
-    }
-
     var triggerGenesTabList = [].slice.call(document.querySelectorAll('#nav-genes-tab'))
       triggerGenesTabList.forEach(function (triggerEl) {
         var tabTrigger = new bootstrap.Tab(triggerEl)
@@ -453,9 +426,41 @@
       })
     })
 
+    function set_scrolly_table(table_id) {
+      if (document.getElementById(table_id).rows.length > 5) {
+        $('#' + table_id).DataTable({
+          scrollY: 350,
+          stripeClasses: [],
+          scrollCollapse: true,
+          paging: false,
+          searching: false,
+          ordering: true,
+          info: false})
+      }
+    }
+
     set_scrolly_table('overlapping_table')
     set_scrolly_table('genes_panel_table')
     set_scrolly_table('transcripts_panel_table')
+
+    // Tab hidden thead are not always drawn well, as they have no size. Force adjust and redraw on show.
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+      $($.fn.dataTable.tables(true)).DataTable()
+      .columns.adjust().draw();
+    });
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
+    })
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body'})
+    })
 
   </script>
 {% endblock %}
