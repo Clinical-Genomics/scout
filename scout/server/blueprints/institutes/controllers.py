@@ -166,7 +166,7 @@ def populate_institute_form(form, institute_obj):
     panel_set = set()
     for panel in available_panels:
         panel_set.add((panel["panel_name"], panel["display_name"]))
-    form.gene_panels.choices = sorted(panel_set, key=lambda tup1: tup[1])
+    form.gene_panels.choices = sorted(panel_set, key=lambda tup: tup[1])
 
     return default_phenotypes
 
