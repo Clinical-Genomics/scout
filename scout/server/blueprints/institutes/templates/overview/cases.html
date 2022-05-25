@@ -1,5 +1,5 @@
 {% import "bootstrap/wtf.html" as wtf %}
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
@@ -14,37 +14,37 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
-  <li class="nav-item active">
-    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">Cases</a>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Cases</span>
   </li>
 {% endblock %}
 
 
 {% macro search_form() %}
 <form action="{{ url_for('overview.cases', institute_id=institute._id) }}" method="GET" accept-charset="utf-8">
-    <div class="row d-flex align-items-center">
-      <div class="form-group col3">
+    <div class="row d-flex align-items-end">
+      <div class="col-3">
         {{ form.search_type.label(class="control-label") }}
         {{ form.search_type(class="form-control") }}
       </div>
-      <div class="form-group col-4">
+      <div class="col-4">
         {{ form.search_term.label(class="control-label") }}
         {{ form.search_term(class="form-control", placeholder='example:18201') }}
       </div>
-      <div class="form-group col-2">
-        {{ form.search(class="btn btn-primary form-control", style="margin-top: 30px;") }}
+      <div class="col-2">
+        {{ form.search(class="btn btn-primary form-control") }}
       </div>
-      <div class="form-group col-1">
+      <div class="col-1">
         {{ form.search_limit.label(class="control-label") }}
         {{ form.search_limit(class="form-control") }}
       </div>
-      <div class="form-group col-1" >
-        {{ form.skip_assigned.label(class="control-label") }}
-        {{ form.skip_assigned(class="form-control") }}
+      <div class="col-1 form-check">
+        {{ form.skip_assigned.label(class="ms-2 form-check-label") }}
+        {{ form.skip_assigned(class="ms-2 form-check-input") }}
       </div>
-      <div class="form-group col-1">
-        {{ form.is_research.label(class="control-label") }}
-        {{ form.is_research(class="form-control") }}
+      <div class="col-1 form-check">
+        {{ form.is_research.label(class="ms-2 form-check-label") }}
+        {{ form.is_research(class="ms-2 form-check-input") }}
       </div>
     </div>
   </form>
@@ -64,15 +64,15 @@
         <tr>
           <th style="width: 25%">{{ group_name|capitalize }} cases</th>
           <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='status' else 'grey'}};background-color:white;">
-            <i class="fa fa-sort{{'-'+sort_order if sort_by=='status' }}" aria-hidden="true" data-toggle="tooltip" title="Sort cases by 'status'"></i>
+            <i class="fa fa-sort{{'-'+sort_order if sort_by=='status' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort cases by 'status'"></i>
           </a></th>
           <th style="width: 15%">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='analysis_date' else 'grey'}};background-color:white;">
-            <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis date"></i>
+            <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis date"></i>
           </a></th>
           <th style="width: 20%">Link</th>
           <th style="width: 5%">Sequencing</th>
           <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
-            <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
+            <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
           </a></th>
           <th style="width: 10%">Clinvar</th>
         </tr>
@@ -93,37 +93,37 @@
 
 
 {% macro case_row(case) %}
-  <tr class="{% if case.status == 'solved' %} bg-success{% endif %}">
+  <tr class="{% if case.status == 'solved' %}causative{% endif %}">
     <td>
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
-        <span class="badge badge-primary">
+        <span class="badge bg-primary">
           {% for item in case.individuals %}
             <i class="fa fa-user"></i>
           {% endfor %}
         </span>
       {% endif %}
       {% for user in case.assignees %}
-        <span class="badge badge-secondary">{{ user.name }}</span>
+        <span class="badge bg-secondary">{{ user.name }}</span>
       {% endfor %}
       {% if case.needs_check %}
-        <span class="badge badge-warning">decipher</span>
+        <span class="badge bg-warning">decipher</span>
       {% endif %}
     </td>
     <td>
-      <span class="badge badge-primary">{{ case.status }}</span>
+      <span class="badge bg-primary">{{ case.status }}</span>
       {% if case.is_migrated %}
-        <span class="badge badge-primary">migrated</span>
+        <span class="badge bg-primary">migrated</span>
       {% endif %}
     </td>
     <td class="d-flex justify-content-between align-items-center">
       {{ case.analysis_date.date() }}
       {% if case.rerun_requested %}
-          <span class="badge badge-secondary">rerun pending</span>
+          <span class="badge bg-secondary">rerun pending</span>
       {% elif case.is_rerun %}
-        <span class="badge badge-secondary">rerun</span>
+        <span class="badge bg-secondary">rerun</span>
       {% endif %}
     </td>
     <td>
@@ -161,7 +161,7 @@
           {% set badge_class = 'default' %}
         {% endif %}
 
-        <span class="badge badge-{{ badge_class }}">
+        <span class="badge bg-{{ badge_class }}">
           {{ analysis_type|upper }}
         </span>
       {% endfor %}
@@ -171,7 +171,7 @@
     </td>
     <td>
       {% if case.clinvar_variants %}
-        <a href="#clinvar_{{case.display_name}}" data-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
+        <a href="#clinvar_{{case.display_name}}" data-bs-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
         <!-- Modal -->
         <div class="modal fade" id="clinvar_{{case.display_name}}" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -193,7 +193,7 @@
                 </ul>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
               </div>
             </div>
           </div>
@@ -220,14 +220,14 @@
 
       {% if sanger_unevaluated %}
         <div class="container alert alert-info alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           {% if sanger_unevaluated|length > 1%}
           You have <strong>{{ sanger_unevaluated|length }}</strong> cases with Sanger validations to evaluate!
           {% else %}
           You have <strong>1</strong> case with Sanger validations to evaluate!&nbsp;
           {% endif %}
           <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#evaluateModal">
+          <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#evaluateModal">
             evaluate
           </button>
 
@@ -255,7 +255,7 @@
                   </ul>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
               </div>
             </div>
@@ -281,7 +281,6 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
   <script src="{{ url_for('overview.static', filename='form_scripts.js') }}"></script>
   <script>
   var caseSearchTerms = {{ search_terms|safe }};
