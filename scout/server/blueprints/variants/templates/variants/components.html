@@ -1,7 +1,7 @@
 {% macro gene_cell(variant) %}
   <div class="align-items-center">
     {% if variant.category == "cancer" or variant.category == "sv_cancer" %}
-      <a data-toggle="tooltip" data-html="true" title="
+      <a data-bs-toggle="tooltip" data-bs-html="true" title="
         <div>
           <div>
             <strong>{{ variant.first_rep_gene.hgnc_symbol }}</strong>: {{ variant.first_rep_gene.description }}
@@ -33,17 +33,18 @@
       </a>
       {% if variant.panels|count > 0 %}
           <a
-            class="badge badge-secondary text-white"
-            data-toggle="popover"
-            data-html="true"
-            data-trigger="hover click"
-            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-            title="">{{variant.panels|count}}
+            class="badge bg-secondary text-white"
+            data-bs-toggle="popover"
+            data-bs-html="true"
+            data-bs-trigger="hover click"
+            title="Overlapping gene panels"
+            data-bs-content="{{variant.panels|join('<br>')|safe}}"
+            >{{variant.panels|count}}
           </a>
       {% endif %}
     {% else %}
       {% for gene in variant.genes %}
-        <a data-toggle="tooltip" data-html="true" title="
+        <a data-bs-toggle="tooltip" data-bs-html="true" title="
         <div>
           <div>
             <strong>{{ gene.hgnc_symbol }}</strong>: {{ gene.description }}
@@ -68,12 +69,12 @@
       {% endfor %}
       {% if variant.panels|count > 0 %}
           <a
-            class="badge badge-secondary text-white"
-            data-toggle="popover"
-            data-html="true"
-            data-trigger="hover click"
-            data-content="<strong>Overlapping gene panels:</strong><br>{{variant.panels|join('<br>')|safe}}"
-            title="">{{variant.panels|count}}
+            class="badge bg-secondary text-white"
+            data-bs-toggle="popover"
+            data-bs-html="true"
+            data-bs-trigger="hover click"
+            data-bs-content="{{variant.panels|join('<br>')|safe}}"
+            title="Overlapping gene panels">{{variant.panels|count}}
           </a>
       {% endif %}
     {% endif %}
@@ -81,8 +82,8 @@
 {% endmacro %}
 
 {% macro observed_cell_general(variant) %}
-  <div data-toggle="tooltip" data-placement="right" data-html="true" title="
-    <div class='text-left'>
+  <div data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="
+    <div class='text-start'>
       <div>
         <strong>Local (arch.)</strong>: {{ variant.local_obs_old or 0 }} obs.
       </div>
@@ -108,19 +109,19 @@
     </div>
   ">
   {% if variant.clinsig_human %}
-    <span class="badge badge-dark">ClinVar</span>
+    <span class="badge bg-secondary">ClinVar</span>
     <br>
   {% endif%}
   {% if variant.cosmic_ids %}
-    <span class="badge badge-dark">COSMIC</span>
+    <span class="badge bg-secondary">COSMIC</span>
     <br>
   {% endif %}
   {% if variant.mitomap_associated_diseases %}
-    <span class="badge badge-dark">MITOMAP</span>
+    <span class="badge bg-secondary">MITOMAP</span>
     <br>
   {% endif %}
   {% if variant.local_obs_old %}
-    <span class="badge badge-dark">Local</span>
+    <span class="badge bg-secondary">Local</span>
     <br>
   {% endif %}
 
@@ -128,8 +129,8 @@
 {% endmacro %}
 
 {% macro frequency_cell_general(variant) %}
-  <div data-toggle="tooltip" data-placement="left" data-html="true" title="
-    <div class='text-left'>
+  <div data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
+    <div class='text-start'>
       {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
         <div>
           <strong>gnomAD(MT) hom</strong>: {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency }}
@@ -174,4 +175,16 @@
     {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency else '~' }}
   {% endif %}
   </div>
+{% endmacro %}
+
+{% macro external_stylesheets() %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endmacro %}
+
+{% macro external_scripts() %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 {% endmacro %}

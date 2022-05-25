@@ -1,0 +1,89 @@
+{% macro institutes_actionbar() %}
+<!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
+  <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its items can be kept on the Navbar 'Menu' -->
+    <!-- Bootstrap List Group -->
+    <ul class="list-group">
+      <!-- institutes index menu item -->
+      <a href="{{ url_for('cases.index') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-institution me-3"></span>
+              <span class="menu-collapsed">Institutes</span>
+          </div>
+      </a>
+
+      <!-- genes menu item-->
+      <a href="{{ url_for('genes.genes') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-book me-3"></span>
+              <span class="menu-collapsed">Genes</span>
+          </div>
+      </a>
+
+      <!-- panels menu item-->
+      <a href="{{ url_for('panels.panels') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-file-text me-3"></span>
+              <span class="menu-collapsed">Gene Panels</span>
+          </div>
+      </a>
+
+      <!-- phenotypes menu item-->
+      <a href="{{ url_for('phenotypes.hpo_terms') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-stethoscope me-3"></span>
+              <span class="menu-collapsed">Phenotypes</span>
+          </div>
+      </a>
+
+      <!-- diagnoses menu item-->
+      <a href="{{ url_for('diagnoses.omim_diagnoses') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user-md me-3"></span>
+              <span class="menu-collapsed">Diagnoses</span>
+          </div>
+      </a>
+
+      <!-- genes menu item-->
+      <a href="{{ url_for('managed_variants.managed_variants') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-map-marker me-3"></span>
+              <span class="menu-collapsed">Managed variants</span>
+          </div>
+      </a>
+
+      <!-- genes menu item-->
+      <a href="{{ url_for('login.users') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user-secret me-3"></span>
+              <span class="menu-collapsed">Users</span>
+          </div>
+      </a>
+
+      <!-- dashboard menu item -->
+      <a href="{{ url_for('dashboard.index') }}" class="bg-dark list-group-item list-group-item-action flex-column align-items-start h-100">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-bar-chart me-3"></span>
+              <span class="menu-collapsed">Dashboard</span>
+          </div>
+      </a>
+
+      <!-- dashboard menu item -->
+      <a href="https://clinical-genomics.github.io/scout" rel="noopener" referrerpolicy="no-referrer" target='_blank' class="bg-dark list-group-item list-group-item-action flex-column align-items-start h-100">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-question-circle me-3"></span>
+              <span class="menu-collapsed">User guide</span>
+          </div>
+      </a>
+
+      <!-- dashboard menu item -->
+      <a href="https://github.com/Clinical-Genomics/scout/issues" rel="noopener" referrerpolicy="no-referrer" target='_blank' class="bg-dark list-group-item list-group-item-action flex-column align-items-start h-100">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-github me-3"></span>
+              <span class="menu-collapsed">Open issues</span>
+          </div>
+      </a>
+
+
+    </ul><!-- List Group END-->
+  </div><!-- sidebar-container END -->
+{% endmacro %}

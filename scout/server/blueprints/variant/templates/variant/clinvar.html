@@ -1,4 +1,4 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -51,8 +51,8 @@
             {{ panel_variants() }}
           </div>
           <div class="col-xs-6 col-sm-6 col-md-12">
-            <div class="form-group text-center">
-              <button class="btn btn-secondary" data-toggle="modal" value="submit">Add variants to Clinvar submission</button>
+            <div class="text-center">
+              <button class="btn btn-lg btn-info" data-bs-toggle="modal" value="submit">Add variants to Clinvar submission</button>
             </div>
           </div>
       </form>
@@ -82,9 +82,9 @@
           <div class="panel-heading">
             <h5>
             {% if pinned.category == 'snv' %}
-              <span class="badge badge-success float-left">snv</span>
+              <span class="badge bg-success float-start">snv</span>
             {% else %}
-              <span class="badge badge-warning float-left">sv</span>
+              <span class="badge bg-warning float-start">sv</span>
             {% endif %}
             {% if pinned.simple_id|length > 25 and pinned.cytoband_start %}
               #Variant --> {{ pinned.sub_category+"("+pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end+")" }}
@@ -146,7 +146,7 @@
                     <tr>
                       <td >Variant model of inheritance <br>
                         {% for model in pinned.genetic_models|sort %}
-                          <span class="badge badge-info">{{ model }}</span>
+                          <span class="badge bg-info">{{ model }}</span>
                         {% endfor %}
                       </td>
                       <td>
@@ -360,7 +360,7 @@
           {% endif %}
           <!--end of SV fields-->
 
-          <a href="#more_variant_{{pinned._id}}" data-toggle="collapse">More optional fields</a><hr>
+          <a href="#more_variant_{{pinned._id}}" data-bs-toggle="collapse">More optional fields</a><hr>
           <div id="more_variant_{{pinned._id}}" class="collapse">
             <table class="table table-fixed">
               <tbody>
@@ -417,10 +417,10 @@
         {% if individual.phenotype == 2 %}
           {% for sample in pinned.samples %}
             {% if sample.display_name == individual.display_name and sample.genotype_call != '0/0' and sample.genotype_call != './.' %}
-              <div class="form-group" id="cdata_checkbox_{{pinned._id}}" >
+              <div class="row" id="cdata_checkbox_{{pinned._id}}" >
                 <div class="col-12 card">
                   <div class="form-check">
-                    <label data-toggle="collapse" class="form-check-label" class="form-check-input" data-target="#casedata_{{pinned._id}}" aria-expanded="false" aria-controls="collapseOne">
+                    <label data-bs-toggle="collapse" class="form-check-label" class="form-check-input" data-bs-target="#casedata_{{pinned._id}}" aria-expanded="false" aria-controls="collapseOne">
                       <input type="checkbox" class="form-check-input" name="casedata_{{pinned._id}}" id="_{{pinned._id}}"/>Submit case data for this variant
                     </label>
                   </div>
