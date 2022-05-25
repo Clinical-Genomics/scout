@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 ### Changed
 ### Fixed
+- Bug in gene variants page (All SNVs and INDELs) when gene is not found any more
 
 ## [4.53]
 ### Added

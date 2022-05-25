@@ -464,22 +464,25 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         variant_genes = variant_obj.get("genes")
         hgvs_c = []
         hgvs_p = []
-        if variant_genes is not None:
-            for gene_obj in variant_genes:
-                hgnc_id = gene_obj["hgnc_id"]
-                gene_caption = store.hgnc_gene_caption(hgnc_id)
-                gene_symbols = [gene_caption["hgnc_symbol"]]
+        if variant_genes is None:
+            continue
+        for gene_obj in variant_genes:
+            hgnc_id = gene_obj["hgnc_id"]
+            gene_caption = store.hgnc_gene_caption(hgnc_id)
+            if gene_caption is None:
+                continue
+            gene_symbols = [gene_caption["hgnc_symbol"]]
 
-                # gather HGVS info from gene transcripts
-                (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
-                hgvs_c.append(hgvs_nucleotide)
-                hgvs_p.append(hgvs_protein)
+            # gather HGVS info from gene transcripts
+            (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
+            hgvs_c.append(hgvs_nucleotide)
+            hgvs_p.append(hgvs_protein)
 
-            if len(gene_symbols) == 1:
-                variant_obj["hgvs"] = hgvs_str(gene_symbols, hgvs_p, hgvs_c)
+        if len(gene_symbols) == 1:
+            variant_obj["hgvs"] = hgvs_str(gene_symbols, hgvs_p, hgvs_c)
 
-            # populate variant predictions for display
-            variant_obj.update(predictions(variant_genes))
+        # populate variant predictions for display
+        variant_obj.update(predictions(variant_genes))
 
         variants.append(variant_obj)
 
