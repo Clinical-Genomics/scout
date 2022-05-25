@@ -44,13 +44,6 @@ def api_institutes():
     return jsonify(data)
 
 
-@blueprint.route("/overview")
-def institutes():
-    """Display a list of all user institutes."""
-    data = dict(institutes=controllers.institutes())
-    return render_template("overview/institutes.html", **data)
-
-
 @blueprint.route("/api/v1/institutes/<institute_id>/cases", methods=["GET", "POST"])
 def api_cases(institute_id):
     """API endpoint that returns all cases for a given institute"""
