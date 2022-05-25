@@ -1,4 +1,4 @@
-{% extends "bootstrap4.html" %}
+{% extends "bootstrap_global.html" %}
 
 {% block title %}
   {% if title %}
@@ -17,17 +17,17 @@
 {% endblock head %}
 
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg navbar-inverse">
+    <nav class="navbar navbar-expand-lg nav-pills navbar-dark bg-primary sticky-top">
       <div class="container-fluid">
         <a class="navbar-brand" href="{{ url_for('cases.index') }}">
-          <img src="{{ url_for('public.static', filename='scout-logo.png') }}" width="30" height="30" class="d-inline-block align-top" alt=""><font color="white">Scout</font></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <img src="{{ url_for('public.static', filename='scout-logo.png') }}" width="30" height="30" class="d-inline-block align-top text-white" alt="">Scout</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
+          <ul class="navbar-nav me-auto">
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="fa fa-bars"></span>
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -38,11 +38,11 @@
                 <a class="dropdown-item" href="{{ url_for('diagnoses.omim_diagnoses') }}">Diagnoses</a>
                 <a class="dropdown-item" href="{{ url_for('managed_variants.managed_variants') }}">Managed variants</a>
                 <a class="dropdown-item" href="{{ url_for('login.users') }}">Users</a>
-                <a class="dropdown-item" href="{{ url_for('overview.institutes') }}">Institutes</a>
+                <a class="dropdown-item" href="{{ url_for('cases.index') }}">Institutes</a>
                 <a class="dropdown-item" href="{{ url_for('dashboard.index') }}">Dashboard</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="https://clinical-genomics.github.io/scout" target='_blank'>User guide</a>
-                <a class="dropdown-item" href="https://github.com/Clinical-Genomics/scout/issues" target='_blank'>Open issues</a>
+                <div class="dropdown-divider" ></div>
+                <a class="dropdown-item" href="https://clinical-genomics.github.io/scout" referrerpolicy="no-referrer" rel="noopener" target='_blank'>User guide</a>
+                <a class="dropdown-item" href="https://github.com/Clinical-Genomics/scout/issues" referrerpolicy="no-referrer" rel="noopener" target='_blank'>Open issues</a>
               </div>
             </li>
             {% block top_nav %}{% endblock %}
@@ -51,7 +51,7 @@
             {% block top_nav_right %}
               {% if current_user.is_authenticated %}
                 <li class="nav-item dropdown">
-                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
+                  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li>
                       <a class="dropdown-item" href="{{ url_for('login.logout') }}">Logout</a>
