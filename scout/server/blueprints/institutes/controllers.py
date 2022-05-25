@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+import re
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
@@ -280,7 +281,9 @@ def cases(store, request, institute_id):
     data["institute"] = institute_obj
     name_query = None
     if request.args.get("search_term"):
-        name_query = "".join([request.args.get("search_type"), request.args.get("search_term")])
+        name_query = "".join(
+            [request.args.get("search_type"), re.escape(request.args.get("search_term"))]
+        )
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
     skip_assigned = request.args.get("skip_assigned")
