@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panels HTML select in institute's settings page
 - Bootstrap upgraded to version 5
 - Fix some Sourcery and SonarCloud suggestions
+- Escape special characters in case search on institute and dashboard pages
 
 ## [4.53]
 ### Added
