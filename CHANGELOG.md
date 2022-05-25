@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 ### Changed
 - Improved HTML syntax in case report template
+- Modified message displayed when variant rank stats could not be calculated
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 ### Fixed
 - Remove load demo case command from docker-compose.yml
