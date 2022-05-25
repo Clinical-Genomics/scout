@@ -79,7 +79,7 @@
         {% endfor %}
 </tbody>
     </table>
-    {{pagination_hidden_div(page)}}
+    {{ pagination_hidden_div(page) }}
     {{ pagination_footer(more_variants, page) }}
   </div>
 </form>
@@ -109,29 +109,6 @@
   </div>
 {% endmacro %}
 
-<<<<<<< HEAD
-=======
-{% macro footer() %}
-  <div class="container-fluid">
-    <div class="text-center">
-      {% if more_variants %}
-        <div class="row">
-	  <div class="col-xs-6">
-             <button name="page" type="submit" class="btn btn-default" value={{ page + 1 }}>Next page</button>
-	  </div>
-	  <div class="col-xs-6">
-            <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
-	  </div>
-	      </div>
-      {% else %}
-        <i class="text-muted">No more variants to display</i>
-        <button name="page" type="submit" class="btn btn-default" value=1>First page</button>
-      {% endif %}
-    </div>
-  </div>
-{% endmacro %}
-
->>>>>>> 68613aba603169eb15a69559dad091ce0ecf19fd
 {% macro filters_form() %}
     {{ form.csrf_token }}
       <div class="row">
