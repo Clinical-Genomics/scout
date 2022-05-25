@@ -4,6 +4,30 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Added
+- Dark mode, using browser/OS media preference
+### Changed
+- Improved HTML syntax in case report template
+### Fixed
+- Remove load demo case command from docker-compose.yml
+- Text elements being split across pages in PDF reports
+- Made login password field of type `password` in LDAP login form
+- Gene panels HTML select in institute's settings page
+- Bootstrap upgraded to version 5
+- Fix some Sourcery and SonarCloud suggestions
+
+## [4.53]
+### Added
+### Changed
+- Point Alamut API key docs link to new API version
+- Parse dbSNP id from ID only if it says "rs", else use VEP CSQ fields
+- Removed MarkupSafe from the dependencies
+### Fixed
+- Reintroduced loading of SVs for demo case 643595
+- Successful parse of FOUND_IN should avoid GATK caller default
+- All vulnerabilities flagged by SonarCloud
+
 ## [4.52]
 ### Added
 - Demo cancer case gets loaded together with demo RD case in demo instance

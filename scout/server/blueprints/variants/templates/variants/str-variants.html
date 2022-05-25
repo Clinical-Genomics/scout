@@ -1,7 +1,8 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 {% from "utils.html" import comments_table, pedigree_panel %}
-{% from "variants/components.html" import gene_cell, frequency_cell_general %}
-{% from "variant/buttons.html" import igv_button, reviewer_button%}
+{% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general %}
+{% from "variant/buttons.html" import reviewer_button%}
+
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filter_script_main %}
 
 {% block title %}
@@ -10,7 +11,7 @@
 
 {% block css %}
 {{ super() }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  {{ external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -28,7 +29,7 @@
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">{{ form.variant_type.data|capitalize }} STRs</span>
   </li>
 {% endblock %}
@@ -44,7 +45,7 @@
      {{ pagination_hidden_div(page) }}
     <div class="card panel-default" id="accordion">
       <div class="card-header">
-        <strong><a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
+        <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
       </div>
       <!--Expand filters form if filters were used in a previous POST request-->
       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
@@ -55,7 +56,7 @@
   </form>
   <div class="card mt-3">
     <table class="table table-bordered table-hover" style="table-layout: fixed">
-      <thead>
+      <thead class="thead table-light">
         <tr>
           <th style="width:8%" title="Index">Index</th>
           <th title="Repeat ID">Repeat locus</th>
@@ -80,7 +81,7 @@
           {% elif 'causatives' in case and variant._id in case.causatives %}
              <tr class="causative">
           {% elif variant.str_status == 'normal' %}
-              <tr class="bg-primary">
+              <tr class="{% if loop.index0 % 2 %}even{% else %}odd{% endif %}">
           {% elif variant.str_status == 'full_mutation' %}
               <tr class="bg-danger">
           {% elif variant.str_status == 'pre_mutation' %}
@@ -88,16 +89,16 @@
 	        {% else %}
 	            <tr>
 	        {% endif %}
-            <td>{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
-            <td>{{ str_locus_info(variant) }}</td>
-	          <td class="text-right">{{ variant.str_display_ru or variant.str_ru  }}</td>
-            <td class="text-right"><b>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</b></td>
-            <td class="text-right">{{ variant.str_ref }}</td>
+            <td class="str-link">{{ cell_rank(variant, institute, case, form, manual_rank_options) }}</td>
+            <td class="str-link">{{ str_locus_info(variant) }}</td>
+	          <td class="text-end">{{ variant.str_display_ru or variant.str_ru  }}</td>
+            <td class="text-end"><b>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</b></td>
+            <td class="text-end">{{ variant.str_ref }}</td>
             <td>{{ str_status(variant) }}</td>
             <td>{% for sample in variant.samples %}
                   {% if sample.genotype_call != "./." %}
-                    <div class="float-left">{{ sample.display_name }}</div>
-                    <div class="float-right">{{ sample.genotype_call }}</div><br>
+                    <div class="float-start">{{ sample.display_name }}</div>
+                    <div class="float-end">{{ sample.genotype_call }}</div><br>
                   {% endif %}
                 {% endfor %}
             </td>
@@ -137,9 +138,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  {{ external_scripts() }}
   <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
   <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
   {{ filter_script_main(cytobands) }}
@@ -157,29 +156,30 @@
       width: '100%'
     });
 
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip();
-      $('[data-toggle="popover"]').popover({
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl, {
         sanitizeFn: function (content) {
           return DOMPurify.sanitize(content)
         },
         container: 'body',
-      });
-
-      $('table').stickyTableHeaders({
-        fixedOffset: $(".navbar-fixed-top")
-      });
-    });
+      })
+    })
 
   </script>
 {% endblock %}
 
 {% macro str_status(variant) %}
-<a class="badge badge-secondary text-white"
-  data-toggle="popover"
-  data-html="true"
+<a class="badge bg-secondary text-white"
+  data-bs-toggle="popover"
+  data-bs-html="true"
   data-trigger="hover click"
-  data-content="{% if variant.str_normal_max %}
+  data-bs-content="{% if variant.str_normal_max %}
     <table>
       <tr><td>Normal max</td><td>{{ variant.str_normal_max }}</td></tr>
       <tr><td>Pathologic min</td><td>{{ variant.str_pathologic_min }}</td><tr>
@@ -202,13 +202,13 @@
 {% macro str_locus_info(variant) %}
   <a
   href="{{ variant.str_source_link }}"
-  class="link text-black"
+  class="link"
   target="_blank"
-  data-toggle="popover"
-  data-html="true"
-  data-trigger="hover"
-  data-content="
-  <div class='text-left'>
+  data-bs-toggle="popover"
+  data-bs-html="true"
+  data-bs-trigger="hover"
+  data-bs-content="
+  <div class='text-start'>
     {% if variant.str_disease %}
       <div><strong>Disease:</strong> {{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</div>
     {% else %}
@@ -233,7 +233,7 @@
   title="">{{ variant.str_repid }}
   </a>
   {% for gene in variant.genes %}
-    <span class="badge badge-secondary"><a href="{{ gene.stripy_link }}" class="text-white">S</a></span>
-    <span class="badge badge-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white">G</a></span>
+    <span class="badge bg-secondary"><a href="{{ gene.stripy_link }}" class="text-white">S</a></span>
+    <span class="badge bg-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white">G</a></span>
   {% endfor %}
 {% endmacro %}

@@ -1,4 +1,4 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 
 {% block title %}
   {{ super() }} - {{ panel.institute.display_name }} - {{ panel.display_name }}
@@ -6,7 +6,7 @@
 
 {% block css %}
 {{ super() }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 
 {% block content_main %}
@@ -15,51 +15,47 @@
       {{ form.csrf_token }}
       <div class="card panel-default mt-3">
         <div class="panel-heading">
-          Edit {{ gene.hgnc_symbol }} for {{ panel.display_name }}
+          Edit {{ gene.hgnc_symbol }} for {{ panel.display_name }}
         </div>
         <div class="card-body">
-          <div class="form-group">
-            <div class="row">
-              <div class="col-md-4">
-                {{ form.disease_associated_transcripts.label(class="control-label") }}<br>
-                <select name="disease_associated_transcripts" multiple class="selectpicker">
-                  {% for opt in form.disease_associated_transcripts.choices %}
-                    <option value="{{opt[0]}}" {{ "selected" if 'previous' in opt[1] }}>{{opt[1]}}</option>
-                  {% endfor %}
-                </select>
-              </div>
-              <div class="col-md-4">
-                {{ form.reduced_penetrance.label(class="control-label") }}
-                (OMIM: {{ 'Yes' if gene.incomplete_penetrance else 'unknown' }})
-                <div>{{ form.reduced_penetrance() }}</div>
-              </div>
-              <div class="col-md-4">
-                {{ form.mosaicism.label(class="control-label") }}
-                <div>{{ form.mosaicism() }}</div>
-              </div>
+          <div class="row">
+            <div class="col-md-4">
+              {{ form.disease_associated_transcripts.label(class="control-label") }}<br>
+              <select name="disease_associated_transcripts" multiple class="selectpicker" data-style="btn-secondary">
+                {% for opt in form.disease_associated_transcripts.choices %}
+                  <option value="{{opt[0]}}" {{ "selected" if 'previous' in opt[1] }}>{{opt[1]}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-4">
+              {{ form.reduced_penetrance.label(class="control-label") }}
+              (OMIM: {{ 'Yes' if gene.incomplete_penetrance else 'unknown' }})
+              <div>{{ form.reduced_penetrance() }}</div>
+            </div>
+            <div class="col-md-4">
+              {{ form.mosaicism.label(class="control-label") }}
+              <div>{{ form.mosaicism() }}</div>
             </div>
           </div>
-          <div class="form-group">
-            <div class="row">
-              <div class="col-md-4">
-                {{ form.inheritance_models.label(class="control-label") }}<br>
-                {{ form.inheritance_models(class="selectpicker", data_width="100%") }}
-              </div>
-              <div class="col-md-4">
-                {{ form.custom_inheritance_models.label(class="control-label") }}
-                {{ form.custom_inheritance_models(class="form-control", placeholder="free text, comma separated") }}
-              </div>
-              <div class="col-md-2">
-                {{ form.database_entry_version.label(class="control-label") }}
-                (ex: 1.2)
-                {{ form.database_entry_version(class="form-control") }}
-              </div>
+          <div class="row">
+            <div class="col-md-4">
+              {{ form.inheritance_models.label(class="control-label") }}<br>
+              {{ form.inheritance_models(class="selectpicker", data_style="btn-secondary", data_width="100%") }}
             </div>
-            <div class="row mt-3">
-              <div class="col-md-12">
-                {{ form.comment.label(class="control-label") }}
-                {{ form.comment(class="form-control") }}
-              </div>
+            <div class="col-md-4">
+              {{ form.custom_inheritance_models.label(class="control-label") }}
+              {{ form.custom_inheritance_models(class="form-control", placeholder="free text, comma separated") }}
+            </div>
+            <div class="col-md-2">
+              {{ form.database_entry_version.label(class="control-label") }}
+              (ex: 1.2)
+              {{ form.database_entry_version(class="form-control") }}
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-12">
+              {{ form.comment.label(class="control-label") }}
+              {{ form.comment(class="form-control") }}
             </div>
           </div>
         </div>
@@ -67,7 +63,7 @@
           <div class="row">
             <div class="col text-center">
               <div class="btn-group" style="width:50%;">
-                <a class="btn btn-outline-secondary" href="{{ url_for('panels.panel', panel_id=panel._id) }}">Cancel</a>
+                <a class="btn btn-secondary" href="{{ url_for('panels.panel', panel_id=panel._id) }}">Cancel</a>
                 <button class="btn btn-primary" type="submit">Save</button>
               </div>
             </div>
@@ -80,5 +76,5 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock %}

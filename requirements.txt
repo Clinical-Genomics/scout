@@ -42,6 +42,5 @@ anytree
 # chanjo-report
 python-dateutil
 
-
 # Required by scripts
 tabulate

@@ -8,6 +8,7 @@ import shutil
 import pymongo
 from flask import Blueprint, flash, redirect, request, send_file, url_for
 from flask_login import current_user
+from markupsafe import Markup
 
 from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
@@ -46,7 +47,7 @@ def reset_dismissed(institute_id, case_name):
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = int(request.form.get("page", 1))
+    page = int(Markup.escape(request.form.get("page", "1")))
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = request.args.get("variant_type", "clinical")
@@ -174,13 +175,9 @@ def test(institute_id, case_name, str_repid):
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
-    print("str_variants")
 
-    page = int(request.form.get("page", 1))
-    variant_type = request.args.get("variant_type", "clinical")
-
-    print("variant page")
-    print("args", request.args.get("variant_type", "clinical"))
+    page = int(Markup.escape(request.form.get("page", "1")))
+    variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
 
     category = "str"
 
@@ -264,8 +261,8 @@ def str_variants(institute_id, case_name):
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
 
-    page = int(request.form.get("page", 1))
-    variant_type = request.args.get("variant_type", "clinical")
+    page = int(Markup.escape(request.form.get("page", "1")))
+    variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
     category = "sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -340,7 +337,7 @@ def sv_variants(institute_id, case_name):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
-    variant_type = request.args.get("variant_type", "clinical")
+    variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
@@ -369,7 +366,7 @@ def cancer_variants(institute_id, case_name):
             # Flash a message with errors
             for field, err_list in form.errors.items():
                 for err in err_list:
-                    flash(f"Content of field '{field}' has not a valid format", "warning")
+                    flash(f"Content of field '{field}' does not have a valid format", "warning")
             # And do not submit the form
             return redirect(
                 url_for(
@@ -379,10 +376,10 @@ def cancer_variants(institute_id, case_name):
                     expand_search=True,
                 )
             )
-        page = int(request.form.get("page", 1))
+        page = int(Markup.escape(request.form.get("page", "1")))
 
     else:
-        page = int(request.args.get("page", 1))
+        page = int(Markup.escape(request.args.get("page", "1")))
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
@@ -448,8 +445,8 @@ def cancer_variants(institute_id, case_name):
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
 
-    page = int(request.form.get("page", 1))
-    variant_type = request.args.get("variant_type", "clinical")
+    page = int(Markup.escape(request.form.get("page", "1")))
+    variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
     category = "cancer_sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
