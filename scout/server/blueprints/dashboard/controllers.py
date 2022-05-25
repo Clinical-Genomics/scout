@@ -1,4 +1,5 @@
 import logging
+import re
 
 from flask import flash, redirect, request, url_for
 from flask_login import current_user
@@ -77,7 +78,7 @@ def populate_dashboard_data(request):
         institute_id = None
 
     slice_query = compose_slice_query(
-        request.form.get("search_type"), request.form.get("search_term")
+        request.form.get("search_type"), re.escape(request.form.get("search_term"))
     )
     get_dashboard_info(store, data, institute_id, slice_query)
     return data
