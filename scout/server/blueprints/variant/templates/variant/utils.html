@@ -5,7 +5,7 @@
     <div class="modal-content">
         <div class="modal-header">
            <h5 class="modal-title" id="causativeLabel">Mark variant as causative</h5>
-           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
              <span aria-hidden="true">&times;</span>
            </button>
         </div>
@@ -15,15 +15,15 @@
             <div class="row">
               <div class="col d-flex">
                   <div class="d-flex justify-content-between align-items-center">
-                    <div data-placement="top">
+                    <div data-bs-placement="top">
                       Variant explains phenotype partially (partial causative)&nbsp;&nbsp;
                     </div>
                     <br>
                     <br>
-                    <div>
-                      <input type="checkbox" class="ios8-switch" id="partial_causative" name="partial_causative"
-                        data-toggle='collapse' data-target='#partial_phenotypes'>
-                      <label for="partial_causative"></label>
+                    <div class="form-check form-switch">
+                      <input type="checkbox" class="form-check-input" id="partial_causative" name="partial_causative"
+                        data-bs-toggle='collapse' data-bs-target='#partial_phenotypes'>
+                      <label class="form-check-label" for="partial_causative"></label>
                     </div>
                   </div>
               </div>
@@ -31,11 +31,11 @@
             <div id="partial_phenotypes" class="collapse mt-2">
               <h6><strong>Associated phenotype</strong></h6>
               <!-- A partial causative variant is resposible for a specific phenotype. Make sure phenotype is specified -->
-              <div class="row ml-3">
+              <div class="row ms-3">
                 <div class="col-6">
                   <!-- Phenotype could be specified using OMIM -->
                   <h6>Diagnosis phenotype (OMIM):</h6>
-                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker">
+                  <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker" data-style="btn-secondary">
                     {% for omim_term in case.diagnosis_phenotypes %}
                       {% if omim_term is number %} <!-- Old way of saving OMIM terms in cases: list of diagnosis numbers -->
                         <option value="{{omim_term}}">
@@ -52,7 +52,7 @@
                 <div class="col-6">
                   <!-- Phenotype could also be specified by HPO terms -->
                   <h6>Phenotype terms (HPO):</h6>
-                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker">
+                  <select multiple="multiple" name="hpo_select" id="hpo_select" class="selectpicker" data-style="btn-secondary">
                     {% for hpo_term in case.phenotype_terms %}
                       <option value="{{hpo_term.feature}}_{{hpo_term.phenotype_id}}">
                         {{hpo_term.feature}} ({{ hpo_term.phenotype_id }})
@@ -65,7 +65,7 @@
             <br>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
               Mark causative
             </button>
@@ -80,14 +80,14 @@
 <div id="accordion">
   <div class="row">
     <div class="col-4 d-flex align-items-center">
-     <span><a data-toggle="collapse" data-parent="#accordion" href="#track_settings" class="text-secondary">Settings DNA <i class="fas fa-cogs text-secondary"></i></a></span>
+     <span><a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#track_settings" class="text-secondary">Settings DNA <i class="fas fa-cogs text-secondary"></i></a></span>
     </div>
     <div id="track_settings" class="col-8 collapse">
       <form action="{{url_for('variant.update_tracks_settings')}}" method="POST">
         <div class="row d-flex align-items-center">
             <div class="col-3">Show tracks:</div>
             <div class="col-6">
-              <select name="user_tracks" class="selectpicker" data-width="90%" multiple>
+              <select name="user_tracks" class="selectpicker" data-width="90%" data-style="btn-secondary" multiple>
                 {% for track in igv_tracks %}
                   <!--pre-select option if user has saved it in preferences or select all options if user has no preferences yet-->
                   <option value="{{ track }}" {{ "selected" if current_user.igv_tracks and track in current_user.igv_tracks or current_user.igv_tracks is not defined }}>{{ track }}</option>
@@ -95,7 +95,7 @@
               </select>
             </div>
             <div class="col-3">
-              <button type="submit" class="btn btn-sm btn-outline-secondary">Save</button>
+              <button type="submit" class="btn btn-sm btn-secondary">Save</button>
             </div>
         </div>
       </form>
@@ -113,8 +113,8 @@
     {% endif %}
     <div class="card-body">
       <div class="table-responsive">
-        <table class="table table-bordered">
-          <thead class="thead-light">
+        <table class="table table-bordered" id="overlapping_table">
+          <thead class="thead table-light">
             <tr>
               <th>Variant</th>
               <th>Gene</th>
@@ -144,9 +144,9 @@
               </td>
               <td>{{ overlapping_variant.hgnc_symbols|join(', ')|truncate(40, True) }}</td>
               <td>{{ overlapping_variant.sub_category|upper }}</td>
-	            <td class="text-right">{{ variant.rank_score + overlapping_variant.rank_score }}</td>
-              <td class="text-right">{{ overlapping_variant.rank_score }}</td>
-              <td class="text-right">{{ overlapping_variant.length }}</td>
+	            <td class="text-end">{{ variant.rank_score + overlapping_variant.rank_score }}</td>
+              <td class="text-end">{{ overlapping_variant.rank_score }}</td>
+              <td class="text-end">{{ overlapping_variant.length }}</td>
               <td>{{ overlapping_variant.region_annotations|join(', ')|truncate(40, True) }}</td>
               <td>{{ overlapping_variant.functional_annotations|join(', ')|truncate(40, True) }}</td>
             </tr>
@@ -164,12 +164,12 @@
 
 {% macro genes_panel(variant) %}
   <div class="card panel-default">
-    <table class="table table-bordered table-sm">
-      <thead>
+    <table class="table table-bordered table-sm" id="genes_panel_table">
+      <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
-          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
-          <th>Ensembl ID <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ensembl ID'"></i></th>
-          <th>Description <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'description'"></i></th>
+          <th>Gene <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'gene'"></span></th>
+          <th>Ensembl ID <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'ensembl ID'"></span></th>
+          <th>Description <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'description'"></span></th>
         </tr>
       </thead>
       <tbody>
@@ -196,20 +196,20 @@
 {% endmacro %}
 
 {% macro transcripts_panel(variant) %}
-  <div class="card panel-default table-responsive fixed-panel">
-    <table id="transcripts_panel_table" class="table table-bordered card-sm">
-      <thead>
+  <div class="card panel-default">
+    <table id="transcripts_panel_table" class="table table-bordered table-sm">
+      <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
-          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
-          <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
-          <th>RefSeq <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'refSeq'"></i></th>
-          <th>Biotype <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'biotype'"></i></th>
-          <th>Mutation type <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'mutation type'"></i></th>
-          <th>Strand <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'strand'"></i></th>
-          <th>Exon <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'exon'"></i></th>
-          <th>Intron <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'intron'"></i></th>
-          <th>cDNA <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'cDNA'"></i></th>
-          <th>Amino acid <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'amino acid'"></i></th>
+          <th>Gene <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'gene'"></span></th>
+          <th>Transcript <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'transcript'"></span></th>
+          <th>RefSeq <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'refSeq'"></span></th>
+          <th>Biotype <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'biotype'"></span></th>
+          <th>Mutation type <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'mutation type'"></span></th>
+          <th>Strand <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'strand'"></span></th>
+          <th>Exon <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'exon'"></span></th>
+          <th>Intron <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'intron'"></span></th>
+          <th>cDNA <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'cDNA'"></span></th>
+          <th>Amino acid <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'amino acid'"></span></th>
         </tr>
       </thead>
       <tbody>
@@ -226,14 +226,14 @@
                   {{ transcript.transcript_id }}
                 </a>
                 {% if transcript.is_canonical %}
-                  <span class="badge badge-info">C</span>
+                  <span class="badge bg-info">C</span>
                 {% endif %}
               </td>
               <td>
                 {{ transcript.refseq_identifiers|join(',') }}
               </td>
               <td>{{ transcript.biotype or '' }}</td>
-              <td data-toggle="tooltip" data-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
+              <td data-bs-toggle="tooltip" data-bs-placement="right" title="{{ transcript.functional_annotations|join(', ') }}">
                 {{ transcript.functional_annotations
                       |join(', ')
                       |truncate(20, True) }}
@@ -254,17 +254,17 @@
 {% macro proteins_panel(variant) %}
   <div class="panel panel-default table-responsive">
     <table id="proteins_panel_table" class="table table-bordered">
-      <thead>
+      <thead class="table-light thead">
         <tr style="cursor: pointer; white-space: nowrap">
-          <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'gene'"></i></th>
-          <th>Transcript <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'transcript'"></i></th>
-          <th>Protein <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'protein'"></i></th>
-          <th>SWISS PROT <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'SWISS PROT'"></i></th>
-          <th>Sift <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Sift'"></i></th>
-          <th>Polyphen <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Polyphen'"></i></th>
-          <th>Pfam <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Pfam'"></i></th>
-          <th>ProSite <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ProSite'"></i></th>
-          <th>Smart <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'Smart'"></i></th>
+          <th>Gene <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'gene'"></span></th>
+          <th>Transcript <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'transcript'"></span></th>
+          <th>Protein <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'protein'"></span></th>
+          <th>SWISS PROT <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'SWISS PROT'"></span></th>
+          <th>Sift <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Sift'"></span></th>
+          <th>Polyphen <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Polyphen'"></span></th>
+          <th>Pfam <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Pfam'"></span></th>
+          <th>ProSite <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'ProSite'"></span></th>
+          <th>Smart <span class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'Smart'"></span></th>
         </tr>
       </thead>
       <tbody>
@@ -343,11 +343,11 @@
       {% endif %}
 
       {% if zoom == "length" and variant.chromosome == variant.end_chrom %}
-        <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+        <a class="btn btn-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}-{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
       {% elif zoom == "start" %}
-        <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+        <a class="btn btn-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.chromosome }}:{{ variant.position }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
       {% elif zoom == "end" %}
-        <a class="btn btn-outline-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
+        <a class="btn btn-secondary btn-sm" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{build}}&position=chr{{ variant.end_chrom }}:{{ variant.end }}&dgv=pack&knownGene=pack&omimGene=pack" target="_blank">UCSC</a>
       {% endif %}
     </div>
 
@@ -397,7 +397,7 @@
     </button>
   </form>
   {% else %}
-  <button class="btn btn-light navbar-btn" data-toggle="modal" data-target="#causativeModal">
+  <button class="btn btn-light navbar-btn" data-bs-toggle="modal" data-bs-target="#causativeModal">
     Mark causative
   </button>
   {% endif %}

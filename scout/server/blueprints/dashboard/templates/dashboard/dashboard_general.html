@@ -1,11 +1,21 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Dashboard</span>
+  </li>
+{% endblock %}
 
 {% block content_main %}
   <div class="container-float mt-3">
       <ul class="nav nav-tabs nav-justified">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'general' %}active{% endif %}" data-toggle="tab" onclick="hide_div('general')"><h4>General statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'cases' %}active{% endif %}" data-toggle="tab" onclick="hide_div('cases')"><h4>Case statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'variants' %}active{% endif %}" data-toggle="tab" onclick="hide_div('variants')"><h4>Variant statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'general' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('general')"><h4>General statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'cases' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('cases')"><h4>Case statistics</h4></a></li>
+        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'variants' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('variants')"><h4>Variant statistics</h4></a></li>
       </ul>
 
       <!--filter panel -->
@@ -26,29 +36,26 @@
 
 {% macro dashboard_search_form() %}
 <div class="card">
-  <form class="mt-3 ml-3" id='form' class="form-horizontal" method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
+  <form class="mt-3 ms-3 form-horizontal" id='form' method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
       <input type="hidden" value="{{panel}}" name="panel" id="panel">
-      <div class="form-row align-items-center mb-3">
+      <div class="row align-items-center mb-3">
         <!--Search institute select-->
-        <div class="col-2 ml-3">
+        <div class="col-2 ms-3">
           {{ dashboard_form.search_institute(class="form-control") }}
         </div>
-
         <!--Search type select field-->
-        <div class="col-3 ml-3">
+        <div class="col-3 ms-3">
           {{ dashboard_form.search_type(class="form-control", id="search_type") }}
         </div>
         <!--Search term textfield-->
-        <div class="col-4 ml-3">
+        <div class="col-4 ms-3">
           {{ dashboard_form.search_term(class="form-control", placeholder="Search term", id="search_term") }}
         </div>
-
         <!--Search term textfield-->
-        <div class="col-1 ml-3">
+        <div class="col-1 ms-3">
           {{ dashboard_form.search(class="form-control") }}
         </div>
-
-      </div> <!--end of class="form-row align-items-center"-->
+      </div> <!--end of class="row align-items-center"-->
     </form>
   </div>
 {% endmacro %}
@@ -60,7 +67,7 @@
       <h1>Samples</h1>
       <div>
         <canvas id="ngsType" height="150"></canvas><br>
-        <table class="table table-sm text-left">
+        <table class="table table-sm text-start" role="presentation" aria-label="Total case count per preparation type">
           {% for group in analysis_types %}
             <tr>
               <td>Total {{ group.name|upper }} samples (not cases)</td>
@@ -74,7 +81,7 @@
       <h1>Cases</h1>
       <div>
           <canvas id="casesType" height="150"></canvas><br>
-          <table class="table table-sm text-left">
+          <table class="table table-sm text-start" role="presentation" aria-label="Case counts grouped by status">
             {% for group in cases %}
               <tr>
                 <td>Cases {{ group.status|capitalize }}: {{ group.count }}</td>
@@ -88,7 +95,7 @@
       <h1>Pedigree info</h1>
       <div>
         <canvas id="pedigreeTypes" height="150"></canvas><br>
-        <table class="table table-sm text-left">
+        <table class="table table-sm text-start" role="presentation" aria-label="Fraction of cases grouped by pedigree type">
           {% for topic in pedigree %}
             <tr>
               <td>{{ topic.title }} Cases</td>
@@ -110,7 +117,7 @@
         <canvas id="cases-bar-horiz" height="100"></canvas>
     </div>
     <div class="col-md-4">
-      <table class="table table-sm text-left">
+      <table class="table table-sm text-start" role="presentation" aria-label="Cases grouped after interactions">
         {% for topic in overview %}
           <tr>
             <td>{{ topic.title }} Cases: {{ topic.count }}</td>
@@ -132,7 +139,7 @@
         <canvas id="var-validations" width="600" height="300"></canvas>
     </div>
     <div class="col-md-4">
-      <table class="table text-left">
+      <table class="table text-start" role="presentation" aria-label="Cases grouped by validation events">
         {% for topic in variants %}
         <tr>
           <td>{{ topic.title }} Cases: : {{ topic.count }}</td>
@@ -155,7 +162,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
 

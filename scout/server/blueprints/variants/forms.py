@@ -97,7 +97,7 @@ class VariantFiltersForm(FlaskForm):
     compound_rank_score = IntegerField("Compound rank score")
     compound_follow_filter = BooleanField("Compounds follow filter")
     cadd_inclusive = BooleanField("CADD inclusive")
-    clinsig = NonValidatingSelectMultipleField("CLINSIG", choices=CLINSIG_OPTIONS)
+    clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
 
     gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
 

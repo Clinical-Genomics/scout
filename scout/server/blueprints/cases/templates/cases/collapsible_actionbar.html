@@ -3,9 +3,9 @@
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
       <ul class="list-group">
-          <a href="#" data-toggle="sidebar-collapse" class="bg-dark list-group-item list-group-item-action d-flex align-items-center">
+          <a href="#" data-bs-toggle="sidebar-collapse" class="bg-dark list-group-item list-group-item-action d-flex align-items-center">
               <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span id="collapse-icon" class="fa fa-2x mr-3"></span>
+                  <span id="collapse-icon" class="fa fa-2x me-3"></span>
                   <span id="collapse-text" class="menu-collapsed">Collapse</span>
               </div>
           </a>
@@ -15,7 +15,7 @@
           {{ analysis_date(case) }}
           {{ genome_build(case, case_groups) }}
           {{ rank_model(case) }}
-          <li class="list-group-item sidebar-separator menu-collapsed"></li>
+          <li class="list-group-item bg-dark sidebar-separator menu-collapsed"></li>
           {{ status(institute, case) }}
           {{ assign(institute, case) }}
           {% if not (case.is_archived or case.is_research) %}
@@ -39,16 +39,16 @@
 {% endmacro %}
 
 {% macro default_gene_panel(institute, case) %}
-  {% for panel in case.panels if panel.is_default %}>
+  {% for panel in case.panels if panel.is_default %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex w-100 justify-content-start align-items-center">
-          <span class="fa fa-tag fa-fw mr-3"></span>
+          <span class="fa fa-tag fa-fw me-3"></span>
           <span class="menu-collapsed">
             <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
               {{ panel.display_name|truncate(18, True) }}
             </a>
             {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
-              <a><span class="badge badge-pill badge-sm badge-warning" data-toggle="popover" data-placement="left" data-html="true" data-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
+              <a><span class="badge rounded-pill badge-sm bg-warning" data-bs-toggle="popover" data-bs-placement="left" data-bs-html="true" data-bs-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
             {% endif %}
           </span>
         </div>
@@ -57,11 +57,11 @@
 {% endmacro %}
 
 {% macro reports(institute,case) %}
-<a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu1" aria-controls="submenu1" data-bs-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fa fa-book fa-fw mr-3"></span>
+        <span class="fa fa-book fa-fw me-3"></span>
         <span class="menu-collapsed">Reports</span>
-        <span class="submenu-icon ml-auto"></span>
+        <span class="submenu-icon ms-auto"></span>
     </div>
 </a>
 <!-- Submenu content -->
@@ -69,26 +69,26 @@
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div>
-          <span class="menu-collapsed ml-2">General</span>
+          <span class="menu-collapsed ms-2">General</span>
         </div>
         <div>
           <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
-                <i class="fa fa-link"></i></a>
+                <span class="fa fa-link"></span></a>
         </div>
         <div>
           <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}" download>
-                <i class="fa fa-file-pdf-o"></i></a>
+                <span class="fa fa-file-pdf-o"></span></a>
         </div>
       </div>
     </div>
     {% if case.multiqc %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
-          <span class="menu-collapsed ml-2">MultiQC</span>
+          <span class="menu-collapsed ms-2">MultiQC</span>
           {% if case.multiqc is existing %}
-            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
           {% else %}
-            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></i>
+            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></span>
           {% endif %}
         </div>
       </div>
@@ -96,11 +96,11 @@
     {% if config.SQLALCHEMY_DATABASE_URI and case.track != "cancer" %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
-          <span class="menu-collapsed ml-2">Coverage</span>
+          <span class="menu-collapsed ms-2">Coverage</span>
             <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
-                <i class="fa fa-link"></i></a>
+                <span class="fa fa-link"></span></a>
             </form>
         </div>
       </div>
@@ -109,10 +109,10 @@
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div>
-          <span class="menu-collapsed ml-2">mtDNA report</span>
+          <span class="menu-collapsed ms-2">mtDNA report</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><i class="fa fa-file-excel-o"></i></a>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-file-excel-o"></span></a>
         </div>
       </div>
     </div>
@@ -137,19 +137,20 @@
       {% endfor %}
     {% endif %}
 </div>
+<!-- end reports macro -->
 {% endmacro %}
 
 {% macro analysis_date(case) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fa fa-clock-o fa-fw mr-3"></span>
+    <span class="fa fa-clock-o fa-fw me-3"></span>
     <span class="menu-collapsed">{{ case.analysis_date.date() }}</span>
   </div>
 </div>
 {% if case.is_migrated %}
   <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-info fa-fw mr-3"></span>
+      <span class="fa fa-info fa-fw me-3"></span>
       <span class="menu-collapsed">migrated</span>
     </div>
   </div>
@@ -159,7 +160,7 @@
 {% macro genome_build(case, case_groups) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-wrench fa-fw mr-3"></span>
+      <span class="fa fa-wrench fa-fw me-3"></span>
       <span class="menu-collapsed">Genome build {{ case.genome_build }}</span>
   </div>
 </div>
@@ -177,14 +178,14 @@
 {% macro rank_model(case) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
-      <span class="fa fa-barcode fa-fw mr-3"></span>
+      <span class="fa fa-barcode fa-fw me-3"></span>
       <span class="menu-collapsed">Rank model v.<a href="{{ case.rank_model_link }}">{{ case.rank_model_version }}</a></span>
   </div>
 </div>
 {% if case.sv_rank_model_version %}
   <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex w-100 justify-content-start align-items-center">
-        <span class="fa fa-barcode fa-fw mr-3"></span>
+        <span class="fa fa-barcode fa-fw me-3"></span>
         <span class="menu-collapsed">SV rank model v.<a href="{{ case.sv_rank_model_link }}">{{ case.sv_rank_model_version }}</a></span>
     </div>
   </div>
@@ -196,13 +197,13 @@
     <form method="POST"
           action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
       <div class="nav-sidebar-item" style="color: #FFFFFF;">
-          <span class="fa fa-star fa-fw mr-3"></span>
+          <span class="fa fa-star fa-fw me-3"></span>
           <span class="menu-collapsed">
           Status: {{ case.status|capitalize }}<br><br>
           <div class="btn-group btn-group-justified">
             <div class="btn-group">
               {% if case.status != 'archived' %}
-                <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#archive_modal">
+                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#archive_modal">
                   Archive
                 </button>
               {% else %}
@@ -226,17 +227,17 @@
 {% macro assign(institute, case) %}
 <div class="list-group-item d-inline-block bg-dark">
   <div class="nav-sidebar-item" style="color: #FFFFFF;">
-    <span class="fa fa-users fa-fw mr-3"></span>
+    <span class="fa fa-users fa-fw me-3"></span>
     <span class="menu-collapsed">Assignees<br><br>
       {% for user in case.assignees %}
         <form method="POST" action="{{ url_for('cases.assign', institute_id=institute._id,
           case_name=case.display_name, user_id=user._id) }}">
             {% if case.assignees|length == 1 and not case.status in ['inactive', 'prioritized'] %}
-              <button type="button" name="action" value="DELETE" class="btn btn-warning btn-xs form-control" data-toggle="modal" data-target="#confirm_inactivate">
+              <button type="button" name="action" value="DELETE" class="btn btn-warning btn-xs form-control" data-bs-toggle="modal" data-bs-target="#confirm_inactivate">
             {% else %}
               <button type="submit" name="action" value="DELETE" class="btn btn-warning btn-xs form-control">
             {% endif %}
-                <i class="fa fa-remove"></i>
+                <span class="fa fa-remove"></span>
                   {{ user.name }}
               </button>
         </form>
@@ -246,7 +247,7 @@
                              case_name=case.display_name) }}"
           title="You adopt a case to show that you assume responsibility for it. Your name will show up in relation to the case for all team members to see.">
           <button class="btn btn-light form-control btn-xs">
-            <i class="fa fa-heart"></i> Assign yourself</button>
+            <span class="fa fa-heart"></span> Assign yourself</button>
       </form>
     </span>
   </div>
@@ -255,32 +256,32 @@
 {% endmacro %}
 
 {% macro research(case) %}
-<a href="#submenu2" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="submenu2" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu2" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="submenu2" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fa fa-graduation-cap fa-fw mr-3"></span>
+    <span class="fa fa-graduation-cap fa-fw me-3"></span>
     <span class="menu-collapsed">Research list</span>
-    <span class="submenu-icon ml-auto"></span>
+    <span class="submenu-icon ms-auto"></span>
   </div>
 </a>
 <!-- Submenu content -->
   {% if case.research_requested %}
     <span class="d-flex align-items-center">
-      <i class="text-white mt-1 ml-3">Research pending</i>
-      <button type="button" class="btn btn-danger btn-xs ml-3" data-toggle="modal" data-target="#cancel-research-modal"><i class="fa fa-hand-paper-o text-white"></i></button>
+      <em class="text-white mt-1 ms-3">Research pending</em>
+      <button type="button" class="btn btn-danger btn-xs ms-3" data-bs-toggle="modal" data-bs-target="#cancel-research-modal"><span class="fa fa-hand-paper-o text-white"></span></button>
     </span>
   {% else %}
     <div id='submenu2' class="collapse">
-      <button type="button" class="btn btn-danger btn-sm form-control" data-toggle="modal" data-target="#research-modal">Request research</button>
+      <button type="button" class="btn btn-danger btn-sm form-control" data-bs-toggle="modal" data-bs-target="#research-modal">Request research</button>
     </div>
   {% endif %}
 {% endmacro %}
 
 {% macro rerun(institute, case) %}
-<a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu3" data-bs-toggle="collapse" aria-controls="submenu3" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fa fa-retweet fa-fw mr-3"></span>
+    <span class="fa fa-retweet fa-fw me-3"></span>
     <span class="menu-collapsed">Reruns</span>
-    <span class="submenu-icon ml-auto"></span>
+    <span class="submenu-icon ms-auto"></span>
   </div>
 </a>
 <!-- Submenu content -->
@@ -291,33 +292,33 @@
     </div>
   {% endif %}
   <span class="d-flex align-items-center">
-    <i class="text-white mt-1 ml-3">Rerun pending</i>
+    <em class="text-white mt-1 ms-3">Rerun pending</em>
   </span>
 {% else %}
   <div id='submenu3' class="collapse">
     {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
-    <button type="button" class="btn btn-warning btn-sm form-control" data-toggle="modal" data-target="#rerun-modal">Request rerun</button>
+    <button type="button" class="btn btn-warning btn-sm form-control" data-bs-toggle="modal" data-bs-target="#rerun-modal">Request rerun</button>
   </div>
 {% endif %}
 {% endmacro %}
 
 
 {% macro rerun_monitor_interact(institute, case) %}
-  <div class="ml-3 mt-1">
+  <div class="ms-3 mt-1">
     <form action="{{ url_for('cases.rerun_monitor', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-toggle="tooltip" title="A new analysis will start when relevant parts of the workflow are updated"> Activate monitoring</span>
+      <span><input type="checkbox" id="rerun_monitoring" onChange="this.form.submit()" name="rerun_monitoring" value="monitor" {% if case.rerun_monitoring %}checked{% endif %}></span><span class="text-white" data-bs-toggle="tooltip" title="A new analysis will start when relevant parts of the workflow are updated"> Activate monitoring</span>
     </form>
   </div>
 {% endmacro %}
 
 {% macro share_case(institute, case, collaborators) %}
-<a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu4" data-bs-toggle="collapse" aria-controls="submenu4" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fa fa-handshake-o fa-fw mr-3"></span>
+    <span class="fa fa-handshake-o fa-fw me-3"></span>
     <span class="menu-collapsed">Share case</span>
-    <span class="submenu-icon ml-auto"></span>
+    <span class="submenu-icon ms-auto"></span>
   </div>
 </a>
 <!-- Submenu content -->
@@ -360,40 +361,40 @@
 
 {% macro beacon_share(institute, case, current_user) %}
   {% if "beacon_submitter" not in current_user.roles %}
-    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to the Beacon. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-bs-toggle="popover" data-bs-content="You don't have the permission to submit data to the Beacon. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% else %}
-    <a data-target="#beacon_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a data-bs-target="#beacon_modal" data-bs-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% endif %}
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fab fa-watchman-monitoring"></span>
-      <span class="menu-collapsed ml-3">{% if case.beacon %}Beacon submission {% else %} Share to Beacon {% endif %}</span>
-      <span class="submenu-icon ml-auto"></span>
+      <span class="menu-collapsed ms-3">{% if case.beacon %}Beacon submission {% else %} Share to Beacon {% endif %}</span>
+      <span class="submenu-icon ms-auto"></span>
     </div>
   </a>
 {% endmacro %}
 
 {% macro matchmaker_share(institute, case, current_user) %}
   {% if "mme_submitter" not in current_user.roles %}
-    <a disabled="disabled" data-toggle="popover" data-content="You don't have the permission to submit data to Matchmaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-bs-toggle="popover" data-bs-content="You don't have the permission to submit data to Matchmaker Exchange. Please contact us to start using this functionality." class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% elif "suspects" not in case or case.suspects|length == 0 %}
-    <a disabled="disabled" data-toggle="popover" data-content="No pinned variants for this case. Please pin at least a variant (SNV, SV) to share to the Matchmaker Exchange" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a disabled="disabled" data-bs-toggle="popover" data-bs-content="No pinned variants for this case. Please pin at least a variant (SNV, SV) to share to the Matchmaker Exchange" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% else %}
-    <a data-target="#matchmaker_modal" data-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+    <a data-bs-target="#matchmaker_modal" data-bs-toggle="modal" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   {% endif %}
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fas fa-people-arrows"></span>
-      <span class="menu-collapsed ml-3">Matchmaker</span>
-      <span class="submenu-icon ml-auto"></span>
+      <span class="menu-collapsed ms-3">Matchmaker</span>
+      <span class="submenu-icon ms-auto"></span>
     </div>
   </a>
 {% endmacro %}
 
 {% macro check_decipher(case, institute) %}
-<a href="#submenu5" data-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
+<a href="#submenu5" data-bs-toggle="collapse" aria-controls="submenu5" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fa fa-check fa-fw mr-3"></span>
+    <span class="fa fa-check fa-fw me-3"></span>
     <span class="menu-collapsed">Decipher check</span>
-    <span class="submenu-icon ml-auto"></span>
+    <span class="submenu-icon ms-auto"></span>
   </div>
 </a>
 <!-- Submenu content -->
@@ -401,7 +402,7 @@
   <form method="POST"
             action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
         <button name="action" value="DELETE" class="btn btn-success form-control">
-          <i class="fa fa-check-square-o"></i>
+          <span class="fa fa-check-square-o"></span>
           Decipher Checked
         </button>
       </form>
@@ -416,7 +417,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Request research list</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -425,7 +426,7 @@
             <p>You also confirm that you have the <strong>relevant consent</strong>.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Confirm</button>
           </div>
         </div>
@@ -442,7 +443,7 @@
             <p>Cancel request to upload research variants?</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Confirm</button>
           </div>
         </div>
@@ -460,7 +461,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Request rerun</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -468,7 +469,7 @@
             <p>Please confirm that you want to <strong>rerun {{ case.display_name }}</strong>. This will <strong>replace current variants</strong> with updated information.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Confirm</button>
           </div>
         </div>
@@ -483,7 +484,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Request reanalysis</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="toggleEditMetadata()">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" onclick="toggleEditMetadata()">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -493,7 +494,7 @@
       <div class="modal-footer">
         <form action="{{ url_for('cases.reanalysis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <input type="hidden" name="sample_metadata" id="reanalysis-data-container" value="" />
-          <button type="button" class="btn btn-default" data-dismiss="modal" onclick="toggleEditMetadata()">Close</button>
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal" onclick="toggleEditMetadata()">Close</button>
           <button type="submit" value="{{ case.display_name }}" class="btn btn-primary">Confirm</button>
         </form>
       </div>
@@ -508,7 +509,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="confirmInactivateLabel">Confirm inactivate case</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -538,7 +539,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="archiveCaseLabel">Confirm archive case</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -547,7 +548,7 @@
         You will have to request a FULL rerun to continue evaluating e.g. research variants.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <form method="POST"
           action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
           <button type="submit" class="btn btn-primary" value="archived" name="status">Archive</button>
@@ -564,21 +565,21 @@
   <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex flex-row flex-fill bd-highlight">
       <div>
-        <span class="menu-collapsed ml-2">Delivery ({{ analysis.date.date() }})</span>
+        <span class="menu-collapsed ms-2">Delivery ({{ analysis.date.date() }})</span>
       </div>
       {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><i class="fa fa-link"></i></a>
+                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><span class="fa fa-link"></span></a>
         </div>
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
-        <div><i class="fa fa-exclamation-circle ml-1" data-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></i></div>
+        <div><span class="fa fa-exclamation-circle ms-1" data-bs-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>
       {% else %}
-        <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
+        <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
       {% endif %}
     </div>
   </div>
@@ -589,19 +590,19 @@
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight">
     <div>
-      <span class="menu-collapsed ml-2">Delivery ({{ case.analysis_date.date() }})</span>
+      <span class="menu-collapsed ms-2">Delivery ({{ case.analysis_date.date() }})</span>
     </div>
     {% if case.delivery_report is existing %}
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None) }}" target="_blank"><i class="fa fa-link"></i></a>
+                          case_name=case.display_name, date=None) }}" target="_blank"><span class="fa fa-link"></span></a>
       </div>
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                          case_name=case.display_name, date=None, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
       </div>
     {% else %}
-      <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></i></div>
+      <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
     {% endif %}
   </div>
 </div>
@@ -611,14 +612,14 @@
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight">
     <div>
-      <span class="menu-collapsed ml-2">CNV report</span>
+      <span class="menu-collapsed ms-2">CNV report</span>
     </div>
     <div>
       {% if case.cnv_report is existing %}
         <a href="{{ url_for('cases.cnv_report', institute_id=institute,
-                        case_name=case.display_name, format='pdf') }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+                        case_name=case.display_name, format='pdf') }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
       {% else %}
-        <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></i>
+        <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></span>
       {% endif %}
     </div>
   </div>
@@ -632,14 +633,14 @@
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div class="text-nowrap">
-          <span class="menu-collapsed ml-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
+          <span class="menu-collapsed ms-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
         </div>
         <div>
           {% if case[report_type] is existing %}
             <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
-                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
           {% else %}
-            <i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></i>
+            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></span>
           {% endif %}
         </div>
       </div>
@@ -652,20 +653,20 @@
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex flex-row flex-fill bd-highlight">
     <div>
-      <span class="menu-collapsed ml-2">Coverage and QC report</span>
+      <span class="menu-collapsed ms-2">Coverage and QC report</span>
     </div>
 
     {% if case.coverage_qc_report is existing %}
       <div>
         <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                          case_name=case.display_name) }}" target="_blank"><i class="fa fa-link"></i></a>
+                          case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
       </div>
       <div>
         <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                          case_name=case.display_name, format='pdf') }}" download><i class="fa fa-file-pdf-o"></i></a>
+                          case_name=case.display_name, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
       </div>
     {% else %}
-         <div><i class="fa fa-exclamation-triangle ml-1" data-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></i></div>
+         <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></span></div>
     {% endif %}
   </div>
 </div>
