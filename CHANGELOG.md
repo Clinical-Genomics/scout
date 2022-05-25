@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 ### Fixed
 - Bug in gene variants page (All SNVs and INDELs) when gene is not found any more
+- Gene panels HTML select in institute's settings page
 
 ## [4.53]
 ### Added
