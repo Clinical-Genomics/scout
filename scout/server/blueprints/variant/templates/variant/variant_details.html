@@ -3,13 +3,13 @@
     <div class="panel-heading">
       GT call
       {% if variant.is_par %}
-        <span class="badge badge-info">PAR</span>
+        <span class="badge bg-info">PAR</span>
       {% endif %}
     </div>
     <div class="card-body">
     <div class="table-responsive">
       <table class="table table-bordered">
-        <thead>
+        <thead class="thead table-light">
           <tr>
             <th rowspan="2">Sample</th>
             <th rowspan="2">Genotype (GT)</th>
@@ -39,7 +39,7 @@
               <td class="text-center">{{ sample.genotype_call }}</td>
               {% if sample.allele_depths %}
                   {% for number in sample.allele_depths %}
-                    <td class="text-right">
+                    <td class="text-end">
                       {% if number == -1 %}
                         <small>N/A</small>
                       {% else %}
@@ -48,8 +48,8 @@
                     </td>
                   {% endfor %}
               {% else %}
-                  <td class="text-right"><small>N/A</small></td>
-                  <td class="text-right"><small>N/A</small></td>
+                  <td class="text-end"><small>N/A</small></td>
+                  <td class="text-end"><small>N/A</small></td>
               {% endif %}
 
               {% if variant.category == "snv" and variant.chromosome in ["MT","M"] %}
@@ -70,9 +70,9 @@
                 {% else %}
                   {% set cancer_var.vaf = "N/A" %}
                 {% endif %}
-                <td class="text-right">{{ cancer_var.vaf }}</td>
+                <td class="text-end">{{ cancer_var.vaf }}</td>
               {% else %}
-                <td class="text-right">
+                <td class="text-end">
                 {% if variant.category == "sv" %}
                   {% if sample.genotype_quality not in ["None", None, "-1", -1] %}
                     {{ sample.genotype_quality }}
@@ -98,7 +98,7 @@
     </div>
     <div class="panel-footer">
       {% for name, caller in variant.callers %}
-        <span class="badge badge-secondary">{{ name }}: {{ caller }}</span>
+        <span class="badge bg-secondary">{{ name }}: {{ caller }}</span>
       {% endfor %}
     </div>
     </div>
@@ -110,7 +110,7 @@
     <div class="panel-heading">Frequencies</div>
     <div class="card-body">
       <table class="table">
-        <thead class="thead-light">
+        <thead class="thead table-light">
           <tr>
             <th scope="col">Source</th>
             <th scope="col">Frequency</th>
@@ -128,7 +128,7 @@
             </td>
             <td>
               {% if value %}
-                <span class="badge badge-secondary">{{ value|human_decimal }}</span>
+                <span class="badge bg-secondary">{{ value|human_decimal }}</span>
               {% else %}
                 -
               {% endif %}
@@ -145,11 +145,11 @@
   <div class="card panel-default">
     <div class="panel-heading d-flex justify-content-between">
       <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
-      <span data-toggle="tooltip" title="Nr of observations is the total number of occurrences in the loqusdb instances. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
+      <span data-bs-toggle="tooltip" title="Nr of observations is the total number of occurrences in the loqusdb instance. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
     </div>
     <div class="card-body">
       <table class="table">
-        <thead class="thead-light">
+        <thead class="thead table-light">
           <tr>
             <th scope="col">ID</th>
             <th scope="col">Nr obs.</th>
@@ -187,6 +187,26 @@
         </tbody>
       </table>
     </div>
+<<<<<<< HEAD
+=======
+    <div class="card-footer">
+      <span title="Shows maximum 10 cases"><strong>Cases</strong></span>
+        {% if observations['cases'] %}
+          {% for data in observations['cases'] %}
+            {% if data.variant and data.variant.category == "snv"%}
+              <a class="ms-3" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+            {% elif data.variant and data.variant.category == "sv"%}
+              <a class="ms-3" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+            {% else %}
+              <span class="text-muted ms-3" >{{ data.case.display_name }}</span>
+            {% endif %}
+          {% endfor %}
+          {% if observations['cases']|length >= 10 %}
+          ...
+          {% endif%}
+        {% endif %}
+    </div>
+>>>>>>> 68613aba603169eb15a69559dad091ce0ecf19fd
   </div>
 {% endmacro %}
 
@@ -198,7 +218,7 @@
     </div>
     <div class="card-body">
       <table class="table">
-        <thead class="thead-light">
+        <thead class="thead table-light">
           <tr>
             <th scope="col">Nr obs.</th>
             <th scope="col">Nr homo.</th>
@@ -225,7 +245,7 @@
       <ul class="list-group">
         <li class="list-group-item">
           <a href="https://sift.bii.a-star.edu.sg/www/SIFT_help.html" target="_blank">SIFT</a>
-          <span class="float-right">
+          <span class="float-end">
             {% if variant.sift_predictions  %}
               {{ variant.sift_predictions|join(', ') }}</span>
             {% else %}
@@ -234,9 +254,9 @@
           </span>
         </li>
         <li class="list-group-item">
-          <a href="https://sites.google.com/site/revelgenomics/about" target="_blank" data-toggle="tooltip"
-            title="An ensemble score based on 13 individual scores for predicting the pathogenicity of missense variants. Scores range from 0 to 1. The larger the score the more likely the SNP has damaging effect" >REVEL score</a>
-          <span class="float-right">
+          <a href="https://sites.google.com/site/revelgenomics/about" target="_blank" data-bs-toggle="tooltip"
+            title="An ensemble score based on 13 individual scores for predicting the pathogenicity of missense variants. Scores range from 0 to 1. The larger the score the more likely the SNP has damaging effect">REVEL score</a>
+          <span class="float-end">
           {% if variant.revel  %}
              {{ variant.revel }}
           {% else %}
@@ -245,9 +265,9 @@
           </span>
         </li>
         <li class="list-group-item">
-          <a href="http://database.liulab.science/dbNSFP" target="_blank" data-toggle="tooltip"
+          <a href="http://database.liulab.science/dbNSFP" target="_blank" data-bs-toggle="tooltip"
              title="REVEL scores were ranked among all REVEL scores in dbNSFP. The REVEL rank score is the ratio of the rank of the score over the total number of REVEL scores in dbNSFP">REVEL rank score</a>
-          <span class="float-right">
+          <span class="float-end">
           {% if variant.revel_score  %}
              {{ variant.revel_score }}
           {% else %}
@@ -257,7 +277,7 @@
         </li>
         <li class="list-group-item">
           <a href="http://genetics.bwh.harvard.edu/pph2/" target="_blank">Polyphen</a>
-          <span class="float-right">
+          <span class="float-end">
           {% if variant.polyphen_predictions %}
             {{ variant.polyphen_predictions|join(', ') }}
           {% else %}
@@ -267,11 +287,11 @@
         </li>
         <li class="list-group-item">
           SPIDEX
-          <span class="float-right">{{ variant.spidex_human }}</span>
+          <span class="float-end">{{ variant.spidex_human }}</span>
         </li>
         <li class="list-group-item">
           <a href="https://doi.org/10.1016/j.cell.2018.12.015" target="_blank">SpliceAI</a> <a href="https://github.com/Illumina/SpliceAI" target="_blank">DS max</a>
-          <span class="float-right control-label" data-toggle="tooltip" data-html="true" data-placement="bottom"
+          <span class="float-end control-label" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
               title="<strong>{% if variant.spliceai_scores %}
                  {% for entry in variant.spliceai_scores %}
                     SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
@@ -297,15 +317,15 @@
       <ul class="list-group">
         <li class="list-group-item">
           PHAST
-          <span class="float-right">{{ variant.phast_conservation|join(', ') or '-' }}</span>
+          <span class="float-end">{{ variant.phast_conservation|join(', ') or '-' }}</span>
         </li>
         <li class="list-group-item">
           GERP
-          <span class="float-right">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
+          <span class="float-end">{{ variant.gerp_conservation|join(', ') or '-' }}</span>
         </li>
         <li class="list-group-item">
           phyloP
-          <span class="float-right">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
+          <span class="float-end">{{ variant.phylop_conservation|join(', ') or '-' }}</span>
         </li>
       </ul>
     </div>

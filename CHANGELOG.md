@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Dark mode, using browser/OS media preference
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
 ### Changed
@@ -15,6 +16,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Text elements being split across pages in PDF reports
 - Made login password field of type `password` in LDAP login form
 - Gene panels HTML select in institute's settings page
+- Bootstrap upgraded to version 5
+- Fix some Sourcery and SonarCloud suggestions
 
 ## [4.53]
 ### Added

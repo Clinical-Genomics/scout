@@ -1,7 +1,7 @@
 
 {% macro disease_associated(variant) %}
   <div class="card panel-default">
-    <div class="panel-heading" data-toggle='tooltip' title="Transcripts described as disease associated in the case default gene panels">Disease associated transcripts</div>
+    <div class="panel-heading" data-bs-toggle='tooltip' title="Transcripts described as disease associated in the case default gene panels">Disease associated transcripts</div>
     <div class=card-body>
       <table class="table table-bordered table-hover table-sm">
         <tr>
@@ -28,17 +28,17 @@
 
 {% macro transcripts_overview(variant) %}
   <div class="card panel-default">
-    <div data-toggle='tooltip' class="panel-heading" title="Displays all transcripts with RefSeq id. The complete list of transcripts is available below. One ensembl transcript can have multiple RefSeq ids. Blue color indicates that the ensembl transcript is mapped to a transcript that is primary according to HGNC">
+    <div data-bs-toggle='tooltip' class="panel-heading" title="Displays all transcripts with RefSeq id. The complete list of transcripts is available below. One ensembl transcript can have multiple RefSeq ids. Blue color indicates that the ensembl transcript is mapped to a transcript that is primary according to HGNC">
       RefSeq transcripts</div>
     <div class=card-body>
       <table id="transcript_overview_table" class="table table-bordered table-hover table-sm">
-        <thead class="thead-light">
+        <thead class="thead table-light">
           <tr style="cursor: pointer; white-space: nowrap">
-            <th>Gene <i class="fas fa-sort" data-toggle="tooltip" title="Sort by gene name"></i></th>
-            <th>Refseq IDs <i class="fas fa-sort" data-toggle="tooltip" title="Sort by Refseq ID"></i></th>
-            <th>ID <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'ID'"></i></th>
-            <th>HGVS Description <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'HGVS Description'"></i></th>
-            <th>Links <i class="fas fa-sort" data-toggle="tooltip" title="Sort by 'links'"></i></th>
+            <th>Gene <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by gene name"></i></th>
+            <th>Refseq IDs <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by Refseq ID"></i></th>
+            <th>ID <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'ID'"></i></th>
+            <th>HGVS Description <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'HGVS Description'"></i></th>
+            <th>Links <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by 'links'"></i></th>
           </tr>
         </thead>
         <tbody>
@@ -55,23 +55,23 @@
                   {{tx.decorated_refseq_ids|join(", ")}}
                   <font class="text-muted font-italic">{{tx.muted_refseq_ids|join(", ")}}</font>
                 {% else %}
-                  <font class="text-muted font-italic">Check complete list of transcripts
+                  <font class="text-muted font-italic">Check complete list of transcripts</font>
                 {% endif %}
               </td> <!-- end of Refseq IDs col-->
 
               <td class="d-flex align-items-center"> <!-- ID col-->
                 <span class="text"> {{ tx.transcript_id }}</span>
                 {% if tx.is_primary %}
-                  <a href="#" data-toggle="tooltip" title="hgnc primary"><span class="badge badge-primary ml-1" title="hgnc primary">P</span></a>
+                  <a href="#" data-bs-toggle="tooltip" title="hgnc primary"><span class="badge bg-primary ms-1" title="hgnc primary">P</span></a>
                 {% endif %}
                 {% if tx.mane %}
-                    <a href="#" data-toggle="tooltip" title="MANE Select - {{tx.mane}}"><span class="badge badge-success ml-1" title="MANE Select">M</span></a>
+                    <a href="#" data-bs-toggle="tooltip" title="MANE Select - {{tx.mane}}"><span class="badge bg-success ms-1" title="MANE Select">M</span></a>
                 {% endif %}
                 {% if tx.mane_plus %}
-                    <a href="#" data-toggle="tooltip" title="MANE Plus Clinical - {{tx.mane_plus}}"><span class="badge badge-success ml-1" title="MANE Plus Clinical">M+</span></a>
+                    <a href="#" data-bs-toggle="tooltip" title="MANE Plus Clinical - {{tx.mane_plus}}"><span class="badge bg-success ms-1" title="MANE Plus Clinical">M+</span></a>
                 {% endif %}
                 {% if tx.is_canonical %}
-                  <a href="#" data-toggle="tooltip" title="vep canonical"><span class="badge badge-info ml-1" title="vep canonical">C</span></a>
+                  <a href="#" data-bs-toggle="tooltip" title="vep canonical"><span class="badge bg-info ms-1" title="vep canonical">C</span></a>
                 {% endif %}
               </td> <!-- end of ID col-->
 
@@ -83,27 +83,27 @@
                 {% else %}
                   {{ hgvs_c }}
                 {% endif %}
-                <span class="text-muted float-right">
+                <span class="text-muted float-end">
                   {{ (tx.protein_sequence_name or '')|url_decode }}
                 </span>
               </td> <!-- end of HGVS Description col -->
 
               <td class="text-center"> <!-- links col -->
                 {% if tx.varsome_link %}
-                  <a href="{{ tx.varsome_link }}" class="badge badge-secondary text-white" target="_blank"
-                    data-toggle="tooltip" title="Varsome">V</a>
+                  <a href="{{ tx.varsome_link }}" class="badge bg-secondary text-white" target="_blank"
+                    data-bs-toggle="tooltip" title="Varsome">V</a>
                 {% endif %}
                 {% if tx.tp53_link %}
-                  <a href="{{ tx.tp53_link }}" class="badge badge-secondary text-white" target="_blank"
-                    data-toggle="tooltip" title="MutanTP53">TP53</a>
+                  <a href="{{ tx.tp53_link }}" class="badge bg-secondary text-white" target="_blank"
+                    data-bs-toggle="tooltip" title="MutanTP53">TP53</a>
                 {% endif %}
                 {% if tx.cbioportal_link %}
-                  <a href="{{ tx.cbioportal_link }}" class="badge badge-secondary text-white" target="_blank"
-                    data-toggle="tooltip" title="cBioPortal">CBP</a>
+                  <a href="{{ tx.cbioportal_link }}" class="badge bg-secondary text-white" target="_blank"
+                    data-bs-toggle="tooltip" title="cBioPortal">CBP</a>
                 {% endif %}
                 {% if tx.mycancergenome_link %}
-                  <a href="{{ tx.mycancergenome_link }}" class="badge badge-secondary text-white" target="_blank"
-                    data-toggle="tooltip" title="MyCancerGenome">MCG</a>
+                  <a href="{{ tx.mycancergenome_link }}" class="badge bg-secondary text-white" target="_blank"
+                    data-bs-toggle="tooltip" title="MyCancerGenome">MCG</a>
                 {% endif %}
               </td> <!-- end of links col -->
             </tr>
