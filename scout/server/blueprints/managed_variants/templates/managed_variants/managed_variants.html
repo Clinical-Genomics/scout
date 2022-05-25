@@ -1,4 +1,4 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 
 {% import "bootstrap/wtf.html" as wtf %}
 
@@ -10,7 +10,7 @@
 
 {% block css %}
 {{ super() }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 
 {% block top_nav %}
@@ -18,7 +18,7 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-   <li class="nav-item active">
+   <li class="nav-item active d-flex align-items-center">
      <span class="navbar-text">Managed variants</span>
    </li>
 {% endblock %}
@@ -31,7 +31,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-toggle="collapse" data-parent="#accordion_add" href="#collapseAdd">
+            <a data-bs-toggle="collapse" data-bs-parent="#accordion_add" href="#collapseAdd">
                 Add variant
             </a>
           </h5>
@@ -50,7 +50,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-toggle="collapse" data-parent="#accordion_load" href="#collapseLoad">
+            <a data-bs-toggle="collapse" data-bs-parent="#accordion_load" href="#collapseLoad">
                 Load variants
             </a>
           </h5>
@@ -70,7 +70,7 @@
        <div class="card mt-3">
         <div class="card-header">
           <h5>
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
+            <a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">
                 Filters
             </a>
           </h5>
@@ -83,10 +83,9 @@
   </div>
 </form>
 
-
 <div class="table-responsive" style="padding-top: 25px;">
   <table class="table table-bordered table-hover">
-    <thead>
+    <thead class="thead table-light">
       <tr>
         <th style="width:10%">Chr</th>
         <th style="width:10%">Start</th>
@@ -110,9 +109,9 @@
           <td>{{ variant.sub_category }}</td>
           <td>
             {{ variant.description }}
-            <div class="float-right">
+            <div class="float-end">
               <form method="POST" action="{{ url_for('managed_variants.remove_managed_variant', variant_id=variant.managed_variant_id) }}">
-                  <button id="{{variant._id}}" type="button" data-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
+                  <button id="{{variant._id}}" type="button" data-bs-toggle="collapse" href="#modifydiv_{{variant._id}}" aria-expanded="false" aria-controls="modifydiv_{{variant._id}}" class="btn btn-warning btn-xs">
                     <span class="fa fa-pencil-square-o"></span>
                   </button>
                   <button id="remove_{{variant._id}}" type="submit" href="remove_{{variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o"></span></button>
@@ -122,7 +121,7 @@
         </tr>
         <tr>
         {{ modify_variant(variant) }}
-        </div>
+        </tr>
       {% endfor %}
     </tbody>
   </table>
@@ -155,10 +154,9 @@
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
            <button name="add_variant" id="add_variant" type="submit" class="btn btn-primary btn-sm">Save</button>
-           <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+           <button name="cancel" id="cancel" type="cancel" class="btn btn-secondary btn-sm">Cancel</button>
          </div>
       </td>
-
   </form>
 {% endmacro %}
 
@@ -168,10 +166,10 @@
       <div class="col-sm-7 text-center">
         <input type="file" name="csv_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
         <label class="custom-file-label" for="csv_file">Choose file</label><br>
-        <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/variants/#Managed-variants-upload-file-format">managed variants file</a>?</p>
+        <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/variants/#Managed-variants-upload-file-format" rel="noopener" target="_blank">managed variants file</a>?</p>
       </div>
       <div class="col-sm-2 text-center">
-        <button type="submit" class="btn btn-outline-secondary">Upload</button>
+        <button type="submit" class="btn btn-secondary">Upload</button>
       </div>
     </div>
 {% endmacro %}
@@ -209,7 +207,7 @@
       <tr>
         <td colspan=12>
           <button name="add_variant" id="submit" type="submit" class="btn btn-primary btn-sm">Add</button>
-          <button name="cancel" id="cancel" type="cancel" class="btn btn-outline-secondary btn-sm">Cancel</button>
+          <button name="cancel" id="cancel" type="cancel" class="btn btn-secondary btn-sm">Cancel</button>
         </td>
       </tr>
     </tbody>
@@ -221,10 +219,10 @@
     {{ filters_form.csrf_token }}
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(filters_form.category, class="selectpicker")}}
+        {{ wtf.form_field(filters_form.category, class="selectpicker", data_style="btn-secondary")}}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.sub_category, class="selectpicker")}}
+        {{ wtf.form_field(filters_form.sub_category, class="selectpicker", data_style="btn-secondary")}}
       </div>
       <div class="col-4">
         {{ wtf.form_field(filters_form.description) }}
@@ -263,9 +261,7 @@
 
 {% block scripts %}
 {{ super() }}
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-table-headers/0.1.19/js/jquery.stickytableheaders.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 
   $(document).ready(function(){
@@ -274,15 +270,16 @@
     populateSubTypeSelect('modify_variant')
   })
 
-  $(function () {
-    $('[data-toggle="tooltip"]').tooltip();
-    $('[data-toggle="popover"]').popover({
+  var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+  var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+  return new bootstrap.Popover(popoverTriggerEl, {
       container: 'body',
-    });
+    })
+  })
 
-    $('table').stickyTableHeaders({
-      fixedOffset: $(".navbar-fixed-top")
-    });
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
   })
 
   var subcategoryOptions = {{ subcategory_choices|safe }}; // add form
@@ -292,7 +289,6 @@
   var chromSelect = document.forms["filters_form"].elements["chromosome"]; // filter form chromosome
   var start_coord_field = document.forms["filters_form"].elements["position"]; // filter form start coord
   var end_coord_field = document.forms["filters_form"].elements["end"]; // filter form end coord
-
 
   // clear option elements from any given select
   function clearSelect(selectElem){

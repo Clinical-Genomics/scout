@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="shortcut icon" href="{{url_for('public.favicon')}}">
+
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#eeeeee" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#111111" media="(prefers-color-scheme: light)">
+
+	{% block css %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" integrity="sha384-pZAJcuaxKZEGkzXV5bYqUcSwBfMZPdQS/+JXdYOu9ScyZJMnGHD5Xi6HVHfZuULH" crossorigin="anonymous">
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	  <link rel="stylesheet" href="{{ url_for('static', filename='bs_styles.css') }}">
+	{% endblock %}
+
+	{% block css_style %}
+  {% endblock %}
+
+	<!-- Adding support for Font Awesome icons version 6 -->
+<script src="https://kit.fontawesome.com/bff7dad824.js" integrity="sha384-8Yxb56m+KtlrkK25iUzrFDnqpqau39dNExBTUhYsKNooLBVXYLcUECSwdcnTG7LJ" crossorigin="anonymous"></script>
+
+	<style>
+
+		.spinner {
+			height: 100vh;
+			width: 100vw;
+			overflow: hidden;
+			position: absolute;
+		}
+
+		.spinner>div {
+			height: 90px;
+			width: 90px;
+      border: 5px solid #1182b22c;
+			border-top-color: #1181B2;
+			position: absolute;
+			margin: auto;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			border-radius: 50%;
+			animation: spin 0.5s infinite linear;
+			z-index: 100;
+		}
+
+		@keyframes spin {
+			100%{
+				transform: rotate(360deg);
+			}
+		}
+
+	</style>
+</head>
+
+<body>
+	<!-- Loading spinner -->
+	<div class="spinner">
+		<div></div>
+	</div>
+	{% block body %}
+  {% block navbar%}
+  {% endblock navbar%}
+	{% block content %}
+  {% endblock content%}
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  {% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+  {% endblock scripts %}
+
+	{% endblock body %}
+
+</body>
+</html>
+
+<script>
+
+$(window).on('beforeunload', function(){
+	$('.spinner').show();
+});
+
+$(document).ready (function() {
+	  $('.spinner').hide();
+})
+</script>
