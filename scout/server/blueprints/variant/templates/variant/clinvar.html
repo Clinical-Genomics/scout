@@ -50,11 +50,13 @@
           <div class="row">
             {{ panel_variants() }}
           </div>
-          <div class="col-xs-6 col-sm-6 col-md-12">
+          <br>
+          <div class="col-6 col-sm-6 col-md-12">
             <div class="text-center">
-              <button class="btn btn-lg btn-info" data-bs-toggle="modal" value="submit">Add variants to Clinvar submission</button>
+              <button class="btn btn-secondary" data-bs-toggle="modal" value="submit">Add variants to Clinvar submission</button>
             </div>
           </div>
+          <br>
       </form>
 {% else %}
     Can't submit to clinvar without specifying at least a phenotype for this case! <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
