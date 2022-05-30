@@ -464,7 +464,6 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         update_HGNC_symbols(store, variant_genes, genome_build)
 
         # Populate variant HGVS and predictions
-        variant_genes = variant_obj.get("genes")
         hgvs_c = []
         hgvs_p = []
         if variant_genes is None:
@@ -636,18 +635,20 @@ def update_HGNC_symbols(store, variant_genes, genome_build):
     Returns:
         gene_object()"""
 
-    if variant_genes is not None:
-        for gene_obj in variant_genes:
-            # If there is no hgnc id there is nothin we can do
-            if not gene_obj["hgnc_id"]:
+    if variant_genes is None:
+        return
+
+    for gene_obj in variant_genes:
+        # If there is no hgnc id there is nothin we can do
+        if not gene_obj["hgnc_id"]:
+            continue
+        # Else we collect the gene object and check the id
+        if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
+            hgnc_gene_caption = store.hgnc_gene_caption(gene_obj["hgnc_id"], build=genome_build)
+            if not hgnc_gene_caption:
                 continue
-            # Else we collect the gene object and check the id
-            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
-                hgnc_gene_caption = store.hgnc_gene_caption(gene_obj["hgnc_id"], build=genome_build)
-                if not hgnc_gene_caption:
-                    continue
-                gene_obj["hgnc_symbol"] = hgnc_gene_caption["hgnc_symbol"]
-                gene_obj["description"] = hgnc_gene_caption["description"]
+            gene_obj["hgnc_symbol"] = hgnc_gene_caption["hgnc_symbol"]
+            gene_obj["description"] = hgnc_gene_caption["description"]
 
 
 def get_genome_build(variant_case_obj):
