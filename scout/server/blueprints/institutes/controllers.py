@@ -468,7 +468,9 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         hgvs_p = []
         if variant_genes is not None:
             for gene_obj in variant_genes:
-                hgnc_id = gene_obj["hgnc_id"]
+                hgnc_id = gene_obj.get("hgnc_id")
+                if hgnc_id is None:
+                    continue
                 gene_caption = store.hgnc_gene_caption(hgnc_id, genome_build)
                 gene_symbols = [gene_caption["hgnc_symbol"]]
 
