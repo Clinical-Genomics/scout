@@ -235,7 +235,9 @@ def pdf_case_report(institute_id, case_name):
             )  # Transform to png, since PDFkit can't render svg images
             data["case"]["madeline_path"] = write_to
         except Exception as ex:
-            LOG.error(f"Could not convert SVG pedigree figure {case_obj['madeline_info']} to PNG")
+            LOG.error(
+                f"Could not convert SVG pedigree figure {case_obj['madeline_info']} to PNG: {ex}"
+            )
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
