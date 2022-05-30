@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Dark mode, using browser/OS media preference
+- Case status change modal
 ### Changed
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
