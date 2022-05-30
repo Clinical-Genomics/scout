@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Bootstrap upgraded to version 5
 - Fix some Sourcery and SonarCloud suggestions
 - Escape special characters in case search on institute and dashboard pages
+- Broken case PDF reports when no Madeline pedigree image can be created
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
 
 ## [4.53]
