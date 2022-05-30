@@ -471,7 +471,7 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
             continue
         for gene_obj in variant_genes:
             hgnc_id = gene_obj["hgnc_id"]
-            gene_caption = store.hgnc_gene_caption(hgnc_id)
+            gene_caption = store.hgnc_gene_caption(hgnc_id, genome_build)
             if gene_caption is None:
                 continue
             gene_symbols = [gene_caption["hgnc_symbol"]]
@@ -652,7 +652,7 @@ def update_HGNC_symbols(store, variant_genes, genome_build):
 
 def get_genome_build(variant_case_obj):
     """Find genom build in `variant_case_obj`. If not found use build #37"""
-    build = variant_case_obj.get("genome_build")
+    build = str(variant_case_obj.get("genome_build"))
     if build in ["37", "38"]:
         return build
     return "37"
