@@ -648,7 +648,7 @@ def update_HGNC_symbols(store, variant_genes, genome_build):
 
 def get_genome_build(variant_case_obj):
     """Find genom build in `variant_case_obj`. If not found use build #37"""
-    build = variant_case_obj.get("genome_build")
+    build = str(variant_case_obj.get("genome_build"))
     if build in ["37", "38"]:
         return build
     return "37"
