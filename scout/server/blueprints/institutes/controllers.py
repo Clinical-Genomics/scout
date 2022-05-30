@@ -17,7 +17,7 @@ from scout.constants import (
     PHENOTYPE_GROUPS,
 )
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variant.utils import predictions, update_representative_gene
+from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
