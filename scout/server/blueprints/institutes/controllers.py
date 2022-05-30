@@ -466,25 +466,22 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
         # Populate variant HGVS and predictions
         hgvs_c = []
         hgvs_p = []
-        if variant_genes is None:
-            continue
-        for gene_obj in variant_genes:
-            hgnc_id = gene_obj["hgnc_id"]
-            gene_caption = store.hgnc_gene_caption(hgnc_id, genome_build)
-            if gene_caption is None:
-                continue
-            gene_symbols = [gene_caption["hgnc_symbol"]]
+        if variant_genes is not None:
+            for gene_obj in variant_genes:
+                hgnc_id = gene_obj["hgnc_id"]
+                gene_caption = store.hgnc_gene_caption(hgnc_id, genome_build)
+                gene_symbols = [gene_caption["hgnc_symbol"]]
 
-            # gather HGVS info from gene transcripts
-            (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
-            hgvs_c.append(hgvs_nucleotide)
-            hgvs_p.append(hgvs_protein)
+                # gather HGVS info from gene transcripts
+                (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
+                hgvs_c.append(hgvs_nucleotide)
+                hgvs_p.append(hgvs_protein)
 
-        if len(gene_symbols) == 1:
-            variant_obj["hgvs"] = hgvs_str(gene_symbols, hgvs_p, hgvs_c)
+            if len(gene_symbols) == 1:
+                variant_obj["hgvs"] = hgvs_str(gene_symbols, hgvs_p, hgvs_c)
 
-        # populate variant predictions for display
-        variant_obj.update(predictions(variant_genes))
+            # populate variant predictions for display
+            variant_obj.update(predictions(variant_genes))
 
         variants.append(variant_obj)
 
@@ -635,25 +632,23 @@ def update_HGNC_symbols(store, variant_genes, genome_build):
     Returns:
         gene_object()"""
 
-    if variant_genes is None:
-        return
-
-    for gene_obj in variant_genes:
-        # If there is no hgnc id there is nothin we can do
-        if not gene_obj["hgnc_id"]:
-            continue
-        # Else we collect the gene object and check the id
-        if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
-            hgnc_gene_caption = store.hgnc_gene_caption(gene_obj["hgnc_id"], build=genome_build)
-            if not hgnc_gene_caption:
+    if variant_genes is not None:
+        for gene_obj in variant_genes:
+            # If there is no hgnc id there is nothin we can do
+            if not gene_obj["hgnc_id"]:
                 continue
-            gene_obj["hgnc_symbol"] = hgnc_gene_caption["hgnc_symbol"]
-            gene_obj["description"] = hgnc_gene_caption["description"]
+            # Else we collect the gene object and check the id
+            if gene_obj.get("hgnc_symbol") is None or gene_obj.get("description") is None:
+                hgnc_gene_caption = store.hgnc_gene_caption(gene_obj["hgnc_id"], build=genome_build)
+                if not hgnc_gene_caption:
+                    continue
+                gene_obj["hgnc_symbol"] = hgnc_gene_caption["hgnc_symbol"]
+                gene_obj["description"] = hgnc_gene_caption["description"]
 
 
 def get_genome_build(variant_case_obj):
     """Find genom build in `variant_case_obj`. If not found use build #37"""
-    build = str(variant_case_obj.get("genome_build"))
+    build = variant_case_obj.get("genome_build")
     if build in ["37", "38"]:
         return build
     return "37"
