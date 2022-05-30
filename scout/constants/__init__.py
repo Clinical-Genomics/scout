@@ -142,8 +142,13 @@ CALLERS = {
         {"id": "freebayes", "name": "Freebayes"},
     ],
     "cancer_sv": [
-        {"id": "manta", "name": "Manta"},
         {"id": "gatk", "name": "GATK"},
+        {"id": "manta", "name": "Manta"},
+        {"id": "dellysv", "name": "DellySV"},
+        {"id": "cnvkit", "name": "CNVkit"},
+        {"id": "ascat", "name": "ASCAT"},
+        {"id": "dellycnv", "name": "DellyCNV"},
+        {"id": "tiddit", "name": "TIDDIT"},
     ],
     "sv": [
         {"id": "gatk", "name": "GATK"},

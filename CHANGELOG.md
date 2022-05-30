@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
+- Added more somatic SV callers (Balsamic v9 lineup)
 ### Fixed
 - Remove load demo case command from docker-compose.yml
 - Text elements being split across pages in PDF reports
