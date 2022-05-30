@@ -472,6 +472,8 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
                 if hgnc_id is None:
                     continue
                 gene_caption = store.hgnc_gene_caption(hgnc_id, genome_build)
+                if gene_caption is None:
+                    continue
                 gene_symbols = [gene_caption["hgnc_symbol"]]
 
                 # gather HGVS info from gene transcripts
