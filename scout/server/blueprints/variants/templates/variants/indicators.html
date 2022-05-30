@@ -10,7 +10,7 @@
 
 {% macro causative_badge(variant, case) %}
   {% if 'causatives' in case and variant._id in case.causatives %}
-    <span class="badge badge-success" style="margin-left:1px" data-toggle="tooltip" data-placement="right" title="Causative variant">Causative</span>
+    <span class="badge bg-success" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-placement="right" title="Causative variant">Causative</span>
   {% endif %}
 {% endmacro %}
 
@@ -20,12 +20,12 @@
   {% if comment_count > 0 %}
     {% set comments_content = comments_table(institute, case, variant.comments, variant._id) %}
     <a href="#"
-       class="badge badge-info"
-       data-toggle="popover"
-       data-placement="right"
-       data-html="true"
+       class="badge bg-info"
+       data-bs-toggle="popover"
+       data-bs-placement="right"
+       data-bs-html="true"
        data-trigger="hover click"
-       data-content="{{ comments_content }}"
+       data-bs-content="{{ comments_content }}"
        title=""
        style="color:white;"
        >
@@ -41,10 +41,10 @@
 
 {% macro other_tiered_variants(variant) %}
   {% if variant.matching_tiered %}
-    <span class="popovers badge badge-dark" data-toggle="popover" data-html="true" title=""
-        data-content="
+    <span class="popovers badge bg-dark" data-bs-toggle="popover" data-bs-html="true" title=""
+        data-bs-content="
           {% for tier, tiered_info in variant.matching_tiered.items() %}
-            <span class='badge badge-{{tiered_info.label}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
+            <span class='badge bg-{{tiered_info.label}}'>{{tier}} ({{tiered_info.links|length}}x)</span>
           {% endfor %}
         "
        data-original-title="Previously tiered as">T</span>
@@ -55,7 +55,7 @@
 {% macro evaluations_badge(variant) %}
   {% if variant.evaluations %}
     {% for evaluation in (variant.evaluations or []) %}
-      <span class="badge badge-secondary" style="margin-left:1px" data-toggle="tooltip" data-placement="right"
+      <span class="badge bg-secondary" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-placement="right"
         title="Previously classified as {{ evaluation.classification.label }}">
         {{ evaluation.classification.short }}
       </span>
@@ -67,7 +67,7 @@
 {% macro research_assessments_badge(variant) %}
   {% if variant.research_assessments %}
     {% for assessment in (variant.research_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+      <span class="badge bg-{{ assessment.display_class }}" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right"
         title="Research {{ assessment.title }}">
         {{ assessment.label }}</span>
     {% endfor %}
@@ -78,7 +78,7 @@
 {% macro clinical_assessments_badge(variant) %}
   {% if variant.clinical_assessments %}
     {% for assessment in (variant.clinical_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+      <span class="badge bg-{{ assessment.display_class }}" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right"
           title="Clinical {{ assessment.title }}">
           {{ assessment.label }}</span>
     {% endfor %}
@@ -89,7 +89,7 @@
 {% macro group_assessments_badge(variant) %}
   {% if variant.group_assessments %}
     {% for assessment in (variant.group_assessments or []) %}
-      <span class="badge badge-{{ assessment.display_class }}" data-html="true" data-toggle="tooltip" data-placement="right"
+      <span class="badge bg-{{ assessment.display_class }}" data-bs-html="true" data-bs-toggle="tooltip" data-bs-placement="right"
         title="Cohort {{ assessment.title }}">
         {{ assessment.label }}</span>
     {% endfor %}

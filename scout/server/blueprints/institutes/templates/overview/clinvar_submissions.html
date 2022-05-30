@@ -1,4 +1,4 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
@@ -13,14 +13,14 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">Clinvar submissions</span>
   </li>
 {% endblock %}
 
 {% macro submissions_macro(submissions) %}
 <div class="container-float">
-  <h3>ClinVar submissions page<h5></h3><a data-target="#howto" href="#" data-toggle="modal">howto</a></h5><br>
+  <h3>ClinVar submissions page<h5></h3><a data-bs-target="#howto" href="#" data-bs-toggle="modal">howto</a></h5><br>
   <!-- Modal -->
   <div class="modal fade" role="dialog" id="howto" aria-hidden="true" tabindex="-1">
     <div class="modal-dialog modal-xl" role="document">
@@ -54,7 +54,7 @@
           </p>
         </div>
         <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
       </div>
     </div>
@@ -99,10 +99,16 @@
             <li class="breadcrumb-item"><button type="submit" name="update_submission" value="delete" class="btn btn-danger btn-xs">Delete submission</button></li>
           </ol>
         </nav>
-        <div class="form-inline mb-3">
-          <label for="clinvar_id">submission name</label>
-          <input type="text" class="form-control mx-sm-3" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
-          <button type="submit" class="btn btn-primary" name="update_submission" value="register_id">Update</button>
+        <div class="row mb-3">
+          <div class="col-2">
+            <label for="clinvar_id" class="form-text">Submission name</label>
+          </div>
+          <div class="col-4">
+            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-primary form-control" name="update_submission" value="register_id">Update</button>
+          </div>
         </div>
       </form>
       <div> <!--variant data div -->
@@ -134,14 +140,14 @@
                       <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                    <td><div class="badge badge-warning">SV</div></td>
+                    <td><div class="badge bg-warning">SV</div></td>
                   {% else %}
                     {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
                     <td width="15%">
                       <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                    <td><div class="badge badge-success">SNV</div></td>
+                    <td><div class="badge bg-success">SNV</div></td>
                   {% endif %}
                 </td>
                 <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
@@ -249,9 +255,9 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script type="text/javascript">
+  {{ super() }}
+
+  <script type="text/javascript">
 
   $(function () {
       $('.casedata  div').hide();

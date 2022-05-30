@@ -1,10 +1,3 @@
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip();
-  $('table').stickyTableHeaders({
-    fixedOffset: $(".navbar-fixed-top")
-  });
-});
-
 function updateArgs(caseGroup, sortItem, sortOrder) {
   sort_items = ['sort=status', 'sort=analysis_date', 'sort=track', 'order=asc', 'order=desc'];
   //modifying the sorting of cases

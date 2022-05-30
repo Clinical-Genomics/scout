@@ -6,10 +6,19 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Dark mode, using browser/OS media preference
 ### Changed
+- Improved HTML syntax in case report template
+- Modified message displayed when variant rank stats could not be calculated
 ### Fixed
-- Bug in gene variants page (All SNVs and INDELs) when gene is not found any more
+- Remove load demo case command from docker-compose.yml
+- Text elements being split across pages in PDF reports
+- Made login password field of type `password` in LDAP login form
 - Gene panels HTML select in institute's settings page
+- Bootstrap upgraded to version 5
+- Fix some Sourcery and SonarCloud suggestions
+- Escape special characters in case search on institute and dashboard pages
+- Bug in gene variants page (All SNVs and INDELs)
 
 ## [4.53]
 ### Added

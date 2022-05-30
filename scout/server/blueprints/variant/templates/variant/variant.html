@@ -1,4 +1,4 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 {% from "variant/buttons.html" import database_buttons %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
@@ -6,7 +6,7 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
-{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table %}
+{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table, external_scripts, external_stylesheets %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 
@@ -15,8 +15,8 @@
 {% endblock %}
 
 {% block css %}
-{{ super() }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+  {{ super() }}
+  {{ external_stylesheets() }}
 {% endblock %}
 
 {% block top_nav %}
@@ -142,14 +142,14 @@
     <div class="row">
       <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
     </div>
-    <div class="row">
+    <div class="mt-3 row">
       <div class="col-12">
-        <div class="card ">
+        <div class="card">
           <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-              <a class="nav-item nav-link active" id="nav-genes-tab" data-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
-              <a class="nav-item nav-link" id="nav-transcripts-tab" data-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
-              <a class="nav-item nav-link" id="nav-proteins-tab" data-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
+              <a class="nav-link active" id="nav-genes-tab" data-bs-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-link" id="nav-transcripts-tab" data-bs-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+              <a class="nav-link" id="nav-proteins-tab" data-bs-toggle="tab" href="#nav-proteins" role="tab" aria-controls="nav-proteins" aria-selected="false">Proteins</a>
             </div>
           </nav>
           <div class="tab-content" id="nav-tabContent">
@@ -192,9 +192,9 @@
     <div class="panel-heading">
       <div
           class="panel-heading collapsed"
-          data-toggle="collapse"
-          data-parent="#attached-img-panel"
-          data-target="#attached-images"
+          data-bs-toggle="collapse"
+          data-bs-parent="#attached-img-panel"
+          data-bs-target="#attached-images"
           onclick="flipArrowIcon(this)"
       ><span class="fa fa-angle-down rotate-icon"></span>
           &nbsp;Attached images
@@ -280,14 +280,14 @@
             <td>
               Matches OMIM inhert.
               {% if variant.is_matching_inheritance %}
-                <span class="badge badge-success float-right">Yes</span>
+                <span class="badge bg-success float-end">Yes</span>
               {% else %}
-                <div class="badge badge-warning float-right">No</div>
+                <div class="badge bg-warning float-end">No</div>
               {% endif %}
             </td>
             <td>
               Frequency
-              <div class="badge badge-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-right">
+              <div class="badge bg-{% if variant.frequency == 'common' %}danger{% elif variant.frequency == 'uncommon' %}warning{% else %}success{% endif %} float-end">
                 {{ variant.frequency }}
               </div>
             </td>
@@ -309,7 +309,7 @@
           {% set dbsnp_ids = variant.dbsnp_id.split(';') %}
           <li class="list-group-item">
             SNP info
-            <span class="float-right">
+            <span class="float-end">
               {% for snp in dbsnp_ids %}
                 <a target="_blank" href="{{variant.snp_links[snp]}}">
                   {{ snp }}
@@ -320,7 +320,7 @@
         {% endif %}
       </ul>
       <table class="table table-bordered table-fixed table-sm">
-        <thead class="border-top">
+        <thead class="thead table-light border-top">
           <tr class="active">
             <th>Gene</th>
             <th>Region</th>
@@ -355,7 +355,7 @@
       {{ alignments(institute, case, variant, current_user, config, igv_tracks, splice_junctions_tracks) }}
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
-	<thead>
+	<thead class="thead table-light">
 	  <th>Custom annotation</th>
 	  <th>Value</th>
 	</thead>
@@ -383,7 +383,7 @@
   <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
     <div class="d-flex justify-content-between">
       {% for option in ACMG_OPTIONS %}
-        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'mr-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
+        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'me-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
           {{ option.short }}
         </button>
       {% endfor %}
@@ -399,7 +399,7 @@
         <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
           {{ data.classification.label }}
         </a>
-        <span class="badge badge-info">{{ data.classification.short }}</span>
+        <span class="badge bg-info">{{ data.classification.short }}</span>
       </span>
       <span>
         {% if not current_variant %}
@@ -421,10 +421,7 @@
 
 {% block scripts %}
   {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.11/purify.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-  <script src="//cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-
+  {{ external_scripts() }}
   <script>
     const flipArrowIcon = (element) => {
       const icon = element.firstChild
@@ -435,41 +432,75 @@
       }
     }
 
+    var triggerGenesTabList = [].slice.call(document.querySelectorAll('#nav-genes-tab'))
+      triggerGenesTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', function (event) {
+        event.preventDefault()
+        tabTrigger.show()
+      })
+    })
+
+    var triggerTransTabList = [].slice.call(document.querySelectorAll('#nav-transcripts-tab'))
+      triggerTransTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', function (event) {
+        event.preventDefault()
+        tabTrigger.show()
+      })
+    })
+
+    var triggerProtTabList = [].slice.call(document.querySelectorAll('#nav-proteins-tab'))
+      triggerProtTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', function (event) {
+        event.preventDefault()
+        tabTrigger.show()
+      })
+    })
+
     function set_scrolly_table(table_id) {
-    if (document.getElementById(table_id).rows.length > 5) {
-      $('#' + table_id).DataTable({
-        scrollY: 350,
-        stripeClasses: [],
-        scrollCollapse: true,
-        paging: false,
-        searching: false,
-        ordering: true,
-        info: false})
+      if (document.getElementById(table_id).rows.length > 5) {
+        $('#' + table_id).DataTable({
+          scrollY: 350,
+          stripeClasses: [],
+          scrollCollapse: true,
+          searching: false,
+          paging: false,
+          ordering: true,
+          info: false})
       }
     }
-
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
-      $($.fn.dataTable.tables(true)).DataTable()
-      .columns.adjust()
-    });
 
     set_scrolly_table('transcript_overview_table')
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
 
-    $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
+    // Tab hidden thead are not always drawn well, as they have no size. Force adjust and redraw on show.
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+      $($.fn.dataTable.tables(true)).DataTable()
+      .columns.adjust().draw();
     });
 
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip({
-        container: 'body'
-      });
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
+    })
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body'})
+    })
 
     $('select[multiple]').selectpicker({
         width: '100%'
       });
-    });
 
     $('.js-copy').click(function() {
       var text = $(this).attr('data-copy');
