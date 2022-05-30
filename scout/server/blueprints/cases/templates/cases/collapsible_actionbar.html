@@ -1,4 +1,4 @@
-{% macro action_bar(institute, case, collaborators, current_user) %}
+{% macro action_bar(institute, case, causatives, collaborators, current_user) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -33,7 +33,7 @@
             {{ check_decipher(case, institute) }}
           {% endif %}
           {{ confirm_inactivate(institute,case) }}
-          {{ archive_case(institute,case) }}
+          {{ archive_case(institute,case, causatives) }}
       </ul><!-- List Group END-->
   </div><!-- sidebar-container END -->
 {% endmacro %}
@@ -572,7 +572,7 @@
 </div>
 {% endmacro %}
 
-{% macro archive_case(institute,case)%}
+{% macro archive_case(institute,case, causatives)%}
 <div class="modal fade" id="archive_modal" tabindex="-1" role="dialog" aria-labelledby="archiveCaseLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -582,17 +582,29 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        Are you sure? This will disable the alignment view and delete analysis files.
-        You will have to request a FULL rerun to continue evaluating e.g. research variants.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <form method="POST"
-          action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
-          <button type="submit" class="btn btn-primary" value="archived" name="status">Archive</button>
-        </form>
-      </div>
+      {% if causatives|length == 0 %}
+        <div class="modal-body">
+          Are you sure? This will disable the alignment view and delete analysis files.
+          You will have to request a FULL rerun to continue evaluating e.g. research variants.
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form method="POST"
+            action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
+            <button type="submit" class="btn btn-primary" value="archived" name="status">Archive</button>
+          </form>
+        </div>
+      {% else %}
+        <div class="modal-body">
+          You have marked causatives for this case. Please clear them before archiving the case.
+          Note that a solved case is subject to the same archive policy as archived cases.
+          Archived cases will not count as solved.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
