@@ -80,11 +80,13 @@
 	      <tr>
           {% if case.madeline_info and case.individuals|length > 1 %}
 	        <td style='width: 33%;'>
-	            {% if format == 'html' %}
-	              {{ case.madeline_info|safe }}
-	            {% elif case.madeline_path %} <!--PDF version-->
+            {% if case.madeline_info %}
+              {% if format == 'html' %}
+                {{ case.madeline_info|safe }}
+              {% elif case.madeline_path %} <!-- PDF report -->
                 <img alt="pedigree_img" src="{{case.madeline_path}}">
-	            {% endif %}
+              {% endif %}
+            {% endif %}
           </td>
           {% endif %}
           <td>
