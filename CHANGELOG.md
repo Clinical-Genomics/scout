@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Dark mode, using browser/OS media preference
+- Admin users can create missing beacon datasets from the institute's settings page
 ### Changed
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
@@ -30,10 +31,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Reintroduced loading of SVs for demo case 643595
 - Successful parse of FOUND_IN should avoid GATK caller default
 - All vulnerabilities flagged by SonarCloud
-
-## [4.52]
-### Added
-- Admin users can create missing beacon datasets from the institute's settings page
 
 ## [4.52]
 ### Added

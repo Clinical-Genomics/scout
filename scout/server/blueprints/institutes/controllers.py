@@ -142,7 +142,6 @@ def populate_beacon_form(institute_obj):
     beacon_form = BeaconDatasetForm()
 
     if current_user.is_admin is False:
-        LOG.warning("User must be an admin to create a beacon dataset")
         return beacon_form
 
     if not all(
