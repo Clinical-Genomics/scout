@@ -41,7 +41,7 @@
                   <li class="list-group-item">
                     HGNC ID
                     <span class="float-end">
-                      <a target="_blank" href={{ record.hgnc_link }} target="_blank"> {{ hgnc_id }}</a>
+                      <a target="_blank" href={{ record.hgnc_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ hgnc_id }}</a>
                     </span>
                   </li>
                   <li class="list-group-item">
@@ -75,27 +75,27 @@
                   <li class="list-group-item">
                     OMIM
                     <span class="float-end">
-                      <a target="_blank" href={{ record.omim_link }} target="_blank"> {{ omim_id }}</a>
+                      <a target="_blank" href={{ record.omim_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ omim_id }}</a>
                     </span>
                   </li>
                   <li class="list-group-item">
                     Entrez
                     <span class="float-end">
-                      <a target="_blank" href={{ record.entrez_link }} target="_blank"> {{ entrez_id }}</a>
+                      <a target="_blank" href={{ record.entrez_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ entrez_id }}</a>
                     </span>
                   </li>
                   {% if pli_score %}
                   <li class="list-group-item">
-                    pLi Score(ExAC) - (compare to <a href={{ record.gnomad_link }} target="_blank">GnomAD here</a>)
+                    pLi Score(ExAC) - (compare to <a href={{ record.gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD here</a>)
                     <span class="float-end">
-                      <a target="_blank" href={{ record.exac_link }} target="_blank"> {{ pli_score|round(2) }}</a>
+                      <a target="_blank" href={{ record.exac_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ pli_score|round(2) }}</a>
                     </span>
                   </li>
                   {% endif %}
                   <li class="list-group-item">
                     Protein Paint
                     <span class="float-end">
-                      <a target="_blank" href={{ record.ppaint_link }} target="_blank"> {{ symbol }}</a>
+                      <a target="_blank" href={{ record.ppaint_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ symbol }}</a>
                     </span>
                   </li>
                 </ul>
@@ -111,7 +111,7 @@
                 <li class="list-group-item">
                     {{ phenotype.description }}
                     <span class="float-end">
-                        <a target="_blank" href={{ record.omim_link }} target="_blank"> {{ phenotype.mim_number }}</a>
+                        <a target="_blank" href={{ record.omim_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ phenotype.mim_number }}</a>
                     </span>
                 </li>
             {% endfor %}
@@ -146,9 +146,9 @@
       Ensembl ID
       <span class="float-end">
         {%if gene.build == '37'%}
-            <a target="_blank" href={{ gene.ensembl_37_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+            <a target="_blank" href={{ gene.ensembl_37_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.ensembl_id }}</a>
         {% else %}
-            <a target="_blank" href={{ gene.ensembl_38_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+            <a target="_blank" href={{ gene.ensembl_38_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.ensembl_id }}</a>
         {% endif %}
       </span>
     </li>
@@ -163,49 +163,55 @@
     <li class="list-group-item">
       Expression Atlas
       <span class="float-end">
-        <a target="_blank" href={{ gene.expression_atlas_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        <a target="_blank" href={{ gene.expression_atlas_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       Human Protein Atlas
       <span class="float-end">
-        <a target="_blank" href={{ gene.hpa_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        <a target="_blank" href={{ gene.hpa_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       Reactome
       <span class="float-end">
-        <a target="_blank" href={{ gene.reactome_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        <a target="_blank" href={{ gene.reactome_link }}referrerpolicy="no-referrer" rel="noopener"  target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       ClinGen
       <span class="float-end">
-        <a target="_blank" href={{ gene.clingen_link }} target="_blank"> {{ gene.hgnc_id }}</a>
+        <a target="_blank" href={{ gene.clingen_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.hgnc_id }}</a>
+      </span>
+    </li>
+  <li class="list-group-item">
+      GenCC
+      <span class="float-end">
+        <a target="_blank" href={{ gene.gencc_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.hgnc_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       String
       <span class="float-end">
-        <a target="_blank" href={{ gene.string_link }} target="_blank"> {{ gene.ensembl_id }}</a>
+        <a target="_blank" href={{ gene.string_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.ensembl_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       GENEMANIA
       <span class="float-end">
-        <a target="_blank" href={{ gene.genemania_link }} target="_blank"> {{ gene.hgnc_symbol }}</a>
+        <a target="_blank" href={{ gene.genemania_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.hgnc_symbol }}</a>
       </span>
     </li>
     <li class="list-group-item">
       Vega Database
       <span class="float-end">
-        <a target="_blank" href={{ gene.vega_link }} target="_blank"> {{ gene.vega_id }}</a>
+        <a target="_blank" href={{ gene.vega_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.vega_id }}</a>
       </span>
     </li>
     <li class="list-group-item">
       UCSC gene browser ({{ gene.build }})
       <span class="float-end">
-        <a target="_blank" href={{ gene.ucsc_link }} target="_blank"> {{ gene.ucsc_id }}</a>
+        <a target="_blank" href={{ gene.ucsc_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ gene.ucsc_id }}</a>
       </span>
     </li>
   </ul>
@@ -217,7 +223,7 @@
     <ul class="list-group list-scroll">
       {% for transcript in gene.transcripts %}
         <li class="list-group-item {{ 'list-group-item-info' if transcript.is_primary }}">
-            <a target="_blank" href={{ transcript.ensembl_link }} target="_blank"> {{ transcript.ensembl_transcript_id }}</a>
+            <a target="_blank" href={{ transcript.ensembl_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ transcript.ensembl_transcript_id }}</a>
             /  {{ transcript.refseq_identifiers|join(', ') or '-' }}
             {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
 		  <span class="float-end">{{ transcript['position'] }}</span>
