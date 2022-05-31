@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dark mode, using browser/OS media preference
 - Allow marking case as solved without defining causative variants
 - Admin users can create missing beacon datasets from the institute's settings page
+- GenCC links on gene and variant pages
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
 ### Changed
