@@ -64,7 +64,7 @@ def test_export_cases(mock_app, case_obj):
     assert result.exit_code == 0
     assert "scout/demo/643594" in result.output
 
-    # Test cli querying for cases with a specifi status (solved)
+    # Test cli querying for cases with a specific status (solved)
     result = runner.invoke(cli, ["export", "cases", "-s", "solved"])
     # Test case should be found
     assert result.exit_code == 0

@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal, reanalysis_modal %}
+{% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal, reanalysis_modal, solve_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "cases/utils.html" import clinvar_panel, causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
@@ -44,7 +44,7 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    {{ action_bar(institute, case, collaborators, current_user) }} <!-- This is the sidebar -->
+    {{ action_bar(institute, case, causatives, collaborators, current_user) }} <!-- This is the sidebar -->
     {{ case_page() }}
   </div> <!-- end of div id body-row -->
 </div>
@@ -166,6 +166,7 @@
       </div>
 
       {{ modal_synopsis() }}
+      {{ solve_modal(institute, case) }}
       {{ rerun_modal(institute, case) }}
       {{ research_modal(institute, case) }}
       {{ reanalysis_modal(institute, case) }}
