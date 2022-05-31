@@ -7,6 +7,8 @@ from werkzeug.datastructures import ImmutableMultiDict
 from scout.server.app import create_app
 from scout.server.extensions import beacon, store
 
+BEACON_BASE_URL = "http://localhost:6000/apiv1.0"
+
 
 def test_beacon_create_app():
     """Test initiating the Beacon extensions when app config file contains right params"""
@@ -16,7 +18,7 @@ def test_beacon_create_app():
         config=dict(
             TESTING=True,
             BEACON_TOKEN=str(uuid.uuid4()),
-            BEACON_URL="http://localhost:6000/apiv1.0",
+            BEACON_URL=BEACON_BASE_URL,
         )
     )
 
@@ -25,6 +27,24 @@ def test_beacon_create_app():
         assert beacon.add_variants_url
         assert beacon.delete_variants_url
         assert beacon.token
+
+
+@responses.activate
+def test_add_dataset(app, institute_obj):
+    """Test the function that sends a POST request to the Beacon with the info to create a new dataset"""
+
+    # GIVEN a mocked Beacon server dataset add endpoint
+    url = f"{BEACON_BASE_URL}/add_dataset"
+    responses.add(
+        responses.POST,
+        url,
+        json={"message": "Dataset collection was successfully updated"},
+        status=200,
+    )
+    # invoking add_dataset function with expected params
+    resp_code = beacon.add_dataset(institute_obj, "cust000_GRCh37")
+    # Should return a success response code (200)
+    assert resp_code == 200
 
 
 def test_add_variants_unauthorized_user(app):
@@ -57,7 +77,7 @@ def test_add_variants_wrong_dataset(app, user_obj, case_obj):
     case genome build is available in Beacon"""
 
     # GIVEN a mocked Beacon server info endpoint
-    url = "http://localhost:6000/apiv1.0/"
+    url = f"{BEACON_BASE_URL}/add"
     responses.add(
         responses.GET,
         url,
@@ -89,11 +109,11 @@ def test_add_variants(app, user_obj, case_obj):
     """Test add_variants function when user is authorized"""
 
     # GIVEN a mocked Beacon server add endpoint
-    url = "http://localhost:6000/apiv1.0/add"
+    url = f"{BEACON_BASE_URL}/add"
     responses.add(responses.POST, url, json={"foo": "bar"}, status=202)
 
     # GIVEN a mocked Beacon server info endpoint
-    url = "http://localhost:6000/apiv1.0/"
+    url = f"{BEACON_BASE_URL}/"
     responses.add(
         responses.GET,
         url,
@@ -124,7 +144,7 @@ def test_add_variants(app, user_obj, case_obj):
 def test_remove_variants(app, user_obj, institute_obj, case_obj):
     """Test remove_variants function when user is authorized to edit a beacon submission"""
 
-    url = "http://localhost:6000/apiv1.0/delete"
+    url = f"{BEACON_BASE_URL}/delete"
     responses.add(responses.DELETE, url, json={"foo": "bar"}, status=202)
 
     # GIVEN a case with Beacon submission data:
