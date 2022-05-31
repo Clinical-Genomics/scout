@@ -178,7 +178,7 @@ def institute_settings(institute_id):
     beacon_form = controllers.populate_beacon_form(institute_obj)
 
     # if institute is to be updated
-    if request.method == "POST" and beacon_form.validate_on_submit():
+    if request.method == "POST" and institute_form.validate_on_submit():
         institute_obj = controllers.update_institute_settings(store, institute_obj, request.form)
         if isinstance(institute_obj, dict):
             flash("institute was updated ", "success")
