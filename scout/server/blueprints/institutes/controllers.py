@@ -144,28 +144,23 @@ def populate_beacon_form(institute_obj):
     if current_user.is_admin is False:
         return beacon_form
 
-    if current_app.config.get("BEACON_URL") is not current_app.config.get("BEACON_TOKEN"):
-        # Send a request to the beacon to collect the existing datasets
-        LOG.warning(
-            "Both BEACON_URL and BEACON_TOKEN params are required in Scout configuration file to create a new Beacon dataset"
-        )
-        return beacon_form
+    if current_app.config.get("BEACON_URL") and current_app.config.get("BEACON_TOKEN"):
+        # Collect all dataset IDs names present on the Beacon
+        beacon_dsets = beacon.get_datasets()
 
-    # Collect all dataset IDs names present on the Beacon
-    beacon_dsets = beacon.get_datasets()
+        dset_options = []  # List of tuples containing dataset select options
+        for build in ["GRCh37", "GRCh38"]:
+            institute_build = "_".join([institute_obj["_id"], build])
+            if (
+                institute_build in beacon_dsets
+            ):  # If dataset doesn't already exist, add the option to create it
+                continue
+            dset_options.append(
+                (institute_build, f"{institute_obj['_id']} public dataset - Genome build {build}")
+            )
 
-    dset_options = []  # List of tuples containing dataset select options
-    for build in ["GRCh37", "GRCh38"]:
-        institute_build = "_".join([institute_obj["_id"], build])
-        if (
-            institute_build in beacon_dsets
-        ):  # If dataset doesn't already exist, add the option to create it
-            continue
-        dset_options.append(
-            (institute_build, f"{institute_obj['_id']} public dataset - Genome build {build}")
-        )
+        beacon_form.beacon_dataset.choices = dset_options
 
-    beacon_form.beacon_dataset.choices = dset_options
     return beacon_form
 
 
