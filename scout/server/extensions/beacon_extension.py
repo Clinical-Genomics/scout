@@ -89,7 +89,7 @@ class Beacon:
 
         Args:
             institute_obj(dict): scout.models.Institute
-            dataset_it(str): a string like this "<institute_id>_<genome_build>". Example: cust000_GRCh38
+            dataset_id(str): a string like this "<institute_id>_<genome_build>". Example: cust000_GRCh38
         """
         genome_build = dataset_id.split("_")[1]
         dataset_obj = {
