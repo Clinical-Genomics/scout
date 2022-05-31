@@ -7,11 +7,11 @@ import logging
 
 from flask import flash
 from flask_login import current_user
-from werkzeug.datastructures import Headers
 
 from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
+DATASET_BUILDS = ["GRCh37", "GRCh38"]
 
 
 class Beacon:
@@ -21,12 +21,14 @@ class Beacon:
         self.add_variants_url = None
         self.delete_variants_url = None
         self.token = None
+        self.dataset_builds = DATASET_BUILDS
 
     def init_app(self, app):
         """Initialize the beacon extension and make its parametars available to the app."""
         self.token = app.config.get("BEACON_TOKEN")
         self.beacon_url = app.config.get("BEACON_URL")
 
+        self.add_dataset_url = "/".join([self.beacon_url, "add_dataset"])
         self.add_variants_url = "/".join([self.beacon_url, "add"])
         self.delete_variants_url = "/".join([self.beacon_url, "delete"])
 
@@ -40,7 +42,7 @@ class Beacon:
         if json_resp.get("status_code") == 200:
             datasets = json_resp.get("content", {}).get("datasets", [])
         else:
-            flash("Error retrieving Beacon's dataset list:{json_resp}")
+            flash("Error retrieving Beacon's dataset list:{json_resp}", "warning")
         return [dset["id"] for dset in datasets]
 
     def base_submission_data(self, store, case_obj, form):
@@ -53,7 +55,7 @@ class Beacon:
                 [('case', 'internal_id'), ('samples', 'affected'), ('vcf_files', 'vcf_snv'), ('vcf_files', 'vcf_snv_research'), ('panels', '6246b25121d86882e127710c')]
 
         Returns:
-            data(dict): a dictionary with base info to be use as json data in beacon add request (lacks path to VCF file to extract variants from)
+            data(dict): a dictionary with base info to be used as json data in beacon add request (lacks path to VCF file to extract variants from)
         """
         # Initialize key/values to be sent in request:
         assembly = "GRCh38" if "38" in str(case_obj.get("genome_build", "37")) else "GRCh37"
@@ -83,6 +85,33 @@ class Beacon:
             data["genes"] = {"ids": list(gene_ids), "id_type": "HGNC"}
 
         return data
+
+    def add_dataset(self, institute_obj, dataset_id):
+        """Add a missing dataset for an institute
+
+        Args:
+            institute_obj(dict): scout.models.Institute
+            dataset_id(str): a string like this "<institute_id>_<genome_build>". Example: cust000_GRCh38
+        """
+        genome_build = dataset_id.split("_")[1]
+        dataset_obj = {
+            "id": dataset_id,
+            "name": dataset_id,
+            "description": f"Scout dataset. Institute:{institute_obj.get('display_name')} - genome build:{genome_build}",
+            "build": genome_build,
+            "authlevel": "public",  # Standard publuc dataset, this can be fixed later
+            "version": "v1.0",
+        }
+        headers = {"X-Auth-Token": self.token}
+        json_resp = post_request_json(url=self.add_dataset_url, headers=headers, data=dataset_obj)
+
+        flash_code = "warning"
+
+        if json_resp.get("status_code") == 200:  # If dataset was created successfully
+            flash_code = "success"
+
+        flash(f"Beacon responded: {json_resp}", flash_code)
+        return json_resp.get("status_code")
 
     def add_variants(self, store, case_obj, form):
         """Adding variants from one of more individuals of case to Beacon
@@ -116,9 +145,7 @@ class Beacon:
             )
             return
 
-        headers = Headers()
         headers = {"X-Auth-Token": self.token}
-
         update_case = False  # if True, update case with Beacon submission in Scout database
 
         # Loop over the list of VCF files selected by user (clinical SNVs, research SNVs, clinical SVs ..)
@@ -174,7 +201,6 @@ class Beacon:
             "dataset_id": "_".join([institute_id, assembly]),
             "samples": case_obj.get("beacon", {}).get("samples", []),
         }
-        headers = Headers()
         headers = {"X-Auth-Token": self.token}
 
         json_resp = delete_request_json(
