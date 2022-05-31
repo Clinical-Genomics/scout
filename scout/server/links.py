@@ -212,7 +212,7 @@ def clingen(hgnc_id):
 
 
 def gencc(hgnc_id):
-    link = "https://search.thegencc/genes/HGNC:{}"
+    link = "https://search.thegencc.org/genes/HGNC:{}"
     if not hgnc_id:
         return None
     return link.format(hgnc_id)
