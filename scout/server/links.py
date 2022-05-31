@@ -45,6 +45,7 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["string_link"] = string(ensembl_id)
     gene_obj["reactome_link"] = reactome(ensembl_id)
     gene_obj["clingen_link"] = clingen(hgnc_id)
+    gene_obj["gencc_link"] = gencc(hgnc_id)
     gene_obj["expression_atlas_link"] = expression_atlas(ensembl_id)
     gene_obj["exac_link"] = exac(ensembl_id)
     gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
@@ -205,6 +206,13 @@ def reactome(ensembl_id):
 
 def clingen(hgnc_id):
     link = "https://search.clinicalgenome.org/kb/genes/HGNC:{}"
+    if not hgnc_id:
+        return None
+    return link.format(hgnc_id)
+
+
+def gencc(hgnc_id):
+    link = "https://search.thegencc/genes/HGNC:{}"
     if not hgnc_id:
         return None
     return link.format(hgnc_id)
