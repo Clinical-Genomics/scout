@@ -11,6 +11,7 @@ from flask_login import current_user
 from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
+DATASET_BUILDS = ["GRCh37", "GRCh38"]
 
 
 class Beacon:
@@ -20,6 +21,7 @@ class Beacon:
         self.add_variants_url = None
         self.delete_variants_url = None
         self.token = None
+        self.dataset_builds = DATASET_BUILDS
 
     def init_app(self, app):
         """Initialize the beacon extension and make its parametars available to the app."""

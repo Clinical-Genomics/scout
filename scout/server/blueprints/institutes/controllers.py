@@ -149,7 +149,7 @@ def populate_beacon_form(institute_obj):
         beacon_dsets = beacon.get_datasets()
 
         dset_options = []  # List of tuples containing dataset select options
-        for build in ["GRCh37", "GRCh38"]:
+        for build in beacon.dataset_builds:
             institute_build = "_".join([institute_obj["_id"], build])
             if (
                 institute_build in beacon_dsets
