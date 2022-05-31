@@ -5,7 +5,7 @@ import re
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
-from flask import flash
+from flask import current_app, flash
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
@@ -18,11 +18,12 @@ from scout.constants import (
 )
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variant.utils import update_representative_gene
-from scout.server.extensions import store
+from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
+from scout.utils.scout_requests import get_request_json
 
-from .forms import CaseFilterForm
+from .forms import BeaconDatasetForm, CaseFilterForm
 
 LOG = logging.getLogger(__name__)
 
@@ -129,6 +130,38 @@ def institute(store, institute_id):
 
     data = {"institute": institute_obj, "users": users}
     return data
+
+
+def populate_beacon_form(institute_obj):
+    """Populate the form select of scout.server.blueprints.institutes.forms.BeaconDatasetForm with data.
+    Available data is a controlled dictionary of dataset names depending of the datasets already existing in the Beacon server
+
+    Args:
+        institute_obj(dict) An institute object
+    """
+    beacon_form = BeaconDatasetForm()
+
+    if current_user.is_admin is False:
+        return beacon_form
+
+    if current_app.config.get("BEACON_URL") and current_app.config.get("BEACON_TOKEN"):
+        # Collect all dataset IDs names present on the Beacon
+        beacon_dsets = beacon.get_datasets()
+
+        dset_options = []  # List of tuples containing dataset select options
+        for build in beacon.dataset_builds:
+            institute_build = "_".join([institute_obj["_id"], build])
+            if (
+                institute_build in beacon_dsets
+            ):  # If dataset doesn't already exist, add the option to create it
+                continue
+            dset_options.append(
+                (institute_build, f"{institute_obj['_id']} public dataset - Genome build {build}")
+            )
+
+        beacon_form.beacon_dataset.choices = dset_options
+
+    return beacon_form
 
 
 def populate_institute_form(form, institute_obj):
