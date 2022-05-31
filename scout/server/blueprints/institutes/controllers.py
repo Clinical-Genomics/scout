@@ -144,7 +144,7 @@ def populate_beacon_form(institute_obj):
     if current_user.is_admin is False:
         return beacon_form
 
-    if not all(
+    if current_app.config.get("BEACON_URL") is not current_app.config.get("BEACON_TOKEN"):
         [current_app.config.get("BEACON_URL") and current_app.config.get("BEACON_TOKEN")]
     ):  # Send a request to the beacon to collect the existing datasets
         LOG.warning(
