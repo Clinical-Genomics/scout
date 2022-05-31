@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dark mode, using browser/OS media preference
 - Allow marking case as solved without defining causative variants
 - Admin users can create missing beacon datasets from the institute's settings page
+- GenCC links on gene and variant pages
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 ### Changed
 - Improved HTML syntax in case report template
