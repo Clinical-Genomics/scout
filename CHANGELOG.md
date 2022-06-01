@@ -22,6 +22,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix some Sourcery and SonarCloud suggestions
 - Escape special characters in case search on institute and dashboard pages
 - Broken case PDF reports when no Madeline pedigree image can be created
+- Layout of buttons Matchmaker submission panel (case page)
+- Removing cases from Matchmaker (simplified code and fixed functionality)
 
 ## [4.53]
 ### Added
