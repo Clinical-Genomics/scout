@@ -140,6 +140,8 @@ CALLERS = {
         {"id": "pindel", "name": "Pindel"},
         {"id": "gatk", "name": "GATK"},
         {"id": "freebayes", "name": "Freebayes"},
+        {"id": "tnscope", "name": "TNScope"},
+        {"id": "tnscope_umi", "name": "TNscope_UMI"},
     ],
     "cancer_sv": [
         {"id": "gatk", "name": "GATK"},
