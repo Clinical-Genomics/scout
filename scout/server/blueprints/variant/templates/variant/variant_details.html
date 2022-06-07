@@ -144,7 +144,7 @@
 {% macro observations_panel(variant, observations, case) %}
   <div class="card panel-default">
     <div class="panel-heading d-flex justify-content-between">
-      <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
+      <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
       <span data-bs-toggle="tooltip" title="Nr of observations is the total number of occurrences in the loqusdb instance. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
     </div>
     <div class="card-body">
@@ -189,7 +189,7 @@
 {% if "SHOW_OBSERVED_VARIANT_ARCHIVE" in config and config["SHOW_OBSERVED_VARIANT_ARCHIVE"] == true %}
   <div class="card panel-default">
     <div class="panel-heading">
-      <a class="text-white" href="https://github.com/moonso/loqusdb" target="_blank">Local observations (archive {{obs_date or '2017-05-31'}})</a>
+      <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations (archive {{obs_date or '2017-05-31'}})</a>
     </div>
     <div class="card-body">
       <table class="table">
@@ -333,7 +333,7 @@
 
 {% macro mappability(variant) %}
   <div class="card panel-default">
-    <div class="panel-heading">Mappability (<a class="text-white" href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
+    <div class="panel-heading">Mappability (<a href="http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=genomicSuperDups" target="_blank">fracMatch</a>)</div>
     <div class="panel-body">
       <ul class="list-group">
         {{ mappability_list(variant) }}
