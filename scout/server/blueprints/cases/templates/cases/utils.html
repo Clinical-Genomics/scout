@@ -431,7 +431,7 @@
                 <div class="col-8">
                   {% for omim in variant_phenotypes.omim_terms %}
                     <span class="badge badge-sm bg-secondary">
-                      <a class="text-white" target="_blank" href="http://omim.org/entry/{{omim|replace('OMIM:','')}}">
+                      <a target="_blank" href="http://omim.org/entry/{{omim|replace('OMIM:','')}}">
                         {{omim}}
                       </a>
                     </span>
@@ -444,7 +444,7 @@
                 </div>
                 <div class="col-8">
                   {% for hpo in variant_phenotypes.hpo_terms %}
-                    <a class="text-white" target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
+                    <a target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
                       <span class="badge badge-sm bg-info">{{hpo.phenotype_id}}</span>
                     </a>
                   {% endfor %}
