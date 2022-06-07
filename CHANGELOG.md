@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
+- Expanded instructions on how to test on CG development server (cg-vm1)
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 ### Fixed
 - Remove load demo case command from docker-compose.yml
