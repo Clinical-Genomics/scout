@@ -1267,14 +1267,16 @@ class CaseHandler(object):
         return updated_variants
 
     def unique_cases_by_date(self, user_obj=None):
-        """Return set of events, unique by cases and ordered with 'updated_at'."""
-        query = dict(user_id=user_obj["_id"]) if user_obj else dict()
-
-        return (
-            self.event_collection.find(query)
-            .sort("updated_at", pymongo.DESCENDING)
-            .distinct("case")
+        """Return list of cases, ordered with 'updated_at'. Each case appears only once."""
+        case_list = self.event_collection.aggregate(
+            [
+                {"$group": {"_id": "$case", "date": {"$max": "$updated_at"}}},
+                {"$sort": {"date": -1}},
+                {"$group": {"_id": "$_id"}},
+            ]
         )
+
+        return [elem.get("_id") for elem in case_list]
 
     def get_display_name(self, case_id):
         """Get display name from case_id"""
