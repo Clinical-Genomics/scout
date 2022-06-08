@@ -12,17 +12,21 @@
       </div> <!-- end of modal title -->
       <div class="modal-body">
         {% if case.mme_submission %} <!-- case was already submitted to Matchmaker -->
-          <div class="row d-flex justify-content-around">
-            <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Submission details <span class="fas fa-people-arrows"></span></a>
-            <select class="custom-select" onchange="window.open(this.value,'_self');" style="width:auto;">
-                 <option selected>Match against</option>
-                 <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in Matchmaker</option>
-                 {% if mme_nodes %}
-                    {% for node in mme_nodes %}
-                      <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
-                    {% endfor %}
-                {% endif %}
-            </select>
+          <div class="row">
+            <div class="col-6">
+              <a href="{{url_for('cases.matchmaker_matches', institute_id=institute._id, case_name=case.display_name)}}" class="btn btn-secondary text-white" role="button" target="_blank">Submission details <span class="fas fa-people-arrows"></span></a>
+            </div>
+            <div class="col-6">
+              <select class="btn btn-secondary" onchange="window.open(this.value,'_self');" style="width:auto;">
+                   <option selected>Match against</option>
+                   <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target='internal') }}">Scout patients in Matchmaker</option>
+                   {% if mme_nodes %}
+                      {% for node in mme_nodes %}
+                        <option value="{{ url_for('cases.matchmaker_match', institute_id=institute._id, case_name=case.display_name, target=node.id) }}">{{node.description}}</option>
+                      {% endfor %}
+                  {% endif %}
+              </select>
+            </div>
           </div>
           <hr>
           <p><a href="#mme_form" data-bs-toggle="collapse">Modify submission</a></p>
@@ -128,23 +132,9 @@
 {% macro modal_mme_delete(institute, case) %}
   <form id="mme_delete" method="POST" action="{{ url_for('cases.matchmaker_delete', institute_id=institute._id, case_name=case.display_name )}}">
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-danger form-control" data-bs-toggle="modal" data-bs-target="#mme_delete_confirm">
+    <button type="submit" class="btn btn-danger form-control">
     Remove case from Matchmaker
     </button>
-    <!-- Modal -->
-    <div class="modal fade" id="mme_delete_confirm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-body">
-          Confirm delete case from Matchmaker?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-danger">Delete</button>
-        </div>
-      </div>
-    </div>
-    </div>
   </form>
 {% endmacro %}
 

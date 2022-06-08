@@ -25,6 +25,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken case PDF reports when no Madeline pedigree image can be created
 - Removed text-white links style that were invisible in new pages style
 - Variants pagination after pressing "Filter variants" or "Clinical filter"
+- Layout of buttons Matchmaker submission panel (case page)
+- Removing cases from Matchmaker (simplified code and fixed functionality)
 
 ## [4.53]
 ### Added
