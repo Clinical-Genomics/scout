@@ -47,6 +47,9 @@ def parse_case_data(**kwargs):
 
     # If ped file  provided we need to parse that first
     if kwargs.get("ped"):
+        logging.warning(
+            "Loading cases using .ped files is deprecated and will be no longer supported in the future. Load cases using .yaml config files instead.",
+        )
         family_id, samples = parse_ped(kwargs["ped"])
         config_dict["family"] = family_id
         config_dict["samples"] = samples

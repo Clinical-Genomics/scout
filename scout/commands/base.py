@@ -49,7 +49,9 @@ def get_app(ctx=None):
     cli_config = {}
     # if a .yaml config file was provided use its params to intiate the app
     if options.params.get("config"):
-
+        logging.warning(
+            "Support for launching Scout using a .yaml config file is deprecated and will be removed in the next major release (5.0). Use a PYTHON (.py) config file instead.",
+        )
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 
