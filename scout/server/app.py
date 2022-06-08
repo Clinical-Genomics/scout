@@ -75,7 +75,6 @@ def create_app(config_file=None, config=None):
     configure_extensions(app)
     register_blueprints(app)
     register_filters(app)
-    register_tests(app)
 
     if not (app.debug or app.testing) and app.config.get("MAIL_USERNAME"):
         # setup email logging of errors
