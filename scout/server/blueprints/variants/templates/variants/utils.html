@@ -28,18 +28,21 @@
       chromSel.addEventListener("change", eraseChromPosString);
     }
 
+    var the_form = document.forms['filters_form'];
+
     document.getElementById('hide_dismissed').onchange = function() {
       document.getElementById('expand_search').value = "False";
-      var the_form = document.forms['filters_form'];
       the_form.submit();
     };
 
     document.getElementById('show_unaffected').onchange = function() {
       document.getElementById('expand_search').value = "False";
-      var the_form = document.forms['filters_form'];
       the_form.submit();
     };
 
+    function resetPage(){
+      document.getElementById('page').value = "1";
+    }
   </script>
 {% endmacro %}
 
@@ -295,10 +298,10 @@
   </div>
   <div class="row justify-content-between" style="margin-top:20px;">
       <div class="col-4">
-        {{ form.filter_variants(class="btn btn-primary form-control") }}
+        {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
       </div>
       <div class="col-4">
-         {{ form.clinical_filter(class="btn btn-secondary form-control") }}
+         {{ form.clinical_filter(class="btn btn-secondary form-control", onclick="resetPage()") }}
       </div>
       <div class="col-4">
         {{ form.export(class="btn btn-warning form-control") }}
@@ -357,7 +360,7 @@
 </div>
 <div class="row" style="margin-top:20px;">
     <div class="col-4">
-      {{ form.filter_variants(class="btn btn-primary form-control") }}
+      {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
     </div>
     <div class="col-4">
       {{ form.export(class="btn btn-warning form-control") }}
@@ -480,10 +483,10 @@
 
 <div class="row">
   <div class="col-4">
-    {{ form.filter_variants(class="btn btn-primary form-control") }}
+    {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
   </div>
   <div class="col-4">
-    {{ form.clinical_filter(class="btn btn-secondary form-control ") }}
+    {{ form.clinical_filter(class="btn btn-secondary form-control", onclick="resetPage()") }}
   </div>
   <div class="col-4">
     {{ form.export(class="btn btn-warning form-control") }}
@@ -603,7 +606,7 @@
     <div class="form" id="buttons">
       <div class="row justify-content-center" style="margin-top:20px;">
         <div class="col-4">
-          <button class="btn btn-primary form-control">Filter variants</button>
+          <button class="btn btn-primary form-control" onclick="resetPage()">Filter variants</button>
         </div>
         <div class="col-4">
           {{ form.export(class="btn btn-warning form-control") }}
@@ -716,7 +719,7 @@
     <div id="buttons">
       <div class="row justify-content-center" style="margin-top:20px;">
         <div class="col-4">
-          <button class="btn btn-primary form-control">Filter variants</button>
+          <button class="btn btn-primary form-control" onclick="resetPage()">Filter variants</button>
         </div>
         <div class="col-4">
           {{ form.export(class="btn btn-warning form-control") }}
@@ -839,7 +842,7 @@
     <input type="submit" name="page" id="paginate-first" value=1 hidden="true">
     <input type="submit" name="page" id="paginate-previous" value={{page-1}} hidden="true">
     <input type="submit" name="page" id="paginate-next" value={{page + 1}} hidden="true">
-    <input type="hidden" name="page" value="{{page}}"> <!-- In order to work, this input should be placed AFTER the submit form items with the same name -->
+    <input type="hidden" id="page" name="page" value="{{page}}"> <!-- In order to work, this input should be placed AFTER the submit form items with the same name -->
   </div>
 {% endmacro %}
 
@@ -878,4 +881,3 @@
       </div>
     </div>
 {% endmacro %}
-
