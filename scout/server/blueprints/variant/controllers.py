@@ -135,8 +135,11 @@ def has_rna_tracks(case_obj):
         # Track contains 2 files and they should both be present
         splicej_bed = ind.get("splice_junctions_bed")
         rna_cov_bw = ind.get("rna_coverage_bigwig")
-        if all([splicej_bed, rna_cov_bw, os.path.exists(splicej_bed), os.path.exists(rna_cov_bw)]):
-            return True
+        if None in [splicej_bed, rna_cov_bw]:
+            continue
+        if False in [os.path.exists(splicej_bed), os.path.exists(rna_cov_bw)]:
+            continue
+        return True
     return False
 
 
