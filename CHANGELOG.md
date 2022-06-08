@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow marking case as solved without defining causative variants
 - Admin users can create missing beacon datasets from the institute's settings page
 - GenCC links on gene and variant pages
+- Deprecation warnings when launching the app using a .yaml config file or loading cases using .ped files
 ### Changed
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
