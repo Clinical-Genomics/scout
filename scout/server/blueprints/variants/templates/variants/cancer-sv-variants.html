@@ -175,8 +175,8 @@
         </a>
       </div>
       <div class="col-10 d-flex">
-        {{ form.filter_variants(class_="btn btn-primary form-control") }}
-        {{ form.clinical_filter(class_="btn btn-info form-control") }}
+        {{ form.filter_variants(class_="btn btn-primary form-control", onclick="resetPage()") }}
+        {{ form.clinical_filter(class_="btn btn-info form-control", onclick="resetPage()") }}
         {{ form.export(class_="btn btn-warning form-control") }}
       </div>
     </div>

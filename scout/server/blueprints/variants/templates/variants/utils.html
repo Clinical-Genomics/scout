@@ -360,7 +360,7 @@
 </div>
 <div class="row" style="margin-top:20px;">
     <div class="col-4">
-      {{ form.filter_variants(class="btn btn-primary form-control") }}
+      {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
     </div>
     <div class="col-4">
       {{ form.export(class="btn btn-warning form-control") }}
@@ -483,10 +483,10 @@
 
 <div class="row">
   <div class="col-4">
-    {{ form.filter_variants(class="btn btn-primary form-control") }}
+    {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
   </div>
   <div class="col-4">
-    {{ form.clinical_filter(class="btn btn-secondary form-control ") }}
+    {{ form.clinical_filter(class="btn btn-secondary form-control", onclick="resetPage()") }}
   </div>
   <div class="col-4">
     {{ form.export(class="btn btn-warning form-control") }}
