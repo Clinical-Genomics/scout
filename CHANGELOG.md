@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Escape special characters in case search on institute and dashboard pages
 - Broken case PDF reports when no Madeline pedigree image can be created
 - Removed text-white links style that were invisible in new pages style
+- Removed buttons to display alignment files removed from server
 
 ## [4.53]
 ### Added

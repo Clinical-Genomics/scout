@@ -231,13 +231,6 @@ def register_filters(app):
         return len(list(cursor_copy))
 
 
-def register_tests(app):
-    @app.template_test("existing")
-    def path_exists(path):
-        """Check if file exists. Helper for jinja template."""
-        return os.path.exists(path)
-
-
 def configure_oauth_login(app):
     """Register the Google Oauth login client using config settings"""
 
