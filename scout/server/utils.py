@@ -181,7 +181,8 @@ def case_has_alignments(case_obj):
     """
     case_obj["bam_files"] = False  # Availability of alignments for autosomal chromosomes
     for ind in case_obj.get("individuals"):
-        if ind.get("bam_file") and ind.get("bam_file") != "":
+        bam_path = ind.get("bam_file")
+        if bam_path and os.path.exists(bam_path):
             case_obj["bam_files"] = True
             return
 
@@ -194,7 +195,8 @@ def case_has_mt_alignments(case_obj):
     """
     case_obj["mt_bams"] = False  # Availability of alignments for MT chromosome
     for ind in case_obj.get("individuals"):
-        if ind.get("mt_bam") and ind.get("mt_bam") != "":
+        mt_bam_path = ind.get("mt_bam")
+        if mt_bam_path and os.path.exists(mt_bam_path):
             case_obj["mt_bams"] = True
             return
 

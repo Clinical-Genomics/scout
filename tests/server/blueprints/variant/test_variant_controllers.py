@@ -84,16 +84,23 @@ def test_tx_overview(app):
             assert key in tx
 
 
-def test_has_rna_tracks(case_obj):
+def test_has_rna_tracks(case_obj, tmpdir):
     """Test the function that returns True if any individual of a case has RNA tracks available"""
 
-    # GIVEN a case with an individual with RNA tracks:
+    # GIVEN an individual with splice junctions bed file and rna coverage track
+    splicej_bed = tmpdir.join("test.bed")
+    rna_cov_bw = tmpdir.join("test.BigWig")
+    splicej_bed.write("content")
+    rna_cov_bw.write("content")
+
     for ind in case_obj["individuals"]:
         if ind["phenotype"] == 1:  # Lets's assume only the affected individuals has RNA data
             continue
-        ind["splice_junctions_bed"] = "test.bed"
-        ind["rna_coverage_bigwig"] = "test.BigWig"
 
+        ind["splice_junctions_bed"] = str(splicej_bed)
+        ind["rna_coverage_bigwig"] = str(rna_cov_bw)
+
+    # THEN case should result having RNA tracks
     assert has_rna_tracks(case_obj) is True
 
 
