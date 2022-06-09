@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
 
 import pymongo
@@ -60,10 +59,7 @@ class UserHandler(object):
         """
         query = {}
         if institute:
-            LOG.info("Fetching all users from institute %s", institute)
             query = {"institutes": {"$in": [institute]}}
-        else:
-            LOG.info("Fetching all users")
 
         res = self.user_collection.find(query)
         return res
@@ -83,10 +79,8 @@ class UserHandler(object):
             return None
         query = {}
         if user_id:
-            LOG.info("Fetching user %s", user_id)
             query["_id"] = user_id
         else:
-            LOG.info("Fetching user %s", email)
             query["email"] = email
 
         user_obj = self.user_collection.find_one(query)

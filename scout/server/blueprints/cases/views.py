@@ -227,12 +227,17 @@ def pdf_case_report(institute_id, case_name):
 
     # Workaround to be able to print the case pedigree to pdf
     if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
-        write_to = os.path.join(cases_bp.static_folder, "madeline.png")
-        svg2png(
-            bytestring=case_obj["madeline_info"],
-            write_to=write_to,
-        )  # Transform to png, since PDFkit can't render svg images
-        data["case"]["madeline_path"] = write_to
+        try:
+            write_to = os.path.join(cases_bp.static_folder, "madeline.png")
+            svg2png(
+                bytestring=case_obj["madeline_info"],
+                write_to=write_to,
+            )  # Transform to png, since PDFkit can't render svg images
+            data["case"]["madeline_path"] = write_to
+        except Exception as ex:
+            LOG.error(
+                f"Could not convert SVG pedigree figure {case_obj['madeline_info']} to PNG: {ex}"
+            )
 
     html_report = render_template("cases/case_report.html", format="pdf", **data)
 
@@ -259,7 +264,9 @@ def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # create a temp folder to write excel files into
-    temp_excel_dir = os.path.join(cases_bp.static_folder, "_".join([case_name, "mt_reports"]))
+    temp_excel_dir = os.path.join(
+        cases_bp.static_folder, "_".join([case_obj["display_name"], "mt_reports"])
+    )
     os.makedirs(temp_excel_dir, exist_ok=True)
 
     if controllers.mt_excel_files(store, case_obj, temp_excel_dir):
