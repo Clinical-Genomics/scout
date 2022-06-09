@@ -65,8 +65,7 @@ def get_events_of_interest(store, user):
         events_per_case.append(event_list)
 
     for events in events_per_case:
-        LOG.warning("EVENTS: {}".format(events))
-        if events is not []:
+        if events:
             compact_events = get_compact_events(events)
             event = {}
             event["human_readable"] = events_to_string(compact_events)
