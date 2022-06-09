@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Changed
+- Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
+
+
 ## [4.54]
 ### Added
 - Dark mode, using browser/OS media preference
@@ -62,7 +67,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - User sessions to check files served by `server.blueprints.alignviewers.remote_static` endpoint
 - Moved Beacon-related functions to a dedicated app extension
 - Audit Filter now also loads filter displaying the variants for it
-- Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 ### Fixed
 - Handle `attachment_filename` parameter renamed to `download_name` when Flask 2.2 will be released
 - Removed cursor timeout param in cases find adapter function to avoid many code warnings
