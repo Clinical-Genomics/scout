@@ -64,6 +64,7 @@ def get_events_of_interest(store, user):
         events_per_case.append(event_list)
 
     for events in events_per_case:
+        LOG.debug("EVENTS: {}".format(events))
         if events is not []:
             compact_events = get_compact_events(events)
             event = {}
@@ -73,7 +74,7 @@ def get_events_of_interest(store, user):
             event["case"] = head["case"]
             events_of_interest.append(event)
         else:
-            LOG.debug("EVENTS: {}".format(events))
+            LOG.debug("ELSE EVENTS: {}".format(events))
     return events_of_interest
 
 
