@@ -35,6 +35,12 @@ def mock_comment():
 
 
 @pytest.fixture
+def loqusdburl():
+    """Return the base url of a loqusdb mock"""
+    return "http://127.0.0.1:9000"
+
+
+@pytest.fixture
 def loqusdb():
     """Return a loqusdb mock"""
     loqus_mock = LoqusdbMock()
@@ -42,7 +48,7 @@ def loqusdb():
 
 
 @pytest.fixture
-def app(real_database_name, real_variant_database, user_obj):
+def app(real_database_name, real_variant_database, user_obj, loqusdburl):
     """A test app containing the endpoints of the real app"""
 
     app = create_app(
@@ -60,7 +66,7 @@ def app(real_database_name, real_variant_database, user_obj):
             BEACON_TOKEN="DEMO",
             LOQUSDB_SETTINGS={
                 "test": {
-                    "api_url": "http://127.0.0.1:9000",
+                    "api_url": loqusdburl,
                     "instance_type": "api",
                     "id": "loqusRD",
                     "version": "2.5",

@@ -122,7 +122,7 @@ def test_get_igv_tracks():
 
 
 @responses.activate
-def test_observations_controller_non_existing(app, institute_obj, case_obj):
+def test_observations_controller_non_existing(app, institute_obj, case_obj, loqusdburl):
 
     # GIVEN an app with a connected loqusdb instance
     loqus_id = "test"
@@ -136,7 +136,7 @@ def test_observations_controller_non_existing(app, institute_obj, case_obj):
     var_name = f"{var_obj['chromosome']}_{var_obj['position']}_{var_obj['reference']}_{var_obj['alternative']}"
     responses.add(
         responses.GET,
-        f"http://127.0.0.1:9000/variants/{var_name}",
+        f"{loqusdburl}/variants/{var_name}",
         json={"total": n_cases, "cases": []},
         status=200,
     )
@@ -161,7 +161,7 @@ def test_observations_controller_non_existing(app, institute_obj, case_obj):
 
 
 @responses.activate
-def test_observations_controller_snv(app, institute_obj):
+def test_observations_controller_snv(app, institute_obj, loqusdburl):
     """Testing observation controller to retrieve observations for one SNV variant"""
 
     case_obj = store.case_collection.find_one()
@@ -179,7 +179,7 @@ def test_observations_controller_snv(app, institute_obj):
 
     responses.add(
         responses.GET,
-        f"http://127.0.0.1:9000/variants/{var_name}",
+        f"{loqusdburl}/variants/{var_name}",
         json={"families": [var_obj["case_id"]], "observations": 1},
         status=200,
     )
@@ -204,7 +204,7 @@ def test_observations_controller_snv(app, institute_obj):
 
 
 @responses.activate
-def test_observations_controller_sv(app, sv_variant_obj, institute_obj):
+def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdburl):
     """Testing observations controller to retrieve observations for one SV variant.
     Test that SV variant similar to a given one from another case is returned
     """
@@ -223,7 +223,7 @@ def test_observations_controller_sv(app, sv_variant_obj, institute_obj):
     store.variant_collection.insert_one(sv_variant_obj)
 
     ## GIVEN patched request to the loqusdbapi instance
-    req_url = f"http://127.0.0.1:9000/svs/?chrom={sv_variant_obj['chromosome']}&end_chrom={sv_variant_obj['end_chrom']}&pos={sv_variant_obj['position']}&end={sv_variant_obj['end']}&sv_type={sv_variant_obj['sub_category'].upper()}"
+    req_url = f"{loqusdburl}/svs/?chrom={sv_variant_obj['chromosome']}&end_chrom={sv_variant_obj['end_chrom']}&pos={sv_variant_obj['position']}&end={sv_variant_obj['end']}&sv_type={sv_variant_obj['sub_category'].upper()}"
     responses.add(
         responses.GET,
         req_url,

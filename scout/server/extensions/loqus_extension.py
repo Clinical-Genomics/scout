@@ -151,7 +151,7 @@ class LoqusDB:
         LOG.debug("version: {}".format(version))
         return version
 
-    def set_loqus_query(self, variant_obj, category):
+    def get_loqus_query(self, variant_obj, category):
         """Create a loqusDB query based on the variant's characteristics
 
         Args:
