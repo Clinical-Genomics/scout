@@ -1,4 +1,5 @@
 import logging
+import os
 from base64 import b64encode
 from datetime import date
 
@@ -132,8 +133,13 @@ def has_rna_tracks(case_obj):
     # Display junctions track if available for any of the individuals
     for ind in case_obj.get("individuals", []):
         # Track contains 2 files and they should both be present
-        if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
-            return True
+        splicej_bed = ind.get("splice_junctions_bed")
+        rna_cov_bw = ind.get("rna_coverage_bigwig")
+        if None in [splicej_bed, rna_cov_bw]:
+            continue
+        if False in [os.path.exists(splicej_bed), os.path.exists(rna_cov_bw)]:
+            continue
+        return True
     return False
 
 
