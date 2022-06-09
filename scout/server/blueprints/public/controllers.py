@@ -62,19 +62,20 @@ def get_events_of_interest(store, user):
     LOG.warning("CASES: {}".format(cases))
     for case in cases:
         event_list = events_in_case(store, user, case)
-        events_per_case.append(event_list)
+        # only add non-empty event_lists
+        if event_list:
+            events_per_case.append(event_list)
+        else:
+            LOG.warning("no events found for: {} {}".format(case, user))
 
     for events in events_per_case:
-        if events:
-            compact_events = get_compact_events(events)
-            event = {}
-            event["human_readable"] = events_to_string(compact_events)
-            head, *_tail = events
-            event["link"] = head["link"]
-            event["case"] = head["case"]
-            events_of_interest.append(event)
-        else:
-            LOG.warning("ELSE EVENTS: {}".format(events))
+        compact_events = get_compact_events(events)
+        event = {}
+        event["human_readable"] = events_to_string(compact_events)
+        head, *_tail = events
+        event["link"] = head["link"]
+        event["case"] = head["case"]
+        events_of_interest.append(event)
     return events_of_interest
 
 
