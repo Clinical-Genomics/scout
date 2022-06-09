@@ -142,6 +142,7 @@ CALLERS = {
         {"id": "freebayes", "name": "Freebayes"},
         {"id": "tnscope", "name": "TNScope"},
         {"id": "tnscope_umi", "name": "TNscope_UMI"},
+        {"id": "vardict", "name": "VarDict"},
     ],
     "cancer_sv": [
         {"id": "gatk", "name": "GATK"},
