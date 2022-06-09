@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Changed
+- Create ClinVar submissions from pinned variants list in case page
+- Select which pinned variants will be included in ClinVar submission documents
+
 ## [4.54]
 ### Added
 - Dark mode, using browser/OS media preference
@@ -16,8 +21,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modified message displayed when variant rank stats could not be calculated
 - Expanded instructions on how to test on CG development server (cg-vm1)
 - Added more somatic variant callers (Balsamic v9 SNV, develop SV)
-- Create ClinVar submissions from pinned variants list in case page
-- Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
 - Remove load demo case command from docker-compose.yml
 - Text elements being split across pages in PDF reports
