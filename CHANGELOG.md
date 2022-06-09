@@ -4,6 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Fixed
+- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
+
+
 ## [4.54]
 ### Added
 - Dark mode, using browser/OS media preference
@@ -30,7 +35,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Layout of buttons Matchmaker submission panel (case page)
 - Removing cases from Matchmaker (simplified code and fixed functionality)
 - Reintroduce check for missing alignment files purged from server
-- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
 
 ## [4.53]
 ### Added
