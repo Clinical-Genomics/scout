@@ -67,3 +67,11 @@ def test_events_to_string():
     assert "Assigned 1 variant" in events_string
     assert "Pinned 1 variant" in events_string
     assert "Pinned 3 cases" in events_string
+
+
+def test_events_to_string_empty_string():
+    # GIVEN an empty list
+    test_list = []
+
+    # THEN the empty string is returned
+    assert "" == events_to_string(test_list)

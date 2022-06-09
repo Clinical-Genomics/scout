@@ -153,4 +153,4 @@ def events_to_string(list_of_events):
         )
         sentence4 = sentence3 + " (" + pretty_date(compact_event.date) + ")"
         l.append(sentence4)
-    return reduce(lambda a, b: a + ". " + b, l)
+    return reduce(lambda a, b: a + ". " + b, l, "")
