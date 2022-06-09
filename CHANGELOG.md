@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variants pagination after pressing "Filter variants" or "Clinical filter"
 - Layout of buttons Matchmaker submission panel (case page)
 - Removing cases from Matchmaker (simplified code and fixed functionality)
+- Reintroduce check for missing alignment files purged from server
 
 ## [4.53]
 ### Added
