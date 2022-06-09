@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Added
+- Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
+### Changed
+- Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
+
+
 ## [4.54]
 ### Added
 - Dark mode, using browser/OS media preference
@@ -11,13 +18,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Admin users can create missing beacon datasets from the institute's settings page
 - GenCC links on gene and variant pages
 - Deprecation warnings when launching the app using a .yaml config file or loading cases using .ped files
-- Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 ### Changed
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
 - Expanded instructions on how to test on CG development server (cg-vm1)
 - Added more somatic variant callers (Balsamic v9 SNV, develop SV)
-- Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 ### Fixed
 - Remove load demo case command from docker-compose.yml
 - Text elements being split across pages in PDF reports
