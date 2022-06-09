@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
 - Expanded instructions on how to test on CG development server (cg-vm1)
+- Added more somatic SV callers (Balsamic v9 lineup)
 ### Fixed
 - Remove load demo case command from docker-compose.yml
 - Text elements being split across pages in PDF reports
@@ -28,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variants pagination after pressing "Filter variants" or "Clinical filter"
 - Layout of buttons Matchmaker submission panel (case page)
 - Removing cases from Matchmaker (simplified code and fixed functionality)
+- Reintroduce check for missing alignment files purged from server
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
 
 ## [4.53]
