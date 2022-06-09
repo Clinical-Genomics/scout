@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
 - Expanded instructions on how to test on CG development server (cg-vm1)
+- Added more somatic SV callers (Balsamic v9 lineup)
 - Create ClinVar submissions from pinned variants list in case page
 - Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
@@ -30,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variants pagination after pressing "Filter variants" or "Clinical filter"
 - Layout of buttons Matchmaker submission panel (case page)
 - Removing cases from Matchmaker (simplified code and fixed functionality)
+- Reintroduce check for missing alignment files purged from server
 
 ## [4.53]
 ### Added
