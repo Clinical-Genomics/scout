@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Added
+- Institute settings allow saving multiple loqusdb instances for one institute
+- Display stats from multiple instances of loqusdb on variant page
+
+
 ## [4.54]
 ### Added
 - Dark mode, using browser/OS media preference
@@ -11,8 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Admin users can create missing beacon datasets from the institute's settings page
 - GenCC links on gene and variant pages
 - Deprecation warnings when launching the app using a .yaml config file or loading cases using .ped files
-- Institute settings allow saving multiple loqusdb instances for one institute
-- Display stats from multiple instances of loqusdb on variant page
 ### Changed
 - Improved HTML syntax in case report template
 - Modified message displayed when variant rank stats could not be calculated
