@@ -8,7 +8,7 @@ LOG = logging.getLogger(__name__)
 
 HEADERS = {"Content-type": "application/json"}
 RESTAPI_37 = "https://grch37.rest.ensembl.org"
-RESTAPI_38 = "http://rest.ensembl.org"
+RESTAPI_38 = "https://rest.ensembl.org"
 PING_ENDPOINT = "info/ping"
 
 BIOMART_37 = "https://feb2014.archive.ensembl.org/biomart/martservice?query="
@@ -212,7 +212,7 @@ class EnsemblBiomartClient:
             '<?xml version="1.0" encoding="UTF-8"?>',
             "<!DOCTYPE Query>",
             '<Query  virtualSchemaName = "default" formatter = "TSV" header = "0" uniqueRows'
-            ' = "1" count = "" datasetConfigVersion = "0.6" completionStamp = "1">',
+            ' = "0" count = "" datasetConfigVersion = "0.6" completionStamp = "1">',
             "",
             '\t<Dataset name = "hsapiens_gene_ensembl" interface = "default" >',
         ]
