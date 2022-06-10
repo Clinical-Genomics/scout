@@ -40,17 +40,15 @@
               <td>{{ ind.msi or 'N/A' }}</td>
               {% if ind.phenotype_human == "tumor" %}
                 <td>
-                  <div class="row">
-                  {% if not ind.tumor_purity or ind.tumor_purity|float < 0.2 %}
-                  <div class="col-1">
-                    <div class="badge bg-danger rounded-pill">
-                      <span class="fa fa-exclamation " data-bs-toggle='tooltip' data-bs-container='body' title="Low or missing tumor purity"></span>
-                    </div>
-                  </div>
-                  {% endif %}
-                  <div class="col-11"><input name="tumor_purity.{{ind.individual_id}}" type="number" step="0.01" min="0.1" max=1
-                  class="form-control col-7" value="{{ind.tumor_purity}}"></div>
-                </div>
+                  <div class="d-flex align-items-center">
+                    {% if not ind.tumor_purity or ind.tumor_purity|float < 0.2 %}
+                      <div class="badge bg-danger rounded-pill">
+                        <span class="fa fa-exclamation " data-bs-toggle='tooltip' data-bs-container='body' title="Low or missing tumor purity"></span>
+                      </div>
+                    {% endif %}
+                    <input name="tumor_purity.{{ind.individual_id}}" type="number" step="0.01" min="0.1" max=1
+                    class="form-control" value="{{ind.tumor_purity}}">
+                  <div>
                 </td>
               {% else %}
                 <td>N/A</td>
