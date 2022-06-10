@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
+- VariantS comment popovers reactivate on hover
 
 ## [4.54]
 ### Added
