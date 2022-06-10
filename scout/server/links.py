@@ -145,9 +145,9 @@ def omim(omim_id):
 
 def ensembl(ensembl_id, build=37):
 
-    link = "https://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
+    link = "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
     if build == 38:
-        link = "https://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
+        link = "http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
     if not ensembl_id:
         return None
 
@@ -313,10 +313,10 @@ def refseq(refseq_id):
 
 
 def ensembl_tx(ens_tx_id, build=37):
-    link = "https://grch37.ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
+    link = "http://grch37.ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
 
     if build == 38:
-        link = "https://ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
+        link = "http://ensembl.org/Homo_sapiens/" "Gene/Summary?t={}"
     if not ens_tx_id:
         return None
 
@@ -455,12 +455,10 @@ def thousandg_link(variant_obj, build=None):
 
     if build == 37:
         url_template = (
-            "https://grch37.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
+            "http://grch37.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
         )
     else:
-        url_template = (
-            "https://www.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
-        )
+        url_template = "http://www.ensembl.org/Homo_sapiens/Variation/Explore" "?v={};vdb=variation"
 
     return url_template.format(dbsnp_id)
 
@@ -473,9 +471,9 @@ def ensembl_link(variant_obj, build=37):
         my_end = variant_obj["position"]
 
     if build == 37:
-        url_template = "https://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{my_end}"
+        url_template = "http://grch37.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{my_end}"
     else:
-        url_template = "https://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{my_end}"
+        url_template = "http://www.ensembl.org/Homo_sapiens/Location/View?db=core;r={this[chromosome]}:{this[position]}-{my_end}"
     return url_template.format(this=variant_obj, my_end=my_end)
 
 
