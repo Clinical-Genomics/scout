@@ -9,7 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 ### Changed
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
-
+### Fixed
+- Low tumor purity badge alignment in cancer samples table on cancer case view
 
 ## [4.54]
 ### Added
