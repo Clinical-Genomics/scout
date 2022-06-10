@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Create ClinVar submissions from pinned variants list in case page
 - Select which pinned variants will be included in ClinVar submission documents
+### Fixed
+- Low tumor purity badge alignment in cancer samples table on cancer case view
 
 ## [4.54]
 ### Added
