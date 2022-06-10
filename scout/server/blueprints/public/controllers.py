@@ -59,14 +59,13 @@ def get_events_of_interest(store, user):
     events_of_interest = []
     events_per_case = []
     cases = recent_cases(user, store)
-    LOG.warning("CASES: {}".format(cases))
     for case in cases:
         event_list = events_in_case(store, user, case)
         # only add non-empty event_lists
         if event_list:
             events_per_case.append(event_list)
         else:
-            LOG.warning("no events found for: {} {}".format(case, user))
+            LOG.debug("no events found for case: {} / {}".format(case, user.email))
 
     for events in events_per_case:
         compact_events = get_compact_events(events)
@@ -89,7 +88,7 @@ def recent_cases(user, store):
     Returns:
         list of store.case._id
     """
-    return list(store.unique_cases_by_date({"_id": user.email}))
+    return list(store.unique_cases_by_date(user.email))
 
 
 def events_in_case(store, user, case):

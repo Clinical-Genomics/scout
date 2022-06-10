@@ -1266,17 +1266,18 @@ class CaseHandler(object):
         LOG.info("Verification status updated for {} variants".format(n_status_updated))
         return updated_variants
 
-    def unique_cases_by_date(self, user_obj=None):
+    def unique_cases_by_date(self, user_email=None):
         """Return list of cases, ordered with 'updated_at'. Each case appears only once."""
         case_list = self.event_collection.aggregate(
             [
-                {"$group": {"_id": "$case", "date": {"$max": "$updated_at"}}},
+                {"$match": {"user_id": user_email}},
+                {"$group": {"_id": "$case", "date": {"$last": "$updated_at"}}},
                 {"$sort": {"date": -1}},
-                {"$group": {"_id": "$_id"}},
             ]
         )
-
         return [elem.get("_id") for elem in case_list]
+
+
 
     def get_display_name(self, case_id):
         """Get display name from case_id"""
