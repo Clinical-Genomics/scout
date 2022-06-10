@@ -8,7 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
-
+### Fixed
+- Low tumor purity badge alignment in cancer samples table on cancer case view
 
 ## [4.54]
 ### Added
