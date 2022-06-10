@@ -6,8 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Fixed
+- Low tumor purity badge alignment in cancer samples table on cancer case view
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
-
 
 ## [4.54]
 ### Added
