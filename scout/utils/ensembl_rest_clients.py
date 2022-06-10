@@ -7,11 +7,11 @@ import requests
 LOG = logging.getLogger(__name__)
 
 HEADERS = {"Content-type": "application/json"}
-RESTAPI_37 = "https://feb2014.archive.ensembl.org"
-RESTAPI_38 = "https://rest.ensembl.org"
+RESTAPI_37 = "https://grch37.rest.ensembl.org"
+RESTAPI_38 = "http://rest.ensembl.org"
 PING_ENDPOINT = "info/ping"
 
-BIOMART_37 = "http://feb2014.archive.ensembl.org/biomart/martservice?query="
+BIOMART_37 = "https://feb2014.archive.ensembl.org/biomart/martservice?query="
 BIOMART_38 = "https://www.ensembl.org/biomart/martservice?query="
 
 
@@ -182,7 +182,9 @@ class EnsemblBiomartClient:
         Yields:
             biomartline
         """
+
         url = self.build_url(xml)
+        LOG.warning(f"URL:{url}")
         try:
             with requests.get(url, stream=True) as req:
                 for line in req.iter_lines():
