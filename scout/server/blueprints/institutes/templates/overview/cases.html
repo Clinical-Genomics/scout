@@ -98,7 +98,7 @@
       <a href="{{ url_for('cases.case', institute_id=case.owner, case_name=case.display_name) }}">
         {{ case.display_name }}
       </a>
-      {% if case.individuals|length > 1%}
+      {% if case.individuals|length > 1 %}
         <span class="badge bg-primary">
           {% for item in case.individuals %}
             {% if case.track == "cancer" %}
