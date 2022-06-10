@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
+- Updating database genes in build 37
 
 ## [4.54]
 ### Added

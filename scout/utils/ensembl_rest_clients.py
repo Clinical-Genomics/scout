@@ -184,7 +184,6 @@ class EnsemblBiomartClient:
         """
 
         url = self.build_url(xml)
-        LOG.warning(f"URL:{url}")
         try:
             with requests.get(url, stream=True) as req:
                 for line in req.iter_lines():
