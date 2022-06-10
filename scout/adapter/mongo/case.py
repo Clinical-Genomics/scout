@@ -1277,8 +1277,6 @@ class CaseHandler(object):
         )
         return [elem.get("_id") for elem in case_list]
 
-
-
     def get_display_name(self, case_id):
         """Get display name from case_id"""
         return self.case_collection.find_one({"_id": case_id}).get("display_name")
