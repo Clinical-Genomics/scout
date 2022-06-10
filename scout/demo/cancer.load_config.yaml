@@ -17,7 +17,7 @@ samples:
     vcf2cytosure: scout/demo/999-99.test.cgh
     tmb: 7
     msi: 15
-    tumor_purity: 1
+    tumor_purity: 0.1
 
   - analysis_type: panel
     sample_id: 998-99
