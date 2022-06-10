@@ -82,6 +82,7 @@ def get_display_name(case, store):
     """Get display_name for case"""
     return store.get_display_name(case)
 
+
 def recent_cases(user, store):
     """Return a list of recent cases order in increasing age. A case
     may appear only once.
