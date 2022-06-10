@@ -24,7 +24,7 @@ def test_marrvel_link_38(app, case_obj):
     store.variant_collection.insert_one(test_variant)
 
     # GIVEN that the variant can be lifted over to build 37
-    url = f"http://grch37.rest.ensembl.org/map/human/GRCh38/{test_variant['chromosome']}:{test_variant['position']}..{test_variant['position']}/GRCh37?content-type=application/json"
+    url = f"https://grch37.rest.ensembl.org/map/human/GRCh38/{test_variant['chromosome']}:{test_variant['position']}..{test_variant['position']}/GRCh37?content-type=application/json"
 
     liftover_mappings = {
         "mappings": [
