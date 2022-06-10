@@ -73,10 +73,14 @@ def get_events_of_interest(store, user):
         event["human_readable"] = events_to_string(compact_events)
         head, *_tail = events
         event["link"] = head["link"]
-        event["case"] = head["case"]
+        event["name"] = get_display_name(head["case"], store)
         events_of_interest.append(event)
     return events_of_interest
 
+
+def get_display_name(case, store):
+    """Get display_name for case"""
+    return store.get_display_name(case)
 
 def recent_cases(user, store):
     """Return a list of recent cases order in increasing age. A case
