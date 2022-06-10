@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
+### Changed
+- Represent different tumor samples as vials in cases page
 
 ## [4.54]
 ### Added
