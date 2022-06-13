@@ -55,40 +55,39 @@ def get_date(date, date_format=None):
 def pretty_date(time=False):
     """Given time as datetime() or integer, return the time passed from now
     as a string in human readable format"""
-
-    def more_than_a_day(days):
-        """Return a string for passed time more than a day"""
-        if days == 1:
-            return "Yesterday"
-        if days < 7:
-            return str(days) + " days ago"
-        if days == 7:
-            return str(days // 7) + " week ago"
-        if days < 31:
-            return str(days // 7) + " weeks ago"
-        if days < 365:
-            return str(days // 30) + " months ago"
-        return str(days // 365) + " years ago"
-
-    def within_24_h(seconds):
-        """Return a string for passed time is less than a day"""
-        if seconds < 10:
-            return "just now"
-        if seconds < 60:
-            return str(seconds) + " seconds ago"
-        if seconds < 120:
-            return "a minute ago"
-        if seconds < 3600:
-            return str(seconds // 60) + " minutes ago"
-        if seconds < 7200:
-            return "an hour ago"
-        if seconds < 86400:
-            return str(seconds // 3600) + " hours ago"
-
     (diff_seconds, diff_days) = get_time_diff(time)
     if diff_days == 0:
         return within_24_h(diff_seconds)
     return more_than_a_day(diff_days)
+
+def more_than_a_day(days):
+    """Return a string for passed time more than a day"""
+    if days == 1:
+        return "Yesterday"
+    if days < 7:
+        return str(days) + " days ago"
+    if days == 7:
+        return str(days // 7) + " week ago"
+    if days < 31:
+        return str(days // 7) + " weeks ago"
+    if days < 365:
+        return str(days // 30) + " months ago"
+    return str(days // 365) + " years ago"
+
+def within_24_h(seconds):
+    """Return a string for passed time is less than a day"""
+    if seconds < 10:
+        return "just now"
+    if seconds < 60:
+        return str(seconds) + " seconds ago"
+    if seconds < 120:
+        return "a minute ago"
+    if seconds < 3600:
+        return str(seconds // 60) + " minutes ago"
+    if seconds < 7200:
+        return "an hour ago"
+    if seconds < 86400:
+        return str(seconds // 3600) + " hours ago"
 
 
 def get_time_diff(time):
