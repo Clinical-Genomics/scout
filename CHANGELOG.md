@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - VariantS comment popovers reactivate on hover
 - Updating database genes in build 37
 - ACMG classification summary hidden by sticky navbar
+- Logo backgrounds fixed to white on welcome page
+- Update KUH logo
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
 
 ## [4.54]
