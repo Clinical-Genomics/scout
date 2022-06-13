@@ -5,15 +5,15 @@
 {% endblock %}
 
 {% block content_main %}
-  <div class="container mt-3">
+  <div class="container mt-3 mb-5">
     <form action="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
       <div class="card panel-default mt-3">
         <div class="card-body">
           {% if not evaluation %}
-              <div class="mb-3">
+              <div class="mt-3 fixed-bottom bg-light border">
                 <div class="text-center">
                   {% for option in ACMG_OPTIONS %}
-                    <a id="acmg-{{ option.code }}" class="btn btn-light acmg-preview">{{ option.label }}</a>
+                    <a id="acmg-{{ option.code }}" class="btn acmg-preview">{{ option.label }}</a>
                   {% endfor %}
                 </div>
               </div>
@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <div class="d-flex justify-content-between mt-3">
+      <div class="d-flex justify-content-between mt-3 ">
         {% for category, criteria_group in CRITERIA.items() %}
           <div class="flex-1 {{ 'me-3' if not loop.last }}">
             <h4>Evidence of {{ category }}</h4>
