@@ -7,6 +7,8 @@ from requests.exceptions import HTTPError, MissingSchema
 
 from scout.utils import ensembl_rest_clients
 
+REST_CLIENT_37_URL = "https://grch37.rest.ensembl.org"
+
 
 @responses.activate
 def test_ping_ensemble_37(ensembl_rest_client_37):
@@ -49,7 +51,7 @@ def test_ping_ensemble_38(ensembl_rest_client_38):
 def test_liftover(ensembl_rest_client_37, ensembl_liftover_response):
     """Test send request for coordinates liftover"""
     # GIVEN a patched response from Ensembl
-    url = "http://grch37.rest.ensembl.org/map/human/GRCh37/X:1000000..1000100/GRCh38?content-type=application/json"
+    url = f"{REST_CLIENT_37_URL}/map/human/GRCh37/X:1000000..1000100/GRCh38?content-type=application/json"
     responses.add(
         responses.GET,
         url,
@@ -65,7 +67,7 @@ def test_liftover(ensembl_rest_client_37, ensembl_liftover_response):
 @responses.activate
 def test_send_gene_request(ensembl_gene_response, ensembl_rest_client_37):
     """Test send request with correct params and endpoint"""
-    url = "https://grch37.rest.ensembl.org/overlap/id/ENSG00000103591?feature=gene"
+    url = f"{REST_CLIENT_37_URL}/overlap/id/ENSG00000103591?feature=gene"
     client = ensembl_rest_client_37
     responses.add(
         responses.GET,
@@ -106,7 +108,7 @@ def test_send_request_wrong_url(ensembl_rest_client_37):
     """Successful requests are tested by other tests in this file.
     This test will trigger errors instead.
     """
-    url = "https://grch37.rest.ensembl.org/fakeyurl"
+    url = f"{REST_CLIENT_37_URL}/fakeyurl"
     client = ensembl_rest_client_37
     responses.add(
         responses.GET,
