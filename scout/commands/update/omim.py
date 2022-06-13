@@ -29,8 +29,14 @@ LOG = logging.getLogger(__name__)
     type=click.Path(exists=True),
     help="Path to file in omim mim2genes format",
 )
+@click.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    help="Force update OMIM panel even if no new version of OMIM is available",
+)
 @with_appcontext
-def omim(api_key, institute, genemap2, mim2genes):
+def omim(api_key, institute, genemap2, mim2genes, force):
     """
     Update the automate generated omim gene panel in the database.
     """
@@ -66,6 +72,7 @@ def omim(api_key, institute, genemap2, mim2genes):
             genemap2_lines=mim_files["genemap2"],
             mim2gene_lines=mim_files["mim2genes"],
             institute=institute,
+            force=force,
         )
     except Exception as err:
         LOG.error(err)
