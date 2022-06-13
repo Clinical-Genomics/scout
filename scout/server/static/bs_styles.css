@@ -127,7 +127,6 @@ table.dataTable {margin-bottom: 0}
 	}
 }
 
-
 /* Custom navbar theme */
 .navbar{
   height: 50px;
@@ -144,16 +143,6 @@ table.dataTable {margin-bottom: 0}
 }
 .navbar-nav > .active > .navbar-text {
 	color:var(--bs-white);
-}
-
-.float-top-secondary {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	padding: 1rem;
-	z-index: 99;
-	border-bottom: 1px solid;
 }
 
 /*.navbar-nav > li > a:hover,*/
