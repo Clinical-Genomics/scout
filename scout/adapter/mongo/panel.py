@@ -46,7 +46,7 @@ class PanelHandler:
 
         self.add_gene_panel(panel_obj)
 
-    def load_omim_panel(self, genemap2_lines, mim2gene_lines, institute=None):
+    def load_omim_panel(self, genemap2_lines, mim2gene_lines, institute=None, force=False):
         """Create and load the OMIM-AUTO panel
 
         If the panel already exists, update with new information and increase version
@@ -55,6 +55,7 @@ class PanelHandler:
             genemap_lines(iterable(str)): The genemap2 file information
             mim2gene_lines(iterable(str)): The mim2genes file information
             institute(str): What institute that is responsible. Default: 'cust002'
+            force(bool): if True, force update the OMIM panel
 
         """
         institute = institute or "cust002"
@@ -77,10 +78,9 @@ class PanelHandler:
 
         date_obj = get_date(date_string)
 
-        if existing_panel:
-            if existing_panel["date"] == date_obj:
-                LOG.warning("There is no new version of OMIM")
-                return
+        if existing_panel and existing_panel["date"] == date_obj and force is False:
+            LOG.warning("There is no new version of OMIM")
+            return
 
         panel_data = {
             "path": None,

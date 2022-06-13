@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from pprint import pprint as pp
 
 import pymongo
 
@@ -185,7 +184,6 @@ class InstituteHandler(object):
         Returns:
             Institute object
         """
-        LOG.debug("Fetch institute {}".format(institute_id))
         institute_obj = self.institute_collection.find_one({"_id": institute_id})
         if institute_obj is None:
             LOG.debug("Could not find institute {0}".format(institute_id))

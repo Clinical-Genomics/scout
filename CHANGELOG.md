@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 ### Changed
 - Represent different tumor samples as vials in cases page
+- Option to force-update the OMIM panel
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Represent different tumor samples as vials in cases page
 ### Fixed
