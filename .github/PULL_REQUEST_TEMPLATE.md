@@ -19,8 +19,9 @@ This PR marks a new Scout release. We apply semantic versioning. This is a major
 1. Stop the service with current deployed branch: `systemctl --user stop scout.target`
 1. Start the scout service with the branch to test: `systemctl --user start scout@<this_branch>`
 1. Make sure the branch is deployed: `systemctl --user status scout.target`
-</details>
 1. After testing is done, log out from `cg-vm1` and log in again in the `hasta` server, repeat the `hasta` and `paxa` procedure, which will release the allocated resource (scout-stage) to be used for testing by other users.
+</details>
+
 
 **How to test**:
 1. how to test it, possibly with real cases/data
