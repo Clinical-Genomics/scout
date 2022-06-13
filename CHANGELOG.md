@@ -11,8 +11,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
+### Changed
 - VariantS comment popovers reactivate on hover
 - Updating database genes in build 37
+- Represent different tumor samples as vials in cases page
 
 ## [4.54]
 ### Added
