@@ -5,10 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
+### Changed
+- Represent different tumor samples as vials in cases page
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
 - VariantS comment popovers reactivate on hover
+- - Updating database genes in build 37
 - ACMG classification summary hidden by sticky navbar
+
 
 ## [4.54]
 ### Added
