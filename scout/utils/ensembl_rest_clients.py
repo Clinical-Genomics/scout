@@ -7,12 +7,12 @@ import requests
 LOG = logging.getLogger(__name__)
 
 HEADERS = {"Content-type": "application/json"}
-RESTAPI_37 = "http://grch37.rest.ensembl.org"
-RESTAPI_38 = "http://rest.ensembl.org"
+RESTAPI_37 = "https://grch37.rest.ensembl.org"
+RESTAPI_38 = "https://rest.ensembl.org"
 PING_ENDPOINT = "info/ping"
 
-BIOMART_37 = "http://grch37.ensembl.org/biomart/martservice?query="
-BIOMART_38 = "http://ensembl.org/biomart/martservice?query="
+BIOMART_37 = "https://feb2014.archive.ensembl.org/biomart/martservice?query="
+BIOMART_38 = "https://www.ensembl.org/biomart/martservice?query="
 
 
 class EnsemblRestApiClient:

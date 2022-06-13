@@ -43,7 +43,7 @@ def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_response
     test_variant = store.variant_collection.find_one({"hgnc_symbols": ["POT1"]})
 
     # GIVEN a patched response from Ensembl liftover API
-    url = f'http://grch37.rest.ensembl.org/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
+    url = f'https://grch37.rest.ensembl.org/map/human/GRCh37/{test_variant["chromosome"]}:{test_variant["position"]}..{test_variant["end"]}/GRCh38?content-type=application/json'
     responses.add(
         responses.GET,
         url,
