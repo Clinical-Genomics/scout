@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Changed
 - Represent different tumor samples as vials in cases page
+- Option to force-update the OMIM panel
 - Create ClinVar submissions from pinned variants list in case page
 - Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
