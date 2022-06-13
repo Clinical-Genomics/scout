@@ -99,11 +99,15 @@
         {{ case.display_name }}
       </a>
       {% if case.individuals|length > 1 %}
-        <span class="badge bg-primary">
-          {% for item in case.individuals %}
-            <i class="fa fa-user"></i>
-          {% endfor %}
-        </span>
+      <span class="badge bg-primary">
+        {% for item in case.individuals %}
+          {% if case.track == "cancer" %}
+            <span class="fa fa-vial"></span>
+          {% else %} <!-- rare disease case -->
+            <span class="fa fa-user"></span>
+          {% endif %}
+        {% endfor %}
+      </span>
       {% endif %}
       {% for user in case.assignees %}
         <span class="badge bg-secondary">{{ user.name }}</span>
