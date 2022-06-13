@@ -5,21 +5,18 @@
 {% endblock %}
 
 {% block content_main %}
-  {% if not evaluation %}
-    <div class="float-top-secondary">
-      <div class="text-center">
-        {% for option in ACMG_OPTIONS %}
-          <a id="acmg-{{ option.code }}" class="btn btn-light acmg-preview">{{ option.label }}</a>
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
-  <hr>
   <div class="container mt-3">
     <form action="{{ url_for('variant.variant_acmg', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
       <div class="card panel-default mt-3">
         <div class="card-body">
           {% if not evaluation %}
+              <div class="mb-3">
+                <div class="text-center">
+                  {% for option in ACMG_OPTIONS %}
+                    <a id="acmg-{{ option.code }}" class="btn btn-light acmg-preview">{{ option.label }}</a>
+                  {% endfor %}
+                </div>
+              </div>
             <button class="btn btn-primary form-control">Submit</button>
           {% else %}
             <h4>
