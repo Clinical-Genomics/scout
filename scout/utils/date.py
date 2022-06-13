@@ -60,6 +60,7 @@ def pretty_date(time=False):
         return within_24_h(diff_seconds)
     return more_than_a_day(diff_days)
 
+
 def more_than_a_day(days):
     """Return a string for passed time more than a day"""
     if days == 1:
@@ -73,6 +74,7 @@ def more_than_a_day(days):
     if days < 365:
         return str(days // 30) + " months ago"
     return str(days // 365) + " years ago"
+
 
 def within_24_h(seconds):
     """Return a string for passed time is less than a day"""
