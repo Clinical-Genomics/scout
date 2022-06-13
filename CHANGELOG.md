@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display stats from multiple instances of loqusdb on variant page
 ### Changed
 - Represent different tumor samples as vials in cases page
+- Option to force-update the OMIM panel
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
 - VariantS comment popovers reactivate on hover
