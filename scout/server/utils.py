@@ -300,6 +300,3 @@ def zip_dir_to_obj(path):
     data.seek(0)
 
     return data
-
-
-
