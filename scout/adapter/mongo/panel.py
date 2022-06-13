@@ -163,7 +163,7 @@ class PanelHandler:
 
         Args:
             panel_obj(dict)
-            replace(bool), if True, upsert panel data in database
+            replace(bool), if True, replace panel data in database
         """
         panel_name = panel_obj["panel_name"]
         panel_version = panel_obj["version"]
