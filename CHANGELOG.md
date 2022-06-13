@@ -10,11 +10,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Represent different tumor samples as vials in cases page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
+- Represent different tumor samples as vials in cases page
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
 - VariantS comment popovers reactivate on hover
 - Updating database genes in build 37
-
+- ACMG classification summary hidden by sticky navbar
 
 ## [4.54]
 ### Added
