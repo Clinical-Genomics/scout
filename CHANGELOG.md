@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - VariantS comment popovers reactivate on hover
 - Updating database genes in build 37
 - ACMG classification summary hidden by sticky navbar
+- Logo backgrounds fixed to white on welcome page
 
 
 ## [4.54]
