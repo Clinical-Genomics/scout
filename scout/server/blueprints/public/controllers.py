@@ -131,7 +131,11 @@ def get_compact_events(event_list):
         if event_list == []:
             return acc
         head, *tail = event_list
-        if len(acc) >= 1 and head["verb"] == acc[-1].verb and head["category"] == acc[-1].event_type:
+        if (
+            len(acc) >= 1
+            and head["verb"] == acc[-1].verb
+            and head["category"] == acc[-1].event_type
+        ):
             try:
                 compact_event = acc.pop()
                 acc.append(compact_event.increment())
@@ -142,6 +146,7 @@ def get_compact_events(event_list):
             compact_event = CompactEvent(head["verb"], head["category"], head["updated_at"])
             acc.append(compact_event)
         return compile_latest_events_aux(tail, acc)
+
     compiled_events = compile_latest_events_aux(event_list, [])
     top_events = compiled_events[0:NOF_RECENT_EVENTS]
     return top_events
@@ -163,7 +168,7 @@ def events_to_string(list_of_events):
         """Return a possessive 's' to append if n is >1. This is used
         to make grammatically corrected strings."""
         if n > 1:
-           return "s"
+            return "s"
         return ""
 
     for compact_event in list_of_events:
