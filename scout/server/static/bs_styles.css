@@ -32,6 +32,18 @@ table.dataTable {margin-bottom: 0}
 	 top: 50px;
 }
 
+a:visited {
+	color: var(--bs-purple);
+}
+
+a.btn-secondary:visited {
+  color: white;
+}
+
+a.dropdown-item:visited {
+  all: unset;
+}
+
 /* affected, archived and similar accents */
 .bg-danger-light {
     background-color: var(--bs-info);
