@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Represent different tumor samples as vials in cases page
 - Option to force-update the OMIM panel
+- Visited links displayed with cyan color
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
 - VariantS comment popovers reactivate on hover
@@ -15,7 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG classification summary hidden by sticky navbar
 - Logo backgrounds fixed to white on welcome page
 - Update KUH logo
-- Visited links turn purple again
 
 
 ## [4.54]
