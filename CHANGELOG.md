@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG classification summary hidden by sticky navbar
 - Logo backgrounds fixed to white on welcome page
 - Update KUH logo
+- Visited links turn purple again
 
 ## [4.54]
 ### Added
