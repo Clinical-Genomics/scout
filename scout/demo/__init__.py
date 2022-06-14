@@ -3,6 +3,8 @@ import pkg_resources
 ###### Files ######
 # Gene panel:
 panel_file = "demo/panel_1.txt"
+panelapp_file = "demo/panelapp_test_panel.json"
+
 madeline_file = "demo/madeline.xml"
 
 # Case info
@@ -26,6 +28,7 @@ empty_sv_file = "demo/empty.clinical.SV.vcf.gz"
 clinical_str_file = "demo/643594.clinical.str.stranger.vcf.gz"
 
 panel_path = pkg_resources.resource_filename("scout", panel_file)
+panelapp_panel_path = pkg_resources.resource_filename("scout", panelapp_file)
 madeline_path = pkg_resources.resource_filename("scout", madeline_file)
 load_path = pkg_resources.resource_filename("scout", load_file)
 cancer_load_path = pkg_resources.resource_filename("scout", cancer_load_file)
