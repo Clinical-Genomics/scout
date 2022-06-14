@@ -62,14 +62,14 @@ def test_load_panel_panelapp(mock_app, institute_obj):
     runner = mock_app.test_cli_runner()
 
     # Run command to load a PanelApp panel from the web
-    result = runner.invoke(cli, ["load", "panel", "--panel-app", "--panel-id", 522])
+    result = runner.invoke(cli, ["load", "panel", "--panel-app", "--panel-id", panelapp_panel])
 
     # THEN panel should be loaded in database and the number of gene panels should increase by one
     assert result.exit_code == 0
     assert sum(1 for i in store.panel_collection.find()) == 2
 
     # Run the command again and it should not return error:
-    result = runner.invoke(cli, ["load", "panel", "--panel-app", "--panel-id", 522])
+    result = runner.invoke(cli, ["load", "panel", "--panel-app", "--panel-id", panelapp_panel])
     assert result.exit_code == 0
     # Gene panels should still be the same, since PanelApp panel has been overwritten
 
