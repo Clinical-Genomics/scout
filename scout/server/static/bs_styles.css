@@ -36,7 +36,7 @@ a:visited {
 	color: var(--bs-cyan);
 }
 
-a.btn:visited {
+a.btn-secondary:visited {
   color: white;
 }
 
