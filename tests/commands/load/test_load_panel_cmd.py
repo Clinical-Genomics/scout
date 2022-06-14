@@ -46,11 +46,11 @@ def test_load_panel_panelapp(mock_app):
     assert sum(1 for i in store.panel_collection.find()) == 1
 
     # GIVEN a mocked response from PanelApp (mock response returns test PanelApp panel from scout/demo folder)
-    data = None
     panelapp_panel = 522
+    data = None
     with open(panelapp_panel_path) as f:
         data = json.load(f)
-    url = f"https://panelapp.genomicsengland.co.uk/WebServices/get_panel/{522}"
+    url = f"https://panelapp.genomicsengland.co.uk/WebServices/get_panel/{panelapp_panel}"
     responses.add(
         responses.GET,
         url,
