@@ -72,6 +72,7 @@ def test_load_panel_panelapp(mock_app, institute_obj):
     result = runner.invoke(cli, ["load", "panel", "--panel-app", "--panel-id", panelapp_panel])
     assert result.exit_code == 0
     # Gene panels should still be the same, since PanelApp panel has been overwritten
+    assert sum(1 for i in store.panel_collection.find()) == 2
 
 
 def test_load_panel_maintainer_not_in_db(mock_app, institute_obj):
