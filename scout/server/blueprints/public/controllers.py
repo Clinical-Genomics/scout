@@ -86,13 +86,14 @@ def get_display_name(case, store):
 def case_page_link(url):
     "Drop subpages from url so that only url to case page is returned"
     url_tokens = url.split("/")
-    LOG.warning('LINK: {}'.format(url))
     # Drop leading tokens if url on format
     # `http://localhost:5000/cust000/643594/e24b65bf27feacec6a81c8e9e19bd5f1`
-    if url_tokens[0] == "http":
+    if url_tokens[0] == "http:" or url_tokens[0] == "https:":
         url_tokens = url_tokens[3:]
+    if url_tokens[0] == "":
+        url_tokens = url_tokens[1:]
     # Drop trailing url tokens and return
-    return "/".join(url_tokens[0:3])
+    return "/" + "/".join(url_tokens[0:2])
 
 
 def recent_cases(user, store):
