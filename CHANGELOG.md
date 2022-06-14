@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Logo backgrounds fixed to white on welcome page
 - Update KUH logo
 - Visited links turn purple again
+- Style of link buttons and dropdown menus
 
 
 ## [4.54]
