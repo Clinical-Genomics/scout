@@ -41,7 +41,7 @@ a.btn-secondary:visited {
 }
 
 a.dropdown-item:visited {
-  color: var(--bs-blue);
+  all: unset;
 }
 
 /* affected, archived and similar accents */
