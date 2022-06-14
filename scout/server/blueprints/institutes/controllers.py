@@ -21,7 +21,6 @@ from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
-from scout.utils.scout_requests import get_request_json
 
 from .forms import BeaconDatasetForm, CaseFilterForm
 
