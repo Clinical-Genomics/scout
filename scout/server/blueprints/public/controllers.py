@@ -42,13 +42,7 @@ class CompactEvent:
 
     def __repr__(self):
         return (
-            self.verb
-            + ":"
-            + self.event_type
-            + ":"
-            + str(self.count)
-            + ":"
-            + pretty_date(self.date)
+            self.verb + ":" + self.event_type + ":" + str(self.count) + ":" + pretty_date(self.date)
         )
 
 
@@ -146,14 +140,10 @@ def get_compact_events(event_list):
                 compact_event = acc.pop()
                 acc.append(compact_event.increment())
             except IndexError:
-                compact_event = CompactEvent(
-                    head["verb"], head["category"], head["updated_at"]
-                )
+                compact_event = CompactEvent(head["verb"], head["category"], head["updated_at"])
                 acc.append(compact_event)
         else:
-            compact_event = CompactEvent(
-                head["verb"], head["category"], head["updated_at"]
-            )
+            compact_event = CompactEvent(head["verb"], head["category"], head["updated_at"])
             acc.append(compact_event)
         return compile_latest_events_aux(tail, acc)
 
