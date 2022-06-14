@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ACMG classification summary hidden by sticky navbar
 - Logo backgrounds fixed to white on welcome page
 - Update KUH logo
+- Visited links turn purple again
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
 
 ## [4.54]
