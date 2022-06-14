@@ -36,6 +36,10 @@ a:visited {
 	color: var(--bs-cyan);
 }
 
+a.btn:visited {
+  color: white;
+}
+
 /* affected, archived and similar accents */
 .bg-danger-light {
     background-color: var(--bs-info);
