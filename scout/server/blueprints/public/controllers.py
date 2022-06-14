@@ -82,6 +82,7 @@ def get_display_name(case, store):
     """Get display_name for case"""
     return store.get_display_name(case)
 
+
 def get_customer(case, store):
     """Get customer for case"""
     return store.get_customer(case)
@@ -91,7 +92,7 @@ def case_page_link(case, store):
     """Create a relative link to the case page"""
     customer = get_customer(case, store)
     display_name = get_display_name(case, store)
-    link = "/" + customer + "/" + display_name 
+    link = "/" + customer + "/" + display_name
     return link
 
 
