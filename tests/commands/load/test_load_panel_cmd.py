@@ -9,7 +9,7 @@ from scout.demo import panel_path, panelapp_panel_path
 from scout.server.extensions import store
 
 
-def test_load_panel(mock_app, institute_obj):
+def test_load_panel(mock_app):
     """Test the CLI command that loads a gene panel"""
 
     runner = mock_app.test_cli_runner()
@@ -39,7 +39,7 @@ def test_load_panel(mock_app, institute_obj):
 
 
 @responses.activate
-def test_load_panel_panelapp(mock_app, institute_obj):
+def test_load_panel_panelapp(mock_app):
     """Test loading a PanelApp gene panel"""
 
     # GIVEN a gene panel collection with one panel
@@ -75,7 +75,7 @@ def test_load_panel_panelapp(mock_app, institute_obj):
     assert sum(1 for i in store.panel_collection.find()) == 2
 
 
-def test_load_panel_maintainer_not_in_db(mock_app, institute_obj):
+def test_load_panel_maintainer_not_in_db(mock_app):
     """Test the CLI command that loads a gene panel"""
 
     runner = mock_app.test_cli_runner()
