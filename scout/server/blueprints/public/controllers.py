@@ -86,7 +86,7 @@ def get_display_name(case, store):
 def case_page_link(url):
     "Drop subpages from url so that only url to case page is returned"
     url_tokens = url.split("/")
-    LOG.warning('LINK: {}'.format(url))
+    LOG.warning("LINK: {}".format(url))
     # Drop leading tokens if url on format
     # `http://localhost:5000/cust000/643594/e24b65bf27feacec6a81c8e9e19bd5f1`
     if url_tokens[0] == "http":
