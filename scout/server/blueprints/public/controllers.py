@@ -78,7 +78,7 @@ def get_events_of_interest(store, user):
         event = {}
         event["human_readable"] = events_to_string(compact_events)
         head, *_tail = events
-        event["link"] = case_page_link(head["link"])
+        event["link"] = case_page_link(head["case"], store)
         event["name"] = get_display_name(head["case"], store)
         events_of_interest.append(event)
     return events_of_interest
@@ -88,18 +88,17 @@ def get_display_name(case, store):
     """Get display_name for case"""
     return store.get_display_name(case)
 
+def get_customer(case, store):
+    """Get customer for case"""
+    return store.get_customer(case)
 
-def case_page_link(url):
-    "Drop subpages from url so that only url to case page is returned"
-    url_tokens = url.split("/")
-    # Drop leading tokens if url on format
-    # `http://localhost:5000/cust000/643594/e24b65bf27feacec6a81c8e9e19bd5f1`
-    if url_tokens[0] == "http:" or url_tokens[0] == "https:":
-        url_tokens = url_tokens[3:]
-    if url_tokens[0] == "":
-        url_tokens = url_tokens[1:]
-    # Drop trailing url tokens and return
-    return "/" + "/".join(url_tokens[0:2])
+
+def case_page_link(case, store):
+    """Create a relative link to the case page"""
+    customer = get_customer(case, store)
+    display_name = get_display_name(case, store)
+    link = "/" + customer + "/" + display_name 
+    return link
 
 
 def recent_cases(user, store):

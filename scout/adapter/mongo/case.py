@@ -1281,6 +1281,10 @@ class CaseHandler(object):
         """Get display name from case_id"""
         return self.case_collection.find_one({"_id": case_id}).get("display_name")
 
+    def get_customer(self, case_id):
+        """Get owner from case_id"""
+        return self.case_collection.find_one({"_id": case_id}).get("owner")
+
 
 def get_variantid(variant_obj, family_id):
     """Create a new variant id.
