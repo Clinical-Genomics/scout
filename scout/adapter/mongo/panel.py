@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 class PanelHandler:
     """Code to handle interactions with the mongo database for panels"""
 
-    def load_panel(self, parsed_panel):
+    def load_panel(self, parsed_panel, replace=False):
         """Load a gene panel based on the info sent
         A panel object is built and integrity checks are made.
         The panel object is then loaded into the database.
@@ -31,6 +31,7 @@ class PanelHandler:
             date(datetime.datetime): Date of creation
             version(float)
             full_name(str): Option to have a long name
+            replace(bool): Option to replace a panel document in database if a panel with same version already exists
 
             panel_info(dict): {
                 'file': <path to panel file>(str),
@@ -44,7 +45,7 @@ class PanelHandler:
         """
         panel_obj = build_panel(parsed_panel, self)
 
-        self.add_gene_panel(panel_obj)
+        self.add_gene_panel(panel_obj, replace=replace)
 
     def load_omim_panel(self, genemap2_lines, mim2gene_lines, institute=None, force=False):
         """Create and load the OMIM-AUTO panel
@@ -157,23 +158,39 @@ class PanelHandler:
 
         LOG.info("Updated %s genes", nr_genes)
 
-    def add_gene_panel(self, panel_obj):
+    def add_gene_panel(self, panel_obj, replace=False):
         """Add a gene panel to the database
 
         Args:
             panel_obj(dict)
+            replace(bool), if True, replace panel data in database
         """
         panel_name = panel_obj["panel_name"]
         panel_version = panel_obj["version"]
         display_name = panel_obj.get("display_name", panel_name)
 
-        if self.gene_panel(panel_name, panel_version):
+        LOG.info("loading panel %s, version %s to database", display_name, panel_version)
+        LOG.info("Nr genes in panel: %s", len(panel_obj.get("genes", [])))
+
+        old_panel = self.gene_panel(panel_name, panel_version)
+
+        if old_panel and replace is False:
             raise IntegrityError(
                 "Panel {0} with version {1} already"
                 " exist in database".format(panel_name, panel_version)
             )
-        LOG.info("loading panel %s, version %s to database", display_name, panel_version)
-        LOG.info("Nr genes in panel: %s", len(panel_obj.get("genes", [])))
+        elif (
+            old_panel
+        ):  # Same version of this panel exists, but should be replaced by new panel document
+            LOG.warning(
+                f"Panel {panel_name} v.{panel_version} already exists. Replacing it with new data"
+            )
+            new_panel = self.panel_collection.find_one_and_replace(
+                old_panel, panel_obj, return_document=pymongo.ReturnDocument.AFTER
+            )
+            LOG.debug("Panel replaced")
+            return new_panel["_id"]
+        # Else create a new panel document with a given version
         result = self.panel_collection.insert_one(panel_obj)
         LOG.debug("Panel saved")
         return result.inserted_id
