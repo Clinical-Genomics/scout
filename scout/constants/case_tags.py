@@ -1,4 +1,4 @@
-ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "external")
+ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "panel-umi", "external")
 
 CUSTOM_CASE_REPORTS = [
     "multiqc",
