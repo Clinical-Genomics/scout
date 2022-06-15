@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, Union
 from pydantic import BaseModel, Field, root_validator, validator
 from typing_extensions import Literal
 
+from scout.constants import ANALYSIS_TYPES
 from scout.exceptions import ConfigError, PedigreeError
 from scout.utils.date import get_date
 
@@ -81,7 +82,7 @@ class Image(BaseModel):
 
 class ScoutIndividual(BaseModel):
     alignment_path: Optional[str] = None
-    analysis_type: Literal["wgs", "wes", "mixed", "unknown", "panel", "external"] = None
+    analysis_type: Literal[ANALYSIS_TYPES] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
     capture_kits: Optional[str] = Field(alias="capture_kit")  #!
