@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed sidebar from Causatives page - navigation is available on the top bar for now
 ### Fixed
 - Remove a:visited css style from all buttons
+- Update of HPO terms via command line
 
 ## [4.55]
 ### Changed

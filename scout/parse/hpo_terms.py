@@ -44,19 +44,33 @@ def build_hpo_tree(hpo_lines):
 def parse_hpo_obo(hpo_lines):
     """Parse a .obo formated hpo line"""
     term = {}
+    in_term = False
+
     for line in hpo_lines:
         if len(line) == 0:
             continue
         line = line.rstrip()
+
+        # [Typedef] entries are not parsed
+        # Resume term parsing if a new [Term] is seen
+        if line == "[Typedef]":
+            in_term = False
+            continue
+
         # New term starts with [Term]
         if line == "[Term]":
-            # Return prevoious term if it exists
+            in_term = True
+            # Return previous term if it exists
             if term:
                 yield term
             # Initialize empty term
             term = {}
+            continue
 
-        elif line.startswith("id"):
+        if not in_term:
+            continue
+
+        if line.startswith("id"):
             term["hpo_id"] = line[4:]
 
         elif line.startswith("name"):
