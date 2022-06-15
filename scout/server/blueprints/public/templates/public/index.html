@@ -55,7 +55,7 @@
           
     {% else %}
       {% if config.GOOGLE %}
-        <a class="btn btn-primary" onclick="sendBrowserInfo()" href="{{ url_for('login.login') }}" role="button">
+        <a class="btn btn-primary btn-lg text-white" onclick="sendBrowserInfo()" href="{{ url_for('login.login') }}" role="button">
           Login with Google
         </a>
       {% elif config.LDAP_HOST or config.LDAP_SERVER %}
