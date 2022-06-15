@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `panel-umi` tag option when loading cancer analyses
 ### Changed
 - Black text to make comments more visible in dark mode
+### Fixed
+- Remove a:visited css style from all buttons
 
 ## [4.55]
 ### Changed
