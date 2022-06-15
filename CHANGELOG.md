@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Fixed
-- Style of user login button
+- Remove a:visited css style from all buttons
 
 ## [4.55]
 ### Changed
