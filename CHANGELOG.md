@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
 - Remove a:visited css style from all buttons
+- Update of HPO terms via command line
 
 ## [4.55]
 ### Changed
