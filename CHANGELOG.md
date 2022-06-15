@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Black text to make comments more visible in dark mode
 ### Fixed
+- Remove a:visited css style from all buttons
 - Update of HPO terms via command line
 
 ## [4.55]

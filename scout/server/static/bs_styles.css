@@ -36,8 +36,8 @@ a:visited {
 	color: var(--bs-purple);
 }
 
-a.btn-secondary:visited {
-  color: white;
+a.btn:visited {
+  color: inherit;
 }
 
 a.dropdown-item:visited {
