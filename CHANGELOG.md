@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Test for PanelApp panels loading
+- `panel-umi` tag option when loading cancer analyses
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
 ### Changed
