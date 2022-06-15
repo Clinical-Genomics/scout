@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 ### Fixed
 - Remove a:visited css style from all buttons
+- Update of HPO terms via command line
 
 ## [4.55]
 ### Changed
