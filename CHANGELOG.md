@@ -6,19 +6,24 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Changed
-- Represent different tumor samples as vials in cases page
-- Option to force-update the OMIM panel
 - Create ClinVar submissions from pinned variants list in case page
 - Select which pinned variants will be included in ClinVar submission documents
+
+
+## [4.55]
+### Changed
+- Represent different tumor samples as vials in cases page
+- Option to force-update the OMIM panel
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
 - VariantS comment popovers reactivate on hover
 - Updating database genes in build 37
 - ACMG classification summary hidden by sticky navbar
 - Logo backgrounds fixed to white on welcome page
-- Update KUH logo
 - Visited links turn purple again
 - Style of link buttons and dropdown menus
+- Update KUH and GMS logos
+- Link color for Managed variants
 
 ## [4.54]
 ### Added
