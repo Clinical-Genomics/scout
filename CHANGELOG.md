@@ -9,6 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
+### Changed
+- Black text to make comments more visible in dark mode
+### Fixed
+- Remove a:visited css style from all buttons
 
 ## [4.55]
 ### Changed
