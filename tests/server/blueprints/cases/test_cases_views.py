@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+import platform
+import pytest
 import requests
 from bson.objectid import ObjectId
 from flask import current_app, json, url_for
@@ -604,6 +606,7 @@ def test_remove_case_group(app, case_obj, institute_obj):
         assert resp.status_code == 302
 
 
+@pytest.mark.skipif(platform.machine() == "arm64", reason="Will segfault on M1")
 def test_download_hpo_genes(app, case_obj, institute_obj):
     """Test the endpoint that downloads the dynamic gene list for a case"""
 
@@ -733,6 +736,7 @@ def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
         assert resp.status_code == 302
 
 
+@pytest.mark.skipif(platform.machine() == "arm64", reason="Will segfault on M1")
 def test_pdf_case_report(app, institute_obj, case_obj):
     # Test the web page containing the general case report
 
@@ -864,6 +868,7 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
         assert "Leveransrapport Clinical Genomics" in str(resp.data)
 
 
+@pytest.mark.skipif(platform.machine() == "arm64", reason="Will segfault on M1")
 def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
 
     # GIVEN an initialized app

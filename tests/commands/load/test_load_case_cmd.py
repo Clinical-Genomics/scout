@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+import platform
+import pytest
 import tempfile
 
 from scout.commands import cli
@@ -161,6 +163,9 @@ def test_load_case_NoConf(mock_app, institute_obj, case_obj):
     assert result.exit_code != 0
 
 
+@pytest.mark.skipif(
+    platform.machine() == "arm64", reason="Fails on M1 when invoking from command line"
+)
 def test_load_case_BadPath(mock_app, institute_obj, case_obj):
     # GIVEN a config setup with an incorrect path configured
     runner = mock_app.test_cli_runner()

@@ -18,7 +18,7 @@ pathlib
 pdfkit
 xlsxwriter
 click
-cryptography<3.4
+#cryptography<3.4
 defusedxml
 svglib
 cairosvg

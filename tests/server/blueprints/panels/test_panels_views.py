@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import platform
+import pytest
 from flask import url_for
 
 from scout.server.extensions import store
@@ -145,6 +147,7 @@ def test_panels(app, institute_obj):
 
 
 # This test is slow since pdf rendering is slow
+@pytest.mark.skipif(platform.machine() == "arm64", reason="Will segfault on M1")
 def test_panel_export(client, real_panel_database):
     adapter = real_panel_database
     # GIVEN a panel in the database
