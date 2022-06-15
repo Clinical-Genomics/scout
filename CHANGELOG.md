@@ -6,9 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Added
+- Test for PanelApp panels loading
 - `panel-umi` tag option when loading cancer analyses
 ### Changed
 - Black text to make comments more visible in dark mode
+- Loading PanelApp panels replaces pre-existing panels with same version
 ### Fixed
 - Remove a:visited css style from all buttons
 
