@@ -40,6 +40,10 @@ a.btn-secondary:visited {
   color: white;
 }
 
+a.btn-primary:visited {
+  color: white;
+}
+
 a.dropdown-item:visited {
   all: unset;
 }
