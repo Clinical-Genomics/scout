@@ -36,8 +36,8 @@ a:visited {
 	color: var(--bs-purple);
 }
 
-a.btn-secondary:visited {
-  color: white;
+a.btn:visited {
+  color: inherit;
 }
 
 a.dropdown-item:visited {
@@ -79,11 +79,11 @@ a.dropdown-item:visited {
 	/* comments even-odd row dark */
 	.even {
 		background-color: #b6b6b6;
-		color:var(--bs-white);
+		color:var(--bs-black);
 	}
 	.odd {
 		background-color: #95a8b0;
-		color:var(--bs-white);
+		color:var(--bs-black);
 	}
 
 	.even a {
