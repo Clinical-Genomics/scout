@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Remove a:visited css style from all buttons
 - Update of HPO terms via command line
+- Background color of `MIXED` sequencing type on cases page
 
 ## [4.55]
 ### Changed
