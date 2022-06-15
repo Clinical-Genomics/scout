@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
+### Fixed
+- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
+
+
+## [4.55]
 ### Changed
 - Represent different tumor samples as vials in cases page
 - Option to force-update the OMIM panel
@@ -14,10 +19,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updating database genes in build 37
 - ACMG classification summary hidden by sticky navbar
 - Logo backgrounds fixed to white on welcome page
-- Update KUH logo
 - Visited links turn purple again
 - Style of link buttons and dropdown menus
-- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
+- Update KUH and GMS logos
+- Link color for Managed variants
 
 ## [4.54]
 ### Added
