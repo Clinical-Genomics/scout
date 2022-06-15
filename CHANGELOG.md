@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## []
 ### Added
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
+### Changed
+- Black text to make comments more visible in dark mode
+### Fixed
+- Remove a:visited css style from all buttons
 
 ## [4.55]
 ### Changed
