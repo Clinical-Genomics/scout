@@ -140,6 +140,6 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
             continue
 
         try:
-            adapter.load_panel(parsed_panel=parsed_panel)
+            adapter.load_panel(parsed_panel=parsed_panel, replace=True)
         except Exception as err:
             raise err

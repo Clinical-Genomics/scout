@@ -5,8 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
+### Added
+- Test for PanelApp panels loading
 ### Changed
 - Black text to make comments more visible in dark mode
+- Loading PanelApp panels replaces pre-existing panels with same version
 - Create ClinVar submissions from pinned variants list in case page
 - Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
