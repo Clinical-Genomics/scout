@@ -5,9 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
+### Changed
+- Black text to make comments more visible in dark mode
 ### Fixed
+- Remove a:visited css style from all buttons
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
-
 
 ## [4.55]
 ### Changed
