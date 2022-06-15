@@ -15,7 +15,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Remove a:visited css style from all buttons
 - Update of HPO terms via command line
+- Background color of `MIXED` sequencing type on cases page
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
+
 
 ## [4.55]
 ### Changed
