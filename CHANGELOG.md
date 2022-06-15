@@ -6,9 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Changed
+- Black text to make comments more visible in dark mode
 - Create ClinVar submissions from pinned variants list in case page
 - Select which pinned variants will be included in ClinVar submission documents
-
+### Fixed
+- Remove a:visited css style from all buttons
 
 ## [4.55]
 ### Changed
