@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Fixed
+- Update of HPO terms via command line
+
 ## [4.55]
 ### Changed
 - Represent different tumor samples as vials in cases page

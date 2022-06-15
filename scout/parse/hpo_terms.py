@@ -48,6 +48,10 @@ def parse_hpo_obo(hpo_lines):
         if len(line) == 0:
             continue
         line = line.rstrip()
+
+        if line == "[Typedef]":
+            break
+
         # New term starts with [Term]
         if line == "[Term]":
             # Return prevoious term if it exists
