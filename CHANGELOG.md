@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove a:visited css style from all buttons
 - Update of HPO terms via command line
 - Background color of `MIXED` sequencing type on cases page
+- Fixed regex error when searching for cases with query ending with `\ `
 
 ## [4.55]
 ### Changed
