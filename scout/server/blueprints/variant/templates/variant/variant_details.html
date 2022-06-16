@@ -269,7 +269,11 @@
           <span class="float-end control-label" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="bottom"
               title="<strong>{% if variant.spliceai_scores %}
                  {% for entry in variant.spliceai_scores %}
-                  {{entry}}
+                    SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
+                    <br>All scores and positions(relative to variant):<br>
+                    {%  if variant.spliceai_predictions[loop.index] is not none %}
+                      {{ variant.spliceai_predictions[loop.index] }} <br>
+                    {%  endif %}
                   {% endfor %}
               {% else %}
                 'No SpliceAI positions annotated for this variant.'
