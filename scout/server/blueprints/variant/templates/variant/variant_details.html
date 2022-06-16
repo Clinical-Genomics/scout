@@ -271,7 +271,7 @@
                  {% for entry in variant.spliceai_scores %}
                     SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
                     <br>All scores and positions(relative to variant):<br>
-                    {% for pred in variant.spliceai_predictions[loop.index0] %}
+                    {% for pred in variant.spliceai_predictions[loop.index0] or [] %}
                       {{pred}}<br>
                     {% endfor %}
                   {% endfor %}
