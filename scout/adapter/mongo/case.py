@@ -1279,11 +1279,19 @@ class CaseHandler(object):
 
     def get_display_name(self, case_id):
         """Get display name from case_id"""
-        return self.case_collection.find_one({"_id": case_id}).get("display_name")
+        try:
+            return self.case_collection.find_one({"_id": case_id}).get("display_name")
+        except AttributeError:
+            LOG.warning("Except(AttributeError).get_display_name: {}")
+            return ""
 
-    def get_customer(self, case_id):
-        """Get owner from case_id"""
-        return self.case_collection.find_one({"_id": case_id}).get("owner")
+    def get_institute(self, case_id):
+        """Get owner/institute from case_id"""
+        try:
+            return self.case_collection.find_one({"_id": case_id}).get("owner")
+        except AttributeError:
+            LOG.warning("Except(AttributeError).get_institute: {}")
+            return ""
 
 
 def get_variantid(variant_obj, family_id):
