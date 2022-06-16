@@ -21,7 +21,6 @@ from scout.server.blueprints.variant.utils import predictions, update_representa
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
-from scout.utils.scout_requests import get_request_json
 
 from .forms import BeaconDatasetForm, CaseFilterForm
 
@@ -315,7 +314,7 @@ def cases(store, request, institute_id):
     name_query = None
     if request.args.get("search_term"):
         name_query = "".join(
-            [request.args.get("search_type"), re.escape(request.args.get("search_term"))]
+            [request.args.get("search_type"), re.escape(request.args["search_term"].strip())]
         )
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
