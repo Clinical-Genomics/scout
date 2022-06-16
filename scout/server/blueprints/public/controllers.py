@@ -28,9 +28,9 @@ class CompactEvent:
 
     def increment_by_one(self):
         """Increment internal counter by one
-        
+
         Args: none
-        Returns: 
+        Returns:
             CompactEvent()
         """
         self.count = self.count + 1
