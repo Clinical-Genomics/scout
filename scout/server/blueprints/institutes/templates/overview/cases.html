@@ -155,7 +155,7 @@
           {% set badge_class = 'warning' %}
         {% elif analysis_type == 'tga' %}
           {% set badge_class = 'info' %}
-        {% elif analysis_type == 'panel' %}
+        {% elif analysis_type in ['panel', 'panel-umi'] %}
           {% set badge_class = 'info' %}
         {% elif analysis_type == 'mixed' %}
           {% set badge_class = 'dark' %}
