@@ -199,7 +199,7 @@ EVENTS_MAP = {
     "open_research": f"Opened research mode",
     "reset_research": f"Canceled research mode",
     "unmark_causative": f"Unmarked nof event_type causative",
-    "mark_partial_causative": f"Mark nof event_type partial causative",
+    "mark_partial_causative": f"Marked nof event_type partial causative",
     "unmark_partial_causative": f"Unmarked nof event_type partial causative",
     "manual_rank": f"Updated nof event_type manual rank",
     "cancer_tier": f"Updated nof event_type cancer tier",
