@@ -17,7 +17,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update of HPO terms via command line
 - Background color of `MIXED` and `PANEL-UMI` sequencing types on cases page
 - Fixed regex error when searching for cases with query ending with `\ `
+- Genesymbols on Causatives page lighter in dark mode
 - Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
+
 
 ## [4.55]
 ### Changed
