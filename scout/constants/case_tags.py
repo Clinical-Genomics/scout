@@ -194,7 +194,7 @@ EVENTS_MAP = {
     "synopsis": f"Updated synopsis on nof event_type",
     "unpin": f"Removed pinned nof event_type",
     "sanger": f"Ordered Sanger sequencing ",
-    "cancel_sanger": f"Cancelled sanger order",
+    "cancel_sanger": f"Cancelled Sanger order",
     "archive": f"Archived nof event_type",
     "open_research": f"Opened research mode",
     "reset_research": f"Canceled research mode",
