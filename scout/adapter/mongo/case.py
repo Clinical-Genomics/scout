@@ -1266,8 +1266,14 @@ class CaseHandler(object):
         LOG.info("Verification status updated for {} variants".format(n_status_updated))
         return updated_variants
 
-    def unique_cases_by_date(self, user_email=None):
-        """Return list of cases, ordered with 'updated_at'. Each case appears only once."""
+    def unique_cases_by_date(self, user_email):
+        """Return list of cases, ordered with 'updated_at'. Each case appears only once.
+
+        Args:
+           user_email(string)
+        Returns:
+            list of cases(dict)
+        """
         case_list = self.event_collection.aggregate(
             [
                 {"$match": {"user_id": user_email}},
@@ -1278,19 +1284,31 @@ class CaseHandler(object):
         return [elem.get("_id") for elem in case_list]
 
     def get_display_name(self, case_id):
-        """Get display name from case_id"""
+        """Get display name from case matching case_id
+        Args:
+           case_id(string)
+        Returns:
+            display_name(string)
+        """
         try:
             return self.case_collection.find_one({"_id": case_id}).get("display_name")
         except AttributeError:
-            LOG.warning("Except(AttributeError).get_display_name: {}")
+            LOG.warning("Caught AttributeError -get_display_name: {}".format(case_id))
             return ""
 
     def get_institute(self, case_id):
-        """Get owner/institute from case_id"""
+        """Get owner a.ka. institute from case matching case_id
+
+        Args:
+           case_id(string)
+        Returns:
+            institute(string)
+        """
+
         try:
             return self.case_collection.find_one({"_id": case_id}).get("owner")
         except AttributeError:
-            LOG.warning("Except(AttributeError).get_institute: {}")
+            LOG.warning("Caught AttributeError -get_institute: {}".format(case_id))
             return ""
 
 
