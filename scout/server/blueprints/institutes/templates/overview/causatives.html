@@ -82,7 +82,7 @@
           {% if (case.causatives and variant._id in case.causatives) or (case.partial_causatives and variant._id in case.partial_causatives) %}
           <tr>
             <td>
-              {{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}
+              <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
             </td>
             <td><a href="{{ url_for('variant.variant',
                 institute_id=institute._id,
