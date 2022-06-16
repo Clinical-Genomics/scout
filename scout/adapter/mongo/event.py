@@ -183,12 +183,25 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         return self.event_collection.find(query)
 
     def user_events(self, user_obj=None):
-        """Fetch all events by a specific user."""
+        """Fetch all events by a specific user.
+
+        Args:
+           user_obj(user_obj)
+        Returns:
+            list of events(dict)
+        """
         query = dict(user_id=user_obj["_id"]) if user_obj else dict()
         return self.event_collection.find(query)
 
     def user_events_by_case(self, user_obj, case):
-        """Fetch all events by a specific user and case sorted by updated_at."""
+        """Fetch all events by a specific user and case sorted by updated_at.
+
+        Args:
+            user_obj(dict)
+            case(string)
+        Returns:
+            list of events(dict)
+        """
 
         query = dict()
         query["user_id"] = user_obj["_id"]
