@@ -193,7 +193,7 @@ EVENTS_MAP = {
     "unassign": f"Unassigned nof event_type",
     "synopsis": f"Updated synopsis on nof event_type",
     "unpin": f"Removed pinned nof event_type",
-    "sanger": f"Ordered sanger sequencing ",
+    "sanger": f"Ordered Sanger sequencing ",
     "cancel_sanger": f"Cancelled sanger order",
     "archive": f"Archived nof event_type",
     "open_research": f"Opened research mode",
