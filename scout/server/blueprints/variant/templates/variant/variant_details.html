@@ -270,7 +270,7 @@
               title="<strong>{% if variant.spliceai_scores %}
                  {% for entry in variant.spliceai_scores %}
                     SpliceAI highest delta score {{ entry }} </strong> at position {{ variant.spliceai_positions[loop.index0]}} relative to this variant.
-                    {%  if variant.spliceai_predictions[loop.index] is not none %}
+                    {%  if variant.spliceai_predictions[loop.index] %}
                       <br>All scores and positions(relative to variant):<br>
                       {{ variant.spliceai_predictions[loop.index] }} <br>
                     {%  endif %}
