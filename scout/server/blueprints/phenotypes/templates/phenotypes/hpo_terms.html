@@ -35,8 +35,8 @@
                 {% for pheno in phenotypes %}
                 <tr>
                   <td><a href="http://hpo.jax.org/app/browse/term/{{pheno.hpo_id}}" referrerpolicy="no-referrer" target="_blank">{{ pheno.hpo_id }}</a></td>
-                  <td>{{ pheno.description }}</td>
-                  <td>{{pheno.genes|length}}</td>
+                  <td><span class="text-body">{{ pheno.description }}</span></td>
+                  <td><span class="text-body">{{pheno.genes|length}}</span></td>
                 </tr>
                 {% endfor %}
               </table>

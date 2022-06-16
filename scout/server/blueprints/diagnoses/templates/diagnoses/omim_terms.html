@@ -40,7 +40,7 @@
                 <tr>
                   <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank">{{ omim.disease_nr }}</a></td>
                   <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}"><span class="fa fa-link"></span></a></td>
-                  <td>{{ omim.description }}</td>
+                  <td><span class="text-body">{{ omim.description }}</span></td>
                   <td><!-- inheritance-->
                     {% for model in omim.inheritance %}
                       <span class="badge bg-info">{{model}}</span>
@@ -48,8 +48,8 @@
                       -
                     {% endfor %}
                   </td><!--end of inheritance-->
-                  <td>{{ omim.genes|length }}</td>
-                  <td>{{ omim.hpo_terms|length }}</td>
+                  <td><span class="text-body">{{ omim.genes|length }}</span></td>
+                  <td><span class="text-body">{{ omim.hpo_terms|length }}</span></td>
                 </tr>
               {% endfor %}
             </table>
