@@ -165,6 +165,33 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         return self.event_collection.find(query).sort("created_at", pymongo.DESCENDING)
 
+    def events_by_variant_id(
+        self,
+        variant_id,
+        verb=None,
+        institute=None,
+    ):
+        """Return all events for variant_id, optionally selected for verb.
+        Note that this is across all cases. Otherwise use events().
+
+        Args:
+            variant_id: md5 hash simple id chr_pos_ref_alt
+
+        Returns:
+            pymongo.Cursor: Query results
+
+        """
+
+        query = {"variant_id": variant_id}
+
+        if verb:
+            query["verb"] = verb
+
+        if institute:
+            query["institute"] = institute
+
+        return self.event_collection.find(query)
+
     def case_events_by_verb(self, category, institute, case, verb):
         """Return events with a specific verb for a case of an institute
         Args:

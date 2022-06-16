@@ -63,6 +63,16 @@
   {% endif %}
 {% endmacro %}
 
+{% macro dismissals_badge(variant) %}
+  {% if variant.dismissals %}
+      <span class="badge bg-secondary" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+        title="Previously classified as <ul>{% for dismissal in (variant.dismissals or []) %}<li>{{ dismissal.label }}</li>{% endfor %}</ul>">
+        {{ variant.dismissals|length }}
+      </span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
 
 {% macro research_assessments_badge(variant) %}
   {% if variant.research_assessments %}
