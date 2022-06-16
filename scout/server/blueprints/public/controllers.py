@@ -1,4 +1,5 @@
 import logging
+from flask import url_for
 from functools import reduce
 
 from scout.constants import EVENTS_MAP
@@ -92,7 +93,7 @@ def case_page_link(case, store):
     """Create a relative link to the case page"""
     customer = get_customer(case, store)
     display_name = get_display_name(case, store)
-    link = "/" + customer + "/" + display_name
+    link = url_for("cases.case", institute_id=customer, case_name=display_name)
     return link
 
 
