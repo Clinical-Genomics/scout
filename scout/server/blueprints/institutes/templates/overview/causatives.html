@@ -27,7 +27,6 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    {{ institute_actionbar(institute) }} <!-- This is the sidebar -->
     <div class="col">
         {{ causatives() }}
     </div>
@@ -83,7 +82,7 @@
           {% if (case.causatives and variant._id in case.causatives) or (case.partial_causatives and variant._id in case.partial_causatives) %}
           <tr>
             <td>
-              {{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}
+              <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
             </td>
             <td><a href="{{ url_for('variant.variant',
                 institute_id=institute._id,

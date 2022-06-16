@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
+### Added
+- Test for PanelApp panels loading
+- `panel-umi` tag option when loading cancer analyses
+### Changed
+- Black text to make comments more visible in dark mode
+- Loading PanelApp panels replaces pre-existing panels with same version
+- Removed sidebar from Causatives page - navigation is available on the top bar for now
+### Fixed
+- Remove a:visited css style from all buttons
+- Update of HPO terms via command line
+- Background color of `MIXED` and `PANEL-UMI` sequencing types on cases page
+- Fixed regex error when searching for cases with query ending with `\ `
+- Genesymbols on Causatives page lighter in dark mode
+
+## [4.55]
 ### Changed
 - Represent different tumor samples as vials in cases page
 - Option to force-update the OMIM panel
@@ -14,10 +29,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updating database genes in build 37
 - ACMG classification summary hidden by sticky navbar
 - Logo backgrounds fixed to white on welcome page
-- Update KUH logo
 - Visited links turn purple again
 - Style of link buttons and dropdown menus
-
+- Update KUH and GMS logos
+- Link color for Managed variants
 
 ## [4.54]
 ### Added

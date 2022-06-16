@@ -5,7 +5,7 @@ owner: cust000
 family: 'cancer_test'
 family_name: 'cancer_case'
 samples:
-  - analysis_type: panel
+  - analysis_type: panel-umi
     sample_id: 999-99
     tumor_type: Chordoma
     capture_kit: Twist.V1

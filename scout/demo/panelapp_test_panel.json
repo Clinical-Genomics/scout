@@ -1,0 +1,163 @@
+{
+    "result": {
+        "Genes": [
+            {
+                "GeneSymbol": "BAP1",
+                "EnsembleGeneIds": [
+                    "ENSG00000163930"
+                ],
+                "ModeOfInheritance": "monoallelic",
+                "Penetrance": null,
+                "Publications": null,
+                "Phenotypes": null,
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "HighEvidence",
+                "Evidences": [
+                    "Expert Review Green",
+                    "NHS GMS",
+                    "Expert List"
+                ]
+            },
+            {
+                "GeneSymbol": "CDK4",
+                "EnsembleGeneIds": [
+                    "ENSG00000135446"
+                ],
+                "ModeOfInheritance": "monoallelic",
+                "Penetrance": null,
+                "Publications": null,
+                "Phenotypes": null,
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "HighEvidence",
+                "Evidences": [
+                    "Expert Review Green",
+                    "NHS GMS",
+                    "Expert List"
+                ]
+            },
+            {
+                "GeneSymbol": "CDKN2A",
+                "EnsembleGeneIds": [
+                    "ENSG00000147889"
+                ],
+                "ModeOfInheritance": "monoallelic",
+                "Penetrance": null,
+                "Publications": null,
+                "Phenotypes": [
+                    "{Melanoma, cutaneous malignant, 2}, OMIM:155601",
+                    "{Melanoma and neural system tumor syndrome}, OMIM:155755",
+                    "{Melanoma-pancreatic cancer syndrome}, OMIM:606719"
+                ],
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "HighEvidence",
+                "Evidences": [
+                    "Expert Review Green",
+                    "NHS GMS",
+                    "Expert List"
+                ]
+            },
+            {
+                "GeneSymbol": "POT1",
+                "EnsembleGeneIds": [
+                    "ENSG00000128513"
+                ],
+                "ModeOfInheritance": "monoallelic",
+                "Penetrance": null,
+                "Publications": [
+                    "24686849",
+                    "24686846",
+                    "29523635",
+                    "30451293",
+                    "30586141",
+                    "32325837",
+                    "32907878"
+                ],
+                "Phenotypes": [
+                    "Melanoma, cutaneous malignant, susceptibility to, 10, OMIM:615848"
+                ],
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "HighEvidence",
+                "Evidences": [
+                    "Expert Review Green",
+                    "NHS GMS",
+                    "Expert List"
+                ]
+            },
+            {
+                "GeneSymbol": "ACD",
+                "EnsembleGeneIds": [
+                    "ENSG00000102977"
+                ],
+                "ModeOfInheritance": "monoallelic",
+                "Penetrance": null,
+                "Publications": null,
+                "Phenotypes": null,
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "ModerateEvidence",
+                "Evidences": [
+                    "Expert Review Amber",
+                    "NHS GMS"
+                ]
+            },
+            {
+                "GeneSymbol": "BRCA2",
+                "EnsembleGeneIds": [
+                    "ENSG00000139618"
+                ],
+                "ModeOfInheritance": "monoallelic",
+                "Penetrance": null,
+                "Publications": null,
+                "Phenotypes": null,
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "ModerateEvidence",
+                "Evidences": [
+                    "Expert Review Amber",
+                    "NHS GMS"
+                ]
+            },
+            {
+                "GeneSymbol": "TERF2IP",
+                "EnsembleGeneIds": [
+                    "ENSG00000166848"
+                ],
+                "ModeOfInheritance": null,
+                "Penetrance": null,
+                "Publications": null,
+                "Phenotypes": null,
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "ModerateEvidence",
+                "Evidences": [
+                    "Expert Review Amber",
+                    "NHS GMS"
+                ]
+            },
+            {
+                "GeneSymbol": "TERT",
+                "EnsembleGeneIds": [
+                    "ENSG00000164362"
+                ],
+                "ModeOfInheritance": "monoallelic",
+                "Penetrance": null,
+                "Publications": [
+                    "23348503"
+                ],
+                "Phenotypes": null,
+                "ModeOfPathogenicity": null,
+                "LevelOfConfidence": "ModerateEvidence",
+                "Evidences": [
+                    "Expert Review Amber",
+                    "NHS GMS",
+                    "Expert List"
+                ]
+            }
+        ],
+        "STRs": [],
+        "Regions": [],
+        "SpecificDiseaseName": "Familial melanoma",
+        "version": "1.12",
+        "Created": "2022-03-03T10:25:36.859855Z",
+        "DiseaseGroup": "",
+        "DiseaseSubGroup": "",
+        "Status": "public"
+    }
+}
