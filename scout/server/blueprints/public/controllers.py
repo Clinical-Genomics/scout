@@ -26,7 +26,13 @@ class CompactEvent:
         self.date = date
         self.count = 1
 
-    def increment(self):
+    def increment_by_one(self):
+        """Increment internal counter by one
+        
+        Args: none
+        Returns: 
+            CompactEvent()
+        """
         self.count = self.count + 1
         return self
 
@@ -59,9 +65,9 @@ def get_events_of_interest(store, user):
     """
     events_of_interest = []
     events_per_case = []
-    cases = recent_cases(user, store)
+    cases = list(store.unique_cases_by_date(user.email))
     for case in cases:
-        event_list = events_in_case(store, user, case)
+        event_list = list(store.user_events_by_case({"_id": user.email}, case))
         # only add non-empty event_lists
         if event_list:
             events_per_case.append(event_list)
@@ -74,61 +80,44 @@ def get_events_of_interest(store, user):
         event["human_readable"] = events_to_string(compact_events)
         head, *_tail = events
         event["link"] = case_page_link(head["case"], store)
-        event["name"] = get_display_name(head["case"], store)
+        event["name"] = store.get_display_name(head["case"])
         events_of_interest.append(event)
     return events_of_interest
 
 
-def get_display_name(case, store):
-    """Get display_name for case"""
-    return store.get_display_name(case)
-
-
-def get_customer(case, store):
-    """Get customer for case"""
-    return store.get_customer(case)
-
-
 def case_page_link(case, store):
-    """Create a relative link to the case page"""
-    customer = get_customer(case, store)
-    display_name = get_display_name(case, store)
-    link = url_for("cases.case", institute_id=customer, case_name=display_name)
+    """Create a relative link to the case page
+    Args:
+        case: string
+        store: scout.adapter.MongoAdapter
+    Returns:
+       link: string:
+    """
+    institute = store.get_institute(case)
+    display_name = store.get_display_name(case)
+    link = url_for("cases.case", institute_id=institute, case_name=display_name)
     return link
-
-
-def recent_cases(user, store):
-    """Return a list of recent cases order in increasing age. A case
-    may appear only once.
-
-    Args:
-        user: store.user
-        store: scout.adapter.MongoAdapter
-    Returns:
-        list of store.case._id
-    """
-    return list(store.unique_cases_by_date(user.email))
-
-
-def events_in_case(store, user, case):
-    """Return a list of events associated with a user's specific case.
-    Args:
-        store: scout.adapter.MongoAdapter
-        user: store.user
-        case: case._id
-    Returns:
-        list of store.event
-    """
-    return list(store.user_events_by_case({"_id": user.email}, case))
 
 
 def get_compact_events(event_list):
     """Compile a list of of events in a compact format, ready to be
     displayed on a Scout webpage. Subsequent events of the same type and verb will
-    increment a counter. Return NOF_RECENT_EVENTS events."""
+    increment a counter. Return NOF_RECENT_EVENTS events.
+
+    Args:
+        event_list(list of events)
+    Returns:
+           list of CompactEvents
+    """
 
     def compile_latest_events_aux(event_list, acc):
-        """Auxiliary function for list recurssion"""
+        """Auxiliary function for list recurssion
+        Args:
+            event_list(list of events)
+            acc(empty list)
+        Returns:
+           list of CompactEvents
+        """
         if event_list == []:
             return acc
         head, *tail = event_list
@@ -139,7 +128,7 @@ def get_compact_events(event_list):
         ):
             try:
                 compact_event = acc.pop()
-                acc.append(compact_event.increment())
+                acc.append(compact_event.increment_by_one())
             except IndexError:
                 compact_event = CompactEvent(head["verb"], head["category"], head["updated_at"])
                 acc.append(compact_event)
