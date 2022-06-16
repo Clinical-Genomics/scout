@@ -314,7 +314,7 @@ def cases(store, request, institute_id):
     name_query = None
     if request.args.get("search_term"):
         name_query = "".join(
-            [request.args.get("search_type"), re.escape(request.args.get("search_term"))]
+            [request.args.get("search_type"), re.escape(request.args["search_term"].strip())]
         )
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
