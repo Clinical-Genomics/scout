@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## []
+## [4.56]
 ### Added
 - Test for PanelApp panels loading
 - `panel-umi` tag option when loading cancer analyses
@@ -17,7 +17,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update of HPO terms via command line
 - Background color of `MIXED` and `PANEL-UMI` sequencing types on cases page
 - Fixed regex error when searching for cases with query ending with `\ `
-- Genesymbols on Causatives page lighter in dark mode
+- Gene symbols on Causatives page lighter in dark mode
+- SpliceAI tooltip of multigene variants
 
 ## [4.55]
 ### Changed
