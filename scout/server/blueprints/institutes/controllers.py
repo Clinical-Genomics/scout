@@ -5,7 +5,7 @@ import re
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
-from flask import current_app, flash
+from flask import current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
@@ -29,6 +29,30 @@ LOG = logging.getLogger(__name__)
 
 # Do not assume all cases have a valid track set
 TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
+
+
+def get_timeline_data():
+    """Retrieve chronologially ordered events from the database to display them in the timeline page
+
+    Returns:
+        timeline_results(dict): dictionary containing timeline data
+    """
+    timeline_results = []
+    results = store.user_timeline(current_user.email)
+    for eventg in results:  # Add links to cases pages
+        LOG.warning(eventg)
+        case_obj = store.case(case_id=eventg["_id"]["case_id"])
+        if case_obj is None:
+            continue
+        eventg["_id"]["link"] = url_for(
+            "cases.case",
+            institute_id=eventg["_id"]["institute"],
+            case_name=case_obj["display_name"],
+        )
+        LOG.warning(eventg)
+        timeline_results.append(eventg)
+    LOG.error(timeline_results)
+    return timeline_results
 
 
 def causatives(institute_obj, request):

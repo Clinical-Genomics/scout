@@ -54,6 +54,7 @@
                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li>
+                      <a class="dropdown-item" href="{{ url_for('overview.timeline') }}">Timeline</a>
                       <a class="dropdown-item" href="{{ url_for('login.logout') }}">Logout</a>
                     </li>
                   </ul>

@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pymongo
 from bson import ObjectId
+from dateutil.relativedelta import relativedelta
 
 from scout.constants import CASE_STATUSES, REV_ACMG_MAP
 
@@ -16,6 +17,45 @@ LOG = logging.getLogger(__name__)
 
 class EventHandler(CaseEventHandler, VariantEventHandler):
     """Class to handle events for the mongo adapter"""
+
+    def user_timeline(self, user_email):
+        """Retrieve the last events created by a user, grouped by institute, case_name, category, verb and date
+           and ordered by descending date (from the newest). Return 100 groups of these events
+
+        Args:
+            user_email(string): email of a logged user
+
+        Returns:
+            pymongo.Cursor: query results
+        """
+        # Build the query pipeline
+        match_query = {
+            "$match": {
+                "user_id": user_email,
+            }
+        }
+        # Return only events created by given user during the last year
+        add_fields = {
+            "$addFields": {
+                "yearMonthDay": {"$dateToString": {"format": "%Y-%m-%d", "date": "$updated_at"}},
+            }
+        }  # Create an additional field: yearMonthDay to group and display events better later
+        group = {
+            "$group": {
+                "_id": {
+                    "institute": "$institute",
+                    "case_id": "$case",
+                    "category": "$category",
+                    "verb": "$verb",
+                    "yearMonthDay": "$yearMonthDay",
+                },
+                "count": {"$sum": 1},
+            }
+        }  # Group events by institute, case_name, category, verb and date
+        sort = {"$sort": {"_id.yearMonthDay": -1}}  # Sort by date
+        limit = {"$limit": 1000}
+        pipeline = [match_query, add_fields, group, sort, limit]
+        return self.event_collection.aggregate(pipeline)
 
     def delete_event(self, event_id):
         """Delete a event

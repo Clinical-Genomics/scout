@@ -17,7 +17,7 @@ from flask import (
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER, VERBS_MAP
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
@@ -35,6 +35,14 @@ blueprint = Blueprint(
     static_folder="static",
     static_url_path="/overview/static",
 )
+
+
+@blueprint.route("/overview/timeline", methods=["GET"])
+@templated("overview/timeline.html")
+def timeline():
+    data = {"events": controllers.get_timeline_data()}
+    data["verbs_map"] = VERBS_MAP
+    return dict(**data)
 
 
 @blueprint.route("/api/v1/institutes", methods=["GET"])
