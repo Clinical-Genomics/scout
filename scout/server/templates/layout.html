@@ -51,7 +51,7 @@
             {% block top_nav_right %}
               {% if current_user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('overview.timeline') }}"><i class="fa fa-timeline">Timeline</i></a>
+                <a class="nav-link" href="{{ url_for('overview.timeline') }}"></a>
               </li>
                 <li class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>

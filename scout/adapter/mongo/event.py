@@ -52,7 +52,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             }
         }  # Group events by institute, case_name, category, verb and date
         sort = {"$sort": {"_id.yearMonthDay": -1}}  # Sort by date
-        limit = {"$limit": 1000}
+        limit = {"$limit": 100}
         pipeline = [match_query, add_fields, group, sort, limit]
         return self.event_collection.aggregate(pipeline)
 

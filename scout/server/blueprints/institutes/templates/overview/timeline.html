@@ -16,10 +16,9 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link active" href="{{ url_for('overview.timeline') }}">Timeline</a>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Timeline</span>
   </li>
-
 {% endblock %}
 
 {% block content_main %}
@@ -81,9 +80,8 @@
               <span>{{eventg._id.yearMonthDay}}</span>
           </div>
           <div class="bottom">
-            <a href="{{eventg._id.link}}" target="_blank">Cust {{eventg._id.institute}}, case {{eventg._id.case_name}}</a>
+            <a href="{{eventg._id.link}}" target="_blank" rel="noopener">Cust {{eventg._id.institute}}, case {{eventg._id.case_name}}</a>
           </div>
-
       </section>
     </div>
 
