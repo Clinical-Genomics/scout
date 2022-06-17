@@ -21,7 +21,6 @@ from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER, VERBS_MAP
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
-from scout.utils.scout_requests import post_request_json
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
