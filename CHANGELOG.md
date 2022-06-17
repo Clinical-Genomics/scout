@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Prior ACMG classifications view is no longer limited by pathogenicity
 ### Fixed
+- Visibility of Sanger ordered badge on case page, light mode
 - Some of the DataTables tables got a bit dark in dark mode
 
 ## [4.56]

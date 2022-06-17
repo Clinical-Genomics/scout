@@ -329,8 +329,8 @@
 {% macro variant_validation_badge(variant) %}
   {% if variant.validation in ['True positive','False positive'] %}
     <span class="badge bg-success">Validated</span>
-  {% elif variant.sanger_ordered %}a
-    <span class="badge bg-default">Verification ordered</span>
+  {% elif variant.sanger_ordered %}
+    <span class="badge bg-secondary">Verification ordered</span>
   {% endif %}
 {% endmacro %}
 
