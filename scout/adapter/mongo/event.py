@@ -3,9 +3,8 @@ from datetime import datetime
 
 import pymongo
 from bson import ObjectId
-from dateutil.relativedelta import relativedelta
 
-from scout.constants import CASE_STATUSES, REV_ACMG_MAP
+from scout.constants import CASE_STATUSES
 
 from .case_events import CaseEventHandler
 from .variant_events import VariantEventHandler
