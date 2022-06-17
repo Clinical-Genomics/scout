@@ -16,6 +16,10 @@
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('overview.timeline') }}">Timeline</a>
+  </li>
+
 {% endblock %}
 
 {% block content_main %}
@@ -40,31 +44,31 @@
 
     <!-- set icon to display and title text according to event verb -->
     {% if eventg._id.verb in ["assign", "unassign"] %}
-      {% set icon = "icon fa fa-heart" %}
+      {% set icon = "icon fas fa-heart" %}
     {% elif eventg._id.verb in ["archive", "status"] %}
-      {% set icon = "icon fa fa-flag" %}
+      {% set icon = "icon fas fa-archive" %}
     {% elif "comment" in eventg._id.verb %}
-      {% set icon = "icon fa fa-comment" %}
+      {% set icon = "icon fas fa-comment" %}
     {% elif eventg._id.verb in ["synopsis", "update_diagnosis", "phenotype", "add_case", "update_case", "update_individual", "check_case", "add_cohort", "remove_cohort"] %}
-      {% set icon = "fa-folder-open" %}
+      {% set icon = "icon fas fa-folder-open" %}
     {% elif eventg._id.verb in ["share", "mme"] %}
-      {% set icon = "icon fa fa-share" %}
+      {% set icon = "icon fas fa-share" %}
     {% elif "rerun" in eventg._id.verb %}
-      {% set icon = "icon fa fa-gears" %}
+      {% set icon = "icon fas fa-gears" %}
     {% elif "pin" in eventg._id.verb %}
-      {% set icon = "icon fa fa-map-pin" %}
+      {% set icon = "icon fas fa-map-pin" %}
     {% elif eventg._id.verb in ["validate", "sanger"] %}
-      {% set icon = "icon fa fa-check" %}
+      {% set icon = "icon fas fa-check" %}
     {% elif "research" in eventg._id.verb %}
-      {% set icon = "icon fa fa-magnifying-glass" %}
+      {% set icon = "icon fas fa-search" %}
     {% elif "causative" in eventg._id.verb %}
-      {% set icon = "icon fa fa-bullseye-arrow" %}
+      {% set icon = "icon fa fa-bullseye-pointer" %}
     {% elif eventg._id.verb in ["manual_rank", "cancer_tier", "acmg", "mosaic_tags"] %}
-      {% set icon = "icon fa fa-ranking-star" %}
+      {% set icon = "icon fas fa-check-double" %}
     {% elif "dismiss" in eventg._id.verb %}
-      {% set icon = "icon fa fa-circle-xmark" %}
+      {% set icon = "icon fas fa-times" %}
     {% else %}
-      {% set icon = "icon fa-fa-star" %}
+      {% set icon = "icon fas fa-star" %}
     {% endif %}
 
     <!-- Display the single events, by day and category-->

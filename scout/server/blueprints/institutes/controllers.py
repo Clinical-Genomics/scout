@@ -44,14 +44,13 @@ def get_timeline_data():
         case_obj = store.case(case_id=eventg["_id"]["case_id"])
         if case_obj is None:
             continue
+        eventg["_id"]["case_name"] = case_obj.get("display_name")
         eventg["_id"]["link"] = url_for(
             "cases.case",
             institute_id=eventg["_id"]["institute"],
             case_name=case_obj["display_name"],
         )
-        LOG.warning(eventg)
         timeline_results.append(eventg)
-    LOG.error(timeline_results)
     return timeline_results
 
 

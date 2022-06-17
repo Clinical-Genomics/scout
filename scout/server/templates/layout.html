@@ -50,11 +50,13 @@
           <ul class="navbar-nav navbar-right">
             {% block top_nav_right %}
               {% if current_user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('overview.timeline') }}"><i class="fa fa-timeline">Timeline</i></a>
+              </li>
                 <li class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
                   <ul class="dropdown-menu">
                     <li>
-                      <a class="dropdown-item" href="{{ url_for('overview.timeline') }}">Timeline</a>
                       <a class="dropdown-item" href="{{ url_for('login.logout') }}">Logout</a>
                     </li>
                   </ul>
