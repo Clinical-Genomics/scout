@@ -15,20 +15,28 @@ TEST_SUBPANEL = dict(
 )
 
 
-def test_events_timeline(app, user_obj, institute_obj):
+def test_events_timeline(app, user_obj, institute_obj, case_obj):
     """Test the wiew that returns the last 100 groups of events for a user"""
 
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
+
+        # GIVEN one user event present in the database
+        store.assign(institute=institute_obj, case=case_obj, user=user_obj, link="test_link")
+        assert store.event_collection.find_one()
+
         resp = client.get(
             url_for(
                 "overview.timeline",
             )
         )
-        # Then the page should not return error
+        # THEN the page should not return error
         assert resp.status_code == 200
+
+        # AND the wvent should be displayed on the timeline page
+        assert "assigned" in str(resp.data)
 
 
 def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
