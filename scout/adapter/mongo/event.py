@@ -17,12 +17,13 @@ LOG = logging.getLogger(__name__)
 class EventHandler(CaseEventHandler, VariantEventHandler):
     """Class to handle events for the mongo adapter"""
 
-    def user_timeline(self, user_email):
+    def user_timeline(self, user_email, limit=100):
         """Retrieve the last events created by a user, grouped by institute, case_name, category, verb and date
            and ordered by descending date (from the newest). Return 100 groups of these events
 
         Args:
             user_email(string): email of a logged user
+            limit(int): 100 to display latest events or -1 to display all events
 
         Returns:
             pymongo.Cursor: query results
@@ -50,9 +51,15 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 "count": {"$sum": 1},
             }
         }  # Group events by institute, case_name, category, verb and date
-        sort = {"$sort": {"_id.yearMonthDay": -1}}  # Sort by date
-        limit = {"$limit": 100}  # Return max 100 event groups
-        pipeline = [match_query, add_fields, group, sort, limit]
+        sort = {
+            "$sort": {"_id.yearMonthDay": -1, "_id.institute": 1, "_id.case_id": 1}
+        }  # Sort by date desc, institute and case asc
+
+        pipeline = [match_query, add_fields, group, sort]
+
+        if limit > 0:  # Limit number of events to be displayed
+            pipeline.append({"$limit": limit})  # 100 events by default
+
         return self.event_collection.aggregate(pipeline)
 
     def delete_event(self, event_id):

@@ -50,9 +50,17 @@
           <ul class="navbar-nav navbar-right">
             {% block top_nav_right %}
               {% if current_user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('overview.timeline') }}">timeline</a>
-              </li>
+                <li class="nav-item dropdown">
+                  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Timeline<span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('overview.timeline', limit=100) }}">Last events</a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" href="{{ url_for('overview.timeline', limit=-1) }}">All events</a>
+                    </li>
+                  </ul>
+                </li>
                 <li class="nav-item dropdown">
                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">{{ current_user.name }} <span class="caret"></span></a>
                   <ul class="dropdown-menu">

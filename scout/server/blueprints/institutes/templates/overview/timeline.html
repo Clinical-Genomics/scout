@@ -1,6 +1,5 @@
 <!-- Inspired by https://github.com/Nathlo/vertical-timeline -->
 {% extends "layout.html" %}
-{% from "overview/institute_sidebar.html" import institute_actionbar %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
@@ -13,12 +12,6 @@
 
 {% block top_nav %}
   {{ super() }}
-  <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
-  </li>
-  <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">Timeline</span>
-  </li>
 {% endblock %}
 
 {% block content_main %}
@@ -29,7 +22,7 @@
   </div>
 
   <!-- Loop over the group of events and display them on the timeline -->
-  {% set ns = namespace(last_event_day=None, row_class="1") %}
+  {% set ns = namespace(last_event_day=None, row_class="1", last_case=None, space_top=false) %}
 
   {% for eventg in events %}
     <!-- Display events from the same day on the same side of the timeline -->
@@ -39,6 +32,13 @@
       {% else %}
         {% set ns.row_class = "1" %}
       {% endif %}
+    {% endif %}
+
+    <!-- Improve different cases visibility by alternating colors in same date -->
+    {% if eventg._id.case_id !=  ns.last_case %}
+      {% set ns.space_top = true %}
+    {% else %}
+      {% set ns.space_top = false %}
     {% endif %}
 
     <!-- Set icon to display and according to verb type-->
@@ -71,21 +71,24 @@
     {% endif %}
 
     <!-- Display the single events, by day and category-->
-    <div class="row row-{{ns.row_class}}">
+    <div class="row row-{{ns.row_class}}" {% if ns.space_top == true %} style="margin-top: 30px;" {% endif %}>
       <section>
           <em class="{{icon}}"></em>
           <div class="details">
-              <span class="title">{{verbs_map[eventg._id.verb]}} ({{eventg.count}}x) {{eventg._id.category}}
+              <span class="title">
+                  <a href="{{eventg._id.link}}" target="_blank" rel="noopener">{{eventg._id.institute}}, case {{eventg._id.case_name}}</a>
               </span>
               <span>{{eventg._id.yearMonthDay}}</span>
           </div>
           <div class="bottom">
-            <a href="{{eventg._id.link}}" target="_blank" rel="noopener">Cust {{eventg._id.institute}}, case {{eventg._id.case_name}}</a>
+            {{verbs_map[eventg._id.verb]}} ({{eventg.count}}x) {{eventg._id.category}}
           </div>
       </section>
     </div>
 
     {% set ns.last_event_day = eventg._id.yearMonthDay %}
+    {% set ns.last_case = eventg._id.case_id %}
+
 
   {% endfor %}
 </div>
