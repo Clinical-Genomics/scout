@@ -15,6 +15,22 @@ TEST_SUBPANEL = dict(
 )
 
 
+def test_events_timeline(app, user_obj, institute_obj):
+    """Test the wiew that returns the last 100 groups of events for a user"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+        resp = client.get(
+            url_for(
+                "overview.timeline",
+            )
+        )
+        # Then the page should not return error
+        assert resp.status_code == 200
+
+
 def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
     """Test the view showing the available phenotype models for an institute, after sending POST request with new phenotype model data"""
 
