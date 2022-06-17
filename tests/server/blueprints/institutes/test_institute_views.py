@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-import pytest
 from flask import url_for
 from flask_login import current_user
 

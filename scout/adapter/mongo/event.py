@@ -32,8 +32,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             "$match": {
                 "user_id": user_email,
             }
-        }
-        # Return only events created by given user during the last year
+        }  # Return only events created by given user
         add_fields = {
             "$addFields": {
                 "yearMonthDay": {"$dateToString": {"format": "%Y-%m-%d", "date": "$updated_at"}},
@@ -52,7 +51,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             }
         }  # Group events by institute, case_name, category, verb and date
         sort = {"$sort": {"_id.yearMonthDay": -1}}  # Sort by date
-        limit = {"$limit": 100}
+        limit = {"$limit": 100}  # Return max 100 event groups
         pipeline = [match_query, add_fields, group, sort, limit]
         return self.event_collection.aggregate(pipeline)
 
