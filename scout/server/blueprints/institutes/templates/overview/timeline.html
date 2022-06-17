@@ -41,7 +41,7 @@
       {% endif %}
     {% endif %}
 
-    <!-- set icon to display and title text according to event verb -->
+    <!-- Set icon to display and according to verb type-->
     {% if eventg._id.verb in ["assign", "unassign"] %}
       {% set icon = "icon fas fa-heart" %}
     {% elif eventg._id.verb in ["archive", "status"] %}
