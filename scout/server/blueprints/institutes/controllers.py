@@ -40,7 +40,6 @@ def get_timeline_data():
     timeline_results = []
     results = store.user_timeline(current_user.email)
     for eventg in results:  # Add links to cases pages
-        LOG.warning(eventg)
         case_obj = store.case(case_id=eventg["_id"]["case_id"])
         if case_obj is None:
             continue
