@@ -102,13 +102,9 @@ def variants(
 
         variant_obj["evaluations"] = evaluations
 
-        dismissals = []
-        for dismissal_obj in store.get_dismissals(variant_obj):
-            if dismissal_obj["case_id"] == case_obj["_id"]:
-                continue
-
-            dismissals.append(dismissal_obj)
-        variant_obj["dismissals"] = dismissals
+        variant_obj["dismissals"] = store.get_dismissals(
+            variant_obj["variant_id"], exclude_case=case_obj["_id"]
+        )
 
         clinical_var_obj = variant_obj
         if is_research:

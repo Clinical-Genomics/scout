@@ -5,9 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ##[]
+### Added
+- Show dismiss count from other cases on matching variantS
+### Changed
+- Prior ACMG classifications view is no longer limited by pathogenicity
 ### Fixed
 - Some of the DataTables tables got a bit dark in dark mode
--
+
 ## [4.56]
 ### Added
 - Test for PanelApp panels loading
