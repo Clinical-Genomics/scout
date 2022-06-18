@@ -37,7 +37,7 @@
       {% endif %}
     {% endif %}
 
-    <!-- Improve different cases visibility by alternating colors in same date -->
+    <!-- Improve different cases visibility by introducing a space between the block of events of each different case -->
     {% if eventg._id.case_id !=  ns.last_case %}
       {% set ns.space_top = true %}
     {% else %}
