@@ -25,7 +25,7 @@
   </div>
 
   <!-- Loop over the group of events and display them on the timeline -->
-  {% set ns = namespace(last_event_day=None, row_class="1", last_case=None, space_top=false) %}
+  {% set ns = namespace(last_event_day=None, row_class="1", last_case=None) %}
 
   {% for eventg in events %}
     <!-- Display events from the same day on the same side of the timeline -->
@@ -39,51 +39,23 @@
 
     <!-- Improve different cases visibility by introducing a space between the block of events of each different case -->
     {% if eventg._id.case_id !=  ns.last_case %}
-      {% set ns.space_top = true %}
-    {% else %}
-      {% set ns.space_top = false %}
+      <div class="row row-{{ns.row_class}}"  style="margin-top: 30px;">
+        <section>
+            <em class="icon icon fas fa-star"></em>
+            <div class="details">
+              <a href="{{eventg._id.link}}" target="_blank" rel="noopener">{{eventg._id.institute}}, case {{eventg._id.case_name}}</a>
+              <span>{{eventg._id.yearMonthDay}}</span>
+            </div>
+        </section>
+      </div>
     {% endif %}
 
-    <!-- Set icon to display and according to verb type-->
-    {% if eventg._id.verb in ["assign", "unassign"] %}
-      {% set icon = "icon fas fa-heart" %}
-    {% elif eventg._id.verb in ["archive", "status"] %}
-      {% set icon = "icon fas fa-archive" %}
-    {% elif "comment" in eventg._id.verb %}
-      {% set icon = "icon fas fa-comment" %}
-    {% elif eventg._id.verb in ["synopsis", "update_diagnosis", "phenotype", "add_case", "update_case", "update_individual", "check_case", "add_cohort", "remove_cohort"] %}
-      {% set icon = "icon fas fa-folder-open" %}
-    {% elif eventg._id.verb in ["share", "mme"] %}
-      {% set icon = "icon fas fa-share" %}
-    {% elif "rerun" in eventg._id.verb %}
-      {% set icon = "icon fas fa-gears" %}
-    {% elif "pin" in eventg._id.verb %}
-      {% set icon = "icon fas fa-map-pin" %}
-    {% elif eventg._id.verb in ["validate", "sanger"] %}
-      {% set icon = "icon fas fa-check" %}
-    {% elif "research" in eventg._id.verb %}
-      {% set icon = "icon fas fa-search" %}
-    {% elif "causative" in eventg._id.verb %}
-      {% set icon = "icon fas fa-bullseye" %}
-    {% elif eventg._id.verb in ["manual_rank", "cancer_tier", "acmg", "mosaic_tags"] %}
-      {% set icon = "icon fas fa-check-double" %}
-    {% elif "dismiss" in eventg._id.verb %}
-      {% set icon = "icon fas fa-times" %}
-    {% else %}
-      {% set icon = "icon fas fa-star" %}
-    {% endif %}
 
     <!-- Display the single events, by day and category-->
-    <div class="row row-{{ns.row_class}}" {% if ns.space_top == true %} style="margin-top: 30px;" {% endif %}>
+    <div class="row row-{{ns.row_class}}">
       <section>
-          <em class="{{icon}}"></em>
+          <em class="icon {{verbs_icons[eventg._id.verb]}}"></em>
           <div class="details">
-              <span class="title">
-                  <a href="{{eventg._id.link}}" target="_blank" rel="noopener">{{eventg._id.institute}}, case {{eventg._id.case_name}}</a>
-              </span>
-              <span>{{eventg._id.yearMonthDay}}</span>
-          </div>
-          <div class="bottom">
             {{verbs_map[eventg._id.verb]}} ({{eventg.count}}x) {{eventg._id.category}}
           </div>
       </section>

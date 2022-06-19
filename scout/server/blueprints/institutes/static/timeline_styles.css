@@ -39,7 +39,7 @@ html {
   justify-content: flex-end;
 }
 
-/* Main Content Styles */
+/* Case link styles */
 .wrapper .row section {
   position: relative;
   width: calc(50% - 40px);
@@ -100,35 +100,10 @@ html {
   left: -60px;
 }
 
-.row section .details,
-.row section .bottom {
+.row section .details{
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.row section .details .title {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.row section p {
-  margin: 10px 0 17px;
-}
-
-.row section .bottom a {
-  text-decoration: none;
-  font-size: 17px;
-  font-weight: 400;
-  padding: 7px 15px;
-  background-color: var(--bs-blue);
-  color: #fff;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-}
-
-.row section .bottom a:hover {
-  transform: scale(0.97);
 }
 
 @media (max-width: 790px) {

@@ -22,6 +22,7 @@ from .case_tags import (
     REV_SEX_MAP,
     SAMPLE_SOURCE,
     SEX_MAP,
+    VERBS_ICONS_MAP,
     VERBS_MAP,
 )
 from .clinvar import (

@@ -17,7 +17,7 @@ from flask import (
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER, VERBS_MAP
+from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER, VERBS_ICONS_MAP, VERBS_MAP
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
@@ -41,6 +41,7 @@ blueprint = Blueprint(
 def timeline():
     data = {"events": controllers.get_timeline_data(request.args.get("limit") or "100")}
     data["verbs_map"] = VERBS_MAP
+    data["verbs_icons"] = VERBS_ICONS_MAP
     return dict(**data)
 
 
