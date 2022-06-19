@@ -29,16 +29,14 @@
 
   {% for eventg in events %}
     <!-- Display events from the same day on the same side of the timeline -->
-    {% if eventg._id.yearMonthDay !=  ns.last_event_day %}
+    {% if eventg._id.yearMonthDay !=  ns.last_event_day or eventg._id.case_id !=  ns.last_case%}
       {% if ns.row_class == "1" %}
         {% set ns.row_class = "2" %}
       {% else %}
         {% set ns.row_class = "1" %}
       {% endif %}
-    {% endif %}
 
-    <!-- Improve different cases visibility by introducing a space between the block of events of each different case -->
-    {% if eventg._id.case_id !=  ns.last_case %}
+      <!-- Display case name and link of top of list of case events -->
       <div class="row row-{{ns.row_class}}"  style="margin-top: 30px;">
         <section>
             <em class="icon icon fas fa-star"></em>
@@ -49,7 +47,6 @@
         </section>
       </div>
     {% endif %}
-
 
     <!-- Display the single events, by day and category-->
     <div class="row row-{{ns.row_class}}">
