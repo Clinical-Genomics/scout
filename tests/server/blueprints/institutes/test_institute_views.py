@@ -34,7 +34,7 @@ def test_events_timeline(app, user_obj, institute_obj, case_obj):
         # THEN the page should not return error
         assert resp.status_code == 200
 
-        # AND the wvent should be displayed on the timeline page
+        # AND the event should be displayed on the timeline page
         assert "assigned" in str(resp.data)
 
 
