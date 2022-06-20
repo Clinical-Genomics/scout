@@ -90,18 +90,21 @@ def variants(
 
         evaluations = []
         is_research = variant_obj["variant_type"] == "research"
-        # Get previous ACMG evalautions of the variant from other cases
+        # Get previous ACMG evaluations of the variant from other cases
         for evaluation_obj in store.get_evaluations(variant_obj):
             if evaluation_obj["case_id"] == case_obj["_id"]:
                 continue
 
             classification = evaluation_obj["classification"]
 
-            if is_research or classification not in ["pathogenic", "likely_pathogenic"]:
-                evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(classification)
-                evaluations.append(evaluation_obj)
+            evaluation_obj["classification"] = ACMG_COMPLETE_MAP.get(classification)
+            evaluations.append(evaluation_obj)
 
         variant_obj["evaluations"] = evaluations
+
+        variant_obj["dismissals"] = store.get_dismissals(
+            variant_obj["variant_id"], exclude_case=case_obj["_id"]
+        )
 
         clinical_var_obj = variant_obj
         if is_research:

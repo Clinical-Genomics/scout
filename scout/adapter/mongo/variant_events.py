@@ -1,8 +1,7 @@
 import logging
-from datetime import datetime
+from collections import Counter
 
 import pymongo
-from bson import ObjectId
 
 from scout.constants import CANCER_TIER_OPTIONS, REV_ACMG_MAP
 
@@ -755,6 +754,41 @@ class VariantEventHandler(object):
         )
         LOG.debug("Variant updated")
         return updated_variant
+
+    def get_dismissals(self, variant_id, exclude_case=None):
+        """Get dismissed variants from all cases given a variant_id
+
+        Arguments:
+            variant_id (str): variant_id (md5 hash of simple id chrom_pos_ref_alt)
+            exclude_case (str): case _id - exclude this case from count, typically the present case
+
+        Returns:
+           dismissals (int): count of dismissals for variant
+        """
+
+        variant_dismiss_events = Counter(
+            [
+                event["variant_id"]
+                for event in self.events_by_variant_id(
+                    variant_id=variant_id, verb="dismiss_variant"
+                )
+                if event["case"] != exclude_case
+            ]
+        )
+
+        variant_reset_dismiss_events = Counter(
+            [
+                event["variant_id"]
+                for event in self.events_by_variant_id(
+                    variant_id=variant_id, verb="reset_dismiss_variant"
+                )
+                if event["case"] != exclude_case
+            ]
+        )
+
+        dismissed = variant_dismiss_events - variant_reset_dismiss_events
+
+        return dismissed[variant_id]
 
     def update_mosaic_tags(self, institute, case, user, link, variant, mosaic_tags):
         """Create an event for updating the mosaicism tags for a variant
