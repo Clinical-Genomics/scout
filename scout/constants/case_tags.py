@@ -110,6 +110,63 @@ VERBS_MAP = {
     "update_case_group_ids": "updated case group ids for",
 }
 
+# Font-awesome jcons used by VERBS_ICONS_MAP
+ICON_TIMES = "icon fas fa-times"
+ICON_FOLDER_OPEN = "icon fas fa-folder-open"
+ICON_SEARCH = "icon fas fa-search"
+ICON_RANK = "icon fa fa-check-double"
+ICON_GEARS = "icon fas fa-gears"
+
+VERBS_ICONS_MAP = {
+    "assign": "icon fas fa-heart",
+    "unassign": ICON_TIMES,
+    "status": "icon fas fa-star",
+    "comment": "icon fas fa-comment",
+    "comment_update": "icon fas fa-comment",
+    "synopsis": ICON_FOLDER_OPEN,
+    "pin": "icon fas fa-map-pin",
+    "unpin": "icon fas fa-map-pin",
+    "sanger": "icon fas fa-check",
+    "cancel_sanger": ICON_TIMES,
+    "archive": "icon fas fa-archive",
+    "open_research": ICON_SEARCH,
+    "reset_research": ICON_SEARCH,
+    "mark_causative": ICON_RANK,
+    "unmark_causative": ICON_RANK,
+    "mark_partial_causative": ICON_RANK,
+    "unmark_partial_causative": ICON_RANK,
+    "manual_rank": ICON_RANK,
+    "cancer_tier": ICON_RANK,
+    "add_phenotype": ICON_FOLDER_OPEN,
+    "remove_phenotype": ICON_FOLDER_OPEN,
+    "add_case": ICON_FOLDER_OPEN,
+    "update_case": "icon fas fa-folder-open",
+    "update_individual": ICON_FOLDER_OPEN,
+    "check_case": "icon fas fa-star",
+    "share": ICON_SEARCH,
+    "unshare": ICON_TIMES,
+    "rerun": ICON_GEARS,
+    "rerun_monitor": ICON_GEARS,
+    "rerun_unmonitor": ICON_GEARS,
+    "validate": "icon fas fa-check",
+    "update_diagnosis": ICON_FOLDER_OPEN,
+    "add_cohort": ICON_FOLDER_OPEN,
+    "remove_cohort": ICON_FOLDER_OPEN,
+    "acmg": ICON_RANK,
+    "dismiss_variant": ICON_TIMES,
+    "reset_dismiss_variant": ICON_TIMES,
+    "reset_dismiss_all_variants": ICON_TIMES,
+    "mosaic_tags": ICON_RANK,
+    "update_default_panels": ICON_FOLDER_OPEN,
+    "update_clinical_filter_hpo": ICON_FOLDER_OPEN,
+    "mme_add": "icon fas fa-share",
+    "mme_remove": "icon fas fa-share",
+    "filter_stash": ICON_SEARCH,
+    "filter_audit": ICON_SEARCH,
+    "update_sample": ICON_FOLDER_OPEN,
+    "update_case_group_ids": ICON_FOLDER_OPEN,
+}
+
 # Tissue types for rare disease samples and controls
 
 SOURCES = [

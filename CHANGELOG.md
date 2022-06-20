@@ -4,8 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## []
 ## Added
+- Display last 50 or 500 events for a user in a timeline
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
 ### Fixed
