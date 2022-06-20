@@ -5,7 +5,7 @@ import re
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
-from flask import current_app, flash
+from flask import current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
@@ -29,6 +29,49 @@ LOG = logging.getLogger(__name__)
 
 # Do not assume all cases have a valid track set
 TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
+
+# These events are registered both for a case and a variant of the same case
+VAR_SPECIFIC_EVENTS = [
+    "mark_causative",
+    "mark_causative",
+    "mark_partial_causative",
+    "unmark_partial_causative",
+    "pinned_variant",
+    "sanger",
+    "cancel_sanger",
+]
+
+
+def get_timeline_data(limit):
+    """Retrieve chronologially ordered events from the database to display them in the timeline page
+
+    Args:
+        limit(str): for instance "50" to display last 50 events. "-1" to display all events
+
+    Returns:
+        timeline_results(dict): dictionary containing timeline data
+    """
+    timeline_results = []
+    results = store.user_timeline(current_user.email, int(limit))
+    for eventg in results:  # Add links to cases pages
+        case_obj = store.case(case_id=eventg["_id"]["case_id"])
+        if case_obj is None:
+            continue
+        # Some events are captured both for case and variant. Display them only once (for the variant)
+        if (
+            eventg["_id"].get("category") == "case"
+            and eventg["_id"].get("verb") in VAR_SPECIFIC_EVENTS
+        ):
+            continue
+        # Build link to case page
+        eventg["_id"]["case_name"] = case_obj.get("display_name")
+        eventg["_id"]["link"] = url_for(
+            "cases.case",
+            institute_id=eventg["_id"]["institute"],
+            case_name=case_obj["display_name"],
+        )
+        timeline_results.append(eventg)
+    return timeline_results
 
 
 def causatives(institute_obj, request):
