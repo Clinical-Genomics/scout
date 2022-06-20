@@ -105,7 +105,6 @@ class MMEHandler(object):
         # create events for subjects add in MatchMaker for this case
         institute_obj = self.institute(case_obj["owner"])
         link = f"/{institute_obj['_id']}/{case_obj['display_name']}"
-
         for individual in case_obj["individuals"]:
             if individual["phenotype"] == 2:  # affected
                 # create event for patient

@@ -107,13 +107,18 @@ def test_matchmaker_add_snv(app, user_obj, case_obj, test_hpo_terms, mocker):
         )
         assert saved_results == 1
 
-        # THEN ine case should be uodated and a submission object correctly saved to database
+        # THEN one case should be uodated and a submission object correctly saved to database
         updated_case = store.case_collection.find_one()
         submission = updated_case["mme_submission"]
         assert (
             submission["patients"][0]["genomicFeatures"][0]["variant"]["start"]
             == test_variant["position"]
         )
+
+        # AND the relative event should be saved in the database:
+        mme_event = store.event_collection.find_one()
+        assert mme_event["verb"] == "mme_add"
+        assert mme_event["link"] == f"/{case_obj['owner']}/{case_obj['display_name']}"
 
 
 def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
@@ -196,6 +201,11 @@ def test_matchmaker_delete(app, mme_submission, user_obj, case_obj, mocker):
         # THEN the case should be updated and the submission should be gone
         updated_case = store.case_collection.find_one()
         assert updated_case.get("mme_submission") is None
+
+        # AND an event should have been added to the event collection:
+        mme_event = store.event_collection.find_one()
+        assert mme_event["verb"] == "mme_remove"
+        assert mme_event["link"] == f"/{case_obj['owner']}/{case_obj['display_name']}"
 
 
 def test_matchmaker_match(app, mme_submission, user_obj, case_obj, mocker):
