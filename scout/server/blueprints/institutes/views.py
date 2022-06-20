@@ -39,7 +39,7 @@ blueprint = Blueprint(
 @blueprint.route("/overview/timeline", methods=["GET"])
 @templated("overview/timeline.html")
 def timeline():
-    data = {"events": controllers.get_timeline_data(request.args.get("limit") or "100")}
+    data = {"events": controllers.get_timeline_data(request.args.get("limit") or "50")}
     data["verbs_map"] = VERBS_MAP
     data["verbs_icons"] = VERBS_ICONS_MAP
     return dict(**data)
