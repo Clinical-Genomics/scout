@@ -23,7 +23,6 @@ from scout.server.blueprints.variants.controllers import update_form_hgnc_symbol
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
 
-
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
 
