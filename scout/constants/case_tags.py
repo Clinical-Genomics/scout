@@ -113,7 +113,7 @@ VERBS_MAP = {
 # Font-awesome jcons used by VERBS_ICONS_MAP
 ICON_TIMES = "icon fas fa-times"
 ICON_FOLDER_OPEN = "icon fas fa-folder-open"
-iCON_SEARCH = "icon fas fa-search"
+ICON_SEARCH = "icon fas fa-search"
 ICON_RANK = "icon fa fa-check-double"
 ICON_GEARS = "icon fas fa-gears"
 
@@ -129,8 +129,8 @@ VERBS_ICONS_MAP = {
     "sanger": "icon fas fa-check",
     "cancel_sanger": ICON_TIMES,
     "archive": "icon fas fa-archive",
-    "open_research": iCON_SEARCH,
-    "reset_research": iCON_SEARCH,
+    "open_research": ICON_SEARCH,
+    "reset_research": ICON_SEARCH,
     "mark_causative": ICON_RANK,
     "unmark_causative": ICON_RANK,
     "mark_partial_causative": ICON_RANK,
@@ -143,7 +143,7 @@ VERBS_ICONS_MAP = {
     "update_case": "icon fas fa-folder-open",
     "update_individual": ICON_FOLDER_OPEN,
     "check_case": "icon fas fa-star",
-    "share": iCON_SEARCH,
+    "share": ICON_SEARCH,
     "unshare": ICON_TIMES,
     "rerun": ICON_GEARS,
     "rerun_monitor": ICON_GEARS,
@@ -161,8 +161,8 @@ VERBS_ICONS_MAP = {
     "update_clinical_filter_hpo": ICON_FOLDER_OPEN,
     "mme_add": "icon fas fa-share",
     "mme_remove": "icon fas fa-share",
-    "filter_stash": iCON_SEARCH,
-    "filter_audit": iCON_SEARCH,
+    "filter_stash": ICON_SEARCH,
+    "filter_audit": ICON_SEARCH,
     "update_sample": ICON_FOLDER_OPEN,
     "update_case_group_ids": ICON_FOLDER_OPEN,
 }
