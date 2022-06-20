@@ -8,11 +8,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ## Added
 - Display last 50 or 500 events for a user in a timeline
+- Show dismiss count from other cases on matching variantS
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
+### Changed
+- Prior ACMG classifications view is no longer limited by pathogenicity
 ### Fixed
-- Some of the DataTables tables got a bit dark in dark mode
 - Visibility of Sanger ordered badge on case page, light mode
+- Some of the DataTables tables got a bit dark in dark mode
 - Update list of variant specific events
 
 ## [4.56]
