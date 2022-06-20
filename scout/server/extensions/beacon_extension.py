@@ -178,6 +178,31 @@ class Beacon:
             store.case_collection.find_one_and_update(
                 {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
             )
+            # Create a relative event in database
+            self.update_event_collection(user_obj, case_obj, "beacon_add")
+
+    def update_event_collection(self, user_obj, case_obj, verb):
+        """Update the event database collection whenever variants are added of remove from the BEACON_URL
+
+        Args:
+            store(adapter.MongoAdapter)
+            user_obj(dict): scout.models.
+            case_obj(dict): scout.models.User
+            verb(string): "beacon_add" or "beacon_remove"
+        """
+        institute_obj = self.institute(case_obj["owner"])
+        link = f"{institute_obj['_id']}/{case_obj['display_name']}"
+
+        store.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category="case",
+            verb=verb,
+            subject=individual["display_name"],
+            level="specific",
+        )
 
     def remove_variants(self, store, institute_id, case_obj):
         """
@@ -219,3 +244,5 @@ class Beacon:
 
         if update_case:
             store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
+            # Create a relative event in database
+            self.update_event_collection(user_obj, case_obj, "beacon_remove")
