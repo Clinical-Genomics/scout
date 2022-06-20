@@ -282,12 +282,12 @@ def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     variant = adapter.variant_collection.find_one()
 
-    assert variant.get("dismiss_variant") == None
+    assert variant.get("dismiss_variant") is None
 
     # WHEN dismissing a variant
 
@@ -337,15 +337,14 @@ def test_matching_dismissed_variant(adapter, institute_obj, case_obj, user_obj, 
 
     variant = adapter.variant_collection.find_one()
 
-    assert variant.get("dismiss_variant") == None
+    assert variant.get("dismiss_variant") is None
 
     # WHEN dismissing a variant
-
     link = "testDismissMyVariant"
 
     dismiss_reason = [3, 5, 7]
 
-    updated_variant = adapter.update_dismiss_variant(
+    adapter.update_dismiss_variant(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
@@ -355,8 +354,8 @@ def test_matching_dismissed_variant(adapter, institute_obj, case_obj, user_obj, 
     )
 
     # WHEN asking for dismissals for other variant
-    dismissals = adapter.get_dismissals(variant_id=other_var["variant_id"])
-    # one dissmissal is found
+    dismissals = adapter.get_dismissals(variant_id=variant["variant_id"])
+    # one dismissal is found
     assert dismissals == 1
 
     # WHEN asking for dismissals for the same variants, in other cases, excluding the dismissed

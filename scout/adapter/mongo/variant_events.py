@@ -778,7 +778,7 @@ class VariantEventHandler(object):
 
         variant_reset_dismiss_events = Counter(
             [
-                event
+                event["variant_id"]
                 for event in self.events_by_variant_id(
                     variant_id=variant_id, verb="reset_dismiss_variant"
                 )
@@ -788,7 +788,7 @@ class VariantEventHandler(object):
 
         dismissed = variant_dismiss_events - variant_reset_dismiss_events
 
-        return dismissed["variant_id"]
+        return dismissed[variant_id]
 
     def update_mosaic_tags(self, institute, case, user, link, variant, mosaic_tags):
         """Create an event for updating the mosaicism tags for a variant
