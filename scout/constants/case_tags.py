@@ -105,7 +105,7 @@ VERBS_MAP = {
     "mme_add": "exported to Matchmaker patient",
     "mme_remove": "removed from Matchmaker patient",
     "beacon_add": "exported variants to the Beacon",
-    "beacon_remove": "Removed variants from the Beacon",
+    "beacon_remove": "removed variants from the Beacon",
     "filter_stash": "stored a filter for",
     "filter_audit": "marked case audited with filter",
     "update_sample": "updated sample data for",
