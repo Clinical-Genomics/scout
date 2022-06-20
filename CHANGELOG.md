@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ##[]
 ### Added
-- User events timeline
+- Display last 50 or 500 events for a user in a timeline
 ### Fixed
 - Some of the DataTables tables got a bit dark in dark mode
 - Visibility of Sanger ordered badge on case page, light mode

@@ -46,7 +46,7 @@ def get_timeline_data(limit):
     """Retrieve chronologially ordered events from the database to display them in the timeline page
 
     Args:
-        limit(str): "100" to display latest events or "-1" to display all events
+        limit(str): for instance "100" to display last 100 events. "-1" to display all events
 
     Returns:
         timeline_results(dict): dictionary containing timeline data
