@@ -772,7 +772,7 @@ class VariantEventHandler(object):
                 for event in self.events_by_variant_id(
                     variant_id=variant_id, verb="dismiss_variant"
                 )
-                if not event["case"] == exclude_case
+                if event["case"] != exclude_case
             ]
         )
 
@@ -782,7 +782,7 @@ class VariantEventHandler(object):
                 for event in self.events_by_variant_id(
                     variant_id=variant_id, verb="reset_dismiss_variant"
                 )
-                if not event["case"] == exclude_case
+                if event["case"] != exclude_case
             ]
         )
 
