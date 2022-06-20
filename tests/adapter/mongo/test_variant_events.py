@@ -333,7 +333,7 @@ def test_matching_dismissed_variant(adapter, institute_obj, case_obj, user_obj, 
     adapter.variant_collection.insert_one(other_var)
 
     assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     variant = adapter.variant_collection.find_one()
 
