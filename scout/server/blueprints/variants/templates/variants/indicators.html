@@ -63,6 +63,15 @@
   {% endif %}
 {% endmacro %}
 
+{% macro dismissals_badge(variant) %}
+  {% if variant.dismissals %}
+      <span class="badge bg-secondary" style="margin-left:1px" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top"
+        title="Previosuly dismissed in {{ variant.dismissals }} other cases. Use with caution: the clinical question may have been different.">
+        {{ variant.dismissals }}
+      </span>
+  {% endif %}
+{% endmacro %}
+
 
 {% macro research_assessments_badge(variant) %}
   {% if variant.research_assessments %}
