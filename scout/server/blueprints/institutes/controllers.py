@@ -33,10 +33,11 @@ TRACKS = {None: "Rare Disease", "rare": "Rare Disease", "cancer": "Cancer"}
 # These events are registered both for a case and a variant of the same case
 VAR_SPECIFIC_EVENTS = [
     "mark_causative",
-    "mark_causative",
+    "unmark_causative",
     "mark_partial_causative",
     "unmark_partial_causative",
-    "pinned_variant",
+    "pin",
+    "unpin",
     "sanger",
     "cancel_sanger",
 ]
