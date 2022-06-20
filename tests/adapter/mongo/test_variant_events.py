@@ -282,12 +282,12 @@ def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj
     adapter.user_collection.insert_one(user_obj)
     adapter.variant_collection.insert_one(variant_obj)
 
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     variant = adapter.variant_collection.find_one()
 
-    assert variant.get("dismiss_variant") == None
+    assert variant.get("dismiss_variant") is None
 
     # WHEN dismissing a variant
 
@@ -310,6 +310,67 @@ def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj
 
     # THEN the variant should be dismissed
     assert updated_variant.get("dismiss_variant") == dismiss_reason
+
+
+def test_matching_dismissed_variant(adapter, institute_obj, case_obj, user_obj, variant_obj):
+
+    # GIVEN a variant db with at least one variant, and no events
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+
+    # GIVEN another case with the same variant
+    other_case = deepcopy(case_obj)
+    other_case["_id"] = "other_case"
+    other_case["display_name"] = "that other case"
+    adapter.case_collection.insert_one(other_case)
+
+    other_var = deepcopy(variant_obj)
+    other_var["_id"] = "another_id"
+    other_var["case"] = case_obj["_id"]
+    other_var["owner"] = institute_obj["_id"]
+    adapter.variant_collection.insert_one(other_var)
+
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
+
+    variant = adapter.variant_collection.find_one()
+
+    assert variant.get("dismiss_variant") is None
+
+    # WHEN dismissing a variant
+    link = "testDismissMyVariant"
+
+    dismiss_reason = [3, 5, 7]
+
+    adapter.update_dismiss_variant(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant,
+        dismiss_variant=dismiss_reason,
+    )
+
+    # WHEN asking for dismissals for other variant
+    dismissals = adapter.get_dismissals(variant_id=variant["variant_id"])
+    # one dismissal is found
+    assert dismissals == 1
+
+    # WHEN asking for dismissals for the same variants, in other cases, excluding the dismissed
+    dismissals = adapter.get_dismissals(
+        variant_id=variant["variant_id"], exclude_case=case_obj["_id"]
+    )
+    # no dismissals are found
+    assert dismissals == 0
+
+    # WHEN asking for dismissals for other variants, excluding that other case
+    dismissals = adapter.get_dismissals(
+        variant_id=other_var["variant_id"], exclude_case=other_case["_id"]
+    )
+    # one dismissal is still found
+    assert dismissals == 1
 
 
 def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_obj):
