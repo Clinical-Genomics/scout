@@ -36,11 +36,10 @@ class MMEHandler(object):
             submitted_cases.add(case_obj["_id"])
         return submitted_cases
 
-    def mme_reassign(self, case_ids, old_user, new_users_email):
+    def mme_reassign(self, case_ids, new_users_email):
         """Reassign cases submitted to MME to another user
         Args:
             case_ids(set): a set of case _ids
-            old_contact(dict): a scout user object
             new_users_email(str): email of another user in Scout
         """
         new_contact = self.user(new_users_email)
