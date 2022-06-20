@@ -218,7 +218,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         Note that this is across all cases. Otherwise use events().
 
         Args:
-            variant_id: md5 hash simple id chr_pos_ref_alt
+            variant_id (str): md5 hash simple id chr_pos_ref_alt
+            verb (str): event verb, see eg VERBS_MAP
+            institute (str): institute id
 
         Returns:
             pymongo.Cursor: Query results

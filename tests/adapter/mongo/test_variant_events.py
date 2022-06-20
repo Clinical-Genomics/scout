@@ -357,21 +357,21 @@ def test_matching_dismissed_variant(adapter, institute_obj, case_obj, user_obj, 
     # WHEN asking for dismissals for other variant
     dismissals = adapter.get_dismissals(variant_id=other_var["variant_id"])
     # one dissmissal is found
-    assert len(dismissals) == 1
+    assert dismissals == 1
 
     # WHEN asking for dismissals for the same variants, in other cases, excluding the dismissed
     dismissals = adapter.get_dismissals(
         variant_id=variant["variant_id"], exclude_case=case_obj["_id"]
     )
     # no dismissals are found
-    assert len(dismissals) == 0
+    assert dismissals == 0
 
     # WHEN asking for dismissals for other variants, excluding that other case
     dismissals = adapter.get_dismissals(
         variant_id=other_var["variant_id"], exclude_case=other_case["_id"]
     )
     # one dismissal is still found
-    assert len(dismissals) == 1
+    assert dismissals == 1
 
 
 def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_obj):
