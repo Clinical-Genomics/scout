@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Visibility of Sanger ordered badge on case page, light mode
 - Some of the DataTables tables got a bit dark in dark mode
+- Update list of variant specific events
 
 ## [4.56]
 ### Added
