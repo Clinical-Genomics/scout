@@ -2,7 +2,6 @@ from flask import request, url_for
 from flask_login import current_user
 
 import scout.server.blueprints.cases.controllers as controllers
-from scout.server.blueprints.cases.controllers import redirect
 from scout.server.extensions import matchmaker, store
 
 

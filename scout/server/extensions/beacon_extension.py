@@ -2,7 +2,6 @@
    cgbeacon2: https://github.com/Clinical-Genomics/cgbeacon2
 """
 import datetime
-import json
 import logging
 
 from flask import flash
