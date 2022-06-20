@@ -44,7 +44,7 @@ def test_gene_variants(app, user_obj, institute_obj):
         # containing the expected results
         assert "POT1" in str(resp.data)
 
-        
+
 def test_events_timeline(app, user_obj, institute_obj, case_obj):
     """Test the wiew that returns the last 100 groups of events for a user"""
 
