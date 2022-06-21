@@ -48,7 +48,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Publish main image (Dockerfile) to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v4
       with:
         name: clinicalgenomics/scout
         username: ${{ secrets.DOCKER_USERNAME }}
