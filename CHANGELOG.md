@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visibility of Sanger ordered badge on case page, light mode
 - Some of the DataTables tables got a bit dark in dark mode
 - Update list of variant specific events
+- PanelApp gene symbols could mismatch on case
 
 ## [4.56]
 ### Added

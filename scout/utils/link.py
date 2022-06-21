@@ -1,8 +1,6 @@
 import logging
-import sys
-from pprint import pprint as pp
 
-from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_genes, parse_ensembl_transcripts
+from scout.parse.ensembl import parse_ensembl_genes
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.hpo_terms import get_incomplete_penetrance_genes
@@ -148,19 +146,23 @@ def get_correct_ids(hgnc_symbol, alias_genes):
     identify a gene. We need a way to guess what gene is pointed at.
 
     Args:
-        hgnc_symbol(str): The symbol used by a resource
+        hgnc_symbol(str): The symbol used by a resource.
         alias_genes(dict): A dictionary with all the alias symbols (including the current symbol)
-                           for all genes
+                           for all genes. GeneHandler maps may contain mixed case aliases.
 
     Returns:
         hgnc_ids(iterable(int)): Hopefully only one but a symbol could map to several ids
     """
     hgnc_ids = set()
-    # hgnc_symbol = hgnc_symbol.upper()
-    if hgnc_symbol in alias_genes or hgnc_symbol.upper() in alias_genes:
+    hgnc_id_info = False
+    if hgnc_symbol in alias_genes:
         hgnc_id_info = alias_genes[hgnc_symbol]
-        if hgnc_id_info["true"]:
-            return set([hgnc_id_info["true"]])
+    elif hgnc_symbol.upper() in alias_genes:
+        hgnc_id_info = alias_genes[hgnc_symbol.upper()]
+
+    if hgnc_id_info.get("true"):
+        return set([hgnc_id_info["true"]])
+    if hgnc_id_info.get("ids"):
         return set(hgnc_id_info["ids"])
     return hgnc_ids
 

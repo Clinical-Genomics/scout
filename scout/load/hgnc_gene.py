@@ -94,7 +94,7 @@ def load_hgnc_genes(
             gene_objects.append(gene_obj)
 
     LOG.info("Nr of genes without coordinates in build %s: %s", build, non_existing)
-    LOG.info(f"Loading {len(gene_objects)} genes to database")
+    LOG.info(f"Loading {len(gene_objects)} genes to database")
     adapter.load_hgnc_bulk(gene_objects)
 
     LOG.info("Loading done. %s genes loaded", len(gene_objects))
