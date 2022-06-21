@@ -302,7 +302,7 @@ def update_institute_settings(store, institute_obj, form):
         add_groups=False,
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
-        loqusdb_id=form.get("loqusdb_id"),
+        loqusdb_ids=form.getlist("loqusdb_id"),
         alamut_key=form.get("alamut_key"),
     )
     return updated_institute
