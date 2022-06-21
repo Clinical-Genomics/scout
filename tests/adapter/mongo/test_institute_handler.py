@@ -129,7 +129,7 @@ def test_update_institute_sanger_loqusDB(adapter, institute_obj, user_obj):
     adapter.update_institute(
         internal_id=institute_obj["internal_id"],
         sanger_recipient=user_obj["email"],
-        loqusdb_id="mockID",
+        loqusdb_ids=["mockID"],
     )
 
     ## THEN assert that the institute has been updated

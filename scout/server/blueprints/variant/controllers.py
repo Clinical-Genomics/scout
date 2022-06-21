@@ -428,77 +428,25 @@ def variant_rank_scores(store, case_obj, variant_obj):
     return rank_score_results
 
 
-def observations(store, loqusdb, case_obj, variant_obj):
-    """Query observations for a variant.
-
-    Check if variant_obj have been observed before ni the loqusdb instance.
-    If not return empty dictionary.
-
-    We need to add links to the variant in other cases where the variant has been observed.
-    First we need to make sure that the user has access to these cases. The user_institute_ids holds
-    information about what institutes the user has access to.
-
-    Loop over the case ids from loqusdb and check if they exist in the scout instance.
-    Also make sure that we do not link to the observation that is the current variant.
+def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
+    """Get a list of cases where variant observations occurred.
+    These are only the cases the user has access to.
 
     Args:
         store (scout.adapter.MongoAdapter)
-        loqusdb (scout.server.extensions.LoqusDB)
-        case_obj (scout.models.Case)
-        variant_obj (scout.models.Variant)
+        variant_obj(scout.models.Variant) it's the variant the loqusdb stats are computer for
+        category(str)
+        obs_families(list). List of all cases in loqusdb where variant occurred
 
     Returns:
-        obs_data(dict)
+        obs_cases(list).
     """
-    institute_id = variant_obj["institute"]
-    institute_obj = store.institute(institute_id)
-    loqusdb_id = institute_obj.get("loqusdb_id") or "default"
-    if loqusdb.loqusdb_settings[loqusdb_id]["version"] is None:
-        flash("Could not connect to the preselected loqusdb instance", "danger")
-        return {
-            "total": "N/A",
-        }
-
-    chrom = variant_obj["chromosome"]
-    end_chrom = variant_obj.get("end_chrom", chrom)
-    pos = variant_obj["position"]
-    end = variant_obj["end"]
-    ref = variant_obj["reference"]
-    alt = variant_obj["alternative"]
-    var_case_id = variant_obj["case_id"]
-    var_type = variant_obj.get("variant_type", "clinical")
-    category = variant_obj["category"]
-    if category == "cancer":
-        category = "snv"
-    if category == "cancer_sv":
-        category = "sv"
-
-    composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
-    variant_query = {
-        "_id": composite_id,
-        "chrom": chrom,
-        "end_chrom": end_chrom,
-        "pos": pos,
-        "end": end,
-        "length": variant_obj.get("length", 0),
-        "variant_type": variant_obj.get("sub_category", "").upper(),
-        "category": category,
-    }
-    obs_data = loqusdb.get_variant(variant_query, loqusdb_id=loqusdb_id)
-
-    if not obs_data:
-        obs_data["total"] = loqusdb.case_count(variant_category=category, loqusdb_id=loqusdb_id)
-        if obs_data["total"]:
-            obs_data["observations"] = 0
-        return obs_data
-
+    obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
-
-    obs_data["cases"] = []
-    for i, case_id in enumerate(obs_data.get("families", [])):
-        if i > 10:
+    for i, case_id in enumerate(obs_families):
+        if len(obs_cases) == 10:
             break
-        if case_id == var_case_id:
+        if case_id == variant_obj["case_id"]:
             continue
         # other case might belong to same institute, collaborators or other institutes
         other_case = store.case(case_id)
@@ -521,7 +469,74 @@ def observations(store, loqusdb, case_obj, variant_obj):
         if other_variant is None and category == "sv":
             other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
 
-        obs_data["cases"].append(dict(case=other_case, variant=other_variant))
+        obs_cases.append(dict(case=other_case, variant=other_variant))
+
+    return obs_cases
+
+
+def observations(store, loqusdb, case_obj, variant_obj):
+    """Query observations for a variant.
+
+    Check if variant_obj have been observed before ni the loqusdb instance.
+    If not return empty dictionary.
+
+    We need to add links to the variant in other cases where the variant has been observed.
+    First we need to make sure that the user has access to these cases. The user_institute_ids holds
+    information about what institutes the user has access to.
+
+    Loop over the case ids from loqusdb and check if they exist in the scout instance.
+    Also make sure that we do not link to the observation that is the current variant.
+
+    Args:
+        store (scout.adapter.MongoAdapter)
+        loqusdb (scout.server.extensions.LoqusDB)
+        case_obj (scout.models.Case)
+        variant_obj (scout.models.Variant)
+
+    Returns:
+        obs_data(dict) with loqusdb id as key and observations stats as value
+    """
+    obs_data = {}
+    institute_id = variant_obj["institute"]
+    institute_obj = store.institute(institute_id)
+
+    inst_loqus_ids = institute_obj.get("loqusdb_id", [])
+
+    # institute_obj.get("loqusdb_id") was a string initially because only one instance of loqus could be associated to a institute
+    if isinstance(inst_loqus_ids, str):
+        inst_loqus_ids = [inst_loqus_ids]
+
+    # Compose variant query to submit to one or more loqusdb instances
+    category = variant_obj["category"]
+    if category == "cancer":
+        category = "snv"
+    if category == "cancer_sv":
+        category = "sv"
+    loqus_query = loqusdb.get_loqus_query(variant_obj, category)
+
+    for loqus_id in inst_loqus_ids:  # Loop over all loqusdb instances of an institute
+        obs_data[loqus_id] = {}
+        loqus_settings = loqusdb.loqusdb_settings.get(loqus_id)
+
+        if loqus_settings is None:  # An instance might have been renamed or removed
+            flash(f"Could not connect to the preselected loqusdb '{loqus_id}' instance", "warning")
+            obs_data[loqus_id]["total"] = "N/A"
+            continue
+        obs_data[loqus_id] = loqusdb.get_variant(
+            loqus_query, loqusdb_id=loqus_id
+        )  # collect observation on that loqus instance
+
+        if not obs_data[loqus_id]:  # data is an empty dictionary
+            # Collect count of variants in variant's case
+            obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
+            if obs_data[loqus_id].get("total"):
+                obs_data[loqus_id]["observations"] = 0
+            continue
+
+        # collect cases where observations occurred
+        obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
+            store, variant_obj, category, obs_data[loqus_id].get("families", [])
+        )
 
     return obs_data
 

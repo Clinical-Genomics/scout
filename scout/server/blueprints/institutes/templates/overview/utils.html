@@ -101,9 +101,9 @@
               <!-- Admins can modify loqusdb settings -->
               <div class="col-md-4">
                 {{ form.loqusdb_id.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="LoqudDB id" ) }}<br>
-                <select class="selectpicker" name="loqusdb_id" data-style="btn-secondary">
+                <select multiple class="selectpicker" name="loqusdb_id" data-style="btn-secondary">
                   {% for instance in loqus_instances %}
-                    <option value="{{instance}}" {% if institute.loqusdb_id == instance %} selected {% endif %}>{{instance}}</option>
+                    <option value="{{instance}}" {% if instance in institute.loqusdb_id %} selected {% endif %}>{{instance}}</option>
                   {% endfor %}
                 </select>
               </div>
