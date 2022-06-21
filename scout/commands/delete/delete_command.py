@@ -239,7 +239,7 @@ def user(mail):
             type=str,
         )
         try:
-            adapter.mme_reassign(mme_submitted_cases, user_obj, new_contact_email)
+            adapter.mme_reassign(mme_submitted_cases, new_contact_email)
         except Exception as ex:
             LOG.error(ex)
             return

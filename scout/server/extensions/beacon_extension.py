@@ -2,10 +2,9 @@
    cgbeacon2: https://github.com/Clinical-Genomics/cgbeacon2
 """
 import datetime
-import json
 import logging
 
-from flask import flash
+from flask import flash, url_for
 from flask_login import current_user
 
 from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
@@ -178,6 +177,8 @@ class Beacon:
             store.case_collection.find_one_and_update(
                 {"_id": case_obj["_id"]}, {"$set": {"beacon": submission}}
             )
+            # Create a relative event in database
+            self.update_event_collection(store, user_obj, case_obj, "beacon_add")
 
     def remove_variants(self, store, institute_id, case_obj):
         """
@@ -219,3 +220,31 @@ class Beacon:
 
         if update_case:
             store.case_collection.update_one({"_id": case_obj["_id"]}, {"$unset": {"beacon": 1}})
+            # Create a relative event in database
+            self.update_event_collection(store, user_obj, case_obj, "beacon_remove")
+
+    def update_event_collection(self, store, user_obj, case_obj, verb):
+        """Update the event database collection whenever variants are added of remove from the BEACON_URL
+
+        Args:
+            store(adapter.MongoAdapter)
+            user_obj(dict): scout.models.
+            case_obj(dict): scout.models.User
+            verb(string): "beacon_add" or "beacon_remove"
+        """
+        institute_obj = store.institute(case_obj["owner"])
+
+        link = url_for(
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+        )
+
+        store.create_event(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=link,
+            category="case",
+            verb=verb,
+            subject=case_obj["display_name"],
+            level="specific",
+        )
