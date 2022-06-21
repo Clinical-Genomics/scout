@@ -156,8 +156,8 @@ def get_correct_ids(hgnc_symbol, alias_genes):
         hgnc_ids(iterable(int)): Hopefully only one but a symbol could map to several ids
     """
     hgnc_ids = set()
-    hgnc_symbol = hgnc_symbol.upper()
-    if hgnc_symbol in alias_genes:
+    # hgnc_symbol = hgnc_symbol.upper()
+    if hgnc_symbol in alias_genes or hgnc_symbol.upper() in alias_genes:
         hgnc_id_info = alias_genes[hgnc_symbol]
         if hgnc_id_info["true"]:
             return set([hgnc_id_info["true"]])
