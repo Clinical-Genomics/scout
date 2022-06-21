@@ -1,5 +1,4 @@
 import logging
-from pprint import pprint as pp
 
 import click
 from flask.cli import with_appcontext
@@ -29,7 +28,12 @@ LOG = logging.getLogger(__name__)
     help="Specify email adress for a existing user that should be added to the institute",
 )
 @click.option("-d", "--display-name", help="Set a new display name for a insitute")
-@click.option("-l", "--loqusdb_id", help="Set a new loqusdb_id for a institute")
+@click.option(
+    "-l",
+    "--loqusdb_id",
+    help="Set a loqusdb_id for a institute. Repeat for multiple loqusdb instances",
+    multiple=True,
+)
 @click.option(
     "-r",
     "--remove-sanger",
@@ -58,7 +62,7 @@ def institute(
             coverage_cutoff=coverage_cutoff,
             frequency_cutoff=frequency_cutoff,
             display_name=display_name,
-            loqusdb_id=loqusdb_id,
+            loqusdb_ids=loqusdb_id,
             remove_sanger=remove_sanger,
         )
     except Exception as err:
