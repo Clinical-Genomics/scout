@@ -10,39 +10,6 @@ from scout.server.app import create_app
 from scout.server.blueprints.login.models import LoginUser
 
 
-class LoqusdbMock:
-    """Mock the loqusdb api"""
-
-    def __init__(self):
-        self.nr_cases = 130
-        self.variants = {"1_169898014_T_C": {"families": ["vitalmouse"]}}
-        self.loqusdb_settings = {
-            "default": {
-                "api_url": "http://127.0.0.1:9000",
-                "instance_type": "api",
-                "id": "default",
-                "version": "2.5",
-            }
-        }
-
-    def case_count(self):
-        return self.nr_cases
-
-    def get_variant(self, var_dict, loqusdb_id="test"):
-        loqus_instance = self.loqusdb_settings.get(loqusdb_id)
-        var = self.variants.get(var_dict["_id"], {})
-        var["total"] = self.nr_cases
-        return var
-
-    def _add_variant(self, var_obj):
-        simple_id = var_obj["simple_id"]
-        case_id = var_obj["case_id"]
-        self.variants[simple_id] = {"families": [case_id]}
-
-    def _all_variants(self):
-        return self.variants
-
-
 class MockMail:
     _send_was_called = False
     _message = None
@@ -68,6 +35,12 @@ def mock_comment():
 
 
 @pytest.fixture
+def loqusdburl():
+    """Return the base url of a loqusdb mock"""
+    return "http://127.0.0.1:9000"
+
+
+@pytest.fixture
 def loqusdb():
     """Return a loqusdb mock"""
     loqus_mock = LoqusdbMock()
@@ -75,7 +48,7 @@ def loqusdb():
 
 
 @pytest.fixture
-def app(real_database_name, real_variant_database, user_obj):
+def app(real_database_name, real_variant_database, user_obj, loqusdburl):
     """A test app containing the endpoints of the real app"""
 
     app = create_app(
@@ -91,6 +64,14 @@ def app(real_database_name, real_variant_database, user_obj):
             MME_TOKEN=str(uuid.uuid4()),
             BEACON_URL="http://localhost:6000/apiv1.0",
             BEACON_TOKEN="DEMO",
+            LOQUSDB_SETTINGS={
+                "test": {
+                    "api_url": loqusdburl,
+                    "instance_type": "api",
+                    "id": "loqusRD",
+                    "version": "2.5",
+                }
+            },
         )
     )
 

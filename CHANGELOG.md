@@ -4,11 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-##[]
-### Added
+
+## []
+## Added
 - Display last 50 or 500 events for a user in a timeline
 - Show dismiss count from other cases on matching variantS
 - Save Beacon-related events in events collection
+- Institute settings allow saving multiple loqusdb instances for one institute
+- Display stats from multiple instances of loqusdb on variant page
 ### Changed
 - Prior ACMG classifications view is no longer limited by pathogenicity
 ### Fixed
