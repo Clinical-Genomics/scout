@@ -170,15 +170,15 @@
                   {% if obs.cases %}
                     {% for data in obs.cases %}
                       {% if data.variant and data.variant.category == "snv"%}
-                        <a class="badge badge-pill badge-light" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                        <a class="badge badge-pill" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                       {% elif data.variant and data.variant.category == "sv"%}
-                        <a class="badge badge-pill badge-light" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                        <a class="badge badge-pill" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                       {% else %}
-                        <span class="text-muted ml-3 badge badge-pill badge-light" >{{ data.case.display_name }}</span>
+                        <span class="ml-3 badge badge-pill" >{{ data.case.display_name }}</span>
                       {% endif %}
                     {% endfor %}
-                    {% if obs.cases|length >= 10 %}
-                    ...
+                    {% if obs.cases|length > 10 %}
+                    and more
                     {% endif%}
                   {% endif %}
               </td>
