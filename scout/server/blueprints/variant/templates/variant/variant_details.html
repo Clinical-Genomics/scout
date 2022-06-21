@@ -174,7 +174,7 @@
                       {% elif data.variant and data.variant.category == "sv"%}
                         <a class="badge badge-pill" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                       {% else %}
-                        <span class="ml-3 badge badge-pill text-body">{{ data.case.display_name }}</span>
+                        <span class="ml-3 badge rounded-pill bg-light text-dark">{{ data.case.display_name }}</span>
                       {% endif %}
                     {% endfor %}
                     {% if obs.cases|length > 10 %}
