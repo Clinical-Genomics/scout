@@ -37,7 +37,6 @@ class InstituteHandler(object):
         internal_id,
         sanger_recipient=None,
         sanger_recipients=None,
-        loqusdb_id=None,
         coverage_cutoff=None,
         frequency_cutoff=None,
         display_name=None,
@@ -48,6 +47,7 @@ class InstituteHandler(object):
         add_groups=None,
         sharing_institutes=None,
         cohorts=None,
+        loqusdb_ids=[],
         alamut_key=None,
     ):
         """Update the information for an institute
@@ -56,7 +56,6 @@ class InstituteHandler(object):
             internal_id(str): The internal institute id
             sanger_recipient(str): Email adress to add for sanger order
             sanger_recipients(list): A list of sanger recipients email addresses
-            loqusdb_id(str): identify loqusdb setting to use
             coverage_cutoff(int): Update coverage cutoff
             frequency_cutoff(float): New frequency cutoff
             display_name(str): New display name
@@ -67,13 +66,13 @@ class InstituteHandler(object):
             add_groups(bool): If groups should be added. If False replace groups
             sharing_institutes(list(str)): Other institutes to share cases with
             cohorts(list(str)): patient cohorts
+            loqusdb_ids(list(str)): list of ids of loqusdb instances Scout is connected to
             alamut_key(str): optional, Alamut Plus API key -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
 
         Returns:
             updated_institute(dict)
 
         """
-
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
@@ -154,9 +153,9 @@ class InstituteHandler(object):
         if cohorts is not None:
             updates["$set"]["cohorts"] = cohorts
 
-        if loqusdb_id is not None:
-            LOG.info("Updating loqusdb id for institute: %s to %s", internal_id, loqusdb_id)
-            updates["$set"]["loqusdb_id"] = loqusdb_id
+        if loqusdb_ids:
+            LOG.warning("Updating loqusdb id for institute: %s to %s", internal_id, loqusdb_ids)
+            updates["$set"]["loqusdb_id"] = loqusdb_ids
 
         if alamut_key is not None:
             updates["$set"]["alamut_key"] = (
