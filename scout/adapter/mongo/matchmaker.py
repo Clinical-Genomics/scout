@@ -2,6 +2,8 @@
 import logging
 from datetime import datetime
 
+from flask import url_for
+
 LOG = logging.getLogger(__name__)
 
 
@@ -103,7 +105,9 @@ class MMEHandler(object):
 
         # create events for subjects add in MatchMaker for this case
         institute_obj = self.institute(case_obj["owner"])
-        link = f"/{institute_obj['_id']}/{case_obj['display_name']}"
+        link = url_for(
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+        )
         for individual in case_obj["individuals"]:
             if individual["phenotype"] == 2:  # affected
                 # create event for patient
@@ -132,7 +136,9 @@ class MMEHandler(object):
         """
         institute_obj = self.institute(case_obj["owner"])
         # create events for subjects removal from Matchmaker this case
-        link = f"/{institute_obj['_id']}/{case_obj['display_name']}"
+        link = url_for(
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+        )
         for individual in case_obj["individuals"]:
             if individual["phenotype"] == 2:  # affected
                 # create event for patient removal

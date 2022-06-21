@@ -4,7 +4,7 @@
 import datetime
 import logging
 
-from flask import flash
+from flask import flash, url_for
 from flask_login import current_user
 
 from scout.utils.scout_requests import delete_request_json, get_request_json, post_request_json
@@ -233,7 +233,10 @@ class Beacon:
             verb(string): "beacon_add" or "beacon_remove"
         """
         institute_obj = store.institute(case_obj["owner"])
-        link = f"/{institute_obj['_id']}/{case_obj['display_name']}"
+
+        link = url_for(
+            "cases.case", institute_id=institute_obj["_id"], case_name=case_obj["display_name"]
+        )
 
         store.create_event(
             institute=institute_obj,
