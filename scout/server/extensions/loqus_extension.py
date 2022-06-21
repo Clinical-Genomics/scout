@@ -58,9 +58,12 @@ class LoqusDB:
         Args:
             cgf(list): list of dictionaries probably containing containing key/values "binary_path" and "config_path"
         """
+        cgf_as_dict = {}
         for setting in cfg:
             cfg_id = setting.get("id") or "default"
-            self.loqusdb_settings[cfg_id] = setting
+            cgf_as_dict[cfg_id] = setting
+
+        self.loqusdb_settings = cgf_as_dict
 
     def init_app(self, app):
         """Initialize LoqusDB from Flask app and check that settings are valid."""
@@ -147,6 +150,35 @@ class LoqusDB:
         version = output.rstrip().split(" ")[-1]
         LOG.debug("version: {}".format(version))
         return version
+
+    def get_loqus_query(self, variant_obj, category):
+        """Create a loqusDB query based on the variant's characteristics
+
+        Args:
+            variant_obj(scout.models.Variant)
+            category(str)
+        Returns:
+            loqus_query(dict)
+        """
+        chrom = variant_obj["chromosome"]
+        end_chrom = variant_obj.get("end_chrom", chrom)
+        pos = variant_obj["position"]
+        end = variant_obj["end"]
+        ref = variant_obj["reference"]
+        alt = variant_obj["alternative"]
+
+        composite_id = "{0}_{1}_{2}_{3}".format(chrom, pos, ref, alt)
+        loqus_query = {
+            "_id": composite_id,
+            "chrom": chrom,
+            "end_chrom": end_chrom,
+            "pos": pos,
+            "end": end,
+            "length": variant_obj.get("length", 0),
+            "variant_type": variant_obj.get("sub_category", "").upper(),
+            "category": category,
+        }
+        return loqus_query
 
     def case_count(self, variant_category, loqusdb_id="default"):
         """Returns number of cases in loqus instance
