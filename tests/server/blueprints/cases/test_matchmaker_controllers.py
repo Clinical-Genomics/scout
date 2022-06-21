@@ -114,7 +114,7 @@ def test_matchmaker_add_snv(app, user_obj, case_obj, test_hpo_terms, mocker):
             == test_variant["position"]
         )
 
-        # AND the relative event should be saved in the database:
+        # AND the corresponding event should be saved in the database:
         mme_event = store.event_collection.find_one()
         assert mme_event["verb"] == "mme_add"
         assert mme_event["link"] == f"/{case_obj['owner']}/{case_obj['display_name']}"
