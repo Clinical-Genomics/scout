@@ -36,11 +36,10 @@ class MMEHandler(object):
             submitted_cases.add(case_obj["_id"])
         return submitted_cases
 
-    def mme_reassign(self, case_ids, old_user, new_users_email):
+    def mme_reassign(self, case_ids, new_users_email):
         """Reassign cases submitted to MME to another user
         Args:
             case_ids(set): a set of case _ids
-            old_contact(dict): a scout user object
             new_users_email(str): email of another user in Scout
         """
         new_contact = self.user(new_users_email)
@@ -104,6 +103,7 @@ class MMEHandler(object):
 
         # create events for subjects add in MatchMaker for this case
         institute_obj = self.institute(case_obj["owner"])
+        link = f"/{institute_obj['_id']}/{case_obj['display_name']}"
         for individual in case_obj["individuals"]:
             if individual["phenotype"] == 2:  # affected
                 # create event for patient
@@ -111,7 +111,7 @@ class MMEHandler(object):
                     institute=institute_obj,
                     case=case_obj,
                     user=user_obj,
-                    link="",
+                    link=link,
                     category="case",
                     verb="mme_add",
                     subject=individual["display_name"],
@@ -131,7 +131,8 @@ class MMEHandler(object):
 
         """
         institute_obj = self.institute(case_obj["owner"])
-        # create events for subjects removal from Matchmaker this cas
+        # create events for subjects removal from Matchmaker this case
+        link = f"/{institute_obj['_id']}/{case_obj['display_name']}"
         for individual in case_obj["individuals"]:
             if individual["phenotype"] == 2:  # affected
                 # create event for patient removal
@@ -139,7 +140,7 @@ class MMEHandler(object):
                     institute=institute_obj,
                     case=case_obj,
                     user=user_obj,
-                    link="",
+                    link=link,
                     category="case",
                     verb="mme_remove",
                     subject=individual["display_name"],
