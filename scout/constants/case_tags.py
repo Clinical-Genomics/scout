@@ -104,6 +104,8 @@ VERBS_MAP = {
     "update_clinical_filter_hpo": "updated clinical filter HPO status for",
     "mme_add": "exported to Matchmaker patient",
     "mme_remove": "removed from Matchmaker patient",
+    "beacon_add": "exported variants to the Beacon",
+    "beacon_remove": "removed variants from the Beacon",
     "filter_stash": "stored a filter for",
     "filter_audit": "marked case audited with filter",
     "update_sample": "updated sample data for",
@@ -116,6 +118,7 @@ ICON_FOLDER_OPEN = "icon fas fa-folder-open"
 ICON_SEARCH = "icon fas fa-search"
 ICON_RANK = "icon fa fa-check-double"
 ICON_GEARS = "icon fas fa-gears"
+ICON_SHARE = "icon fas fa-share"
 
 VERBS_ICONS_MAP = {
     "assign": "icon fas fa-heart",
@@ -143,7 +146,7 @@ VERBS_ICONS_MAP = {
     "update_case": "icon fas fa-folder-open",
     "update_individual": ICON_FOLDER_OPEN,
     "check_case": "icon fas fa-star",
-    "share": ICON_SEARCH,
+    "share": ICON_SHARE,
     "unshare": ICON_TIMES,
     "rerun": ICON_GEARS,
     "rerun_monitor": ICON_GEARS,
@@ -159,8 +162,10 @@ VERBS_ICONS_MAP = {
     "mosaic_tags": ICON_RANK,
     "update_default_panels": ICON_FOLDER_OPEN,
     "update_clinical_filter_hpo": ICON_FOLDER_OPEN,
-    "mme_add": "icon fas fa-share",
-    "mme_remove": "icon fas fa-share",
+    "mme_add": ICON_SHARE,
+    "mme_remove": ICON_TIMES,
+    "beacon_add": ICON_SHARE,
+    "beacon_remove": ICON_TIMES,
     "filter_stash": ICON_SEARCH,
     "filter_audit": ICON_SEARCH,
     "update_sample": ICON_FOLDER_OPEN,

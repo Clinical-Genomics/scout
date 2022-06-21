@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## Added
 - Display last 50 or 500 events for a user in a timeline
 - Show dismiss count from other cases on matching variantS
+- Save Beacon-related events in events collection
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
 ### Changed
@@ -17,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visibility of Sanger ordered badge on case page, light mode
 - Some of the DataTables tables got a bit dark in dark mode
 - Update list of variant specific events
+- Missing link in saved MatchMaker-related events
 
 ## [4.56]
 ### Added
