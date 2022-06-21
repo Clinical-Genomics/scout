@@ -11,7 +11,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Save Beacon-related events in events collection
 ### Changed
 - Prior ACMG classifications view is no longer limited by pathogenicity
-- Use stable version of `elgohr/Publish-Docker-Github-Action` GitHub action used to push Docker images to Docker Hub
 ### Fixed
 - Visibility of Sanger ordered badge on case page, light mode
 - Some of the DataTables tables got a bit dark in dark mode
