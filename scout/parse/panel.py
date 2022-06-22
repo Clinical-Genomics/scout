@@ -10,7 +10,6 @@ from scout.constants import (
 )
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
-from scout.utils.link import get_correct_ids
 
 from .omim import get_mim_genes
 
