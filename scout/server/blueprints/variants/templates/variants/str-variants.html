@@ -204,6 +204,8 @@
   href="{{ variant.str_source_link }}"
   class="link"
   target="_blank"
+  referrerpolicy="no-referrer"
+  rel="noopener"
   data-bs-toggle="popover"
   data-bs-html="true"
   data-bs-trigger="hover"
@@ -233,7 +235,7 @@
   title="">{{ variant.str_repid }}
   </a>
   {% for gene in variant.genes %}
-    <span class="badge bg-secondary"><a href="{{ gene.stripy_link }}" class="text-white">S</a></span>
-    <span class="badge bg-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white">G</a></span>
+    <span class="badge bg-secondary"><a href="{{ gene.stripy_link }}" class="text-white" referrerpolicy="no-referrer" rel="noopener" target="_blank">S</a></span>
+    <span class="badge bg-secondary"><a href="{{ gene.gnomad_str_link }}" class="text-white" referrerpolicy="no-referrer" rel="noopener" target="_blank">G</a></span>
   {% endfor %}
 {% endmacro %}
