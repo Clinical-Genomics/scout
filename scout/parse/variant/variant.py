@@ -349,13 +349,13 @@ def parse_variant(
     if local_obs_old_freq:
         parsed_variant["local_obs_old_freq"] = float(local_obs_old_freq)
 
-    if "Date" in local_archive_info:
+    if local_archive_info and "Date" in local_archive_info:
         parsed_variant["local_obs_old_date"] = local_archive_info.get("Date")
 
-    if "NrCases" in local_archive_info:
+    if local_archive_info and "NrCases" in local_archive_info:
         parsed_variant["local_obs_old_nr_cases"] = local_archive_info.get("NrCases")
 
-    if "Description" in local_archive_info:
+    if local_archive_info and "Description" in local_archive_info:
         parsed_variant["local_obs_old_desc"] = local_archive_info.get("Description")
 
     ###################### Add severity predictions ######################
