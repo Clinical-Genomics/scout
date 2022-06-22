@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Some of the DataTables tables got a bit dark in dark mode
 - Update list of variant specific events
 - Missing link in saved MatchMaker-related events
+- Locus info links from STR variantS page open in new browser tabs
 
 ## [4.56]
 ### Added
