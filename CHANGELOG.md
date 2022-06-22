@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
-## []
+## [4.57]
 ## Added
 - Display last 50 or 500 events for a user in a timeline
 - Show dismiss count from other cases on matching variantS
