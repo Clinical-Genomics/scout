@@ -116,7 +116,9 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
     """
     base_url = "https://panelapp.genomicsengland.co.uk/WebServices/{0}/"
 
-    hgnc_map = adapter.genes_by_alias()
+    hgnc_map = (
+        adapter.ensembl_to_hgnc_mapping()
+    )  # dict with Ensembl ids as keys and HB`GNC ids as values {"ENSG00000121410":"A1BG", ...}
 
     panel_ids = [panel_id]
 
