@@ -286,7 +286,9 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     hgnc_symbol = app_gene["GeneSymbol"]
     # Returns a set of hgnc ids
     ensembl_ids = app_gene["EnsembleGeneIds"]
-    hgnc_ids = [hgnc_map[ensembl_id] for ensembl_id in ensembl_ids]
+    hgnc_ids = [
+        hgnc_map.get("ensembl_id") for ensembl_id in ensembl_ids if hgnc_map.get("ensembl_id")
+    ]
     if not hgnc_ids:
         LOG.warning("Gene %s does not exist in database. Skipping gene...", hgnc_symbol)
         return gene_info
