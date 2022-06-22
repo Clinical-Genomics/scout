@@ -116,7 +116,7 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
     """
     base_url = "https://panelapp.genomicsengland.co.uk/WebServices/{0}/"
 
-    hgnc_map = adapter.genes_by_alias()
+    hgnc_map = adapter.ensembl_to_hgnc_mapping()
 
     panel_ids = [panel_id]
 
