@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Missing link in saved MatchMaker-related events
 - Genes with mixed case gene symbols missing in PanelApp panels
 - Alignment of elements on the Beacon submission modal window
+- Locus info links from STR variantS page open in new browser tabs
 
 ## [4.56]
 ### Added
