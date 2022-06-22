@@ -371,6 +371,17 @@ class GeneHandler(object):
 
         return alias_genes
 
+    def ensembl_to_hgnc_mapping(self):
+        """Return a dictionary with Ensembl ids as keys and hgnc_ids as values
+
+        Returns:
+            mapping(dict): {"ENSG00000121410":"A1BG", ...}
+        """
+        pipeline = [{"$group": {"_id": {"ensembl_id": "$ensembl_id", "hgnc_id": "$hgnc_id"}}}]
+        result = self.hgnc_collection.aggregate(pipeline)
+        mapping = {res["_id"]["ensembl_id"]: res["_id"]["hgnc_id"] for res in result}
+        return mapping
+
     def ensembl_genes(self, build=None, add_transcripts=False, id_transcripts=False):
         """Return a dictionary with ensembl ids as keys and gene objects as value.
 
