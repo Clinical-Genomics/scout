@@ -19,6 +19,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Some of the DataTables tables got a bit dark in dark mode
 - Update list of variant specific events
 - Missing link in saved MatchMaker-related events
+- Genes with mixed case gene symbols missing in PanelApp panels
+- Alignment of elements on the Beacon submission modal window
 
 ## [4.56]
 ### Added
