@@ -68,6 +68,11 @@ def test_load_panel_panelapp(mock_app):
     assert result.exit_code == 0
     assert sum(1 for _ in store.panel_collection.find()) == 2
 
+    # AND newly created gene panel should contain 2 genes: POT1 and MEGF8 (which is present in the json panel with the alias "C19orf49")
+    panel_obj = store.panel_collection.find_one({"panel_name": str(panelapp_panel)})
+    for gene in panel_obj["genes"]:
+        assert gene["symbol"] in ["POT1", "MEGF8"]
+
     # Run the command again and it should not return error:
     result = runner.invoke(cli, ["load", "panel", "--panel-app", "--panel-id", panelapp_panel])
     assert result.exit_code == 0
