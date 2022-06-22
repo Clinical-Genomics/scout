@@ -268,11 +268,11 @@ def parse_gene_panel(
 
 
 def parse_panel_app_gene(app_gene, hgnc_map):
-    """Parse a panel app formated gene
+    """Parse a panel app formatted gene.
 
     Args:
-        app_gene(dict): Dict with panel app info
-        hgnc_map(dict): Map from hgnc_symbol to hgnc_id
+        app_gene(dict): dict with panel app info, where Ensembl ids are present as a loist with key "EnsembleGeneIds"
+        hgnc_map(dict): a dictionary with Ensembl IDs as keys and HGNC ids as values
 
     Returns:
         gene_info(dict): Scout infromation
@@ -284,7 +284,7 @@ def parse_panel_app_gene(app_gene, hgnc_map):
         return gene_info
 
     hgnc_symbol = app_gene["GeneSymbol"]
-    # Returns a set of hgnc ids
+
     ensembl_ids = app_gene["EnsembleGeneIds"]
     hgnc_ids = set(
         hgnc_map.get(ensembl_id) for ensembl_id in ensembl_ids if hgnc_map.get(ensembl_id)
