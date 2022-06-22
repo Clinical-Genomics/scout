@@ -380,6 +380,8 @@ class VariantLoader(object):
             category(str): ['snv','sv','cancer','str']
             sample_info(dict): A dictionary with info about samples.
                                Strictly for cancer to tell which is tumor
+           custom_images(dict): A dict with custom images for a case.
+           local_archive_info(dict): A dict with info about the local archive used for annotation
 
         Returns:
             nr_inserted(int)

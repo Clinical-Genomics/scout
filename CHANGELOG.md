@@ -13,8 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
 - Display date and frequency of obs derived from count of local archive observations from MIP11
-### Changed[
-- Prior ACMG classifications view is no longer limited by pathogenicity]()
+### Changed
+- Prior ACMG classifications view is no longer limited by pathogenicity
 ### Fixed
 - Visibility of Sanger ordered badge on case page, light mode
 - Some of the DataTables tables got a bit dark in dark mode
