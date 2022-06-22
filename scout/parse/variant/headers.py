@@ -37,10 +37,31 @@ def parse_local_archive_header(vcf_obj):
     """
     local_archive_header = {}
 
-    if "NrCases" in vcf_obj:
-        local_archive_header["NrCases"] = vcf_obj["NrCases"]
+    if "Obs" in vcf_obj:
+        local_archive_header["Description"] = vcf_obj["Obs"]["Description"]
 
-    return rank_results_header
+    if "NrCases" in vcf_obj:
+        local_archive_header["NrCases"] = int(vcf_obj["NrCases"]["NrCases"])
+
+    # Capture loqusdb date from vcf header lines of the format
+    # ##Software=<ID=loqusdb,Version=2.5,Date="2020-08-21 09:02",CommandLineOptions="">
+    for header_line in vcf_obj.raw_header.split("\n"):
+        if len(header_line) == 0:
+            continue
+        if "Software" not in header_line:
+            pass
+        elif "loqusdb" in header_line:
+            software_entry = header_line.split("<")[1]
+            entries = software_entry.split(",")
+            for entry in entries:
+                assignment = entry.split("=")
+                if len(assignment) > 1:
+                    the_key = assignment[0]
+                    the_value = assignment[1]
+                    if the_key == "Date":
+                        local_archive_header["Date"] = the_value
+
+    return local_archive_header
 
 
 def parse_header_format(description):

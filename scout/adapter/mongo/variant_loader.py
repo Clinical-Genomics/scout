@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
-import pathlib
-import re
-import tempfile
 from datetime import datetime
-from pprint import pprint as pp
 
 # Third party modules
 import pymongo
@@ -21,7 +17,11 @@ from scout.parse.variant.clnsig import is_pathogenic
 from scout.parse.variant.coordinates import parse_coordinates
 
 # Local modules
-from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
+from scout.parse.variant.headers import (
+    parse_local_archive_header,
+    parse_rank_results_header,
+    parse_vep_header,
+)
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
 
@@ -360,6 +360,7 @@ class VariantLoader(object):
         category="snv",
         sample_info=None,
         custom_images=None,
+        local_archive_info=None,
     ):
         """Perform the loading of variants
 
@@ -434,6 +435,7 @@ class VariantLoader(object):
                     vep_header=vep_header,
                     individual_positions=individual_positions,
                     category=category,
+                    local_archive_info=local_archive_info,
                 )
 
                 # Build the variant object

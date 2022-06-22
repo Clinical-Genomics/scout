@@ -212,7 +212,7 @@
 {% if "SHOW_OBSERVED_VARIANT_ARCHIVE" in config and config["SHOW_OBSERVED_VARIANT_ARCHIVE"] == true %}
   <div class="card panel-default">
     <div class="panel-heading">
-      <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations (archive {{obs_date or '2017-05-31'}})</a>
+      <a href="https://github.com/moonso/loqusdb" target="_blank" data-bs-toggle="tooltip" title="Local observations annotated from an archive copy of the loqusdb local frequency database. Only variants above a quality threshold are included, and each case is included only once. {% if variant.local_obs_old_desc %} {{variant.local_obs_old_desc}} {% endif %}">Local observations (archive {{ obs_date or variant.local_obs_old_date or "dump"}})</a>
     </div>
     <div class="card-body">
       <table class="table">
@@ -227,7 +227,7 @@
           <tr>
             <td>{{ variant.local_obs_old|default('N/A') }}</td>
             <td>{{ variant.local_obs_hom_old|default('N/A') }}</td>
-            <td>{% if variant.local_obs_old_freq %} {{variant.local_obs_old_freq|round(6)}} {% else %} N/A {% endif %}</td>
+            <td>{% if variant.local_obs_old_freq %} {{variant.local_obs_old_freq|round(6)}} {% elif variant.local_obs_old_nr_cases %} {{ (variant.local_obs_old/variant.local_obs_old_nr_cases)|round(5) }} {% else %} N/A {% endif %}</td>
           </tr>
         </tbody>
       </table>
