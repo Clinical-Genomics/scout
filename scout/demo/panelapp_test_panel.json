@@ -2,23 +2,6 @@
     "result": {
         "Genes": [
             {
-                "GeneSymbol": "BAP1",
-                "EnsembleGeneIds": [
-                    "ENSG00000163930"
-                ],
-                "ModeOfInheritance": "monoallelic",
-                "Penetrance": null,
-                "Publications": null,
-                "Phenotypes": null,
-                "ModeOfPathogenicity": null,
-                "LevelOfConfidence": "HighEvidence",
-                "Evidences": [
-                    "Expert Review Green",
-                    "NHS GMS",
-                    "Expert List"
-                ]
-            },
-            {
                 "GeneSymbol": "CDK4",
                 "EnsembleGeneIds": [
                     "ENSG00000135446"
@@ -36,24 +19,24 @@
                 ]
             },
             {
-                "GeneSymbol": "CDKN2A",
+                "GeneSymbol": "C19orf49",
                 "EnsembleGeneIds": [
-                    "ENSG00000147889"
+                    "ENSG00000105429"
                 ],
-                "ModeOfInheritance": "monoallelic",
+                "ModeOfInheritance": "biallelic",
                 "Penetrance": null,
-                "Publications": null,
+                "Publications": [
+                    "23063620"
+                ],
                 "Phenotypes": [
-                    "{Melanoma, cutaneous malignant, 2}, OMIM:155601",
-                    "{Melanoma and neural system tumor syndrome}, OMIM:155755",
-                    "{Melanoma-pancreatic cancer syndrome}, OMIM:606719"
+                    "Polydactyly",
+                    "Carpenter syndrome 2 614976"
                 ],
                 "ModeOfPathogenicity": null,
                 "LevelOfConfidence": "HighEvidence",
                 "Evidences": [
                     "Expert Review Green",
-                    "NHS GMS",
-                    "Expert List"
+                    "Victorian Clinical Genetics Services"
                 ]
             },
             {
@@ -82,80 +65,13 @@
                     "NHS GMS",
                     "Expert List"
                 ]
-            },
-            {
-                "GeneSymbol": "ACD",
-                "EnsembleGeneIds": [
-                    "ENSG00000102977"
-                ],
-                "ModeOfInheritance": "monoallelic",
-                "Penetrance": null,
-                "Publications": null,
-                "Phenotypes": null,
-                "ModeOfPathogenicity": null,
-                "LevelOfConfidence": "ModerateEvidence",
-                "Evidences": [
-                    "Expert Review Amber",
-                    "NHS GMS"
-                ]
-            },
-            {
-                "GeneSymbol": "BRCA2",
-                "EnsembleGeneIds": [
-                    "ENSG00000139618"
-                ],
-                "ModeOfInheritance": "monoallelic",
-                "Penetrance": null,
-                "Publications": null,
-                "Phenotypes": null,
-                "ModeOfPathogenicity": null,
-                "LevelOfConfidence": "ModerateEvidence",
-                "Evidences": [
-                    "Expert Review Amber",
-                    "NHS GMS"
-                ]
-            },
-            {
-                "GeneSymbol": "TERF2IP",
-                "EnsembleGeneIds": [
-                    "ENSG00000166848"
-                ],
-                "ModeOfInheritance": null,
-                "Penetrance": null,
-                "Publications": null,
-                "Phenotypes": null,
-                "ModeOfPathogenicity": null,
-                "LevelOfConfidence": "ModerateEvidence",
-                "Evidences": [
-                    "Expert Review Amber",
-                    "NHS GMS"
-                ]
-            },
-            {
-                "GeneSymbol": "TERT",
-                "EnsembleGeneIds": [
-                    "ENSG00000164362"
-                ],
-                "ModeOfInheritance": "monoallelic",
-                "Penetrance": null,
-                "Publications": [
-                    "23348503"
-                ],
-                "Phenotypes": null,
-                "ModeOfPathogenicity": null,
-                "LevelOfConfidence": "ModerateEvidence",
-                "Evidences": [
-                    "Expert Review Amber",
-                    "NHS GMS",
-                    "Expert List"
-                ]
             }
         ],
         "STRs": [],
         "Regions": [],
-        "SpecificDiseaseName": "Familial melanoma",
+        "SpecificDiseaseName": "Panel for testing PanelApp panels loading",
         "version": "1.12",
-        "Created": "2022-03-03T10:25:36.859855Z",
+        "Created": "2022-06-22T10:25:36.859855Z",
         "DiseaseGroup": "",
         "DiseaseSubGroup": "",
         "Status": "public"
