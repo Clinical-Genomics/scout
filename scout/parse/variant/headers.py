@@ -48,9 +48,7 @@ def parse_local_archive_header(vcf_obj):
     for header_line in vcf_obj.raw_header.split("\n"):
         if len(header_line) == 0:
             continue
-        if "Software" not in header_line:
-            pass
-        elif "loqusdb" in header_line:
+        if "Software" in header_line and "loqusdb" in header_line:
             software_entry = header_line.split("<")[1]
             entries = software_entry.split(",")
             for entry in entries:
