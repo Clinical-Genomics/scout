@@ -654,6 +654,9 @@ class VariantLoader(object):
 
         # Parse the neccessary headers from vcf file
         rank_results_header = parse_rank_results_header(vcf_obj)
+
+        local_archive_info = parse_local_archive_header(vcf_obj)
+
         vep_header = parse_vep_header(vcf_obj)
         if vep_header:
             LOG.info("Found VEP header %s", "|".join(vep_header))
@@ -704,6 +707,7 @@ class VariantLoader(object):
                 category=category,
                 sample_info=sample_info,
                 custom_images=custom_images,
+                local_archive_info=local_archive_info,
             )
         except Exception as error:
             LOG.exception("unexpected error")

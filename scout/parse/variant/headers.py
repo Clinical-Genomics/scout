@@ -23,6 +23,26 @@ def parse_rank_results_header(vcf_obj):
     return rank_results_header
 
 
+def parse_local_archive_header(vcf_obj):
+    """Return a dict with local archive data for the case.
+
+    Check if the rank result is in the vcf header. If it exists return a dict
+    with the fields of interest
+
+    Args:
+        vcf_obj(cyvcf2.VCF)
+
+    Returns:
+        local_archive_header(dict)
+    """
+    local_archive_header = {}
+
+    if "NrCases" in vcf_obj:
+        local_archive_header["NrCases"] = vcf_obj["NrCases"]
+
+    return rank_results_header
+
+
 def parse_header_format(description):
     """Get the format from a vcf header line description
 
