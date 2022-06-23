@@ -28,6 +28,7 @@ def parse_variant(
     vep_header=None,
     individual_positions=None,
     category=None,
+    local_archive_info=None,
 ):
     """Return a parsed variant
 
@@ -42,7 +43,7 @@ def parse_variant(
         individual_positions(dict): Explain what position each individual has
                                     in vcf
         category(str): 'snv', 'sv', 'str', 'cancer' or 'cancer_sv'
-
+        local_archive_info(dict): date and total count for local obs
     Returns:
         parsed_variant(dict): Parsed variant
     """
@@ -347,6 +348,15 @@ def parse_variant(
     local_obs_old_freq = variant.INFO.get("clinical_genomics_loqusFrq")
     if local_obs_old_freq:
         parsed_variant["local_obs_old_freq"] = float(local_obs_old_freq)
+
+    if local_archive_info and "Date" in local_archive_info:
+        parsed_variant["local_obs_old_date"] = local_archive_info.get("Date")
+
+    if local_archive_info and "NrCases" in local_archive_info:
+        parsed_variant["local_obs_old_nr_cases"] = local_archive_info.get("NrCases")
+
+    if local_archive_info and "Description" in local_archive_info:
+        parsed_variant["local_obs_old_desc"] = local_archive_info.get("Description")
 
     ###################### Add severity predictions ######################
     cadd = parse_cadd(variant, parsed_transcripts)

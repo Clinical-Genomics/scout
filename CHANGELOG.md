@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Save Beacon-related events in events collection
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
+- Display date and frequency of obs derived from count of local archive observations from MIP11
 ### Changed
 - Prior ACMG classifications view is no longer limited by pathogenicity
 ### Fixed
