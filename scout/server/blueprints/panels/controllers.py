@@ -100,12 +100,13 @@ def update_existing_panel(store, request, lines):
             csv_lines=lines,
             option=update_option,
         )
+        if panel_obj:
+            return panel_obj.get("_id")
     else:
         flash(
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return panel_obj.get("_id")
 
 
 def panel_create_or_update(store, request):
