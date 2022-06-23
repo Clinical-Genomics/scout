@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
-import pathlib
-import re
-import tempfile
 from datetime import datetime
-from pprint import pprint as pp
 
 # Third party modules
 import pymongo
@@ -21,7 +17,11 @@ from scout.parse.variant.clnsig import is_pathogenic
 from scout.parse.variant.coordinates import parse_coordinates
 
 # Local modules
-from scout.parse.variant.headers import parse_rank_results_header, parse_vep_header
+from scout.parse.variant.headers import (
+    parse_local_archive_header,
+    parse_rank_results_header,
+    parse_vep_header,
+)
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
 
@@ -360,6 +360,7 @@ class VariantLoader(object):
         category="snv",
         sample_info=None,
         custom_images=None,
+        local_archive_info=None,
     ):
         """Perform the loading of variants
 
@@ -379,6 +380,8 @@ class VariantLoader(object):
             category(str): ['snv','sv','cancer','str']
             sample_info(dict): A dictionary with info about samples.
                                Strictly for cancer to tell which is tumor
+           custom_images(dict): A dict with custom images for a case.
+           local_archive_info(dict): A dict with info about the local archive used for annotation
 
         Returns:
             nr_inserted(int)
@@ -434,6 +437,7 @@ class VariantLoader(object):
                     vep_header=vep_header,
                     individual_positions=individual_positions,
                     category=category,
+                    local_archive_info=local_archive_info,
                 )
 
                 # Build the variant object
@@ -654,6 +658,9 @@ class VariantLoader(object):
 
         # Parse the neccessary headers from vcf file
         rank_results_header = parse_rank_results_header(vcf_obj)
+
+        local_archive_info = parse_local_archive_header(vcf_obj)
+
         vep_header = parse_vep_header(vcf_obj)
         if vep_header:
             LOG.info("Found VEP header %s", "|".join(vep_header))
@@ -704,6 +711,7 @@ class VariantLoader(object):
                 category=category,
                 sample_info=sample_info,
                 custom_images=custom_images,
+                local_archive_info=local_archive_info,
             )
         except Exception as error:
             LOG.exception("unexpected error")
