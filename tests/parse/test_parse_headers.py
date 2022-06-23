@@ -2,6 +2,7 @@ from cyvcf2 import VCF
 
 from scout.parse.variant.headers import (
     parse_header_format,
+    parse_local_archive_header,
     parse_rank_results_header,
     parse_vep_header,
 )
@@ -21,6 +22,18 @@ def test_parse_header_format_no_format():
     description = '"Consequence annotations from Ensembl VEP."'
     format_info = parse_header_format(description)
     assert format_info == ""
+
+
+def test_parse_local_archive_header(variant_clinical_file):
+    ## GIVEN a vcf object
+    vcf_obj = VCF(variant_clinical_file)
+    ## WHEN parsing the local archive results header
+    local_archive_info = parse_local_archive_header(vcf_obj)
+    ## THEN assert the header is returned correct
+    assert isinstance(local_archive_info, dict)
+    assert "Description" in local_archive_info
+    assert "NrCases" in local_archive_info
+    assert "Date" in local_archive_info
 
 
 def test_parse_rank_results_header(variant_clinical_file):

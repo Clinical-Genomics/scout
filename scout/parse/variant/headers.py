@@ -26,25 +26,30 @@ def parse_rank_results_header(vcf_obj):
 def parse_local_archive_header(vcf_obj):
     """Return a dict with local archive data for the case.
 
-    Check if the rank result is in the vcf header. If it exists return a dict
-    with the fields of interest
+    Check if info on the local archive is in the vcf header. If it exists return a dict
+    with the fields of interest.
+
+    Capture descriptions from the loqus db INFO.Obs field that contain filename for the archive
+
+    Capture NrCases entries in the VCF header, stating the number of cases in the archive
+
+    Capture loqusdb date from vcf header lines of the format
+    ##Software=<ID=loqusdb,Version=2.5,Date="2020-08-21 09:02",CommandLineOptions="">
 
     Args:
         vcf_obj(cyvcf2.VCF)
 
     Returns:
-        local_archive_header(dict)
+        local_archive_info(dict)
     """
-    local_archive_header = {}
+    local_archive_info = {}
 
     if "Obs" in vcf_obj:
-        local_archive_header["Description"] = vcf_obj["Obs"]["Description"]
+        local_archive_info["Description"] = vcf_obj["Obs"]["Description"]
 
     if "NrCases" in vcf_obj:
-        local_archive_header["NrCases"] = int(vcf_obj["NrCases"]["NrCases"])
+        local_archive_info["NrCases"] = int(vcf_obj["NrCases"]["NrCases"])
 
-    # Capture loqusdb date from vcf header lines of the format
-    # ##Software=<ID=loqusdb,Version=2.5,Date="2020-08-21 09:02",CommandLineOptions="">
     for header_line in vcf_obj.raw_header.split("\n"):
         if "Software" in header_line and "loqusdb" in header_line:
             software_entry = header_line.split("<")[1]
@@ -54,9 +59,9 @@ def parse_local_archive_header(vcf_obj):
                 the_key = assignment[0]
                 if the_key == "Date":
                     the_value = assignment[1]
-                    local_archive_header["Date"] = the_value
+                    local_archive_info["Date"] = the_value
 
-    return local_archive_header
+    return local_archive_info
 
 
 def parse_header_format(description):
