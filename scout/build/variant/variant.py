@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from . import build_genotype, build_compound, build_gene, build_clnsig
+from . import build_clnsig, build_compound, build_gene, build_genotype
 
 LOG = logging.getLogger(__name__)
 
@@ -397,6 +397,15 @@ def build_variant(
 
     if variant.get("local_obs_old_freq"):  # SVs
         variant_obj["local_obs_old_freq"] = variant["local_obs_old_freq"]
+
+    if variant.get("local_obs_old_date"):
+        variant_obj["local_obs_old_date"] = variant["local_obs_old_date"]
+
+    if variant.get("local_obs_old_desc"):
+        variant_obj["local_obs_old_desc"] = variant["local_obs_old_desc"]
+
+    if variant.get("local_obs_old_nr_cases"):
+        variant_obj["local_obs_old_nr_cases"] = variant["local_obs_old_nr_cases"]
 
     # Add the sv counts:
     if frequencies.get("clingen_benign"):
