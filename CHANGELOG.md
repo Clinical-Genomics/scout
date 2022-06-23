@@ -17,7 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Visibility of Sanger ordered badge on case page, light mode
 - Some of the DataTables tables got a bit dark in dark mode
-- Update list of variant specific events
+- Remove all redundancies when displaying timeline events (some events are saved both as case-related and variant-related)
 - Missing link in saved MatchMaker-related events
 - Genes with mixed case gene symbols missing in PanelApp panels
 - Alignment of elements on the Beacon submission modal window
