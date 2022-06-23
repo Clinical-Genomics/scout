@@ -67,6 +67,9 @@ variant = dict(
     local_obs_old=int,
     local_obs_hom_old=int,
     local_obs_old_freq=float,
+    local_obs_old_desc=str,
+    local_obs_old_nr_cases=int,
+    local_obs_old_date=str,
     # Predicted deleteriousness:
     cadd_score=float,
     clnsig=list,  # list of <clinsig>
