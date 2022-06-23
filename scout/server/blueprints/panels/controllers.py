@@ -105,7 +105,8 @@ def update_existing_panel(store, request, lines):
             "Permission denied: please ask a panel maintainer or admin for help.",
             "danger",
         )
-    return panel_obj.get("_id")
+    if panel_obj:
+        return panel_obj.get("_id")
 
 
 def panel_create_or_update(store, request):
