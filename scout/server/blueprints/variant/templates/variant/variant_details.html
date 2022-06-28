@@ -180,6 +180,8 @@
                     {% if obs.cases|length > 10 %}
                     + more
                     {% endif%}
+                  {% elif obs.observations == 1 %}
+                    observed only in this case
                   {% endif %}
               </td>
             </tr>
