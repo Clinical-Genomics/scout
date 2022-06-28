@@ -189,24 +189,6 @@
         </tbody>
       </table>
     </div>
-
-    <div class="card-footer">
-      <span title="Shows maximum 10 cases"><strong>Cases</strong></span>
-        {% if observations['cases'] %}
-          {% for data in observations['cases'] %}
-            {% if data.variant and data.variant.category == "snv"%}
-              <a class="ms-3" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
-            {% elif data.variant and data.variant.category == "sv"%}
-              <a class="ms-3" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
-            {% else %}
-              <span class="text-muted ms-3" >{{ data.case.display_name }}</span>
-            {% endif %}
-          {% endfor %}
-          {% if observations['cases']|length >= 10 %}
-          ...
-          {% endif%}
-        {% endif %}
-    </div>
   </div>
 {% endmacro %}
 
