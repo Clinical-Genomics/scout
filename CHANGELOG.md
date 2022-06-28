@@ -4,21 +4,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.57.1]
+### Fixed
+- Updating/replacing a gene panel from file with a corrupted or malformed file
 
-## []
-## Added
+## [4.57]
+### Added
 - Display last 50 or 500 events for a user in a timeline
 - Show dismiss count from other cases on matching variantS
 - Save Beacon-related events in events collection
 - Institute settings allow saving multiple loqusdb instances for one institute
 - Display stats from multiple instances of loqusdb on variant page
-- Display date and frequency of obs derived from count of local archive observations from MIP11
+- Display date and frequency of obs derived from count of local archive observations from MIP11 (requires fix in MIP)
 ### Changed
 - Prior ACMG classifications view is no longer limited by pathogenicity
 ### Fixed
 - Visibility of Sanger ordered badge on case page, light mode
-- Some of the DataTables tables got a bit dark in dark mode
-- Update list of variant specific events
+- Some of the DataTables tables (Phenotypes and Diagnoses pages) got a bit dark in dark mode
+- Remove all redundancies when displaying timeline events (some events are saved both as case-related and variant-related)
 - Missing link in saved MatchMaker-related events
 - Genes with mixed case gene symbols missing in PanelApp panels
 - Alignment of elements on the Beacon submission modal window
