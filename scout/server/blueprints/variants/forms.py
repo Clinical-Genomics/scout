@@ -100,6 +100,7 @@ class VariantFiltersForm(FlaskForm):
     clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
 
     gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
+    local_obs = IntegerField("Local obs. (archive)")
 
     filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")
@@ -135,7 +136,6 @@ class FiltersForm(VariantFiltersForm):
 
     clinsig_confident_always_returned = BooleanField("CLINSIG Confident")
     spidex_human = SelectMultipleField("SPIDEX", choices=SPIDEX_CHOICES)
-    local_obs = IntegerField("Local obs. (archive)")
 
     clinical_filter = SubmitField(label="Clinical filter")
     clinvar_tag = BooleanField("ClinVar hits")
