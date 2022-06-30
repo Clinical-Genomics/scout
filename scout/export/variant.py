@@ -2,7 +2,7 @@
 import logging
 import urllib.parse
 
-from scout.constants import CALLERS, CHROMOSOME_INTEGERS, CHROMOSOMES
+from scout.constants import CHROMOSOME_INTEGERS
 
 LOG = logging.getLogger(__name__)
 
