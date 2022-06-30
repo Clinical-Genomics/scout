@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+### Fixed
+- HTTP 500 when visiting a the details page for a cancer variant that had been ranked with genmod
+
 ## [4.57.1]
 ### Fixed
 - Updating/replacing a gene panel from file with a corrupted or malformed file
