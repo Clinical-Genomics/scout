@@ -209,6 +209,7 @@ def variant(
             'igv_tracks': IGV_TRACKS,
             'gens_info': <dict>,
             'evaluations': <list(evaluations)>,
+            'rank_score_results': <list(rank_score_results)>,
         }
 
     """
