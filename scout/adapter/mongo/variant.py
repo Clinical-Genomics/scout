@@ -431,6 +431,9 @@ class VariantHandler(VariantLoader):
             case_obj = self.case(case_id=case_id)
             if not case_obj or not var_obj:
                 continue  # Take into account that stuff might have been removed from database
+            if var_obj.get("validation") is None or var_obj.get("validation") == "Not validated":
+                continue
+
             var_obj["case_obj"] = {
                 "display_name": case_obj["display_name"],
                 "individuals": case_obj["individuals"],
