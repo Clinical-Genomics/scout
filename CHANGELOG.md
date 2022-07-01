@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## []
 ### Fixed
+- HTTP 500 when visiting a the details page for a cancer variant that had been ranked with genmod
 - Export of verified variants when variant gene has no transcripts
 
 ## [4.57.1]
