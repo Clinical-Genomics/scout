@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Export of STR verified variants
 - Do not download as verified variants first verified and then reset to not validated
+- Avoid duplicated lines in downloaded verified variants reflecting changes in variant validation status
 
 ## [4.57.2]
 ### Fixed
