@@ -1,12 +1,13 @@
 {% extends "layout.html" %}
 {% from "utils.html" import comments_panel, activity_panel %}
-{% from "variant/utils.html" import rankscore_panel, overlapping_panel, genes_panel, transcripts_panel, proteins_panel, pin_button, causative_button, modal_causative %}
+{% from "variant/utils.html" import overlapping_panel, genes_panel, transcripts_panel, proteins_panel, pin_button, causative_button, modal_causative %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
 {% from "variant/buttons.html" import database_buttons, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
 {% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify  %}
 {% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
+{% from "variant/rank_score_results.html" import rankscore_panel %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -104,8 +105,8 @@
 
     <div class="row">
       <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
-      {% if variant.rank_score_results %}
-        <div class="col-12">{{ rankscore_panel(variant) }}</div>
+      {% if rank_score_results %}
+        <div class="col-12">{{ rankscore_panel(rank_score_results) }}</div>
       {% endif %}
     </div>
 
@@ -343,6 +344,14 @@
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
+    })
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body'})
     })
 
     $('select[multiple]').selectpicker({
