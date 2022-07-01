@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## []
+### Fixed
+- Export of verified variants when variant gene has no transcripts
+
 ## [4.57.1]
 ### Fixed
 - Updating/replacing a gene panel from file with a corrupted or malformed file

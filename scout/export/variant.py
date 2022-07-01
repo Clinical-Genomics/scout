@@ -2,7 +2,7 @@
 import logging
 import urllib.parse
 
-from scout.constants import CALLERS, CHROMOSOME_INTEGERS, CHROMOSOMES
+from scout.constants import CHROMOSOME_INTEGERS
 
 LOG = logging.getLogger(__name__)
 
@@ -104,7 +104,7 @@ def export_verified_variants(aggregate_variants, unique_callers):
             ):  # this will be a unique long field in the document
                 genes.append(gene.get("hgnc_symbol", ""))
                 funct_anno.append(gene.get("functional_annotation"))
-                for transcript in gene.get("transcripts"):
+                for transcript in gene.get("transcripts", []):
                     if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
                         prot_effect.append(
                             urllib.parse.unquote(transcript.get("protein_sequence_name"))
