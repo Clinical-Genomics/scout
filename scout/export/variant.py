@@ -111,7 +111,7 @@ def export_verified_variants(aggregate_variants, unique_callers):
                             urllib.parse.unquote(transcript.get("protein_sequence_name"))
                         )
             line.append(",".join(prot_effect))
-            line.append(",".join(funct_anno or ""))
+            line.append(",".join(funct_anno))
             line.append(",".join(genes))
             line.append(variant.get("rank_score"))
             line.append(variant.get("cadd_score"))
