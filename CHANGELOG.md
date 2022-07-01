@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## []
 ### Added
 - Add filter by local observations (archive) to structural variants filters
+### Fixed
+- Export of verified variants when variant gene has no transcripts
 
 ## [4.57.1]
 ### Fixed
