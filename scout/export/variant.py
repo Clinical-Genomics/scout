@@ -103,14 +103,15 @@ def export_verified_variants(aggregate_variants, unique_callers):
                 "genes", []
             ):  # this will be a unique long field in the document
                 genes.append(gene.get("hgnc_symbol", ""))
-                funct_anno.append(gene.get("functional_annotation"))
+                if gene.get("functional_annotation"):
+                    funct_anno.append(gene.get("functional_annotation"))
                 for transcript in gene.get("transcripts", []):
                     if transcript.get("is_canonical") and transcript.get("protein_sequence_name"):
                         prot_effect.append(
                             urllib.parse.unquote(transcript.get("protein_sequence_name"))
                         )
             line.append(",".join(prot_effect))
-            line.append(",".join(funct_anno))
+            line.append(",".join(funct_anno or ""))
             line.append(",".join(genes))
             line.append(variant.get("rank_score"))
             line.append(variant.get("cadd_score"))
