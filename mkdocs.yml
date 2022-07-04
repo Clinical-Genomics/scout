@@ -56,6 +56,7 @@ nav:
       - Load config: 'admin-guide/load-config.md'
       - Updating case individuals tracks: 'admin-guide/updating-individuals.md'
       - Gene definitions: 'admin-guide/genes.md'
+      - PanelApp gene panels: 'admin-guide/panelapp_panels.md'
       - Gens integration: 'admin-guide/gens_integration.md'
       - HPO terms: 'admin-guide/hpo.md'
       - Annotations: 'admin-guide/annotations.md'
