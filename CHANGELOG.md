@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Documentation on how to create/update PanelApp panels
+### Fixed
+- Parsing of variant.FORMAT "DR" key in parse variant file
 
 ## [4.57.3]
 ### Fixed
