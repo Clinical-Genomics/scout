@@ -67,7 +67,14 @@ def cases(institute_id):
     return controllers.cases(store, request, institute_id)
 
 
-@blueprint.route("/<institute_id>/causatives")
+@blueprint.route("/<institute_id>/verified")
+@templated("overview/verified.html")
+def verified(institute_id):
+    institute_obj = institute_and_case(store, institute_id)
+    return dict(institute=institute_obj, verified=store.verified(institute_id))
+
+
+@blueprint.route("/<institute_id>/validated")
 @templated("overview/causatives.html")
 def causatives(institute_id):
     institute_obj = institute_and_case(store, institute_id)

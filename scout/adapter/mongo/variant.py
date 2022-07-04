@@ -414,7 +414,7 @@ class VariantHandler(VariantLoader):
         return self.variant_collection.count_documents(mongo_variant_query)
 
     def verified(self, institute_id):
-        """Return all verified variants for a given institute
+        """Return all verified variants for a given institute, sorted by case _id
 
         Args:
             institute_id(str): institute id
@@ -434,8 +434,9 @@ class VariantHandler(VariantLoader):
                 },
             }
         }
+        sort = {"$sort": {"_id.case": 1}}  # Sort by case _id
 
-        validate_events = self.event_collection.aggregate([query, group])
+        validate_events = self.event_collection.aggregate([query, group, sort])
         for event in validate_events:
             case_id = event["_id"]["case"]
             variant_id = event["_id"]["variant_id"]

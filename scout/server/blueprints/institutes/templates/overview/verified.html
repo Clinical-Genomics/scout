@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
+
+{% block title %}
+{{ super() }} - Institutes
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+ {{ db_table_external_stylesheets() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Verified variants</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    <div class="col">
+        {{ verified() }}
+    </div>
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  {{ db_table_external_scripts() }}
+  <script type="text/javascript">
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    $(document).ready(function() {
+      $('#verified_table').DataTable( {
+          paging: false,
+          dom: 'Bfrtip',
+          buttons: [
+              'copyHtml5',
+              'excelHtml5',
+          ]
+      } );
+    } );
+  </script>
+{% endblock %}
+
+{% macro verified() %}
+<div class="card mt-3">
+  <div class="card-body">
+    <table id="verified_table" class="table display table-sm" cellspacing="0">
+      <thead class="thead table-light sticky-top sticky-offset">
+        <tr>
+          <th>Gene</th>
+          <th>Variant</th>
+          <th>Change</th>
+          <th>HGVS[c]</th>
+          <th>HGVS[p]</th>
+          <th>Category</th>
+          <th data-bs-toggle='tooltip' data-bs-container='body' title="score(model version)">Rank score</th>
+          <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
+          <th>Inheritance</th>
+          <th>ACMG</th>
+          <th>Case</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endmacro %}
