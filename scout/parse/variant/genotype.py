@@ -152,7 +152,7 @@ def get_paired_ends(variant, pos):
     if "DR" in variant.FORMAT:
         values = variant.format("DR")[pos]
         ref_value = int(values[0])
-        if alt_value >= 0:
+        if ref_value >= 0:
             paired_end_ref = ref_value
     return (paired_end_ref, paired_end_alt)
 
