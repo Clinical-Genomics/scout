@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.57.4]
 ### Fixed
 - Parsing of variant.FORMAT "DR" key in parse variant file
 
