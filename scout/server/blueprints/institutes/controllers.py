@@ -75,6 +75,27 @@ def get_timeline_data(limit):
     return timeline_results
 
 
+def verified(institute_id):
+    """Create content to be displayed on institute verified page
+
+    Args:
+        institute_id(str): institute["_id"] value
+
+    Returns:
+        verified(list): list of variant objects
+    """
+    verified = []
+    for variant_obj in store.verified(institute_id=institute_id):
+        if variant_obj["category"] in ["snv", "cancer"]:
+            update_representative_gene(
+                variant_obj, variant_obj.get("genes", [])
+            )  # required to display cDNA and protein change
+
+        verified.append(variant_obj)
+
+    return verified
+
+
 def causatives(institute_obj, request):
     """Create content to be displayed on institute causatives page
 
