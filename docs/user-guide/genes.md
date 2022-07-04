@@ -58,7 +58,7 @@ Build | Chrom | EnsGeneID | Gene Name  | EnsTransID | RefSeq mRNA
  38 | 17 | ENSG00000204815 | TTC25 | ENST00000377540 | NM_031421
  38 | 17 | ENSG00000204815 | TTC25 | ENST00000377540 | NM_031421
  38 | 17 | ENSG00000204815 | TTC25 | ENST00000585530 | -
- 
+
 ### PTPRQ
 
 Build | Chrom | EnsGeneID | Gene Name  | EnsTransID | RefSeq mRNA
@@ -113,9 +113,9 @@ Build | Chrom | EnsGeneID | Gene Name  | EnsTransID | RefSeq mRNA
  **37** | HG1426_PATCH | ENSG00000268853 | FGF16 | ENST00000600602 | -
 --- | --- |--- | --- |  --- | ---
  **38** | X | ENSG00000196468 | FGF16 | ENST00000439435 | NM_003868
- 
+
  The refseq transcript exists in build 37 but is missing the refseq identifier. We would NOT miss any variants here.
- 
+
 ### TRAC
 
  Build | Chrom | EnsGeneID | Gene Name  | EnsTransID | RefSeq mRNA
@@ -135,7 +135,7 @@ Build | Chrom | EnsGeneID | Gene Name  | EnsTransID | RefSeq mRNA
  --- | --- |--- | --- |  --- | ---
  *38* | 1 | ENSG00000276747 | PADI6 | ENST00000619609 | NM_207421
  *38* | CHR_HG2095_PATCH | ENSG00000280949 | PADI6 | ENST00000625380 | NM_207421
- 
+
  Unclear what happens here...
 
 ### GDF1
@@ -144,8 +144,8 @@ Build | Chrom | EnsGeneID | Gene Name  | EnsTransID | RefSeq mRNA
  --- | --- |--- | --- |  --- | ---
  **37** | 19 | ENSG00000130283 | GDF1 | ENST00000247005 | -
  --- | --- |--- | --- |  --- | ---
- **38** | 19 | ENSG00000130283 | GDF1 | ENST00000247005 | - 
- 
+ **38** | 19 | ENSG00000130283 | GDF1 | ENST00000247005 | -
+
  Same transcripts, no refseq in both builds. No variants will be missed here
 
 ### TUBB3
@@ -182,9 +182,9 @@ This is very unclear, it goes from one to many transcripts between the builds. H
  **38** | CHR_HSCHR14_3_CTG1 | ENSG00000274497 | IGHG2 | ENST00000621803 | -
  **38** | 14 | ENSG00000211893 | IGHG2 | ENST00000641095 | -
  **38** | 14 | ENSG00000211893 | IGHG2 | ENST00000390545 | -
- 
+
  No refseq in any build. Same transcripts in both builds except a new one in a patch. No variants would be missed here.
- 
+
 
 ### IGHM
 
@@ -195,10 +195,10 @@ This is very unclear, it goes from one to many transcripts between the builds. H
  --- | --- |--- | --- |  --- | ---
  **37** | CHR_HSCHR14_3_CTG1 | ENSG00000282657 | IGHM | ENST00000626472 | -
  **37** | 14 | ENSG00000211899 | IGHM | ENST00000637539 | -
- **37** | 14 | ENSG00000211899 | IGHM | ENST00000390559 | - 
- 
+ **37** | 14 | ENSG00000211899 | IGHM | ENST00000390559 | -
+
  Same as above, no variants missing here
- 
+
 ### IGKC
 
   Build | Chrom | EnsGeneID | Gene Name  | EnsTransID | RefSeq mRNA
@@ -206,7 +206,7 @@ This is very unclear, it goes from one to many transcripts between the builds. H
  **37** | 2 | ENSG00000211592 | IGKC | ENST00000390237 | -
   --- | --- |--- | --- |  --- | ---
  **38** | 2 | ENSG00000211592 | IGKC | ENST00000390237 | -
- 
+
  Same in both builds. No variants would be missing here
 
 ### FCGR2C
@@ -308,8 +308,8 @@ This is unclear. We might miss variants here
  **38** | 17 | ENSG00000006062 | MAP3K14 | ENST00000376926 | -
  **38** | CHR_HSCHR17_2_CTG5 | ENSG00000282637 | MAP3K14 | ENST00000633437 | -
  **38** | CHR_HSCHR17_2_CTG5 | ENSG00000282637 | MAP3K14 | ENST00000634016 | -
- 
- Here one of the transcripts have been given a refseq identifier in build 38, that transcript exists in build 37 so no variants would be missed here. 
- 
+
+ Here one of the transcripts have been given a refseq identifier in build 38, that transcript exists in build 37 so no variants would be missed here.
+
 [hgnc]: www.genenames.org
 [issue]: https://github.com/Clinical-Genomics/scout/issues/570
