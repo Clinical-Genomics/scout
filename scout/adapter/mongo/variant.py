@@ -343,15 +343,30 @@ class VariantHandler(VariantLoader):
         Returns:
             res(list): a list with validated variants
         """
-        query = {"verb": "validate", "institute": institute_id}
         res = []
-        validate_events = self.event_collection.find(query)
-        for validated in list(validate_events):
-            case_id = validated["case"]
-            var_obj = self.variant(case_id=case_id, document_id=validated["variant_id"])
+
+        # Build the query pipeline
+        query = {"$match": {"verb": "validate", "institute": institute_id}}
+        group = {
+            "$group": {
+                "_id": {
+                    "case": "$case",
+                    "variant_id": "$variant_id",
+                },
+            }
+        }
+
+        validate_events = self.event_collection.aggregate([query, group])
+        for event in validate_events:
+            case_id = event["_id"]["case"]
+            variant_id = event["_id"]["variant_id"]
+            var_obj = self.variant(case_id=case_id, document_id=variant_id)
             case_obj = self.case(case_id=case_id)
             if not case_obj or not var_obj:
                 continue  # Take into account that stuff might have been removed from database
+            if var_obj.get("validation") is None or var_obj.get("validation") == "Not validated":
+                continue
+
             var_obj["case_obj"] = {
                 "display_name": case_obj["display_name"],
                 "individuals": case_obj["individuals"],
