@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Documentation on how to create/update PanelApp panels
 - Add filter by local observations (archive) to structural variants filters
+### Changed
+- State that loqusdb observation is in current case if observations count is one and no cases are shown  
 
 ## [4.57.4]
 ### Fixed
