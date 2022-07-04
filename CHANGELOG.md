@@ -9,6 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
 
+## [4.57.3]
+### Fixed
+- Export of STR verified variants
+- Do not download as verified variants first verified and then reset to not validated
+- Avoid duplicated lines in downloaded verified variants reflecting changes in variant validation status
+
 ## [4.57.2]
 ### Fixed
 - Export of verified variants when variant gene has no transcripts
