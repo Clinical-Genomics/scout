@@ -382,7 +382,7 @@
 
 {% macro sv_filters(form, institute, case) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
-<div class="row">
+<div class="row mb-3">
   <div class="col-4">
     {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
     {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
@@ -404,7 +404,7 @@
     {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
   </div>
 </div>
-<div class="row">
+<div class="row mb-3">
   <div class="col-3">
     {{ form.hgnc_symbols.label(class="control-label") }}
     {{ form.hgnc_symbols(class="form-control") }}
@@ -439,22 +439,26 @@
     {{ form.gnomad_frequency(class="form-control") }}
   </div>
 </div>
-<div class="row">
-  <div class="col-4">
+<div class="row mb-3">
+  <div class="col-6">
     <div class="row">
-      <div class="col-4">
+      <div class="col-3">
+        {{ form.local_obs.label(class="control-label") }}
+        {{ form.local_obs(class="form-control") }}
+      </div>
+      <div class="col-3">
          {{ form.clingen_ngi.label(class="control-label") }}
          {{ form.clingen_ngi(class="form-control") }}
       </div>
-      <div class="col-4">
+      <div class="col-3">
         {{ form.swegen.label(class="control-label") }}
         {{ form.swegen(class="form-control") }}
       </div>
-      <div class="col-4">
+      <div class="col-3">
         {{ form.chrom.label(class="control-label") }}
         {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
       </div>
-      </div>
+    </div>
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.start) }}
@@ -462,14 +466,14 @@
   <div class="col-2">
     {{ wtf.form_field(form.end) }}
   </div>
-  <div class="col-2">
+  <div class="col-1">
     {{ wtf.form_field(form.cytoband_start) }}
   </div>
-  <div class="col-2">
+  <div class="col-1">
     {{ wtf.form_field(form.cytoband_end) }}
   </div>
 </div>
-<div class="row">
+<div class="row mb-3">
   <div class="col-2">
     <a class="btn btn-secondary btn-sm" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
       String coordinates
@@ -630,7 +634,7 @@
 {% macro cancer_sv_filters(form, institute, case) %}
     {{ form.csrf_token }}
     {{ form.variant_type() }}
-    <div class="row">
+    <div class="row mb-3">
       <div class="col-2">
         {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
         {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
