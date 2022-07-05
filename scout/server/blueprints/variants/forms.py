@@ -42,14 +42,14 @@ SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
 class NonValidatingSelectMultipleField(SelectMultipleField):
     """Necessary to skip validation of dynamic multiple selects in form"""
 
-    def pre_validate(self, form):
+    def pre_validate(self, _form):
         pass
 
 
 class NonValidatingSelectField(SelectField):
     """Necessary to skip validation of dynamic selects in form"""
 
-    def pre_validate(self, form):
+    def pre_validate(self, _form):
         pass
 
 
