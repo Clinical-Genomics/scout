@@ -17,7 +17,14 @@ from flask import (
 from flask_login import current_user
 from werkzeug.datastructures import Headers
 
-from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER, VERBS_ICONS_MAP, VERBS_MAP
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    VERBS_ICONS_MAP,
+    VERBS_MAP,
+)
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated
@@ -72,7 +79,11 @@ def cases(institute_id):
 def verified(institute_id):
     institute_obj = institute_and_case(store, institute_id)
     verified = controllers.verified(institute_id)
-    return dict(institute=institute_obj, verified=verified)
+    return dict(
+        institute=institute_obj,
+        verified=verified,
+        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
+    )
 
 
 @blueprint.route("/<institute_id>/causatives")
