@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add filter by local observations (archive) to structural variants filters
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
+- Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
+- Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 
 ## [4.57.4]
 ### Fixed
@@ -54,7 +56,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Test for PanelApp panels loading
 - `panel-umi` tag option when loading cancer analyses
-- Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 ### Changed
 - Black text to make comments more visible in dark mode
 - Loading PanelApp panels replaces pre-existing panels with same version
@@ -71,8 +72,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Represent different tumor samples as vials in cases page
 - Option to force-update the OMIM panel
-- Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
-- Represent different tumor samples as vials in cases page
 ### Fixed
 - Low tumor purity badge alignment in cancer samples table on cancer case view
 - VariantS comment popovers reactivate on hover
