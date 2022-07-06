@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add filter by local observations (archive) to structural variants filters
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
+- Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
+- Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Verified variants displayed in a dedicated page reachable in institute sidebar
 
 ## [4.57.4]
