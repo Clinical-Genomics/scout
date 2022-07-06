@@ -17,9 +17,11 @@
           {% for variant in suspects %}
             {% if variant._id %} <!-- variant was not removed after reupload -->
               <input class="ml-3" type="checkbox" name="clinvar_variant" value="{{variant._id}}"
-              {% if variant._id in case.clinvar_variants.keys() %} checked {% endif %}
-              {% if variant.category == 'str' %} disabled {% endif %}
-              >{{pretty_variant(variant)}}<br>
+              {% if variant.category == 'str' or variant._id in case.clinvar_variants.keys() %} disabled {% endif %}
+              >
+              {{pretty_variant(variant)}} {% if variant._id in case.clinvar_variants.keys() %} - <i>Already submitted</i> - {% endif %}
+
+              <br>
             {% endif %}
           {% endfor %}
           </div>
