@@ -15,6 +15,7 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
+from pymongo import DESCENDING
 from werkzeug.datastructures import Headers
 
 from scout.constants import (
@@ -27,7 +28,7 @@ from scout.constants import (
 )
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
-from scout.server.utils import institute_and_case, jsonconverter, templated
+from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
 
 from . import controllers
 from .forms import GeneVariantFiltersForm, InstituteForm, PhenoModelForm, PhenoSubPanelForm
@@ -131,7 +132,7 @@ def lock_filter(institute_id, filter_id):
 def gene_variants(institute_id):
     """Display a list of SNV variants."""
     page = int(request.form.get("page", 1))
-
+    result_size = None
     institute_obj = institute_and_case(store, institute_id)
 
     data = {}
@@ -152,22 +153,22 @@ def gene_variants(institute_id):
             flash("Provided gene symbols could not be used in variants' search", "warning")
             return redirect(request.referrer)
 
-        variants_query = store.gene_variants(
+        variants_query = store.build_variant_query(
             query=form.data,
-            institute_id=institute_id,
+            institute_ids=[inst["_id"] for inst in user_institutes(store, current_user)],
             category="snv",
             variant_type=variant_type,
-        )
+        )  # This is the actual query dictionary, not the cursor with results
 
-        result_size = store.count_gene_variants(
-            query=form.data,
-            institute_id=institute_id,
-            category="snv",
-            variant_type=variant_type,
-        )
-        data = controllers.gene_variants(store, variants_query, result_size, page)
+        results = store.variant_collection.find(variants_query).sort(
+            [("rank_score", DESCENDING)]
+        )  # query results
+        result_size = store.variant_collection.count_documents(variants_query)
+        data = controllers.gene_variants(
+            store, results, result_size, page
+        )  # decorated variant results, max 50 in a page
 
-    return dict(institute=institute_obj, form=form, page=page, **data)
+    return dict(institute=institute_obj, form=form, page=page, result_size=result_size, **data)
 
 
 # MOST OF THE CONTENT OF THIS ENDPOINT WILL BE REMOVED AND INCLUDED INTO THE BEACON EXTENSION UNDER SERVER/EXTENSIONS
