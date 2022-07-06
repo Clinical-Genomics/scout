@@ -74,7 +74,7 @@ class QueryHandler(object):
         return variants_query
 
     def build_variant_query(
-        self, query=None, institute_id=None, category="snv", variant_type=["clinical"]
+        self, query=None, institute_ids=[], category="snv", variant_type=["clinical"]
     ):
         """Build a mongo query across multiple cases.
         Translate query options from a form into a complete mongo query dictionary.
@@ -90,6 +90,7 @@ class QueryHandler(object):
 
         Args:
             query(dict): A query dictionary for the database, from a query form.
+            institute_ids: a list of institute _ids
             category(str): 'snv', 'sv', 'str' 'cancer_sv' or 'cancer'
             variant_type(str): 'clinical' or 'research'
 
@@ -108,9 +109,7 @@ class QueryHandler(object):
         LOG.debug("Building a mongo query for %s" % query)
 
         mongo_variant_query["hgnc_symbols"] = {"$in": query["hgnc_symbols"]}
-
         mongo_variant_query["variant_type"] = {"$in": variant_type}
-
         mongo_variant_query["category"] = category
 
         select_cases = None
@@ -126,29 +125,14 @@ class QueryHandler(object):
         if query.get("cohorts"):
             mongo_case_query["cohorts"] = {"$in": query["cohorts"]}
 
-        if mongo_case_query != {}:
-            mongo_case_query["collaborators"] = institute_id
+        if mongo_case_query != {} or institute_ids:
+            mongo_case_query["collaborators"] = {"$in": institute_ids}
             LOG.debug("Search cases for selection set, using query {0}".format(mongo_case_query))
             select_case_objs = self.case_collection.find(mongo_case_query)
             select_cases = [case_id.get("_id") for case_id in select_case_objs]
 
         if query.get("similar_case"):
-            similar_case_display_name = query["similar_case"][0]
-            case_obj = self.case(display_name=similar_case_display_name, institute_id=institute_id)
-            if case_obj:
-                LOG.debug("Search for cases similar to %s", case_obj.get("display_name"))
-
-                hpo_terms = []
-                for term in case_obj.get("phenotype_terms", []):
-                    hpo_terms.append(term.get("phenotype_id"))
-
-                similar_cases = (
-                    self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"]) or []
-                )
-                LOG.debug("Similar cases: %s", similar_cases)
-                select_cases = [similar[0] for similar in similar_cases]
-            else:
-                LOG.debug("Case %s not found.", similar_case_display_name)
+            select_cases = self._get_similar_cases(query, institute_ids)
 
         if (
             select_cases is not None
@@ -161,6 +145,34 @@ class QueryHandler(object):
         LOG.debug("Querying %s" % mongo_variant_query)
 
         return mongo_variant_query
+
+    def _get_similar_cases(self, query, institute_ids):
+        """Get a list of cases similar to the given one
+        Args:
+            query(dict): A query dictionary for the database, from a query form.
+            institute_ids: a list of institute _ids
+
+        Returns:
+            select_cases(list): a list of case dictionaries
+        """
+        select_cases = []
+        similar_case_display_name = query["similar_case"][0]
+        for institute_id in institute_ids:
+            case_obj = self.case(display_name=similar_case_display_name, institute_id=institute_id)
+            if case_obj is None:
+                continue
+            LOG.debug("Search for cases similar to %s", case_obj.get("display_name"))
+
+            hpo_terms = []
+            for term in case_obj.get("phenotype_terms", []):
+                hpo_terms.append(term.get("phenotype_id"))
+
+            similar_cases = (
+                self.cases_by_phenotype(hpo_terms, case_obj["owner"], case_obj["_id"]) or []
+            )
+            LOG.debug("Similar cases: %s", similar_cases)
+            select_cases += [similar[0] for similar in similar_cases]
+        return select_cases
 
     def build_query(
         self, case_id, query=None, variant_ids=None, category="snv", build="37"
