@@ -67,18 +67,21 @@
 
 {% macro validated_chart() %}
 {% set ordered = verified_stats[0] + verified_stats[1] + verified_stats[2]%}
+{% set pos_perc = (verified_stats[0] * 100 / ordered)|round(1) if verified_stats[0] > 0 else 0 %}
+{% set neg_perc = (verified_stats[1] * 100 / ordered)|round(1) if verified_stats[1] > 0 else 0 %}
+{% set u_perc = (verified_stats[2] * 100 / ordered)|round(1) if verified_stats[2] > 0 else 0 %}
 <div class="col-2 mt-3">
   Validations ordered: {{ordered}}
 </div>
 <div id="valid-meter" class="col-8 mt-3">
   <div id="truePos" class="d-flex justify-content-center">
-    <span href="#" data-toggle="tooltip" title="True positives: {{verified_stats[0]}} - {{ (verified_stats[0] * 100 / ordered)|round(1) }}%">TP:{{verified_stats[0]}}</span>
+    <span href="#" data-toggle="tooltip" title="True positives: {{verified_stats[0]}} - {{ pos_perc }}%">TP:{{verified_stats[0]}}</span>
   </div>
   <div id="falsePos" class="d-flex justify-content-center">
-    <span href="#" data-toggle="tooltip" title="False positives: {{verified_stats[1]}} - {{ (verified_stats[1] * 100 / ordered)|round(1) }}%">FP:{{verified_stats[1]}}</span>
+    <span href="#" data-toggle="tooltip" title="False positives: {{verified_stats[1]}} - {{ neg_perc }}%">FP:{{verified_stats[1]}}</span>
   </div>
   <div id="ordered" class="d-flex justify-content-center">
-    <span href="#" data-toggle="tooltip" title="Validation unknown: {{verified_stats[2]}} - {{ (verified_stats[2] * 100 / ordered)|round(1) }}%">U:{{verified_stats[2]}}</span>
+    <span href="#" data-toggle="tooltip" title="Validation unknown: {{verified_stats[2]}} - {{ u_perc }}%">U:{{verified_stats[2]}}</span>
   </div>
 </div>
 {% endmacro %}
