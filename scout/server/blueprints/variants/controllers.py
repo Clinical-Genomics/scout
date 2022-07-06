@@ -37,8 +37,8 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import FILTERSFORMCLASS  # noqa: F401; noqa: F401
 from .forms import (
+    FILTERSFORMCLASS,
     CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
