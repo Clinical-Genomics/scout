@@ -516,24 +516,13 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
     skip_count = per_page * max(page - 1, 0)
     more_variants = True if variant_count > (skip_count + per_page) else False
     variant_res = pymongo_cursor.skip(skip_count).limit(per_page)
-    my_institutes = set(inst["_id"] for inst in user_institutes(store, current_user))
     variants = []
 
     for variant_obj in variant_res:
         # Populate variant case_display_name
         variant_case_obj = store.case(case_id=variant_obj["case_id"])
-        if not variant_case_obj:
-            # A variant with missing case was encountered
-            continue
         case_display_name = variant_case_obj.get("display_name")
         variant_obj["case_display_name"] = case_display_name
-
-        # hide other institutes for now
-        other_institutes = set([variant_case_obj.get("owner")])
-        other_institutes.update(set(variant_case_obj.get("collaborators", [])))
-        if my_institutes.isdisjoint(other_institutes):
-            # If the user does not have access to the information we skip it
-            continue
 
         genome_build = get_genome_build(variant_case_obj)
         variant_genes = variant_obj.get("genes")
