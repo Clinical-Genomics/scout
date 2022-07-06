@@ -15,7 +15,6 @@
       <ul class="nav nav-tabs nav-justified">
         <li class="nav-item"><a href="#" class="nav-link {% if panel == 'general' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('general')"><h4>General statistics</h4></a></li>
         <li class="nav-item"><a href="#" class="nav-link {% if panel == 'cases' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('cases')"><h4>Case statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'variants' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('variants')"><h4>Variant statistics</h4></a></li>
       </ul>
 
       <!--filter panel -->
@@ -26,7 +25,6 @@
         {% elif total_cases %}
           {{ general_stats_panels() }}
           {{ cases_stats_panels() }}
-          {{ variants_stats_panels() }}
         {% endif %}
       </div>
 
@@ -130,49 +128,11 @@
 </div>
 {% endmacro %}
 
-
-{% macro variants_stats_panels() %}
-<div class="container-float mt-3 text-center" id="variants">
-  {{variants}}
-  <div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-4 d-flex justify-content-right align-items-center">
-        <canvas id="var-validations" width="600" height="300"></canvas>
-    </div>
-    <div class="col-md-4">
-      <table class="table text-start" role="presentation" aria-label="Cases grouped by validation events">
-        {% for topic in variants %}
-        <tr>
-          <td>{{ topic.title }} Cases: : {{ topic.count }}</td>
-          <td>{{ (topic.percent * 100)|round(1) }}%</td>
-        </tr>
-        {% endfor %}
-      </table>
-        <br>
-        <div class="card mt-3" >
-          <form id="download_verified" action="{{ url_for('variants.download_verified')}}" method="GET">
-            <button type="submit" name="verified_vars" value="verified" class="form-control">Download all verified variants for your cases</button>
-          </form>
-        </div>
-    </div>
-    <div class="col-md-2"></div>
-  </div>
-
-</div>
-{% endmacro %}
-
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
-
-    if(document.getElementById('download_verified')){
-      document.querySelector("#download_verified").addEventListener("submit", function(e){
-        // Avoid page spinner being stuck on download verified variants
-        $(window).unbind('beforeunload');
-      });
-    }
 
     // Code taking care of case filtering
     var caseSearchTerms = {{ search_terms|safe }};
@@ -211,15 +171,6 @@
           // Assign a new value to hidden panel form field
           panel_field = document.getElementById("panel");
           panel_field.value=show_div;
-          // Hide search type select and search term in the filters if panel=="variants"
-          if (show_div=="variants"){
-            sel.style.display = "none";
-            searchTerm.style.display = "none";
-          }
-          else{
-            sel.style.display = "block";
-            searchTerm.style.display = "block";
-          }
         }
         else{ // hide the other 2 divs
           div_el.style.display = "none";
@@ -237,9 +188,6 @@
 
       // create cases detailed stats chart ===> case stats
       createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
-
-      // create variants detailed stats chart ===> variants stats
-      createChart(document.getElementById("var-validations").getContext('2d'), varValidations( {{variants|safe }}))
     {% endif %}
 
   </script>
