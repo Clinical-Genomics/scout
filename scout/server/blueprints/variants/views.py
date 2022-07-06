@@ -536,39 +536,3 @@ def upload_panel(institute_id, case_name):
         url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
         code=307,
     )
-
-
-@variants_bp.route("/verified", methods=["GET"])
-def download_verified():
-    """Download all verified variants for user's cases"""
-
-    user_obj = store.user(current_user.email)
-
-    user_institutes = (
-        [inst["_id"] for inst in store.institutes()]
-        if current_user.is_admin
-        else user_obj.get("institutes")
-    )
-    temp_excel_dir = os.path.join(variants_bp.static_folder, "verified_folder")
-    os.makedirs(temp_excel_dir, exist_ok=True)
-
-    if controllers.verified_excel_file(store, user_institutes, temp_excel_dir):
-        data = zip_dir_to_obj(temp_excel_dir)
-
-        # remove temp folder with excel files in it
-        shutil.rmtree(temp_excel_dir)
-
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        return send_file(
-            data,
-            mimetype="application/zip",
-            as_attachment=True,
-            download_name="_".join(["scout", "verified_variants", today]) + ".zip",
-            cache_timeout=0,
-        )
-
-    # remove temp folder with excel files in it
-    shutil.rmtree(temp_excel_dir)
-
-    flash("No verified variants could be exported for user's institutes", "warning")
-    return redirect(request.referrer)
