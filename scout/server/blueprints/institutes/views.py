@@ -79,10 +79,12 @@ def cases(institute_id):
 @templated("overview/verified.html")
 def verified(institute_id):
     institute_obj = institute_and_case(store, institute_id)
-    verified = controllers.verified(institute_id)
+    verified_vars = controllers.verified_vars(institute_id)
+    verified_stats = controllers.verified_stats(institute_id, verified_vars)
     return dict(
         institute=institute_obj,
-        verified=verified,
+        verified=verified_vars,
+        verified_stats=verified_stats,
         acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
     )
 
