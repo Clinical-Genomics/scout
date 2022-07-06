@@ -75,13 +75,13 @@
 </div>
 <div id="valid-meter" class="col-8 mt-3">
   <div id="truePos" class="d-flex justify-content-center">
-    <span href="#" data-toggle="tooltip" title="True positives: {{verified_stats[0]}} - {{ pos_perc }}%">TP:{{verified_stats[0]}}</span>
+    <span href="#" data-toggle="tooltip" title="True positives: {{verified_stats[0]}} ({{ pos_perc }}%)">TP:{{verified_stats[0]}}</span>
   </div>
   <div id="falsePos" class="d-flex justify-content-center">
-    <span href="#" data-toggle="tooltip" title="False positives: {{verified_stats[1]}} - {{ neg_perc }}%">FP:{{verified_stats[1]}}</span>
+    <span href="#" data-toggle="tooltip" title="False positives: {{verified_stats[1]}} ({{ neg_perc }}%)">FP:{{verified_stats[1]}}</span>
   </div>
   <div id="ordered" class="d-flex justify-content-center">
-    <span href="#" data-toggle="tooltip" title="Validation unknown: {{verified_stats[2]}} - {{ u_perc }}%">U:{{verified_stats[2]}}</span>
+    <span href="#" data-toggle="tooltip" title="Validation unknown: {{verified_stats[2]}} ({{ u_perc }}%)">U:{{verified_stats[2]}}</span>
   </div>
 </div>
 {% endmacro %}

@@ -1,6 +1,5 @@
 import datetime
 import logging
-import os.path
 import re
 from datetime import date
 
@@ -9,12 +8,10 @@ from flask import Response, flash, url_for
 from flask_login import current_user
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
-from xlsxwriter import Workbook
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
-    CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
@@ -26,8 +23,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
 )
-from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
-from scout.export.variant import export_verified_variants
+from scout.constants.variants_export import EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
     clinsig_human,
     predictions,
@@ -48,7 +44,6 @@ from .forms import (
     FiltersForm,
     StrFiltersForm,
     SvFiltersForm,
-    VariantFiltersForm,
 )
 
 LOG = logging.getLogger(__name__)

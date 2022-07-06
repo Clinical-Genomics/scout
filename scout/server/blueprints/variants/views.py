@@ -2,11 +2,9 @@
 import datetime
 import io
 import logging
-import os.path
-import shutil
 
 import pymongo
-from flask import Blueprint, flash, redirect, request, send_file, url_for
+from flask import Blueprint, flash, redirect, request, url_for
 from flask_login import current_user
 from markupsafe import Markup
 
@@ -18,7 +16,7 @@ from scout.constants import (
     SEVERE_SO_TERMS,
 )
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated, zip_dir_to_obj
+from scout.server.utils import institute_and_case, templated
 
 from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
