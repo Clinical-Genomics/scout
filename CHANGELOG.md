@@ -10,11 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation on how to create/update PanelApp panels
 - Add filter by local observations (archive) to structural variants filters
 ### Changed
-<<<<<<< HEAD
 - State that loqusdb observation is in current case if observations count is one and no cases are shown
-=======
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
->>>>>>> 632321dac861c90eb974d136df90c16e3d2489d3
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Verified variants displayed in a dedicated page reachable in institute sidebar
