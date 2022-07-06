@@ -316,6 +316,16 @@ def clinvar_create(institute_id, case_name):
             )
             return redirect(request.referrer)
 
+        old_submitted = request.form.get("old_submitted").split(",")
+        for pinned in pinned_selected:
+            if pinned not in old_submitted:
+                continue
+            flash(
+                "One or more variants you choose are already present in the newest submission object. Remove them from the submission before re-submitting them",
+                "warning",
+            )
+            return redirect(request.referrer)
+
         data = clinvar_export(store, institute_obj, case_obj, pinned_selected)
         return data
 
