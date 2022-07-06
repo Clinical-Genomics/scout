@@ -15,6 +15,7 @@ from scout.utils.coordinates import is_par
 from .variant_loader import VariantLoader
 
 LOG = logging.getLogger(__name__)
+MATCHQ = "$match"
 
 
 class VariantHandler(VariantLoader):
@@ -344,7 +345,7 @@ class VariantHandler(VariantLoader):
             pymongo.cursor
         """
         # Build the query pipeline
-        query = {"$match": {"verb": "validate", "institute": institute_id, "category": "variant"}}
+        query = {MATCHQ: {"verb": "validate", "institute": institute_id, "category": "variant"}}
         group = {
             "$group": {
                 "_id": {
@@ -408,7 +409,7 @@ class VariantHandler(VariantLoader):
             query = self.case_collection.aggregate(
                 [
                     {
-                        "$match": {
+                        MATCHQ: {
                             "collaborators": institute_id,
                             "causatives": {"$exists": True},
                         }
@@ -904,7 +905,7 @@ class VariantHandler(VariantLoader):
             return case_obj["variants_stats"]
 
         # Update case variant stats
-        match = {"$match": {"case_id": case_id, "institute": institute_id}}
+        match = {MATCHQ: {"case_id": case_id, "institute": institute_id}}
         group = {
             "$group": {
                 "_id": {"type": "$variant_type", "category": "$category"},

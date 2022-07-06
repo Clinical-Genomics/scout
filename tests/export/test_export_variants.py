@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scout.constants import CALLERS
-from scout.constants.variants_export import MT_EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
+from scout.constants.variants_export import MT_EXPORT_HEADER
 from scout.export.variant import export_mt_variants, export_verified_variants
 
 

@@ -36,3 +36,26 @@ VCF_HEADER = [
     '##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">',
     "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO",
 ]
+
+VERIFIED_VARIANTS_HEADER = [
+    "Institute",
+    "Database id",
+    "Variant category",
+    "Variant type",
+    "Display name",
+    "Local link",
+    "Verified state",
+    "Case name",
+    "Sample",
+    "Position",
+    "Change",
+    "Canonical_transcript_HGVS",
+    "Functional annotations",
+    "Genes",  # This is going to be a list flattened to a string
+    "Rank score",
+    "CADD score",
+    "Sample genotype",
+    "AD reference",
+    "AD alternative",
+    "Genotype quality",
+]
