@@ -649,9 +649,9 @@ def clinvar_export(store, institute_obj, case_obj, variants):
 
     Args:
         store(scout.adapter.MongoAdapter)
-        institute_obj(str): Institute ID
-        case_obj(str): case ID
-        variants(list): list of variant._id strings
+        institute_obj(dict): scout.model.Institute
+        case_obj(dict): scout.model.Case
+        variants(list of strings): list of variant._ids
 
     Returns:
         data(dict): all the required data (case and variant level) to pre-fill in fields
@@ -664,7 +664,7 @@ def clinvar_export(store, institute_obj, case_obj, variants):
         case_obj = store.convert_diagnoses_format(case_obj)
     variant_objs = [store.variant(variant_id) or variant_id for variant_id in variants]
 
-    # gather missing transcript info from entrez (refseq id version)
+    # gather missing transcript info (refseq id version)
     for var_obj in variant_objs:
         # Exclude variants that aren't loaded
         if isinstance(var_obj, str):

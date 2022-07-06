@@ -19,7 +19,7 @@
               <input class="ml-3" type="checkbox" name="clinvar_variant" value="{{variant._id}}"
               {% if variant.category == 'str' or variant._id in case.clinvar_variants.keys() %} disabled {% endif %}
               >
-              {{pretty_variant(variant)}} {% if variant._id in case.clinvar_variants.keys() %} - <i>Already submitted</i> - {% endif %}
+              {{pretty_variant(variant)}} {% if variant._id in case.clinvar_variants.keys() %} - <em>Already submitted</em> - {% endif %}
 
               <br>
             {% endif %}
