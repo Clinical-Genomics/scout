@@ -282,7 +282,7 @@ class ScoutLoadConfig(BaseModel):
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
-    genome_build: int = Field(38, alias="human_genome_build")
+    genome_build: str = Field(38, alias="human_genome_build")
     individuals: List[ScoutIndividual] = Field([], alias="samples")
     lims_id: Optional[str] = None
     madeline_info: Optional[str] = Field(None, alias="madeline")  #!

@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from scout.constants import CUSTOM_CASE_REPORTS
+from scout.constants import CUSTOM_CASE_REPORTS, GENOME_BUILD_37, GENOME_BUILD_38
 from scout.exceptions import ConfigError, IntegrityError
 from . import build_individual
 
@@ -193,10 +193,9 @@ def build_case(case_data, adapter):
     case_obj["dynamic_gene_list"] = []
 
     # Meta data
-    genome_build = case_data.get("genome_build", "37")
-    if not genome_build in ["37", "38"]:
-        pass
-        ##TODO raise exception if invalid genome build was used
+    genome_build = case_data.get("genome_build", GENOME_BUILD_37)
+    if not genome_build in [GENOME_BUILD_37, GENOME_BUILD_38]:
+        raise ValueError(f"Genome build {genome_build} not supported")
 
     case_obj["genome_build"] = genome_build
 
