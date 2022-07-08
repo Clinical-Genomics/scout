@@ -17,6 +17,7 @@
 {% block content_main %}
   <div>
     {{ new_panel() }}
+    {{ search_gene_card() }}
     {% if panel_groups %}
       {% for institute,panels in panel_groups %}
         {{ panel_view(institute,panels) }}
@@ -26,6 +27,18 @@
     {% endif %}
   </div>
 {% endblock %} <!-- end of content_main -->
+
+{% macro search_gene_card() %}
+<div class="container-float">
+  <div class="card mt-3">
+    <div class="card-body">
+      <input type="text" name="new_panel_name" class="form-control" placeholder="Search Gene" required
+             pattern="^[a-zA-Z0-9_]*$" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </div>
+  </div>
+</div>
+{% endmacro %}
 
 {% macro new_panel() %}
 <div class="container-float">
@@ -66,7 +79,7 @@
         </div>
         <div class="row">
           <div class="col text-center">
-            <button type="submit" class="btn btn-secondary">Upload</button>
+            <button type="submit" class="btn btn-secondary">UploadS</button>
           </div>
         </div>
       </form>
