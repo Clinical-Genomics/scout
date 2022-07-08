@@ -3,6 +3,7 @@ import os
 import tempfile
 
 from scout.commands import cli
+from scout.constants import GENOME_BUILD_37
 from scout.demo import load_path, ped_path
 from scout.parse import case
 from scout.server.extensions import store
@@ -40,7 +41,7 @@ def test_load_case_from_ped(mock_app, institute_obj, case_obj):
     assert result.exit_code == 0
     case_obj = store.case_collection.find_one()
     # WITH the expected genome build
-    assert case_obj["genome_build"] == 37
+    assert case_obj["genome_build"] == GENOME_BUILD_37
 
 
 def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
