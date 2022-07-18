@@ -582,13 +582,6 @@ class PanelHandler:
         except ValueError as err:
             # this is excpected to occur often, we can still search
             search_int = search_string
-        query = {
-            "$or": [
-                {"genes.hgnc_id": search_int}, {"genes.symbol": search_string}
-            ]
-        }
+        query = {"$or": [{"genes.hgnc_id": search_int}, {"genes.symbol": search_string}]}
         result = self.panel_collection.find(query)
         return [element["panel_name"] for element in result]
-
-
-        
