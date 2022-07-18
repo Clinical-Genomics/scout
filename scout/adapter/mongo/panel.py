@@ -549,23 +549,46 @@ class PanelHandler:
     def clinical_symbols(self, case_obj):
         """Return all the clinical gene symbols for a case."""
         panel_ids = [panel["panel_id"] for panel in case_obj.get("panels", [])]
-        query = self.panel_collection.aggregate(
+        query_result = self.panel_collection.aggregate(
             [
                 {"$match": {"_id": {"$in": panel_ids}}},
                 {"$unwind": "$genes"},
                 {"$group": {"_id": "$genes.symbol"}},
             ]
         )
-        return set(item["_id"] for item in query)
+        return set(item["_id"] for item in query_result)
 
     def clinical_hgnc_ids(self, case_obj):
         """Return all the clinical gene hgnc IDs for a case."""
         panel_ids = [panel["panel_id"] for panel in case_obj.get("panels", [])]
-        query = self.panel_collection.aggregate(
+        query_result = self.panel_collection.aggregate(
             [
                 {"$match": {"_id": {"$in": panel_ids}}},
                 {"$unwind": "$genes"},
                 {"$group": {"_id": "$genes.hgnc_id"}},
             ]
         )
-        return set(item["_id"] for item in query)
+        return set(item["_id"] for item in query_result)
+
+    def search_panels(self, search_string):
+        """Return all panels and versions that contain given gene"""
+
+        # {$or[{"genes.symbol":'/MT-TFf/'},{"genes.hgnc_id": 7481}]}
+        LOG.debug("SEARCH STRING: {}".format(search_string))
+
+        # TODO: wider search with wildcards or regexp?
+        try:
+            search_int = int(search_string)
+        except ValueError as err:
+            # this is excpected to occur often, we can still search
+            search_int = search_string
+        query = {
+            "$or": [
+                {"genes.hgnc_id": search_int}, {"genes.symbol": search_string}
+            ]
+        }
+        result = self.panel_collection.find(query)
+        return [element["panel_name"] for element in result]
+
+
+        
