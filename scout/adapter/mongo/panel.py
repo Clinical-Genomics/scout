@@ -571,8 +571,7 @@ class PanelHandler:
         return set(item["_id"] for item in query_result)
 
     def search_panels(self, search_string):
-        """Return all panels and versions that contain given gene"""
-        LOG.debug("SEARCH STRING: {}".format(search_string))
+        """Return all panels and versions that contain given gene, list is sorted"""
 
         # Try to cast search string to integer for searching hgnc_id:s.
         try:
@@ -581,5 +580,6 @@ class PanelHandler:
             search_int = search_string
         query = {"$or": [{"genes.hgnc_id": search_int}, {"genes.symbol": search_string}]}
         result = self.panel_collection.find(query)
-        return [[element["panel_name"], element["version"]] for element in result]
+        result_list = [[element["panel_name"], element["version"]] for element in result]
+        return sorted(result_list)
 

@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 
-from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
+from flask import Blueprint, Response, escape, flash, redirect, render_template, request, send_file, url_for
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -45,9 +45,8 @@ def panels():
     search_string = ""
     if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string
-        search_string = request.form.get("search_for")
+        search_string = escape(request.form.get("search_for"))
         panels_found = store.search_panels(search_string)
-        LOG.debug("FOUND: {}".format(panels_found))
 
     # Add new panel
     if request.method == "POST" and not request.form.get(
