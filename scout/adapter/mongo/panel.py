@@ -574,19 +574,12 @@ class PanelHandler:
         """Return all panels and versions that contain given gene"""
         LOG.debug("SEARCH STRING: {}".format(search_string))
 
-        # TODO: wider search with wildcards or regexp?
+        # Try to cast search string to integer for searching hgnc_id:s.
         try:
             search_int = int(search_string)
         except ValueError as err:
-            # this is excpected to occur often, we can still search
             search_int = search_string
-        query = {
-            "$or": [
-                {"genes.hgnc_id": search_int}, {"genes.symbol": search_string}
-            ]
-        }
+        query = {"$or": [{"genes.hgnc_id": search_int}, {"genes.symbol": search_string}]}
         result = self.panel_collection.find(query)
         return [[element["panel_name"], element["version"]] for element in result]
 
-
-        

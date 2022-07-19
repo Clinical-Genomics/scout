@@ -43,14 +43,16 @@ def panels():
     # Add search box and add results if applicable
     panels_found = []
     search_string = ""
-    if request.method == "POST" and request.form.get('search_for'):
+    if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string
-        search_string = request.form.get('search_for')
+        search_string = request.form.get("search_for")
         panels_found = store.search_panels(search_string)
         LOG.debug("FOUND: {}".format(panels_found))
-        
+
     # Add new panel
-    if request.method == "POST" and not request.form.get('search_for'):  # Edit/create a new panel and redirect to its page
+    if request.method == "POST" and not request.form.get(
+        "search_for"
+    ):  # Edit/create a new panel and redirect to its page
         LOG.debug("request.method == 'POST'")
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
@@ -87,8 +89,8 @@ def panels():
         panel_names=panel_names,
         panel_versions=panel_versions,
         institutes=institutes,
-        search_string = search_string,
-        search_result = panels_found
+        search_string=search_string,
+        search_result=panels_found,
     )
 
 
