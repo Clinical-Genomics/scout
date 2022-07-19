@@ -576,7 +576,7 @@ class PanelHandler:
         # Try to cast search string to integer for searching hgnc_id:s.
         try:
             search_int = int(search_string)
-        except ValueError as err:
+        except ValueError as _err:
             search_int = search_string
         query = {"$or": [{"genes.hgnc_id": search_int}, {"genes.symbol": search_string}]}
         result = self.panel_collection.find(query)
