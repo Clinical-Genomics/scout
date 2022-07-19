@@ -582,4 +582,3 @@ class PanelHandler:
         query = {"$or": [{"genes.hgnc_id": search_int}, {"genes.symbol": search_string}]}
         result = self.panel_collection.find(query)
         return [[element["panel_name"], element["version"]] for element in result]
-
