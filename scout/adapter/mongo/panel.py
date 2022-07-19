@@ -572,8 +572,6 @@ class PanelHandler:
 
     def search_panels(self, search_string):
         """Return all panels and versions that contain given gene"""
-
-        # {$or[{"genes.symbol":'/MT-TFf/'},{"genes.hgnc_id": 7481}]}
         LOG.debug("SEARCH STRING: {}".format(search_string))
 
         # TODO: wider search with wildcards or regexp?
@@ -588,7 +586,7 @@ class PanelHandler:
             ]
         }
         result = self.panel_collection.find(query)
-        return [element["panel_name"] for element in result]
+        return [[element["panel_name"], element["version"]] for element in result]
 
 
         

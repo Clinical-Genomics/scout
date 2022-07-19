@@ -28,32 +28,47 @@
   </div>
 {% endblock %} <!-- end of content_main -->
 
+
+
+ 
+<!-- Create a Bootstrap card containing text bar and submit button for searching -->
 {% macro search_gene_card() %}
 <div class="container-float">
   <div class="card mt-3">
     <div class="card-body">
       <form action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
-        <input type="text" name="search_for" class="form-control" placeholder="Search Gene in Panels" required
-               pattern="^[a-zA-Z0-9_]*$" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
-        <button type="submit" class="btn btn-secondary">Search!</button>
+        <div class="row">
+          <div class="col-5">
+            <input type="text" name="search_for" class="form-control" placeholder="Search Gene in Panels" required
+                   pattern="^[a-zA-Z0-9_\-]*$" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
+          </div>
+          <div class="col">
+            <button type="submit" class="btn btn-secondary">Search!</button>
+          </div>
+          <div class="col">
+          </div>
       </form>
 
-      {% if search_result %}
-      <hr>
-      <b> <i>{{search_string}}</i> found in: </b>
-      <br>
-          {% for element in search_result %}
-          {{element}}<br>
-          {% endfor %}
+      <div id="SearchResults" class="card-body">
+        {% if search_result %}
+        <b> <i>{{search_string}}</i> found in: </b> <br>
+        {% for name, version in search_result %}
+        {{name}}   version {{version}}<br>
+        {% endfor %}
 
-      {% else %}
-      <hr>
-      <b> <i>{{search_string}}</i> not found. </b>
-      {% endif %}
+        {% elif search_string  %}
+        <b> <i>{{search_string}} </i> not found. </b>
+
+        {% else  %}
+        <!-- Do nothing -->
+        {% endif %}
+      </div>
+      </div>
     </div>
   </div>
 </div>
 {% endmacro %}
+
 
 {% macro new_panel() %}
 <div class="container-float">
