@@ -582,4 +582,3 @@ class PanelHandler:
         result = self.panel_collection.find(query)
         result_list = [[element["panel_name"], element["version"]] for element in result]
         return sorted(result_list)
-
