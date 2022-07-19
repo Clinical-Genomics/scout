@@ -51,13 +51,13 @@
 
       <div id="SearchResults" class="card-body">
         {% if search_result %}
-        <b> <i>{{search_string}}</i> found in: </b> <br>
+        <strong> <em>{{search_string}}</em> found in: </strong> <br>
         {% for name, version in search_result %}
-        {{name}}   version {{version}}<br>
+        {{name}},   version {{version}}<br>
         {% endfor %}
 
         {% elif search_string  %}
-        <b> <i>{{search_string}} </i> not found. </b>
+        <strong> <em>{{search_string}} </em> not found. </strong>
 
         {% else  %}
         <!-- Do nothing -->
