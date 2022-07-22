@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from scout.utils.dict_utils import remove_nonetype
 from . import build_clnsig, build_compound, build_gene, build_genotype
 
 LOG = logging.getLogger(__name__)
@@ -158,100 +159,149 @@ def build_variant(
         institute=institute_id,
     )
 
+    variant_obj["category"] = variant.get("category")
+    variant_obj["cosmic_ids"] = variant.get("cosmic_ids")
+    variant_obj["cytoband_end"] = variant.get("cytoband_end")
+    variant_obj["cytoband_start"] = variant.get("cytoband_start")
+    variant_obj["dbsnp_id"] = variant.get("dbsnp_id")
+    variant_obj["end"] = safe_convert(variant.get("end"), int)
+    variant_obj["end_chrom"] = variant.get("end_chrom")
+    variant_obj["filters"] = variant.get("filters")
+    variant_obj["length"] = safe_convert(variant.get("length"), int)
+    variant_obj["mate_id"] = variant.get("mate_id")
     variant_obj["missing_data"] = False
     variant_obj["position"] = int(variant["position"])
-    variant_obj["rank_score"] = float(variant["rank_score"])
-
-    end = variant.get("end")
-    if end:
-        variant_obj["end"] = int(end)
-
-    length = variant.get("length")
-    if length:
-        variant_obj["length"] = int(length)
-
-    variant_obj["simple_id"] = variant["ids"].get("simple_id")
-
     variant_obj["quality"] = float(variant["quality"]) if variant["quality"] else None
-    variant_obj["filters"] = variant["filters"]
-
-    variant_obj["dbsnp_id"] = variant.get("dbsnp_id")
-    variant_obj["cosmic_ids"] = variant.get("cosmic_ids")
-
-    variant_obj["category"] = variant["category"]
+    variant_obj["rank_score"] = float(variant["rank_score"])
+    variant_obj["simple_id"] = variant["ids"].get("simple_id")
     variant_obj["sub_category"] = variant.get("sub_category")
 
-    if "mate_id" in variant:
-        variant_obj["mate_id"] = variant["mate_id"]
+    ### String Specific
+    variant_obj["str_disease"] = variant.get("str_disease")
+    variant_obj["str_inheritance_mode"] = variant.get("str_inheritance_mode")
+    variant_obj["str_len"] = variant.get("str_len")
+    variant_obj["str_normal_max"] = variant.get("str_normal_max")
+    variant_obj["str_pathologic_min"] = variant.get("str_pathologic_min")
+    variant_obj["str_ref"] = variant.get("str_ref")
+    variant_obj["str_repid"] = variant.get("str_repid")
+    variant_obj["str_ru"] = variant.get("str_ru")
+    variant_obj["str_source"] = variant.get("str_source")
+    variant_obj["str_status"] = variant.get("str_status")
+    variant_obj["str_swegen_mean"] = safe_convert(variant.get("str_swegen_mean"), float)
+    variant_obj["str_swegen_std"] = safe_convert(variant.get("str_swegen_std"), float)
 
-    if "cytoband_start" in variant:
-        variant_obj["cytoband_start"] = variant["cytoband_start"]
+    ### Mitochondria Specific
+    variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
+    variant_obj["hmtvar_variant_id"] = variant.get("hmtvar_variant_id")
 
-    if "cytoband_end" in variant:
-        variant_obj["cytoband_end"] = variant["cytoband_end"]
+    variant_obj["genetic_models"] = variant.get("genetic_models")
 
-    if "end_chrom" in variant:
-        variant_obj["end_chrom"] = variant["end_chrom"]
+    set_sample(variant_obj, variant.get("samples", []), sample_info)
+    add_compounds(variant_obj, variant.get("compounds", []))
+    add_genes(variant_obj, variant.get("genes", []), hgncid_to_gene)
 
-    ############ Str specific ############
-    if "str_ru" in variant:
-        variant_obj["str_ru"] = variant["str_ru"]
+    # Make gene searches more effective
+    if "hgnc_ids" in variant:
+        variant_obj["hgnc_ids"] = [hgnc_id for hgnc_id in variant["hgnc_ids"] if hgnc_id]
 
-    if "str_repid" in variant:
-        variant_obj["str_repid"] = variant["str_repid"]
+    add_hgnc_symbols(variant_obj, variant_obj["hgnc_ids"], hgncid_to_gene)
+    link_gene_panels(variant_obj, gene_to_panels)
+    add_clnsig_objects(variant_obj, variant.get("clnsig", []))
 
-    if "str_ref" in variant:
-        variant_obj["str_ref"] = variant["str_ref"]
+    ### Add the conservation
+    conservation_info = variant.get("conservation", {})
+    variant_obj["phast_conservation"] = conservation_info.get("phast")
+    variant_obj["gerp_conservation"] = conservation_info.get("gerp")
+    variant_obj["phylop_conservation"] = conservation_info.get("phylop")
 
-    if "str_len" in variant:
-        variant_obj["str_len"] = variant["str_len"]
+    ### Add autozygosity calls
+    variant_obj["azlength"] = variant.get("azlength")
+    variant_obj["azqual"] = variant.get("azqual")
+    variant_obj["custom"] = variant.get("custom")
+    variant_obj["somatic_score"] = variant.get("somatic_score")
 
-    if "str_status" in variant:
-        variant_obj["str_status"] = variant["str_status"]
+    # Add the frequencies
+    add_frequencies(variant_obj, variant.get("frequencies", {}))
 
-    if "str_normal_max" in variant:
-        variant_obj["str_normal_max"] = variant["str_normal_max"]
+    # Add the local observation counts from the old archive
+    # SNVs and SVs
+    variant_obj["local_obs_old"] = variant.get("local_obs_old")
 
-    if "str_pathologic_min" in variant:
-        variant_obj["str_pathologic_min"] = variant["str_pathologic_min"]
+    # SNVs
+    variant_obj["local_obs_hom_old"] = variant.get("local_obs_hom_old")
 
-    if "str_swegen_mean" in variant:
-        variant_obj["str_swegen_mean"] = (
-            float(variant["str_swegen_mean"]) if variant["str_swegen_mean"] else None
-        )
+    # SVs
+    variant_obj["local_obs_old_freq"] = variant.get("local_obs_old_freq")
+    variant_obj["local_obs_old_date"] = variant.get("local_obs_old_date")
+    variant_obj["local_obs_old_desc"] = variant.get("local_obs_old_desc")
+    variant_obj["local_obs_old_nr_cases"] = variant.get("local_obs_old_nr_cases")
 
-    if "str_swegen_std" in variant:
-        variant_obj["str_swegen_std"] = (
-            float(variant["str_swegen_std"]) if variant["str_swegen_std"] else None
-        )
+    ##### Add the severity predictors #####
+    variant_obj["cadd_score"] = variant.get("cadd_score")
+    variant_obj["revel_score"] = variant.get("revel_score")
+    variant_obj["spidex"] = variant.get("spidex")
 
-    if "str_inheritance_mode" in variant:
-        variant_obj["str_inheritance_mode"] = variant["str_inheritance_mode"]
+    add_rank_score(variant_obj, variant)
 
-    if "str_disease" in variant:
-        variant_obj["str_disease"] = variant["str_disease"]
+    # Cancer specific
+    variant_obj["mvl_tag"] = True if variant.get["mvl_tag"] else None
 
-    if "str_source" in variant:
-        variant_obj["str_source"] = variant["str_source"]
+    return remove_nonetype(variant_obj)
 
-    # Mitochondria specific
-    if "mitomap_associated_diseases" in variant:
-        variant_obj["mitomap_associated_diseases"] = variant["mitomap_associated_diseases"]
 
-    if "hmtvar_variant_id" in variant:
-        variant_obj["hmtvar_variant_id"] = variant["hmtvar_variant_id"]
+def safe_convert(unknown_var, fun):
+    """Cast unknown_var using fun, return None if exception is caught.
+    Args: unknown_var: Object
+          fun: Function
+    Returns: Object"""
+    try:
+        return fun(unknown_var)
+    except ValueError:
+        return None
+    except TypeError:
+        return None
 
+
+def link_gene_panels(variant_obj, gene_to_panels):
+    """Link gene panels"""
+    panel_names = set()
+
+    for hgnc_id in variant_obj["hgnc_ids"]:
+        gene_panels = gene_to_panels.get(hgnc_id, set())
+        panel_names = panel_names.union(gene_panels)
+
+    if panel_names:
+        variant_obj["panels"] = list(panel_names)
+
+
+def add_clnsig_objects(variant_obj, clnsig_list):
+    """ """
+    clnsig_objects = []
+    for entry in clnsig_list:
+        clnsig_obj = build_clnsig(entry)
+        clnsig_objects.append(clnsig_obj)
+
+    if clnsig_objects:
+        variant_obj["clnsig"] = clnsig_objects
+
+
+def add_callers(variant_obj, call_info):
+    """ """
+    for caller in call_info:
+        if call_info[caller]:
+            variant_obj[caller] = call_info[caller]
+
+
+def set_sample(variant_obj, sample_list, sample_info):
+    """What does this?"""
     gt_types = []
-    for sample in variant.get("samples", []):
+    for sample in sample_list:
         gt_call = build_genotype(sample)
         gt_types.append(gt_call)
 
         if sample_info:
             sample_id = sample["individual_id"]
-            if sample_info[sample_id] == "case":
-                key = "tumor"
-            else:
-                key = "normal"
+            key = "tumor" if sample_info[sample_id] == "case" else "normal"
             variant_obj[key] = {
                 "alt_depth": sample["alt_depth"],
                 "ref_depth": sample["ref_depth"],
@@ -260,23 +310,22 @@ def build_variant(
                 "ind_id": sample_id,
             }
 
-    variant_obj["samples"] = gt_types
 
-    if "genetic_models" in variant:
-        variant_obj["genetic_models"] = variant["genetic_models"]
-
-    ##### Add the compounds #####
+def add_compounds(variant_obj, compound_list):
+    """ """
     compounds = []
-    for compound in variant.get("compounds", []):
+    for compound in compound_list:
         compound_obj = build_compound(compound)
         compounds.append(compound_obj)
 
     if compounds:
         variant_obj["compounds"] = compounds
 
-    ##### Add the genes with transcripts #####
+
+def add_genes(variant_obj, gene_list, hgncid_to_gene):
+    """ """
     genes = []
-    for index, gene in enumerate(variant.get("genes", [])):
+    for index, gene in enumerate(gene_list):
         if gene.get("hgnc_id"):
             gene_obj = build_gene(gene, hgncid_to_gene)
             genes.append(gene_obj)
@@ -285,156 +334,24 @@ def build_variant(
                 # mark variant as missing data
                 variant_obj["missing_data"] = True
                 break
+    variant_obj["genes"] = genes
 
-    if genes:
-        variant_obj["genes"] = genes
 
-    # To make gene searches more effective
-    if "hgnc_ids" in variant:
-        variant_obj["hgnc_ids"] = [hgnc_id for hgnc_id in variant["hgnc_ids"] if hgnc_id]
-
-    # Add the hgnc symbols from the database genes
+def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
+    """Add the hgnc symbols from the database genes"""
     hgnc_symbols = []
-    for hgnc_id in variant_obj["hgnc_ids"]:
+    for hgnc_id in hgnc_id_list:
         gene_obj = hgncid_to_gene.get(hgnc_id)
         if gene_obj:
             hgnc_symbols.append(gene_obj["hgnc_symbol"])
-        # else:
-        # LOG.warning("missing HGNC symbol for: %s", hgnc_id)
+        else:
+            LOG.warning("missing HGNC symbol for: %s", hgnc_id)
 
-    if hgnc_symbols:
-        variant_obj["hgnc_symbols"] = hgnc_symbols
+    variant_obj["hgnc_symbols"] = hgnc_symbols
 
-    ##### link gene panels #####
-    panel_names = set()
-    for hgnc_id in variant_obj["hgnc_ids"]:
-        gene_panels = gene_to_panels.get(hgnc_id, set())
-        panel_names = panel_names.union(gene_panels)
 
-    if panel_names:
-        variant_obj["panels"] = list(panel_names)
-
-    ##### Add the clnsig objects from clinvar #####
-    clnsig_objects = []
-    for entry in variant.get("clnsig", []):
-        clnsig_obj = build_clnsig(entry)
-        clnsig_objects.append(clnsig_obj)
-
-    if clnsig_objects:
-        variant_obj["clnsig"] = clnsig_objects
-
-    ##### Add the callers #####
-    call_info = variant.get("callers", {})
-
-    for caller in call_info:
-        if call_info[caller]:
-            variant_obj[caller] = call_info[caller]
-
-    ##### Add the conservation #####
-    conservation_info = variant.get("conservation", {})
-    if conservation_info.get("phast"):
-        variant_obj["phast_conservation"] = conservation_info["phast"]
-
-    if conservation_info.get("gerp"):
-        variant_obj["gerp_conservation"] = conservation_info["gerp"]
-
-    if conservation_info.get("phylop"):
-        variant_obj["phylop_conservation"] = conservation_info["phylop"]
-
-    ##### Add autozygosity calls #####
-    if variant.get("azlength"):
-        variant_obj["azlength"] = variant["azlength"]
-
-    if variant.get("azqual"):
-        variant_obj["azqual"] = variant["azqual"]
-
-    if variant.get("custom"):
-        variant_obj["custom"] = variant["custom"]
-
-    if variant.get("somatic_score"):
-        variant_obj["somatic_score"] = variant["somatic_score"]
-
-    ##### Add the frequencies #####
-    frequencies = variant.get("frequencies", {})
-    if frequencies.get("thousand_g"):
-        variant_obj["thousand_genomes_frequency"] = float(frequencies["thousand_g"])
-
-    if frequencies.get("thousand_g_max"):
-        variant_obj["max_thousand_genomes_frequency"] = float(frequencies["thousand_g_max"])
-
-    if frequencies.get("exac"):
-        variant_obj["exac_frequency"] = float(frequencies["exac"])
-
-    if frequencies.get("exac_max"):
-        variant_obj["max_exac_frequency"] = float(frequencies["exac_max"])
-
-    if frequencies.get("gnomad"):
-        variant_obj["gnomad_frequency"] = float(frequencies["gnomad"])
-
-    if frequencies.get("gnomad_max"):
-        variant_obj["max_gnomad_frequency"] = float(frequencies["gnomad_max"])
-
-    if frequencies.get("gnomad_mt_homoplasmic"):
-        variant_obj["gnomad_mt_homoplasmic_frequency"] = float(frequencies["gnomad_mt_homoplasmic"])
-
-    if frequencies.get("gnomad_mt_heteroplasmic"):
-        variant_obj["gnomad_mt_heteroplasmic_frequency"] = float(
-            frequencies["gnomad_mt_heteroplasmic"]
-        )
-
-    if frequencies.get("thousand_g_left"):
-        variant_obj["thousand_genomes_frequency_left"] = float(frequencies["thousand_g_left"])
-
-    if frequencies.get("thousand_g_right"):
-        variant_obj["thousand_genomes_frequency_right"] = float(frequencies["thousand_g_right"])
-
-    # add the local observation counts from the old archive
-    if variant.get("local_obs_old"):  # SNVs and SVs
-        variant_obj["local_obs_old"] = variant["local_obs_old"]
-
-    if variant.get("local_obs_hom_old"):  # SNVs
-        variant_obj["local_obs_hom_old"] = variant["local_obs_hom_old"]
-
-    if variant.get("local_obs_old_freq"):  # SVs
-        variant_obj["local_obs_old_freq"] = variant["local_obs_old_freq"]
-
-    if variant.get("local_obs_old_date"):
-        variant_obj["local_obs_old_date"] = variant["local_obs_old_date"]
-
-    if variant.get("local_obs_old_desc"):
-        variant_obj["local_obs_old_desc"] = variant["local_obs_old_desc"]
-
-    if variant.get("local_obs_old_nr_cases"):
-        variant_obj["local_obs_old_nr_cases"] = variant["local_obs_old_nr_cases"]
-
-    # Add the sv counts:
-    if frequencies.get("clingen_benign"):
-        variant_obj["clingen_cgh_benign"] = frequencies["clingen_benign"]
-    if frequencies.get("clingen_pathogenic"):
-        variant_obj["clingen_cgh_pathogenic"] = frequencies["clingen_pathogenic"]
-    if frequencies.get("clingen_ngi"):
-        variant_obj["clingen_ngi"] = frequencies["clingen_ngi"]
-    if frequencies.get("swegen"):
-        variant_obj["swegen"] = frequencies["swegen"]
-    if frequencies.get("clingen_mip"):
-        variant_obj["clingen_mip"] = frequencies["clingen_mip"]
-    # Decipher is never a frequency, it will ony give 1 if variant exists in decipher
-    # Check if decipher exists
-    if frequencies.get("decipher"):
-        variant_obj["decipher"] = frequencies["decipher"]
-
-    ##### Add the severity predictors #####
-
-    if variant.get("cadd_score"):
-        variant_obj["cadd_score"] = variant["cadd_score"]
-
-    if variant.get("revel_score"):
-        variant_obj["revel_score"] = variant["revel_score"]
-
-    if variant.get("spidex"):
-        variant_obj["spidex"] = variant["spidex"]
-
-    # Add the rank score results
+def add_rank_score(variant_obj, variant):
+    """Add the rank score results"""
     rank_results = []
     for category in variant.get("rank_result", []):
         rank_result = {"category": category, "score": variant["rank_result"][category]}
@@ -443,8 +360,41 @@ def build_variant(
     if rank_results:
         variant_obj["rank_score_results"] = rank_results
 
-    # Cancer specific
-    if variant.get("mvl_tag"):
-        variant_obj["mvl_tag"] = True
 
-    return variant_obj
+def add_frequencies(variant_obj, frequencies):
+    """Whats the frequency Kenneth?"""
+    variant_obj["exac_frequency"] = safe_convert(frequencies.get("exac"), float)
+    variant_obj["gnomad_frequency"] = safe_convert(frequencies.get("gnomad"), float)
+    variant_obj["gnomad_mt_heteroplasmic_frequency"] = safe_convert(
+        frequencies.get("gnomad_mt_heteroplasmic"), float
+    )
+
+    variant_obj["gnomad_mt_homoplasmic_frequency"] = safe_convert(
+        frequencies.get("gnomad_mt_homoplasmic"), float
+    )
+
+    variant_obj["max_exac_frequency"] = safe_convert(frequencies.get("exac_max"), float)
+    variant_obj["max_gnomad_frequency"] = safe_convert(frequencies.get("gnomad_max"), float)
+    variant_obj["max_thousand_genomes_frequency"] = safe_convert(
+        frequencies.get("thousand_g_max"), float
+    )
+
+    variant_obj["thousand_genomes_frequency"] = safe_convert(frequencies.get("thousand_g"), float)
+    variant_obj["thousand_genomes_frequency_left"] = safe_convert(
+        frequencies.get("thousand_g_left"), float
+    )
+
+    variant_obj["thousand_genomes_frequency_right"] = safe_convert(
+        frequencies.get("thousand_g_right"), float
+    )
+
+    # Add the sv counts:
+    variant_obj["clingen_cgh_benign"] = frequencies.get("clingen_benign")
+    variant_obj["clingen_cgh_pathogenic"] = frequencies.get("clingen_pathogenic")
+    variant_obj["clingen_mip"] = frequencies.get("clingen_mip")
+    variant_obj["clingen_ngi"] = frequencies.get("clingen_ngi")
+    variant_obj["swegen"] = frequencies.get("swegen")
+
+    # Decipher is never a frequency, it will ony give 1 if variant exists in decipher
+    # Check if decipher exists
+    variant_obj["decipher"] = frequencies.get("decipher")
