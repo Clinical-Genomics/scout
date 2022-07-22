@@ -245,7 +245,7 @@ def build_variant(
     add_rank_score(variant_obj, variant)
 
     # Cancer specific
-    variant_obj["mvl_tag"] = True if variant.get["mvl_tag"] else None
+    variant_obj["mvl_tag"] = True if variant.get("mvl_tag") else None
 
     return remove_nonetype(variant_obj)
 
