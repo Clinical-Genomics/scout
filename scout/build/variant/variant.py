@@ -2,6 +2,7 @@
 import logging
 
 from scout.utils.dict_utils import remove_nonetype
+from scout.utils import safe_convert
 from . import build_clnsig, build_compound, build_gene, build_genotype
 
 LOG = logging.getLogger(__name__)
@@ -249,23 +250,13 @@ def build_variant(
     return remove_nonetype(variant_obj)
 
 
-def safe_convert(unknown_var, fun):
-    """Cast unknown_var using fun, return None if exception is caught.
-    Args: unknown_var: Object
-          fun: Function
-    Returns: Object"""
-    try:
-        return fun(unknown_var)
-    except ValueError:
-        return None
-    except TypeError:
-        return None
-
-
 def link_gene_panels(variant_obj, gene_to_panels):
-    """Link gene panels"""
+    """Add link gene panels to variant_obj 
+           Args: variant_obj (Dict)
+                 gene_to_panels (List)
+           Returns: None
+    """
     panel_names = set()
-
     for hgnc_id in variant_obj["hgnc_ids"]:
         gene_panels = gene_to_panels.get(hgnc_id, set())
         panel_names = panel_names.union(gene_panels)
@@ -275,7 +266,10 @@ def link_gene_panels(variant_obj, gene_to_panels):
 
 
 def add_clnsig_objects(variant_obj, clnsig_list):
-    """ """
+    """Add clnsig objects to variant_obj 
+           Args: variant_obj (Dict)
+                 clnsig_list (List)
+           Returns: None """
     clnsig_objects = []
     for entry in clnsig_list:
         clnsig_obj = build_clnsig(entry)
@@ -286,14 +280,21 @@ def add_clnsig_objects(variant_obj, clnsig_list):
 
 
 def add_callers(variant_obj, call_info):
-    """ """
+    """Add call_info to variant_obj 
+           Args: variant_obj (Dict)
+                 call_info (List)
+           Returns: None """
     for caller in call_info:
         if call_info[caller]:
             variant_obj[caller] = call_info[caller]
 
 
 def set_sample(variant_obj, sample_list, sample_info):
-    """What does this?"""
+    """Add call_info to variant_obj 
+           Args: variant_obj (Dict)
+                 sample_list (List)
+                 sample_info (Dict)
+           Returns: None """
     gt_types = []
     for sample in sample_list:
         gt_call = build_genotype(sample)
@@ -312,7 +313,10 @@ def set_sample(variant_obj, sample_list, sample_info):
 
 
 def add_compounds(variant_obj, compound_list):
-    """ """
+    """Add compound list to variant_obj 
+           Args: variant_obj (Dict)
+                 compound_list (List)
+           Returns: None """
     compounds = []
     for compound in compound_list:
         compound_obj = build_compound(compound)
@@ -323,7 +327,11 @@ def add_compounds(variant_obj, compound_list):
 
 
 def add_genes(variant_obj, gene_list, hgncid_to_gene):
-    """ """
+    """Add compound list to variant_obj 
+           Args: variant_obj (Dict)
+                 gene_list (list)
+                 hgncid_to_gene (Dict)
+           Returns: None """
     genes = []
     for index, gene in enumerate(gene_list):
         if gene.get("hgnc_id"):
@@ -338,7 +346,11 @@ def add_genes(variant_obj, gene_list, hgncid_to_gene):
 
 
 def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
-    """Add the hgnc symbols from the database genes"""
+    """Add the hgnc symbols from the database genes
+           Args: variant_obj (Dict)
+                 hgnc_id_list (List)
+                 hgncid_to_gene (Dict)
+           Returns: None """
     hgnc_symbols = []
     for hgnc_id in hgnc_id_list:
         gene_obj = hgncid_to_gene.get(hgnc_id)
@@ -351,7 +363,10 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
 
 
 def add_rank_score(variant_obj, variant):
-    """Add the rank score results"""
+    """Add the rank score results
+           Args: variant_obj (Dict)
+                 variant (Dict)
+           Returns: None """
     rank_results = []
     for category in variant.get("rank_result", []):
         rank_result = {"category": category, "score": variant["rank_result"][category]}
@@ -362,7 +377,10 @@ def add_rank_score(variant_obj, variant):
 
 
 def add_frequencies(variant_obj, frequencies):
-    """Whats the frequency Kenneth?"""
+    """Add the rank score results
+           Args: variant_obj (Dict)
+                 variant (Dict)
+           Returns: None """
     variant_obj["exac_frequency"] = safe_convert(frequencies.get("exac"), float)
     variant_obj["gnomad_frequency"] = safe_convert(frequencies.get("gnomad"), float)
     variant_obj["gnomad_mt_heteroplasmic_frequency"] = safe_convert(
