@@ -2,7 +2,7 @@
 import logging
 
 from scout.utils.dict_utils import remove_nonetype
-from scout.utils import safe_convert
+from scout.utils import call_safe
 from . import build_clnsig, build_compound, build_gene, build_genotype
 
 LOG = logging.getLogger(__name__)
