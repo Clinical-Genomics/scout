@@ -342,7 +342,8 @@ def add_genes(variant_obj, gene_list, hgncid_to_gene):
                 # mark variant as missing data
                 variant_obj["missing_data"] = True
                 break
-    variant_obj["genes"] = genes
+    if genes:
+        variant_obj["genes"] = genes
 
 
 def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
