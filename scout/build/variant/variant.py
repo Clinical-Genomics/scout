@@ -165,10 +165,10 @@ def build_variant(
     variant_obj["cytoband_end"] = variant.get("cytoband_end")
     variant_obj["cytoband_start"] = variant.get("cytoband_start")
     variant_obj["dbsnp_id"] = variant.get("dbsnp_id")
-    variant_obj["end"] = safe_convert(variant.get("end"), int)
+    variant_obj["end"] = call_safe(int, variant.get("end"))
     variant_obj["end_chrom"] = variant.get("end_chrom")
     variant_obj["filters"] = variant.get("filters")
-    variant_obj["length"] = safe_convert(variant.get("length"), int)
+    variant_obj["length"] = call_safe(int, variant.get("length"))
     variant_obj["mate_id"] = variant.get("mate_id")
     variant_obj["missing_data"] = False
     variant_obj["position"] = int(variant["position"])
@@ -188,8 +188,8 @@ def build_variant(
     variant_obj["str_ru"] = variant.get("str_ru")
     variant_obj["str_source"] = variant.get("str_source")
     variant_obj["str_status"] = variant.get("str_status")
-    variant_obj["str_swegen_mean"] = safe_convert(variant.get("str_swegen_mean"), float)
-    variant_obj["str_swegen_std"] = safe_convert(variant.get("str_swegen_std"), float)
+    variant_obj["str_swegen_mean"] = call_safe(float, variant.get("str_swegen_mean"))
+    variant_obj["str_swegen_std"] = call_safe(float, variant.get("str_swegen_std"))
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
@@ -251,10 +251,10 @@ def build_variant(
 
 
 def link_gene_panels(variant_obj, gene_to_panels):
-    """Add link gene panels to variant_obj 
-           Args: variant_obj (Dict)
-                 gene_to_panels (List)
-           Returns: None
+    """Add link gene panels to variant_obj
+    Args: variant_obj (Dict)
+          gene_to_panels (List)
+    Returns: None
     """
     panel_names = set()
     for hgnc_id in variant_obj["hgnc_ids"]:
@@ -266,10 +266,10 @@ def link_gene_panels(variant_obj, gene_to_panels):
 
 
 def add_clnsig_objects(variant_obj, clnsig_list):
-    """Add clnsig objects to variant_obj 
-           Args: variant_obj (Dict)
-                 clnsig_list (List)
-           Returns: None """
+    """Add clnsig objects to variant_obj
+    Args: variant_obj (Dict)
+          clnsig_list (List)
+    Returns: None"""
     clnsig_objects = []
     for entry in clnsig_list:
         clnsig_obj = build_clnsig(entry)
@@ -280,21 +280,21 @@ def add_clnsig_objects(variant_obj, clnsig_list):
 
 
 def add_callers(variant_obj, call_info):
-    """Add call_info to variant_obj 
-           Args: variant_obj (Dict)
-                 call_info (List)
-           Returns: None """
+    """Add call_info to variant_obj
+    Args: variant_obj (Dict)
+          call_info (List)
+    Returns: None"""
     for caller in call_info:
         if call_info[caller]:
             variant_obj[caller] = call_info[caller]
 
 
 def set_sample(variant_obj, sample_list, sample_info):
-    """Add call_info to variant_obj 
-           Args: variant_obj (Dict)
-                 sample_list (List)
-                 sample_info (Dict)
-           Returns: None """
+    """Add call_info to variant_obj
+    Args: variant_obj (Dict)
+          sample_list (List)
+          sample_info (Dict)
+    Returns: None"""
     gt_types = []
     for sample in sample_list:
         gt_call = build_genotype(sample)
@@ -313,10 +313,10 @@ def set_sample(variant_obj, sample_list, sample_info):
 
 
 def add_compounds(variant_obj, compound_list):
-    """Add compound list to variant_obj 
-           Args: variant_obj (Dict)
-                 compound_list (List)
-           Returns: None """
+    """Add compound list to variant_obj
+    Args: variant_obj (Dict)
+          compound_list (List)
+    Returns: None"""
     compounds = []
     for compound in compound_list:
         compound_obj = build_compound(compound)
@@ -327,11 +327,11 @@ def add_compounds(variant_obj, compound_list):
 
 
 def add_genes(variant_obj, gene_list, hgncid_to_gene):
-    """Add compound list to variant_obj 
-           Args: variant_obj (Dict)
-                 gene_list (list)
-                 hgncid_to_gene (Dict)
-           Returns: None """
+    """Add compound list to variant_obj
+    Args: variant_obj (Dict)
+          gene_list (list)
+          hgncid_to_gene (Dict)
+    Returns: None"""
     genes = []
     for index, gene in enumerate(gene_list):
         if gene.get("hgnc_id"):
@@ -347,10 +347,10 @@ def add_genes(variant_obj, gene_list, hgncid_to_gene):
 
 def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
     """Add the hgnc symbols from the database genes
-           Args: variant_obj (Dict)
-                 hgnc_id_list (List)
-                 hgncid_to_gene (Dict)
-           Returns: None """
+    Args: variant_obj (Dict)
+          hgnc_id_list (List)
+          hgncid_to_gene (Dict)
+    Returns: None"""
     hgnc_symbols = []
     for hgnc_id in hgnc_id_list:
         gene_obj = hgncid_to_gene.get(hgnc_id)
@@ -364,9 +364,9 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
 
 def add_rank_score(variant_obj, variant):
     """Add the rank score results
-           Args: variant_obj (Dict)
-                 variant (Dict)
-           Returns: None """
+    Args: variant_obj (Dict)
+          variant (Dict)
+    Returns: None"""
     rank_results = []
     for category in variant.get("rank_result", []):
         rank_result = {"category": category, "score": variant["rank_result"][category]}
@@ -378,32 +378,28 @@ def add_rank_score(variant_obj, variant):
 
 def add_frequencies(variant_obj, frequencies):
     """Add the rank score results
-           Args: variant_obj (Dict)
-                 variant (Dict)
-           Returns: None """
-    variant_obj["exac_frequency"] = safe_convert(frequencies.get("exac"), float)
-    variant_obj["gnomad_frequency"] = safe_convert(frequencies.get("gnomad"), float)
-    variant_obj["gnomad_mt_heteroplasmic_frequency"] = safe_convert(
-        frequencies.get("gnomad_mt_heteroplasmic"), float
+    Args: variant_obj (Dict)
+          variant (Dict)
+    Returns: None"""
+    variant_obj["exac_frequency"] = call_safe(float, frequencies.get("exac"))
+    variant_obj["gnomad_frequency"] = call_safe(float, frequencies.get("gnomad"))
+    variant_obj["gnomad_mt_heteroplasmic_frequency"] = call_safe(
+        float, frequencies.get("gnomad_mt_heteroplasmic")
     )
-
-    variant_obj["gnomad_mt_homoplasmic_frequency"] = safe_convert(
-        frequencies.get("gnomad_mt_homoplasmic"), float
+    variant_obj["gnomad_mt_homoplasmic_frequency"] = call_safe(
+        float, frequencies.get("gnomad_mt_homoplasmic")
     )
-
-    variant_obj["max_exac_frequency"] = safe_convert(frequencies.get("exac_max"), float)
-    variant_obj["max_gnomad_frequency"] = safe_convert(frequencies.get("gnomad_max"), float)
-    variant_obj["max_thousand_genomes_frequency"] = safe_convert(
-        frequencies.get("thousand_g_max"), float
+    variant_obj["max_exac_frequency"] = call_safe(float, frequencies.get("exac_max"))
+    variant_obj["max_gnomad_frequency"] = call_safe(float, frequencies.get("gnomad_max"))
+    variant_obj["max_thousand_genomes_frequency"] = call_safe(
+        float, frequencies.get("thousand_g_max")
     )
-
-    variant_obj["thousand_genomes_frequency"] = safe_convert(frequencies.get("thousand_g"), float)
-    variant_obj["thousand_genomes_frequency_left"] = safe_convert(
-        frequencies.get("thousand_g_left"), float
+    variant_obj["thousand_genomes_frequency"] = call_safe(float, frequencies.get("thousand_g"))
+    variant_obj["thousand_genomes_frequency_left"] = call_safe(
+        float, frequencies.get("thousand_g_left")
     )
-
-    variant_obj["thousand_genomes_frequency_right"] = safe_convert(
-        frequencies.get("thousand_g_right"), float
+    variant_obj["thousand_genomes_frequency_right"] = call_safe(
+        float, frequencies.get("thousand_g_right")
     )
 
     # Add the sv counts:
