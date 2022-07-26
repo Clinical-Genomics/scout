@@ -77,10 +77,9 @@ def parse_variant(
     # type can be 'clinical' or 'research'
     parsed_variant["variant_type"] = variant_type
 
-
     category = get_category(category, variant, parsed_variant)
     parsed_variant["category"] = category
-    
+
     ################# General information #################
     parsed_variant["reference"] = variant.REF
 
@@ -212,8 +211,8 @@ def parse_variant(
     parsed_variant["local_obs_hom_old"] = call_safe(int, variant.INFO.get("Hom"))
 
     # SVs only
-    parsed_variant["local_obs_old_freq"] = call_safe(float, 
-        variant.INFO.get("clinical_genomics_loqusFrq")
+    parsed_variant["local_obs_old_freq"] = call_safe(
+        float, variant.INFO.get("clinical_genomics_loqusFrq")
     )
     set_local_archive_info(parsed_variant, local_archive_info)
     if local_archive_info and "Date" in local_archive_info:
@@ -259,7 +258,13 @@ def parse_variant(
 
 
 def get_genmod_key(case):
-    """ML fix"""
+    """Gen genmod key
+
+    Args:
+        case(dict)
+    Return:
+        case._id(str) or case.display_name(str)
+    """
     case_id = case["_id"]
     if "-" in case_id:
         LOG.debug("internal case id detected")
@@ -268,7 +273,15 @@ def get_genmod_key(case):
 
 
 def get_variant_alternative(variant, category):
-    """Builds a dictionary with the different ids that are used"""
+    """Builds a dictionary with the different ids that are used
+
+    Args:
+        variant(dict)
+        category(dict)
+    Return:
+        alternative variant: Str
+    """
+
     if variant.ALT:
         return variant.ALT[0]
     elif not variant.ALT and category == "str":
@@ -276,34 +289,50 @@ def get_variant_alternative(variant, category):
 
 
 def get_filters(variant):
-    """ML fix"""
+    """Get variant filter
+
+    Args:
+        variant(dict)
+    Return:
+        variant filter()
+    """
     if variant.FILTER:
         return variant.FILTER.split(";")
     return ["PASS"]
 
 
 def get_samples(variant, individual_positions, case):
-    """ML fix"""
+    """Get samples
+
+    Args:
+        variant
+        individual_positions(dict):
+        case
+    Return:
+        variant filter
+    """
     if individual_positions and case["individuals"]:
         return parse_genotypes(variant, case["individuals"], individual_positions)
     return []
 
 
-
 def get_category(category, variant, parsed_variant):
-    """ML fix"""
-    # category is sv or snv
-    # cyvcf2 knows if it is a sv, indel or snv variant
-
-    # ML: indentation here looks wierd?
+    """Get category of variant.
+    Args:
+        category(str)
+        variant(cyvcf2.Variant)
+        parsed_variant(dict)
+    Return:
+        category(str)
+    """
     if category:
         return category
-    
+
     var_type = variant.var_type
     if var_type == "indel":
         return "snv"
     if var_type == "snp":
-          return "snv"
+        return "snv"
     if var_type == "mnp":
         LOG.warning("Category MNP found: {}".format(parsed_variant["ids"]["display_name"]))
         return "snv"
@@ -311,14 +340,21 @@ def get_category(category, variant, parsed_variant):
 
 
 def set_dbsnp_id(parsed_variant, variant_id):
-    """ML fix"""
-    # TODO: double check!
+    """Set dbsnp id
+    Args:
+        parsed_variant(dict)
+        variant_id(str)
+    """
     if variant_id and "rs" in variant_id:
         parsed_variant["dbsnp_id"] = variant_id
 
 
 def set_source(parsed_variant, variant):
-    """ML fix"""
+    """Set source in parsed_variant
+    Args:
+        parsed_variant(dict)
+        variant(cyvcf2.Variant)
+    """
     str_source_display = variant.INFO.get("SourceDisplay")
     str_source_type = variant.INFO.get("Source")
     str_source_id = variant.INFO.get("SourceId")
@@ -332,7 +368,11 @@ def set_source(parsed_variant, variant):
 
 
 def set_mitomap_associated_diseases(parsed_variant, variant):
-    """ML fix"""
+    """Set mitomap_associated_diseases in parsed_variant
+    Args:
+        parsed_variant(dict)
+        variant(cyvcf2.Variant)
+    """
     mitomap_associated_diseases = variant.INFO.get("MitomapAssociatedDiseases")
     if mitomap_associated_diseases and mitomap_associated_diseases != ".":
         parsed_variant["mitomap_associated_diseases"] = str(
@@ -341,7 +381,16 @@ def set_mitomap_associated_diseases(parsed_variant, variant):
 
 
 def add_gene_and_transcript_info(parsed_variant, variant, vep_header):
-    """ML fix"""
+    """Add gene info and transcript info. Return list of parsed
+    transcripts for later use in parsing.
+       Args:
+           parsed_variant(dict)
+           variant(cyvcf2.Variant)
+           vep_header(list)
+       Return:
+           parsed_transcripts(list)
+    """
+
     raw_transcripts = []
     parsed_transcripts = []
     dbsnp_ids = set()
@@ -364,7 +413,6 @@ def add_gene_and_transcript_info(parsed_variant, variant, vep_header):
             cosmic_ids.add(cosmic)
 
     # The COSMIC tag in INFO is added via VEP and/or bcftools annotate
-
     cosmic_tag = variant.INFO.get("COSMIC")
     if cosmic_tag:
         for cosmic_id in cosmic_tag.split("&"):
@@ -392,20 +440,28 @@ def add_gene_and_transcript_info(parsed_variant, variant, vep_header):
 
 
 def set_clnsig(parsed_variant, variant, parsed_transcripts):
-    """ML fix"""
-    # TODO: fix this!?
+    """Set clnsig in parsed_variant
+    Args:
+        parsed_variant(dict)
+        variant(cyvcf2.Variant)
+        parsed_transcripts(list)
+    """
+    # XXX: Why is clnsig_predictions set to emtpy list and then compared?
     clnsig_predictions = []
-
     if len(clnsig_predictions) == 0 and len(parsed_transcripts) > 0:
         # Parse INFO fielf to collect clnsig info
         clnsig_predictions = parse_clnsig(variant, transcripts=parsed_transcripts)
 
-    if clnsig_predictions:
-        parsed_variant["clnsig"] = clnsig_predictions
+    parsed_variant["clnsig"] = clnsig_predictions
 
 
 def set_rank_result(parsed_variant, variant, rank_results_header):
-    """ML fix"""
+    """Set rank_result in parsed_variant
+    Args:
+        parsed_variant(dict)
+        variant(cyvcf2.Variant)
+        rank_results_header(list)
+    """
     rank_result = variant.INFO.get("RankResult")
     if rank_result:
         results = [int(i) for i in rank_result.split("|")]
@@ -413,7 +469,11 @@ def set_rank_result(parsed_variant, variant, rank_results_header):
 
 
 def set_local_archive_info(parsed_variant, local_archive_info):
-    """ML fix!"""
+    """Set local_archive_info in parsed_variant
+    Args:
+        parsed_variant(dict)
+        local_archive_info(dict)
+    """
     if local_archive_info is None:
         return None
     if "Date" in local_archive_info:
@@ -425,7 +485,11 @@ def set_local_archive_info(parsed_variant, local_archive_info):
 
 
 def add_hmtvar(parsed_variant, variant):
-    """ML fix!"""
+    """Set hmtvar in parsed_variant
+    Args:
+        parsed_variant(dict)
+        variant(cyvcf2.Variant)
+    """
     hmtvar_variant_id = variant.INFO.get("HmtVar")
     if hmtvar_variant_id and hmtvar_variant_id != ".":
         parsed_variant["hmtvar_variant_id"] = int(hmtvar_variant_id)
