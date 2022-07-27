@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-
 LOG = logging.getLogger(__name__)
 
 
@@ -12,8 +11,6 @@ def call_safe(fun, unknown_var):
     try:
         return fun(unknown_var)
     except ValueError:
-        print(ValueError)
         return None
     except TypeError as _er:
-        LOG.error("TypeError {} {}. {}".format(fun, unknown_var, _er))
         return None
