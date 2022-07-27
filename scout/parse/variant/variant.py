@@ -2,8 +2,8 @@ import logging
 
 from scout.constants import CHR_PATTERN
 from scout.exceptions import VcfError
-from scout.utils.dict_utils import remove_nonetype
 from scout.utils import call_safe
+from scout.utils.dict_utils import remove_nonetype
 
 from .callers import parse_callers
 from .clnsig import parse_clnsig
