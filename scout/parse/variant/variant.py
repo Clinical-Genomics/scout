@@ -2,9 +2,9 @@ import logging
 
 from scout.constants import CHR_PATTERN
 from scout.exceptions import VcfError
-
 from scout.utils.dict_utils import remove_nonetype
 from scout.utils import call_safe
+
 from .callers import parse_callers
 from .clnsig import parse_clnsig
 from .compound import parse_compounds
@@ -18,7 +18,6 @@ from .ids import parse_ids
 from .models import parse_genetic_models
 from .rank_score import parse_rank_score
 from .transcript import parse_transcripts
-
 
 LOG = logging.getLogger(__name__)
 
