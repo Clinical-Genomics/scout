@@ -71,6 +71,7 @@ def remote_cors(remote_url):
 @alignviewers_bp.route("/remote/static", methods=["OPTIONS", "GET"])
 def remote_static():
     """Stream *large* static files with special requirements."""
+    print("*****1")
     file_path = request.args.get("file") or "."
 
     # Check that user is logged in or that file extension is valid
@@ -92,6 +93,7 @@ def sashimi_igv(institute_id, case_name, variant_id):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """
+    print("*****2")
     _, case_obj = institute_and_case(
         store, institute_id, case_name
     )  # This function takes care of checking if user is authorized to see resource
@@ -130,6 +132,7 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     Returns:
         a string, corresponging to the HTML rendering of the IGV alignments page
     """
+    print("*****3")
     _, case_obj = institute_and_case(
         store, institute_id, case_name
     )  # This function takes care of checking if user is authorized to see resource
@@ -138,7 +141,9 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     controllers.set_session_tracks(display_obj)
 
     response = Response(render_template("alignviewers/igv_viewer.html", **display_obj))
-
+    print("RESPONSE")
+    print(response)
+    print(current_user)
     @response.call_on_close
     @copy_current_request_context
     def clear_session_tracks():
