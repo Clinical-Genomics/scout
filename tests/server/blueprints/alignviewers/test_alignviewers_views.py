@@ -106,7 +106,7 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
     # GIVEN a user that is not an admin nor has access to demo case:
     store.user_collection.find_one_and_update(
         {"_id": user_obj["_id"]},
-        {"$set": {"roles": [], "institutes": []}},
+        {"$set": {"roles": ["not_authorized"], "institutes": ["no_institute"]}},
     )
 
     # GIVEN an initialized app
@@ -116,6 +116,15 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
         client.get(url_for("auto_login"))
 
         # WHEN the igv endpoint is invoked with the right parameters
+        url =     url_for(
+                "alignviewers.igv",
+                institute_id=case_obj["owner"],
+                case_name=case_obj["display_name"],
+                variant_id=variant_obj["_id"],
+            )
+        print("*****")
+        print(url)
+        
         resp = client.get(
             url_for(
                 "alignviewers.igv",
@@ -125,7 +134,7 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
             )
         )
 
-        # THEN the response should be "not authorized" (403)
+        # Then the response should be "not authorized" (403)
         assert resp.status_code == 403
 
 
