@@ -110,7 +110,6 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
         # {"$set": {"roles": ["not_authorized"], "institutes": ["no_institute"]}},
     )
 
-    
     # GIVEN an initialized app
     with app.test_client() as client:
 
@@ -142,8 +141,7 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
 
         # Then the response should be "not authorized" (403)
         assert resp.status_code == 403
-        1/0
-
+        1 / 0
 
 
 def test_igv_authorized(app, user_obj, case_obj, variant_obj):
