@@ -116,15 +116,15 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
         client.get(url_for("auto_login"))
 
         # WHEN the igv endpoint is invoked with the right parameters
-        url =     url_for(
-                "alignviewers.igv",
-                institute_id=case_obj["owner"],
-                case_name=case_obj["display_name"],
-                variant_id=variant_obj["_id"],
-            )
+        url = url_for(
+            "alignviewers.igv",
+            institute_id=case_obj["owner"],
+            case_name=case_obj["display_name"],
+            variant_id=variant_obj["_id"],
+        )
         print("*****")
         print(url)
-        
+
         resp = client.get(
             url_for(
                 "alignviewers.igv",
