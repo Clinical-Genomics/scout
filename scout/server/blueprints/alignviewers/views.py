@@ -144,6 +144,7 @@ def igv(institute_id, case_name, variant_id=None, chrom=None, start=None, stop=N
     print("RESPONSE")
     print(response)
     print(current_user)
+
     @response.call_on_close
     @copy_current_request_context
     def clear_session_tracks():
