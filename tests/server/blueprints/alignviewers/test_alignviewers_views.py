@@ -124,7 +124,8 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
         )
         print("*****")
         print(url)
-
+        print(user_obj)
+        print(store.user(user_id=user_obj["_id"]))
         resp = client.get(
             url_for(
                 "alignviewers.igv",
@@ -135,7 +136,7 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
         )
 
         # Then the response should be "not authorized" (403)
-        assert resp.status_code == 403
+        assert resp.status_code == 402
 
 
 def test_igv_authorized(app, user_obj, case_obj, variant_obj):
