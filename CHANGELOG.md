@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
+- Fix sidebar panel icons in Case view
 
 ## [4.57.4]
 ### Fixed
