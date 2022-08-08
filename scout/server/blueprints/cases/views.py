@@ -280,7 +280,7 @@ def mt_report(institute_id, case_name):
             mimetype="application/zip",
             as_attachment=True,
             download_name="_".join(["scout", case_name, "MT_report", today]) + ".zip",
-            cache_timeout=0,
+            max_age=0,
         )
 
     shutil.rmtree(temp_excel_dir)
