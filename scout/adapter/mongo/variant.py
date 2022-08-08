@@ -529,7 +529,8 @@ class VariantHandler(VariantLoader):
                 "category": "variant",
             }
         )
-        positional_variant_ids = set()
+
+        other_display_names = []
 
         for var_event in var_causative_events:
             if case_obj and var_event["case"] == case_obj["_id"]:
@@ -542,7 +543,7 @@ class VariantHandler(VariantLoader):
 
             other_link = var_event["link"]
             # link contains other variant ID
-            other_causative_id = other_link.split("/")[-1]  # example: md5-key ID of a variant
+            other_causative_id = other_link.split("/")[-1]  # md5-key ID of a variant
 
             if (
                 other_causative_id not in other_case.get("causatives", [])
@@ -555,15 +556,15 @@ class VariantHandler(VariantLoader):
                 0:4
             ]  # example: [ "17", "7577559", "G" "A"]
 
-            other_var_display_name_clinical = "_".join(other_var_displ_name + ["clinical"])
-            other_var_display_name_research = "_".join(other_var_displ_name + ["research"])
+            other_display_names.append("_".join(other_var_displ_name + ["clinical"]))
+            other_display_names.append("_".join(other_var_displ_name + ["research"]))
 
-            return self.match_affected_gt(
-                case_obj=case_obj,
-                institute_obj=institute_obj,
-                display_names=other_var_display_name_clinical + other_var_display_name_research,
-                limit_genes=limit_genes,
-            )
+        return self.match_affected_gt(
+            case_obj=case_obj,
+            institute_obj=institute_obj,
+            display_names=other_display_names,
+            limit_genes=limit_genes,
+        )
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
