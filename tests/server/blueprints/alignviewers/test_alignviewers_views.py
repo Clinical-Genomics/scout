@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import requests
 from flask import session, url_for
 
 from scout.server.extensions import store
