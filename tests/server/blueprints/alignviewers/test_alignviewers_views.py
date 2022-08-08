@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import requests
 from flask import session, url_for
 
 from scout.server.extensions import store
@@ -103,17 +102,11 @@ def test_remote_cors(app):
 def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
     """Test view requests and produces igv alignments, when the user dosn't have access to the case"""
 
-    # GIVEN a user that is not an admin nor has access to demo case:
-    store.user_collection.find_one_and_update(
-        {"_id": user_obj["_id"]},
-        {"$set": {"roles": [], "institutes": []}},
-    )
-
     # GIVEN an initialized app
     with app.test_client() as client:
 
-        # GIVEN that the user is logged in
-        client.get(url_for("auto_login"))
+        # GIVEN that the user is logged in but not authorized to see the page
+        client.get(url_for("auto_login_not_authorized"))
 
         # WHEN the igv endpoint is invoked with the right parameters
         resp = client.get(
