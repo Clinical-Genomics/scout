@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import requests
 from flask import session, url_for
 
 from scout.server.extensions import store
@@ -103,33 +102,13 @@ def test_remote_cors(app):
 def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
     """Test view requests and produces igv alignments, when the user dosn't have access to the case"""
 
-    # GIVEN a user that is not an admin nor has access to demo case:
-    store.user_collection.find_one_and_update(
-        {"_id": user_obj["_id"]},
-        {"$set": {"roles": [], "institutes": []}},
-        # {"$set": {"roles": ["not_authorized"], "institutes": ["no_institute"]}},
-    )
-
     # GIVEN an initialized app
     with app.test_client() as client:
 
-        # GIVEN that the user is logged in
-        r = client.get(url_for("auto_login"))
-        print("FIRST RESP")
-        print(r)
+        # GIVEN that the user is logged in but not authorized to see the page
+        client.get(url_for("auto_login_not_authorized"))
 
         # WHEN the igv endpoint is invoked with the right parameters
-        url = url_for(
-            "alignviewers.igv",
-            institute_id=case_obj["owner"],
-            case_name=case_obj["display_name"],
-            variant_id=variant_obj["_id"],
-        )
-        print("*****")
-        print(url)
-        print(user_obj)
-        print(store.user(user_id=user_obj["_id"]))
-
         resp = client.get(
             url_for(
                 "alignviewers.igv",
@@ -139,9 +118,8 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
             )
         )
 
-        # Then the response should be "not authorized" (403)
+        # THEN the response should be "not authorized" (403)
         assert resp.status_code == 403
-        1 / 0
 
 
 def test_igv_authorized(app, user_obj, case_obj, variant_obj):
