@@ -565,8 +565,6 @@ class VariantHandler(VariantLoader):
                 limit_genes=limit_genes,
             )
 
-        return []
-
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
 
