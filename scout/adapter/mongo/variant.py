@@ -482,13 +482,15 @@ class VariantHandler(VariantLoader):
             causatives(iterable(Variant))
         """
 
-        if len(positional_variant_ids) == 0:
+        if len(positional_variant_ids) == 0 and len(display_names) == 0:
             return []
+
+        LOG.warning(f"HERE BITCHES---{display_names}")
 
         filters = {
             "$or": [
                 {"variant_id": {"$in": list(positional_variant_ids)}},
-                {"display_name": {"$in": display_names}},
+                {"display_name": {"$in": list(display_names)}},
             ],
         }
 
