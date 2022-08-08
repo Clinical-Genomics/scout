@@ -432,7 +432,12 @@ class VariantHandler(VariantLoader):
         if len(positional_variant_ids) == 0:
             return []
 
-        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
+        return self.match_affected_gt(
+            case_obj=case_obj,
+            institute_obj=institute_obj,
+            positional_variant_ids=positional_variant_ids,
+            limit_genes=limit_genes,
+        )
 
     def _find_affected(self, case_obj):
         """Internal method to find affected individuals.
@@ -455,14 +460,17 @@ class VariantHandler(VariantLoader):
 
         return affected_ids
 
-    def match_affected_gt(self, case_obj, institute_obj, positional_variant_ids, limit_genes):
+    def match_affected_gt(
+        self, case_obj, institute_obj, positional_variant_ids=[], display_names=[], limit_genes=None
+    ):
         """Match positional_variant_ids against variants from affected individuals
         in a case, ensuring that they at least are carriers.
 
         Args:
             case_obj (dict): A Case object.
             institute_obj (dict): An Institute object.
-            positional_variant_ids (iterable): A set of possible positional variant ids to look for
+            positional_variant_ids (iterable): a set of possible positional variant ids to look for
+            display_names(list): a list of display names to look for (might include clinical and/or research variants)
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
@@ -472,7 +480,13 @@ class VariantHandler(VariantLoader):
         if len(positional_variant_ids) == 0:
             return []
 
-        filters = {"variant_id": {"$in": list(positional_variant_ids)}}
+        filters = {
+            "$or": [
+                {"variant_id": {"$in": list(positional_variant_ids)}},
+                {"display_name": {"$in": display_names}},
+            ],
+        }
+
         if case_obj:
             affected_ids = self._find_affected(case_obj)
             if len(affected_ids) == 0:
@@ -516,6 +530,7 @@ class VariantHandler(VariantLoader):
             }
         )
         positional_variant_ids = set()
+
         for var_event in var_causative_events:
             if case_obj and var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
@@ -524,17 +539,33 @@ class VariantHandler(VariantLoader):
             if other_case is None:
                 # Other variant belongs to a case that doesn't exist any more
                 continue
+
             other_link = var_event["link"]
             # link contains other variant ID
-            other_causative_id = other_link.split("/")[-1]
+            other_causative_id = other_link.split("/")[-1]  # example: md5-key ID of a variant
 
-            if other_causative_id in other_case.get("causatives", []):
-                positional_variant_ids.add(var_event["variant_id"])
+            if (
+                other_causative_id not in other_case.get("causatives", [])
+                and other_causative_id not in other_case.get("partial_causatives", {}).keys()
+            ):
+                continue
 
-            if other_causative_id in other_case.get("partial_causatives", {}).keys():
-                positional_variant_ids.add(var_event["variant_id"])
+            # Collect other causative variant's coords and change (exclude if it's clinical or research)
+            other_var_displ_name = var_event.get("subject").split("_")[
+                0:4
+            ]  # example: [ "17", "7577559", "G" "A"]
 
-        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
+            other_var_display_name_clinical = "_".join(other_var_displ_name + ["clinical"])
+            other_var_display_name_research = "_".join(other_var_displ_name + ["research"])
+
+            return self.match_affected_gt(
+                case_obj=case_obj,
+                institute_obj=institute_obj,
+                display_names=other_var_display_name_clinical + other_var_display_name_research,
+                limit_genes=limit_genes,
+            )
+
+        return []
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.

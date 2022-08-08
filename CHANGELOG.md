@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Documentation on how to create/update PanelApp panels
 - Add filter by local observations (archive) to structural variants filters
+### Fixed
+- Search matching causatives also among research variants in other cases
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
