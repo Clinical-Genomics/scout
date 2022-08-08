@@ -461,7 +461,12 @@ class VariantHandler(VariantLoader):
         return affected_ids
 
     def match_affected_gt(
-        self, case_obj, institute_obj, positional_variant_ids=[], display_names=[], limit_genes=None
+        self,
+        case_obj,
+        institute_obj,
+        positional_variant_ids=set(),
+        display_names=set(),
+        limit_genes=None,
     ):
         """Match positional_variant_ids against variants from affected individuals
         in a case, ensuring that they at least are carriers.
@@ -469,8 +474,8 @@ class VariantHandler(VariantLoader):
         Args:
             case_obj (dict): A Case object.
             institute_obj (dict): An Institute object.
-            positional_variant_ids (iterable): a set of possible positional variant ids to look for
-            display_names(list): a list of display names to look for (might include clinical and/or research variants)
+            positional_variant_ids (set): a set of possible positional variant ids to look for
+            display_names(set): a set of display names to look for (might include clinical and/or research variants)
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
@@ -530,7 +535,7 @@ class VariantHandler(VariantLoader):
             }
         )
 
-        other_display_names = []
+        other_display_names = set()
 
         for var_event in var_causative_events:
             if case_obj and var_event["case"] == case_obj["_id"]:
@@ -556,8 +561,8 @@ class VariantHandler(VariantLoader):
                 0:4
             ]  # example: [ "17", "7577559", "G" "A"]
 
-            other_display_names.append("_".join(other_var_displ_name + ["clinical"]))
-            other_display_names.append("_".join(other_var_displ_name + ["research"]))
+            other_display_names.add("_".join(other_var_displ_name + ["clinical"]))
+            other_display_names.add("_".join(other_var_displ_name + ["research"]))
 
         return self.match_affected_gt(
             case_obj=case_obj,
