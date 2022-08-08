@@ -485,8 +485,6 @@ class VariantHandler(VariantLoader):
         if len(positional_variant_ids) == 0 and len(display_names) == 0:
             return []
 
-        LOG.warning(f"HERE BITCHES---{display_names}")
-
         filters = {
             "$or": [
                 {"variant_id": {"$in": list(positional_variant_ids)}},
