@@ -56,7 +56,7 @@ COVERAGE_REPORT_TIMEOUT = 20
 
 
 def phenomizer_diseases(hpo_ids, case_obj):
-    """Retrieve phenomizer diseases and display them in a dedicated page
+    """Return the list of HGNC symbols that match annotated HPO terms on Phenomizer
     Args:
         hpo_ids(list)
         case_obj(models.Case)
@@ -66,7 +66,12 @@ def phenomizer_diseases(hpo_ids, case_obj):
 
     username = current_app.config["PHENOMIZER_USERNAME"]
     password = current_app.config["PHENOMIZER_PASSWORD"]
-    return hpo_diseases(username, password, hpo_ids)
+    try:
+        results = query_phenomizer.query(username, password, *hpo_ids)
+        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
+        return diseases
+    except RuntimeError:
+        flash("Could not establish a conection to Phenomizer", "danger")
 
 
 def coverage_report_contents(base_url, institute_obj, case_obj):
@@ -825,33 +830,6 @@ def hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols):
         unique_genes = unique_genes.intersection(set(clinical_symbols))
 
     return unique_genes
-
-
-def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
-    """Return the list of HGNC symbols that match annotated HPO terms.
-
-    Args:
-        username (str): username to use for phenomizer connection
-        password (str): password to use for phenomizer connection
-
-    Returns:
-        query_result: a generator of dictionaries on the form
-        {
-            'p_value': float,
-            'disease_source': str,
-            'disease_nr': int,
-            'gene_symbols': list(str),
-            'description': str,
-            'raw_line': str
-        }
-    """
-    # skip querying Phenomizer unless at least one HPO terms exists
-    try:
-        results = query_phenomizer.query(username, password, *hpo_ids)
-        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
-        return diseases
-    except RuntimeError:
-        flash("Could not establish a conection to Phenomizer", "danger")
 
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
