@@ -68,7 +68,7 @@ def phenomizer_diseases(hpo_ids, case_obj):
     password = current_app.config["PHENOMIZER_PASSWORD"]
     try:
         results = query_phenomizer.query(username, password, *hpo_ids)
-        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
+        diseases = [result for result in results if result["p_value"] <= 1]
         return diseases
     except RuntimeError:
         flash("Could not establish a conection to Phenomizer", "danger")
