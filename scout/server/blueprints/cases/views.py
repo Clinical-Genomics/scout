@@ -447,6 +447,9 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
+    if action == "REMOVEGENE":
+        flash("HERE BITCHES")
+
     if action == "GENES":
         hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))

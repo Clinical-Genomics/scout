@@ -559,6 +559,12 @@ function SidebarCollapse () {
     $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
 }
 
+function dynamicGenesCheck(source){
+  var checkboxes = document.getElementsByName('dynamicGene');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
 
 function toggleClickableButtons(button, select_field) {
     const selection = document.getElementById(select_field)

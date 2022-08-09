@@ -98,60 +98,73 @@
     </div>
 
     <!-- scrollable div containing dynamic gene list -->
-    <div class="mt-3 ms-3" style="max-height:200px; overflow-y: scroll; min-height: 100px;">
-      {% if case.dynamic_gene_list %}
-        <i>
-        {% for hpo_gene in case.dynamic_gene_list %}
-          {{ hpo_gene.hgnc_symbol }}&nbsp;&nbsp;
-        {% endfor %}
-        </i>
-      {% else %}
-        <span class="text-muted">No gene list generated</span>
-      {% endif %}
-    </div>
+    <form id="dynamic_genes" method="POST" action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name) }}" >
+      <div class="mt-3 ms-3" style="max-height:200px; overflow-y: scroll; min-height: 100px;">
+        {% if case.dynamic_gene_list %}
+          <i>
+          {% for hpo_gene in case.dynamic_gene_list %}
+            <input type="checkbox" name="dynamicGene" id="dynamicGene" value="hpo_gene.hgnc_id">
+            {{ hpo_gene.hgnc_symbol }}
+            &nbsp;&nbsp;
+          {% endfor %}
+          </i>
+        {% else %}
+          <span class="text-muted">No gene list generated</span>
+        {% endif %}
+      </div>
+    </form>
 
     {% if case.dynamic_gene_list %}
-      <div>
-        <div class="row d-flex justify-content-between mt-3 mb-3">
-          <div class="col align-content-center">
-            <div class="row mt-1">
-              {% if case.track == 'cancer' %}
-                <a class="btn btn-secondary btn-sm text-white"
-                  href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
-                                   case_name=case.display_name, variant_type='clinical',
-                                   gene_panels=['hpo']) }}">
-                   Clinical HPO SNV variants
-                 </a>
-              {% else %}
-                <a class="btn btn-secondary btn-sm text-white"
-                  href="{{ url_for('variants.variants', institute_id=institute._id,
-                                   case_name=case.display_name, variant_type='clinical',
-                                   gene_panels=['hpo']) }}">
-                   Clinical HPO SNV variants
-                 </a>
-               {% endif %}
-            </div>
-            <div class="row mt-1">
-              <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
-                <div class="form-check form-switch">
-                  <input type="checkbox" class="form-check-input" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
-                  <label for="hpo_clinical_filter" class="form-check-label"><span data-bs-placement="top" data-bs-toggle='tooltip'
-                  title="Toggle on to use dynamic (HPO) panel instead of default gene panel for searching with clinical filter.">Use HPO list for clinical filter</span></label>
-                </div>
-              </form>
-            </div>
-
-          </div>
-          <div class="col align-content-between">
-            <div class="row">
-              <a class="btn btn-sm btn-primary mt-1 text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Clinical HPO gene panel</a>
-            </div>
-            <div class="row">
-              <a class="btn btn-sm btn-primary mt-1 text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Research HPO gene panel</a>
-            </div>
+      <div class="row d-flex justify-content-between">
+        <div class="col align-content-center"><!-- Edit synamic gene list-->
+          <div class="form-check form-switch">
+            <input type="checkbox" class="form-check-input" id="checkAllGenes" onChange="dynamicGenesCheck(this)" name="checkAllGenes">
+            <label for="checkAllGenes" class="form-check-label">Select all genes</label>
           </div>
         </div>
+        <div class="col align-content-center">
+          <a class="btn btn-danger btn-sm text-white"
+            href="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}">
+             Remove selected genes
+           </a>
+        </div>
+        </form><!-- End of dynamic_genes form -->
       </div>
+
+      <div class="row d-flex justify-content-between mt-2"> <!-- Show variants in dynamic gene list -->
+        <div class="col align-content-center">
+          <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
+            <div class="form-check form-switch">
+              <input type="checkbox" class="form-check-input" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
+              <label for="hpo_clinical_filter" class="form-check-label"><span data-bs-placement="top" data-bs-toggle='tooltip'
+              title="Toggle on to use dynamic (HPO) panel instead of default gene panel for searching with clinical filter.">Use HPO list for clinical filter</span></label>
+            </div>
+          </form>
+        </div>
+        <div class="col align-content-center">
+          {% if case.track == 'cancer' %}
+            <a class="btn btn-secondary btn-sm text-white"
+              href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Clinical HPO SNV variants
+             </a>
+          {% else %}
+            <a class="btn btn-secondary btn-sm text-white"
+              href="{{ url_for('variants.variants', institute_id=institute._id,
+                               case_name=case.display_name, variant_type='clinical',
+                               gene_panels=['hpo']) }}">
+               Show clinical HPO SNV variants
+             </a>
+           {% endif %}
+        </div>
+      </div> <!-- End of Show variants in dynamic gene list -->
+
+      <div class="btn-group d-flex justify-content-center mt-2"> <!-- Download genes in HPO gene panel -->
+        <a class="btn btn-sm btn-primary mt-1 text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Clinical HPO gene panel</a>
+        <a class="btn btn-sm btn-primary mt-1 text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Research HPO gene panel</a>
+      </div>
+
     {% endif %}
   </div>
 {% endmacro %}
