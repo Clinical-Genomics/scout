@@ -424,7 +424,7 @@ def phenotypes_actions(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if action == "PHENOMIZER":
-        controllers.phenotypes_actions_phenomizer()
+        controllers.phenotypes_actions_phenomizer(hpo_ids, institute_obj, case_obj)
 
     if action == "DELETE":
         for hpo_id in hpo_ids:
