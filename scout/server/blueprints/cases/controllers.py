@@ -9,7 +9,7 @@ from base64 import b64encode
 import query_phenomizer
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, flash, redirect, request, url_for
+from flask import current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from flask_mail import Message
 from requests.auth import HTTPBasicAuth
@@ -54,6 +54,28 @@ JSON_HEADERS = {
 }
 
 COVERAGE_REPORT_TIMEOUT = 20
+
+
+def phenotypes_actions_phenomizer(hpo_ids, institute_obj, case_obj):
+    """Retrieve phenomizer diseases and display them in a dedicated page
+    Args:
+        hpo_ids(list)
+        institute_obj(models.Institute)
+        case_obj(models.Case)
+    """
+    if len(hpo_ids) == 0:
+        hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
+
+    username = current_app.config["PHENOMIZER_USERNAME"]
+    password = current_app.config["PHENOMIZER_PASSWORD"]
+    diseases = controllers.hpo_diseases(username, password, hpo_ids)
+    if diseases:
+        return render_template(
+            "cases/diseases.html",
+            diseases=diseases,
+            institute=institute_obj,
+            case=case_obj,
+        )
 
 
 def coverage_report_contents(base_url, institute_obj, case_obj):
