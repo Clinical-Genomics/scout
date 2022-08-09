@@ -43,7 +43,6 @@ from scout.server.blueprints.variant.controllers import variant as variant_decor
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
 from scout.server.utils import case_has_alignments, case_has_mt_alignments, institute_and_case
-from scout.utils.scout_requests import delete_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
 
