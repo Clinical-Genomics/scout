@@ -55,11 +55,10 @@ JSON_HEADERS = {
 COVERAGE_REPORT_TIMEOUT = 20
 
 
-def phenomizer_diseases(hpo_ids, institute_obj, case_obj):
+def phenomizer_diseases(hpo_ids, case_obj):
     """Retrieve phenomizer diseases and display them in a dedicated page
     Args:
         hpo_ids(list)
-        institute_obj(models.Institute)
         case_obj(models.Case)
     """
     if len(hpo_ids) == 0:
