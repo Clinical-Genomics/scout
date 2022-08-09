@@ -29,7 +29,7 @@
       </div>
       <div class="col-4">
           <label class="control-label" for="search_term">Search cases</label>
-          <input class="form-control" id="search_term" name="search_term" placeholder="example:18201" type="text" pattern="[^<>?!=\\/]*" title="No special characters">
+          <input class="form-control" id="search_term" name="search_term" placeholder="example:18201" type="text" pattern="[^<>?!=\\/]*" title="Characters ^<>?!=\/ are not allowed">
       </div>
       <div class="col-2">
         {{ form.search(class="btn btn-primary form-control") }}
