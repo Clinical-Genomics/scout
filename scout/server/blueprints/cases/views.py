@@ -454,7 +454,7 @@ def phenotypes_actions(institute_id, case_name):
             for dyn_gene in case_obj.get("dynamic_gene_list")
             if dyn_gene["hgnc_id"] not in genes_to_remove
         ]
-        store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids))
+        store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids)
 
     if action == "GENES":
         hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
