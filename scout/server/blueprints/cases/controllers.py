@@ -68,7 +68,7 @@ def phenotypes_actions_phenomizer(hpo_ids, institute_obj, case_obj):
 
     username = current_app.config["PHENOMIZER_USERNAME"]
     password = current_app.config["PHENOMIZER_PASSWORD"]
-    diseases = controllers.hpo_diseases(username, password, hpo_ids)
+    diseases = hpo_diseases(username, password, hpo_ids)
     if diseases:
         return render_template(
             "cases/diseases.html",
