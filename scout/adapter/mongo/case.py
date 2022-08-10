@@ -354,7 +354,7 @@ class CaseHandler(object):
 
         if within_days:
             query["_id"] = {
-                "$in": last_modified_cases(
+                "$in": self.last_modified_cases(
                     within_days, has_causatives, finished, reruns, research_requested, status
                 )
             }
