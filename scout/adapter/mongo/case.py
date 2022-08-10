@@ -385,14 +385,11 @@ class CaseHandler(object):
         """
         verbs = set()
         if has_causatives:
-            LOG.error("HAS CAUSATIVES")
             verbs.add("mark_causative")
         if finished:
-            LOG.error("FINISHED")
             verbs.add("archive")
             verbs.add("mark_causative")
         if reruns:
-            LOG.error("RERUNS")
             verbs.add("rerun")
         if research_requested:
             verbs.add("open_research")
