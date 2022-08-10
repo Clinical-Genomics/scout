@@ -422,21 +422,26 @@ class CaseHandler(object):
         sanger_missing = set()
         match_query = {
             "$match": {
-                "case_id": institute_id,
+                "institute": institute_id,
                 "sanger_ordered": True,
-                "validation": {"$nin": ["True positive", "False positive"]},
+                "$or": [
+                    {"validation": {"$nin": ["True positive", "False positive"]}},
+                    {"validation": {"$exists": False}},
+                ],
             }
         }
         group = {
             "$group": {
                 "_id": {
-                    "case_id": "$case_id",
+                    "case": "$case_id",
                 },
             }
-        }  # Group events by institute, case_name, category, verb and date
+        }
         pipeline = [match_query, group]
         for res in self.variant_collection.aggregate(pipeline):
-            sanger_missing.add(res["_id"]["case_id"])
+            LOG.warning(res)
+            sanger_missing.add(res["_id"]["case"])
+        LOG.warning(sanger_missing)
         return sanger_missing
 
     def prioritized_cases(self, institute_id=None):
