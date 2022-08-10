@@ -244,7 +244,7 @@ class CaseHandler(object):
         self,
         owner=None,
         collaborator=None,
-        query=None,
+        query={},
         skip_assigned=False,
         has_causatives=False,
         reruns=False,
@@ -294,7 +294,7 @@ class CaseHandler(object):
                 instead returns corresponding query dict
                 that can be reused in compound queries or for testing.
         """
-        query = query or {}
+        query = query
         order = None
 
         # Prioritize when both owner and collaborator params are present
@@ -322,14 +322,14 @@ class CaseHandler(object):
         if rerun_monitor:
             query["rerun_monitoring"] = True
 
+        if research_requested:
+            query["research_requested"] = True
+
         if status:
             query["status"] = status
 
         elif finished:
             query["status"] = {"$in": ["solved", "archived"]}
-
-        if research_requested:
-            query["research_requested"] = True
 
         if is_research:
             query["is_research"] = {"$exists": True, "$eq": True}
@@ -404,6 +404,7 @@ class CaseHandler(object):
         sanger_missing = set()
         match_query = {
             "$match": {
+                "case_id": institute_id,
                 "sanger_ordered": True,
                 "validation": {"$nin": ["True positive", "False positive"]},
             }
