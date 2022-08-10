@@ -312,9 +312,6 @@ class CaseHandler(object):
         if has_causatives:
             query["causatives"] = {"$exists": True, "$ne": []}
 
-        if case_ids:
-            query["_id"] = {"$in": case_ids}
-
         if reruns:
             query["rerun_requested"] = True
 
@@ -353,11 +350,12 @@ class CaseHandler(object):
             order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
-            query["_id"] = {
-                "$in": self.last_modified_cases(
-                    within_days, has_causatives, finished, reruns, research_requested, status
-                )
-            }
+            case_ids = self.last_modified_cases(
+                within_days, has_causatives, finished, reruns, research_requested, status
+            )
+
+        if case_ids:
+            query["_id"] = {"$in": case_ids}
 
         if yield_query:
             return query
