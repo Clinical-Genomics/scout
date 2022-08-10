@@ -294,6 +294,8 @@ class CaseHandler(object):
                 instead returns corresponding query dict
                 that can be reused in compound queries or for testing.
         """
+        LOG.warning(locals())
+
         order = None
         query = query or {}
         # Prioritize when both owner and collaborator params are present
@@ -311,6 +313,9 @@ class CaseHandler(object):
 
         if has_causatives:
             query["causatives"] = {"$exists": True, "$ne": []}
+
+        if case_ids:
+            query["_id"] = {"$in": case_ids}
 
         if reruns:
             query["rerun_requested"] = True
@@ -350,12 +355,11 @@ class CaseHandler(object):
             order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
-            case_ids = self.last_modified_cases(
-                within_days, has_causatives, finished, reruns, research_requested, status
-            )
-
-        if case_ids:
-            query["_id"] = {"$in": case_ids}
+            query["_id"] = {
+                "$in": self.last_modified_cases(
+                    within_days, has_causatives, finished, reruns, research_requested, status
+                )
+            }
 
         if yield_query:
             return query
@@ -383,11 +387,14 @@ class CaseHandler(object):
         """
         verbs = set()
         if has_causatives:
+            LOG.error("HAS CAUSATIVES")
             verbs.add("mark_causative")
         if finished:
+            LOG.error("FINISHED")
             verbs.add("archive")
             verbs.add("mark_causative")
         if reruns:
+            LOG.error("RERUNS")
             verbs.add("rerun")
         if research_requested:
             verbs.add("open_research")
