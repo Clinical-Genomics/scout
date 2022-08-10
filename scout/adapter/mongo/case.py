@@ -322,14 +322,14 @@ class CaseHandler(object):
         if rerun_monitor:
             query["rerun_monitoring"] = True
 
-        if research_requested:
-            query["research_requested"] = True
-
         if status:
             query["status"] = status
 
         elif finished:
             query["status"] = {"$in": ["solved", "archived"]}
+
+        if research_requested:
+            query["research_requested"] = True
 
         if is_research:
             query["is_research"] = {"$exists": True, "$eq": True}
