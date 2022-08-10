@@ -261,6 +261,7 @@ class CaseHandler(object):
         yield_query=False,
         within_days=None,
         assignee=None,
+        case_ids=[],
     ):
         """Fetches all cases from the backend.
 
@@ -280,11 +281,12 @@ class CaseHandler(object):
             phenotype_terms(bool): Fetch all cases with phenotype
             pinned(bool): Fetch all cases with pinned variants
             name_query(str): Could be hpo term, HPO-group, user, part of display name,
-                             part of inds or part of synopsis
+                             part of ids or part of synopsis
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
             within_days(int): timespan (in days) for latest event on case
             assignee(str): email of an assignee
+            case_ids(list): return only cases with an ID specified in this list
 
         Returns:
             Cases ordered by date.
@@ -292,7 +294,6 @@ class CaseHandler(object):
                 instead returns corresponding query dict
                 that can be reused in compound queries or for testing.
         """
-        LOG.debug("Fetch all cases")
         query = query or {}
         order = None
 
@@ -301,11 +302,9 @@ class CaseHandler(object):
             collaborator = None
 
         if collaborator:
-            LOG.debug("Use collaborator {0}".format(collaborator))
             query["collaborators"] = collaborator
 
         if owner:
-            LOG.debug("Use owner {0}".format(owner))
             query["owner"] = owner
 
         if skip_assigned:
@@ -313,6 +312,9 @@ class CaseHandler(object):
 
         if has_causatives:
             query["causatives"] = {"$exists": True, "$ne": []}
+
+        if case_ids:
+            query["_id"] = {"$in": case_ids}
 
         if reruns:
             query["rerun_requested"] = True
@@ -391,16 +393,42 @@ class CaseHandler(object):
 
         return self.case_collection.find(query).sort("updated_at", -1)
 
+    def sanger_ordered_cases(self, institute_id):
+        """Fetch all cases with at least a variant with validation ordered but not performed
+
+        Args:
+            institute_id(str): id of an institute
+        Returns:
+            sanger_missing(set): a set of case _ids with variants having Sanger validation missing
+        """
+        sanger_missing = set()
+        match_query = {
+            "$match": {
+                "sanger_ordered": True,
+                "validation": {"$nin": ["True positive", "False positive"]},
+            }
+        }
+        group = {
+            "$group": {
+                "_id": {
+                    "case_id": "$case_id",
+                },
+            }
+        }  # Group events by institute, case_name, category, verb and date
+        pipeline = [match_query, group]
+        for res in self.variant_collection.aggregate(pipeline):
+            sanger_missing.add(res["_id"]["case_id"])
+        return sanger_missing
+
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.
 
         Args:
-            collaborator(str): If collaborator should be considered
+            institute_id(str): id of an institute
         """
         query = {}
 
         if institute_id:
-            LOG.debug("Use collaborator {0}".format(institute_id))
             query["collaborators"] = institute_id
 
         query["status"] = "prioritized"

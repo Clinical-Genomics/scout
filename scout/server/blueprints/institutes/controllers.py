@@ -362,17 +362,21 @@ def cases(store, request, institute_id):
         )
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
-    skip_assigned = request.args.get("skip_assigned")
     data["form"] = populate_case_filter_form(request.args)
+    skip_assigned = request.args.get("skip_assigned")
     data["skip_assigned"] = skip_assigned
     is_research = request.args.get("is_research")
     data["is_research"] = is_research
+    validation_ordered = request.args.get("validation_ordered")
+    data["validation_ordered"] = validation_ordered
+
     prioritized_cases = store.prioritized_cases(institute_id=institute_id)
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
         skip_assigned=skip_assigned,
         is_research=is_research,
+        case_ids=list(store.sanger_ordered_cases(institute_id)) if validation_ordered else [],
     )
     all_cases = _sort_cases(data, request, all_cases)
 
