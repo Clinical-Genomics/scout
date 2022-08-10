@@ -244,7 +244,7 @@ class CaseHandler(object):
         self,
         owner=None,
         collaborator=None,
-        query={},
+        query=None,
         skip_assigned=False,
         has_causatives=False,
         reruns=False,
@@ -295,7 +295,7 @@ class CaseHandler(object):
                 that can be reused in compound queries or for testing.
         """
         order = None
-
+        query = query or {}
         # Prioritize when both owner and collaborator params are present
         if collaborator and owner:
             collaborator = None
@@ -353,35 +353,11 @@ class CaseHandler(object):
             order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
-            verbs = set()
-
-            if has_causatives:
-                verbs.add("mark_causative")
-            if finished:
-                verbs.add("archive")
-                verbs.add("mark_causative")
-            if reruns:
-                verbs.add("rerun")
-            if research_requested:
-                verbs.add("open_research")
-            if status and status == "solved":
-                verbs.add("mark_causative")
-            verbs = list(verbs)
-
-            days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
-            # Look up 'mark_causative' events added since specified number days ago
-            event_query = {
-                "category": "case",
-                "verb": {"$in": verbs},
-                "created_at": {"$gte": days_datetime},
+            query["_id"] = {
+                "$in": last_modified_cases(
+                    within_days, has_causatives, finished, reruns, research_requested, status
+                )
             }
-            recent_events = self.event_collection.find(event_query)
-            recent_cases = set()
-            # Find what cases these events concern
-            for event in recent_events:
-                recent_cases.add(event["case"])
-            recent_cases = list(recent_cases)
-            query["_id"] = {"$in": recent_cases}
 
         if yield_query:
             return query
@@ -392,11 +368,54 @@ class CaseHandler(object):
 
         return self.case_collection.find(query).sort("updated_at", -1)
 
+    def last_modified_cases(
+        self, within_days, has_causatives, finished, reruns, research_requested, status
+    ):
+        """Retrieve cases that have been modified during the last n. days
+        Args:
+            within_days(int)
+            has_causatives(bool)
+            finished(bool)
+            reruns(bool)
+            research_requested(bool)
+            status(str)
+
+        Returns:
+            recent_cases(list): list of case _ids
+        """
+        verbs = set()
+        if has_causatives:
+            verbs.add("mark_causative")
+        if finished:
+            verbs.add("archive")
+            verbs.add("mark_causative")
+        if reruns:
+            verbs.add("rerun")
+        if research_requested:
+            verbs.add("open_research")
+        if status and status == "solved":
+            verbs.add("mark_causative")
+        verbs = list(verbs)
+
+        days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
+        # Look up 'mark_causative' events added since specified number days ago
+        event_query = {
+            "category": "case",
+            "verb": {"$in": verbs},
+            "created_at": {"$gte": days_datetime},
+        }
+        recent_events = self.event_collection.find(event_query)
+        recent_cases = set()
+        # Find what cases these events concern
+        for event in recent_events:
+            recent_cases.add(event["case"])
+        return list(recent_cases)
+
     def sanger_ordered_cases(self, institute_id):
         """Fetch all cases with at least a variant with validation ordered but not performed
-
         Args:
             institute_id(str): id of an institute
+
         Returns:
             sanger_missing(set): a set of case _ids with variants having Sanger validation missing
         """
