@@ -294,8 +294,6 @@ class CaseHandler(object):
                 instead returns corresponding query dict
                 that can be reused in compound queries or for testing.
         """
-        LOG.warning(locals())
-
         order = None
         query = query or {}
         # Prioritize when both owner and collaborator params are present

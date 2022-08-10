@@ -381,10 +381,7 @@ def cases(store, request, institute_id):
     all_cases = _sort_cases(data, request, all_cases)
 
     data["nr_cases"] = store.nr_cases(institute_id=institute_id)
-
-    sanger_unevaluated = get_sanger_unevaluated(store, institute_id, current_user.email)
-    if len(sanger_unevaluated) > 0:
-        data["sanger_unevaluated"] = sanger_unevaluated
+    data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
