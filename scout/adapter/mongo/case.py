@@ -439,9 +439,7 @@ class CaseHandler(object):
         }
         pipeline = [match_query, group]
         for res in self.variant_collection.aggregate(pipeline):
-            LOG.warning(res)
             sanger_missing.add(res["_id"]["case"])
-        LOG.warning(sanger_missing)
         return sanger_missing
 
     def prioritized_cases(self, institute_id=None):
