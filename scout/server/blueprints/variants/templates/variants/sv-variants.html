@@ -131,9 +131,9 @@ onsubmit="return validateForm()">
       <div class="d-flex justify-content-between align-items-center">
         <div>
           {% if variant.hgnc_symbols|length >= 5 %}
-            <a class="m3-3" data-bs-toggle="collapse" href="#_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">{{variant.hgnc_symbols|length}}</a> genes
+            <a class="mr-3" data-bs-toggle="collapse" href="#_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">[...]</a>
             <div class="collapse" id="_{{variant._id}}">
-              {% for symbol in variant.hgnc_symbols %}
+              {% for symbol in variant.hgnc_symbols|sort %}
                 {{symbol}}<br>
               {% endfor %}
             </div>
