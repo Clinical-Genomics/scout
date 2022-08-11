@@ -71,7 +71,7 @@ def update_representative_gene(variant_obj, variant_genes):
         # get HGVNp identifier from the canonical transcript
         hgvsp_identifier = None
         for tc in first_rep_gene.get("transcripts", []):
-            if tc.get("is_canonical", False) is False:
+            if tc["is_canonical"] is False:
                 continue
             hgvsp_identifier = tc.get("protein_sequence_name")
             if first_rep_gene.get("hgvs_identifier") is None:
