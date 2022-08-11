@@ -62,11 +62,12 @@
 <div class="container-float">
   {% if variant.missing_data %}
     <div class="alert alert-warning">Showing only first 30 genes!
-       <a class="ml-3" data-bs-toggle="collapse" href="showAllGenes" role="button" aria-expanded="false" aria-controls="showAllGenes">All genes</a>
+       <a class="ml-3" data-bs-toggle="collapse" href="#showAllGenes" role="button" aria-expanded="false" aria-controls="showAllGenes">All genes</a><br>
+       <div class="collapse" id="showAllGenes">
+         {{variant.hgnc_symbols|sort|join(", ")}}
+       </div>
     </div>
-    <div class="collapse" id="showAllGenes">
-      {{variant.hgnc_symbols|sort|join(", ")}}
-    </div>
+
   {% endif %}
   <div class="row">
     <div class="col-md-4">
