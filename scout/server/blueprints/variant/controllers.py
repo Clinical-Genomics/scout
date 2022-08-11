@@ -309,8 +309,15 @@ def variant(
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
-
-    variant_genes = variant_obj.get("genes", [])
+    variant_genes = []
+    if variant_obj["category"] in ["sv", "cancer_sv"]:
+        for hgnc in variant_obj.get("hgnc_ids", []):
+            gene_obj = store.hgnc_gene(hgnc_identifier=hgnc, build=case_obj["genome_build"])
+            if not gene_obj:
+                continue
+            variant_genes.append(gene_obj)
+    else:
+        variant_genes = variant_obj.get("genes", [])
     update_representative_gene(variant_obj, variant_genes)
 
     # Add display information about callers
