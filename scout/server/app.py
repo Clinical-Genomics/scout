@@ -69,7 +69,7 @@ def create_app(config_file=None, config=None):
         app.config["PERMANENT_SESSION_LIFETIME"] = session_duration
         app.config["REMEMBER_COOKIE_DURATION"] = session_duration
 
-    app.config["JSON_SORT_KEYS"] = False
+    app.json.sort_keys = False
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
     configure_extensions(app)
