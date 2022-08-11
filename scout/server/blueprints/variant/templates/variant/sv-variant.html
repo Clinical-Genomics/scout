@@ -60,9 +60,6 @@
 
 {% block content_main %}
 <div class="container-float">
-  {% if variant.missing_data %}
-    <div class="alert alert-warning">Showing only first 30 genes!</div>
-  {% endif %}
   <div class="row">
     <div class="col-md-4">
       {{ panel_basics() }}

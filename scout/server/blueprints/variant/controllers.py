@@ -319,6 +319,7 @@ def variant(
     else:
         variant_genes = variant_obj.get("genes", [])
     update_representative_gene(variant_obj, variant_genes)
+    variant_obj["genes"] = variant_genes
 
     # Add display information about callers
     variant_obj["callers"] = callers(variant_obj, category=variant_category)
