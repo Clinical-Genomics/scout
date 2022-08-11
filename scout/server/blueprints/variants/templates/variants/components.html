@@ -11,7 +11,9 @@
         </div>
       {% else %}
         <div>
-          <span class="badge bg-secondary mr-3">{{ variant.hgnc_symbols|length }}</span>
+          {% if variant.hgnc_symbols%}
+            <span class="badge bg-secondary mr-3">{{ variant.hgnc_symbols|length }}</span>
+          {% endif %}
           {{variant.hgnc_symbols|sort|join(", ")}}
         </div>
       {% endif %}
