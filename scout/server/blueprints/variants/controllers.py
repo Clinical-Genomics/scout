@@ -1584,6 +1584,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
     for build in ["37", "38"]:
         if build in str(case_obj.get("genome_build", "")):
             genome_build = build
+            break
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
