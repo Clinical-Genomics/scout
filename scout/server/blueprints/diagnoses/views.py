@@ -21,9 +21,7 @@ def omim_diagnosis(omim_nr):
 @templated("diagnoses/omim_terms.html")
 def omim_diagnoses():
     """Display all OMIM diagnoses available in database"""
-
-    data = controllers.disease_terms(store)
-    return data
+    return controllers.disease_terms(store)
 
 
 @omim_bp.route("/api/v1/diagnoses")

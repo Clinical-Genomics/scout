@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from scout.server.utils import document_generated
+
 
 def omim_entry(store, omim_nr):
     """Retrieve specific info for an OMIM term at the gene level
@@ -25,6 +27,7 @@ def disease_terms(store):
     Returns:
         data(dict): dict with key "terms" set to an array of all disease terms
     """
-
-    data = {"terms": store.disease_terms()}
+    omim_terms = list(store.disease_terms())
+    last_updated = document_generated(omim_terms[0]["_id"] if omim_terms else None)
+    data = {"terms": omim_terms, "last_updated": last_updated}
     return data
