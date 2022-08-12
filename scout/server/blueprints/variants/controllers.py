@@ -41,8 +41,8 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import (  # noqa: F401; noqa: F401
-    FILTERSFORMCLASS,
+from .forms import FILTERSFORMCLASS  # noqa: F401; noqa: F401
+from .forms import (
     CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
@@ -1585,7 +1585,8 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     hgnc_symbols = []
     not_found_ids = []
-    genome_build = "38" if case_obj and "38" in str(case_obj.get("genome_build", "37")) else "37"
+
+    genome_build = "38" if case_obj and "38" in str(case_obj.get("genome_build", "37")) else None
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:

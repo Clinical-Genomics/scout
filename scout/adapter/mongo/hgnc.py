@@ -42,38 +42,30 @@ class GeneHandler(object):
 
         return result
 
-    def hgnc_gene_caption(self, hgnc_identifier, build="37"):
+    def hgnc_gene_caption(self, hgnc_identifier, build=None):
         """Fetch the current hgnc gene symbol and similar caption info for a gene in a lightweight dict
         Avoid populating transcripts, exons etc that would be added on a full gene object. Use hgnc_gene() if
         you need to use those.
 
         Args:
             hgnc_identifier(int)
-            build(str)
+            build(str or None)
 
         Returns:
             gene_caption(dict): light pymongo document with keys "hgnc_symbol", "description", "chromosome", "start", "end".
         """
 
-        if build:
-            build = str(build)
-        if not build in ["37", "38"]:
-            build = "37"
-        query = {}
-        projection = {}
+        query = {"hgnc_id": int(hgnc_identifier)}
 
-        hgnc_identifier = int(hgnc_identifier)
-        query["hgnc_id"] = hgnc_identifier
-        query["build"] = build
+        if build in ["37", "38"]:
+            query["build"] = build
 
-        projection["hgnc_id"] = 1
-        projection["hgnc_symbol"] = 1
-        projection["description"] = 1
-        projection["chromosome"] = 1
-        projection["start"] = 1
-        projection["end"] = 1
+        projection = {}  # fields to return in query results
+        for item in ["hgnc_id", "hgnc_symbol", "description", "chromosome", "start", "end"]:
+            projection[item] = 1
 
         gene_symbol_obj = self.hgnc_collection.find_one(query, projection)
+
         if not gene_symbol_obj:
             return None
 
@@ -300,17 +292,21 @@ class GeneHandler(object):
         LOG.info("All genes fetched")
         return hgnc_dict
 
-    def gene_by_symbol_or_aliases(self, symbol, build="37"):
+    def gene_by_symbol_or_aliases(self, symbol, build=None):
         """Return an iterable with only one gene when gene with a given symbol if found
            or a cursor with genes where the provided symbol is among the aliases.
         Args:
             symbol(str)
-            build(str)
+            build(str or None)
 
         Returns:
             res(list or pymongo.Cursor(dict)): return a list with one gene or a cursor with several gene dictionaries
         """
-        res = self.hgnc_collection.find_one({"hgnc_symbol": symbol, "build": str(build)})
+        query = {"hgnc_symbol": symbol}
+        if build:
+            query["build"] = str(build)
+
+        res = self.hgnc_collection.find_one(query)
         if res:
             return [res]
 
