@@ -1603,7 +1603,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
     # add HPO genes to list, if they were missing
     if "hpo" in form.data.get("gene_panels", []):
         hpo_symbols = list(
-            set(term_obj["hgnc_symbol"] for term_obj in case_obj.get("dynamic_gene_list"))
+            set(term_obj["hgnc_symbol"] for term_obj in case_obj.get("dynamic_gene_list", []))
         )
 
         current_symbols = set(hgnc_symbols)
