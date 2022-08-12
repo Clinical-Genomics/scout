@@ -145,7 +145,7 @@ class DiagnosisHandler(object):
         Args:
             disease_obj(dict)
         """
-        LOG.debug("Loading disease term %s into database", disease_obj["_id"])
+        LOG.debug("Loading disease term %s into database", disease_obj["disease_id"])
         try:
             self.disease_term_collection.insert_one(disease_obj)
         except DuplicateKeyError as err:

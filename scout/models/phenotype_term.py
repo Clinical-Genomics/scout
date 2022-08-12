@@ -42,7 +42,7 @@ class HpoTerm(dict):
 class DiseaseTerm(dict):
     """Represents a disease term
 
-    _id = str, # Same as disease_id
+    _id = str, # auto-generated PyMongo ObjectID
     disease_id = str, # required, like OMIM:600233
     disease_nr = int, # The disease nr
     description = str, # required
@@ -65,7 +65,6 @@ class DiseaseTerm(dict):
     ):
         super(DiseaseTerm, self).__init__()
         self["disease_id"] = disease_id
-        self["_id"] = disease_id
         self["disease_nr"] = int(disease_nr)
         self["description"] = description
         self["source"] = source

@@ -19,7 +19,6 @@ def build_disease_term(disease_info, alias_genes={}):
         disease_obj(dict): Formated for mongodb
 
         disease_term = dict(
-            _id = str, # Same as disease_id
             disease_id = str, # required, like OMIM:600233
             disase_nr = int, # The disease nr, required
             description = str, # required
@@ -39,8 +38,6 @@ def build_disease_term(disease_info, alias_genes={}):
         raise KeyError("Diseases nr has to be integer")
 
     disease_id = "{0}:{1}".format("OMIM", disease_nr)
-
-    LOG.debug("Building disease term %s", disease_id)
 
     try:
         description = disease_info["description"]

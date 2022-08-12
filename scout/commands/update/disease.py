@@ -3,10 +3,7 @@
 """
 update/disease.py
 
-Update the disease terms in database
-
-Created by Måns Magnusson on 2017-04-03.
-Copyright (c) 2017 __MoonsoInc__. All rights reserved.
+Update the disease terms (OMIM) in database
 """
 
 import logging
