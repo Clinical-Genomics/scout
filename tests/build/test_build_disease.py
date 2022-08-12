@@ -13,7 +13,7 @@ def test_build_disease_term(adapter, test_disease):
 
     ## THEN assert the term is on the correct format
 
-    assert disease_obj["_id"] == disease_obj["disease_id"] == "OMIM:615349"
+    assert disease_obj["disease_id"] == "OMIM:615349"
     assert disease_obj["inheritance"] == ["AR"]
     assert disease_obj["genes"] == [17978]
     assert disease_obj["source"] == "OMIM"
