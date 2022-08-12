@@ -42,14 +42,7 @@ from scout.server.utils import (
 )
 
 from .forms import FILTERSFORMCLASS  # noqa: F401; noqa: F401
-from .forms import (
-    CancerFiltersForm,
-    CancerSvFiltersForm,
-    FiltersForm,
-    StrFiltersForm,
-    SvFiltersForm,
-    VariantFiltersForm,
-)
+from .forms import CancerSvFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 
