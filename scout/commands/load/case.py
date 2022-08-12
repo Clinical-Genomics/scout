@@ -8,7 +8,6 @@ import yaml
 from cyvcf2 import VCF
 from flask.cli import with_appcontext
 
-from scout.constants import GENOME_BUILD_37, GENOME_BUILD_38
 from scout.exceptions import ConfigError, IntegrityError
 from scout.load import load_scout
 from scout.parse.case import parse_case_data
@@ -110,11 +109,11 @@ def case(
         )
         raise click.Abort()
 
-    if config_data.get("genome_build") not in [GENOME_BUILD_37, GENOME_BUILD_38]:
-        config_data["genome_build"] = str(
+    if config_data.get("genome_build") not in [37, 38, "37", "38"]:
+        config_data["genome_build"] = int(
             click.prompt(
                 f"Please enter a valid genome build for this case",
-                type=click.Choice([GENOME_BUILD_37, GENOME_BUILD_38]),
+                type=click.Choice(["37", "38"]),
             )
         )
 
