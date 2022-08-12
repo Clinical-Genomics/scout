@@ -64,12 +64,7 @@ class GeneHandler(object):
         for item in ["hgnc_id", "hgnc_symbol", "description", "chromosome", "start", "end"]:
             projection[item] = 1
 
-        gene_symbol_obj = self.hgnc_collection.find_one(query, projection)
-
-        if not gene_symbol_obj:
-            return None
-
-        return gene_symbol_obj
+        return self.hgnc_collection.find_one(query, projection)
 
     def hgnc_gene(self, hgnc_identifier, build="37"):
         """Fetch a hgnc gene
