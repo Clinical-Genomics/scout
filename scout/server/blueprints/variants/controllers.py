@@ -1581,7 +1581,7 @@ def update_form_hgnc_symbols(store, case_obj, form):
     genome_build = None
 
     if case_obj:
-        if "38" in case_obj.get("genome_build"):
+        if "38" in case_obj.get("genome_build", "37"):
             genome_build = "38"
         else:
             genome_build = "37"
