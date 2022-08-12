@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Documentation on how to create/update PanelApp panels
 - Add filter by local observations (archive) to structural variants filters
+- Add search for Gene Panels
 ### Fixed
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
@@ -18,7 +19,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Fix sidebar panel icons in Case view
-- Ensure genome builds are input to Scout as strings from config files and CLI input
 
 ## [4.57.4]
 ### Fixed
