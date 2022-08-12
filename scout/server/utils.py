@@ -25,7 +25,6 @@ def document_generated(document_id):
         document_id.generation_time (datetime.datetime) or None if document_id is not of type ObjectId
     """
     if isinstance(document_id, ObjectId):
-        LOG.warning(document_id.generation_time)
         return document_id.generation_time
     LOG.error(f"Could not retrieve generation date for Object {document_id}")
 
