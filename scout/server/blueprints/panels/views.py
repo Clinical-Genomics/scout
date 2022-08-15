@@ -58,7 +58,7 @@ def panels():
         panels_found = store.search_panels(search_string)
 
     # Add new panel
-    if request.method == "POST" and not request.form.get(
+    elif request.method == "POST":
         "search_for"
     ):  # Edit/create a new panel and redirect to its page
         LOG.debug("request.method == 'POST'")
