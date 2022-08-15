@@ -536,6 +536,7 @@ def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
             for gene_obj in variant_genes:
                 hgnc_id = gene_obj["hgnc_id"]
                 gene_caption = store.hgnc_gene_caption(hgnc_id)
+                LOG.info(f"Retrieving gene info for HGNC ID {hgnc_id}")
                 gene_symbols = [gene_caption["hgnc_symbol"]]
 
                 # gather HGVS info from gene transcripts
