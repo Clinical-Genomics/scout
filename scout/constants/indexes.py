@@ -33,15 +33,6 @@ INDEXES = {
             [
                 ("case_id", ASCENDING),
                 ("category", ASCENDING),
-                ("rank_score", DESCENDING),
-            ],
-            name="caseid_rankscore",
-            background=True,
-        ),
-        IndexModel(
-            [
-                ("case_id", ASCENDING),
-                ("category", ASCENDING),
                 ("variant_rank", ASCENDING),
             ],
             name="caseid_variantrank",
@@ -89,7 +80,6 @@ INDEXES = {
             name="caseid_category_chromosome_start_end",
             background=True,
         ),
-        IndexModel([("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True),
         IndexModel(
             [("variant_id", ASCENDING), ("institute", ASCENDING)],
             name="variant_id_institute",
