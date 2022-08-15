@@ -81,6 +81,14 @@ def app(real_database_name, real_variant_database, user_obj, loqusdburl):
         assert login_user(user_inst, remember=True)
         return "ok"
 
+    @app.route("/auto_login_not_authorized")
+    def auto_login_not_authorized():
+        user_obj["roles"] = []
+        user_obj["institutes"] = []
+        user_inst = LoginUser(user_obj)
+        assert login_user(user_inst, remember=True)
+        return "ok"
+
     return app
 
 
