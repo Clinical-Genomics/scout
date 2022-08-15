@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
-from scout.server.extensions import store
 
 
 def test_view_index(mock_app):
@@ -22,4 +21,3 @@ def test_view_index(mock_app):
     # this time indexes in event collection should not be found
     assert "event\tvariant_id" not in result.output
     # but indexes of variant collection are shown
-    assert "variant\tsanger" in result.output
