@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Fix sidebar panel icons in Case view
+- Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 
 ## [4.57.4]
 ### Fixed
@@ -65,7 +66,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Black text to make comments more visible in dark mode
 - Loading PanelApp panels replaces pre-existing panels with same version
 - Removed sidebar from Causatives page - navigation is available on the top bar for now
-- Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 ### Fixed
 - Remove a:visited css style from all buttons
 - Update of HPO terms via command line
