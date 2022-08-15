@@ -56,11 +56,19 @@ def panels():
         # Query db for panels containing the search string
         search_string = escape(request.form.get("search_for"))
         panels_found = store.search_panels(search_string)
+        LOG.debug("FOUND: {}".format(panels_found))
 
+        panels_found_compiled = _compile_panel_versions(panels_found)
+        list_iterator = iter(panels_found))
+        for item in list_iterator:
+            print(item)
+            print(next(item))
+            
+        
     # Add new panel
     elif request.method == "POST":
         "search_for"
-    ):  # Edit/create a new panel and redirect to its page
+      # Edit/create a new panel and redirect to its page
         LOG.debug("request.method == 'POST'")
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
@@ -337,3 +345,21 @@ def gene_edit(panel_id, hgnc_id):
                 if panel_value is not None:
                     form_field.process_data(panel_value)
     return dict(panel=panel_obj, form=form, gene=hgnc_gene, panel_gene=panel_gene)
+
+
+def _compile_panel_versions(panels_found):
+    if panels_found == []:
+        return []
+    [name, version], *tail = panels_found
+    return _compile_panel_versions_aux(tail, [name, [version]])
+
+def _compile_panel_versions_aux(panels_found, acc):
+    if panels_found == []:
+        return acc
+    [name, version], *tail = panels_found
+    [acc_name, version_list] = acc
+    if name == acc_name:
+        acc = [acc_name, version_list +[version]]
+    else:
+        acc.append([name, [version]])
+    return _compile_panel_versions_aux(tail, acc)
