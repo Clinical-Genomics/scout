@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Fix sidebar panel icons in Case view
+- Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 - Ensure genome builds are input to Scout as strings from config files and CLI input
 
 ## [4.57.4]
