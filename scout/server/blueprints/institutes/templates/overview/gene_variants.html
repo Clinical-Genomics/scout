@@ -48,12 +48,12 @@
         </tr>
 </thead>
 <tbody>
-        {% for variant in variants %}
-          {% if variant.dismiss_variant %}
-            <tr class="dismiss">
-    {% else %}
-      <tr>
-    {% endif %}
+    {% for variant in variants %}
+      {% if variant.dismiss_variant %}
+        <tr class="dismiss">
+      {% else %}
+        <tr>
+      {% endif %}
             <td class="align-middle">{{ cell_rank(variant) }}</td>
             <td class="align-middle">{{ gene_cell(variant) }}</td>
             <td class="align-middle">{{ frequency_cell_general(variant) }}</td>
@@ -70,13 +70,20 @@
             </td>
             <td> {{ (variant.hgvs or '')|url_decode  }}</td>
           </tr>
-        {% else %}
+        {% endfor %}
+        {% if form.hgnc_symbols.data == [] %}
         <tr>
           <td colspan=7>
-            No matching variants
+            No variants to display
           </td>
         </tr>
-        {% endfor %}
+        {% elif variants == [] %}
+        <tr>
+          <td colspan=7>
+            No variants in genes matching your query in genes: {{form.hgnc_symbols.data|join(", ")}}
+          </td>
+        </tr>
+        {% endif %}
 </tbody>
     </table>
     {{ pagination_hidden_div(page) }}
