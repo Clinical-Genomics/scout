@@ -47,7 +47,6 @@ def api_panels(panel_name):
 @templated("panels/panels.html")
 def panels():
     """Show all panels for a user"""
-    LOG.debug("REQUEST: {} {} {}".format(request.args, request.data, request.form))
 
     # Add search box and add results if applicable
     panels_found = []
