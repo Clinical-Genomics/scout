@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
 - Replaced deprecated `app.config["JSON_SORT_KEYS"]` with app.json.sort_keys in app settings
+- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
@@ -73,7 +74,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed regex error when searching for cases with query ending with `\ `
 - Gene symbols on Causatives page lighter in dark mode
 - SpliceAI tooltip of multigene variants
-- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
 
 ## [4.55]
 ### Changed
