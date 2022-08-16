@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix sidebar panel icons in Case view
 - Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 - Verified variants displayed in a dedicated page reachable in institute sidebar
+- Unified stats in dashboard page
 
 ## [4.57.4]
 ### Fixed
