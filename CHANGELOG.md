@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Parsing of variant.FORMAT "DR" key in parse variant file
 - Reduced code complexity in `scout/parse/variant/variant.py`
+- Reduced complexity of code in `scout/build/variant/variant.py`
 
 ## [4.57.3]
 ### Fixed
