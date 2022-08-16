@@ -69,3 +69,16 @@ def amino_acid_residue_change_3_to_1(protein_sequence_name):
     protein_change = "".join([ref, pos, alt])
 
     return protein_change
+
+
+def call_safe(fun, unknown_var):
+    """Call unknown_var using fun, return None if exception is caught.
+    Args: unknown_var: Object
+          fun: Function
+    Returns: Object"""
+    try:
+        return fun(unknown_var)
+    except ValueError:
+        return None
+    except TypeError:
+        return None
