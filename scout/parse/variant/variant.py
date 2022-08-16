@@ -288,7 +288,7 @@ def get_variant_alternative(variant, category):
 
 
 def get_filters(variant):
-    """Get variant filter
+    """Get variant filters
 
     Args:
         variant(dict)
