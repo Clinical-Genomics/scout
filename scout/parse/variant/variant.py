@@ -306,7 +306,7 @@ def get_samples(variant, individual_positions, case):
     Args:
         variant(cyvcf2.Variant)
         individual_positions(dict):
-        case
+        case(dict)
     Return:
         variant filter
     """
