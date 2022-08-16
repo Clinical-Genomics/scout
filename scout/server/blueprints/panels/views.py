@@ -59,7 +59,7 @@ def panels():
     # Add new panel
     elif request.method == "POST":
         "search_for"
-    ):  # Edit/create a new panel and redirect to its page
+        # Edit/create a new panel and redirect to its page
         LOG.debug("request.method == 'POST'")
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
@@ -97,7 +97,8 @@ def panels():
         panel_versions=panel_versions,
         institutes=institutes,
         search_string=search_string,
-        search_result=panels_found,
+        # search_result=panels_found,
+        search_result =  [['a',['1.0', '2.0', '2.1']], ['test', ['1.0', '1.1']]]
     )
 
 
