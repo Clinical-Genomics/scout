@@ -380,7 +380,7 @@ def add_rank_score(variant_obj, variant):
 def add_frequencies(variant_obj, frequencies):
     """Add the rank score results
     Args: variant_obj (Dict)
-          variant (Dict)
+          frequencies (Dict)
     Returns: None"""
     variant_obj["exac_frequency"] = call_safe(float, frequencies.get("exac"))
     variant_obj["gnomad_frequency"] = call_safe(float, frequencies.get("gnomad"))
