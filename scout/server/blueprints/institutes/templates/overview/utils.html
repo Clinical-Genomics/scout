@@ -204,7 +204,7 @@
         {% for variant in variants %}
           {% set case = variant["case_obj"] %}
           <tr>
-            <td style=""><!-- Gene -->
+            <td><!-- Gene -->
               <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
             </td>
             <td><!-- Variant -->
