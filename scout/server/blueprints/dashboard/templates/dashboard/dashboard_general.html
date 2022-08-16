@@ -12,11 +12,6 @@
 
 {% block content_main %}
   <div class="container-float mt-3">
-      <ul class="nav nav-tabs nav-justified">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'general' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('general')"><h4>General statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'cases' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('cases')"><h4>Case statistics</h4></a></li>
-      </ul>
-
       <!--filter panel -->
       <div>
         {{ dashboard_search_form() }}
@@ -35,7 +30,6 @@
 {% macro dashboard_search_form() %}
 <div class="card">
   <form class="mt-3 ms-3 form-horizontal" id='form' method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
-      <input type="hidden" value="{{panel}}" name="panel" id="panel">
       <div class="row align-items-center mb-3">
         <!--Search institute select-->
         <div class="col-2 ms-3">
@@ -64,7 +58,7 @@
     <div class="col-md-4">
       <h1>Samples</h1>
       <div>
-        <canvas id="ngsType" height="150"></canvas><br>
+        <canvas id="ngsType" height="120"></canvas><br>
         <table class="table table-sm text-start" role="presentation" aria-label="Total case count per preparation type">
           {% for group in analysis_types %}
             <tr>
@@ -78,7 +72,7 @@
     <div class="col-md-4">
       <h1>Cases</h1>
       <div>
-          <canvas id="casesType" height="150"></canvas><br>
+          <canvas id="casesType" height="120"></canvas><br>
           <table class="table table-sm text-start" role="presentation" aria-label="Case counts grouped by status">
             {% for group in cases %}
               <tr>
@@ -92,7 +86,7 @@
     <div class="col-md-4">
       <h1>Pedigree info</h1>
       <div>
-        <canvas id="pedigreeTypes" height="150"></canvas><br>
+        <canvas id="pedigreeTypes" height="120"></canvas><br>
         <table class="table table-sm text-start" role="presentation" aria-label="Fraction of cases grouped by pedigree type">
           {% for topic in pedigree %}
             <tr>
@@ -112,7 +106,7 @@
 <div class="mt-3" id="cases">
   <div class="row">
     <div class="col-md-8">
-        <canvas id="cases-bar-horiz" height="100"></canvas>
+        <canvas id="cases-bar-horiz" height="80"></canvas>
     </div>
     <div class="col-md-4">
       <table class="table table-sm text-start" role="presentation" aria-label="Cases grouped after interactions">
@@ -155,28 +149,8 @@
 
     $(document).ready(function(){
       searchTerm.disabled = (sel.value == "");
-      {% if not total_cases %}
-        hide_div("all");
-      {% else %}
-        hide_div('{{panel}}');
-      {% endif %}
     });
 
-    function hide_div(show_div){
-      panels = ["general", "cases", "variants"];
-      for (index = 0; index < panels.length; ++index) {
-        var div_el = document.getElementById(panels[index]);
-        if (panels[index] == show_div){ //show div
-          div_el.style.display = "block";
-          // Assign a new value to hidden panel form field
-          panel_field = document.getElementById("panel");
-          panel_field.value=show_div;
-        }
-        else{ // hide the other 2 divs
-          div_el.style.display = "none";
-        }
-      }
-    }
 
     {% if cases %}
       //create analysis type chart ===> general stats
