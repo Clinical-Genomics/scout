@@ -266,7 +266,7 @@ def get_genmod_key(case):
     """
     case_id = case["_id"]
     if "-" in case_id:
-        LOG.debug("internal case id detected")
+        LOG.debug("iCase ID contains '-'. Using display_name as case _id.")
         return case["display_name"]
     return case["_id"]
 
