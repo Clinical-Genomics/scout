@@ -272,7 +272,7 @@ def get_genmod_key(case):
 
 
 def get_variant_alternative(variant, category):
-    """Builds a dictionary with the different ids that are used
+    """Get variant's ALT
 
     Args:
         variant(dict)
