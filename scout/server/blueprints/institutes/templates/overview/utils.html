@@ -178,7 +178,7 @@
 
 {% macro variant_list_content(institute, variants, acmg_map, callers) %}
 <div class="card mt-3">
-  <div class="card-body text-nowrap overflow-auto">
+  <div class="card-body overflow-auto">
     <table id="verified_table" class="table display table-sm">
       <caption>List of selected variants</caption>
       <thead class="thead table-light sticky-offset">
@@ -204,7 +204,7 @@
         {% for variant in variants %}
           {% set case = variant["case_obj"] %}
           <tr>
-            <td><!-- Gene -->
+            <td style=""><!-- Gene -->
               <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
             </td>
             <td><!-- Variant -->
