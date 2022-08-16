@@ -51,11 +51,21 @@
 
       <div id="SearchResults" class="card-body">
         {% if search_result %}
+    <div class="card-body">
         <strong> <em>{{search_string}}</em> found in: </strong> <br>
+        <table class="table table-striped">
+        <thead>
+          <tr>
+            <th width="10%">Panel Name</th>
+            <th width="90%">Versions</th>
+          </tr>
+        </thead>
+        <tbody>
         {% for name, version in search_result %}
-        {{name}},   version {{version}}<br>
+       <tr><td> {{name}} </td> <td>   version {{version}} </td> </tr>
         {% endfor %}
-
+        </tbody>
+        </table>
         {% elif search_string  %}
         <strong> <em>{{search_string}} </em> not found. </strong>
 
