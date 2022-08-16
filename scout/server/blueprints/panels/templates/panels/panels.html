@@ -51,11 +51,34 @@
 
       <div id="SearchResults" class="card-body">
         {% if search_result %}
+    <div class="card-body">
         <strong> <em>{{search_string}}</em> found in: </strong> <br>
-        {% for name, version in search_result %}
-        {{name}},   version {{version}}<br>
-        {% endfor %}
-
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th width="10%">Panel Name</th>
+              <th width="90%">Versions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in search_result %}
+            <tr>
+              <td> {{item[0]}} </td>
+              <td>
+                <!-- <table cellpadding="4px"> -->
+                  <table  style="border-spacing: 40px 10px;">
+                <tr>
+                  {% for version_list in item[1] %}
+                  <td style="padding:0 10px"> {{version_list}} </td>
+                  {% endfor %}
+                </tr>
+              </table>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- FIX: this should be else-clause and search_string not conditional -->
         {% elif search_string  %}
         <strong> <em>{{search_string}} </em> not found. </strong>
 

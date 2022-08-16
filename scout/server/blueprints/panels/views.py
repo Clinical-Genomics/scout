@@ -47,7 +47,6 @@ def api_panels(panel_name):
 @templated("panels/panels.html")
 def panels():
     """Show all panels for a user"""
-    LOG.debug("REQUEST: {} {} {}".format(request.args, request.data, request.form))
 
     # Add search box and add results if applicable
     panels_found = []
@@ -56,8 +55,6 @@ def panels():
         # Query db for panels containing the search string
         search_string = escape(request.form.get("search_for"))
         panels_found = store.search_panels(search_string)
-        LOG.debug("FOUND: {}".format(panels_found))
-
         panels_found_compiled = _compile_panel_versions(panels_found)
         list_iterator = iter(panels_found))
         for item in list_iterator:
@@ -68,7 +65,7 @@ def panels():
     # Add new panel
     elif request.method == "POST":
         "search_for"
-      # Edit/create a new panel and redirect to its page
+        # Edit/create a new panel and redirect to its page
         LOG.debug("request.method == 'POST'")
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
@@ -106,7 +103,8 @@ def panels():
         panel_versions=panel_versions,
         institutes=institutes,
         search_string=search_string,
-        search_result=panels_found,
+        # search_result=panels_found,
+        search_result=[["a", ["1.0", "2.0", "2.1"]], ["test", ["1.0", "1.1"]]],
     )
 
 
