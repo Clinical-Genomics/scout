@@ -98,7 +98,7 @@ def panels():
         institutes=institutes,
         search_string=search_string,
         # search_result=panels_found,
-        search_result =  [['a',['1.0', '2.0', '2.1']], ['test', ['1.0', '1.1']]]
+        search_result=[["a", ["1.0", "2.0", "2.1"]], ["test", ["1.0", "1.1"]]],
     )
 
 
