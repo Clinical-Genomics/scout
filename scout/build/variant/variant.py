@@ -177,7 +177,7 @@ def build_variant(
     variant_obj["simple_id"] = variant["ids"].get("simple_id")
     variant_obj["sub_category"] = variant.get("sub_category")
 
-    ### String Specific
+    ### STR variant specific
     variant_obj["str_disease"] = variant.get("str_disease")
     variant_obj["str_inheritance_mode"] = variant.get("str_inheritance_mode")
     variant_obj["str_len"] = variant.get("str_len")
@@ -380,7 +380,7 @@ def add_rank_score(variant_obj, variant):
 def add_frequencies(variant_obj, frequencies):
     """Add the rank score results
     Args: variant_obj (Dict)
-          variant (Dict)
+          frequencies (Dict)
     Returns: None"""
     variant_obj["exac_frequency"] = call_safe(float, frequencies.get("exac"))
     variant_obj["gnomad_frequency"] = call_safe(float, frequencies.get("gnomad"))
