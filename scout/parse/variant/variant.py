@@ -34,20 +34,20 @@ def parse_variant(
 ):
     """Return a parsed variant
 
-            Get all the necessary information to build a variant object
+        Get all the necessary information to build a variant object
 
-        Args:
-            variant(cyvcf2.Variant)
-            case(dict)
-            variant_type(str): 'clinical' or 'research'
-            rank_results_header(list)
-            vep_header(list)
-            individual_positions(dict): Explain what position each individual has
-                                        in vcf
-            category(str): 'snv', 'sv', 'str', 'cancer' or 'cancer_sv'
-            local_archive_info(dict): date and total count for local obs
-        Returns:
-             parsed_variant(dict): Parsed variant
+    Args:
+        variant(cyvcf2.Variant)
+        case(dict)
+        variant_type(str): 'clinical' or 'research'
+        rank_results_header(list)
+        vep_header(list)
+        individual_positions(dict): Explain what position each individual has
+                                    in vcf
+        category(str): 'snv', 'sv', 'str', 'cancer' or 'cancer_sv'
+        local_archive_info(dict): date and total count for local obs
+    Returns:
+         parsed_variant(dict): Parsed variant
     """
     # These are to display how the rank score is built
     rank_results_header = rank_results_header or []
