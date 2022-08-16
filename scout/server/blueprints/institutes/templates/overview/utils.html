@@ -222,7 +222,7 @@
             </td>
             <td>
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvs_identifier %}
-                <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-bs-toggle='tooltip' data-bs-container='body' title="{{ variant.first_rep_gene.hgvs_identifier }}">
+                <span class="text-muted">
                   {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
                 </span>
               {% else %}
@@ -231,7 +231,7 @@
             </td>
             <td>
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvsp_identifier %}
-                <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-bs-toggle='tooltip' data-bs-container='body' title="{{ variant.first_rep_gene.hgvsp_identifier }}">
+                <span class="text-muted">
                   {{variant.first_rep_gene.hgvsp_identifier|truncate(15, True)}}
                 </span>
               {% else %}
