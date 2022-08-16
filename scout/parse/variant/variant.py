@@ -276,7 +276,7 @@ def get_variant_alternative(variant, category):
 
     Args:
         variant(dict)
-        category(dict)
+        category(str)
     Return:
         alternative variant: Str
     """
