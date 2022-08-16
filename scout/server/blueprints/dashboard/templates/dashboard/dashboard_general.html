@@ -15,9 +15,11 @@
       <!--filter panel -->
       <div>
         {{ dashboard_search_form() }}
-        {% if total_cases == 0 %}
-          <div class="alert alert-danger">Your search didn't return any results!</div>
-        {% elif total_cases %}
+        {% if not total_cases %}
+          <div class="alert alert-info mt-3">Use the form above to restrict your search</div>
+        {% elif total_cases == 0 %}
+          <div class="alert alert-danger mt-3">Your search didn't return any results!</div>
+        {% else %}
           {{ general_stats_panels() }}
           {{ cases_stats_panels() }}
         {% endif %}
