@@ -208,11 +208,11 @@
               <a href="{{ url_for('variant.variant',
                   institute_id=institute._id,
                   case_name=case.display_name,
-                  variant_id=variant._id) }}" data-bs-toggle='tooltip' data-bs-container='body' title="{{ variant.display_name }}">{{ variant.display_name|truncate(15, True) }}
+                  variant_id=variant._id) }}">{{ variant.display_name|truncate(15, True) }}
               </a>
             </td>
             <td>
-              <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-bs-toggle='tooltip' data-bs-container='body' title="{{ variant.reference|truncate(30, True) }} → {{ variant.alternative|truncate(30, True) }}">
+              <span class="text-muted">
                 {% if variant.category in 'str' %}
                     {{ variant.alternative|truncate(10, True) | replace("<", " ") | replace(">", "")}}
                 {% else %}
