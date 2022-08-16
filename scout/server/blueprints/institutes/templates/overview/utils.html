@@ -176,7 +176,7 @@
 {% endmacro %}
 
 
-{% macro variant_list_content(institute, variants, acmg_map) %}
+{% macro variant_list_content(institute, variants, acmg_map, callers) %}
 <div class="card mt-3">
   <div class="card-body">
     <table id="verified_table" class="table display table-sm">
@@ -190,6 +190,7 @@
           <th>HGVS[p]</th>
           <th>Functional Annotation</th>
           <th>Category</th>
+          <th>Callers</th>
           <th>CADD score</th>
           <th data-bs-toggle='tooltip' data-bs-container='body' title="score(model version)">Rank score</th>
           <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
@@ -249,6 +250,17 @@
             </td>
             <td><!-- Category -->
               <span class="badge bg-secondary">{{ variant.category|upper }}</span>
+            </td>
+            <td><!-- Callers -->
+              {% for key, values in callers.items() %} <!-- keys: snv, cancer, cancer_sv, sv, str -->
+                {% if variant.category == key %}
+                  {% for caller in values %}
+                    {% if caller.id in variant %}
+                      {{caller.name}}:{{variant[caller.id]}}&nbsp;
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
             </td>
             <td><!-- CADD score -->
               {% if variant.cadd_score %}

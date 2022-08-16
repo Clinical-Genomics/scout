@@ -21,6 +21,7 @@ from werkzeug.datastructures import Headers
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
+    CALLERS,
     CASEDATA_HEADER,
     CLINVAR_HEADER,
     VERBS_ICONS_MAP,
@@ -86,6 +87,7 @@ def verified(institute_id):
         verified=verified_vars,
         verified_stats=verified_stats,
         acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
+        callers=CALLERS,
     )
 
 
