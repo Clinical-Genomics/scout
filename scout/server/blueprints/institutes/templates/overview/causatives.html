@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "overview/utils.html" import variant_list_content %}
 {% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
 
 {% block title %}
@@ -28,7 +29,7 @@
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
     <div class="col">
-        {{ causatives() }}
+        {{ variant_list_content(institute, causatives, acmg_map, callers) }}
     </div>
   </div> <!-- end of div id body-row -->
 </div>
@@ -55,122 +56,3 @@
     } );
   </script>
 {% endblock %}
-
-{% macro causatives() %}
-<div class="card mt-3">
-  <div class="card-body">
-      <table id="causatives_table" class="table display table-sm" cellspacing="0">
-        <thead class="thead table-light sticky-offset">
-          <tr>
-            <th>Gene</th>
-            <th>Variant</th>
-            <th>Change</th>
-            <th>HGVS[c]</th>
-            <th>HGVS[p]</th>
-            <th>Category</th>
-            <th data-bs-toggle='tooltip' data-bs-container='body' title="score(model version)">Rank score</th>
-            <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
-            <th>Inheritance</th>
-            <th>ACMG</th>
-            <th>Case</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for _, group in variant_groups.items() %}
-          {% set group_variant = group[0][1] %}
-          {% for case, variant in group %}
-          {% if (case.causatives and variant._id in case.causatives) or (case.partial_causatives and variant._id in case.partial_causatives) %}
-          <tr>
-            <td>
-              <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
-            </td>
-            <td><a href="{{ url_for('variant.variant',
-                institute_id=institute._id,
-                case_name=case.display_name,
-                variant_id=variant._id) }}">{{ variant.display_name|truncate(10, True) }}
-              </a>
-            </td>
-            <td>
-              <span class="text-muted">
-                {% if group_variant.category in 'str' %}
-                    {{ group_variant.alternative|truncate(10, True) | replace("<", " ") | replace(">", "")}}
-                {% else %}
-                    {{ group_variant.reference|truncate(10, True) }} → {{ group_variant.alternative|truncate(10, True) }}
-                {% endif%}
-              </span>
-            </td>
-            <td>
-              {% if variant.first_rep_gene and variant.first_rep_gene.hgvs_identifier %}
-                <span class="text-muted">
-                  {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
-                </span>
-              {% else %}
-                -
-              {% endif %}
-            </td>
-            <td>
-              {% if variant.first_rep_gene and variant.first_rep_gene.hgvsp_identifier %}
-                <span class="text-muted">
-                  {{variant.first_rep_gene.hgvsp_identifier|truncate(15, True)}}
-                </span>
-              {% else %}
-                -
-              {% endif %}
-            </td>
-            <td><span class="badge bg-secondary">{{ variant.category|upper }}</span></td>
-            <td><a href="#"><span class="badge rounded-pill bg-secondary">
-
-              {{ variant.rank_score }}
-              {% if variant.category == 'sv' %}
-                (v. {{case.sv_rank_model_version or 'na'}})
-              {% else %}
-                (v. {{case.rank_model_version or 'na'}})
-              {% endif %}
-            </span></a></td>
-            <td>
-              {%- for sample in variant.samples -%}
-                {%- for ind in case.individuals -%}
-                  {%- if sample.sample_id == ind.individual_id -%}
-                    {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
-                    <span data-bs-toggle='tooltip' data-bs-container='body' title="{{allele_depths}}" class="badge bg-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}}</span>
-                  {%- endif -%}
-                {%- endfor -%}
-              {%- endfor -%}
-            </td>
-            <td>{% for model in variant.genetic_models %}
-              <span class="badge bg-info">{{model}}</span>
-              {% endfor %}
-            </td>
-            <td>
-              <a href="#" data-bs-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
-                style="text-decoration: none; color: #000;">
-                {% if 'acmg_classification' in variant %}
-                <span class="badge bg-{{acmg_map[variant.acmg_classification].color}}">{{acmg_map[variant.acmg_classification].short}}</span>
-                {% else %}
-                -
-                {% endif %}
-              </a>
-            </td>
-            <td >
-              <a href="{{ url_for('cases.case',
-                                        institute_id=institute._id,
-                                        case_name=case.display_name) }}">
-                {{ case.display_name }}
-              </a>
-              {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
-                <span class="badge bg-warning" data-bs-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
-              {% endif %}
-
-              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }} me-1">
-                {{ case.status }}
-              </span>
-            </td>
-          </tr>
-          {% endif %}
-          {% endfor %}
-          {% endfor %}
-        </tbody>
-      </table>
-  </div>
-</div>
-{% endmacro %}
