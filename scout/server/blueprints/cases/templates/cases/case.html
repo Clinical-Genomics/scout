@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 {% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal, reanalysis_modal, solve_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
-{% from "cases/utils.html" import clinvar_panel, causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
+{% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
+{% from "cases/clinvar.html" import clinvar_vars %}
 
 
 {% block title %}
@@ -74,8 +75,8 @@
       <div class="row">
         <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
         <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
-        {% if case.clinvar_variants %}
-          <div class="col">{{ clinvar_panel(institute, case) }}</div>
+        {% if case.clinvar_variants or case.suspects %}
+          <div class="col">{{ clinvar_vars(institute, case, suspects) }}</div>
         {% endif %}
         <!-- end of data sharing panels -->
       </div>
