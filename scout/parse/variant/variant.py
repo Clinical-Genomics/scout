@@ -275,7 +275,7 @@ def get_variant_alternative(variant, category):
     """Get variant's ALT
 
     Args:
-        variant(dict)
+        variant(cyvcf2.Variant)
         category(str)
     Return:
         alternative variant: Str
