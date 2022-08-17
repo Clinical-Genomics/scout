@@ -49,19 +49,13 @@ def panels():
     """Show all panels for a user"""
 
     # Add search box and add results if applicable
-    panels_found = []
+    panels_found_compiled = []
     search_string = ""
     if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string
         search_string = escape(request.form.get("search_for"))
         panels_found = store.search_panels(search_string)
         panels_found_compiled = _compile_panel_versions(panels_found)
-        list_iterator = iter(panels_found))
-        for item in list_iterator:
-            print(item)
-            print(next(item))
-            
-        
     # Add new panel
     elif request.method == "POST":
         "search_for"
@@ -103,8 +97,8 @@ def panels():
         panel_versions=panel_versions,
         institutes=institutes,
         search_string=search_string,
-        # search_result=panels_found,
-        search_result=[["a", ["1.0", "2.0", "2.1"]], ["test", ["1.0", "1.1"]]],
+        search_result=panels_found_compiled,
+        # search_result=[["a", ["1.0", "2.0", "2.1"]] , ["test", ["1.0", "1.1"]]],
     )
 
 
@@ -346,18 +340,38 @@ def gene_edit(panel_id, hgnc_id):
 
 
 def _compile_panel_versions(panels_found):
+    """Aggregate list of panel names and versions for display.
+
+        Args:
+            panels(list): ['name', 1.0, 'name', 2.0]
+
+        Return:
+            aggegated_panels(list): [['name', [1.0, 2.0]]]
+    """
     if panels_found == []:
         return []
     [name, version], *tail = panels_found
-    return _compile_panel_versions_aux(tail, [name, [version]])
+    return _compile_panel_versions_aux(tail, [[name, [version]]])
 
 def _compile_panel_versions_aux(panels_found, acc):
+    """Auxiliary function for `_compile_panel_versions()`. Aggregate list of panel
+    names and versions for display.
+
+        Args:
+            panels(list): ['name', 1.0, 'name', 2.0]
+            acc(list):  [['name', [1.0, 2.0]]]
+
+        Return:
+            aggegated_panels(list): [[name, [1.0, 2.0]]]
+    """
     if panels_found == []:
+        acc.reverse()
         return acc
     [name, version], *tail = panels_found
-    [acc_name, version_list] = acc
+    [acc_name, version_list], *acc_tail = acc
     if name == acc_name:
-        acc = [acc_name, version_list +[version]]
+        acc_head = [acc_name, version_list +[version]]
+        return _compile_panel_versions_aux(tail, [acc_head, *acc_tail])
     else:
-        acc.append([name, [version]])
-    return _compile_panel_versions_aux(tail, acc)
+        acc_head = [name, [version]]
+        return _compile_panel_versions_aux(tail, [acc_head,  [acc_name, version_list], *acc_tail])
