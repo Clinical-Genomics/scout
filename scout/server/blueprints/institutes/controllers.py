@@ -149,10 +149,7 @@ def causatives(institute_obj, request):
         case_obj = store.case(variant_obj["case_id"])
         if not case_obj:
             continue
-        variant_obj["case_obj"] = {
-            "display_name": case_obj["display_name"],
-            "individuals": case_obj["individuals"],
-        }
+        variant_obj["case_obj"] = case_obj
 
         causatives.append(variant_obj)
 

@@ -314,14 +314,19 @@
                                         case_name=case.display_name) }}">
                 {{ case.display_name }}
               </a>
-              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }} me-1">
+              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }}">
                 {{ case.status }}
               </span>
+              {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
+                <span class="badge bg-warning" data-bs-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
+              {% endif %}
             </td>
             <td><!-- Validated status -->
-              <span class="badge bg-{{ 'success' if variant.validation == 'True positive' else 'danger' }} me-1">
-                {{ variant.validation }}
-              </span>
+              {% if variant.validation %}
+                <span class="badge bg-{{ 'success' if variant.validation == 'True positive' else 'danger' }} me-1">
+                  {{ variant.validation }}
+                </span>
+              {% endif %}
             </td>
           </tr>
         {% endfor %}
