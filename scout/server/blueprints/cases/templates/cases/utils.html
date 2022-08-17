@@ -584,32 +584,6 @@
   </div>
 {% endmacro %}
 
-{% macro clinvar_panel(institute, case) %}
-  <div class="card panel-default">
-    <div class="d-flex justify-content-between" data-bs-toggle='tooltip' title="Variants included in a ClinVar submission object in Scout">
-      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }})
-      </h6>
-      {% if not case.clinvar_variants %}
-        <span class="text-muted me-3 mt-2">No variants in ClinVar submissions </span>
-      {% endif %}
-    </div>
-    <div class="card">
-      <ul class="list-group" style="max-height:300px; overflow-y: scroll;">
-        {% for var_id, submission_data in case.clinvar_variants.items() %}
-          <li class="list-group-item">
-            {% if submission_data.category == 'snv' %}
-              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.start}}_{{submission_data.ref}}>{{submission_data.alt}}</a>
-            {% else %}
-              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=var_id) }}">chr{{submission_data.chromosome}}:{{submission_data.breakpoint1}}_{{submission_data.var_type}}</a>
-            {% endif %}
-              <span class="badge bg-dark">{{submission_data.clinsig}}</span>
-          </li>
-        {% endfor %}
-      </ul>
-    </div> <!--end of <div class="panel-body">-->
-  </div>
-{% endmacro %}
-
 {% macro matching_managed_variants(managed_variants, institute, case) %}
   <div class="card panel-default">
     <div data-bs-toggle='tooltip' class="panel-heading" title="Any variants in this case
