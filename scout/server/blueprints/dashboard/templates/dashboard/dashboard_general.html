@@ -12,21 +12,16 @@
 
 {% block content_main %}
   <div class="container-float mt-3">
-      <ul class="nav nav-tabs nav-justified">
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'general' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('general')"><h4>General statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'cases' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('cases')"><h4>Case statistics</h4></a></li>
-        <li class="nav-item"><a href="#" class="nav-link {% if panel == 'variants' %}active{% endif %}" data-bs-toggle="tab" onclick="hide_div('variants')"><h4>Variant statistics</h4></a></li>
-      </ul>
-
       <!--filter panel -->
       <div>
         {{ dashboard_search_form() }}
         {% if total_cases == 0 %}
-          <div class="alert alert-danger">Your search didn't return any results!</div>
-        {% elif total_cases %}
+          <div class="alert alert-danger mt-3">Your search didn't return any results!</div>
+        {% elif not total_cases %}
+            <div class="alert alert-info mt-3">Use the form above to restrict your search</div>
+        {% else %}
           {{ general_stats_panels() }}
           {{ cases_stats_panels() }}
-          {{ variants_stats_panels() }}
         {% endif %}
       </div>
 
@@ -37,7 +32,6 @@
 {% macro dashboard_search_form() %}
 <div class="card">
   <form class="mt-3 ms-3 form-horizontal" id='form' method='POST' action="{{ url_for('dashboard.index') }}" accept-charset="utf-8">
-      <input type="hidden" value="{{panel}}" name="panel" id="panel">
       <div class="row align-items-center mb-3">
         <!--Search institute select-->
         <div class="col-2 ms-3">
@@ -67,7 +61,7 @@
     <div class="col-md-4">
       <h1>Samples</h1>
       <div>
-        <canvas id="ngsType" height="150"></canvas><br>
+        <canvas id="ngsType" height="120"></canvas><br>
         <table class="table table-sm text-start" role="presentation" aria-label="Total case count per preparation type">
           {% for group in analysis_types %}
             <tr>
@@ -81,7 +75,7 @@
     <div class="col-md-4">
       <h1>Cases</h1>
       <div>
-          <canvas id="casesType" height="150"></canvas><br>
+          <canvas id="casesType" height="120"></canvas><br>
           <table class="table table-sm text-start" role="presentation" aria-label="Case counts grouped by status">
             {% for group in cases %}
               <tr>
@@ -95,7 +89,7 @@
     <div class="col-md-4">
       <h1>Pedigree info</h1>
       <div>
-        <canvas id="pedigreeTypes" height="150"></canvas><br>
+        <canvas id="pedigreeTypes" height="120"></canvas><br>
         <table class="table table-sm text-start" role="presentation" aria-label="Fraction of cases grouped by pedigree type">
           {% for topic in pedigree %}
             <tr>
@@ -115,7 +109,7 @@
 <div class="mt-3" id="cases">
   <div class="row">
     <div class="col-md-8">
-        <canvas id="cases-bar-horiz" height="100"></canvas>
+        <canvas id="cases-bar-horiz" height="80"></canvas>
     </div>
     <div class="col-md-4">
       <table class="table table-sm text-start" role="presentation" aria-label="Cases grouped after interactions">
@@ -131,48 +125,11 @@
 </div>
 {% endmacro %}
 
-
-{% macro variants_stats_panels() %}
-<div class="container-float mt-3 text-center" id="variants">
-  <div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-4 d-flex justify-content-right align-items-center">
-        <canvas id="var-validations" width="600" height="300"></canvas>
-    </div>
-    <div class="col-md-4">
-      <table class="table text-start" role="presentation" aria-label="Cases grouped by validation events">
-        {% for topic in variants %}
-        <tr>
-          <td>{{ topic.title }} Cases: : {{ topic.count }}</td>
-          <td>{{ (topic.percent * 100)|round(1) }}%</td>
-        </tr>
-        {% endfor %}
-      </table>
-        <br>
-        <div class="card mt-3" >
-          <form id="download_verified" action="{{ url_for('variants.download_verified')}}" method="GET">
-            <button type="submit" name="verified_vars" value="verified" class="form-control">Download all verified variants for your cases</button>
-          </form>
-        </div>
-    </div>
-    <div class="col-md-2"></div>
-  </div>
-
-</div>
-{% endmacro %}
-
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js" integrity="sha512-60KwWtZOhzgr840mc57MV8JqDZHAws3w61mhK45KsYHmhyNFJKmfg4M7/s2Jsn4PgtQ4Uhr9xItS+HCbGTIRYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="{{ url_for('dashboard.static', filename='charts.js') }}"></script>
   <script type="text/javascript">
-
-    if(document.getElementById('download_verified')){
-      document.querySelector("#download_verified").addEventListener("submit", function(e){
-        // Avoid page spinner being stuck on download verified variants
-        $(window).unbind('beforeunload');
-      });
-    }
 
     // Code taking care of case filtering
     var caseSearchTerms = {{ search_terms|safe }};
@@ -195,37 +152,8 @@
 
     $(document).ready(function(){
       searchTerm.disabled = (sel.value == "");
-      {% if not total_cases %}
-        hide_div("all");
-      {% else %}
-        hide_div('{{panel}}');
-      {% endif %}
     });
 
-    function hide_div(show_div){
-      panels = ["general", "cases", "variants"];
-      for (index = 0; index < panels.length; ++index) {
-        var div_el = document.getElementById(panels[index]);
-        if (panels[index] == show_div){ //show div
-          div_el.style.display = "block";
-          // Assign a new value to hidden panel form field
-          panel_field = document.getElementById("panel");
-          panel_field.value=show_div;
-          // Hide search type select and search term in the filters if panel=="variants"
-          if (show_div=="variants"){
-            sel.style.display = "none";
-            searchTerm.style.display = "none";
-          }
-          else{
-            sel.style.display = "block";
-            searchTerm.style.display = "block";
-          }
-        }
-        else{ // hide the other 2 divs
-          div_el.style.display = "none";
-        }
-      }
-    }
 
     {% if cases %}
       //create analysis type chart ===> general stats
@@ -237,9 +165,6 @@
 
       // create cases detailed stats chart ===> case stats
       createChart(document.getElementById("cases-bar-horiz").getContext('2d'), casesDetailed( {{overview|safe}}, {{cases[0].count}} ))
-
-      // create variants detailed stats chart ===> variants stats
-      createChart(document.getElementById("var-validations").getContext('2d'), varValidations( {{variants|safe }}))
     {% endif %}
 
   </script>

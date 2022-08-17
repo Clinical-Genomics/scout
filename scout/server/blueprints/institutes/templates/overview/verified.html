@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+{% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "overview/utils.html" import variant_list_content %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
+
+{% block title %}
+{{ super() }} - Institutes
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+ {{ db_table_external_stylesheets() }}
+ <style>
+   #valid-meter {
+     color: white;
+     font-family: sans-serif;
+     font-weight: bold;
+     font-size: 12px;
+     line-height: 20px;
+     display: grid;
+     align-items: center;
+     justify-content: center;
+     grid-template-columns: {{verified_stats[0]}}fr {{verified_stats[1]}}fr {{verified_stats[2]}}fr;
+  }
+
+  #truePos {
+    background: #48bb78;
+  }
+
+  #falsePos {
+    background: #e53e3e;
+  }
+
+  #ordered {
+    background: #805ad5;
+  }
+ </style>
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Verified variants</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row mt-3" id="body-row"> <!--sidebar and main container are on the same row-->
+    <div class="col">
+      <div class="row d-flex justify-content-center">
+        {{validated_chart()}}
+      </div>
+      <div class="row">
+        <div class="col-12">{{ variant_list_content(institute, verified, acmg_map, callers) }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% macro validated_chart() %}
+{% set ordered = verified_stats[0] + verified_stats[1] + verified_stats[2]%}
+{% set pos_perc = (verified_stats[0] * 100 / ordered)|round(1) if verified_stats[0] > 0 else 0 %}
+{% set neg_perc = (verified_stats[1] * 100 / ordered)|round(1) if verified_stats[1] > 0 else 0 %}
+{% set u_perc = (verified_stats[2] * 100 / ordered)|round(1) if verified_stats[2] > 0 else 0 %}
+<div class="col-2 mt-3">
+  Validations ordered: {{ordered}}
+</div>
+<div id="valid-meter" class="col-8 mt-3">
+  <div id="truePos" class="d-flex justify-content-center">
+    <span href="#" data-toggle="tooltip" title="True positives: {{verified_stats[0]}} ({{ pos_perc }}%)">TP:{{verified_stats[0]}}</span>
+  </div>
+  <div id="falsePos" class="d-flex justify-content-center">
+    <span href="#" data-toggle="tooltip" title="False positives: {{verified_stats[1]}} ({{ neg_perc }}%)">FP:{{verified_stats[1]}}</span>
+  </div>
+  <div id="ordered" class="d-flex justify-content-center">
+    <span href="#" data-toggle="tooltip" title="Validation unknown: {{verified_stats[2]}} ({{ u_perc }}%)">U:{{verified_stats[2]}}</span>
+  </div>
+</div>
+{% endmacro %}
+
+
+{% block scripts %}
+  {{ super() }}
+  {{ db_table_external_scripts() }}
+  <script type="text/javascript">
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    $(document).ready(function() {
+      $('#verified_table').DataTable( {
+          paging: false,
+          dom: 'Bfrtip',
+          buttons: [
+              'copyHtml5',
+              'excelHtml5',
+          ]
+      } );
+
+      $('[data-toggle="tooltip"]').tooltip();
+    } );
+  </script>
+{% endblock %}
