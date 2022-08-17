@@ -686,15 +686,29 @@ def test_cases_similar_phenotype_query(app, case_obj, institute_obj, test_hpo_te
         assert case_obj["display_name"] in str(resp.data)
 
 
-def test_verified(app, institute_obj):
+def test_verified(app, institute_obj, case_obj, user_obj, variant_obj):
     """Test the endpoint that returns the list of verified variants for an institute"""
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
-        # WHEN accessing the case page
+
+        # GIVEN a verified variant:
+        store.validate(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link="link",
+            variant=variant_obj,
+            validate_type="False positive",
+        )
+
+        # WHEN accessing the verified variants page
         resp = client.get(url_for("overview.verified", institute_id=institute_obj["internal_id"]))
         assert resp.status_code == 200
+
+        # The variant should be found:
+        assert variant_obj["_id"] in str(resp.data)
 
 
 def test_causatives(app, user_obj, institute_obj, case_obj):
