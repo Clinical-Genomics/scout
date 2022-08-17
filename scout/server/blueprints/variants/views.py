@@ -48,6 +48,7 @@ def variants(institute_id, case_name):
     page = int(Markup.escape(request.form.get("page", "1")))
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
     variant_type = request.args.get("variant_type", "clinical")
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
@@ -152,7 +153,7 @@ def variants(institute_id, case_name):
     "/test/<institute_id>/<case_name>/str/variants/<str_repid>", methods=["GET", "POST"]
 )
 @templated("variants/str-variants-reviewer.html")
-def test(institute_id, case_name, str_repid):
+def reviewer_aln(institute_id, case_name, str_repid):
     """Display STR variant alignment using the REViewer service."""
     if request.args.get("variant_type", "clinical") is "research":
         variant_type = "research"
