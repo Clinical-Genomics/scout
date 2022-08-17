@@ -1,6 +1,5 @@
 import datetime
 import logging
-import os.path
 import re
 from datetime import date
 
@@ -10,12 +9,10 @@ from flask import Markup, Response, flash, url_for
 from flask_login import current_user
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
-from xlsxwriter import Workbook
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
-    CALLERS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
@@ -27,8 +24,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
 )
-from scout.constants.variants_export import EXPORT_HEADER, VERIFIED_VARIANTS_HEADER
-from scout.export.variant import export_verified_variants
+from scout.constants.variants_export import EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
     clinsig_human,
     predictions,
@@ -42,14 +38,13 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import (  # noqa: F401; noqa: F401
+from .forms import (
     FILTERSFORMCLASS,
     CancerFiltersForm,
     CancerSvFiltersForm,
     FiltersForm,
     StrFiltersForm,
     SvFiltersForm,
-    VariantFiltersForm,
 )
 
 LOG = logging.getLogger(__name__)
@@ -1639,53 +1634,6 @@ def update_form_hgnc_symbols(store, case_obj, form):
     )
     form.hgnc_symbols.data = sorted(updated_hgnc_symbols)
     return form
-
-
-def verified_excel_file(store, institute_list, temp_excel_dir):
-    """Collect all verified variants in a list on institutes and save them to file
-    Args:
-        store(adapter.MongoAdapter)
-        institute_list(list): a list of institute ids
-        temp_excel_dir(os.Path): folder where the temp excel files are written to
-    Returns:
-        written_files(int): the number of files written to temp_excel_dir
-    """
-    document_lines = []
-    written_files = 0
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
-    LOG.info("Creating verified variant document..")
-
-    for cust in institute_list:
-        verif_vars = store.verified(institute_id=cust)
-        LOG.info("Found {} verified variants for customer {}".format(len(verif_vars), cust))
-
-        if not verif_vars:
-            continue
-        unique_callers = set()
-        for var_type, var_callers in CALLERS.items():
-            for caller in var_callers:
-                unique_callers.add(caller.get("id"))
-        cust_verified = export_verified_variants(verif_vars, unique_callers)
-
-        document_name = ".".join([cust, "_verified_variants", today]) + ".xlsx"
-        workbook = Workbook(os.path.join(temp_excel_dir, document_name))
-        Report_Sheet = workbook.add_worksheet()
-
-        # Write the column header
-        row = 0
-        for col, field in enumerate(VERIFIED_VARIANTS_HEADER + list(unique_callers)):
-            Report_Sheet.write(row, col, field)
-
-        # Write variant lines, after header (start at line 1)
-        for row, line in enumerate(cust_verified, 1):  # each line becomes a row in the document
-            for col, field in enumerate(line):  # each field in line becomes a cell
-                Report_Sheet.write(row, col, field)
-        workbook.close()
-
-        if os.path.exists(os.path.join(temp_excel_dir, document_name)):
-            written_files += 1
-
-    return written_files
 
 
 def activate_case(store, institute_obj, case_obj, current_user):
