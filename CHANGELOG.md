@@ -14,15 +14,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
 - Replaced deprecated `app.config["JSON_SORT_KEYS"]` with app.json.sort_keys in app settings
-- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc_id that is found in the database
+- Bug in gene variants page (All SNVs and INDELs) when variant gene doesn't have a hgnc id that is found in the database
 - Broken export of causatives table
+- Query for genes in build 38 on `Search SNVs and INDELs` page
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Fix sidebar panel icons in Case view
 - Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
-- Verified variants displayed in a dedicated page reachable in institute sidebar
+- Verified variants displayed in a dedicated page reachable from institute sidebar
 - Unified stats in dashboard page
 
 ## [4.57.4]
