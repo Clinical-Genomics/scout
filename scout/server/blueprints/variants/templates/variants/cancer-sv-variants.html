@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import cancer_sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block %}
-{% from "variants/components.html" import external_scripts, external_stylesheets %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, sv_genes_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -134,20 +134,7 @@
     <td>{{ allele_cell(variant.normal or {}) }}</td>
 
     <td>
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          {% if variant.hgnc_symbols|length >= 5 %}
-            {{ variant.hgnc_symbols[:2]|join(', ') }} [...] {{ variant.hgnc_symbols[-2:]|join(', ') }}
-          {% else %}
-            {% for symbol in variant.hgnc_symbols %}
-              <div>{{ symbol }}</div>
-            {% endfor %}
-          {% endif %}
-        </div>
-        {% if variant.hgnc_symbols %}
-          <span class="badge bg-secondary">{{ variant.hgnc_symbols|length }}</span>
-        {% endif %}
-      </div>
+      {{sv_genes_cell(variant)}}
     </td>
   </tr>
 {% endmacro %}

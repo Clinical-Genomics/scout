@@ -24,6 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused database `sanger_ordered` and `case_id,category,rank_score` indexes (variant collection)
 - Verified variants displayed in a dedicated page reachable from institute sidebar
 - Unified stats in dashboard page
+- Improved gene info for large SVs and cancer SVs
 - Ensure genome builds are input to Scout as strings from config files and CLI input
 
 ## [4.57.4]
