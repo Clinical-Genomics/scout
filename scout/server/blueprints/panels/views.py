@@ -342,16 +342,17 @@ def gene_edit(panel_id, hgnc_id):
 def _compile_panel_versions(panels_found):
     """Aggregate list of panel names and versions for display.
 
-        Args:
-            panels(list): ['name', 1.0, 'name', 2.0]
+    Args:
+        panels(list): ['name', 1.0, 'name', 2.0]
 
-        Return:
-            aggegated_panels(list): [['name', [1.0, 2.0]]]
+    Return:
+        aggegated_panels(list): [['name', [1.0, 2.0]]]
     """
     if panels_found == []:
         return []
     [name, version], *tail = panels_found
     return _compile_panel_versions_aux(tail, [[name, [version]]])
+
 
 def _compile_panel_versions_aux(panels_found, acc):
     """Auxiliary function for `_compile_panel_versions()`. Aggregate list of panel
@@ -370,8 +371,8 @@ def _compile_panel_versions_aux(panels_found, acc):
     [name, version], *tail = panels_found
     [acc_name, version_list], *acc_tail = acc
     if name == acc_name:
-        acc_head = [acc_name, version_list +[version]]
+        acc_head = [acc_name, version_list + [version]]
         return _compile_panel_versions_aux(tail, [acc_head, *acc_tail])
     else:
         acc_head = [name, [version]]
-        return _compile_panel_versions_aux(tail, [acc_head,  [acc_name, version_list], *acc_tail])
+        return _compile_panel_versions_aux(tail, [acc_head, [acc_name, version_list], *acc_tail])
