@@ -18,6 +18,5 @@ def index():
 
     return render_template(
         "dashboard/dashboard_general.html",
-        panel=request.form.get("panel", request.args.get("panel", "general")),
         **data,
     )
