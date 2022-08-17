@@ -31,20 +31,6 @@
       {{ case.display_name }}
     </a>
   </li>
-  <li class="nav-item">
-    {% if cancer %}
-      <a class="nav-link" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type) }}">
-        {{ variant.variant_type|capitalize }} somatic variants
-      </a>
-    {% else %}
-      <a class="nav-link" href="{{ url_for('variants.variants', institute_id=institute._id, case_name=case.display_name, variant_type=variant.variant_type, gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
-        {{ variant.variant_type|capitalize }} SNV and INDELs
-      </a>
-    {% endif %}
-  </li>
-  <li class="nav-item active">
-    <p class="navbar-text">{{ variant.display_name|truncate(20, True) }}</p>
-  </li>
 {% endblock %}
 
 {% block content_main %}
@@ -59,27 +45,18 @@
     Link to the official Clinvar <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#sub_info" target="_blank">documentation</a>.
   <br><br>
     {% if pheno_hpos|length >0 or pheno_omims|length >0 %}
-      <form action="{{ url_for('variant.clinvar', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST" id="clivar_form">
-        <input type="hidden" name="main_var" value="{{ variant._id }}">
+      <form action="{{ url_for('variant.clinvar_create', institute_id=institute._id, case_name=case.display_name) }}" method="POST" id="clivar_form">
         <input type="hidden" name="case_id" value="{{ case._id }}">
-          <div class="d-flex justify-content-between">
-            <div>
-              <input type="checkbox" id="all_vars" name="all_vars" value="all_vars">
-              <label for="submit_all">Submit all pinned variants for this case</label>
-            </div>
-            <br>
-          </div>
           <div class="row">
-            {{ panel_variant('main_var') }}
+            {{ panel_variants() }}
           </div>
-          <div class="row" id="other_vars" style="display: none">
-            {{ panel_variant('other_vars') }}
-          </div>
-          <div class="col-xs-6 col-sm-6 col-md-12">
+          <br>
+          <div class="col-6 col-sm-6 col-md-12">
             <div class="text-center">
-              <button class="btn btn-lg btn-info" data-bs-toggle="modal" value="submit">Add variants to Clinvar submission</button>
+              <button class="btn btn-secondary" data-bs-toggle="modal" value="submit">Add variants to Clinvar submission</button>
             </div>
           </div>
+          <br>
       </form>
 {% else %}
     Can't submit to clinvar without specifying at least a phenotype for this case! <a class="btn btn-default" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
@@ -90,9 +67,8 @@
 {% endblock %}
 
 <!--This panel returns one table for each pinned vat to include in the submission.-->
-{% macro panel_variant(var_type) %}
+{% macro panel_variants() %}
   {% for pinned in pinned_vars %}
-    {% if var_type=='main_var' and pinned._id == variant._id or var_type=='other_vars' and not pinned._id == variant._id %}
     <input type="hidden" name="category@{{pinned._id}}" value={{pinned.category or 'snv' }}>
     <input type ="hidden" name="local_id@{{pinned._id}}" value="{{pinned._id}}">
     <input type ="hidden" name="linking_id@{{pinned._id}}" value="{{pinned._id}}">
@@ -677,7 +653,6 @@
           {% endfor %}
         {% endif %}
       {% endfor %}
-    {% endif %}
   {% endfor %}
 
 {% endmacro %}
