@@ -154,7 +154,10 @@ def variants(institute_id, case_name):
 @templated("variants/str-variants-reviewer.html")
 def test(institute_id, case_name, str_repid):
     """Display STR variant alignment using the REViewer service."""
-    variant_type = request.args.get("variant_type", "clinical")
+    if request.args.get("variant_type", "clinical") is "research":
+        variant_type = "research"
+    else:
+        variant_type = "clinical"
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.str_variants_reviewer(case_obj, str_repid)
