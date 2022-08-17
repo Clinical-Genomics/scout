@@ -75,6 +75,50 @@ def get_timeline_data(limit):
     return timeline_results
 
 
+def verified_vars(institute_id):
+    """Create content to be displayed on institute verified page
+
+    Args:
+        institute_id(str): institute["_id"] value
+
+    Returns:
+        verified(list): list of variant objects (True positive or False Positive)
+    """
+    verified = []
+    for variant_obj in store.verified(institute_id=institute_id):
+        if variant_obj["category"] in ["snv", "cancer"]:
+            update_representative_gene(
+                variant_obj, variant_obj.get("genes", [])
+            )  # required to display cDNA and protein change
+
+        verified.append(variant_obj)
+
+    return verified
+
+
+def verified_stats(institute_id, verified_vars):
+    """Create content to be displayed on institute verified page, stats chart
+
+    Args:
+        institute_id(str): institute["_id"] value
+        verified_vars(list): a list of verified varianst (True positive or False Positive)
+
+    Returns:
+        stats(tuple) -> True positives, False positives, validation unknown
+
+    """
+    true_pos = 0
+    false_pos = 0
+    for var in verified_vars:
+        if var.get("validation") == "True positive":
+            true_pos += 1
+        else:
+            false_pos += 1
+
+    n_validations_ordered = len(list(store.validations_ordered(institute_id)))
+    return true_pos, false_pos, n_validations_ordered - (true_pos + false_pos)
+
+
 def causatives(institute_obj, request):
     """Create content to be displayed on institute causatives page
 
