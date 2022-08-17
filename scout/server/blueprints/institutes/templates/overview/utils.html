@@ -242,16 +242,19 @@
               {% endif %}
             </td>
             <td><!-- Functional Annotation -->
+              <span class="text-muted">
               {% for gene in variant.genes or [] %}
                 {{gene.functional_annotation}}&nbsp;
               {% else %}
                 -
               {% endfor %}
+              </span>
             </td>
             <td><!-- Category -->
               <span class="badge bg-secondary">{{ variant.category|upper }}</span>
             </td>
             <td><!-- Callers -->
+              <span class="text-muted">
               {% for key, values in callers.items() %} <!-- keys: snv, cancer, cancer_sv, sv, str -->
                 {% if variant.category == key %}
                   {% for caller in values %}
@@ -261,6 +264,7 @@
                   {% endfor %}
                 {% endif %}
               {% endfor %}
+              </span>
             </td>
             <td><!-- CADD score -->
               {% if variant.cadd_score %}
