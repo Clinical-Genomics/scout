@@ -15,6 +15,7 @@ from scout.utils.coordinates import is_par
 from .variant_loader import VariantLoader
 
 LOG = logging.getLogger(__name__)
+MATCHQ = "$match"
 
 
 class VariantHandler(VariantLoader):
@@ -334,19 +335,17 @@ class VariantHandler(VariantLoader):
             if hit["length"] == closest_length:
                 return hit
 
-    def verified(self, institute_id):
-        """Return all verified variants for a given institute
+    def validations_ordered(self, institute_id):
+        """Return all unique variant validations ordered for a given institute (events collection)
 
         Args:
             institute_id(str): institute id
 
         Returns:
-            res(list): a list with validated variants
+            pymongo.cursor
         """
-        res = []
-
         # Build the query pipeline
-        query = {"$match": {"verb": "validate", "institute": institute_id}}
+        query = {MATCHQ: {"verb": "validate", "institute": institute_id, "category": "variant"}}
         group = {
             "$group": {
                 "_id": {
@@ -355,8 +354,20 @@ class VariantHandler(VariantLoader):
                 },
             }
         }
+        sort = {"$sort": {"_id.case": 1}}  # Sort by case _id
+        return self.event_collection.aggregate([query, group, sort])
 
-        validate_events = self.event_collection.aggregate([query, group])
+    def verified(self, institute_id):
+        """Return all verified (True Positive or False positive) variants for a given institute, sorted by case _id
+
+        Args:
+            institute_id(str): institute id
+
+        Returns:
+            res(list): a list with validated variants
+        """
+        res = []
+        validate_events = self.validations_ordered(institute_id)
         for event in validate_events:
             case_id = event["_id"]["case"]
             variant_id = event["_id"]["variant_id"]
@@ -398,7 +409,7 @@ class VariantHandler(VariantLoader):
             query = self.case_collection.aggregate(
                 [
                     {
-                        "$match": {
+                        MATCHQ: {
                             "collaborators": institute_id,
                             "causatives": {"$exists": True},
                         }
@@ -894,7 +905,7 @@ class VariantHandler(VariantLoader):
             return case_obj["variants_stats"]
 
         # Update case variant stats
-        match = {"$match": {"case_id": case_id, "institute": institute_id}}
+        match = {MATCHQ: {"case_id": case_id, "institute": institute_id}}
         group = {
             "$group": {
                 "_id": {"type": "$variant_type", "category": "$category"},

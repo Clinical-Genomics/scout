@@ -259,55 +259,68 @@ def test_variant_update_cancer_tier(
         assert resp.status_code == 302
 
 
-def test_clinvar(app, case_obj, variant_obj, institute_obj):
+def test_clinvar_create(app, institute_obj, case_obj, variant_obj):
+    """Test function that collects data to populate form for Clinvar submissions"""
     # GIVEN an initialized app
-    # GIVEN a valid user and institute
-
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
+        client.get(url_for("auto_login"))
 
-        # WHEN the page is accessed via GET request
-        resp = client.get(
-            url_for(
-                "variant.clinvar",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-                variant_id=variant_obj["_id"],
-            )
-        )
-        # Then it should return a page
-        assert resp.status_code == 200
+        # When user submits one form containing a pinned variant for the case:
+        data = {
+            "submit_pinned": "submit",  # This is the submit button
+            "clinvar_variant": variant_obj["_id"],
+        }
 
-        # WHEN instead the page is requested via POST method
-        # using a test clinvar form:
-        data = urlencode(
-            {
-                "main_var": variant_obj["_id"],
-                "@".join(["local_id", variant_obj["_id"]]): variant_obj["_id"],
-                "@".join(["chromosome", variant_obj["_id"]]): variant_obj["chromosome"],
-                "@".join(["start", variant_obj["_id"]]): variant_obj["position"],
-                "@".join(["stop", variant_obj["_id"]]): variant_obj["end"],
-                "@".join(["condition_id_value", variant_obj["_id"]]): [
-                    "HPO_HP:0001250",
-                    "OMIM_145590",
-                ],
-                "@".join(["clin_features", variant_obj["_id"]]): ["HPO_HP:0001507"],
-            }
-        )
         resp = client.post(
             url_for(
-                "variant.clinvar",
+                "variant.clinvar_create",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
-                variant_id=variant_obj["_id"],
             ),
             data=data,
-            content_type="application/x-www-form-urlencoded",
         )
-        # THEN the request status should be a redirect
+        # THEN ClinVar form page should be created correctly
+        assert resp.status_code == 200
+
+
+def test_clinvar_create_save_submission(app, institute_obj, case_obj, variant_obj):
+    """Test function part that saves collected data from a ClinaVar form into the database"""
+
+    # GIVEN variant data collected from the ClinVar form
+    data = {
+        "@".join(["local_id", variant_obj["_id"]]): variant_obj["_id"],
+        "@".join(["chromosome", variant_obj["_id"]]): variant_obj["chromosome"],
+        "@".join(["start", variant_obj["_id"]]): variant_obj["position"],
+        "@".join(["stop", variant_obj["_id"]]): variant_obj["end"],
+        "@".join(["condition_id_value", variant_obj["_id"]]): [
+            "HPO_HP:0001250",
+            "OMIM_145590",
+        ],
+        "@".join(["clin_features", variant_obj["_id"]]): ["HPO_HP:0001507"],
+    }
+
+    # GIVEN a database with no ClinVar submission documents
+    assert store.clinvar_collection.find_one() is None
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # WHEN form is submitted via POST request to the clinvar_create endpoint
+        resp = client.post(
+            url_for(
+                "variant.clinvar_create",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+        # THEN page should redirect
         assert resp.status_code == 302
+        # AND a new submission should be present in database
+        assert store.clinvar_collection.find_one()
 
 
 def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
