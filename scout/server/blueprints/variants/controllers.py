@@ -1,4 +1,3 @@
-import datetime
 import logging
 import re
 from datetime import date
@@ -38,14 +37,7 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import (
-    FILTERSFORMCLASS,
-    CancerFiltersForm,
-    CancerSvFiltersForm,
-    FiltersForm,
-    StrFiltersForm,
-    SvFiltersForm,
-)
+from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 
@@ -1600,7 +1592,13 @@ def update_form_hgnc_symbols(store, case_obj, form):
 
     hgnc_symbols = []
     not_found_ids = []
-    genome_build = "38" if case_obj and "38" in str(case_obj.get("genome_build", "37")) else "37"
+    genome_build = None
+    case_obj = case_obj or {}
+
+    for build in ["37", "38"]:
+        if build in str(case_obj.get("genome_build", "")):
+            genome_build = build
+            break
 
     # retrieve current symbols from form
     if form.hgnc_symbols.data:
@@ -1610,15 +1608,16 @@ def update_form_hgnc_symbols(store, case_obj, form):
                 hgnc_gene_caption = store.hgnc_gene_caption(int(hgnc_symbol), genome_build)
                 if hgnc_gene_caption is None:
                     not_found_ids.append(hgnc_symbol)
-                else:
-                    hgnc_symbols.append(hgnc_gene_caption.get("hgnc_symbol", hgnc_symbol))
-            else:
-                hgnc_symbols.append(hgnc_symbol)
+                    continue
+                hgnc_symbols.append(hgnc_gene_caption.get("hgnc_symbol", hgnc_symbol))
+                continue
+
+            hgnc_symbols.append(hgnc_symbol)
 
     # add HPO genes to list, if they were missing
     if "hpo" in form.data.get("gene_panels", []):
         hpo_symbols = list(
-            set(term_obj["hgnc_symbol"] for term_obj in case_obj["dynamic_gene_list"])
+            set(term_obj["hgnc_symbol"] for term_obj in case_obj.get("dynamic_gene_list", []))
         )
 
         current_symbols = set(hgnc_symbols)
