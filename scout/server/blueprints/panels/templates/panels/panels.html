@@ -39,7 +39,7 @@
       <form action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
         <div class="row">
           <div class="col-5">
-            <input type="text" name="search_for" class="form-control" placeholder="Search Gene in Panels" required
+            <input type="text" name="search_for" class="form-control typeahead_gene" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
                    pattern="^[a-zA-Z0-9_\-]*$" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
           </div>
           <div class="col">
@@ -259,9 +259,14 @@
   <br>
 {% endmacro %}
 
+
 {% block scripts %}
 {{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script type="text/javascript">
+
 
 $('.history_btn').on('click', function(){
     var bid = $(this)[0].id;
@@ -284,5 +289,26 @@ $('.modify_btn').on('click', function(){
       $(sel).fadeToggle();
     }
 });
+
+$(function(){
+console.log("called!")
+      function getNameTerms(query, process) {
+        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead_gene").typeahead({
+        name: 'dynamic_gene_add',
+        source: getNameTerms,
+        minLength: 3,
+      });
+
+      $('select[multiple]').selectpicker({
+        width: '100%'
+      });
+
+  });
+
 </script>
 {% endblock %}
