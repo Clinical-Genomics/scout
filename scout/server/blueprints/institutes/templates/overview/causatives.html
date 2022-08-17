@@ -60,7 +60,7 @@
 <div class="card mt-3">
   <div class="card-body">
       <table id="causatives_table" class="table display table-sm" cellspacing="0">
-        <thead class="thead table-light sticky-top sticky-offset">
+        <thead class="thead table-light sticky-offset">
           <tr>
             <th>Gene</th>
             <th>Variant</th>
@@ -87,11 +87,11 @@
             <td><a href="{{ url_for('variant.variant',
                 institute_id=institute._id,
                 case_name=case.display_name,
-                variant_id=variant._id) }}" data-bs-toggle='tooltip' data-bs-container='body' title="{{ variant.display_name }}">{{ variant.display_name|truncate(10, True) }}
+                variant_id=variant._id) }}">{{ variant.display_name|truncate(10, True) }}
               </a>
             </td>
             <td>
-              <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-bs-toggle='tooltip' data-bs-container='body' title="{{ group_variant.reference|truncate(30, True) }} → {{ group_variant.alternative|truncate(30, True) }}">
+              <span class="text-muted">
                 {% if group_variant.category in 'str' %}
                     {{ group_variant.alternative|truncate(10, True) | replace("<", " ") | replace(">", "")}}
                 {% else %}
@@ -101,7 +101,7 @@
             </td>
             <td>
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvs_identifier %}
-                <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-bs-toggle='tooltip' data-bs-container='body' title="{{ variant.first_rep_gene.hgvs_identifier }}">
+                <span class="text-muted">
                   {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
                 </span>
               {% else %}
@@ -110,7 +110,7 @@
             </td>
             <td>
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvsp_identifier %}
-                <span class="text-muted" style="display: inline-block; margin-left: 10px;" data-bs-toggle='tooltip' data-bs-container='body' title="{{ variant.first_rep_gene.hgvsp_identifier }}">
+                <span class="text-muted">
                   {{variant.first_rep_gene.hgvsp_identifier|truncate(15, True)}}
                 </span>
               {% else %}
