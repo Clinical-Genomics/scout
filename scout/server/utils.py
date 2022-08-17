@@ -114,6 +114,7 @@ def institute_and_case(store, institute_id, case_name=None):
             return abort(404)
 
     # validate that user has access to the institute
+
     if not current_user.is_admin:
         if institute_id not in current_user.institutes:
             if not case_name or not any(
