@@ -43,7 +43,8 @@
         </div>
         <!--Search term textfield-->
         <div class="col-4 ms-3">
-          {{ dashboard_form.search_term(class="form-control", placeholder="Search term", id="search_term") }}
+          <label class="control-label" for="search_term">search_term</label>
+          <input class="form-control" id="search_term" name="search_term" placeholder="Search term" type="text" pattern="[^<>?!=\\/]*" title="Characters ^<>?!=\/ are not allowed">
         </div>
         <!--Search term textfield-->
         <div class="col-1 ms-3">
