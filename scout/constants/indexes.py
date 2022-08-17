@@ -80,6 +80,7 @@ INDEXES = {
             name="caseid_category_chromosome_start_end",
             background=True,
         ),
+        IndexModel([("sanger_ordered", ASCENDING)], name="sanger", background=True, sparse=True),
         IndexModel(
             [("variant_id", ASCENDING), ("institute", ASCENDING)],
             name="variant_id_institute",
