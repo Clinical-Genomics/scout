@@ -72,6 +72,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Black text to make comments more visible in dark mode
 - Loading PanelApp panels replaces pre-existing panels with same version
 - Removed sidebar from Causatives page - navigation is available on the top bar for now
+- Create ClinVar submissions from pinned variants list in case page
+- Select which pinned variants will be included in ClinVar submission documents
 ### Fixed
 - Remove a:visited css style from all buttons
 - Update of HPO terms via command line

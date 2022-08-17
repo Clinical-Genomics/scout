@@ -600,7 +600,7 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
     return classification
 
 
-def build_clinvar_submission(store, request, institute_id, case_name, variant_id):
+def build_clinvar_submission(store, request, institute_id, case_name):
     """Add some variants to a ClinVar submission object or create a new ClinVar submission
 
     Args:
@@ -644,36 +644,32 @@ def build_clinvar_submission(store, request, institute_id, case_name, variant_id
     updated_submission = store.add_to_submission(open_submission["_id"], submission_objects)
 
 
-def clinvar_export(store, institute_id, case_name, variant_id):
+def clinvar_export(store, institute_obj, case_obj, variants):
     """Gather the required data for creating the clinvar submission form
 
     Args:
         store(scout.adapter.MongoAdapter)
-        institute_id(str): Institute ID
-        case_name(str): case ID
-        variant_id(str): variant._id
+        institute_obj(dict): scout.model.Institute
+        case_obj(dict): scout.model.Case
+        variants(list of strings): list of variant._ids
 
     Returns:
         data(dict): all the required data (case and variant level) to pre-fill in fields
                     in the clinvar submission form
 
     """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # If case diagnoses are a list of integers, convert into a list of dictionaries
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
     if case_diagnoses and isinstance(case_diagnoses[0], int):
         case_obj = store.convert_diagnoses_format(case_obj)
-    pinned = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
-    ]
-    variant_obj = store.variant(variant_id)
+    variant_objs = [store.variant(variant_id) or variant_id for variant_id in variants]
 
-    # gather missing transcript info from entrez (refseq id version)
-    for pinned_var in pinned:
+    # gather missing transcript info (refseq id version)
+    for var_obj in variant_objs:
         # Exclude variants that aren't loaded
-        if isinstance(pinned_var, str):
+        if isinstance(var_obj, str):
             continue
-        for gene in pinned_var.get("genes", []):
+        for gene in var_obj.get("genes", []):
             for transcript in gene.get("transcripts"):
                 refseq_id = transcript.get("refseq_id")
                 if not refseq_id:
@@ -684,7 +680,6 @@ def clinvar_export(store, institute_id, case_name, variant_id):
         today=str(date.today()),
         institute=institute_obj,
         case=case_obj,
-        variant=variant_obj,
-        pinned_vars=pinned,
+        pinned_vars=variant_objs,
         inheritance_models=CLINVAR_INHERITANCE_MODELS,
     )
