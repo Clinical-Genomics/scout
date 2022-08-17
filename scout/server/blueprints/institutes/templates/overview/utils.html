@@ -174,3 +174,159 @@
     </tbody>
   </table>
 {% endmacro %}
+
+
+{% macro variant_list_content(institute, variants, acmg_map, callers) %}
+<div class="card mt-3">
+  <div class="card-body overflow-auto">
+    <table id="verified_table" class="table display table-sm">
+      <caption>List of selected variants</caption>
+      <thead class="thead table-light sticky-offset">
+        <tr>
+          <th>Gene</th>
+          <th>Variant</th>
+          <th>Change</th>
+          <th>HGVS[c]</th>
+          <th>HGVS[p]</th>
+          <th>Functional Annotation</th>
+          <th>Category</th>
+          <th>Callers</th>
+          <th>CADD score</th>
+          <th data-bs-toggle='tooltip' data-bs-container='body' title="score(model version)">Rank score</th>
+          <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
+          <th>Inheritance</th>
+          <th>ACMG</th>
+          <th>Case</th>
+          <th>Validated status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for variant in variants %}
+          {% set case = variant["case_obj"] %}
+          <tr>
+            <td><!-- Gene -->
+              <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
+            </td>
+            <td><!-- Variant -->
+              <a href="{{ url_for('variant.variant',
+                  institute_id=institute._id,
+                  case_name=case.display_name,
+                  variant_id=variant._id) }}">{{ variant.display_name|truncate(15, True) }}
+              </a>
+            </td>
+            <td><!-- Change -->
+              <span class="text-muted">
+                {% if variant.category in 'str' %}
+                    {{ variant.alternative|truncate(10, True) | replace("<", " ") | replace(">", "")}}
+                {% else %}
+                    {{ variant.reference|truncate(10, True) }} → {{ variant.alternative|truncate(10, True) }}
+                {% endif%}
+              </span>
+            </td>
+            <td><!-- HGVS[c] -->
+              {% if variant.first_rep_gene and variant.first_rep_gene.hgvs_identifier %}
+                <span class="text-muted">
+                  {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
+                </span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td><!-- HGVS[p] -->
+              {% if variant.first_rep_gene and variant.first_rep_gene.hgvsp_identifier %}
+                <span class="text-muted">
+                  {{variant.first_rep_gene.hgvsp_identifier|truncate(15, True)}}
+                </span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td><!-- Functional Annotation -->
+              <span class="text-muted">
+              {% for gene in variant.genes or [] %}
+                {{gene.functional_annotation}}&nbsp;
+              {% else %}
+                -
+              {% endfor %}
+              </span>
+            </td>
+            <td><!-- Category -->
+              <span class="badge bg-secondary">{{ variant.category|upper }}</span>
+            </td>
+            <td><!-- Callers -->
+              <span class="text-muted">
+              {% for key, values in callers.items() %} <!-- keys: snv, cancer, cancer_sv, sv, str -->
+                {% if variant.category == key %}
+                  {% for caller in values %}
+                    {% if caller.id in variant %}
+                      {{caller.name}}:{{variant[caller.id]}}&nbsp;
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+              </span>
+            </td>
+            <td><!-- CADD score -->
+              {% if variant.cadd_score %}
+                <span class="badge bg-secondary">{{ variant.cadd_score }}</span>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td><!-- Rank score -->
+              <a href="#"><span class="badge rounded-pill bg-secondary">
+              {{ variant.rank_score }}
+              {% if variant.category == 'sv' %}
+                (v. {{case.sv_rank_model_version or 'na'}})
+              {% else %}
+                (v. {{case.rank_model_version or 'na'}})
+              {% endif %}
+              </span></a>
+            </td>
+            <td><!-- Zygosity -->
+              {%- for sample in variant.samples -%}
+                {%- for ind in case.individuals -%}
+                  {%- if sample.sample_id == ind.individual_id -%}
+                    {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
+                    <span data-bs-toggle='tooltip' data-bs-container='body' title="{{allele_depths}}" class="badge bg-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}} AD:{{sample.allele_depths[0]}}|{{sample.allele_depths[1]}}</span>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endfor -%}
+            </td>
+            <td><!-- Inheritance -->
+              {% for model in variant.genetic_models %}
+              <span class="badge bg-info">{{model}}</span>
+              {% endfor %}
+            </td>
+            <td><!-- ACMG -->
+              <a href="#" data-bs-toggle="tooltip" title="ACMG classification assigned by Scout users (not Clinvar)"
+                style="text-decoration: none; color: #000;">
+                {% if 'acmg_classification' in variant %}
+                <span class="badge bg-{{acmg_map[variant.acmg_classification].color}}">{{acmg_map[variant.acmg_classification].short}}</span>
+                {% else %}
+                -
+                {% endif %}
+              </a>
+            </td>
+            <td><!-- Case -->
+              <a href="{{ url_for('cases.case',
+                                        institute_id=institute._id,
+                                        case_name=case.display_name) }}">
+                {{ case.display_name }}
+              </a>
+              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }} me-1">
+                {{ case.status }}
+              </span>
+            </td>
+            <td><!-- Validated status -->
+              <span class="badge bg-{{ 'success' if variant.validation == 'True positive' else 'danger' }} me-1">
+                {{ variant.validation }}
+              </span>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endmacro %}

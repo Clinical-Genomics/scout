@@ -18,7 +18,15 @@ from flask_login import current_user
 from pymongo import DESCENDING
 from werkzeug.datastructures import Headers
 
-from scout.constants import CASEDATA_HEADER, CLINVAR_HEADER, VERBS_ICONS_MAP, VERBS_MAP
+from scout.constants import (
+    ACMG_COMPLETE_MAP,
+    ACMG_MAP,
+    CALLERS,
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    VERBS_ICONS_MAP,
+    VERBS_MAP,
+)
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes
@@ -66,6 +74,21 @@ def api_cases(institute_id):
 def cases(institute_id):
     """Display a list of cases for an institute."""
     return controllers.cases(store, request, institute_id)
+
+
+@blueprint.route("/<institute_id>/verified")
+@templated("overview/verified.html")
+def verified(institute_id):
+    institute_obj = institute_and_case(store, institute_id)
+    verified_vars = controllers.verified_vars(institute_id)
+    verified_stats = controllers.verified_stats(institute_id, verified_vars)
+    return dict(
+        institute=institute_obj,
+        verified=verified_vars,
+        verified_stats=verified_stats,
+        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
+        callers=CALLERS,
+    )
 
 
 @blueprint.route("/<institute_id>/causatives")
