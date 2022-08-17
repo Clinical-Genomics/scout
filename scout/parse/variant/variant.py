@@ -291,7 +291,7 @@ def get_filters(variant):
     """Get variant filters
 
     Args:
-        variant(dict)
+        variant(cyvcf2.Variant)
     Return:
         variant filter()
     """
