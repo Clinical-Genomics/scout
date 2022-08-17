@@ -149,9 +149,7 @@ def variants(institute_id, case_name):
     )
 
 
-@variants_bp.route(
-    "/test/<institute_id>/<case_name>/str/variants/<str_repid>", methods=["GET", "POST"]
-)
+@variants_bp.route("/test/<institute_id>/<case_name>/str/variants/<str_repid>", methods=["GET"])
 @templated("variants/str-variants-reviewer.html")
 def reviewer_aln(institute_id, case_name, str_repid):
     """Display STR variant alignment using the REViewer service."""
