@@ -766,7 +766,7 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
 
     all_hpo_gene_list_genes = set()
     # Loop over the dynamic phenotypes of a case
-    for hpo_id in hpo_gene_list:
+    for hpo_id in hpo_gene_list or []:
         hpo_term = store.hpo_term(hpo_id)
         # Check that HPO term exists in database
         if hpo_term is None:
