@@ -208,7 +208,7 @@
               <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
             </td>
             <td><!-- Variant link -->
-              {% set var_type_page = {"snv":"variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "str":"variant.str_variant"} %}
+              {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
               {% for key, page in var_type_page.items() %}
                 {% if variant.category == key %}
                   <a href="{{ url_for(page,
