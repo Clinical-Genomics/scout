@@ -516,7 +516,7 @@ class CaseHandler(object):
                     "dynamic_panel_phenotypes": phenotype_ids
                     or case.get("dynamic_panel_phenotypes", []),
                     "dynamic_gene_list_edited": (add_only or delete_only)
-                    or (dynamic_gene_list and not dynamic_panel_phenotypes),
+                    or (dynamic_gene_list and not phenotype_ids),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
