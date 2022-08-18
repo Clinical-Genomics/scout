@@ -490,17 +490,14 @@ class CaseHandler(object):
 
         res = []
         if hgnc_ids:
-            LOG.info("Fetching genes by hgnc id: {}".format(hgnc_ids))
             res = self.hgnc_collection.find({"hgnc_id": {"$in": hgnc_ids}, "build": build})
         elif hgnc_symbols:
-            LOG.info("Fetching genes by hgnc symbols")
             for symbol in hgnc_symbols:
                 those_genes = self.gene_aliases(symbol=symbol, build=build)
                 for gene_obj in those_genes:
                     res.append(gene_obj)
 
         for gene_obj in res:
-            LOG.debug("Appending gene {}".format(gene_obj["hgnc_symbol"]))
             dynamic_gene_list.append(
                 {
                     "hgnc_symbol": gene_obj["hgnc_symbol"],
@@ -513,8 +510,7 @@ class CaseHandler(object):
             {
                 "$set": {
                     "dynamic_gene_list": dynamic_gene_list,
-                    "dynamic_panel_phenotypes": phenotype_ids
-                    or case.get("dynamic_panel_phenotypes", []),
+                    "dynamic_panel_phenotypes": phenotype_ids,
                     "dynamic_gene_list_edited": (add_only or delete_only)
                     or (dynamic_gene_list and not phenotype_ids),
                 }
