@@ -54,11 +54,10 @@ def panels():
     if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string
         # TODO: removed escape of form input, sonarcloud will complain
-        search_string = request.form.getlist("search_for")
         hgnc_symbols = ""
+        search_string = request.form.get("search_for")
         try:
-            hgnc_symbols = parse_raw_gene_ids(search_string)
-
+            hgnc_symbols = parse_raw_gene_ids([search_string])
         except ValueError:
             flash(
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
