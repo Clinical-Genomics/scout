@@ -25,6 +25,7 @@ from scout.server.utils import (
     user_institutes,
 )
 from scout.utils.gene import parse_raw_gene_ids
+
 from . import controllers
 from .forms import PanelGeneForm
 
