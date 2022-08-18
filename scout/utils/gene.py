@@ -1,5 +1,7 @@
 import logging
+
 LOG = logging.getLogger(__name__)
+
 
 def get_correct_gene(hgnc_symbol, genes):
     """Check which of the genes in query result that is the correct one
@@ -17,7 +19,6 @@ def get_correct_gene(hgnc_symbol, genes):
         # if one of the gene matches the hgnc symbol return the correct one
         if hgnc_symbol == gene["hgnc_symbol"]:
             return gene
-
 
 
 def parse_raw_gene_symbols(raw_symbols_list):
@@ -65,6 +66,3 @@ def parse_raw_gene_ids(raw_symbols):
     LOG.debug("Parsed HGNC symbols {}".format(hgnc_ids))
 
     return hgnc_ids
-
-
-        

@@ -362,7 +362,6 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
-
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes/actions", methods=["POST"])
 def phenotypes_actions(institute_id, case_name):
     """Perform actions on multiple phenotypes."""
@@ -396,12 +395,11 @@ def phenotypes_actions(institute_id, case_name):
         try:
             hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
         except ValueError:
-                        flash(
-                    "Provided gene info could not be parsed! "
-                    "Please allow autocompletion to finish.",
-                    "warning",
-                )
-        #TODO: dont crash
+            flash(
+                "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
+                "warning",
+            )
+        # TODO: dont crash
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
     if action == "GENES":

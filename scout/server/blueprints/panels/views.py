@@ -61,8 +61,7 @@ def panels():
 
         except ValueError:
             flash(
-                "Provided gene info could not be parsed! "
-                "Please allow autocompletion to finish.",
+                "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
         # TODO: dont crash after error
