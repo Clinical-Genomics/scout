@@ -424,12 +424,7 @@ def phenotypes_actions(institute_id, case_name):
     user_obj = store.user(current_user.email)
 
     if action == "PHENOMIZER":
-        if len(hpo_ids) == 0:
-            hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
-
-        username = current_app.config["PHENOMIZER_USERNAME"]
-        password = current_app.config["PHENOMIZER_PASSWORD"]
-        diseases = controllers.hpo_diseases(username, password, hpo_ids)
+        diseases = controllers.phenomizer_diseases(hpo_ids, case_obj)
         if diseases:
             return render_template(
                 "cases/diseases.html",
@@ -447,13 +442,20 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
+    if action == "REMOVEGENES":  # Remove one or more genes from the dynamic gene list
+        case_dynamic_genes = [dyn_gene["hgnc_id"] for dyn_gene in case_obj.get("dynamic_gene_list")]
+        genes_to_remove = [int(gene_id) for gene_id in request.form.getlist("dynamicGene")]
+        store.update_dynamic_gene_list(
+            case_obj,
+            hgnc_ids=list(set(case_dynamic_genes) - set(genes_to_remove)),
+            delete_only=True,
+        )
+
     if action == "GENES":
         hgnc_symbols = parse_raw_gene_symbols(request.form.getlist("genes"))
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
 
     if action == "GENERATE":
-        if len(hpo_ids) == 0:
-            hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
         results = store.generate_hpo_gene_list(*hpo_ids)
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get("min_match") or 1)
