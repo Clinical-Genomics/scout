@@ -27,9 +27,13 @@ samples:
     tissue_type: blood
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
+    reviewer:
+        'reads': 'scout/demo/ACC5963A1_lanes_1234.cram'
+        'reads_index': 'scout/demo/ACC5963A1_lanes_1234.cram.crai'
+        'vcf': 'scout/demo/ACC5963A1_lanes_1234.vcf'
+        'catalog': 'scout/demo/STR.json'
     rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
-
     chromograph_images:
         'autozygous': 'scout/demo/images/chromograph_demo/autozygous_regions'
         'coverage': 'scout/demo/images/chromograph_demo/coverage'

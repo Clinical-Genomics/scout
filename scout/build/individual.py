@@ -1,7 +1,7 @@
 import logging
 import os
 
-from scout.constants import REV_PHENOTYPE_MAP, REV_SEX_MAP, ANALYSIS_TYPES
+from scout.constants import ANALYSIS_TYPES, REV_PHENOTYPE_MAP, REV_SEX_MAP
 from scout.exceptions import PedigreeError
 
 log = logging.getLogger(__name__)
@@ -109,6 +109,7 @@ def build_individual(ind):
     ind_obj["confirmed_parent"] = ind.get("confirmed_parent")
     ind_obj["predicted_ancestry"] = ind.get("predicted_ancestry")
     ind_obj["chromograph_images"] = ind.get("chromograph_images")
+    ind_obj["reviewer"] = ind.get("reviewer")
 
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')

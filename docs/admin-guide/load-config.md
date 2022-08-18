@@ -67,7 +67,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **smn2_cn** _Int_ Copynumber.
     - **smn2delta78_cn** _Int_ Copynumber.
     - **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
-    - **srs_files** _List_ [Reference][srs]
+    - **reviewer** _List_ [Reference][srs]
       - **reads** _String_ Path to BAM/CRAM file to view STR alignments
       - **reads_index** _String_ Path to BAM/CRAM index file to view STR alignments
       - **vcf** _String_ Path to STR VCF file to view STR alignments
