@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Verified variants displayed in a dedicated page reachable from institute sidebar
 - Unified stats in dashboard page
 - Improved gene info for large SVs and cancer SVs
+- Remove the unused `variant.str_variant` endpoint from variant views
 - Causatives and Verified variants pages to use the same template macro
 
 ## [4.57.4]
