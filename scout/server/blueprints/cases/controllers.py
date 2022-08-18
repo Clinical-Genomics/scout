@@ -55,11 +55,14 @@ JSON_HEADERS = {
 COVERAGE_REPORT_TIMEOUT = 20
 
 
-def phenomizer_diseases(hpo_ids, case_obj):
+def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
     """Return the list of HGNC symbols that match annotated HPO terms on Phenomizer
     Args:
         hpo_ids(list)
         case_obj(models.Case)
+
+    Returns:
+        diseases(list of dictionaries) or None. Results contains the following key/values: p_value, gene_symbols, disease_nr, disease_source, OMIM, description, raw_line
     """
     if len(hpo_ids) == 0:
         hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
@@ -68,7 +71,7 @@ def phenomizer_diseases(hpo_ids, case_obj):
     password = current_app.config["PHENOMIZER_PASSWORD"]
     try:
         results = query_phenomizer.query(username, password, *hpo_ids)
-        diseases = [result for result in results if result["p_value"] <= 1]
+        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
         return diseases
     except RuntimeError:
         flash("Could not establish a conection to Phenomizer", "danger")
