@@ -24,7 +24,7 @@ from scout.server.utils import (
     templated,
     user_institutes,
 )
-
+from scout.utils.gene import parse_raw_gene_ids
 from . import controllers
 from .forms import PanelGeneForm
 
@@ -53,9 +53,26 @@ def panels():
     search_string = ""
     if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string
-        search_string = escape(request.form.get("search_for"))
-        panels_found = store.search_panels(search_string)
-        panels_found_compiled = _compile_panel_versions(panels_found)
+        # TODO: removed escape of form input, sonarcloud will complain
+        search_string = request.form.getlist("search_for")
+        hgnc_symbols = ""
+        try:
+            hgnc_symbols = parse_raw_gene_ids(search_string)
+
+        except ValueError:
+            flash(
+                "Provided gene info could not be parsed! "
+                "Please allow autocompletion to finish.",
+                "warning",
+            )
+        # TODO: dont crash after error
+        LOG.debug("SEARCH: {}".format(search_string))
+        LOG.debug("HGNC: {}".format(hgnc_symbols))
+
+        for hgnc_id in hgnc_symbols:
+            panels_found = store.search_panels(hgnc_id)
+            panels_found_compiled.extend(_compile_panel_versions(panels_found))
+            LOG.debug("FOUND: {}".format(panels_found_compiled))
     # Add new panel
     elif request.method == "POST":
         "search_for"
