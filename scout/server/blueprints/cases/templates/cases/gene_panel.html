@@ -83,13 +83,15 @@
 {% macro hpo_genelist_panel(case, institute, config) %}
   <div id="hpo_genelist_panel">
     <div>
-      <h6 class="ms-3 mt-3"><span class="fas fa-clipboard-list"></span>&nbsp;HPO gene panel ({{ case.dynamic_gene_list|length }} genes)
+      <h6 class="ms-3 mt-3"><span class="fas fa-clipboard-list"></span>&nbsp;HPO gene panel ({{ case.dynamic_gene_list|length }} genes
         {%- if case.dynamic_panel_phenotypes %},
-        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
-            {{ case.dynamic_panel_phenotypes|length }} phenotypes
-            {% if case.dynamic_gene_list_edited %} <span class="text-danger ml-3"> (edited) </span> {% endif %}
-        </span>
+          <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
+              {{ case.dynamic_panel_phenotypes|length }} phenotypes
+
+          </span>
         {% endif %}
+        )
+        {% if case.dynamic_gene_list_edited %} <span class="text-danger ml-3"> (edited) </span> {% endif %}
         {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
           <a class="pull-right" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage</a>
           <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
