@@ -455,6 +455,7 @@ class CaseHandler(object):
         hgnc_ids=None,
         phenotype_ids=None,
         add_only=False,
+        delete_only=False,
     ):
         """Update the dynamic gene list for a case
 
@@ -471,7 +472,8 @@ class CaseHandler(object):
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
             phenotype_ids(list): optionally add phenotype_ids used to generate list
-            add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
+            add_only(bool): set by ADDGENE to add genes, and NOT reset previous dynamic_gene_list
+            delete_only(bool): set by REMOVEGENES when user removes genes from the auto-generated HPO panel
 
         Returns:
             updated_case(dict)
@@ -485,8 +487,6 @@ class CaseHandler(object):
                     {"_id": case["_id"]}, {"dynamic_gene_list": 1, "_id": 0}
                 ).get("dynamic_gene_list", [])
             )
-
-            LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
 
         res = []
         if hgnc_ids:
@@ -508,8 +508,6 @@ class CaseHandler(object):
                     "description": gene_obj["description"],
                 }
             )
-
-        LOG.info("Update dynamic gene panel for: %s", case["display_name"])
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {
@@ -517,11 +515,11 @@ class CaseHandler(object):
                     "dynamic_gene_list": dynamic_gene_list,
                     "dynamic_panel_phenotypes": phenotype_ids
                     or case.get("dynamic_panel_phenotypes", []),
+                    "dynamic_gene_list_edited": add_only or delete_only,
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def case(self, case_id=None, institute_id=None, display_name=None):

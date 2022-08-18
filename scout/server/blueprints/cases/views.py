@@ -446,7 +446,9 @@ def phenotypes_actions(institute_id, case_name):
         case_dynamic_genes = [dyn_gene["hgnc_id"] for dyn_gene in case_obj.get("dynamic_gene_list")]
         genes_to_remove = [int(gene_id) for gene_id in request.form.getlist("dynamicGene")]
         store.update_dynamic_gene_list(
-            case_obj, hgnc_ids=list(set(case_dynamic_genes) - set(genes_to_remove))
+            case_obj,
+            hgnc_ids=list(set(case_dynamic_genes) - set(genes_to_remove)),
+            delete_only=True,
         )
 
     if action == "GENES":
