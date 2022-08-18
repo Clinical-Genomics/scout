@@ -104,26 +104,6 @@ def sv_variant(institute_id, case_name, variant_id):
     return data
 
 
-@variant_bp.route("/<institute_id>/<case_name>/str/variants/<variant_id>")
-@templated("variant/str-variant.html")
-def str_variant(institute_id, case_name, variant_id):
-    """Display a specific STR variant."""
-    data = variant_controller(
-        store,
-        institute_id,
-        case_name,
-        variant_id,
-        add_other=False,
-        get_overlapping=False,
-    )
-    if data is None:
-        flash("An error occurred while retrieving variant object", "danger")
-        return redirect(
-            url_for("variants.str_variants", institute_id=institute_id, case_name=case_name)
-        )
-    return data
-
-
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"])
 @templated("variant/acmg.html")
 def variant_acmg(institute_id, case_name, variant_id):
