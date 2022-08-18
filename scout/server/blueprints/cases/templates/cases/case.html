@@ -561,6 +561,13 @@ function SidebarCollapse () {
 }
 
 function dynamicGenesCheck(source){
+  if(source.name === "dynamicGene"){
+    if(source.checked === false){
+      var checkAllGenes = document.getElementById('checkAllGenes');
+      checkAllGenes.checked = source.checked;
+    }
+    return;
+  }
   var checkboxes = document.getElementsByName('dynamicGene');
   for(var i=0, n=checkboxes.length;i<n;i++) {
     checkboxes[i].checked = source.checked;

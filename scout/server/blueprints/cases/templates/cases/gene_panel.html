@@ -108,7 +108,7 @@
           <form id="dynamicGenes" method="POST" action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name) }}" >
             <i>
             {% for hpo_gene in case.dynamic_gene_list %}
-              <input type="checkbox" name="dynamicGene" id="dynamicGene" value="{{hpo_gene.hgnc_id}}">
+              <input type="checkbox" name="dynamicGene" id="dynamicGene" value="{{hpo_gene.hgnc_id}}" onChange="dynamicGenesCheck(this)">
               <input type="hidden" name="action" value="REMOVEGENES">
               {{ hpo_gene.hgnc_symbol }}
               &nbsp;&nbsp;
