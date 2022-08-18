@@ -456,7 +456,6 @@ def phenotypes_actions(institute_id, case_name):
         store.update_dynamic_gene_list(case_obj, hgnc_symbols=list(hgnc_symbols))
 
     if action == "GENERATE":
-        hpo_ids = hpo_ids
         results = store.generate_hpo_gene_list(*hpo_ids)
         # determine how many HPO terms each gene must match
         hpo_count = int(request.form.get("min_match") or 1)
