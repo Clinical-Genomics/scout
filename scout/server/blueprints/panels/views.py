@@ -56,7 +56,7 @@ def panels():
         # Query db for panels containing the search string
         # TODO: removed escape of form input, sonarcloud will complain
         hgnc_symbols = ""
-        search_string = request.form.get("search_for")
+        search_string = escape(request.form.get("search_for"))
         try:
             hgnc_symbols = parse_raw_gene_ids([search_string])
         except ValueError:
