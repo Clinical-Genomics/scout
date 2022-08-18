@@ -273,7 +273,7 @@
 {% macro hpo_item(hpo_term, case) %}
   {% if hpo_term %}
     <input type="checkbox" name="hpo_id" value="{{ hpo_term.phenotype_id }}"
-           {% if selected_ids and hpo_term.phenotype_id in selected_ids %}checked{% endif %}>
+           {% if case.dynamic_panel_phenotypes and hpo_term.phenotype_id in case.dynamic_panel_phenotypes %} checked {% endif %}>
     {{ hpo_term.feature }}
     <span class="badge bg-info">
       <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
