@@ -382,6 +382,7 @@ class VariantHandler(VariantLoader):
                 "display_name": case_obj["display_name"],
                 "individuals": case_obj["individuals"],
                 "status": case_obj["status"],
+                "partial_causatives": case_obj.get("partial_causatives", []),
             }
             res.append(var_obj)
 
