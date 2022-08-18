@@ -4,7 +4,7 @@ from datetime import date
 
 import bson
 import requests
-from flask import Markup, Response, flash, url_for
+from flask import Markup, Response, current_app, flash, url_for
 from flask_login import current_user
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
@@ -194,15 +194,23 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 
 def str_variants_reviewer(
     case_obj,
+    individual,
     str_repid,
 ):
+    """Controller populating data and calling REViewer Service to fetch svg."""
     print("str_variants_reviewer", str_repid)
-    alignment_path = case_obj.get("alignment_path")
-    url = "http://127.0.0.1:8000/reviewer"
+
+    for ind in case_obj.get("individuals"):
+        if ind.get("individual_id") == individual:
+            continue
+
+    ind_reviewer = ind.get("reviewer")
+    url = current_app.config.get("SCOUT_REVIEWER_URL")
     data = {
-        "reads": alignment_path,
-        "reads_index": f"{alignment_path}.bai",
-        "vcf": "/Users/fredrik/Dropbox/_projects/summer2021/dev/Scout-REViewer-service/tests/test_data/justhusky_exphun_hugelymodelbat.vcf",
+        "reads": ind_reviewer.get("reads"),
+        "reads_index": ind_reviewer.get("reads_index"),
+        "vcf": ind_reviewer.get("vcf"),
+        "catalog": ind_reviewer.get("catalog"),
         "locus": str_repid,
     }
     resp = requests.post(url, json=data)

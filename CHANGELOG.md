@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Documentation on how to create/update PanelApp panels
 - Add filter by local observations (archive) to structural variants filters
+- `Scout-REViewer-Service` integration - show `REViewer` picture if available
 ### Fixed
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
@@ -18,7 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Query for genes in build 38 on `Search SNVs and INDELs` page
 - Prevent typing special characters `^<>?!=\/` in case search form
 ### Changed
-- State that loqusdb observation is in current case if observations count is one and no cases are shown  
+- State that loqusdb observation is in current case if observations count is one and no cases are shown
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Fix sidebar panel icons in Case view
@@ -199,10 +200,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.50.1]
 ### Fixed
 - Show matching causative STR_repid for legacy str variants (pre Stranger hgnc_id)
-
-## [4.50]
-### Added
-- `Scout-REViewer-Service` integration - show `REViewer` picture if available
 
 ## [4.50]
 ### Added
