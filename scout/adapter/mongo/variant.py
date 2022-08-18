@@ -378,7 +378,11 @@ class VariantHandler(VariantLoader):
             if var_obj.get("validation") is None or var_obj.get("validation") == "Not validated":
                 continue
 
-            var_obj["case_obj"] = case_obj
+            var_obj["case_obj"] = {
+                "display_name": case_obj["display_name"],
+                "individuals": case_obj["individuals"],
+                "status": case_obj["status"],
+            }
             res.append(var_obj)
 
         return res
