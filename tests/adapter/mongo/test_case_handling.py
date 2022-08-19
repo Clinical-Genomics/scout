@@ -742,7 +742,7 @@ def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj,
     assert len([case for case in adapter.cases(finished=True, within_days=1)]) == 1
 
 
-def test_sanger_ordered_cases(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
+def test_verification_missing_cases(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
     """Test cases adapter function to retrieve case _ids with Sanger ordered validations (not verified)"""
     adapter = real_adapter
     adapter.case_collection.insert_one(case_obj)
@@ -753,7 +753,7 @@ def test_sanger_ordered_cases(real_adapter, case_obj, user_obj, institute_obj, v
 
     # WHEN querying for cases with Sanger validation pending
     # THEN one case is found
-    assert len(adapter.sanger_ordered_cases(institute_obj["_id"])) == 1
+    assert len(adapter.verification_missing_cases(institute_obj["_id"])) == 1
 
 
 def test_keep_manual_rank_tag_after_reupload(

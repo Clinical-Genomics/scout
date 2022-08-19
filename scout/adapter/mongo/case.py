@@ -414,7 +414,7 @@ class CaseHandler(object):
             recent_cases.add(event["case"])
         return list(recent_cases)
 
-    def validation_missing_cases(self, institute_id):
+    def verification_missing_cases(self, institute_id):
         """Fetch all cases with at least a variant with validation ordered but still pending
         Args:
             institute_id(str): id of an institute
@@ -425,19 +425,19 @@ class CaseHandler(object):
         sanger_missing_cases = []
         sanger_ordered_by_case = self.sanger_ordered(
             institute_id=institute_id
-        )  # A list of dictionaries [{"case_id":[variant_id1, variant_id2], ..}]
-
-        for case_id, var_list in sanger_ordered_by_case.items():
-            if self.case(case_id=case_id) is None:
+        )  # a list of dictionaries like this: [{'_id': 'internal_id', 'vars': ['a1d6df24404c007570021531b80b1e1e']}, ..]
+        for case_variants in sanger_ordered_by_case:
+            if self.case(case_id=case_variants["_id"]) is None:
                 continue
-            for variant_id in var_list:
-                var_obj = self.variant(document_id=variant_id)
+            for variant_id in case_variants["vars"]:
+                var_obj = self.variant(case_id=case_variants["_id"], document_id=variant_id)
+
                 if var_obj is None or var_obj.get("validation") in [
                     "True positive",
                     "False positive",
                 ]:
                     continue
-                sanger_missing_cases.add(case_id)
+                sanger_missing_cases.append(case_variants["_id"])
 
         return sanger_missing_cases
 
