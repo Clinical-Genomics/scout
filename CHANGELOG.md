@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken export of causatives table
 - Query for genes in build 38 on `Search SNVs and INDELs` page
 - Prevent typing special characters `^<>?!=\/` in case search form
+- Search matching causatives also among research variants in other cases
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown  
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page

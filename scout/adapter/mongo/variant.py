@@ -11,6 +11,7 @@ from cyvcf2 import VCF
 
 # Local modules
 from scout.utils.coordinates import is_par
+from scout.utils.md5 import generate_md5_key
 
 from .variant_loader import VariantLoader
 
@@ -473,7 +474,7 @@ class VariantHandler(VariantLoader):
         Args:
             case_obj (dict): A Case object.
             institute_obj (dict): An Institute object.
-            positional_variant_ids (iterable): A set of possible positional variant ids to look for
+            positional_variant_ids (iterable): A set of possible variant_ids (md5 key based upon a list like this: [ "17", "7577559", "G" "A", "research"]
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
@@ -537,13 +538,20 @@ class VariantHandler(VariantLoader):
                 continue
             other_link = var_event["link"]
             # link contains other variant ID
-            other_causative_id = other_link.split("/")[-1]
+            other_causative_id = other_link.split("/")[-1]  # md5-key _id of a variant
 
-            if other_causative_id in other_case.get("causatives", []):
-                positional_variant_ids.add(var_event["variant_id"])
+            if (
+                other_causative_id not in other_case.get("causatives", [])
+                and other_causative_id not in other_case.get("partial_causatives", {}).keys()
+            ):
+                continue
 
-            if other_causative_id in other_case.get("partial_causatives", {}).keys():
-                positional_variant_ids.add(var_event["variant_id"])
+            other_var_simple = var_event.get("subject").split("_")[
+                0:4
+            ]  # example: [ "17", "7577559", "G" "A"]
+
+            for variant_type in ["clinical", "reseach"]:
+                positional_variant_ids.add(generate_md5_key(other_var_simple + [variant_type]))
 
         return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
 

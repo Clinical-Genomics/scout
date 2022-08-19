@@ -3,13 +3,10 @@
 variant = dict(
     # document_id is a md5 string created by institute_genelist_caseid_variantid:
     _id=str,  # required, same as document_id
-    document_id=str,  # required
-    # variant_id is a md5 string created by chrom_pos_ref_alt (simple_id)
-    variant_id=str,  # required
-    # display name is variant_id (no md5)
-    display_name=str,  # required
-    # chrom_pos_ref_alt
-    simple_id=str,
+    document_id=str,  # required. Same as _id
+    variant_id=str,  # required. A md5 string created by [ chrom, pos, ref, alt, variant_type]
+    display_name=str,  # required. no md5. chrom_pos_ref_alt_variant_type
+    simple_id=str,  # required. A string created by chrom_pos_ref_alt
     # The variant can be either research or clinical.
     # For research variants we display all the available information while
     # the clinical variants have limited annotation fields.
