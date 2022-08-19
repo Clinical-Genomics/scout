@@ -95,7 +95,12 @@ def verified(institute_id):
 @templated("overview/causatives.html")
 def causatives(institute_id):
     institute_obj = institute_and_case(store, institute_id)
-    return controllers.causatives(institute_obj, request)
+    return dict(
+        institute=institute_obj,
+        causatives=controllers.causatives(institute_obj, request),
+        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
+        callers=CALLERS,
+    )
 
 
 @blueprint.route("/<institute_id>/filters", methods=["GET"])

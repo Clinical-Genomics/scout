@@ -127,7 +127,7 @@ def causatives(institute_obj, request):
         request(flask.request) request sent by user's browser
 
     Returns:
-        data(dict)
+        causatives(list of dictionaries)
     """
     # Retrieve variants grouped by case
     query = request.args.get("query", "")
@@ -139,37 +139,26 @@ def causatives(institute_obj, request):
         except ValueError:
             flash("Provided gene info could not be parsed!", "warning")
 
-    variants = list(store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id))
-    if variants:
-        variants = sorted(
-            variants,
-            key=lambda k: k.get("hgnc_symbols", [None])[0] or k.get("str_repid") or "",
-        )
+    causatives = []
 
-    all_variants = {}
-    all_cases = {}
-    for variant_obj in variants:
+    for variant_obj in store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
         if variant_obj["category"] in ["snv", "cancer"]:
             update_representative_gene(
                 variant_obj, variant_obj.get("genes", [])
             )  # required to display cDNA and protein change
-        if variant_obj["case_id"] not in all_cases:
-            case_obj = store.case(variant_obj["case_id"])
-            all_cases[variant_obj["case_id"]] = case_obj
-        else:
-            case_obj = all_cases[variant_obj["case_id"]]
+        case_obj = store.case(variant_obj["case_id"])
+        if not case_obj:
+            continue
+        variant_obj["case_obj"] = {
+            "display_name": case_obj["display_name"],
+            "individuals": case_obj["individuals"],
+            "status": case_obj.get("status"),
+            "partial_causatives": case_obj.get("partial_causatives", []),
+        }
 
-        if variant_obj["variant_id"] not in all_variants:
-            all_variants[variant_obj["variant_id"]] = []
+        causatives.append(variant_obj)
 
-        all_variants[variant_obj["variant_id"]].append((case_obj, variant_obj))
-
-    data = dict(
-        institute=institute_obj,
-        variant_groups=all_variants,
-        acmg_map={key: ACMG_COMPLETE_MAP[value] for key, value in ACMG_MAP.items()},
-    )
-    return data
+    return causatives
 
 
 def institutes():
