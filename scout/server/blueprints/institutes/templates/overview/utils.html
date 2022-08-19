@@ -207,12 +207,17 @@
             <td><!-- Gene -->
               <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
             </td>
-            <td><!-- Variant -->
-              <a href="{{ url_for('variant.variant',
-                  institute_id=institute._id,
-                  case_name=case.display_name,
-                  variant_id=variant._id) }}">{{ variant.display_name|truncate(15, True) }}
-              </a>
+            <td><!-- Variant link -->
+              {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
+              {% for key, page in var_type_page.items() %}
+                {% if variant.category == key %}
+                  <a target="_blank" rel="noopener noreferrer" href="{{ url_for(page,
+                      institute_id=institute._id,
+                      case_name=case.display_name,
+                      variant_id=variant._id) }}">{{ variant.display_name|truncate(15, True) }}
+                  </a>
+                {% endif %}
+              {% endfor %}
             </td>
             <td><!-- Change -->
               <span class="text-muted">
@@ -314,14 +319,19 @@
                                         case_name=case.display_name) }}">
                 {{ case.display_name }}
               </a>
-              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }} me-1">
+              <span class="badge bg-{{ 'success' if case.status == 'solved' else 'default' }}">
                 {{ case.status }}
               </span>
+              {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
+                <span class="badge bg-warning" data-bs-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
+              {% endif %}
             </td>
             <td><!-- Validated status -->
-              <span class="badge bg-{{ 'success' if variant.validation == 'True positive' else 'danger' }} me-1">
-                {{ variant.validation }}
-              </span>
+              {% if variant.validation %}
+                <span class="badge bg-{{ 'success' if variant.validation == 'True positive' else 'danger' }} me-1">
+                  {{ variant.validation }}
+                </span>
+              {% endif %}
             </td>
           </tr>
         {% endfor %}
