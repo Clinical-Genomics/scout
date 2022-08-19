@@ -9,13 +9,7 @@ from flask import current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CASE_SEARCH_TERMS,
-    CASE_STATUSES,
-    PHENOTYPE_GROUPS,
-)
+from scout.constants import ACMG_MAP, CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import beacon, store
@@ -396,20 +390,14 @@ def cases(store, request, institute_id):
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
     data["form"] = populate_case_filter_form(request.args)
-    skip_assigned = request.args.get("skip_assigned")
-    data["skip_assigned"] = skip_assigned
-    is_research = request.args.get("is_research")
-    data["is_research"] = is_research
-    validation_ordered = request.args.get("validation_ordered")
-    data["validation_ordered"] = validation_ordered
 
     prioritized_cases = store.prioritized_cases(institute_id=institute_id)
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
-        case_ids=list(store.verification_missing_cases(institute_id)) if validation_ordered else [],
+        skip_assigned=request.args.get("skip_assigned"),
+        is_research=request.args.get("is_research"),
+        verification_pending=request.args.get("validation_ordered"),
     )
     all_cases = _sort_cases(data, request, all_cases)
 

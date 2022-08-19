@@ -264,7 +264,7 @@ class CaseHandler(object):
         yield_query=False,
         within_days=None,
         assignee=None,
-        case_ids=[],
+        verification_pending=None,
     ):
         """Fetches all cases from the backend.
 
@@ -289,7 +289,7 @@ class CaseHandler(object):
                                 compound querying.
             within_days(int): timespan (in days) for latest event on case
             assignee(str): email of an assignee
-            case_ids(list): return only cases with an ID specified in this list
+            verification_pending(bool): If search should be restricted to cases with verification_pending
 
         Returns:
             Cases ordered by date.
@@ -314,9 +314,6 @@ class CaseHandler(object):
 
         if has_causatives:
             query["causatives"] = {"$exists": True, "$ne": []}
-
-        if case_ids:
-            query["_id"] = {"$in": case_ids}
 
         if reruns:
             query["rerun_requested"] = True
@@ -354,6 +351,9 @@ class CaseHandler(object):
         if name_query:
             # Case search filter form query
             order = self._populate_name_query(query, name_query, owner, collaborator)
+
+        if verification_pending:
+            LOG.error("HERE")
 
         if within_days:
             query["_id"] = {
