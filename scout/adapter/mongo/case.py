@@ -2,6 +2,7 @@
 import datetime
 import logging
 import operator
+import re
 from copy import deepcopy
 
 import pymongo
@@ -156,7 +157,7 @@ class CaseHandler(object):
         """
         order = None
         query_field = name_query.split(":")[0]  # example:status
-        query_term = name_query[name_query.index(":") + 1 :].strip()
+        query_term = re.escape(name_query[name_query.index(":") + 1 :].strip())
 
         if query_field == "case" and query_term != "":
             query["$or"] = [
@@ -233,7 +234,9 @@ class CaseHandler(object):
         if query_field == "user":
             query_terms = query_term.split(" ")
             user_query = {
-                "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
+                "$and": [
+                    {"name": {"$regex": re.escape(term), "$options": "i"}} for term in query_terms
+                ]
             }
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["email"] for user in users]}
@@ -502,6 +505,7 @@ class CaseHandler(object):
         hgnc_ids=None,
         phenotype_ids=None,
         add_only=False,
+        delete_only=False,
     ):
         """Update the dynamic gene list for a case
 
@@ -518,7 +522,8 @@ class CaseHandler(object):
             hgnc_symbols (iterable): A list of hgnc_symbols
             hgnc_ids (iterable): A list of hgnc_ids
             phenotype_ids(list): optionally add phenotype_ids used to generate list
-            add_only(bool): set by eg ADDGENE to add genes, and NOT reset previous dynamic_gene_list
+            add_only(bool): set by ADDGENE to add genes, and NOT reset previous dynamic_gene_list
+            delete_only(bool): set by REMOVEGENES when user removes genes from the auto-generated HPO panel
 
         Returns:
             updated_case(dict)
@@ -533,21 +538,16 @@ class CaseHandler(object):
                 ).get("dynamic_gene_list", [])
             )
 
-            LOG.debug("Add selected: current dynamic gene list: {}".format(dynamic_gene_list))
-
         res = []
         if hgnc_ids:
-            LOG.info("Fetching genes by hgnc id: {}".format(hgnc_ids))
             res = self.hgnc_collection.find({"hgnc_id": {"$in": hgnc_ids}, "build": build})
         elif hgnc_symbols:
-            LOG.info("Fetching genes by hgnc symbols")
             for symbol in hgnc_symbols:
                 those_genes = self.gene_aliases(symbol=symbol, build=build)
                 for gene_obj in those_genes:
                     res.append(gene_obj)
 
         for gene_obj in res:
-            LOG.debug("Appending gene {}".format(gene_obj["hgnc_symbol"]))
             dynamic_gene_list.append(
                 {
                     "hgnc_symbol": gene_obj["hgnc_symbol"],
@@ -555,20 +555,18 @@ class CaseHandler(object):
                     "description": gene_obj["description"],
                 }
             )
-
-        LOG.info("Update dynamic gene panel for: %s", case["display_name"])
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {
                 "$set": {
                     "dynamic_gene_list": dynamic_gene_list,
-                    "dynamic_panel_phenotypes": phenotype_ids
-                    or case.get("dynamic_panel_phenotypes", []),
+                    "dynamic_panel_phenotypes": phenotype_ids,
+                    "dynamic_gene_list_edited": (add_only or delete_only)
+                    or (dynamic_gene_list and not phenotype_ids),
                 }
             },
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def case(self, case_id=None, institute_id=None, display_name=None):

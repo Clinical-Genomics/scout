@@ -43,7 +43,6 @@ from scout.server.blueprints.variant.controllers import variant as variant_decor
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
 from scout.server.utils import case_has_alignments, case_has_mt_alignments, institute_and_case
-from scout.utils.scout_requests import delete_request_json, post_request_json
 
 LOG = logging.getLogger(__name__)
 
@@ -54,6 +53,28 @@ JSON_HEADERS = {
 }
 
 COVERAGE_REPORT_TIMEOUT = 20
+
+
+def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
+    """Return the list of HGNC symbols that match annotated HPO terms on Phenomizer
+    Args:
+        hpo_ids(list)
+        case_obj(models.Case)
+
+    Returns:
+        diseases(list of dictionaries) or None. Results contains the following key/values: p_value, gene_symbols, disease_nr, disease_source, OMIM, description, raw_line
+    """
+    if len(hpo_ids) == 0:
+        hpo_ids = [term["phenotype_id"] for term in case_obj.get("phenotype_terms", [])]
+
+    username = current_app.config["PHENOMIZER_USERNAME"]
+    password = current_app.config["PHENOMIZER_PASSWORD"]
+    try:
+        results = query_phenomizer.query(username, password, *hpo_ids)
+        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
+        return diseases
+    except RuntimeError:
+        flash("Could not establish a conection to Phenomizer", "danger")
 
 
 def coverage_report_contents(base_url, institute_obj, case_obj):
@@ -745,7 +766,7 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
 
     all_hpo_gene_list_genes = set()
     # Loop over the dynamic phenotypes of a case
-    for hpo_id in hpo_gene_list:
+    for hpo_id in hpo_gene_list or []:
         hpo_term = store.hpo_term(hpo_id)
         # Check that HPO term exists in database
         if hpo_term is None:
@@ -812,33 +833,6 @@ def hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols):
         unique_genes = unique_genes.intersection(set(clinical_symbols))
 
     return unique_genes
-
-
-def hpo_diseases(username, password, hpo_ids, p_value_treshold=1):
-    """Return the list of HGNC symbols that match annotated HPO terms.
-
-    Args:
-        username (str): username to use for phenomizer connection
-        password (str): password to use for phenomizer connection
-
-    Returns:
-        query_result: a generator of dictionaries on the form
-        {
-            'p_value': float,
-            'disease_source': str,
-            'disease_nr': int,
-            'gene_symbols': list(str),
-            'description': str,
-            'raw_line': str
-        }
-    """
-    # skip querying Phenomizer unless at least one HPO terms exists
-    try:
-        results = query_phenomizer.query(username, password, *hpo_ids)
-        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
-        return diseases
-    except RuntimeError:
-        flash("Could not establish a conection to Phenomizer", "danger")
 
 
 def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
