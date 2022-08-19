@@ -411,36 +411,32 @@ class CaseHandler(object):
             recent_cases.add(event["case"])
         return list(recent_cases)
 
-    def sanger_ordered_cases(self, institute_id):
-        """Fetch all cases with at least a variant with validation ordered but not performed
+    def validation_missing_cases(self, institute_id):
+        """Fetch all cases with at least a variant with validation ordered but still pending
         Args:
             institute_id(str): id of an institute
 
         Returns:
-            sanger_missing(set): a set of case _ids with variants having Sanger validation missing
+            sanger_missing_cases(list): a list of case _ids with variants having Sanger validation missing
         """
-        sanger_missing = set()
-        match_query = {
-            "$match": {
-                "institute": institute_id,
-                "sanger_ordered": True,
-                "$or": [
-                    {"validation": {"$nin": ["True positive", "False positive"]}},
-                    {"validation": {"$exists": False}},
-                ],
-            }
-        }
-        group = {
-            "$group": {
-                "_id": {
-                    "case": "$case_id",
-                },
-            }
-        }
-        pipeline = [match_query, group]
-        for res in self.variant_collection.aggregate(pipeline):
-            sanger_missing.add(res["_id"]["case"])
-        return sanger_missing
+        sanger_missing_cases = []
+        sanger_ordered_by_case = self.sanger_ordered(
+            institute_id=institute_id
+        )  # A list of dictionaries [{"case_id":[variant_id1, variant_id2], ..}]
+
+        for case_id, var_list in sanger_ordered_by_case.items():
+            if self.case(case_id=case_id) is None:
+                continue
+            for variant_id in var_list:
+                var_obj = self.variant(document_id=variant_id)
+                if var_obj is None or var_obj.get("validation") in [
+                    "True positive",
+                    "False positive",
+                ]:
+                    continue
+                sanger_missing_cases.add(case_id)
+
+        return sanger_missing_cases
 
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.

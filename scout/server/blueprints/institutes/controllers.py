@@ -420,7 +420,7 @@ def cases(store, request, institute_id):
         name_query=name_query,
         skip_assigned=skip_assigned,
         is_research=is_research,
-        case_ids=list(store.sanger_ordered_cases(institute_id)) if validation_ordered else [],
+        case_ids=list(store.validation_missing_cases(institute_id)) if validation_ordered else [],
     )
     all_cases = _sort_cases(data, request, all_cases)
 
