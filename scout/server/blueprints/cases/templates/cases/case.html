@@ -114,33 +114,44 @@
       <!-- CASE DIAGNOSES AND PHENOTYPES -->
       <div class="panel-default">
         <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Phenotypes & diagnoses</div>
-        <div class="ms-3 me-3">
-          <div class="row">
-            <div class="col-sm-6 card">
-            {{ hpo_panel(case, institute, config) }}
+        <div class="row">
+          <div class="col-sm-6 ">
+            <div class="card h-100">
+              <div class="card-body">
+                {{ hpo_panel(case, institute, config) }}
+              </div>
             </div>
-            <div class="col-sm-6 card">
-              {{ hpo_genelist_panel(case, institute, config) }}
+          </div>
+          <div class="col-sm-6">
+            <div class="card h-100">
+              <div class="card-body">
+                {{ hpo_genelist_panel(case, institute, config) }}
+              </div>
             </div>
           </div>
         </div> <!--end of <div class="row">-->
-        <!-- OMIM diagnoses-related code-->
+        </div>
+
+          <!-- OMIM diagnoses-related code-->
         {% if not case.track == 'cancer' %}
-          <div class="card">
-            <div class="row">
-                 <div class="col-sm-12 ms-3 mt-3">
-                    <div class="panel-heading">
-                      <h6><em class="fa fa-user-md "></em>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank">OMIM</a>)</h6>
-                     </div>
-                 </div>
-            </div>
-            <div class="row mt-1 mb-3">
-              {{ diagnosis_phenotypes(case, institute, omim_terms) }}
+        <div class="panel-default">
+          <div class="row">
+            <div class="col-sm-12 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank">OMIM</a>)</div>
+                  <div class="row mt-1 mb-3">
+
+                    {{ diagnosis_phenotypes(case, institute, omim_terms) }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
         {% endif %}
         <!-- end of OMIM diagnoses-related code-->
-      </div>
+
 
 
       <div class="panel-default">
