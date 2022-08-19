@@ -211,7 +211,7 @@
               {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
               {% for key, page in var_type_page.items() %}
                 {% if variant.category == key %}
-                  <a target="_blank" rel=”noopener noreferrer” href="{{ url_for(page,
+                  <a target="_blank" rel="noopener noreferrer" href="{{ url_for(page,
                       institute_id=institute._id,
                       case_name=case.display_name,
                       variant_id=variant._id) }}">{{ variant.display_name|truncate(15, True) }}
