@@ -27,9 +27,9 @@
         {{ form.search_type.label(class="control-label") }}
         {{ form.search_type(class="form-control") }}
       </div>
-      <div class="col-3">
-        {{ form.search_term.label(class="control-label") }}
-        {{ form.search_term(class="form-control", placeholder='example:18201') }}
+      <div class="col-4">
+          <label class="control-label" for="search_term">Search cases</label>
+          <input class="form-control" id="search_term" name="search_term" placeholder="example:18201" type="text" pattern="[^<>?!=\\/]*" title="Characters ^<>?!=\/ are not allowed">
       </div>
       <div class="col-1">
         {{ form.search(class="btn btn-primary form-control") }}
