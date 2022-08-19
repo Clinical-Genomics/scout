@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Query for genes in build 38 on `Search SNVs and INDELs` page
 - Prevent typing special characters `^<>?!=\/` in case search form
 - Search matching causatives also among research variants in other cases
+- Links to variants in Verified variants page
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
@@ -31,6 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove the unused `variant.str_variant` endpoint from variant views
 - Easier editing of HPO gene panel on case page
 - Assign phenotype panel less cramped on Case page
+- Causatives and Verified variants pages to use the same template macro
 
 ## [4.57.4]
 ### Fixed
