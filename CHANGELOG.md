@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved gene info for large SVs and cancer SVs
 - Remove the unused `variant.str_variant` endpoint from variant views
 - Easier editing of HPO gene panel on case page
+- Assign phenotype panel less cramped on Case page
 
 ## [4.57.4]
 ### Fixed
