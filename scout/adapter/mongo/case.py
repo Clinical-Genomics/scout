@@ -356,7 +356,7 @@ class CaseHandler(object):
             }
 
         if verification_pending:
-            sanger_pending_cases = self.verification_missing_cases(owner)
+            sanger_pending_cases = set(self.verification_missing_cases(owner))
             query["_id"] = list(set(query.get("_id", [])).intersection(sanger_pending_cases))
 
         if yield_query:
