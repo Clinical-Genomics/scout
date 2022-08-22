@@ -355,9 +355,15 @@ class CaseHandler(object):
                 )
             }
 
-        if verification_pending:
-            sanger_pending_cases = set(self.verification_missing_cases(owner))
-            query["_id"] = list(set(query.get("_id", [])).intersection(sanger_pending_cases))
+        if verification_pending:  # Filter for cases with Sanger verification pending
+            sanger_pending_cases = self.verification_missing_cases(owner)
+            if query.get("_id"):  # Check if other filter alredy limit the search by case _id
+                preselected_ids = query["_id"].get("$in", [])
+                query["_id"]["$in"] = list(
+                    set(preselected_ids).intersection(set(sanger_pending_cases))
+                )  # limit also by Sanger pending
+            else:  # Apply only Sanger pending filter
+                query["_id"] = {"$in": sanger_pending_cases}
 
         if yield_query:
             return query

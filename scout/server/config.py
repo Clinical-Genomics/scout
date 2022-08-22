@@ -18,6 +18,10 @@ MAIL_PORT = 587
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 
+MAIL_USERNAME = "appo"
+ADMINS = ["memmo"]
+MAIL_PASSWORD = "trulallal"
+
 # Filename of accrediation bagde image in server/bluprints/public/static
 # If null no badge is displayed in scout
 ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
