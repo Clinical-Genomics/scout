@@ -76,7 +76,6 @@ def panels():
     elif request.method == "POST":
         "search_for"
         # Edit/create a new panel and redirect to its page
-        LOG.debug("request.method == 'POST'")
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
             return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
