@@ -112,7 +112,6 @@ class CaseHandler(object):
             query_field(str) "pinned" or "causative"
             query_term(str) example:"POT1"
         """
-        LOG.warning(f"IN GENES OF INTEREST--->{query_field}:{query_term}")
         hgnc_id = self.hgnc_id(hgnc_symbol=query_term)
         if hgnc_id is None:
             LOG.debug(f"No gene with the HGNC symbol {query_term} found.")
