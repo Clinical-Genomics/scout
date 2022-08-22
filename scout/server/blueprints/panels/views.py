@@ -66,7 +66,6 @@ def panels():
             )
         # TODO: dont crash after error
         LOG.debug("SEARCH: {}".format(search_string))
-        LOG.debug("HGNC: {}".format(hgnc_symbols))
 
         for hgnc_id in hgnc_symbols:
             panels_found = store.search_panels(hgnc_id)
