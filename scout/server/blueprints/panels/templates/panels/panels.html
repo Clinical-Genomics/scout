@@ -36,7 +36,7 @@
 <div class="container-float">
   <div class="card mt-3">
     <div class="card-body">
-      <form action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
+      <form action="{{ url_for('panels.panels') }}"  method="POST">
         <div class="row">
           <div class="col-5">
             <input type="text" name="search_for" class="form-control typeahead_gene mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
@@ -44,8 +44,6 @@
           </div>
           <div class="col">
             <button type="submit" name="action" value="ADDGENE" class="btn btn-secondary">Search!</button>
-          </div>
-          <div class="col">
           </div>
       </form>
 
