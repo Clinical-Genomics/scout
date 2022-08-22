@@ -95,10 +95,8 @@ COLLECTIONS = [
     "variant",
     "acmg",
 ]
-GENOME_BUILD_37 = "37"
-GENOME_BUILD_38 = "38"
-BUILDS = [GENOME_BUILD_37, GENOME_BUILD_38, "GRCh38"]
 
+BUILDS = ["37", "38", "GRCh38"]
 
 CYTOBANDS_37 = parse_cytoband(cytobands_37_handle)
 CYTOBANDS_38 = parse_cytoband(cytobands_38_handle)
