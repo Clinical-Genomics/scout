@@ -124,8 +124,8 @@ class CaseHandler(object):
             unwind = "$suspects"
             lookup_local = "suspects"
 
-        lookups_as = "lookedup_variant"
-        match = "lookedup_variant.hgnc_ids"
+        LOOKUP_VAR = "lookup_variant"
+        match = f"{LOOKUP_VAR}.hgnc_ids"
 
         cases_with_gene_doc = self.case_collection.aggregate(
             [
@@ -135,7 +135,7 @@ class CaseHandler(object):
                         "from": "variant",
                         "localField": lookup_local,
                         "foreignField": "_id",
-                        "as": lookups_as,
+                        "as": LOOKUP_VAR,
                     }
                 },
                 {"$match": {match: hgnc_id}},
