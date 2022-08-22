@@ -116,17 +116,13 @@ class CaseHandler(object):
         if hgnc_id is None:
             LOG.debug(f"No gene with the HGNC symbol {query_term} found.")
             query["_id"] = {"$in": []}  # No result should be returned by query
+            return
 
         unwind = "$causatives"
         lookup_local = "causatives"
-        lookups_as = "causative_variant"
-        match = "causative_variant.hgnc_ids"
-
         if query_field == "pinned":
             unwind = "$suspects"
             lookup_local = "suspects"
-            lookups_as = "suspect_variant"
-            match = "suspect_variant.hgnc_ids.hgnc_ids"
 
         cases_with_gene_doc = self.case_collection.aggregate(
             [
@@ -136,10 +132,10 @@ class CaseHandler(object):
                         "from": "variant",
                         "localField": lookup_local,
                         "foreignField": "_id",
-                        "as": lookups_as,
+                        "as": "lookup_variant",
                     }
                 },
-                {"$match": {match: hgnc_id}},
+                {"$match": {"lookup_variant.hgnc_ids": hgnc_id}},
                 {"$project": {"_id": 1}},
             ]
         )
@@ -304,11 +300,9 @@ class CaseHandler(object):
             collaborator = None
 
         if collaborator:
-            LOG.debug("Use collaborator {0}".format(collaborator))
             query["collaborators"] = collaborator
 
         if owner:
-            LOG.debug("Use owner {0}".format(owner))
             query["owner"] = owner
 
         if skip_assigned:
