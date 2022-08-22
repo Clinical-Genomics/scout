@@ -394,7 +394,6 @@ def phenotypes_actions(institute_id, case_name):
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
-        # TODO: dont crash
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
 
     if action == "REMOVEGENES":  # Remove one or more genes from the dynamic gene list
