@@ -293,8 +293,8 @@ class CaseHandler(object):
                 instead returns corresponding query dict
                 that can be reused in compound queries or for testing.
         """
-        order = None
         query = query or {}
+        order = None
         # Prioritize when both owner and collaborator params are present
         if collaborator and owner:
             collaborator = None
@@ -348,15 +348,16 @@ class CaseHandler(object):
             # Case search filter form query
             order = self._populate_name_query(query, name_query, owner, collaborator)
 
-        if verification_pending:
-            LOG.error("HERE")
-
         if within_days:
             query["_id"] = {
                 "$in": self.last_modified_cases(
                     within_days, has_causatives, finished, reruns, research_requested, status
                 )
             }
+
+        if verification_pending:
+            sanger_pending_cases = self.verification_missing_cases(owner)
+            query["_id"] = list(set(query.get("_id", [])).intersection(sanger_pending_cases))
 
         if yield_query:
             return query
