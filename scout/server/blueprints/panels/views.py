@@ -3,6 +3,7 @@ import datetime
 import json
 import logging
 
+
 from flask import (
     Blueprint,
     Response,
@@ -50,11 +51,11 @@ def panels():
     """Show all panels for a user"""
 
     # Add search box and add results if applicable
-    panels_found_compiled = []
+    panels_found = []
     search_string = ""
     if request.method == "POST" and request.form.get("search_for"):
-        # Query db for panels containing the search string
-        # TODO: removed escape of form input, sonarcloud will complain
+        # Query db for panels containing the search string. This is done with autocompletion
+        # therefor only one(1) hgnc_id will be received from the form.
         hgnc_symbols = ""
         search_string = escape(request.form.get("search_for"))
         try:
@@ -64,17 +65,10 @@ def panels():
                 "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
                 "warning",
             )
-        # TODO: dont crash after error
-        LOG.debug("SEARCH: {}".format(search_string))
-        LOG.debug("HGNC: {}".format(hgnc_symbols))
+        panels_found = store.search_panels_hgnc_id_aggregate(hgnc_symbols.pop())
 
-        for hgnc_id in hgnc_symbols:
-            panels_found = store.search_panels(hgnc_id)
-            panels_found_compiled.extend(_compile_panel_versions(panels_found))
-            LOG.debug("FOUND: {}".format(panels_found_compiled))
     # Add new panel
     elif request.method == "POST":
-        "search_for"
         # Edit/create a new panel and redirect to its page
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
@@ -112,7 +106,7 @@ def panels():
         panel_versions=panel_versions,
         institutes=institutes,
         search_string=search_string,
-        search_result=panels_found_compiled,
+        search_result=panels_found,
     )
 
 
@@ -353,40 +347,3 @@ def gene_edit(panel_id, hgnc_id):
     return dict(panel=panel_obj, form=form, gene=hgnc_gene, panel_gene=panel_gene)
 
 
-def _compile_panel_versions(panels_found):
-    """Aggregate list of panel names and versions for display.
-
-    Args:
-        panels(list): ['name', 1.0, 'name', 2.0]
-
-    Return:
-        aggegated_panels(list): [['name', [1.0, 2.0]]]
-    """
-    if panels_found == []:
-        return []
-    [name, version], *tail = panels_found
-    return _compile_panel_versions_aux(tail, [[name, [version]]])
-
-
-def _compile_panel_versions_aux(panels_found, acc):
-    """Auxiliary function for `_compile_panel_versions()`. Aggregate list of panel
-    names and versions for display.
-
-        Args:
-            panels(list): ['name', 1.0, 'name', 2.0]
-            acc(list):  [['name', [1.0, 2.0]]]
-
-        Return:
-            aggegated_panels(list): [[name, [1.0, 2.0]]]
-    """
-    if panels_found == []:
-        acc.reverse()
-        return acc
-    [name, version], *tail = panels_found
-    [acc_name, version_list], *acc_tail = acc
-    if name == acc_name:
-        acc_head = [acc_name, version_list + [version]]
-        return _compile_panel_versions_aux(tail, [acc_head, *acc_tail])
-    else:
-        acc_head = [name, [version]]
-        return _compile_panel_versions_aux(tail, [acc_head, [acc_name, version_list], *acc_tail])

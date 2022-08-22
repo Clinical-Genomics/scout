@@ -61,12 +61,12 @@
             <tbody>
               {% for item in search_result %}
               <tr>
-                <td> {{item[0]}} </td>
+                <td> {{item['_id']}} </td>
                 <td>
                   <table  style="border-spacing: 40px 10px;" role="presentation" aria-describedby="Versions">
                     <tr>
-                      {% for version_list in item[1] %}
-                      <td style="padding:0 10px"> {{version_list}} </td>
+                      {% for version in item['versions'] %}
+                      <td style="padding:0 10px"> {{version}} </td>
                       {% endfor %}
                     </tr>
                   </table>
@@ -301,11 +301,6 @@ console.log("called!")
         source: getNameTerms,
         minLength: 3,
       });
-
-      $('select[multiple]').selectpicker({
-        width: '100%'
-      });
-
   });
 
 </script>
