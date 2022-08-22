@@ -345,5 +345,3 @@ def gene_edit(panel_id, hgnc_id):
                 if panel_value is not None:
                     form_field.process_data(panel_value)
     return dict(panel=panel_obj, form=form, gene=hgnc_gene, panel_gene=panel_gene)
-
-

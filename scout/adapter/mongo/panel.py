@@ -572,12 +572,12 @@ class PanelHandler:
 
     def search_panels(self, search_string):
         """Return all panels and versions that contain given gene, list is sorted
-            Args:
-                self: PanelHandler()
-                search_string: string(str) or hgnsc_id (int) to search
+        Args:
+            self: PanelHandler()
+            search_string: string(str) or hgnsc_id (int) to search
 
-            Returns:
-                 list:[str(name), str(version)]
+        Returns:
+             list:[str(name), str(version)]
         """
         # Try to cast search string to integer for searching hgnc_id:s.
         try:
@@ -589,20 +589,19 @@ class PanelHandler:
         result_list = [[element["panel_name"], element["version"]] for element in result]
         return sorted(result_list)
 
-
     def search_panels_hgnc_id_aggregate(self, hgnc_id):
         """Return all panels and versions that contain given gene, list is sorted
-            Args:
-                self: PanelHandler()
-                search_string:  hgnsc_id (int) to search
+        Args:
+            self: PanelHandler()
+            search_string:  hgnsc_id (int) to search
 
-            Returns:
-                 list: [dict(), dict()]
+        Returns:
+             list: [dict(), dict()]
         """
-        query = [{"$match": {'genes.hgnc_id': hgnc_id}},
-                 {"$group": {"_id": '$display_name',
-                             "versions": {"$addToSet": '$version'}}},
-                 {"$sort": {"display_name": 1}}
-                 ]
+        query = [
+            {"$match": {"genes.hgnc_id": hgnc_id}},
+            {"$group": {"_id": "$display_name", "versions": {"$addToSet": "$version"}}},
+            {"$sort": {"display_name": 1}},
+        ]
 
         return list(self.panel_collection.aggregate(query))
