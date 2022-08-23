@@ -632,16 +632,19 @@ class PanelHandler:
             {"$match": {"genes.hgnc_id": hgnc_id}},
             {
                 "$group": {
-                    "_id": {"display_name": "$display_name"},
+                    "_id": "$display_name",
                     "versions": {"$addToSet": "$version"},
                 }
             },
-            {"$sort": {"_id": 1}},
-            {"$sort": {"versions": 1}},
             {"$unwind": "$versions"},
-            {"$group": {"_id": "$_id.display_name", "versions": {"$addToSet": "$versions"}}},
+            {"$sort": {"_id":1, "versions": 1}},
+            {"$group": {"_id": "$_id", "versions": {"$push": "$versions"}}},
+            {"$sort": {"_id": 1}},
+
         ]
 
+        # { $match: { 'genes.hgnc_id': 7481 } },
+        # { $group: { _id: { display_name: '$display_name' }, versions: { $addToSet: '$version' } } },   {$unwind: '$versions'}, {$sort: {'_id':1,'versions': 1}}, {$group:{_id:'$_id', vsn: {$push: '$versions'} }}, {$sort: {'_id':1}})
         result = list(self.panel_collection.aggregate(query))
         LOG.debug("RESULT2: {}".format(result))
         return result
