@@ -593,7 +593,7 @@ class PanelHandler:
         """Return all panels and versions that contain given gene, list is sorted
         Args:
             self: PanelHandler()
-            search_string:  hgnsc_id (int) to search
+            hgnc_id:  hgnsc_id (int) to search
 
         Returns:
              list: [dict(), dict()]
