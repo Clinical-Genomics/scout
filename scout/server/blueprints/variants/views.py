@@ -357,6 +357,7 @@ def cancer_variants(institute_id, case_name):
         form.chrom.data = request.args.get("chrom", "")
         if form.gene_panels.data == []:
             form.gene_panels.data = controllers.case_default_panels(case_obj)
+        form.show_unaffected.data = institute_obj.get("check_show_all_vars", False)
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)

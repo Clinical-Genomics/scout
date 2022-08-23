@@ -1426,6 +1426,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         form.chrom.data = request_obj.args.get("chrom", "")
         if variant_type == "clinical":
             form.gene_panels.data = case_default_panels(case_obj)
+        form.show_unaffected.data = institute_obj.get("check_show_all_vars", False)
 
     else:  # POST
         form = populate_filters_form(
