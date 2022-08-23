@@ -67,7 +67,6 @@ def panels():
             )
         panels_found = store.search_panels_hgnc_id(hgnc_id)
 
-
     # Add new panel
     elif request.method == "POST":
         # Edit/create a new panel and redirect to its page
