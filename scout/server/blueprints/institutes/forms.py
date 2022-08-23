@@ -86,9 +86,7 @@ class InstituteForm(FlaskForm):
 
     alamut_key = StringField("Alamut API key", validators=[validators.Optional()])
 
-    check_show_all_vars = BooleanField(
-        "Preselect 'Show also variants only present in unaffected'"
-    )
+    check_show_all_vars = BooleanField("Preselect 'Show also variants only present in unaffected'")
 
     submit_btn = SubmitField("Save settings")
 
