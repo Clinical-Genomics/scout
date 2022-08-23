@@ -637,10 +637,9 @@ class PanelHandler:
                 }
             },
             {"$unwind": "$versions"},
-            {"$sort": {"_id":1, "versions": 1}},
+            {"$sort": {"_id": 1, "versions": 1}},
             {"$group": {"_id": "$_id", "versions": {"$push": "$versions"}}},
             {"$sort": {"_id": 1}},
-
         ]
 
         # { $match: { 'genes.hgnc_id': 7481 } },
