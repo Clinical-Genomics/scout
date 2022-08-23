@@ -644,7 +644,7 @@ class PanelHandler:
 
         result = list(self.panel_collection.aggregate(query))
         LOG.debug("RESULT2: {}".format(result))
-        return r2
+        return result
 
     def search_panels(self, hgnc_id):
         """Return all panels and versions that contain given gene, list is sorted"""
