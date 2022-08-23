@@ -55,7 +55,7 @@ def panels():
     if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string. This is done with autocompletion
         # therefor only one(1) hgnc_id will be received from the form.
-        hgnc_symbols = ""
+        hgnc_symbols = []
         search_string = escape(request.form.get("search_for"))
         try:
             hgnc_symbols = parse_raw_gene_ids([search_string])
