@@ -69,7 +69,7 @@
       <div class="form-check d-flex justify-content-start">
         {% if institute.check_show_all_vars %}
           <input type="checkbox" class="form-check-input" name="show_unaffected" id="show_unaffected" checked disabled>
-          {{ form.show_unaffected.label(class="form-check-label ms-2", **{'data-bs-toggle': 'tooltip', 'title':'Modify general institute settings to to able to edit this checkbox'}) }}
+          {{ form.show_unaffected.label(class="form-check-label ms-2", **{'data-bs-toggle': 'tooltip', 'title':'Modify general institute settings to be able to edit this checkbox'}) }}
         {% else %}
           {{ form.show_unaffected(class="form-check-input") }}
           {{ form.show_unaffected.label(class="form-check-label ms-2", **{'data-bs-toggle': 'tooltip', 'title':'This filter applies only to cases with more than one sample. When this is unchecked, only variants that are predicted by callers to be present in an affected individual genotype are shown.'}) }}
