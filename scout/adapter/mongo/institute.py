@@ -49,6 +49,7 @@ class InstituteHandler(object):
         cohorts=None,
         loqusdb_ids=[],
         alamut_key=None,
+        check_show_all_vars=None,
     ):
         """Update the information for an institute
 
@@ -161,6 +162,11 @@ class InstituteHandler(object):
             updates["$set"]["alamut_key"] = (
                 alamut_key if alamut_key != "" else None
             )  # allows to reset Alamut key to None
+
+        if check_show_all_vars:
+            updates["$set"]["check_show_all_vars"] = True
+        else:
+            updates["$set"]["check_show_all_vars"] = False
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
