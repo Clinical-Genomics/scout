@@ -55,7 +55,7 @@ def panels():
     if request.method == "POST" and request.form.get("search_for"):
         # Query db for panels containing the search string. This is done with autocompletion
         # therefor only one(1) hgnc_id will be received from the form.
-        hgnc_symbols = ""
+        hgnc_symbols = []
         search_string = escape(request.form.get("search_for"))
         try:
             hgnc_symbols = parse_raw_gene_ids([search_string])
@@ -346,48 +346,3 @@ def gene_edit(panel_id, hgnc_id):
                 if panel_value is not None:
                     form_field.process_data(panel_value)
     return dict(panel=panel_obj, form=form, gene=hgnc_gene, panel_gene=panel_gene)
-
-
-
-
-
-
-def _compile_panel_versions(panels_found):
-    """Aggregate list of panel names and versions for display.
-
-    Args:
-        panels(list): ['name', 1.0, 'name', 2.0]
-
-    Return:
-        aggegated_panels(list): [['name', [1.0, 2.0]]]
-    """
-    if panels_found == []:
-        return []
-    [name, version], *tail = panels_found
-    return _compile_panel_versions_aux(tail, [[name, [version]]])
-
-
-def _compile_panel_versions_aux(panels_found, acc):
-    """Auxiliary function for `_compile_panel_versions()`. Aggregate list of panel
-    names and versions for display.
-
-        Args:
-            panels(list): ['name', 1.0, 'name', 2.0]
-            acc(list):  [['name', [1.0, 2.0]]]
-
-        Return:
-            aggegated_panels(list): [[name, [1.0, 2.0]]]
-    """
-    if panels_found == []:
-        acc.reverse()
-        return acc
-    [name, version], *tail = panels_found
-    [acc_name, version_list], *acc_tail = acc
-    if name == acc_name:
-        acc_head = [acc_name, version_list + [version]]
-        return _compile_panel_versions_aux(tail, [acc_head, *acc_tail])
-    else:
-        acc_head = [name, [version]]
-        return _compile_panel_versions_aux(tail, [acc_head, [acc_name, version_list], *acc_tail])
-
-

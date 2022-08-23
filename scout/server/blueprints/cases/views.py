@@ -391,7 +391,7 @@ def phenotypes_actions(institute_id, case_name):
             hgnc_ids = parse_raw_gene_ids(request.form.getlist("genes"))
         except ValueError:
             flash(
-                "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
+                "Provided gene info could not be parsed!. Please allow autocompletion to finish.",
                 "warning",
             )
         store.update_dynamic_gene_list(case_obj, hgnc_ids=list(hgnc_ids), add_only=True)
