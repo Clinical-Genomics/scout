@@ -207,5 +207,4 @@ class InstituteHandler(object):
         query = {}
         if institute_ids:
             query["_id"] = {"$in": institute_ids}
-        LOG.debug("Fetching all institutes")
         return self.institute_collection.find(query)
