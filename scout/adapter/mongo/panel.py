@@ -596,7 +596,7 @@ class PanelHandler:
             hgnc_id:  hgnsc_id (int) to search
 
         Returns:
-             list: [dict(), dict()]
+             list(dict): example: [{_id: {display_name: 'panel1'}, versions: [1.0, 2.0]}, ...]
         """
         query = [
             {"$match": {"genes.hgnc_id": hgnc_id}},
