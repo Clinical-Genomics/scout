@@ -163,7 +163,6 @@ class InstituteHandler(object):
                 alamut_key if alamut_key != "" else None
             )  # allows to reset Alamut key to None
 
-        # updates["$set"]["check_show_all_vars"] = check_show_all_vars is True
         updates["$set"]["check_show_all_vars"] = check_show_all_vars == "on"
 
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
