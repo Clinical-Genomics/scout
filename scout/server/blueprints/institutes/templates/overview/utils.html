@@ -123,7 +123,7 @@
 
             <div class="row mt-3">
               <div class="col">
-                {{ form.check_show_all_vars() }}
+                <input type="checkbox" name="check_show_all_vars" {% if institute.check_show_all_vars %} checked {%endif%}>
                 {{ form.check_show_all_vars.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Check this box if you want all variants (and not just those occurring in the affected individuals) to be shown by default on variants page") }}
               </div>
             </div>
