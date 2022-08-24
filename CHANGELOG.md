@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add filter by local observations (archive) to structural variants filters
 - Add more splicing consequences to SO term definitions
 - Search for a specific gene in all gene panels
+- Institute settings option to force show all variants on VariantS page for all cases of an institute
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available
 ### Fixed
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2

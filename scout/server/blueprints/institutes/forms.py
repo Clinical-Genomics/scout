@@ -79,11 +79,14 @@ class InstituteForm(FlaskForm):
     cohorts = NonValidatingSelectMultipleField(
         "Available patient cohorts", validators=[validators.Optional()]
     )
+
     institutes = NonValidatingSelectMultipleField("Institutes to share cases with", choices=[])
 
     loqusdb_id = NonValidatingSelectField("LoqusDB id", choices=[])
 
     alamut_key = StringField("Alamut API key", validators=[validators.Optional()])
+
+    check_show_all_vars = BooleanField("Preselect 'Show also variants only present in unaffected'")
 
     submit_btn = SubmitField("Save settings")
 
