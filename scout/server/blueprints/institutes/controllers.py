@@ -331,6 +331,7 @@ def update_institute_settings(store, institute_obj, form):
         cohorts=cohorts,
         loqusdb_ids=form.getlist("loqusdb_id"),
         alamut_key=form.get("alamut_key"),
+        check_show_all_vars=form.get("check_show_all_vars"),
     )
     return updated_institute
 
