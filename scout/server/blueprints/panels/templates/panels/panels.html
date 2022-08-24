@@ -17,6 +17,7 @@
 {% block content_main %}
   <div>
     {{ new_panel() }}
+    {{ search_gene_card() }}
     {% if panel_groups %}
       {% for institute,panels in panel_groups %}
         {{ panel_view(institute,panels) }}
@@ -26,6 +27,68 @@
     {% endif %}
   </div>
 {% endblock %} <!-- end of content_main -->
+
+
+
+ 
+<!-- Create a Bootstrap card containing text bar and submit button for searching -->
+{% macro search_gene_card() %}
+<div class="container-float">
+  <div class="card mt-3">
+    <div class="card-body">
+      <form action="{{ url_for('panels.panels') }}"  method="POST">
+        <div class="row">
+          <div class="col-5">
+            <input type="text" name="search_for" class="form-control typeahead_gene mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
+                   pattern="^[0-9]+\s*\|\s*.*" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
+          </div>
+          <div class="col">
+            <button type="submit" name="action" value="ADDGENE" class="btn btn-secondary">Search!</button>
+          </div>
+      </form>
+
+      <div id="SearchResults" class="card-body">
+        {% if search_result %}
+        <div class="card-body">
+          <strong> <em>{{search_string}}</em> found in: </strong> <br>
+          <table class="table table-striped" aria-describedby="Searchresults">
+            <thead>
+              <tr>
+                <th style="width: 15%">Panel Name</th>
+                <th style="width: 85%">Versions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in search_result %}
+              <tr>
+                <td> {{item['_id']}} </td>
+                <td>
+                  <table  style="border-spacing: 40px 10px;" role="presentation" aria-describedby="Versions">
+                    <tr>
+                      {% for version in item['versions'] %}
+                      <td style="padding:0 10px"> {{version}} </td>
+                      {% endfor %}
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% elif search_string  %}
+          <strong> <em>{{search_string}} </em> not found. </strong>
+          
+          {% else  %}
+          <!-- Do nothing -->
+          {% endif %}
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 
 {% macro new_panel() %}
 <div class="container-float">
@@ -194,9 +257,14 @@
   <br>
 {% endmacro %}
 
+
 {% block scripts %}
 {{ super() }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" referrerpolicy="no-referrer" crossorigin="anonymous"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script type="text/javascript">
+
 
 $('.history_btn').on('click', function(){
     var bid = $(this)[0].id;
@@ -219,5 +287,21 @@ $('.modify_btn').on('click', function(){
       $(sel).fadeToggle();
     }
 });
+
+$(function(){
+console.log("called!")
+      function getNameTerms(query, process) {
+        $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+
+      $(".typeahead_gene").typeahead({
+        name: 'dynamic_gene_add',
+        source: getNameTerms,
+        minLength: 3,
+      });
+  });
+
 </script>
 {% endblock %}
