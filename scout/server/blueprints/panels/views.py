@@ -3,7 +3,17 @@ import datetime
 import json
 import logging
 
-from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
+from flask import (
+    Blueprint,
+    Response,
+    escape,
+    flash,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    url_for,
+)
 from flask_login import current_user
 
 from scout.server.extensions import store
@@ -14,6 +24,7 @@ from scout.server.utils import (
     templated,
     user_institutes,
 )
+from scout.utils.gene import parse_raw_gene_ids
 
 from . import controllers
 from .forms import PanelGeneForm
@@ -37,7 +48,28 @@ def api_panels(panel_name):
 @templated("panels/panels.html")
 def panels():
     """Show all panels for a user"""
-    if request.method == "POST":  # Edit/create a new panel and redirect to its page
+
+    # Add search box and add results if applicable
+    panels_found = []
+    search_string = ""
+    if request.method == "POST" and request.form.get("search_for"):
+        # Query db for panels containing the search string. This is done with autocompletion
+        # therefor only one(1) hgnc_id will be received from the form.
+        hgnc_symbols = []
+        search_string = escape(request.form.get("search_for"))
+        try:
+            hgnc_symbols = parse_raw_gene_ids([search_string])
+            hgnc_id = hgnc_symbols.pop()
+        except ValueError:
+            flash(
+                "Provided gene info could not be parsed! " "Please allow autocompletion to finish.",
+                "warning",
+            )
+        panels_found = store.search_panels_hgnc_id(hgnc_id)
+
+    # Add new panel
+    elif request.method == "POST":
+        # Edit/create a new panel and redirect to its page
         redirect_panel_id = controllers.panel_create_or_update(store, request)
         if redirect_panel_id:
             return redirect(url_for("panels.panel", panel_id=redirect_panel_id))
@@ -73,6 +105,8 @@ def panels():
         panel_names=panel_names,
         panel_versions=panel_versions,
         institutes=institutes,
+        search_string=search_string,
+        search_result=panels_found,
     )
 
 

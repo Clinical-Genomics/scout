@@ -549,23 +549,49 @@ class PanelHandler:
     def clinical_symbols(self, case_obj):
         """Return all the clinical gene symbols for a case."""
         panel_ids = [panel["panel_id"] for panel in case_obj.get("panels", [])]
-        query = self.panel_collection.aggregate(
+        query_result = self.panel_collection.aggregate(
             [
                 {"$match": {"_id": {"$in": panel_ids}}},
                 {"$unwind": "$genes"},
                 {"$group": {"_id": "$genes.symbol"}},
             ]
         )
-        return set(item["_id"] for item in query)
+        return set(item["_id"] for item in query_result)
 
     def clinical_hgnc_ids(self, case_obj):
         """Return all the clinical gene hgnc IDs for a case."""
         panel_ids = [panel["panel_id"] for panel in case_obj.get("panels", [])]
-        query = self.panel_collection.aggregate(
+        query_result = self.panel_collection.aggregate(
             [
                 {"$match": {"_id": {"$in": panel_ids}}},
                 {"$unwind": "$genes"},
                 {"$group": {"_id": "$genes.hgnc_id"}},
             ]
         )
-        return set(item["_id"] for item in query)
+        return set(item["_id"] for item in query_result)
+
+    def search_panels_hgnc_id(self, hgnc_id):
+        """Return all panels and versions that contain given gene, list is sorted
+        Args:
+            self: PanelHandler()
+            hgnc_id: hgnsc_id (int) to search
+
+        Returns:
+             list(dict): example: [{_id: {display_name: 'panel1'}, versions: [1.0, 2.0]}, ...]
+        """
+        query = [
+            {"$match": {"genes.hgnc_id": hgnc_id}},
+            {
+                "$group": {
+                    "_id": "$display_name",
+                    "versions": {"$addToSet": "$version"},
+                }
+            },
+            {"$unwind": "$versions"},
+            {"$sort": {"_id": 1, "versions": 1}},
+            {"$group": {"_id": "$_id", "versions": {"$push": "$versions"}}},
+            {"$sort": {"_id": 1}},
+        ]
+
+        result = list(self.panel_collection.aggregate(query))
+        return result
