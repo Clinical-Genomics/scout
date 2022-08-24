@@ -175,6 +175,7 @@ def str_variants(institute_id, case_name):
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
+        form.show_unaffected.data = institute_obj.get("check_show_all_vars", False)
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_id, category))
