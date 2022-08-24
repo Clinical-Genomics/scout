@@ -41,6 +41,18 @@ from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
 LOG = logging.getLogger(__name__)
 
 
+def populate_force_show_unaffected_vars(institute_obj, form):
+    """Whenever a user institute contains the key/value check_show_all_vars=True,
+    then all variants (and not only those occurring in affected individuals) should be shown
+
+    Args:
+        institute_obj(dict): scout.models.institute
+        form(VariantFiltersForm)
+    """
+    if institute_obj.get("check_show_all_vars"):
+        form.show_unaffected.data = True
+
+
 def populate_chrom_choices(form, case_obj):
     """Populate the option of the chromosome select according to the case genome build"""
     # Populate chromosome choices
@@ -1432,8 +1444,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )
 
-    if institute_obj.get("check_show_all_vars"):
-        form.show_unaffected.data = True
+    populate_force_show_unaffected_vars(institute_obj, form)
 
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
