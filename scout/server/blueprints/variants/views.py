@@ -74,10 +74,12 @@ def variants(institute_id, case_name):
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
-        form.show_unaffected.data = institute_obj.get("check_show_all_vars", False)
 
         if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = controllers.case_default_panels(case_obj)
+
+    if institute_obj.get("check_show_all_vars"):
+        form.show_unaffected.data = True
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_id, category))
@@ -175,7 +177,9 @@ def str_variants(institute_id, case_name):
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
-        form.show_unaffected.data = institute_obj.get("check_show_all_vars", False)
+
+    if institute_obj.get("check_show_all_vars"):
+        form.show_unaffected.data = True
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_id, category))
