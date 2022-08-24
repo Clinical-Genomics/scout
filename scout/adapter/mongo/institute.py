@@ -49,6 +49,7 @@ class InstituteHandler(object):
         cohorts=None,
         loqusdb_ids=[],
         alamut_key=None,
+        check_show_all_vars=None,
     ):
         """Update the information for an institute
 
@@ -162,6 +163,8 @@ class InstituteHandler(object):
                 alamut_key if alamut_key != "" else None
             )  # allows to reset Alamut key to None
 
+        updates["$set"]["check_show_all_vars"] = check_show_all_vars is not None
+
         if updates["$set"].keys() or updates.get("$push") or updates.get("$pull"):
             updates["$set"]["updated_at"] = datetime.now()
             updated_institute = self.institute_collection.find_one_and_update(
@@ -201,5 +204,4 @@ class InstituteHandler(object):
         query = {}
         if institute_ids:
             query["_id"] = {"$in": institute_ids}
-        LOG.debug("Fetching all institutes")
         return self.institute_collection.find(query)
