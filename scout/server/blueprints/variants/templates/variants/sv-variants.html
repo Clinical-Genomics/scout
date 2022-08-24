@@ -49,7 +49,7 @@ onsubmit="return validateForm()">
         <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
           <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
         </div>
-        {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
+        {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
       </div>
       <div class="card mt-3">
         <table id="variantsTable" class="table table-hover table-bordered" style="table-layout: fixed">
