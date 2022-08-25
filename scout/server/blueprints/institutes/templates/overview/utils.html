@@ -1,3 +1,5 @@
+{% from "variants/components.html" import sv_genes_cell %}
+
 {% macro institute_settings(form, beacon_form, institute, current_user, loqus_instances) %}
 <div clas="card w-100">
   <form action="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" method="POST"
@@ -215,9 +217,7 @@
         {% for variant in variants %}
           {% set case = variant["case_obj"] %}
           <tr>
-            <td><!-- Gene -->
-              <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
-            </td>
+            <td>{{ sv_genes_cell(variant) }}</td>
             <td><!-- Variant link -->
               {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
               {% for key, page in var_type_page.items() %}
