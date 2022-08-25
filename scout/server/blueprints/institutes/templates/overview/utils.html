@@ -1,4 +1,4 @@
-{% from "variants/components.html" import sv_genes_cell %}
+{% from "variants/components.html" import sv_genes_cell, svs_funct_anno_cell %}
 
 {% macro institute_settings(form, beacon_form, institute, current_user, loqus_instances) %}
 <div clas="card w-100">
@@ -258,13 +258,7 @@
               {% endif %}
             </td>
             <td><!-- Functional Annotation -->
-              <span class="text-muted">
-              {% for gene in variant.genes or [] %}
-                {{gene.functional_annotation}}&nbsp;
-              {% else %}
-                -
-              {% endfor %}
-              </span>
+              {{ svs_funct_anno_cell(variant) }}
             </td>
             <td><!-- Category -->
               <span class="badge bg-secondary">{{ variant.category|upper }}</span>

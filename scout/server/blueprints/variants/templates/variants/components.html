@@ -21,6 +21,24 @@
   </div>
 {% endmacro %}
 
+{% macro svs_funct_anno_cell(variant) %}
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      {% if variant.functional_annotations|length >= 5 %}
+        <div class="collapse" id="_{{variant._id}}">
+          {% for annotation in variant.functional_annotations|sort %}
+            {{ annotation }}<br>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div>
+          {{ variant.functional_annotations|sort|join(", ") }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
 {% macro gene_cell(variant) %}
   <div class="align-items-center">
     {% if variant.category == "cancer" or variant.category == "sv_cancer" %}
