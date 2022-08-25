@@ -47,7 +47,7 @@
         <div class="row">
           <div class="col-5">
             <input type="text" name="search_for" class="form-control typeahead_gene mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
-                   pattern="^[0-9]+\s*\|\s*.*" title="Search for gene symold, and allow the autocomplete to work for you. Allowed patterns have a numerical hgnc id and a pipe character.">
+                   pattern="^[0-9]+\s*\|\s*.*" title="Search for gene symbol. Type name or number and the field autocompletes a full description. Allowed patterns have a numerical hgnc id and a pipe character.">
           </div>
           <div class="col">
             <button type="submit" name="action" value="ADDGENE" class="btn btn-secondary">Search!</button>
@@ -116,7 +116,7 @@
           </div>
           <div class="col-sm-3 text-center">
               <input type="text" name="new_panel_name" class="form-control" placeholder="Panel ID" required
-                pattern="^[a-zA-Z0-9_-]*$" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
+                pattern="^[a-zA-Z0-9_-]*$" title="Only alphanumeric characters (A-Z+a-z+0-9), hyphens, and underscores allowed.">
             </div>
             <div class="col-sm-4 text-center">
               <input type="text" name="display_name" class="form-control" placeholder="Full name">
