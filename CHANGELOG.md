@@ -26,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better visualization of long lists of genes in large SVs on Causative and Verified Variants page
 - Reintroduced missing button to export Causative variants
 ### Changed
-- State that loqusdb observation is in current case if observations count is one and no cases are shown  
+- State that loqusdb observation is in current case if observations count is one and no cases are shown
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Fix sidebar panel icons in Case view
@@ -39,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Easier editing of HPO gene panel on case page
 - Assign phenotype panel less cramped on Case page
 - Causatives and Verified variants pages to use the same template macro
+- Allow hyphens in panel names
 
 ## [4.57.4]
 ### Fixed
