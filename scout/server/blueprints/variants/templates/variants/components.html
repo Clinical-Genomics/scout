@@ -3,8 +3,8 @@
     <div>
       {% if variant.hgnc_symbols|length >= 5 %}
         <span class="badge bg-secondary mr-3">{{ variant.hgnc_symbols|length }}</span>
-        <a class="mr-3" data-bs-toggle="collapse" href="#_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">[...]</a>
-        <div class="collapse" id="_{{variant._id}}">
+        <a class="mr-3" data-bs-toggle="collapse" href="#_genes_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">[...]</a>
+        <div class="collapse" id="_genes_{{variant._id}}">
           {% for symbol in variant.hgnc_symbols|sort %}
             {{symbol}}<br>
           {% endfor %}
@@ -25,7 +25,8 @@
   <div class="d-flex justify-content-between align-items-center">
     <div>
       {% if variant.functional_annotations|length >= 5 %}
-        <div class="collapse" id="_{{variant._id}}">
+        <a class="mr-3" data-bs-toggle="collapse" href="#_functanno_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">[...]</a>
+        <div class="collapse" id="_functanno_{{variant._id}}">
           {% for annotation in variant.functional_annotations|sort %}
             {{ annotation }}<br>
           {% endfor %}
