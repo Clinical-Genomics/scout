@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Add more splicing consequences to SO term definitions
 - Search for a specific gene in all gene panels
 - Institute settings option to force show all variants on VariantS page for all cases of an institute
+- Filter cases by validation pending status
 ### Fixed
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
