@@ -17,7 +17,7 @@ from scout.constants import (
     PHENOTYPE_GROUPS,
 )
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variant.utils import update_representative_gene
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
@@ -86,11 +86,12 @@ def verified_vars(institute_id):
     """
     verified = []
     for variant_obj in store.verified(institute_id=institute_id):
+        variant_genes = variant_obj.get("genes", [])
         if variant_obj["category"] in ["snv", "cancer"]:
             update_representative_gene(
-                variant_obj, variant_obj.get("genes", [])
+                variant_obj, variant_genes
             )  # required to display cDNA and protein change
-
+        variant_obj.update(predictions(variant_genes))
         verified.append(variant_obj)
 
     return verified
@@ -142,10 +143,12 @@ def causatives(institute_obj, request):
     causatives = []
 
     for variant_obj in store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
+        variant_genes = variant_obj.get("genes", [])
         if variant_obj["category"] in ["snv", "cancer"]:
             update_representative_gene(
-                variant_obj, variant_obj.get("genes", [])
+                variant_obj, variant_genes
             )  # required to display cDNA and protein change
+        variant_obj.update(predictions(variant_genes))
         case_obj = store.case(variant_obj["case_id"])
         if not case_obj:
             continue
