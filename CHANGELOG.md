@@ -38,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Easier editing of HPO gene panel on case page
 - Assign phenotype panel less cramped on Case page
 - Causatives and Verified variants pages to use the same template macro
+- Allow hyphens in panel names
 
 ## [4.57.4]
 ### Fixed
