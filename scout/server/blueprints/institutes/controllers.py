@@ -9,13 +9,7 @@ from flask import current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CASE_SEARCH_TERMS,
-    CASE_STATUSES,
-    PHENOTYPE_GROUPS,
-)
+from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
