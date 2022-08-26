@@ -63,6 +63,7 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["oncokb_link"] = oncokb(hgnc_symbol)
     gene_obj["cbioportal_link"] = cbioportal_gene(hgnc_symbol)
     gene_obj["civic_link"] = civic_gene(hgnc_symbol)
+    gene_obj["ckb_link"] = ckb_gene(hgnc_id)
     gene_obj["iarctp53_link"] = iarctp53(hgnc_symbol)
     gene_obj["stripy_link"] = stripy_gene(hgnc_symbol)
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
@@ -98,6 +99,13 @@ def gnomad_str_gene(hgnc_symbol):
         return "https://gnomad.broadinstitute.org/short-tandem-repeats?dataset=gnomad_r3"
 
     return link.format(hgnc_symbol)
+
+
+def ckb_gene(hgnc_id):
+    link = "https://ckb.jax.org/gene/show?geneId={}"
+    if not hgnc_id:
+        return None
+    return link.format(hgnc_id)
 
 
 def civic_gene(hgnc_symbol):
