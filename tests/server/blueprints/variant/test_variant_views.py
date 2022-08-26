@@ -147,6 +147,34 @@ def test_sv_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
+def test_str_reviewer_variant(app, institute_obj, case_obj, str_variant_obj):
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+
+    # GIVEN an STR variant with a REPID
+    assert str_variant_obj.get("str_repid")
+
+    # WHEN inserting a STR variant
+    assert store.variant_collection.insert_one(str_variant_obj)
+
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN sending a request (GET) to the sv_variant page
+        resp = client.get(
+            url_for(
+                "variant.reviewer_aln",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                variant_id=str_variant_obj["document_id"],
+            )
+        )
+        # THEN the REViewer page should return a page
+        assert resp.status_code == 200
+
+
 def test_variant_update_manual_rank(
     app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
 ):
