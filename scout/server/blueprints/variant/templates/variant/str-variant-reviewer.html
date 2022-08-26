@@ -33,7 +33,7 @@
       {{ variant_type|capitalize }} STRs
     </a>
   </li>
-  <li class="nav-item active">
+  <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">{{ str_repid }}</span>
   </li>
 {% endblock %}
@@ -48,9 +48,9 @@
     <div class="card">
       <h1 class="card-header">{{str_repid}}</h1>
       <div class="card-img-top str-variants-reviewer-container">
-        {% for individual in display_individuals %}
+        {% for individual in individuals %}
           <div class="row">
-            <span class="fa-bold">{{ individual.display_name }}</span><span>({{ individual.internal_id }})</span>
+            <span class="fw-bold">{{ individual.display_name }}</span><span>({{ individual.individual_id }})</span>
           </div>
           <div class="row">{{individual.svg}}</div>
         {% endfor %}

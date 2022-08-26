@@ -576,7 +576,7 @@ def str_variant_reviewer(
 
         ind_reviewer = ind.get("reviewer")
         if not url or not str_repid or not ind_reviewer:
-            display_individual["svg"] = "<SVG></SVG>"
+            display_individual["svg"] = Markup("<SVG></SVG>")
             display_individuals.append(display_individual)
             continue
 
@@ -593,7 +593,7 @@ def str_variant_reviewer(
             display_individual["svg"] = Markup(resp.text)
         except Exception as err:
             flash(f"An error occurred while connecting to Scout-REViewer-Service: {err}")
-            display_individual["svg"] = "<SVG></SVG>"
+            display_individual["svg"] = Markup("<SVG></SVG>")
 
         display_individuals.append(display_individual)
 
