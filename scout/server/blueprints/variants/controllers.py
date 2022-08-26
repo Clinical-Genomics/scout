@@ -219,8 +219,8 @@ def str_variants_reviewer(
     ind_reviewer = ind.get("reviewer")
     url = current_app.config.get("SCOUT_REVIEWER_URL")
     data = {
-        "reads": ind_reviewer.get("reads"),
-        "reads_index": ind_reviewer.get("reads_index"),
+        "reads": ind_reviewer.get("alignment"),
+        "reads_index": ind_reviewer.get("alignment_index"),
         "vcf": ind_reviewer.get("vcf"),
         "catalog": ind_reviewer.get("catalog"),
         "locus": str_repid,

@@ -28,10 +28,10 @@ samples:
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
     reviewer:
-        'reads': 'scout/demo/ACC5963A1_lanes_1234.cram'
-        'reads_index': 'scout/demo/ACC5963A1_lanes_1234.cram.crai'
-        'vcf': 'scout/demo/ACC5963A1_lanes_1234.vcf'
-        'catalog': 'scout/demo/STR.json'
+        'alignment': 'scout/demo/REViewer_test_data/justhusky_exphun_hugelymodelbat_realigned.bam'
+        'alignment_index': 'scout/demo/REViewer_test_data/justhusky_exphun_hugelymodelbat_realigned.bam.bai'
+        'vcf': 'scout/demo/REViewer_test_data/justhusky_exphun_hugelymodelbat.vcf'
+        'catalog': 'scout/demo/REViewer_test_data/catalog_test.json'
     rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
     chromograph_images:

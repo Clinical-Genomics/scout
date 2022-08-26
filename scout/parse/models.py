@@ -29,8 +29,8 @@ class ChromographImages(BaseModel):
 
 
 class REViewer(BaseModel):
-    reads: Optional[str] = None
-    reads_index: Optional[str] = None
+    alignment: Optional[str] = None
+    alignment_index: Optional[str] = None
     vcf: Optional[str] = None
     catalog: Optional[str] = None
 
