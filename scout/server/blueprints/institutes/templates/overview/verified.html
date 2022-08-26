@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "overview/utils.html" import variant_list_content %}
-{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets, db_table_custom_scripts %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
 
 {% block title %}
 {{ super() }} - Institutes
@@ -86,8 +86,9 @@
 </div>
 {% endmacro %}
 
+
 {% block scripts %}
   {{ super() }}
   {{ db_table_external_scripts() }}
-  {{ db_table_custom_scripts() }}
+  <script src="{{ url_for('overview.static', filename='variants_list_scripts.js') }}"></script>
 {% endblock %}

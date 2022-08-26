@@ -188,26 +188,3 @@
   <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.js" integrity="sha512-BSdPiqLbAJOVF1Q+rleIJJIio/8Ihf1zXxfYMinSHMpKdRWX634Mi4Rt8LRYfn0k5nbSlFO7Y7klzNCG8tokFQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
   <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.js" integrity="sha512-ZA1gDCJI+Hul95Y1tSRi3D/GfWRRX11oJH+QqtjnpzJLBDmU9DsO2db5oL3Gn7LezkSL/XWCL5v04ZiCy/RpKQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 {% endmacro %}
-
-{% macro db_table_custom_scripts() %}
-  <script type="text/javascript">
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-
-    $(document).ready(function() {
-      $('#variants_table').DataTable( {
-          paging: false,
-          dom: 'Bfrtip',
-          buttons: [
-              'copyHtml5',
-              'excelHtml5',
-          ]
-      } );
-
-      $('[data-toggle="tooltip"]').tooltip();
-    } );
-  </script>
-{% endmacro %}
