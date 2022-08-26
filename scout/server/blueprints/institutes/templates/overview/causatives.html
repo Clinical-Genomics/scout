@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
 {% from "overview/utils.html" import variant_list_content %}
-{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets, db_table_custom_scripts %}
 
 {% block title %}
 {{ super() }} - Institutes
@@ -38,22 +38,5 @@
 {% block scripts %}
   {{ super() }}
   {{ db_table_external_scripts() }}
-
-  <script type="text/javascript">
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
-    })
-
-    $(document).ready(function() {
-      $('#variants_table').DataTable( {
-          paging: false,
-          dom: 'Bfrtip',
-          buttons: [
-              'copyHtml5',
-              'excelHtml5',
-          ]
-      } );
-    } );
-  </script>
+  {{ db_table_custom_scripts() }}
 {% endblock %}
