@@ -42,8 +42,8 @@
   {{ super() }}
 {% endblock %}
 
-{% block content %}
-<main class="container-fluid">
+{% block content_main %}
+<div class="container-float">
   <div class="row p-2">
     <div class="card">
       <h1 class="card-header">{{str_repid}}</h1>
@@ -57,5 +57,5 @@
       </div>
     </div>
   </div>
-</main>
+</div>
 {% endblock %}
