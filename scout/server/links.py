@@ -1,12 +1,9 @@
-import logging
-
 from flask import current_app
 
 from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1
 
 SHALLOW_REFERENCE_STR_LOCI = ["ARX", "HOXA13"]
-LOG = logging.getLogger(__name__)
 
 
 def add_gene_links(gene_obj, build=37):
