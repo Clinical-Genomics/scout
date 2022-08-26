@@ -123,9 +123,9 @@
 {% macro reviewer_button(case, variant, case_groups, institute_id) %}
   <div>
     <a
-      href="{{url_for('variants.reviewer_aln', institute_id=institute_id, case_name=case.display_name, str_repid=variant.str_repid)}}"
+      href="{{url_for('variant.reviewer_aln', institute_id=institute_id, case_name=case.display_name, variant_id=variant._id)}}"
       class="link text-black"
-      title="{{variant.str_repid}}"
+      title="View REViewer graph alignments for {{variant.str_repid}} using external service."
       >Inspect alignments</a>
     </div>
 {% endmacro %}

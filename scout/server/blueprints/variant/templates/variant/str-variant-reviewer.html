@@ -1,4 +1,4 @@
-{% extends "layout_bs4.html" %}
+{% extends "layout.html" %}
 {% from "utils.html" import comments_table, pedigree_panel %}
 {% from "variants/components.html" import gene_cell, frequency_cell_general %}
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
@@ -48,7 +48,12 @@
     <div class="card">
       <h1 class="card-header">{{str_repid}}</h1>
       <div class="card-img-top str-variants-reviewer-container">
-        {{ svg }}
+        {% for individual in display_individuals %}
+          <div class="row">
+            <span class="fa-bold">{{ individual.display_name }}</span><span>({{ individual.internal_id }})</span>
+          </div>
+          <div class="row">{{individual.svg}}</div>
+        {% endfor %}
       </div>
     </div>
   </div>

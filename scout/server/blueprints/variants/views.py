@@ -2,7 +2,6 @@
 import datetime
 import io
 import logging
-import re
 
 import pymongo
 from flask import Blueprint, flash, redirect, request, url_for
@@ -148,29 +147,6 @@ def variants(institute_id, case_name):
         expand_search=expand_search,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        **data,
-    )
-
-
-@variants_bp.route("/test/<institute_id>/<case_name>/str/variants/<str_repid>", methods=["GET"])
-@templated("variants/str-variants-reviewer.html")
-def reviewer_aln(institute_id, case_name, individual, str_repid):
-    """Display STR variant alignment using the REViewer service."""
-    if request.args.get("variant_type", "clinical") is "research":
-        variant_type = "research"
-    else:
-        variant_type = "clinical"
-    re.escape("str_repid")
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.str_variants_reviewer(case_obj, individual, str_repid)
-
-    return dict(
-        institute=institute_obj,
-        case=case_obj,
-        variant_type=variant_type,
-        format="html",
-        str_repid=str_repid,
         **data,
     )
 
