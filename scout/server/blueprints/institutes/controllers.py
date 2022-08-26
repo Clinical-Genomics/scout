@@ -393,25 +393,20 @@ def cases(store, request, institute_id):
         )
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
-    skip_assigned = request.args.get("skip_assigned")
     data["form"] = populate_case_filter_form(request.args)
-    data["skip_assigned"] = skip_assigned
-    is_research = request.args.get("is_research")
-    data["is_research"] = is_research
+
     prioritized_cases = store.prioritized_cases(institute_id=institute_id)
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
+        skip_assigned=request.args.get("skip_assigned"),
+        is_research=request.args.get("is_research"),
+        verification_pending=request.args.get("validation_ordered"),
     )
     all_cases = _sort_cases(data, request, all_cases)
 
     data["nr_cases"] = store.nr_cases(institute_id=institute_id)
-
-    sanger_unevaluated = get_sanger_unevaluated(store, institute_id, current_user.email)
-    if len(sanger_unevaluated) > 0:
-        data["sanger_unevaluated"] = sanger_unevaluated
+    data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
