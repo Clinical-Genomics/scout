@@ -71,7 +71,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # Connection details for Scout REViewer service
 # URL
-SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
+# SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
 
 #
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
