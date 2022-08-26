@@ -46,6 +46,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **capture_kit** _String_ Exome specifies the capture kit.
     - **chromograph_images** _List_
         - **autozygous** _String_ Path to file.
+        - **coverage** _String_ Path to file.
         - **upd_regions** _String_ Path to file.
         - **upd_sites** _String_ Path to file.
     - **confirmed_parent** _Bool_ True if parent confirmed.
