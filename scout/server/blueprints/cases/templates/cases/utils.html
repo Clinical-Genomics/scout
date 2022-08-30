@@ -572,10 +572,7 @@
     <ul class="list-group collapse" id="matchingCausatives">
       {% for variant in other_causatives %}
         <li class="list-group-item">
-          <a href="{{ url_for('variant.variant', institute_id=institute._id,
-                              case_name=case.display_name, variant_id=variant._id) }}">
-            {{ variant.hgnc_symbols|join(', ') or variant.hgnc_ids|join(', ') or variant.str_repid }}
-          </a>
+          {{ pretty_link_variant(variant, case)}}
         </li>
       {% else %}
         <li class="list-group-item">No matching causative variants.</li>
@@ -593,10 +590,7 @@
     <ul class="list-group">
       {% for variant in managed_variants %}
         <li class="list-group-item collapse" id="matchingManaged">
-          <a href="{{ url_for('variant.variant', institute_id=institute._id,
-                              case_name=case.display_name, variant_id=variant._id) }}">
-            {{ variant.hgnc_symbols|join(', ') }}
-          </a>
+           {{ pretty_link_variant(variant, case)}}
         </li>
       {% else %}
         <li class="list-group-item">No managed variants.</li>
