@@ -33,6 +33,8 @@ class REViewer(BaseModel):
     alignment_index: Optional[str] = None
     vcf: Optional[str] = None
     catalog: Optional[str] = None
+    reference: Optional[str] = None
+    reference_index: Optional[str] = None
 
 
 def _glob_wildcard(path):
