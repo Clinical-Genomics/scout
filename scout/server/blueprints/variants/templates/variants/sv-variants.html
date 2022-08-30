@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, variant_symbols_cell, variant_funct_anno_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -124,7 +124,7 @@ onsubmit="return validateForm()">
       {{ frequency_cell_general(variant) }}
     </td>
     <td>
-      {{ variant_symbols_cell(variant) }}
+      {{ variant_gene_symbols_cell(variant) }}
     </td>
   </tr>
 {% endmacro %}
