@@ -2,7 +2,14 @@
 
 from flask import url_for
 
-from scout.server.links import add_gene_links, alamut_link, cbioportal, mycancergenome, snp_links
+from scout.server.links import (
+    add_gene_links,
+    alamut_link,
+    cbioportal,
+    ckb_gene,
+    mycancergenome,
+    snp_links,
+)
 
 
 def test_alamut_link(app, institute_obj, variant_obj):
@@ -80,6 +87,13 @@ def test_mycancergenome_link():
     protein_change = "p.Ser241Phe"
 
     link = mycancergenome(hgnc_symbol, protein_change)
+    assert link is not None
+
+
+def test_ckb_link():
+    """Test building the link for The Clinical KnowledgeBase (Jackson Lab)"""
+    entrez_id = 7015
+    link = ckb_gene(entrez_id)
     assert link is not None
 
 
