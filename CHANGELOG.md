@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken filter institute cases by pinned gene
 - Better visualization of long lists of genes in large SVs on Causative and Verified Variants page
 - Reintroduced missing button to export Causative variants
+- Better linking and display of matching causatives and managed variants
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
