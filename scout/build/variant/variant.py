@@ -312,6 +312,7 @@ def set_sample(variant_obj, sample_list, sample_info):
             }
     variant_obj["samples"] = gt_types
 
+
 def add_compounds(variant_obj, compound_list):
     """Add compound list to variant_obj
     Args: variant_obj (Dict)
