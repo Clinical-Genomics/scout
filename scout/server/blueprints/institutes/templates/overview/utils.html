@@ -1,3 +1,5 @@
+{% from "variants/components.html" import variant_gene_symbols_cell, variant_funct_anno_cell %}
+
 {% macro institute_settings(form, beacon_form, institute, current_user, loqus_instances) %}
 <div clas="card w-100">
   <form action="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" method="POST"
@@ -190,7 +192,7 @@
 {% macro variant_list_content(institute, variants, acmg_map, callers) %}
 <div class="card mt-3">
   <div class="card-body overflow-auto">
-    <table id="verified_table" class="table display table-sm">
+    <table id="variants_table" class="table display table-sm">
       <caption>List of selected variants</caption>
       <thead class="thead table-light sticky-offset">
         <tr>
@@ -215,9 +217,7 @@
         {% for variant in variants %}
           {% set case = variant["case_obj"] %}
           <tr>
-            <td><!-- Gene -->
-              <span class="text-body">{{ variant.hgnc_symbols|join(', ') if variant.hgnc_symbols else '--'}}</span>
-            </td>
+            <td>{{ variant_gene_symbols_cell(variant) }}</td>
             <td><!-- Variant link -->
               {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
               {% for key, page in var_type_page.items() %}
@@ -258,13 +258,7 @@
               {% endif %}
             </td>
             <td><!-- Functional Annotation -->
-              <span class="text-muted">
-              {% for gene in variant.genes or [] %}
-                {{gene.functional_annotation}}&nbsp;
-              {% else %}
-                -
-              {% endfor %}
-              </span>
+              {{ variant_funct_anno_cell(variant) }}
             </td>
             <td><!-- Category -->
               <span class="badge bg-secondary">{{ variant.category|upper }}</span>
