@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import cancer_sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, sv_genes_cell, svs_funct_anno_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, variant_symbols_cell, variant_funct_anno_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -119,7 +119,7 @@
       {% endif %}
     </td>
     <td>
-      {{ svs_funct_anno_cell(variant) }}
+      {{ variant_funct_anno_cell(variant) }}
     </td>
     <td>
       {% if variant.gnomad_frequency %}
@@ -130,7 +130,7 @@
     <td>{{ allele_cell(variant.normal or {}) }}</td>
 
     <td>
-      {{sv_genes_cell(variant)}}
+      {{ variant_symbols_cell(variant) }}
     </td>
   </tr>
 {% endmacro %}

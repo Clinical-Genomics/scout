@@ -1,4 +1,4 @@
-{% from "variants/components.html" import sv_genes_cell, svs_funct_anno_cell %}
+{% from "variants/components.html" import variant_symbols_cell, variant_funct_anno_cell %}
 
 {% macro institute_settings(form, beacon_form, institute, current_user, loqus_instances) %}
 <div clas="card w-100">
@@ -217,7 +217,7 @@
         {% for variant in variants %}
           {% set case = variant["case_obj"] %}
           <tr>
-            <td>{{ sv_genes_cell(variant) }}</td>
+            <td>{{ variant_symbols_cell(variant) }}</td>
             <td><!-- Variant link -->
               {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
               {% for key, page in var_type_page.items() %}
@@ -258,7 +258,7 @@
               {% endif %}
             </td>
             <td><!-- Functional Annotation -->
-              {{ svs_funct_anno_cell(variant) }}
+              {{ variant_funct_anno_cell(variant) }}
             </td>
             <td><!-- Category -->
               <span class="badge bg-secondary">{{ variant.category|upper }}</span>
