@@ -136,7 +136,7 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
             institute=institute,
             confidence=confidence,
         )
-        parsed_panel["panel_id"] = _panel_id
+        parsed_panel["panel_id"] = "_".join([_panel_id, confidence])
 
         if len(parsed_panel["genes"]) == 0:
             LOG.warning("Panel %s is missing genes. Skipping.", parsed_panel["display_name"])
