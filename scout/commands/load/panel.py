@@ -82,7 +82,6 @@ def panel(
         return
 
     if panel_app:
-        LOG.warning(panel_app_confidence)
         load_panelapp_panel(
             adapter, panel_id, institute=institute, confidence=panel_app_confidence or "green"
         )
