@@ -58,6 +58,12 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **msi** _Int_ Microsatellite instability [0-60].
     - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
     - **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
+    - **reviewer** _List_ [Reference][srs]
+      - **alignment** _String_ Path to BAM/CRAM file to view STR alignments
+      - **alignment_index** _String_ Path to BAM/CRAM index file to view STR alignments
+      - **vcf** _String_ Path to STR VCF file to view STR alignments
+      - **catalog** _String_ Path or URL to REViewer catalog JSON file to view STR alignments
+      - **reference** _String_ Path or URL for REViewer to reference sequence for the individual STR alignment
     - **rna_coverage_bigwig** _String_ Path to coverage islands file generated
     - **rhocall_bed** _String_ Path to BED file to view alignments [Reference][rhocall].
     - **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
@@ -68,11 +74,6 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **smn2_cn** _Int_ Copynumber.
     - **smn2delta78_cn** _Int_ Copynumber.
     - **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
-    - **reviewer** _List_ [Reference][srs]
-      - **alignment** _String_ Path to BAM/CRAM file to view STR alignments
-      - **alignment_index** _String_ Path to BAM/CRAM index file to view STR alignments
-      - **vcf** _String_ Path to STR VCF file to view STR alignments
-      - **catalog** _String_ Path or URL to REViewer catalog JSON file to view STR alignments
     - **tiddit_coverage_wig** _String_ Path to WIG file to view alignments [Reference][tiddit].
     - **tissue_type** _String_ Sample tissue origin i.e. blood, muscle.
     - **tmb** _Int_ Tumor mutational burden [0, 1000] (tumor case only).
