@@ -2,7 +2,6 @@
 import datetime
 import logging
 import operator
-import re
 from copy import deepcopy
 
 import pymongo
@@ -153,7 +152,7 @@ class CaseHandler(object):
         """
         order = None
         query_field = name_query.split(":")[0]  # example:status
-        query_term = re.escape(name_query[name_query.index(":") + 1 :].strip())
+        query_term = name_query[name_query.index(":") + 1 :].strip()
 
         if query_field == "case" and query_term != "":
             query["$or"] = [
@@ -230,9 +229,7 @@ class CaseHandler(object):
         if query_field == "user":
             query_terms = query_term.split(" ")
             user_query = {
-                "$and": [
-                    {"name": {"$regex": re.escape(term), "$options": "i"}} for term in query_terms
-                ]
+                "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
             }
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["email"] for user in users]}
