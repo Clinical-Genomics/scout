@@ -48,6 +48,13 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("--api-key", help="A OMIM api key, see https://omim.org/api.")
 @click.option("--panel-app", is_flag=True, help="Load all PanelApp panels into scout.")
+@click.option(
+    "--panel-app-confidence",
+    type=click.Choice(
+        ["green", "amber", "red"],
+        case_sensitive=True,
+    ),
+)
 @with_appcontext
 def panel(
     path,
@@ -63,6 +70,7 @@ def panel(
     mim2genes,
     api_key,
     panel_app,
+    panel_app_confidence,
 ):
     """Add a gene panel to the database."""
 
@@ -74,7 +82,10 @@ def panel(
         return
 
     if panel_app:
-        load_panelapp_panel(adapter, panel_id, institute=institute)
+        LOG.warning(panel_app_confidence)
+        load_panelapp_panel(
+            adapter, panel_id, institute=institute, confidence=panel_app_confidence or "green"
+        )
         return
 
     if path is None:

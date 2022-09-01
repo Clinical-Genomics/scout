@@ -106,7 +106,7 @@ def load_panel(panel_path, adapter, **kwargs):
         raise err
 
 
-def load_panelapp_panel(adapter, panel_id=None, institute="cust000"):
+def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence="green"):
     """Load PanelApp panels into scout database
 
     If no panel_id load all PanelApp panels
@@ -114,6 +114,7 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000"):
     Args:
         adapter(scout.adapter.MongoAdapter)
         panel_id(str): The panel app panel id
+        confidence(str enum green|amber|red): traffic light-style PanelApp level of confidence
     """
     base_url = "https://panelapp.genomicsengland.co.uk/WebServices/{0}/"
 
@@ -122,7 +123,6 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000"):
     panel_ids = [panel_id]
 
     if not panel_id:
-
         LOG.info("Fetching all panel app panels")
         json_lines = fetch_resource(base_url.format("list_panels"), json=True)
 
@@ -130,9 +130,11 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000"):
 
     for _panel_id in panel_ids:
         json_lines = fetch_resource(base_url.format("get_panel") + _panel_id, json=True)
-
         parsed_panel = parse_panel_app_panel(
-            panel_info=json_lines["result"], hgnc_map=hgnc_map, institute=institute
+            panel_info=json_lines["result"],
+            hgnc_map=hgnc_map,
+            institute=institute,
+            confidence=confidence,
         )
         parsed_panel["panel_id"] = _panel_id
 
