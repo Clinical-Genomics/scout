@@ -170,7 +170,7 @@ def load_omim_panel(adapter, genemap2, mim2genes, api_key, institute):
         LOG.warning(
             "Please provide either an OMIM api key or the path to genemap2 and mim2genesto to load the omim gene panel"
         )
-        raise click.Abort()
+        return
     # Check if OMIM-AUTO exists
     if adapter.gene_panel(panel_id="OMIM-AUTO"):
         LOG.warning(
