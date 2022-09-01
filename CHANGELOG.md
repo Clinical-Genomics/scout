@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.58.1]
+### Added
+- Specify a confidence threshold (green|amber|red) when loading PanelApp panels
 ### Fixed
 - Case search with search strings that contain characters that can be escaped
 
