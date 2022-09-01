@@ -22,8 +22,6 @@ from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
-print("__name__")
-print(__name__)
 variants_bp = Blueprint(
     "variants",
     __name__,
@@ -218,8 +216,6 @@ def str_variants(institute_id, case_name):
     data = controllers.str_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-
-    print("form type data", form.variant_type.data)
 
     return dict(
         institute=institute_obj,

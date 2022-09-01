@@ -107,9 +107,9 @@
               {{ variant.position }}
               {{ reviewer_button(case,variant,case_groups,institute._id) }}
               {% if case.bam_files %}
-                <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a></span>
+                <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a>
               {% else %}
-                <span class="text-muted">BAM file(s) missing</span>
+                <button title="BAM file(s) missing" class="btn btn-secondary btn-sm" disabled>IGV viewer</button>
               {% endif %}
             </td>
         </tr>

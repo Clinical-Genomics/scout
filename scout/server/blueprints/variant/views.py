@@ -109,10 +109,7 @@ def sv_variant(institute_id, case_name, variant_id):
 @templated("variant/str-variant-reviewer.html")
 def reviewer_aln(institute_id, case_name, variant_id):
     """Display STR variant alignment using the REViewer service."""
-    if request.args.get("variant_type", "clinical") == "research":
-        variant_type = "research"
-    else:
-        variant_type = "clinical"
+    variant_type = request.args.get("variant_type", "clinical")
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = str_variant_reviewer(store, case_obj, variant_id)

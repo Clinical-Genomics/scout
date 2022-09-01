@@ -122,14 +122,16 @@
 
 {% macro reviewer_button(case, variant, case_groups, institute_id) %}
   {% if config.SCOUT_REVIEWER_URL %}
-  <div>
+    {% if "reviewer" in case.individuals[0] %}
       <a
       href="{{url_for('variant.reviewer_aln', institute_id=institute_id, case_name=case.display_name, variant_id=variant._id)}}"
-      class="btn btn-secondary btm-sm text-white"
+      class="btn btn-secondary btn-sm text-white" role="button"
       title="View REViewer graph alignments for {{variant.str_repid}} using external service."
       >REViewer</a>
-    </div>
+    {% else %}
+      <button class="btn btn-secondary btn-sm" title="No REViewer aln" disabled>REViewer</button>
+    {% endif %}
   {% else %}
-    <div><span class="text-muted">REViewer not configured</span></div>
+    <button class="btn btn-secondary btn-sm" title="REViewer not configured" disabled>REViewer</button>
   {% endif %}
 {% endmacro %}
