@@ -136,7 +136,10 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
             institute=institute,
             confidence=confidence,
         )
-        parsed_panel["panel_id"] = "_".join([_panel_id, confidence])
+        if confidence != "green":
+            parsed_panel["panel_id"] = "_".join([_panel_id, confidence])
+        else:  # This way the old green panels will be overwritten, instead of creating 2 sets of green panels, old and new
+            parsed_panel["panel_id"] = _panel_id
 
         if len(parsed_panel["genes"]) == 0:
             LOG.warning("Panel %s is missing genes. Skipping.", parsed_panel["display_name"])
