@@ -333,7 +333,9 @@ def parse_panel_app_panel(
     gene_panel = {}
     gene_panel["version"] = float(panel_info["version"])
     gene_panel["date"] = get_date(panel_info["Created"][:-1], date_format=date_format)
-    gene_panel["display_name"] = " - ".join([panel_info["SpecificDiseaseName"], confidence])
+    gene_panel["display_name"] = " - ".join(
+        [panel_info["SpecificDiseaseName"], f"[{confidence.upper()}]"]
+    )
     gene_panel["institute"] = institute
     gene_panel["panel_type"] = panel_type
 
