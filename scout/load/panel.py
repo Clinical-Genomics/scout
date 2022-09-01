@@ -179,10 +179,7 @@ def load_omim_panel(adapter, genemap2, mim2genes, api_key, institute):
         return
 
     if not mim_files:
-        try:
-            mim_files = fetch_mim_files(api_key=api_key, genemap2=True, mim2genes=True)
-        except Exception as err:
-            raise err
+        mim_files = fetch_mim_files(api_key=api_key, genemap2=True, mim2genes=True)
 
     # Here we know that there is no panel loaded
     try:
