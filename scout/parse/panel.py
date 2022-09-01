@@ -343,7 +343,7 @@ def parse_panel_app_panel(
 
     gene_panel["genes"] = []
 
-    nr_excluded = 1
+    nr_excluded = 0
     nr_genes = 0
     for nr_genes, gene in enumerate(panel_info["Genes"], 1):
         gene_info = parse_panel_app_gene(gene, hgnc_map, confidence)
