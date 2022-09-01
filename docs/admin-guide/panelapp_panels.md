@@ -6,7 +6,7 @@ The command to **import/update all gene panels from PanelApp** is the following:
 
 `scout load panel --panel-app  --institute <inst-id> (--panel-app-confidence green|amber|red)`
 
-Please note that **if you don't specify any confidence level with the --panel-app-confidence option, then only the `HighEvidence` (green) will be included in the panels**.
+Please note that **if you don't specify any confidence level with the --panel-app-confidence option, then only the `HighEvidence` (green) genes will be included in the panels**.
 
 To **create/update only one** PanelApp panel, use the following command:
 
