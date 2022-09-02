@@ -6,7 +6,22 @@ The command to **import/update all gene panels from PanelApp** is the following:
 
 `scout load panel --panel-app  --institute <inst-id> (--panel-app-confidence green|amber|red)`
 
-Please note that **if you don't specify any confidence level with the --panel-app-confidence option, then only the `HighEvidence` (green) genes will be included in the panels**.
+The `--panel-app-confidence` option specifies the threshold of confidence for genes that should be added to the panel.
+
+According to PanelApp, the levels of confidence for a gene are the following:
+- Green = highest level of confidence; a gene from 3 or 4 sources.
+- Amber = intermediate; a gene from 2 sources.
+- Red = lowest level of confidence; 1 of the 4 sources or from other sources.
+
+Please note that when you create a PanalApp panel is **Scout, the software uses the specified level as a threshold, and not a filter**, so you'll get the following:
+
+```
+`--panel-app-confidence green` collects green genes from PanelApp
+`--panel-app-confidence amber` collects amber and red from PanelApp
+`--panel-app-confidence red` collects all genes from PanelApp
+```
+
+Please note that **if you don't specify any confidence level with the `--panel-app-confidence option`, then only the `HighEvidence` (green) genes will be included in the panels**.
 
 To **create/update only one** PanelApp panel, use the following command:
 
