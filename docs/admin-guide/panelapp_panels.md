@@ -27,7 +27,7 @@ To **create/update only one** PanelApp panel, use the following command:
 
 `scout load panel --panel-app  --institute <inst-id> --panel-id <panel-id> (--panel-app-confidence green|amber|red)`.
 
-For instance to create the `CAKUT` (id: 234) gene panel, containing amber genes, for an institute named cust000, the command would be:
+For instance to create the `CAKUT` (id: 234) gene panel, containing amber + green genes, for an institute named cust000, the command would be:
 
 `scout load panel --panel-app  --institute cust000 --panel-id 234 --panel-app-confidence amber`
 
