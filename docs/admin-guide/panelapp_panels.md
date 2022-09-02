@@ -16,8 +16,8 @@ According to PanelApp, the levels of confidence for a gene are the following:
 Please note that when you create a PanalApp panel is **Scout, the software uses the specified level as a threshold, and not a filter**, so you'll get the following:
 
 ```
-`--panel-app-confidence green` collects green genes from PanelApp
-`--panel-app-confidence amber` collects amber and red from PanelApp
+`--panel-app-confidence green` collects only green genes from PanelApp
+`--panel-app-confidence amber` collects amber and green genes from PanelApp
 `--panel-app-confidence red` collects all genes from PanelApp
 ```
 
