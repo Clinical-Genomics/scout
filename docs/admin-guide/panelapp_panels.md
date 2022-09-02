@@ -13,7 +13,7 @@ According to PanelApp, the levels of confidence for a gene are the following:
 - Amber = intermediate; a gene from 2 sources.
 - Red = lowest level of confidence; 1 of the 4 sources or from other sources.
 
-Please note that when you create a PanalApp panel is **Scout, the software uses the specified level as a threshold, and not as a filter**, so you'll get the following:
+Please note that when you create a PanalApp panel in **Scout, the software uses the specified level as a threshold, and not as a filter**, so you'll get the following:
 
 ```
 `--panel-app-confidence green` collects only green genes from PanelApp
