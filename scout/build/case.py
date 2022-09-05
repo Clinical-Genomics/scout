@@ -3,6 +3,7 @@ from datetime import datetime
 
 from scout.constants import CUSTOM_CASE_REPORTS
 from scout.exceptions import ConfigError, IntegrityError
+
 from . import build_individual
 
 LOG = logging.getLogger(__name__)
@@ -133,7 +134,6 @@ def build_case(case_data, adapter):
         for individual in case_data.get("individuals", []):
             ind_objs.append(build_individual(individual))
     except Exception as error:
-        ## TODO add some action here
         raise error
     # sort the samples to put the affected individual first
     sorted_inds = sorted(ind_objs, key=lambda ind: -ind["phenotype"])
@@ -196,7 +196,6 @@ def build_case(case_data, adapter):
     genome_build = case_data.get("genome_build", "37")
     if not genome_build in ["37", "38"]:
         pass
-        ##TODO raise exception if invalid genome build was used
 
     case_obj["genome_build"] = genome_build
 

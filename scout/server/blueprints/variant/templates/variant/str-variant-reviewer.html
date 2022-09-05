@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% from "utils.html" import comments_table, pedigree_panel %}
+{% from "variants/components.html" import gene_cell, frequency_cell_general %}
+{% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters %}
+{% from "variant/buttons.html" import igv_button, reviewer_button%}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - STR variants
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">
+      {{ variant_type|capitalize }} STRs
+    </a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">{{ str_repid }}</span>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row p-2">
+    <div class="card">
+      <h1 class="card-header">{{str_repid}}</h1>
+      <div class="card-img-top str-variants-reviewer-container">
+        {% for individual in individuals %}
+          <div class="row">
+            <span class="fw-bold">{{ individual.display_name }}</span><span>({{ individual.individual_id }})</span>
+          </div>
+          <div class="row">{{individual.svg}}</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

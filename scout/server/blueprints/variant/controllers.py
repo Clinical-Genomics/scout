@@ -3,7 +3,8 @@ import os
 from base64 import b64encode
 from datetime import date
 
-from flask import current_app, flash, url_for
+import requests
+from flask import Markup, current_app, flash, url_for
 from flask_login import current_user
 
 from scout.constants import (
@@ -540,6 +541,66 @@ def observations(store, loqusdb, case_obj, variant_obj):
         )
 
     return obs_data
+
+
+def str_variant_reviewer(
+    store,
+    case_obj,
+    variant_id,
+):
+    """Controller populating data and calling REViewer Service to fetch svg.
+    Args:
+        case_obj(dict)
+        variant_obj(dict)
+    Returns:
+        data(dict): {"individuals": list(dict())}}
+            individual dicts being dict with keys:
+                svg(str): image Markup text
+                display_name(str): display name
+                individual_id(str): internal id
+    """
+
+    variant_obj = store.variant(variant_id)
+
+    str_repid = variant_obj.get("str_repid")
+    print("str_variants_reviewer", str_repid)
+
+    url = current_app.config.get("SCOUT_REVIEWER_URL")
+
+    display_individuals = []
+    for ind in case_obj.get("individuals"):
+        display_individual = {
+            "display_name": ind.get("display_name"),
+            "individual_id": ind.get("individual_id"),
+        }
+
+        ind_reviewer = ind.get("reviewer")
+        if not url or not str_repid or not ind_reviewer:
+            display_individual["svg"] = Markup("<SVG></SVG>")
+            display_individuals.append(display_individual)
+            continue
+
+        srs_query_data = {
+            "reads": ind_reviewer.get("alignment"),
+            "reads_index": ind_reviewer.get("alignment_index"),
+            "vcf": ind_reviewer.get("vcf"),
+            "catalog": ind_reviewer.get("catalog"),
+            "locus": str_repid,
+        }
+
+        try:
+            resp = requests.post(url, json=srs_query_data)
+            display_individual["svg"] = Markup(resp.text)
+        except Exception as err:
+            flash(f"An error occurred while connecting to Scout-REViewer-Service: {err}")
+            display_individual["svg"] = Markup("<SVG></SVG>")
+
+        display_individuals.append(display_individual)
+
+    return {
+        "individuals": display_individuals,
+        "str_repid": str_repid,
+    }
 
 
 def variant_acmg(store, institute_id, case_name, variant_id):

@@ -28,6 +28,15 @@ class ChromographImages(BaseModel):
     upd_sites: Optional[str] = None
 
 
+class REViewer(BaseModel):
+    alignment: Optional[str] = None
+    alignment_index: Optional[str] = None
+    vcf: Optional[str] = None
+    catalog: Optional[str] = None
+    reference: Optional[str] = None
+    reference_index: Optional[str] = None
+
+
 def _glob_wildcard(path):
     """Search for multiple files using a path with wildcard."""
     wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
@@ -99,6 +108,7 @@ class ScoutIndividual(BaseModel):
     mt_bam: Optional[str] = None
     phenotype: Literal["affected", "unaffected", "unknown"]
     predicted_ancestry: Optional[str] = None
+    reviewer: Optional[REViewer] = REViewer()
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
     rna_coverage_bigwig: Optional[str] = None
