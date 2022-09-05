@@ -12,7 +12,7 @@ support `alignment_path`.
 
 
 ### Configuration Parameters
-Below are available configuration parameters for a Scout case. Names marked with asterix (*) are mandatory. 
+Below are available configuration parameters for a Scout case. Names marked with asterix (*) are mandatory.
 
 - **analysis_date(*)** _Datetime_ Time for analysis in datetime format. Defaults to time of uploading. Example `2016-10-12 14:00:46`.
 - **cnv_report** _String_ Path to the CNV report file.
@@ -39,42 +39,49 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **rank model version** _String_ Which rank model that was used when scoring the variants.
 - **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
 - **samples** _List_ List of samples included in the case:
-	- **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
-	- **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel, unknown, external}.
-	- **bam_file** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
-	- **bam_path** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
-	- **capture_kit** _String_ Exome specifies the capture kit.
-	- **chromograph_images** _List_
-		- **autozygous** _String_ Path to file.
-		- **upd_regions** _String_ Path to file.
-		- **upd_sites** _String_ Path to file.
-	- **confirmed_parent** _Bool_ True if parent confirmed.
-	- **expected_coverage** _Int_ The level of expected coverage.
-	- **father** _String/Int_ Sample ID for father or 0.
-	- **is_sma** _Bool/None_ if SMA status determined - None if not done.
-	- **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
-	- **mother** _String/Int_ Sample ID for mother or 0.
-	- **msi** _Int_ Microsatellite instability [0-60].
-	- **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
-	- **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
-	- **rna_coverage_bigwig** _String_ Path to coverage islands file generated
-	- **rhocall_bed** _String_ Path to BED file to view alignments [Reference][rhocall].
-	- **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
-	- **samlple_id(*)** _String_ Identifyer for a sample.
-	- **sample_name**: _String_ Name of sample.
-	- **sex (*)**: _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
-	- **smn1_cn** _Int_ Copynumber.
-	- **smn2_cn** _Int_ Copynumber.
-	- **smn2delta78_cn** _Int_ Copynumber.
-	- **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
-	- **tiddit_coverage_wig** _String_ Path to WIG file to view alignments [Reference][tiddit].
-	- **tissue_type** _String_ Sample tissue origin i.e. blood, muscle.
-	- **tmb** _Int_ Tumor mutational burden [0, 1000] (tumor case only).
-	- **tumor_purity** _Float_ Purity of tumor sample [0.1, 1.0] (tumor case only).
-	- **tumor_type** _String_ Type of tumor (tumor case only).
-	- **upd_regions_bed** _String_ Path to BED file to view alignments [Reference][upd].
-	- **upd_sites_bed** _String_ Path to BED file to view alignments [Reference][upd].
-	- **vcf2cytosure** _String_ Path to CGH file to allow download per individual. Such SV files can be visualized using standard arrayCGH analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
+    - **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
+    - **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel, unknown, external}.
+    - **bam_file** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
+    - **bam_path** _String_ Path to BAM/CRAM file to view alignments **WARNING:** Soon to be deprecated, use *alignment_path*.
+    - **capture_kit** _String_ Exome specifies the capture kit.
+    - **chromograph_images** _List_
+        - **autozygous** _String_ Path to file.
+        - **coverage** _String_ Path to file.
+        - **upd_regions** _String_ Path to file.
+        - **upd_sites** _String_ Path to file.
+    - **confirmed_parent** _Bool_ True if parent confirmed.
+    - **expected_coverage** _Int_ The level of expected coverage.
+    - **father** _String/Int_ Sample ID for father or 0.
+    - **is_sma** _Bool/None_ if SMA status determined - None if not done.
+    - **is_sma_carrier**  _Bool/None_  # True / False if SMA carriership determined - None if not done.
+    - **mother** _String/Int_ Sample ID for mother or 0.
+    - **msi** _Int_ Microsatellite instability [0-60].
+    - **mt_bam** _String_ Path to the reduced mitochondrial BAM/CRAM alignment file.
+    - **phenotype(*)** _String_ Specifies the affection status {affected, unaffected, unknown}.
+    - **reviewer** _List_ [Reference][srs]
+      - **alignment** _String_ Path to BAM/CRAM file to view STR alignments
+      - **alignment_index** _String_ Path to BAM/CRAM index file to view STR alignments
+      - **vcf** _String_ Path to STR VCF file to view STR alignments
+      - **catalog** _String_ Path or URL to REViewer catalog JSON file to view STR alignments
+      - **reference** _String_ Path or URL for REViewer to reference sequence for the individual STR alignment
+    - **rna_coverage_bigwig** _String_ Path to coverage islands file generated
+    - **rhocall_bed** _String_ Path to BED file to view alignments [Reference][rhocall].
+    - **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].
+    - **samlple_id(*)** _String_ Identifyer for a sample.
+    - **sample_name**: _String_ Name of sample.
+    - **sex (*)**: _String_ One of: {male, female, unknown}. Sex of the sample in human readable format.
+    - **smn1_cn** _Int_ Copynumber.
+    - **smn2_cn** _Int_ Copynumber.
+    - **smn2delta78_cn** _Int_ Copynumber.
+    - **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
+    - **tiddit_coverage_wig** _String_ Path to WIG file to view alignments [Reference][tiddit].
+    - **tissue_type** _String_ Sample tissue origin i.e. blood, muscle.
+    - **tmb** _Int_ Tumor mutational burden [0, 1000] (tumor case only).
+    - **tumor_purity** _Float_ Purity of tumor sample [0.1, 1.0] (tumor case only).
+    - **tumor_type** _String_ Type of tumor (tumor case only).
+    - **upd_regions_bed** _String_ Path to BED file to view alignments [Reference][upd].
+    - **upd_sites_bed** _String_ Path to BED file to view alignments [Reference][upd].
+    - **vcf2cytosure** _String_ Path to CGH file to allow download per individual. Such SV files can be visualized using standard arrayCGH analysis tools. See [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure/blob/master/README.md).
 - **smn_tsv** _String_ Path to an SMN TSV file.
 - **synopsis** _String_ Synopsis of case.
 - **sv_rank_model_version** _String_ Rank model that was used when scoring the variants.
@@ -118,6 +125,7 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 [multiqc]: https://github.com/ewels/multiqc
 [peddy]: https://github.com/brentp/peddy
 [rhocall]: https://github.com/dnil/rhocall
+[srs]: https://github.com/Clinical-Genomics/Scout-REViewer-service
 [tiddit]: https://github.com/SciLifeLab/TIDDIT
 [upd]: https://github.com/bjhall/upd
 [yaml]: https://yaml.org

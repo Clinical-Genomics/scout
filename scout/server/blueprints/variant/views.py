@@ -1,4 +1,5 @@
 import logging
+import re
 
 from flask import Blueprint, current_app, flash, jsonify, redirect, request, url_for
 from flask_login import current_user
@@ -7,7 +8,7 @@ from markupsafe import Markup
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
 from scout.server.blueprints.variant.controllers import build_clinvar_submission, clinvar_export
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
-from scout.server.blueprints.variant.controllers import observations
+from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
 from scout.server.blueprints.variant.controllers import variant as variant_controller
 from scout.server.blueprints.variant.controllers import variant_acmg as acmg_controller
 from scout.server.blueprints.variant.controllers import variant_acmg_post
@@ -102,6 +103,27 @@ def sv_variant(institute_id, case_name, variant_id):
         data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
 
     return data
+
+
+@variant_bp.route("/<institute_id>/<case_name>/str/variant/<variant_id>", methods=["GET"])
+@templated("variant/str-variant-reviewer.html")
+def reviewer_aln(institute_id, case_name, variant_id):
+    """Display STR variant alignment using the REViewer service."""
+    if request.args.get("variant_type", "clinical") == "research":
+        variant_type = "research"
+    else:
+        variant_type = "clinical"
+
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = str_variant_reviewer(store, case_obj, variant_id)
+
+    return dict(
+        institute=institute_obj,
+        case=case_obj,
+        variant_type=variant_type,
+        format="html",
+        **data,
+    )
 
 
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>/acmg", methods=["GET", "POST"])
