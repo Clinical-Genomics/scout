@@ -40,6 +40,25 @@
   </div>
 {% endmacro %}
 
+{% macro variant_region_anno_cell(variant) %}
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      {% if variant.functional_annotations|length >= 5 %}
+        <a class="mr-3" data-bs-toggle="collapse" href="#_regionanno_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">{% if variant.missing_data %}[first 30 genes]{% else %}[...]{% endif %}</a>
+        <div class="collapse" id="_regionanno_{{variant._id}}">
+          {% for annotation in variant.region_annotations|sort %}
+            {{ annotation }}<br>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div>
+          {{ variant.region_annotations|sort|join(", ") }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
 {% macro gene_cell(variant) %}
   <div class="align-items-center">
     {% if variant.category == "cancer" or variant.category == "sv_cancer" %}
