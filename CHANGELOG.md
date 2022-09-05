@@ -4,9 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [4.58.1]
+## [unpublished]
 ### Added
 - Specify a confidence threshold (green|amber|red) when loading PanelApp panels
+### Changed
+- Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
+
+## [4.58.1]
 ### Fixed
 - Case search with search strings that contain characters that can be escaped
 
