@@ -22,7 +22,6 @@ from . import controllers
 from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
-
 variants_bp = Blueprint(
     "variants",
     __name__,
@@ -47,6 +46,7 @@ def variants(institute_id, case_name):
     page = int(Markup.escape(request.form.get("page", "1")))
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
     variant_type = request.args.get("variant_type", "clinical")
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
@@ -153,8 +153,10 @@ def variants(institute_id, case_name):
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
+
     page = int(Markup.escape(request.form.get("page", "1")))
     variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
+
     category = "str"
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -214,6 +216,7 @@ def str_variants(institute_id, case_name):
     data = controllers.str_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
+
     return dict(
         institute=institute_obj,
         case=case_obj,

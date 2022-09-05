@@ -309,3 +309,11 @@ option {
 .dropdown-menu {
   max-height: 425px !important;
 }
+
+.str-variants-reviewer-container {
+   padding: 20px 5px;
+ }
+ .str-variants-reviewer-container svg {
+   width: 100%;
+   height: auto;
+ }
