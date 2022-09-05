@@ -25,6 +25,7 @@ samples:
     sex: male
     expected_coverage: 30
     tissue_type: blood
+    mitodel: scout/demo/mitodel_test_files/hugelymodelbat_lanes_1_sorted_md_mitodel.txt
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
     reviewer:
