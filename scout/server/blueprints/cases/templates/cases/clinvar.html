@@ -11,7 +11,7 @@
     <div class="card">
       {% if suspects %}
       <div class="checkbox-group required ms-3">
-        <form id="clinvar_submit" action="{{ url_for('variant.clinvar_create', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+        <form id="clinvar_submit" action="{{ url_for('clinvar.clinvar_create', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
           <input type="hidden" name="old_submitted" value="{{case.clinvar_variants.keys()|list|join(',')}}">
           <div class="checkbox-group required">
           {% for variant in suspects %}

@@ -301,33 +301,6 @@ def acmg():
     return jsonify(dict(classification=classification))
 
 
-@variant_bp.route("/<institute_id>/<case_name>/clinvar", methods=["POST"])
-@templated("variant/clinvar.html")
-def clinvar_create(institute_id, case_name):
-    """Create a ClinVar submission document in database for one or more variants from a case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
-    if request.form.get(
-        "submit_pinned"
-    ):  # Request received from case page, contains IDs of vars to export to CLinVar
-        pinned_selected = request.form.getlist("clinvar_variant")
-        if not pinned_selected:
-            flash(
-                "Please select at least one pinned variant to include in ClinVar submission",
-                "warning",
-            )
-            return redirect(request.referrer)
-
-        data = clinvar_export(store, institute_obj, case_obj, pinned_selected)
-        return data
-
-    # Request received from ClinVar page, contains complete info to save in ClinVar submission document
-    build_clinvar_submission(store, request, institute_id, case_name)
-
-    # Redirect to clinvar submissions handling page, to show the newest submission object
-    return redirect(url_for("overview.clinvar_submissions", institute_id=institute_id))
-
-
 @variant_bp.route(
     "/<institute_id>/<case_name>/<variant_id>/<order>",
     methods=["POST"],
