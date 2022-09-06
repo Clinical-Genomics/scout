@@ -18,19 +18,14 @@
 {% endblock %}
 
 {% block content_main %}
-  {% for item in form_data %}
-  <form method="POST" action="{{ url_for('clinvar.add_variant', institute_id=institute._id, case_name=case.display_name) }}" id="{{item.var_id}}_form">
+  {% for vardata in variant_data %}
+  <form method="POST" action="{{ url_for('clinvar.add_variant', institute_id=institute._id, case_name=case.display_name) }}" id="{{vardata.var_id}}_form">
     <div class="card mt-3">
-      <h5 class="card-header"><span class="badge {% if item.var_obj.category == 'sv'%} bg-warning {% else %} bg-secondary {% endif %}" >{{item.var_obj.category}}</span> {{item.var_obj.simple_id|truncate(50, True) }}</h5>
+      <h5 class="card-header"><span class="badge {% if vardata.var_obj.category == 'sv'%} bg-warning {% else %} bg-secondary {% endif %}" >{{vardata.var_obj.category}}</span> {{vardata.var_obj.simple_id|truncate(50, True) }}</h5>
       <div class="card-body">
         <div class="row">
           <div class="col-6"> <!-- Variant Form -->
-            {{ item.var_form.category() }}
-            {{ item.var_form.local_id() }}
-            {{ item.var_form.linking_id() }}
-            {{ item.var_form.chromosome() }}
-            {{ item.var_form.ref() }}
-            {{ item.var_form.alt() }}
+            {{ vardata.var_form.local_id() }}
           </div> <!-- End of Variant form -->
 
           <div class="col-6"> <!-- CaseData Form -->

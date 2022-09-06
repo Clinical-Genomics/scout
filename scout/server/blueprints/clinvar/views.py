@@ -18,10 +18,11 @@ def clinvar_create(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = {"institute": institute_obj, "case": case_obj}
     controllers.set_clinvar_form(request.form.getlist("clinvar_variant") or [], data)
+    LOG.error(data["variant_data"][0]["var_form"].__dict__.get("local_id"))
     return render_template("clinvar_create.html", **data)
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar_add_var", methods=["POST"])
 def add_variant(institute_id, case_name):
     """Adds one variant to an open clinvar submission"""
-    return str(request.form.__dict__)
+    return str(request.form)

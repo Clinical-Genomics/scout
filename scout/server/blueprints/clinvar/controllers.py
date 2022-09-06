@@ -65,7 +65,7 @@ def set_clinvar_form(var_list, data):
         var_list(list): list of variant _ids
         data(dict): data to show in clinvar_create.html template
     """
-    data["form_data"] = []  # {var_id: _id, var_obj: variant_obj, var_form: FlaskForm }
+    data["variant_data"] = []  # {var_id: _id, var_obj: variant_obj, var_form: FlaskForm }
     # Loop over each variant present in var_list and create form fields for it
     for var_id in var_list:
 
@@ -75,4 +75,4 @@ def set_clinvar_form(var_list, data):
 
         var_form = populate_variant_form(var_obj)
         var_form_item = {"var_id": var_id, "var_obj": var_obj, "var_form": var_form}
-        data["form_data"].append(var_form_item)
+        data["variant_data"].append(var_form_item)
