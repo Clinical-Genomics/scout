@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from scout.constants import CLINVAR_INHERITANCE_MODELS, CLNSIG_TERMS
 from scout.server.extensions import store
@@ -40,6 +41,7 @@ def _set_var_form_common_fields(var_form, variant_obj):
     var_form.gene_symbols.data = ",".join(variant_obj.get("hgnc_symbols", []))
     var_form.inheritance_models.choices = [(model, model) for model in CLINVAR_INHERITANCE_MODELS]
     var_form.clinsig.choices = [(term, term) for term in CLNSIG_TERMS]
+    var_form.eval_date.data = datetime.now()
 
 
 def _get_snv_var_form(variant_obj):
