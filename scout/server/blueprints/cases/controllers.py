@@ -648,6 +648,18 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
                 Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
 
+
+        mitodel_inds = []
+
+
+        if mitodel_inds:
+            for col, field in enumerate(MITODEL_HEADER):
+                Report_Sheet.write(row + 6, col, field)
+
+            for row, mitodel_ind in enumerate(mitodel_inds, row+7)
+                for col, item in enumerate(["sample_id", "normal", "discordant", "ratioppk"]):
+                    Report_Sheet.write(row, col, mitodel_ind.get(item))
+
         workbook.close()
 
         if os.path.exists(os.path.join(temp_excel_dir, document_name)):
