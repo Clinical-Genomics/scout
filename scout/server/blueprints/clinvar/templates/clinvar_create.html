@@ -34,9 +34,8 @@
             {{ vardata.var_form.ref() }}
             {{ vardata.var_form.alt() }}
 
-            gne
-
             <table class="table table-fixed">
+
               <tr> <!--gene symbols col -->
                 <td style="width:30%">{{vardata.var_form.gene_symbols.label}}</td>
                 <td>{{ vardata.var_form.gene_symbols() }}</td>
@@ -77,24 +76,10 @@
               </tr>
 
               <!-- Clinical significance cit-->
-              <tr><
+              <tr>
                 <td>{{vardata.var_form.clinsig_cit.label}}</td>
                 <td>{{vardata.var_form.clinsig_cit(placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}</td>
               </tr>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             </table>
 
