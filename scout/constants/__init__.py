@@ -30,6 +30,7 @@ from .clinvar import (
     CLINVAR_HEADER,
     CLINVAR_INHERITANCE_MODELS,
     CLINVAR_SILENCE_IF_EXISTS,
+    CLNSIG_TERMS,
 )
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .file_types import FILE_TYPE_MAP

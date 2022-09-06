@@ -18,5 +18,28 @@
 {% endblock %}
 
 {% block content_main %}
-  HELLO BITCHES
+  {% for item in form_data %}
+  <form method="POST" action="{{ url_for('clinvar.add_variant', institute_id=institute._id, case_name=case.display_name) }}" id="{{item.var_id}}_form">
+    <div class="card mt-3">
+      <h5 class="card-header"><span class="badge {% if item.var_obj.category == 'sv'%} bg-warning {% else %} bg-secondary {% endif %}" >{{item.var_obj.category}}</span> {{item.var_obj.simple_id|truncate(50, True) }}</h5>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6"> <!-- Variant Form -->
+            {{ item.var_form.category() }}
+            {{ item.var_form.local_id() }}
+            {{ item.var_form.linking_id() }}
+            {{ item.var_form.chromosome() }}
+            {{ item.var_form.ref() }}
+            {{ item.var_form.alt() }}
+          </div> <!-- End of Variant form -->
+
+          <div class="col-6"> <!-- CaseData Form -->
+            Casedata shit
+          </div> <!-- End of CaseData Form -->
+        </div>
+        <input type="submit" value="Add variant to submission">
+      </div>
+    </div>
+  </form>
+  {% endfor %}
 {% endblock %}
