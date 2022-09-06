@@ -117,34 +117,8 @@
                         </td>
                       </tr>
                     {% endif %}
-                    <tr>
-                      <td>Coordinates:</td>
-                      {% if pinned.simple_id|length > 25 and pinned.cytoband_start %}
-                        <td><strong>{{ pinned.sub_category + "(" + pinned.chromosome+pinned.cytoband_start+"-"+pinned.end_chrom+pinned.cytoband_end +"), length:"+ pinned.length|string  }}</strong></td>
-                      {% elif pinned.simple_id|length > 25 %}
-                        <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} ({{ pinned.sub_category }})</strong></td>
-                      {% else %}
-                        <td><strong>chr{{ pinned.chromosome }}:{{pinned.position}} ({{ pinned.reference }} -> {{ pinned.alternative }})</strong></td>
-                      {% endif %}
-                    </tr>
-                    {% if pinned.category == 'snv' %}
-                      <tr>
-                        <td>Transcripts & HGVS:<br>(optional)
-                        </td>
-                        <td>
-                          {% for gene in pinned.genes %}
-                            {% for transcript in gene.transcripts %}
-                              {% if transcript.refseq_id and transcript.coding_sequence_name %}
-                                {% for refseq in transcript.refseq_identifiers %}
-                                <input type="radio" id="{{pinned._id+"_"+refseq}}" name="ref_seq@{{pinned._id}}" value="{{refseq+"|"+transcript.coding_sequence_name}}" {% if transcript.is_primary == True %} checked {% endif %}>
-                                <label for="{{pinned._id+"_"+refseq}}">{{refseq}} | {{transcript.coding_sequence_name}}</label><br>
-                                {% endfor %}
-                              {% endif %}
-                            {% endfor %}
-                          {% endfor %} <!--end of gene-->
-                        </td>
-                      </tr>
-                    {% endif %}
+
+              
                     <tr>
                       <td >Variant model of inheritance <br>
                         {% for model in pinned.genetic_models|sort %}

@@ -25,7 +25,80 @@
       <div class="card-body">
         <div class="row">
           <div class="col-6"> <!-- Variant Form -->
+
+            <!-- hidden fields -->
+            {{ vardata.var_form.category() }}
             {{ vardata.var_form.local_id() }}
+            {{ vardata.var_form.linking_id() }}
+            {{ vardata.var_form.chromosome() }}
+            {{ vardata.var_form.ref() }}
+            {{ vardata.var_form.alt() }}
+
+            gne
+
+            <table class="table table-fixed">
+              <tr> <!--gene symbols col -->
+                <td style="width:30%">{{vardata.var_form.gene_symbols.label}}</td>
+                <td>{{ vardata.var_form.gene_symbols() }}</td>
+              </tr>
+
+              {% if vardata.var_form.tx_hgvs %}
+                <tr> <!-- Transcripts & HGVS (SNVs only)-->
+                  <td>{{vardata.var_form.tx_hgvs.label}}</td>
+                  <td>{{vardata.var_form.tx_hgvs() }}</td>
+                </tr>
+              {% endif %}
+
+              <tr> <!-- Inheritance models-->
+                <td>{{vardata.var_form.inheritance_models.label}}<br>
+                  {% for model in vardata.var_obj.genetic_models|sort %}
+                    <span class="badge bg-info">{{ model }}</span>
+                  {% endfor %}
+                </td>
+                <td>{{vardata.var_form.inheritance_models()}}</td>
+              </tr>
+
+              {% if vardata.var_form.dbsnp_id %}
+                <tr> <!-- dbSNP (SNVs only) -->
+                  <td>{{vardata.var_form.dbsnp_id.label}}</td>
+                  <td>{{vardata.var_form.dbsnp_id()}}</td>
+                </tr>
+              {% endif %}
+
+              <tr><!-- Clinical significance -->
+                <td>{{vardata.var_form.clinsig.label}}</td>
+                <td>{{vardata.var_form.clinsig()}}</td>
+              </tr>
+
+              <!-- Clinical significance comment-->
+              <tr>
+                <td>{{vardata.var_form.clinsig_comment.label}}</td>
+                <td>{{vardata.var_form.clinsig_comment()}}</td>
+              </tr>
+
+              <!-- Clinical significance cit-->
+              <tr><
+                <td>{{vardata.var_form.clinsig_cit.label}}</td>
+                <td>{{vardata.var_form.clinsig_cit(placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}</td>
+              </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </table>
+
+
           </div> <!-- End of Variant form -->
 
           <div class="col-6"> <!-- CaseData Form -->

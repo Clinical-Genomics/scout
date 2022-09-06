@@ -27,11 +27,11 @@ class ClinVarVariantForm(FlaskForm):
     chromosome = HiddenField()
     ref = HiddenField()
     alt = HiddenField()
-    gene_symbols = HiddenField()
+    gene_symbols = StringField("Gene symbols")
     inheritance_models = SelectMultipleField("Inheritance models", choices=[])
     clinsig = SelectField("Clinical Significance", choices=[])
     clinsig_comment = TextAreaField("Comment on clinical significance")
-    clinsig_cit = TextAreaField("Clinical significance citations")
+    clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
     eval_date = DateField("Date last evaluated")
     funct_conseq_comment = TextAreaField("Comment on functional consequence")
     hpo_terms = SelectMultipleField("Variant-associated HPO terms", choices=[])
@@ -51,8 +51,8 @@ class SNVariantForm(ClinVarVariantForm):
 
     start = HiddenField()
     stop = HiddenField()
-    tx_hgvs = RadioField("Transcipt and HGVS", choices=[], validators=[validators.Optional()])
-    dbsnp_ids = StringField("Variation identifiers (dbSNPs)")
+    tx_hgvs = RadioField("Transcipts and HGVS", choices=[], validators=[validators.Optional()])
+    dbsnp_id = StringField("Variation identifiers (dbSNPs)")
     funct_conseq = SelectField(
         "Functional consequence (based on experimental evidence, leave blank if unsure)",
         choices=[],
