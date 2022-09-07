@@ -188,7 +188,7 @@
 
 {% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
-  <div class="row">
+  <div class="row mb-2">
     <div class="col-2">
       {{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
       {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
@@ -210,15 +210,17 @@
       {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
     </div>
   </div>
-  <div class="row mt-2">
+  <div class="row mb-2">
     <div class="col-3">
       {{ form.hgnc_symbols.label(class="control-label") }}
       {{ form.hgnc_symbols(class="form-control") }}
     </div>
-    <div class="col-1 d-flex align-items-end">
-        <a class="btn btn-secondary" href="{{ url_for('variants.variants', institute_id=institute._id,
+    <div class="col-1 align-self-end">
+      <div class="d-flex btn-group">
+        <a class="btn btn-secondary text-white" href="{{ url_for('variants.variants', institute_id=institute._id,
           case_name=case.display_name, variant_type=form.variant_type.data,
           gene_panels=['hpo']) }}">HPO gene list</a>
+      </div>
     </div>
     <div class="col-1">
       {{ form.cadd_score.label(class="control-label") }}
@@ -246,7 +248,7 @@
       {{ form.clinvar_tag.label(class="ms-2") }}
     </div>
   </div>
-  <div class="row mt-2">
+  <div class="row mb-2">
     <div class="col-4">
       <div class ="row">
         <div class="col-4">
@@ -276,7 +278,7 @@
       {{ wtf.form_field(form.cytoband_end) }}
     </div>
   </div>
-  <div class="row mt-2">
+  <div class="row">
     <div class="col-2">
       <a class="btn btn-secondary btn-sm form-control" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
         String coordinates
@@ -339,7 +341,7 @@
   </div>
   <div class="col-1 align-self-end">
     <div class="btn-group d-flex">
-      <a class="btn btn-secondary btn-sm " href="{{ url_for('variants.str_variants', institute_id=institute._id,
+      <a class="btn btn-secondary text-white" href="{{ url_for('variants.str_variants', institute_id=institute._id,
         case_name=case.display_name, variant_type=form.variant_type.data,
         gene_panels=['hpo']) }}">HPO gene list</a>
     </div>
@@ -414,10 +416,12 @@
     {{ form.hgnc_symbols.label(class="control-label") }}
     {{ form.hgnc_symbols(class="form-control") }}
   </div>
-  <div class="col-1 mt-3">
-      <a class="btn btn-secondary btn-sm" href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+  <div class="col-1 align-self-end">
+    <div class="d-flex btn-group">
+      <a class="btn btn-secondary text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id,
         case_name=case.display_name, variant_type=form.variant_type.data,
         gene_panels=['hpo']) }}">HPO gene list</a>
+    </div>
   </div>
   <div class="col-2">
     {{ form.size.label(class="control-label") }}
