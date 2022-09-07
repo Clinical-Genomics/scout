@@ -23,6 +23,7 @@ from scout.constants import (
     ASSERTION_METHOD_CIT,
     CLINVAR_INHERITANCE_MODELS,
     CLNSIG_TERMS,
+    COLLECTION_METHOD,
     SV_TYPES,
 )
 
@@ -46,9 +47,9 @@ class ClinVarVariantForm(FlaskForm):
     alt = HiddenField()
     gene_symbols = StringField("Gene symbols")
     inheritance_models = SelectField(
-        "Inheritance models", choices=[(model, model) for model in CLINVAR_INHERITANCE_MODELS]
+        "Inheritance models", choices=[(item, item) for item in CLINVAR_INHERITANCE_MODELS]
     )
-    clinsig = SelectField("Clinical Significance", choices=[(term, term) for term in CLNSIG_TERMS])
+    clinsig = SelectField("Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS])
     clinsig_comment = TextAreaField("Comment on clinical significance")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
     eval_date = DateField("Date last evaluated")
@@ -83,7 +84,7 @@ class SVariantForm(ClinVarVariantForm):
         "Functional consequence (based on experimental evidence, leave blank if unsure)",
         choices=[],
     )
-    sv_type = SelectField("Type of structural variant", choices=[(type, type) for type in SV_TYPES])
+    sv_type = SelectField("Type of structural variant", choices=[(item, item) for item in SV_TYPES])
     copy_number = IntegerField("Copy number")
     ref_copy_number = IntegerField("Reference copy number")
     bp_1 = IntegerField("Breakpoint 1")
@@ -95,9 +96,20 @@ class SVariantForm(ClinVarVariantForm):
     comments = TextAreaField("Comments on this variant")
 
 
-class CaseDataForm(FlaskForm):
-    """Contains the key/values to fill in to specify a case individual (or sample) in the ClinVar submssion creation page"""
+class ObservedIdForm(FlaskForm):
+    """Contains the key/values to fill in to specify a case individual (or sample) in the ClinVar submssion creation page
+    Schema available here: https://github.com/Clinical-Genomics/preClinVar/blob/718905521590196dc84fd576bc43d9fac418b97a/preClinVar/resources/submission_schema.json#L288
+    """
 
-    affected_status = BooleanField(
-        "Affected Status", choices=[(status, status) for status in AFFECTED_STATUS]
+    include_ind = BooleanField("Include individual")
+    individual_id = StringField("Individual ID")
+    linking_id = HiddenField()
+    affected_status = SelectField(
+        "Affected Status", choices=[(item, item) for item in AFFECTED_STATUS]
+    )
+    allele_of_origin = SelectField(
+        "Allele of origin", choices=[(item, item) for item in ALLELE_OF_ORIGIN]
+    )
+    collection_method = SelectField(
+        "Collection method", choices=[(item, item) for item in COLLECTION_METHOD]
     )

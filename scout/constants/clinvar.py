@@ -150,3 +150,16 @@ ALLELE_OF_ORIGIN = [
     "biparental",
     "not applicable",
 ]
+COLLECTION_METHOD = [
+    "curation",
+    "literature only",
+    "reference population",
+    "provider interpretation",
+    "phenotyping only",
+    "case-control",
+    "clinical testing",
+    "in vitro",
+    "in vivo",
+    "research",
+    "not provided",
+]

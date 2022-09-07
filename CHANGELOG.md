@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Button to go directly to HPO SV filter variantS page from case
+### Changed
+- Rewrote the ClinVar export module to simplify and prepare for ClinVar API submission feature
 ### Fixed
 - HPO filter button on SV variantS page
 

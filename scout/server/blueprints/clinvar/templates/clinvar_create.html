@@ -179,6 +179,42 @@
             </table>
           </div>
         </div> <!-- end of variant row -->
+        <div class="row">
+          <h5>Observation data</h5>
+          <ul class="list-group">
+          {% for obs_form in vardata.obs_forms %}
+            <li class="list-group-item">
+              <table class="table table-fixed">
+                <tbody>
+                  <tr>
+                    {{obs_form.linking_id}} <!-- hidden field -->
+                    <td>
+                      {{ obs_form.individual_id.label }}
+                      {{ obs_form.individual_id() }}
+                    </td>
+                    <td>
+                      {{ obs_form.include_ind.label }}
+                      {{ obs_form.include_ind() }}
+                    </td>
+                    <td>
+                      {{ obs_form.affected_status.label }}
+                      {{ obs_form.affected_status() }}
+                    </td>
+                    <td>
+                      {{ obs_form.allele_of_origin.label }}
+                      {{ obs_form.allele_of_origin() }}
+                    </td>
+                    <td>
+                      {{ obs_form.collection_method.label }}
+                      {{ obs_form.collection_method() }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </li>
+          {% endfor %}
+          </ul>
+        </div>
         <div class="d-flex justify-content-center">
           {{ vardata.var_form.submit_btn(class="btn btn-primary") }}
         </div>
