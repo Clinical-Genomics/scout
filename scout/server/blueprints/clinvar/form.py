@@ -46,9 +46,8 @@ class ClinVarVariantForm(FlaskForm):
     # Extra fields:
     assertion_method = StringField("Assertion method")
     assertion_method_cit = TextAreaField("Assertion method citation")
-    drug_resp_cond = TextAreaField("Drug response condition(s)")
 
-    submit_btn = SubmitField("Add to submission")
+    submit_btn = SubmitField("Add variant to submission")
 
 
 class SNVariantForm(ClinVarVariantForm):

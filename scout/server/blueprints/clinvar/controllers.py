@@ -10,6 +10,17 @@ LOG = logging.getLogger(__name__)
 
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
+SV_TYPES = [
+    "Insertion",
+    "Deletion",
+    "Duplication",
+    "Tandem duplication",
+    "copy number loss",
+    "copy number gain",
+    "Inversion",
+    "Translocation",
+    "Complex",
+]
 
 
 def _get_var_tx_hgvs(variant_obj):
@@ -64,7 +75,6 @@ def _get_snv_var_form(variant_obj, case_obj):
     """
     var_form = SNVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
-
     var_form.tx_hgvs.choices = _get_var_tx_hgvs(variant_obj)
     var_form.dbsnp_id.data = variant_obj.get("dbsnp_id", "").split(";")[0]
     var_form.start.data = variant_obj.get("position")
@@ -80,6 +90,8 @@ def _get_sv_var_form(variant_obj, case_obj):
     """
     var_form = SVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
+    var_form.sv_type.choices = [(type, type) for type in SV_TYPES]
+    var_form.ref_copy_number.data = 2
     return var_form
 
 

@@ -101,15 +101,42 @@
                   <td>{{vardata.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}</td>
                 </tr>
 
-                <tr> <!-- Assertion method -->
-                  <td>{{vardata.var_form.assertion_method.label}}</td>
-                  <td>{{vardata.var_form.assertion_method()}}</td>
-                </tr>
+                {% if var_category == 'sv' %}
+                  <tr> <!-- Variant type -->
+                    <td>{{vardata.var_form.sv_type.label}}</td>
+                    <td>{{vardata.var_form.sv_type()}}</td>
+                  </tr>
 
-                <tr> <!-- Assertion method citation -->
-                  <td>{{vardata.var_form.assertion_method_cit.label}}</td>
-                  <td>{{vardata.var_form.assertion_method_cit(class="form-control")}}</td>
-                </tr>
+                  <tr> <!-- Reference copy number -->
+                    <td>{{vardata.var_form.ref_copy_number.label}}</td>
+                    <td>{{vardata.var_form.ref_copy_number()}}</td>
+                  </tr>
+
+                  <tr> <!-- Copy number -->
+                    <td>{{vardata.var_form.copy_number.label}}</td>
+                    <td>{{vardata.var_form.copy_number()}}</td>
+                  </tr>
+
+                  <tr> <!-- Outer start -->
+                    <td>{{vardata.var_form.outer_start.label}}</td>
+                    <td>{{vardata.var_form.outer_start()}}</td>
+                  </tr>
+
+                  <tr> <!-- Inner start -->
+                    <td>{{vardata.var_form.inner_start.label}}</td>
+                    <td>{{vardata.var_form.inner_start()}}</td>
+                  </tr>
+
+                  <tr> <!-- Inner stop -->
+                    <td>{{vardata.var_form.inner_stop.label}}</td>
+                    <td>{{vardata.var_form.inner_stop()}}</td>
+                  </tr>
+
+                  <tr> <!-- Outer stop -->
+                    <td>{{vardata.var_form.outer_stop.label}}</td>
+                    <td>{{vardata.var_form.outer_stop()}}</td>
+                  </tr>
+                {% endif  %}
 
               </tbody>
             </table>
@@ -133,10 +160,27 @@
                   <td>{{vardata.var_form.omim_terms()}}</td>
                 </tr>
 
+                <tr> <!-- Additional comments for condition -->
+                  <td>{{vardata.var_form.variant_condition_comment.label}}</td>
+                  <td>{{vardata.var_form.variant_condition_comment(class="form-control")}}</td>
+                </tr>
+
+                <tr> <!-- Assertion method -->
+                  <td>{{vardata.var_form.assertion_method.label}}</td>
+                  <td>{{vardata.var_form.assertion_method()}}</td>
+                </tr>
+
+                <tr> <!-- Assertion method citation -->
+                  <td>{{vardata.var_form.assertion_method_cit.label}}</td>
+                  <td>{{vardata.var_form.assertion_method_cit(class="form-control")}}</td>
+                </tr>
 
               </tbody>
             </table>
           </div>
+        </div> <!-- end of variant row -->
+        <div class="d-flex justify-content-center">
+          {{ vardata.var_form.submit_btn(class="btn btn-primary") }}
         </div>
       </form>
     </div>
