@@ -124,3 +124,29 @@ CLINVAR_INHERITANCE_MODELS = [
     "Unknown mechanism",
     "Oligogenic inheritance",
 ]
+
+ASSERTION_METHOD = "ACMG Guidelines, 2015"
+ASSERTION_METHOD_CIT = "PMID:25741868"
+SV_TYPES = [
+    "Insertion",
+    "Deletion",
+    "Duplication",
+    "Tandem duplication",
+    "copy number loss",
+    "copy number gain",
+    "Inversion",
+    "Translocation",
+    "Complex",
+]
+AFFECTED_STATUS = ["yes", "no", "unknown", "not provided", "not applicable"]
+ALLELE_OF_ORIGIN = [
+    "germline",
+    "somatic",
+    "de novo",
+    "unknown",
+    "inherited",
+    "maternal",
+    "paternal",
+    "biparental",
+    "not applicable",
+]

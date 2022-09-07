@@ -16,6 +16,16 @@ from wtforms import (
 )
 from wtforms.ext.dateutil.fields import DateField
 
+from scout.constants import (
+    AFFECTED_STATUS,
+    ALLELE_OF_ORIGIN,
+    ASSERTION_METHOD,
+    ASSERTION_METHOD_CIT,
+    CLINVAR_INHERITANCE_MODELS,
+    CLNSIG_TERMS,
+    SV_TYPES,
+)
+
 LOG = logging.getLogger(__name__)
 
 
@@ -27,6 +37,7 @@ class MultiCheckboxField(SelectMultipleField):
 class ClinVarVariantForm(FlaskForm):
     """Contains the key/values to fill in to specify a single general variant in the ClinVar submssion creation page"""
 
+    # Variant-specific fields
     category = HiddenField()
     local_id = HiddenField()
     linking_id = HiddenField()
@@ -34,8 +45,10 @@ class ClinVarVariantForm(FlaskForm):
     ref = HiddenField()
     alt = HiddenField()
     gene_symbols = StringField("Gene symbols")
-    inheritance_models = SelectField("Inheritance models", choices=[])
-    clinsig = SelectField("Clinical Significance", choices=[])
+    inheritance_models = SelectField(
+        "Inheritance models", choices=[(model, model) for model in CLINVAR_INHERITANCE_MODELS]
+    )
+    clinsig = SelectField("Clinical Significance", choices=[(term, term) for term in CLNSIG_TERMS])
     clinsig_comment = TextAreaField("Comment on clinical significance")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
     eval_date = DateField("Date last evaluated")
@@ -44,8 +57,8 @@ class ClinVarVariantForm(FlaskForm):
     variant_condition_comment = TextAreaField("Additional comments describing condition")
 
     # Extra fields:
-    assertion_method = StringField("Assertion method")
-    assertion_method_cit = TextAreaField("Assertion method citation")
+    assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
+    assertion_method_cit = TextAreaField("Assertion method citation", default=ASSERTION_METHOD_CIT)
 
     submit_btn = SubmitField("Add variant to submission")
 
@@ -70,7 +83,7 @@ class SVariantForm(ClinVarVariantForm):
         "Functional consequence (based on experimental evidence, leave blank if unsure)",
         choices=[],
     )
-    sv_type = SelectField("Type of structural variant", choices=[])
+    sv_type = SelectField("Type of structural variant", choices=[(type, type) for type in SV_TYPES])
     copy_number = IntegerField("Copy number")
     ref_copy_number = IntegerField("Reference copy number")
     bp_1 = IntegerField("Breakpoint 1")
@@ -80,3 +93,11 @@ class SVariantForm(ClinVarVariantForm):
     inner_stop = IntegerField("Inner stop")
     outer_stop = IntegerField("Outer stop")
     comments = TextAreaField("Comments on this variant")
+
+
+class CaseDataForm(FlaskForm):
+    """Contains the key/values to fill in to specify a case individual (or sample) in the ClinVar submssion creation page"""
+
+    affected_status = BooleanField(
+        "Affected Status", choices=[(status, status) for status in AFFECTED_STATUS]
+    )

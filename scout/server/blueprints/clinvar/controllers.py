@@ -1,26 +1,12 @@
 import logging
 from datetime import datetime
 
-from scout.constants import CLINVAR_INHERITANCE_MODELS, CLNSIG_TERMS
+from scout.constants import SV_TYPES
 from scout.server.extensions import store
 
-from .form import SNVariantForm, SVariantForm
+from .form import CaseDataForm, SNVariantForm, SVariantForm
 
 LOG = logging.getLogger(__name__)
-
-ASSERTION_METHOD = "ACMG Guidelines, 2015"
-ASSERTION_METHOD_CIT = "PMID:25741868"
-SV_TYPES = [
-    "Insertion",
-    "Deletion",
-    "Duplication",
-    "Tandem duplication",
-    "copy number loss",
-    "copy number gain",
-    "Inversion",
-    "Translocation",
-    "Complex",
-]
 
 
 def _get_var_tx_hgvs(variant_obj):
@@ -53,11 +39,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     var_form.ref.data = variant_obj.get("reference")
     var_form.alt.data = variant_obj.get("alternative")
     var_form.gene_symbols.data = ",".join(variant_obj.get("hgnc_symbols", []))
-    var_form.inheritance_models.choices = [(model, model) for model in CLINVAR_INHERITANCE_MODELS]
-    var_form.clinsig.choices = [(term, term) for term in CLNSIG_TERMS]
     var_form.eval_date.data = datetime.now()
-    var_form.assertion_method.data = ASSERTION_METHOD
-    var_form.assertion_method_cit.data = ASSERTION_METHOD_CIT
     var_form.hpo_terms.choices = [
         (" - ".join([hpo.get("phenotype_id"), hpo.get("feature")]), hpo.get("phenotype_id"))
         for hpo in case_obj.get("phenotype_terms", [])
@@ -90,12 +72,11 @@ def _get_sv_var_form(variant_obj, case_obj):
     """
     var_form = SVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
-    var_form.sv_type.choices = [(type, type) for type in SV_TYPES]
     var_form.ref_copy_number.data = 2
     return var_form
 
 
-def populate_variant_form(variant_obj, case_obj):
+def _populate_variant_form(variant_obj, case_obj):
     """Populate the Flaskform associated to a variant"""
     if variant_obj["category"] in ["snv", "cancer"]:
         var_form = _get_snv_var_form(variant_obj, case_obj)
@@ -106,6 +87,14 @@ def populate_variant_form(variant_obj, case_obj):
         var_form.category.data = "sv"
 
     return var_form
+
+
+def _populate_case_data_form(var_obj, case_obj):
+    """Loop over the individuals of the case and populate a CaseDataForm for each one of them"""
+    cd_form_list = []  # A list of CaseData forms, one for each case individual/sample
+    for ind in case_obj.get("individuals", []):
+        # ind_form = CaseDataForm()
+        pass
 
 
 def set_clinvar_form(var_list, data):
@@ -123,6 +112,12 @@ def set_clinvar_form(var_list, data):
         if not var_obj:
             continue
 
-        var_form = populate_variant_form(var_obj, data["case"])
-        var_form_item = {"var_id": var_id, "var_obj": var_obj, "var_form": var_form}
+        var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
+        cd_form = _populate_case_data_form(var_obj, data["case"])  # casedata form
+        var_form_item = {
+            "var_id": var_id,
+            "var_obj": var_obj,
+            "var_form": var_form,
+            "cd_form": cd_form,
+        }
         data["variant_data"].append(var_form_item)
