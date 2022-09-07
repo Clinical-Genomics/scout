@@ -21,6 +21,7 @@ from scout.constants import (
     CASE_REPORT_CASE_FEATURES,
     CASE_REPORT_CASE_IND_FEATURES,
     CASE_REPORT_VARIANT_TYPES,
+    MITODEL_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
@@ -648,15 +649,15 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
                 Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
 
-
         mitodel_inds = []
 
+        # FETCH INDS
 
         if mitodel_inds:
             for col, field in enumerate(MITODEL_HEADER):
                 Report_Sheet.write(row + 6, col, field)
 
-            for row, mitodel_ind in enumerate(mitodel_inds, row+7)
+            for row, mitodel_ind in enumerate(mitodel_inds, row + 7):
                 for col, item in enumerate(["sample_id", "normal", "discordant", "ratioppk"]):
                     Report_Sheet.write(row, col, mitodel_ind.get(item))
 
