@@ -12,10 +12,16 @@ from wtforms import (
     SubmitField,
     TextAreaField,
     validators,
+    widgets,
 )
 from wtforms.ext.dateutil.fields import DateField
 
 LOG = logging.getLogger(__name__)
+
+
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 
 class ClinVarVariantForm(FlaskForm):
@@ -28,14 +34,13 @@ class ClinVarVariantForm(FlaskForm):
     ref = HiddenField()
     alt = HiddenField()
     gene_symbols = StringField("Gene symbols")
-    inheritance_models = SelectMultipleField("Inheritance models", choices=[])
+    inheritance_models = SelectField("Inheritance models", choices=[])
     clinsig = SelectField("Clinical Significance", choices=[])
     clinsig_comment = TextAreaField("Comment on clinical significance")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
     eval_date = DateField("Date last evaluated")
-    funct_conseq_comment = TextAreaField("Comment on functional consequence")
-    hpo_terms = SelectMultipleField("Variant-associated HPO terms", choices=[])
-    omim_terms = SelectMultipleField("Variant-associated OMIM terms", choices=[])
+    hpo_terms = MultiCheckboxField("Variant-associated HPO terms", choices=[])
+    omim_terms = MultiCheckboxField("Variant-associated OMIM terms", choices=[])
     variant_condition_comment = TextAreaField("Additional comments describing condition")
 
     # Extra fields:

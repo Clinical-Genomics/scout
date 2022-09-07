@@ -8,6 +8,9 @@ from .form import SNVariantForm, SVariantForm
 
 LOG = logging.getLogger(__name__)
 
+ASSERTION_METHOD = "ACMG Guidelines, 2015"
+ASSERTION_METHOD_CIT = "PMID:25741868"
+
 
 def _get_var_tx_hgvs(variant_obj):
     """Retrieve all transcripts / hgvs for a given variant
@@ -26,7 +29,7 @@ def _get_var_tx_hgvs(variant_obj):
     return [(item, item) for item in tx_hgvs_list]
 
 
-def _set_var_form_common_fields(var_form, variant_obj):
+def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     """Sets up fields for a variant form that are shared by SNVs and SVs
 
     Args:
@@ -42,40 +45,52 @@ def _set_var_form_common_fields(var_form, variant_obj):
     var_form.inheritance_models.choices = [(model, model) for model in CLINVAR_INHERITANCE_MODELS]
     var_form.clinsig.choices = [(term, term) for term in CLNSIG_TERMS]
     var_form.eval_date.data = datetime.now()
+    var_form.assertion_method.data = ASSERTION_METHOD
+    var_form.assertion_method_cit.data = ASSERTION_METHOD_CIT
+    var_form.hpo_terms.choices = [
+        (" - ".join([hpo.get("phenotype_id"), hpo.get("feature")]), hpo.get("phenotype_id"))
+        for hpo in case_obj.get("phenotype_terms", [])
+    ]
+    var_form.omim_terms.choices = [
+        (" - ".join([omim.get("disease_id"), omim.get("description")]), omim.get("disease_id"))
+        for omim in case_obj.get("diagnosis_phenotypes", [])
+    ]
 
 
-def _get_snv_var_form(variant_obj):
+def _get_snv_var_form(variant_obj, case_obj):
     """Sets up values for a SNV variant form
     Args:
         var_form(scout.server.blueprints.clinvar.form.SNVariantForm)
     """
     var_form = SNVariantForm()
-    _set_var_form_common_fields(var_form, variant_obj)
+    _set_var_form_common_fields(var_form, variant_obj, case_obj)
 
     var_form.tx_hgvs.choices = _get_var_tx_hgvs(variant_obj)
     var_form.dbsnp_id.data = variant_obj.get("dbsnp_id", "").split(";")[0]
+    var_form.start.data = variant_obj.get("position")
+    var_form.stop.data = variant_obj.get("position")
     return var_form
 
 
-def _get_sv_var_form(variant_obj):
+def _get_sv_var_form(variant_obj, case_obj):
     """Sets up values for a SV variant form
 
     Args:
         var_form(scout.server.blueprints.clinvar.form.SVariantForm)
     """
     var_form = SVariantForm()
-    _set_var_form_common_fields(var_form, variant_obj)
+    _set_var_form_common_fields(var_form, variant_obj, case_obj)
     return var_form
 
 
-def populate_variant_form(variant_obj):
+def populate_variant_form(variant_obj, case_obj):
     """Populate the Flaskform associated to a variant"""
     if variant_obj["category"] in ["snv", "cancer"]:
-        var_form = _get_snv_var_form(variant_obj)
+        var_form = _get_snv_var_form(variant_obj, case_obj)
         var_form.category.data = "snv"
 
     elif variant_obj["category"] in ["sv", "cancer_sv"]:
-        var_form = _get_sv_var_form(variant_obj)
+        var_form = _get_sv_var_form(variant_obj, case_obj)
         var_form.category.data = "sv"
 
     return var_form
@@ -96,6 +111,6 @@ def set_clinvar_form(var_list, data):
         if not var_obj:
             continue
 
-        var_form = populate_variant_form(var_obj)
+        var_form = populate_variant_form(var_obj, data["case"])
         var_form_item = {"var_id": var_id, "var_obj": var_obj, "var_form": var_form}
         data["variant_data"].append(var_form_item)

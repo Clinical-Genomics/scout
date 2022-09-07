@@ -4,6 +4,10 @@
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
 {% endblock %}
 
+{% block css %}
+{{ super() }}
+{% endblock %}
+
 {% block top_nav %}
   <li class="nav-item">
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
@@ -18,90 +22,131 @@
 {% endblock %}
 
 {% block content_main %}
-  {% for vardata in variant_data %}
-  <form method="POST" action="{{ url_for('clinvar.add_variant', institute_id=institute._id, case_name=case.display_name) }}" id="{{vardata.var_id}}_form">
-    <div class="card mt-3">
-      <h5 class="card-header"><span class="badge {% if vardata.var_obj.category == 'sv'%} bg-warning {% else %} bg-secondary {% endif %}" >{{vardata.var_obj.category}}</span> {{vardata.var_obj.simple_id|truncate(50, True) }}</h5>
-      <div class="card-body">
+<p class="mt-3 mb-3">
+<a class="mt-3" href="https://www.ncbi.nlm.nih.gov/clinvar/intro/" target="_blank">Clinvar</a> is a freely accessible archive of clinically relevant variants.
+  Contributing to this database helps improving data sharing and increasing the number of genetic diagnoses worldwide.<br>
+  The form present on this page mirrors the fields on the Clinvar submission spreadsheets. After collecting all the required fields for submitting one or more variants to Clinvar, the info is subsequently processed into comma separated files, ready to be uploaded in the submission process.<br>
+  Link to the official Clinvar <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#sub_info" target="_blank">documentation</a>.
+</p>
+<div class="accordion" id="clinvar_accordion">
+{% for vardata in variant_data %}
+{% if vardata.var_obj.category in ["snv", "cancer"]%}
+  {% set var_category = 'snv' %}
+{% else %}
+  {% set var_category = 'sv' %}
+{% endif %}
+<div class="accordion-item">
+  <h2 class="accordion-header" id="heading_{{vardata.var_id}}">
+      <button class="ml-3 accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_{{vardata.var_id}}" aria-expanded="true" aria-controls="collapse_{{vardata.var_id}}">
+      <span class="badge {% if vardata.var_obj.category == 'sv'%} bg-warning {% else %} bg-secondary {% endif %}">{{vardata.var_obj.category}}</span>&nbsp;&nbsp;{{vardata.var_obj.simple_id|truncate(50, True) }}
+    </button>
+  </h2>
+  <div id="collapse_{{vardata.var_id}}" class="accordion-collapse collapse" aria-labelledby="heading_{{vardata.var_id}}" data-bs-parent="#clinvar_accordion">
+    <div class="accordion-body">
+      <form method="POST" action="{{ url_for('clinvar.add_variant', institute_id=institute._id, case_name=case.display_name) }}" id="{{vardata.var_id}}_form">
+        <!-- hidden fields -->
+        {{ vardata.var_form.category() }}
+        {{ vardata.var_form.local_id() }}
+        {{ vardata.var_form.linking_id() }}
+        {{ vardata.var_form.chromosome() }}
+        {{ vardata.var_form.ref() }}
+        {{ vardata.var_form.alt() }}
+        <!-- SNVs only -->
+        {% if var_category == 'snv' %}
+          {{ vardata.var_form.start() }}
+          {{ vardata.var_form.stop() }}
+        {% endif %}
+        <!-- end of hidden fields -->
+
         <div class="row">
-          <div class="col-6"> <!-- Variant Form -->
-
-            <!-- hidden fields -->
-            {{ vardata.var_form.category() }}
-            {{ vardata.var_form.local_id() }}
-            {{ vardata.var_form.linking_id() }}
-            {{ vardata.var_form.chromosome() }}
-            {{ vardata.var_form.ref() }}
-            {{ vardata.var_form.alt() }}
-
-            <table class="table table-fixed">
-
-              <tr> <!--gene symbols col -->
-                <td style="width:30%">{{vardata.var_form.gene_symbols.label}}</td>
-                <td>{{ vardata.var_form.gene_symbols() }}</td>
-              </tr>
-
-              {% if vardata.var_form.tx_hgvs %}
-                <tr> <!-- Transcripts & HGVS (SNVs only)-->
-                  <td>{{vardata.var_form.tx_hgvs.label}}</td>
-                  <td>{{vardata.var_form.tx_hgvs() }}</td>
+          <h5>Variant data</h5>
+          <div class="col-6">
+            <table class="table table-bordered table-fixed">
+              <tbody>
+                <tr> <!-- gene symbols -->
+                  <td>{{vardata.var_form.gene_symbols.label}}</td>
+                  <td>{{vardata.var_form.gene_symbols()}}</td>
                 </tr>
-              {% endif %}
 
-              <tr> <!-- Inheritance models-->
-                <td>{{vardata.var_form.inheritance_models.label}}<br>
-                  {% for model in vardata.var_obj.genetic_models|sort %}
-                    <span class="badge bg-info">{{ model }}</span>
-                  {% endfor %}
-                </td>
-                <td>{{vardata.var_form.inheritance_models()}}</td>
-              </tr>
+                {% if var_category == 'snv' %}
+                  <tr> <!-- Transcripts & HGVS:(optional) -->
+                    <td>{{vardata.var_form.tx_hgvs.label}}</td>
+                    <td>{{vardata.var_form.tx_hgvs()}}</td>
+                  </tr>
 
-              {% if vardata.var_form.dbsnp_id %}
-                <tr> <!-- dbSNP (SNVs only) -->
-                  <td>{{vardata.var_form.dbsnp_id.label}}</td>
-                  <td>{{vardata.var_form.dbsnp_id()}}</td>
+                  <tr> <!-- dbSNP identifier -->
+                    <td>{{vardata.var_form.dbsnp_id.label}}</td>
+                    <td>{{vardata.var_form.dbsnp_id()}}</td>
+                  </tr>
+
+                {% endif %}
+
+                <tr> <!-- model of inherintance -->
+                  <td>{{vardata.var_form.inheritance_models.label}}</td>
+                  <td>{{vardata.var_form.inheritance_models()}}</td>
                 </tr>
-              {% endif %}
 
-              <tr><!-- Clinical significance -->
-                <td>{{vardata.var_form.clinsig.label}}</td>
-                <td>{{vardata.var_form.clinsig()}}</td>
-              </tr>
+                <tr> <!-- Clinical significance -->
+                  <td>{{vardata.var_form.clinsig.label}}</td>
+                  <td>{{vardata.var_form.clinsig()}}</td>
+                </tr>
 
-              <!-- Clinical significance comment-->
-              <tr>
-                <td>{{vardata.var_form.clinsig_comment.label}}</td>
-                <td>{{vardata.var_form.clinsig_comment()}}</td>
-              </tr>
+                <tr> <!-- Clinical significance comment -->
+                  <td>{{vardata.var_form.clinsig_comment.label}}</td>
+                  <td>{{vardata.var_form.clinsig_comment(class="form-control", placeholder="(optional)")}}</td>
+                </tr>
 
-              <!-- Clinical significance cit-->
-              <tr>
-                <td>{{vardata.var_form.clinsig_cit.label}}</td>
-                <td>{{vardata.var_form.clinsig_cit(placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}</td>
-              </tr>
+                <tr> <!-- Clinical significance citation -->
+                  <td>{{vardata.var_form.clinsig_cit.label}}</td>
+                  <td>{{vardata.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}</td>
+                </tr>
 
-              <tr>
-                <td>{{vardata.var_form.eval_date.label}}</td>
-                <td>{{vardata.var_form.eval_date()}}</td>
-              </tr>
+                <tr> <!-- Assertion method -->
+                  <td>{{vardata.var_form.assertion_method.label}}</td>
+                  <td>{{vardata.var_form.assertion_method()}}</td>
+                </tr>
 
-              
+                <tr> <!-- Assertion method citation -->
+                  <td>{{vardata.var_form.assertion_method_cit.label}}</td>
+                  <td>{{vardata.var_form.assertion_method_cit(class="form-control")}}</td>
+                </tr>
 
-
-
+              </tbody>
             </table>
+          </div>
+          <div class="col-6">
+            <table class="table table-bordered table-fixed">
+              <tbody>
+
+                <tr> <!-- Date last eveluation -->
+                  <td>{{vardata.var_form.eval_date.label}}</td>
+                  <td>{{vardata.var_form.eval_date()}}</td>
+                </tr>
+
+                <tr> <!-- HPO terms -->
+                  <td>{{vardata.var_form.hpo_terms.label}}</td>
+                  <td>{{vardata.var_form.hpo_terms()}}</td>
+                </tr>
+
+                <tr> <!-- OMIM terms -->
+                  <td>{{vardata.var_form.omim_terms.label}}</td>
+                  <td>{{vardata.var_form.omim_terms()}}</td>
+                </tr>
 
 
-          </div> <!-- End of Variant form -->
-
-          <div class="col-6"> <!-- CaseData Form -->
-            Casedata shit
-          </div> <!-- End of CaseData Form -->
+              </tbody>
+            </table>
+          </div>
         </div>
-        <input type="submit" value="Add variant to submission">
-      </div>
+      </form>
     </div>
-  </form>
-  {% endfor %}
+  </div>
+</div> <!-- end of class="accordion-item" div -->
+{% endfor %}
+</div> <!-- end of accordion div -->
+{% endblock %}
+
+
+{% block scripts %}
+{{ super() }}
 {% endblock %}
