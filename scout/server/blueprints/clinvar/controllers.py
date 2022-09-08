@@ -13,7 +13,7 @@ def _get_var_tx_hgvs(variant_obj):
     Args:
         variant_obj(scout.models.Variant)
     Returns:
-        tx_hgvs_list(list) example: ["NM_000277 | c.1241A>G", ...]
+        list. example: ["NM_000277 | c.1241A>G", ...]
     """
     tx_hgvs_list = []
     for gene in variant_obj.get("genes", []):
@@ -30,7 +30,8 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
 
     Args:
         var_form(SNVariantForm or SVariantForm)
-        variant_obj(scout.models.Variant)
+        variant_obj(dict) scout.models.Variant
+        case_obj(dict) scout.models.Case
     """
     var_form.local_id.data = variant_obj["_id"]
     var_form.linking_id.data = variant_obj["_id"]
@@ -52,6 +53,10 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
 def _get_snv_var_form(variant_obj, case_obj):
     """Sets up values for a SNV variant form
     Args:
+        variant_obj(dict) scout.models.Variant
+        case_obj(dict) scout.models.Case
+
+    Returns:
         var_form(scout.server.blueprints.clinvar.form.SNVariantForm)
     """
     var_form = SNVariantForm()
@@ -67,6 +72,10 @@ def _get_sv_var_form(variant_obj, case_obj):
     """Sets up values for a SV variant form
 
     Args:
+        variant_obj(dict) scout.models.Variant
+        case_obj(dict) scout.models.Case
+
+    Returns:
         var_form(scout.server.blueprints.clinvar.form.SVariantForm)
     """
     var_form = SVariantForm()
@@ -76,7 +85,17 @@ def _get_sv_var_form(variant_obj, case_obj):
 
 
 def _populate_variant_form(variant_obj, case_obj):
-    """Populate the Flaskform associated to a variant"""
+    """Populate the Flaskform associated to a variant
+
+    Args:
+        variant_obj(dict) scout.models.Variant
+        case_obj(dict) scout.models.Case
+
+    Return:
+        var_form(scout.server.blueprints.clinvar.form.SVariantForm or
+                 scout.server.blueprints.clinvar.form.SNVariantForm )
+
+    """
     if variant_obj["category"] in ["snv", "cancer"]:
         var_form = _get_snv_var_form(variant_obj, case_obj)
         var_form.category.data = "snv"
@@ -88,22 +107,26 @@ def _populate_variant_form(variant_obj, case_obj):
     return var_form
 
 
-def _populate_case_data_form(var_obj, case_obj):
-    """Loop over the individuals of the case and populate a CaseDataForm for each one of them"""
+def _populate_case_data_form(variant_obj, case_obj):
+    """Loop over the individuals of the case and populate a CaseDataForm for each one of them
+
+    Args:
+        variant_obj(dict) scout.models.Variant
+        case_obj(dict) scout.models.Case
+
+    Returns:
+        cdata_form_list(list) list of scout.server.blueprints.clinvar.form.CaseDataForm
+
+    """
     cdata_form_list = []  # A list of CaseData forms, one for each case individual/sample
     for ind in case_obj.get("individuals", []):
         affected = ind.get("phenotype") == 2
         ind_form = CaseDataForm()
         LOG.warning(affected)
-        if affected:
-            ind_form.affected_status.default = "yes"
-            ind_form.include_ind.data = affected
-        else:
-            ind_form.affected_status.default = "no"
-        ind_form.affected_status
+        ind_form.affected_status.data = "yes" if affected else "no"
+        ind_form.include_ind.data = affected
         ind_form.individual_id.data = ind.get("display_name")
-        ind_form.linking_id.data = var_obj["_id"]
-        ind_form.process()
+        ind_form.linking_id.data = variant_obj["_id"]
         cdata_form_list.append(ind_form)
     return cdata_form_list
 

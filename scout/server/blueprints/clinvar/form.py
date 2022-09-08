@@ -111,5 +111,7 @@ class CaseDataForm(FlaskForm):
         "Allele of origin", choices=[(item, item) for item in ALLELE_OF_ORIGIN]
     )
     collection_method = SelectField(
-        "Collection method", choices=[(item, item) for item in COLLECTION_METHOD]
+        "Collection method",
+        default="clinical testing",
+        choices=[(item, item) for item in COLLECTION_METHOD],
     )

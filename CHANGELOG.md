@@ -9,13 +9,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Button to go directly to HPO SV filter variantS page from case
 ### Changed
 - Rewrote the ClinVar export module to simplify and prepare for ClinVar API submission feature
+- Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
 ### Fixed
 - HPO filter button on SV variantS page
 
 
 ## [4.58.1]
-### Changed
-- Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
 ### Fixed
 - Case search with search strings that contain characters that can be escaped
 
