@@ -182,31 +182,31 @@
         <div class="row">
           <h5>Observation data</h5>
           <ul class="list-group">
-          {% for obs_form in vardata.obs_forms %}
+          {% for cdata in vardata.cdata_forms %}
             <li class="list-group-item">
               <table class="table table-fixed">
                 <tbody>
                   <tr>
-                    {{obs_form.linking_id}} <!-- hidden field -->
+                    {{cdata.linking_id}} <!-- hidden field -->
                     <td>
-                      {{ obs_form.individual_id.label }}
-                      {{ obs_form.individual_id() }}
+                      {{ cdata.individual_id.label }}
+                      {{ cdata.individual_id() }}
                     </td>
                     <td>
-                      {{ obs_form.include_ind.label }}
-                      {{ obs_form.include_ind() }}
+                      {{ cdata.include_ind.label }}
+                      {{ cdata.include_ind() }}
                     </td>
                     <td>
-                      {{ obs_form.affected_status.label }}
-                      {{ obs_form.affected_status() }}
+                      {{ cdata.affected_status.label }}
+                      {{ cdata.affected_status() }}
                     </td>
                     <td>
-                      {{ obs_form.allele_of_origin.label }}
-                      {{ obs_form.allele_of_origin() }}
+                      {{ cdata.allele_of_origin.label }}
+                      {{ cdata.allele_of_origin() }}
                     </td>
                     <td>
-                      {{ obs_form.collection_method.label }}
-                      {{ obs_form.collection_method() }}
+                      {{ cdata.collection_method.label }}
+                      {{ cdata.collection_method() }}
                     </td>
                   </tr>
                 </tbody>

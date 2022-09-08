@@ -3,7 +3,7 @@ from datetime import datetime
 
 from scout.server.extensions import store
 
-from .form import ObservedIdForm, SNVariantForm, SVariantForm
+from .form import CaseDataForm, SNVariantForm, SVariantForm
 
 LOG = logging.getLogger(__name__)
 
@@ -88,16 +88,24 @@ def _populate_variant_form(variant_obj, case_obj):
     return var_form
 
 
-def _populate_observed_in_form(var_obj, case_obj):
+def _populate_case_data_form(var_obj, case_obj):
     """Loop over the individuals of the case and populate a CaseDataForm for each one of them"""
-    óbserved_form_list = []  # A list of CaseData forms, one for each case individual/sample
+    cdata_form_list = []  # A list of CaseData forms, one for each case individual/sample
     for ind in case_obj.get("individuals", []):
-        ind_form = ObservedIdForm()
-        ind_form.include_ind.data = True if ind.get("phenotype") == 2 else False
+        affected = ind.get("phenotype") == 2
+        ind_form = CaseDataForm()
+        LOG.warning(affected)
+        if affected:
+            ind_form.affected_status.default = "yes"
+            ind_form.include_ind.data = affected
+        else:
+            ind_form.affected_status.default = "no"
+        ind_form.affected_status
         ind_form.individual_id.data = ind.get("display_name")
         ind_form.linking_id.data = var_obj["_id"]
-        óbserved_form_list.append(ind_form)
-    return óbserved_form_list
+        ind_form.process()
+        cdata_form_list.append(ind_form)
+    return cdata_form_list
 
 
 def set_clinvar_form(var_list, data):
@@ -116,11 +124,11 @@ def set_clinvar_form(var_list, data):
             continue
 
         var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
-        obs_forms = _populate_observed_in_form(var_obj, data["case"])  # Observed-in form
+        cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
         var_form_item = {
             "var_id": var_id,
             "var_obj": var_obj,
             "var_form": var_form,
-            "obs_forms": obs_forms,
+            "cdata_forms": cdata_forms,
         }
         data["variant_data"].append(var_form_item)
