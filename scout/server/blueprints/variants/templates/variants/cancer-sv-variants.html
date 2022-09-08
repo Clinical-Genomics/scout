@@ -63,12 +63,12 @@
           <th>Start loc</th>
           <th>Stop loc</th>
           <th>Length</th>
+          <th>Frequency</th>
+          <th>Gene(s)</th>
           <th>Region</th>
           <th>Function</th>
-          <th>Frequency</th>
           <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF. &#013; Alt. allele count | Ref. allele count">Tumor</th>
           <th data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF. &#013; Alt. allele count | Ref. allele count">Normal</th>
-          <th>Gene(s)</th>
         </tr>
       </thead>
       <tbody>
@@ -112,22 +112,21 @@
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
     <td>{{ '-' if variant.length == 100000000000 else variant.length }}</td>
     <td>
+      {% if variant.gnomad_frequency %}
+        {{ variant.gnomad_frequency|human_decimal }}
+      {% endif %}
+    </td>
+    <td>
+      {{ variant_gene_symbols_cell(variant) }}
+    </td>
+    <td>
       {{ variant_region_anno_cell(variant) }}
     </td>
     <td>
       {{ variant_funct_anno_cell(variant) }}
     </td>
-    <td>
-      {% if variant.gnomad_frequency %}
-        {{ variant.gnomad_frequency|human_decimal }}
-      {% endif %}
-    </td>
     <td>{{ allele_cell(variant.tumor or {}) }}</td>
     <td>{{ allele_cell(variant.normal or {}) }}</td>
-
-    <td>
-      {{ variant_gene_symbols_cell(variant) }}
-    </td>
   </tr>
 {% endmacro %}
 
