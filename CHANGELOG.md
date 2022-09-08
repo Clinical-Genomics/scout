@@ -4,6 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Button to go directly to HPO SV filter variantS page from case
+- `Scout-REViewer-Service` integration - show `REViewer` picture if available
+### Changed
+- Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
+- Order of cells in variants tables
+### Fixed
+- HPO filter button on SV variantS page
+- Spacing between region|function cells in SVs lists
+
+
 ## [4.58.1]
 ### Added
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available

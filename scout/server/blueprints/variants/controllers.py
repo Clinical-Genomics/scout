@@ -1436,7 +1436,7 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
-        if variant_type == "clinical":
+        if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = case_default_panels(case_obj)
 
     else:  # POST
