@@ -23,5 +23,6 @@ def clinvar_add_variant(institute_id, case_name):
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar_add_var", methods=["POST"])
 def add_variant(institute_id, case_name):
-    """Adds one variant to an open clinvar submission"""
-    return str(request.form)
+    """Adds one variant to an open ClinVar submission"""
+    LOG.error(request.form)
+    return request.form

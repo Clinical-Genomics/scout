@@ -122,7 +122,6 @@ def _populate_case_data_form(variant_obj, case_obj):
     for ind in case_obj.get("individuals", []):
         affected = ind.get("phenotype") == 2
         ind_form = CaseDataForm()
-        LOG.warning(affected)
         ind_form.affected_status.data = "yes" if affected else "no"
         ind_form.include_ind.data = affected
         ind_form.individual_id.data = ind.get("display_name")
@@ -150,3 +149,7 @@ def set_clinvar_form(var_id, data):
         "cdata_forms": cdata_forms,
     }
     data["variant_data"] = variant_data
+
+
+def parse_clinvar_form():
+    """Parses input values provided by the user in the ClinVar add_one form"""

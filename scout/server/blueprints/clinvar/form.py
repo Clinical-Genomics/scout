@@ -61,8 +61,6 @@ class ClinVarVariantForm(FlaskForm):
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
     assertion_method_cit = TextAreaField("Assertion method citation", default=ASSERTION_METHOD_CIT)
 
-    submit_btn = SubmitField("Add variant to submission")
-
 
 class SNVariantForm(ClinVarVariantForm):
     """Inherits fields from the general ClinVar variant form and adds fields specific to SNVs"""
