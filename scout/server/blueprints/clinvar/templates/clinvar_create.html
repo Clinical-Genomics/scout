@@ -57,129 +57,105 @@
           {{ vardata.var_form.stop() }}
         {% endif %}
         <!-- end of hidden fields -->
-
-        <div class="row">
-          <h5>Variant data</h5>
-          <div class="col-6">
-            <table class="table table-bordered table-fixed">
-              <tbody>
-                <tr> <!-- gene symbols -->
-                  <td>{{vardata.var_form.gene_symbols.label}}</td>
-                  <td>{{vardata.var_form.gene_symbols()}}</td>
-                </tr>
-
-                {% if var_category == 'snv' %}
-                  <tr> <!-- Transcripts & HGVS:(optional) -->
-                    <td>{{vardata.var_form.tx_hgvs.label}}</td>
-                    <td>{{vardata.var_form.tx_hgvs()}}</td>
-                  </tr>
-
-                  <tr> <!-- dbSNP identifier -->
-                    <td>{{vardata.var_form.dbsnp_id.label}}</td>
-                    <td>{{vardata.var_form.dbsnp_id()}}</td>
-                  </tr>
-
-                {% endif %}
-
-                <tr> <!-- model of inherintance -->
-                  <td>{{vardata.var_form.inheritance_models.label}}</td>
-                  <td>{{vardata.var_form.inheritance_models()}}</td>
-                </tr>
-
-                <tr> <!-- Clinical significance -->
-                  <td>{{vardata.var_form.clinsig.label}}</td>
-                  <td>{{vardata.var_form.clinsig()}}</td>
-                </tr>
-
-                <tr> <!-- Clinical significance comment -->
-                  <td>{{vardata.var_form.clinsig_comment.label}}</td>
-                  <td>{{vardata.var_form.clinsig_comment(class="form-control", placeholder="(optional)")}}</td>
-                </tr>
-
-                <tr> <!-- Clinical significance citation -->
-                  <td>{{vardata.var_form.clinsig_cit.label}}</td>
-                  <td>{{vardata.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}</td>
-                </tr>
-
-                {% if var_category == 'sv' %}
-                  <tr> <!-- Variant type -->
-                    <td>{{vardata.var_form.sv_type.label}}</td>
-                    <td>{{vardata.var_form.sv_type()}}</td>
-                  </tr>
-
-                  <tr> <!-- Reference copy number -->
-                    <td>{{vardata.var_form.ref_copy_number.label}}</td>
-                    <td>{{vardata.var_form.ref_copy_number()}}</td>
-                  </tr>
-
-                  <tr> <!-- Copy number -->
-                    <td>{{vardata.var_form.copy_number.label}}</td>
-                    <td>{{vardata.var_form.copy_number()}}</td>
-                  </tr>
-
-                  <tr> <!-- Outer start -->
-                    <td>{{vardata.var_form.outer_start.label}}</td>
-                    <td>{{vardata.var_form.outer_start()}}</td>
-                  </tr>
-
-                  <tr> <!-- Inner start -->
-                    <td>{{vardata.var_form.inner_start.label}}</td>
-                    <td>{{vardata.var_form.inner_start()}}</td>
-                  </tr>
-
-                  <tr> <!-- Inner stop -->
-                    <td>{{vardata.var_form.inner_stop.label}}</td>
-                    <td>{{vardata.var_form.inner_stop()}}</td>
-                  </tr>
-
-                  <tr> <!-- Outer stop -->
-                    <td>{{vardata.var_form.outer_stop.label}}</td>
-                    <td>{{vardata.var_form.outer_stop()}}</td>
-                  </tr>
-                {% endif  %}
-
-              </tbody>
-            </table>
+        <h5>Variant data</h5>
+        <div class="row d-flex align-items-center mt-3">
+          <div class="col-2"><!-- gene symbols -->
+            <div class="col-4">{{vardata.var_form.gene_symbols.label}}</div>
+            <div>{{vardata.var_form.gene_symbols()}}</div>
           </div>
-          <div class="col-6">
-            <table class="table table-bordered table-fixed">
-              <tbody>
-
-                <tr> <!-- Date last eveluation -->
-                  <td>{{vardata.var_form.eval_date.label}}</td>
-                  <td>{{vardata.var_form.eval_date()}}</td>
-                </tr>
-
-                <tr> <!-- HPO terms -->
-                  <td>{{vardata.var_form.hpo_terms.label}}</td>
-                  <td>{{vardata.var_form.hpo_terms()}}</td>
-                </tr>
-
-                <tr> <!-- OMIM terms -->
-                  <td>{{vardata.var_form.omim_terms.label}}</td>
-                  <td>{{vardata.var_form.omim_terms()}}</td>
-                </tr>
-
-                <tr> <!-- Additional comments for condition -->
-                  <td>{{vardata.var_form.variant_condition_comment.label}}</td>
-                  <td>{{vardata.var_form.variant_condition_comment(class="form-control")}}</td>
-                </tr>
-
-                <tr> <!-- Assertion method -->
-                  <td>{{vardata.var_form.assertion_method.label}}</td>
-                  <td>{{vardata.var_form.assertion_method()}}</td>
-                </tr>
-
-                <tr> <!-- Assertion method citation -->
-                  <td>{{vardata.var_form.assertion_method_cit.label}}</td>
-                  <td>{{vardata.var_form.assertion_method_cit(class="form-control")}}</td>
-                </tr>
-
-              </tbody>
-            </table>
+          <div class="col-2"><!-- Date last eveluation -->
+            <div class="col-6">{{vardata.var_form.eval_date.label}}</div>
+            <div>{{vardata.var_form.eval_date()}}</div>
           </div>
-        </div> <!-- end of variant row -->
-        <div class="row">
+          <div class="col-3"><!-- model of inherintance -->
+            {{vardata.var_form.inheritance_models.label}}
+            {{vardata.var_form.inheritance_models(class="form-control")}}
+          </div>
+          <div class="col-2"><!-- Assertion method -->
+            {{vardata.var_form.assertion_method.label}}
+            {{vardata.var_form.assertion_method()}}
+          </div>
+          <div class="col-2"><!-- Assertion method citation -->
+            {{vardata.var_form.assertion_method_cit.label}}
+            {{vardata.var_form.assertion_method_cit(class="form-control")}}
+          </div>
+        </div>
+        <div class="row d-flex align-items-center mt-3">
+          {% if var_category == 'snv' %}
+            <div class="col-3"><!-- Transcripts & HGVS:(optional) -->
+              {{vardata.var_form.tx_hgvs.label}}
+              {{vardata.var_form.tx_hgvs(class="form-control")}}
+            </div>
+            <div class="col-3"><!-- dbSNP identifier -->
+              {{vardata.var_form.dbsnp_id.label}}
+              {{vardata.var_form.dbsnp_id()}}
+            </div>
+          {% else %} <!--SV variant-->
+            <div class="col-2"><!-- Variant type -->
+              {{vardata.var_form.sv_type.label}}
+              {{vardata.var_form.sv_type(class="form-control")}}
+            </div>
+            <div class="col-2"><!-- Reference copy number -->
+              {{vardata.var_form.ref_copy_number.label}}
+              {{vardata.var_form.ref_copy_number()}}
+            </div>
+            <div class="col-2"><!-- Copy number -->
+              {{vardata.var_form.copy_number.label}}
+              {{vardata.var_form.copy_number()}}
+            </div>
+            <div class="col-6">
+              <div class="d-flex justify-content-start"><!-- Outer start -->
+                <div class="col-3">{{vardata.var_form.outer_start.label}}</div>
+                <div class="col-9">{{vardata.var_form.outer_start(class="form-control")}}</div>
+              </div>
+              <div class="d-flex justify-content-start"><!-- Inner start -->
+                <div class="col-3">{{vardata.var_form.inner_start.label}}</div>
+                <div class="col-9">{{vardata.var_form.inner_start(class="form-control")}}</div>
+              </div>
+              <div class="d-flex justify-content-start"><!-- Inner stop -->
+                <div class="col-3">{{vardata.var_form.inner_stop.label}}</div>
+                <div class="col-9">{{vardata.var_form.inner_stop(class="form-control")}}</div>
+              </div>
+              <div class="d-flex justify-content-start"><!-- Outer stop -->
+                <div class="col-3">{{vardata.var_form.outer_stop.label}}</div>
+                <div class="col-9">{{vardata.var_form.outer_stop(class="form-control")}}</div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+        <div class="row d-flex align-items-center mt-3">
+          <div class="col-4"><!-- Clinical significance -->
+            {{vardata.var_form.clinsig.label}}
+            {{vardata.var_form.clinsig(class="form-control")}}
+          </div>
+          <div class="col-4"> <!-- Clinical significance comment -->
+            {{vardata.var_form.clinsig_comment.label}}
+            {{vardata.var_form.clinsig_comment(class="form-control", placeholder="(optional)")}}
+          </div>
+          <div class="col-4"> <!-- Clinical significance citation -->
+            {{vardata.var_form.clinsig_cit.label}}
+            {{vardata.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
+          </div>
+        </div>
+        <div class="row d-flex align-items-center mt-3">
+          <div class="col-4"><!-- HPO terms -->
+            {{vardata.var_form.hpo_terms.label}}
+            {{vardata.var_form.hpo_terms()}}
+          </div>
+          <div class="col-4"><!-- OMIM terms -->
+            {{vardata.var_form.omim_terms.label}}
+            {{vardata.var_form.omim_terms}}
+          </div>
+          <div class="col-4"><!-- Additional comments for condition -->
+            {{vardata.var_form.variant_condition_comment.label}}
+            {{vardata.var_form.variant_condition_comment(class="form-control")}}
+          </div>
+        </div>
+
+
+
+        <div class="row d-flex align-items-center mt-3">
+        <div class="row mt-3">
           <h5>Observation data</h5>
           <ul class="list-group">
           {% for cdata in vardata.cdata_forms %}
