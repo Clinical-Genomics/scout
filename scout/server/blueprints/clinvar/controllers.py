@@ -131,27 +131,22 @@ def _populate_case_data_form(variant_obj, case_obj):
     return cdata_form_list
 
 
-def set_clinvar_form(var_list, data):
+def set_clinvar_form(var_id, data):
     """Adds form key/values to the form used in ClinVar create submission page
 
     Args:
-        var_list(list): list of variant _ids
+        var_id(str): variant _id
         data(dict): data to show in clinvar_create.html template
     """
-    data["variant_data"] = []  # {var_id: _id, var_obj: variant_obj, var_form: FlaskForm }
-    # Loop over each variant present in var_list and create form fields for it
-    for var_id in var_list:
-
-        var_obj = store.variant(var_id)
-        if not var_obj:
-            continue
-
-        var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
-        cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
-        var_form_item = {
-            "var_id": var_id,
-            "var_obj": var_obj,
-            "var_form": var_form,
-            "cdata_forms": cdata_forms,
-        }
-        data["variant_data"].append(var_form_item)
+    var_obj = store.variant(var_id)
+    if not var_obj:
+        return
+    var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
+    cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
+    variant_data = {
+        "var_id": var_id,
+        "var_obj": var_obj,
+        "var_form": var_form,
+        "cdata_forms": cdata_forms,
+    }
+    data["variant_data"] = variant_data
