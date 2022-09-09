@@ -976,6 +976,7 @@ def variant_export_lines(store, case_obj, variants_query):
             for sample in ["tumor", "normal"]:
                 allele = variant.get(sample)
                 if not allele:
+                    variant_line.append("-")
                     continue
                 alt_freq = round(allele.get("alt_freq", 0), 4)
                 alt_depth = allele.get("alt_depth")
