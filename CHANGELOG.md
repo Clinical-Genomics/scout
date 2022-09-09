@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Button to go directly to HPO SV filter variantS page from case
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available
+- Functional annotations in variants lists exports (all variants)
+- Cancer/Normal VAFs and COSMIC ids in in variants lists exports (cancer variants)
 ### Changed
 - Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
 - Order of cells in variants tables
