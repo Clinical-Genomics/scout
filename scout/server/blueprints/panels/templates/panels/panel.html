@@ -80,7 +80,6 @@
       {% if config.SQLALCHEMY_DATABASE_URI and case %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report</label>
-          Coverage report
           <a class="float-end" id="coverage_report" href="#" onclick="document.getElementById('report-form').submit();">
             {{ case.display_name }}
           </a>
@@ -89,7 +88,7 @@
           </form>
         </li>
         <li class="list-group-item">
-          Coverage overview
+          <label for="report-genes-form">Coverage overview</label>
           <span class="float-end">
             <a class="float-end" href="#" onclick="document.getElementById('report-genes-form').submit();">
               {{ case.display_name }}
