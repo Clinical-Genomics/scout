@@ -83,7 +83,7 @@
               {% for gene in variant.genes %}
                 <span class="ms-5">
                   <a class="btn btn-sm btn-secondary" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
-                    gene coverage{{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                    Gene coverage {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                   </a>
                 </span>
               {% endfor %}
