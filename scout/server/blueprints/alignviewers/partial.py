@@ -58,8 +58,8 @@ def send_file_partial(path):
 
     resp = Response(data, 206, mimetype=mimetypes.guess_type(path)[0], direct_passthrough=True)
 
-    resp.headers.add("Content-type", "application/octet-stream")
-    resp.headers.add("Accept-Ranges", "bytes")
-    resp.headers.add("Content-Range", "bytes %s-%s/%s" % (first, last, file_len))
-    resp.headers.add("Content-Length", str(response_length))
+    resp.headers.set("Content-type", "application/octet-stream")
+    resp.headers.set("Accept-Ranges", "bytes")
+    resp.headers.set("Content-Range", "bytes %s-%s/%s" % (first, last, file_len))
+    resp.headers.set("Content-Length", str(response_length))
     return resp
