@@ -85,14 +85,14 @@
     <div>
       <h6 class="ms-3 mt-3"><span class="fas fa-clipboard-list"></span>&nbsp;HPO gene panel ({{ case.dynamic_gene_list|length }} genes
         {%- if case.dynamic_panel_phenotypes %},
-          <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
+          <span class="mr-3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ case.dynamic_panel_phenotypes|join(', ') }}">
               {{ case.dynamic_panel_phenotypes|length }} phenotypes
           </span>
         {% endif %}
         )
         {% if case.dynamic_gene_list_edited %} <span class="text-danger ml-3"> (edited) </span> {% endif %}
         {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
-          <div class="pull-right">
+          <div class="ml-3">
             <div class="d-inline p-2">Coverage:</div>
             <div class="d-inline p-2">
               <a href="#" onclick="document.getElementById('hpo-report-form').submit();">report</a>
