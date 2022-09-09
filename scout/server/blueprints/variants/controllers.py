@@ -1044,7 +1044,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     gene_names = []
     canonical_txs = []
     primary_txs = []
-    funct_anno = []
+    funct_annos = []
     gene_info = []
 
     for gene_obj in gene_list:
@@ -1059,11 +1059,10 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
 
         canonical_txs += gene_canonical_txs
         primary_txs += gene_primary_txs
-        if gene_obj.get("functional_annotation"):
-            funct_anno.append(gene_obj["functional_annotation"].replace("_", " "))
-        LOG.error(funct_anno)
+        funct_anno = gene_obj.get("functional_annotation", "-")
+        funct_annos.append(funct_anno.replace("_", " "))
 
-    for item in [gene_ids, gene_names, canonical_txs, primary_txs, funct_anno]:
+    for item in [gene_ids, gene_names, canonical_txs, primary_txs, funct_annos]:
         gene_info.append(" | ".join(str(x) for x in item))
 
     return gene_info
@@ -1078,7 +1077,10 @@ def variants_export_header(case_obj):
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
     header = []
-    header = header + EXPORT_HEADER
+    if case_obj.get("track") == "cancer":
+        header = header + CANCER_EXPORT_HEADER
+    else:
+        header = header + EXPORT_HEADER
     # Add fields specific for case samples
     for individual in case_obj["individuals"]:
         display_name = str(individual["display_name"])
