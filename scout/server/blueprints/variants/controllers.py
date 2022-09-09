@@ -943,8 +943,6 @@ def variant_export_lines(store, case_obj, variants_query):
 
     export_variants = []
 
-    is_cancer = case_obj.get("track") == "cancer"
-
     for variant in variants_query:
         variant_line = []
         position = variant["position"]
@@ -964,7 +962,7 @@ def variant_export_lines(store, case_obj, variants_query):
             variant_line += gene_info
         else:
             empty_col = 0
-            while empty_col < 3:
+            while empty_col < 4:
                 variant_line.append(
                     "-"
                 )  # empty HGNC id, empty gene name and empty transcripts columns
@@ -973,10 +971,25 @@ def variant_export_lines(store, case_obj, variants_query):
         variant_line.append(variant.get("cadd_score", "N/A"))
         variant_line.append(variant.get("gnomad_frequency", "N/A"))
 
-        variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
-        for individual in case_obj["individuals"]:
-            for variant_gt in variant_gts:
-                if individual["individual_id"] == variant_gt["sample_id"]:
+        if case_obj.get("track") == "cancer":
+            for sample in ["tumor", "normal"]:
+                allele = variant.get(sample)
+                if not allele:
+                    continue
+                alt_freq = round(allele.get("alt_freq", 0), 4)
+                alt_depth = allele.get("alt_depth")
+                ref_depth = allele.get("ref_depth")
+
+                vaf_sample = f"{alt_freq} ({alt_depth}|{ref_depth})"
+                variant_line.append(vaf_sample)
+
+        else:
+            variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
+            for individual in case_obj["individuals"]:
+                for variant_gt in variant_gts:
+                    if individual["individual_id"] != variant_gt["sample_id"]:
+                        continue
+
                     variant_line.append(variant_gt["genotype_call"])
                     # gather coverage info
                     variant_line.append(variant_gt["allele_depths"][0])  # AD reference
@@ -1081,13 +1094,13 @@ def variants_export_header(case_obj):
         header = header + CANCER_EXPORT_HEADER
     else:
         header = header + EXPORT_HEADER
-    # Add fields specific for case samples
-    for individual in case_obj["individuals"]:
-        display_name = str(individual["display_name"])
-        header.append("GT_" + display_name)  # Add Genotype filed for a sample
-        header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
-        header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
-        header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+        # Add fields specific for case samples
+        for individual in case_obj["individuals"]:
+            display_name = str(individual["display_name"])
+            header.append("GT_" + display_name)  # Add Genotype filed for a sample
+            header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
+            header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
+            header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
     return header
 
 
