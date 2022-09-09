@@ -81,7 +81,7 @@
           {% if config.SQLALCHEMY_DATABASE_URI %}
             <div class="d-flex flex-wrap">
               {% for gene in variant.genes %}
-                <a class="btn btn-sm btn-secondary" target="_blank" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
+                <a class="btn btn-sm btn-secondary" target="_blank" rel="noopener noreferrer" href="{{ url_for('report.gene', gene_id=gene.hgnc_id, sample_id=variant.samples|map(attribute='sample_id')|list) }}">
                   Gene coverage: {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
                 </a>
               {% endfor %}
