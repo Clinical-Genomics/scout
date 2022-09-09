@@ -93,8 +93,13 @@
         )
         {% if case.dynamic_gene_list_edited %} <span class="text-danger ml-3"> (edited) </span> {% endif %}
         {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
-          <a class="pull-right" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage</a>
+          <a class="pull-right" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage report</a>
           <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+            <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
+          </form>
+          &nbsp
+          <a class="pull-right" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage overview</a>
+          <form id="hpo-report-form" action="{{ url_for('report.genes', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
             <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
           </form>
         {% endif %}
