@@ -104,10 +104,7 @@
             <form id="hpo-report-form" action="{{ url_for('report.genes', sample_id=case.individuals|map(attribute='individual_id')|list", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
               <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
             </form>
-
           </div>
-
-
         {% endif %}
 
       </h6>
