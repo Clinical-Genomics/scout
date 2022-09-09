@@ -22,7 +22,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
 )
-from scout.constants.variants_export import EXPORT_HEADER
+from scout.constants.variants_export import CANCER_EXPORT_HEADER, EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
     clinsig_human,
     predictions,
@@ -943,6 +943,8 @@ def variant_export_lines(store, case_obj, variants_query):
 
     export_variants = []
 
+    is_cancer = case_obj.get("track") == "cancer"
+
     for variant in variants_query:
         variant_line = []
         position = variant["position"]
@@ -957,7 +959,7 @@ def variant_export_lines(store, case_obj, variants_query):
         gene_list = variant.get("genes")  # this is a list of gene objects
 
         # if variant is in genes
-        if gene_list is not None and len(gene_list) > 0:
+        if gene_list:
             gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
             variant_line += gene_info
         else:
@@ -965,11 +967,10 @@ def variant_export_lines(store, case_obj, variants_query):
             while empty_col < 3:
                 variant_line.append(
                     "-"
-                )  # empty HGNC id, emoty gene name and empty transcripts columns
+                )  # empty HGNC id, empty gene name and empty transcripts columns
                 empty_col += 1
 
         variant_line.append(variant.get("cadd_score", "N/A"))
-
         variant_line.append(variant.get("gnomad_frequency", "N/A"))
 
         variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
@@ -1043,6 +1044,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     gene_names = []
     canonical_txs = []
     primary_txs = []
+    funct_anno = []
     gene_info = []
 
     for gene_obj in gene_list:
@@ -1057,8 +1059,11 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
 
         canonical_txs += gene_canonical_txs
         primary_txs += gene_primary_txs
+        if gene_obj.get("functional_annotation"):
+            funct_anno.append(gene_obj["functional_annotation"].replace("_", " "))
+        LOG.error(funct_anno)
 
-    for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
+    for item in [gene_ids, gene_names, canonical_txs, primary_txs, funct_anno]:
         gene_info.append(" | ".join(str(x) for x in item))
 
     return gene_info
