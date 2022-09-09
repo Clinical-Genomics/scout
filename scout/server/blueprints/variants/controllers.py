@@ -972,6 +972,7 @@ def variant_export_lines(store, case_obj, variants_query):
         variant_line.append(variant.get("gnomad_frequency", "N/A"))
 
         if case_obj.get("track") == "cancer":
+            # Add cancer and normal VAFs
             for sample in ["tumor", "normal"]:
                 allele = variant.get(sample)
                 if not allele:
@@ -982,6 +983,9 @@ def variant_export_lines(store, case_obj, variants_query):
 
                 vaf_sample = f"{alt_freq} ({alt_depth}|{ref_depth})"
                 variant_line.append(vaf_sample)
+
+            # ADD eventual COSMIC ID
+            variant_line.append(" | ".join(variant.get("cosmic_ids", "-")))
 
         else:
             variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
