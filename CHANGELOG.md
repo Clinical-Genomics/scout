@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
 - Order of cells in variants tables
+- More evident links to gene coverage from Variant page
 - Rewrote the ClinVar export module to simplify and prepare for ClinVar API submission feature
 ### Fixed
 - HPO filter button on SV variantS page
