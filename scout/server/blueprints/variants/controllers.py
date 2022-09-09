@@ -986,7 +986,8 @@ def variant_export_lines(store, case_obj, variants_query):
                 variant_line.append(vaf_sample)
 
             # ADD eventual COSMIC ID
-            variant_line.append(" | ".join(variant.get("cosmic_ids", ["-"])))
+            cosmic_ids = variant.get("cosmic_ids") or ["-"]
+            variant_line.append(" | ".join(cosmic_ids))
 
         else:
             variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
