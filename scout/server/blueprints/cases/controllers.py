@@ -215,7 +215,7 @@ def case(store, institute_obj, case_obj):
     distinct_genes = set()
     case_obj["panel_names"] = []
     case_obj["outdated_panels"] = {}
-    case_obj["panels"] = sorted(case_obj.get("panels", []), key=lambda d: d["display_name"])
+    case_obj["panels"] = sorted(case_obj.get("panels", []), key=lambda d: d["panel_name"])
     for panel_info in case_obj["panels"]:
         if not panel_info.get("is_default"):
             continue
