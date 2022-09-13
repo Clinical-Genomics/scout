@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
 - Order of cells in variants tables
 - More evident links to gene coverage from Variant page
+- Gene panels sorted by display name in the entire Case page
 ### Fixed
 - HPO filter button on SV variantS page
 - Spacing between region|function cells in SVs lists
