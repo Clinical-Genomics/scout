@@ -216,7 +216,7 @@ def case(store, institute_obj, case_obj):
     case_obj["panel_names"] = []
     case_obj["outdated_panels"] = {}
 
-    for panel_info in case_obj["panels"]:
+    for panel_info in case_obj.get("panels", []):
         if not panel_info.get("display_name"):
             panel_info["display_name"] = panel_info["panel_name"]
         if not panel_info.get("is_default"):
