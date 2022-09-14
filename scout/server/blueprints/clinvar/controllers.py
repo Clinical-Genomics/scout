@@ -151,5 +151,10 @@ def set_clinvar_form(var_id, data):
     data["variant_data"] = variant_data
 
 
-def parse_clinvar_form():
-    """Parses input values provided by the user in the ClinVar add_one form"""
+def parse_clinvar_add_form(form):
+    """Parses input values provided by the user in the ClinVar add_one form
+
+    Args:
+        form(werkzeug.datastructures.ImmutableMultiDic): form submitted by a user
+    """
+    LOG.warning(type(form))
