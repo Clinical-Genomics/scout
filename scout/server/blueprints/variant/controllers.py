@@ -21,7 +21,6 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
-from scout.parse.clinvar import set_submission_objects
 from scout.server.blueprints.variant.utils import update_representative_gene
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import get_variant_links
@@ -659,88 +658,3 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
         criteria=criteria,
     )
     return classification
-
-
-def build_clinvar_submission(store, request, institute_id, case_name):
-    """Add some variants to a ClinVar submission object or create a new ClinVar submission
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        request(flask.Request)
-        institute_id(str): institute_obj['_id']
-        case_name(str): case_obj['display_name']
-        variant_id(str): variant_obj['document_id']
-    """
-    form_dict = {}
-
-    # flatten up HPO and OMIM terms lists into string of keys separated by semicolon
-    for key, value in request.form.items():
-        if "@" in key:
-            variant_id = key.split("@")[1]
-
-        if key.startswith("hpo_terms") and f"omim_terms@{variant_id}" not in request.form:
-            form_dict["@".join(["condition_id_type", variant_id])] = "HPO"
-            form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
-                request.form.getlist(key)
-            )
-
-        elif key.startswith("omim_terms"):
-            form_dict["@".join(["condition_id_type", variant_id])] = "OMIM"
-            form_dict["@".join(["condition_id_value", variant_id])] = ";".join(
-                request.form.getlist(key)
-            )
-
-        elif key.startswith("clin_features"):
-            form_dict[key] = ";".join(request.form.getlist(key))
-
-        else:
-            form_dict[key] = value
-
-    # A tuple of submission objects (variants and casedata objects):
-    submission_objects = set_submission_objects(form_dict)
-
-    # Add submission data to an open clinvar submission object,
-    # or create a new if no open submission is found in database
-    open_submission = store.get_open_clinvar_submission(institute_id)
-    updated_submission = store.add_to_submission(open_submission["_id"], submission_objects)
-
-
-def clinvar_export(store, institute_obj, case_obj, variants):
-    """Gather the required data for creating the clinvar submission form
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        institute_obj(dict): scout.model.Institute
-        case_obj(dict): scout.model.Case
-        variants(list of strings): list of variant._ids
-
-    Returns:
-        data(dict): all the required data (case and variant level) to pre-fill in fields
-                    in the clinvar submission form
-
-    """
-    # If case diagnoses are a list of integers, convert into a list of dictionaries
-    case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
-    if case_diagnoses and isinstance(case_diagnoses[0], int):
-        case_obj = store.convert_diagnoses_format(case_obj)
-    variant_objs = [store.variant(variant_id) or variant_id for variant_id in variants]
-
-    # gather missing transcript info (refseq id version)
-    for var_obj in variant_objs:
-        # Exclude variants that aren't loaded
-        if isinstance(var_obj, str):
-            continue
-        for gene in var_obj.get("genes", []):
-            for transcript in gene.get("transcripts"):
-                refseq_id = transcript.get("refseq_id")
-                if not refseq_id:
-                    continue
-                transcript["refseq_id"] = fetch_refseq_version(refseq_id)
-
-    return dict(
-        today=str(date.today()),
-        institute=institute_obj,
-        case=case_obj,
-        pinned_vars=variant_objs,
-        inheritance_models=CLINVAR_INHERITANCE_MODELS,
-    )

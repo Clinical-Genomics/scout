@@ -6,7 +6,6 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
-from scout.server.blueprints.variant.controllers import build_clinvar_submission, clinvar_export
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
 from scout.server.blueprints.variant.controllers import variant as variant_controller
