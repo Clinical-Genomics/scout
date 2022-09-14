@@ -7,12 +7,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Button to go directly to HPO SV filter variantS page from case
+- `Scout-REViewer-Service` integration - show `REViewer` picture if available
+- Link to HPO panel coverage overview on Case page
 ### Changed
-- Rewrote the ClinVar export module to simplify and prepare for ClinVar API submission feature
 - Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
+- Order of cells in variants tables
+- More evident links to gene coverage from Variant page
+- Gene panels sorted by display name in the entire Case page
+- Rewrote the ClinVar export module to simplify and prepare for ClinVar API submission feature
 ### Fixed
 - HPO filter button on SV variantS page
-
+- Spacing between region|function cells in SVs lists
+- Labels on gene panel Chanjo report
+- Fixed ambigious duplicated response headers when requesting a BAM file from /static
+- Visited color link on gene coverage button (Variant page)
 
 ## [4.58.1]
 ### Fixed
@@ -27,7 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute settings option to force show all variants on VariantS page for all cases of an institute
 - Filter cases by validation pending status
 - Link to The Clinical Knowledgebase (CKB) (https://ckb.jax.org/) in cancer variant's page
-- `Scout-REViewer-Service` integration - show `REViewer` picture if available
+
 ### Fixed
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
