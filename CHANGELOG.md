@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Spacing between region|function cells in SVs lists
 - Labels on gene panel Chanjo report
 - Fixed ambigious duplicated response headers when requesting a BAM file from /static
+- Visited color link on gene coverage button (Variant page)
 
 ## [4.58.1]
 ### Fixed
