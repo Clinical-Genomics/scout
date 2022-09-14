@@ -2,26 +2,65 @@ from datetime import datetime
 
 from bson.objectid import ObjectId
 
-""" Represents the document that gets saved/updated in clinvar_submission collection
- for each instute that has cases with ClinVar submission objects """
-clinvar_submission = dict(
-    _id=ObjectId,
-    status=str,  # open, closed
-    created_at=datetime,
-    institute_id=str,
-    variant_data=list,
-    case_data=list,
-    updated_at=datetime,
-    clinvar_subm_id=str,
-)
+"""Model of the document that gets saved/updated in the clinvar_submission collection
+ for each institute that has cases with ClinVar submission objects"""
+clinvar_submission = {
+    "_id": ObjectId,
+    "status": str,  # open, closed
+    "created_at": datetime,
+    "institute_id": str,
+    "variant_data": list,
+    "case_data": list,
+    "updated_at": datetime,
+    "clinvar_subm_id": str,
+}
 
-"""Represents the document that gets saved/updated when one or more variants are added
-to a ClinVar submission object"""
-clinvar = dict(
-    _id=str,  # _id of a variant
-    Local_ID=str, #(it's actually written ##Local_ID)
-    age=int,
-    allele_origin=str,
-    alt=str,
-    Alternate_allele,
-)
+"""Model of one document that gets saved in the `clinvar` collection. Relative to a Variant object"""
+clinvar = {
+    "_id": str,  # caseID_variantID. Example: "internal_id_4c7d5c70d955875504db72ef8e1abe77"
+    "csv_type": str,  # "variant"
+    "case_id": str,
+    "category": str,  # "snv" or "sv"
+    "local_id": str,  # _id of a scout variant
+    "linking_id": str,  # same as local_id
+    "gene_symbol": str,  # example: "POT1"
+    "hgvs": str,  # example: "c.510G>T"
+    "chromosome": str,
+    "start": int,
+    "stop": int,
+    "ref": str,
+    "alt": str,
+    "variations_ids": str,  # example: "rs116916706"
+    "clinsig": str,  # example: "Pathogenic"
+    "last_evaluated": date,
+    "assertion_method": str,  # default: "ACMG Guidelines, 2015"
+    "assertion_method_cit": str,  # default: "PMID:25741868"
+    "var_type": str,  # (only for SVs) example: "deletion"
+    "ref_copy": int,  # (only for SVs) Copy number in reference allele
+    "alt_copy": int,  # (only for SVs) Copy number in alternative allele
+    "breakpoint1": int,  # (only for SVs)
+    "breakpoint2": int,  # (only for SVs)
+}
+
+"""Model of one document that gets saved in the `clinvar` collection. Relative to a CaseData object"""
+clinvar = {
+    "_id": str,  # caseID_VariantID_individualID. Example: "internal_id_4c7d5c70d955875504db72ef8e1abe77_NA12882"
+    "csv_type": str,  # "casedata"
+    "case_id": str,
+    "category": str,  # "snv" or "sv"
+    "linking_id": str,  # _id of a variant
+    "individual_id": str,  # example: "NA12882"
+    "collection_method": str,  # default: "clinical testing"
+    "allele_origin": str,  # example: "germline"
+    "is_affected": str,  # example: "yes"
+    "sex": str,
+    "fam_history": str,  # example: "no"
+    "is_proband": str,  # example: "yes"
+    "is_secondary_finding": str,  # example: "no"
+    "is_mosaic": str,  # example: "no"
+    "zygosity": str,  # example: "compound heterozygote"
+    "platform_type": str,  # default: "next-gen sequencing"
+    "platform_name": str,  # default: "Whole exome sequencing, Illumina"
+    "method_purpose": str,  # default: "discovery"
+    "reported_at": date,
+}
