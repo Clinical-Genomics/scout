@@ -41,7 +41,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     var_form.ref.data = variant_obj.get("reference")
     var_form.alt.data = variant_obj.get("alternative")
     var_form.gene_symbols.data = ",".join(variant_obj.get("hgnc_symbols", []))
-    var_form.eval_date.data = datetime.now()
+    var_form.last_evaluated.data = datetime.now()
     var_form.hpo_terms.choices = [
         (" - ".join([hpo.get("phenotype_id"), hpo.get("feature")]), hpo.get("phenotype_id"))
         for hpo in case_obj.get("phenotype_terms", [])
@@ -163,10 +163,19 @@ def parse_variant_form_fields(form):
     Returns:
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
     """
-    clinvar_var = {}
-    for key, values in VARIANT_FIELDS.items():
-        LOG.warning(key)
-        LOG.error(values)
+    clinvar_var = {"csv_type": "variant"}
+    # Set values in clinvar_var
+    for key in clinvar_variant:
+        if key in form:
+            clinvar_var[key] = form[key]
+        elif form.get("dbsnp_id"):
+            clinvar_var["variations_ids"] = form["dbsnp_id"]
+        else:
+            LOG.error(key)
+
+    LOG.warning(clinvar_var)
+
+    return clinvar_var
 
 
 def parse_casedata_form_fields(form):
@@ -179,4 +188,4 @@ def parse_casedata_form_fields(form):
     Returns:
         clinvar_cd(dict): scout.models.clinvar.clinvar_casedata
     """
-    clinvar_cd = {}
+    clinvar_cd = {"csv_type": "casedata"}

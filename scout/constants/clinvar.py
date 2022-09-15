@@ -1,5 +1,3 @@
-from . import CHROMOSOMES
-
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
 
@@ -7,24 +5,28 @@ ASSERTION_METHOD_CIT = "PMID:25741868"
 VARIANT_FIELDS = {
     "local_id": {"csv_header": "##Local ID", "required": True, "type": str},
     "linking_id": {"csv_header": "Linking ID", "required": True, "type": str},
-    "gene_symbol": {"csv_header": "Gene symbol", "required": False, "type": str},
+    "gene_symbols": {"csv_header": "Gene symbol", "required": False, "type": str},
     "ref_seq": {"csv_header": "Reference sequence", "required": False, "type": str},
     "hgvs": {"csv_header": "HGVS", "required": False, "type": str},
-    "chromosome": {"csv_header": "Chromosome", "required": False, "type": str, "enum": CHROMOSOMES},
+    "chromosome": {
+        "csv_header": "Chromosome",
+        "required": False,
+        "type": str,
+    },
     "start": {"csv_header": "Start", "required": False, "type": int},
     "stop": {"csv_header": "Stop", "required": False, "type": int},
     "ref": {"csv_header": "Reference allele", "required": False, "type": str},
     "alt": {"csv_header": "Alternate allele", "required": False, "type": str},
-    "var_type": {"csv_header": "Variant type", "required": False, "type": str, "enum": SV_TYPES},
-    "ncopy": {"csv_header": "Copy number", "required": False, "type": int},
-    "ref_copy": {"csv_header": "Reference copy number", "required": False, "type": int},
-    "breakpoint1": {"csv_header": "Breakpoint 1", "required": False, "type": int},
-    "breakpoint2": {"csv_header": "Breakpoint 2", "required": False, "type": int},
+    "var_type": {"csv_header": "Variant type", "required": False, "type": str},
+    "copy_number": {"csv_header": "Copy number", "required": False, "type": int},
+    "ref_copy_number": {"csv_header": "Reference copy number", "required": False, "type": int},
+    "bp_1": {"csv_header": "Breakpoint 1", "required": False, "type": int},
+    "bp_2": {"csv_header": "Breakpoint 2", "required": False, "type": int},
     "outer_start": {"csv_header": "Outer start", "required": False, "type": int},
     "inner_start": {"csv_header": "Inner start", "required": False, "type": int},
     "inner_stop": {"csv_header": "Inner stop", "required": False, "type": int},
     "outer_stop": {"csv_header": "Outer stop", "required": False, "type": int},
-    "variations_ids": {"csv_header": "Variation identifiers", "required": False, "type": str},
+    "dbsnp_id": {"csv_header": "Variation identifiers", "required": False, "type": str},
     "condition_id_type": {
         "csv_header": "Condition ID type",
         "required": True,
@@ -35,17 +37,12 @@ VARIANT_FIELDS = {
         "required": True,
         "type": str,
     },
-    "condition_comment": {
+    "variant_condition_comment": {
         "csv_header": "Condition comment",
         "required": False,
         "type": str,
     },
-    "clinsig": {
-        "csv_header": "Clinical significance",
-        "required": True,
-        "type": str,
-        "enum": CLNSIG_TERMS,
-    },
+    "clinsig": {"csv_header": "Clinical significance", "required": True, "type": str},
     "clinsig_comment": {
         "csv_header": "Comment on clinical significance",
         "required": False,
@@ -63,13 +60,11 @@ VARIANT_FIELDS = {
         "csv_header": "Assertion method citation",
         "required": True,
         "type": str,
-        "enum": ["PubMed", "BookShelf", "DOI", "pmc"],
     },
     "inheritance_mode": {
         "csv_header": "Mode of inheritance",
         "required": False,
         "type": str,
-        "enum": CLINVAR_INHERITANCE_MODELS,
     },
     "drug_response": {
         "csv_header": "Drug response condition",
