@@ -7,6 +7,7 @@ from scout.constants import (
     MODELS_MAP,
     PANEL_GENE_INFO_MODELS,
     PANEL_GENE_INFO_TRANSCRIPTS,
+    PANELAPP_CONFIDENCE_EXCLUDE,
 )
 from scout.utils.date import get_date
 from scout.utils.handle import get_file_handle
@@ -267,12 +268,13 @@ def parse_gene_panel(
     return gene_panel
 
 
-def parse_panel_app_gene(app_gene, hgnc_map):
+def parse_panel_app_gene(app_gene, hgnc_map, confidence):
     """Parse a panel app formatted gene.
 
     Args:
         app_gene(dict): dict with panel app info, where Ensembl ids are present as a loist with key "EnsembleGeneIds"
         hgnc_map(dict): a dictionary with Ensembl IDs as keys and HGNC ids as values
+        confidence(str): enum green|amber|red
 
     Returns:
         gene_info(dict): Scout infromation
@@ -280,7 +282,7 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     gene_info = {}
     confidence_level = app_gene["LevelOfConfidence"]
     # Return empty gene if not confident gene
-    if not confidence_level == "HighEvidence":
+    if confidence_level in PANELAPP_CONFIDENCE_EXCLUDE[confidence]:
         return gene_info
 
     hgnc_symbol = app_gene["GeneSymbol"]
@@ -311,7 +313,9 @@ def parse_panel_app_gene(app_gene, hgnc_map):
     return gene_info
 
 
-def parse_panel_app_panel(panel_info, hgnc_map, institute="cust000", panel_type="clinical"):
+def parse_panel_app_panel(
+    panel_info, hgnc_map, institute="cust000", panel_type="clinical", confidence="green"
+):
     """Parse a PanelApp panel
 
     Args:
@@ -319,6 +323,7 @@ def parse_panel_app_panel(panel_info, hgnc_map, institute="cust000", panel_type=
         hgnc_map(dict): Map from symbol to hgnc ids
         institute(str)
         panel_type(str)
+        confidence(str): enum green|amber|red
 
     Returns:
         gene_panel(dict)
@@ -328,7 +333,9 @@ def parse_panel_app_panel(panel_info, hgnc_map, institute="cust000", panel_type=
     gene_panel = {}
     gene_panel["version"] = float(panel_info["version"])
     gene_panel["date"] = get_date(panel_info["Created"][:-1], date_format=date_format)
-    gene_panel["display_name"] = panel_info["SpecificDiseaseName"]
+    gene_panel["display_name"] = " - ".join(
+        [panel_info["SpecificDiseaseName"], f"[{confidence.upper()}]"]
+    )
     gene_panel["institute"] = institute
     gene_panel["panel_type"] = panel_type
 
@@ -336,17 +343,17 @@ def parse_panel_app_panel(panel_info, hgnc_map, institute="cust000", panel_type=
 
     gene_panel["genes"] = []
 
-    nr_low_confidence = 1
+    nr_excluded = 0
     nr_genes = 0
     for nr_genes, gene in enumerate(panel_info["Genes"], 1):
-        gene_info = parse_panel_app_gene(gene, hgnc_map)
+        gene_info = parse_panel_app_gene(gene, hgnc_map, confidence)
         if not gene_info:
-            nr_low_confidence += 1
+            nr_excluded += 1
             continue
         gene_panel["genes"].append(gene_info)
 
     LOG.info("Number of genes in panel %s", nr_genes)
-    LOG.info("Number of low confidence genes in panel %s", nr_low_confidence)
+    LOG.info("Number of genes exluded due to confidence threshold: %s", nr_excluded)
 
     return gene_panel
 
