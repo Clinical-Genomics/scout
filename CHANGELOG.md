@@ -4,12 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [unreleased]
 ### Added
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available
 - Button to go directly to HPO SV filter variantS page from case
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available
 - Link to HPO panel coverage overview on Case page
+- Specify a confidence threshold (green|amber|red) when loading PanelApp panels
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
 ### Changed
 - Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
