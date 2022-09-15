@@ -35,6 +35,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
         variant_obj(dict) scout.models.Variant
         case_obj(dict) scout.models.Case
     """
+    var_form.case_id.data = case_obj["_id"]
     var_form.local_id.data = variant_obj["_id"]
     var_form.linking_id.data = variant_obj["_id"]
     var_form.chromosome.data = variant_obj.get("chromosome")
@@ -64,7 +65,7 @@ def _get_snv_var_form(variant_obj, case_obj):
     var_form = SNVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
     var_form.tx_hgvs.choices = _get_var_tx_hgvs(variant_obj)
-    var_form.dbsnp_id.data = variant_obj.get("dbsnp_id", "").split(";")[0]
+    var_form.variations_ids.data = variant_obj.get("dbsnp_id", "").split(";")[0]
     var_form.start.data = variant_obj.get("position")
     var_form.stop.data = variant_obj.get("position")
     return var_form
@@ -160,7 +161,8 @@ def _parse_tx_hgvs(clinvar_var, form):
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
-    if not form.get("tx_hgvs"):
+    tx_hgvs = form.get("tx_hgvs")
+    if not tx_hgvs:
         return
     clinvar_var["ref_seq"] = tx_hgvs.split(" | ")[0]
     clinvar_var["hgvs"] = tx_hgvs.split(" | ")[1]
@@ -192,18 +194,19 @@ def parse_variant_form_fields(form):
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
     """
     clinvar_var = {"csv_type": "variant"}
-    LOG.warning(form)
+
     # Set values in clinvar_var
     for key in clinvar_variant:
         if key in form:
             clinvar_var[key] = form[key]
+        else:
+            LOG.error(f"{key}")
         clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
         _parse_tx_hgvs(clinvar_var, form)
         _set_conditions(clinvar_var, form)
         if form.get("dbsnp_id"):
             clinvar_var["variations_ids"] = form["dbsnp_id"]
 
-    LOG.warning(clinvar_var)
     return clinvar_var
 
 

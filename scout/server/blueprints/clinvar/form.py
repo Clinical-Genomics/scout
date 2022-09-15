@@ -47,7 +47,7 @@ class ClinVarVariantForm(FlaskForm):
     ref = HiddenField()
     alt = HiddenField()
     gene_symbol = StringField("Gene symbols")
-    inheritance_models = SelectField(
+    inheritance_mode = SelectField(
         "Inheritance models", choices=[(item, item) for item in CLINVAR_INHERITANCE_MODELS]
     )
     clinsig = SelectField("Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS])
@@ -56,7 +56,7 @@ class ClinVarVariantForm(FlaskForm):
     last_evaluated = DateField("Date last evaluated")
     hpo_terms = MultiCheckboxField("Variant-associated HPO terms", choices=[])
     omim_terms = MultiCheckboxField("Variant-associated OMIM terms", choices=[])
-    variant_condition_comment = TextAreaField("Additional comments describing condition")
+    condition_comment = TextAreaField("Additional comments describing condition")
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
@@ -69,11 +69,7 @@ class SNVariantForm(ClinVarVariantForm):
     start = HiddenField()
     stop = HiddenField()
     tx_hgvs = RadioField("Transcipts and HGVS", choices=[], validators=[validators.Optional()])
-    dbsnp_id = StringField("Variation identifiers (dbSNPs)")
-    funct_conseq = SelectField(
-        "Functional consequence (based on experimental evidence, leave blank if unsure)",
-        choices=[],
-    )
+    variations_ids = StringField("Variation identifiers (dbSNPs)")
 
 
 class SVariantForm(ClinVarVariantForm):

@@ -66,8 +66,8 @@
           <div>{{variant_data.var_form.last_evaluated()}}</div>
         </div>
         <div class="col-3"><!-- model of inherintance -->
-          {{variant_data.var_form.inheritance_models.label}}
-          {{variant_data.var_form.inheritance_models(class="form-control")}}
+          {{variant_data.var_form.inheritance_mode.label}}
+          {{variant_data.var_form.inheritance_mode(class="form-control")}}
         </div>
         <div class="col-2"><!-- Assertion method -->
           {{variant_data.var_form.assertion_method.label}}
@@ -85,8 +85,8 @@
             {{variant_data.var_form.tx_hgvs()}}
           </div>
           <div class="col-3"><!-- dbSNP identifier -->
-            {{variant_data.var_form.dbsnp_id.label}}
-            {{variant_data.var_form.dbsnp_id()}}
+            {{variant_data.var_form.variations_ids.label}}
+            {{variant_data.var_form.variations_ids()}}
           </div>
         {% else %} <!--SV variant-->
           <div class="col-2"><!-- Variant type -->
@@ -122,15 +122,15 @@
         {% endif %}
       </div>
       <div class="row d-flex align-items-center mt-3">
-        <div class="col-4"><!-- Clinical significance -->
+        <div class="col-3"><!-- Clinical significance -->
           {{variant_data.var_form.clinsig.label}}
           {{variant_data.var_form.clinsig(class="form-control")}}
         </div>
-        <div class="col-4"> <!-- Clinical significance comment -->
+        <div class="col-3"> <!-- Clinical significance comment -->
           {{variant_data.var_form.clinsig_comment.label}}
           {{variant_data.var_form.clinsig_comment(class="form-control", placeholder="(optional)")}}
         </div>
-        <div class="col-4"> <!-- Clinical significance citation -->
+        <div class="col-3"> <!-- Clinical significance citation -->
           {{variant_data.var_form.clinsig_cit.label}}
           {{variant_data.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
         </div>
@@ -145,8 +145,8 @@
           {{variant_data.var_form.omim_terms}}
         </div>
         <div class="col-4"><!-- Additional comments for condition -->
-          {{variant_data.var_form.variant_condition_comment.label}}
-          {{variant_data.var_form.variant_condition_comment(class="form-control")}}
+          {{variant_data.var_form.condition_comment.label}}
+          {{variant_data.var_form.condition_comment(class="form-control")}}
         </div>
       </div>
       <!-- End of Variant data form -->

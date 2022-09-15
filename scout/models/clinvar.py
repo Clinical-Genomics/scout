@@ -29,12 +29,16 @@ clinvar_variant = {
     "chromosome": str,
     "condition_id_type": str,  # enum: "HPO", "OMIM"
     "condition_id_value": str,  # example: HP:0001298;HP:0001250
+    "condition_comment": str,
     "start": int,
     "stop": int,
     "ref": str,
     "alt": str,
     "variations_ids": str,  # example: "rs116916706"
     "clinsig": str,  # example: "Pathogenic"
+    "clinsig_comment": str,
+    "clinsig_cit": str,
+    "inheritance_mode": str,
     "last_evaluated": date,
     "assertion_method": str,  # default: "ACMG Guidelines, 2015"
     "assertion_method_cit": str,  # default: "PMID:25741868"
