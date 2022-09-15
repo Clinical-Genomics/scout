@@ -18,15 +18,7 @@ from flask_login import current_user
 from pymongo import DESCENDING
 from werkzeug.datastructures import Headers
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CALLERS,
-    CASEDATA_HEADER,
-    CLINVAR_HEADER,
-    VERBS_ICONS_MAP,
-    VERBS_MAP,
-)
+from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS, VERBS_ICONS_MAP, VERBS_MAP
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
 from scout.server.extensions import beacon, loqusdb, store
 from scout.server.utils import institute_and_case, jsonconverter, templated, user_institutes

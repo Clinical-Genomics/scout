@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from bson.objectid import ObjectId
 
@@ -16,7 +16,7 @@ clinvar_submission = {
 }
 
 """Model of one document that gets saved in the `clinvar` collection. Relative to a Variant object"""
-clinvar = {
+clinvar_variant = {
     "_id": str,  # caseID_variantID. Example: "internal_id_4c7d5c70d955875504db72ef8e1abe77"
     "csv_type": str,  # "variant"
     "case_id": str,
@@ -43,7 +43,7 @@ clinvar = {
 }
 
 """Model of one document that gets saved in the `clinvar` collection. Relative to a CaseData object"""
-clinvar = {
+clinvar_casedata = {
     "_id": str,  # caseID_VariantID_individualID. Example: "internal_id_4c7d5c70d955875504db72ef8e1abe77_NA12882"
     "csv_type": str,  # "casedata"
     "case_id": str,

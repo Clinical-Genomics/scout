@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime
 
+from scout.constants.clinvar import VARIANT_FIELDS
+from scout.models.clinvar import clinvar_casedata, clinvar_variant
 from scout.server.extensions import store
 
 from .form import CaseDataForm, SNVariantForm, SVariantForm
@@ -151,10 +153,30 @@ def set_clinvar_form(var_id, data):
     data["variant_data"] = variant_data
 
 
-def parse_clinvar_add_form(form):
+def parse_variant_form_fields(form):
     """Parses input values provided by the user in the ClinVar add_one form
+       and creates a Variant ClinVar dictionary to be saved in database (clinvar collection)
 
     Args:
         form(werkzeug.datastructures.ImmutableMultiDic): form submitted by a user
+
+    Returns:
+        clinvar_var(dict): scout.models.clinvar.clinvar_variant
     """
-    LOG.warning(type(form))
+    clinvar_var = {}
+    for key, values in VARIANT_FIELDS.items():
+        LOG.warning(key)
+        LOG.error(values)
+
+
+def parse_casedata_form_fields(form):
+    """Parses input values provided by the user in the ClinVar add_one form
+      and creates a Variant ClinVar dictionary to be saved in database (clinvar collection)
+
+    Args:
+        form(werkzeug.datastructures.ImmutableMultiDic): form submitted by a user
+
+    Returns:
+        clinvar_cd(dict): scout.models.clinvar.clinvar_casedata
+    """
+    clinvar_cd = {}
