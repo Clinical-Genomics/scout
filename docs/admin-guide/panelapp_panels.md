@@ -4,7 +4,7 @@ Gene panels can be imported from [PanelApp](https://panelapp.genomicsengland.co.
 
 The command to **import/update all gene panels from PanelApp** is the following:
 
-`scout load panel --panel-app  --institute <inst-id> (--panel-app-confidence green|amber|red)`
+`scout load panel --panel-app  --institute <inst-id> [--panel-app-confidence <green|amber|red>]`
 
 The `--panel-app-confidence` option specifies the threshold of confidence for genes that should be added to the panel.
 
