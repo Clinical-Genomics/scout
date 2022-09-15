@@ -67,3 +67,9 @@ UPDATE_GENES_RESOURCES = {
         "ensembl_transcripts_38_reduced.txt",
     ],
 }
+
+PANELAPP_CONFIDENCE_EXCLUDE = {
+    "green": ["ModerateEvidence", "LowEvidence"],
+    "amber": ["LowEvidence"],
+    "red": [],
+}
