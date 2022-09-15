@@ -40,14 +40,14 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
     var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.ref.data = variant_obj.get("reference")
     var_form.alt.data = variant_obj.get("alternative")
-    var_form.gene_symbols.data = ",".join(variant_obj.get("hgnc_symbols", []))
+    var_form.gene_symbol.data = ",".join(variant_obj.get("hgnc_symbols", []))
     var_form.last_evaluated.data = datetime.now()
     var_form.hpo_terms.choices = [
-        (" - ".join([hpo.get("phenotype_id"), hpo.get("feature")]), hpo.get("phenotype_id"))
+        (hpo.get("phenotype_id"), " - ".join([hpo.get("phenotype_id"), hpo.get("feature")]))
         for hpo in case_obj.get("phenotype_terms", [])
     ]
     var_form.omim_terms.choices = [
-        (" - ".join([omim.get("disease_id"), omim.get("description")]), omim.get("disease_id"))
+        (omim.get("disease_id"), " - ".join([omim.get("disease_id"), omim.get("description")]))
         for omim in case_obj.get("diagnosis_phenotypes", [])
     ]
 
@@ -153,6 +153,34 @@ def set_clinvar_form(var_id, data):
     data["variant_data"] = variant_data
 
 
+def _parse_tx_hgvs(clinvar_var, form):
+    """Set ref_seq and hgvs symbols for a clinvar variant
+
+    Args:
+        clinvar_var(dict): scout.models.clinvar.clinvar_variant
+        form(werkzeug.datastructures.ImmutableMultiDic)
+    """
+    if not form.get("tx_hgvs"):
+        return
+    clinvar_var["ref_seq"] = tx_hgvs.split(" | ")[0]
+    clinvar_var["hgvs"] = tx_hgvs.split(" | ")[1]
+
+
+def _set_conditions(clinvar_var, form):
+    """Set condition_id_type and condition_id_value for a clinvar variant
+
+    Args:
+        clinvar_var(dict): scout.models.clinvar.clinvar_variant
+        form(werkzeug.datastructures.ImmutableMultiDic)
+    """
+    if form.getlist("omim_terms"):
+        clinvar_var["condition_id_type"] = "OMIM"
+        clinvar_var["condition_id_value"] = ";".join(form.getlist("omim_terms"))
+    elif form.getlist("hpo_terms"):
+        clinvar_var["condition_id_type"] = "HPO"
+        clinvar_var["condition_id_value"] = ";".join(form.getlist("hpo_terms"))
+
+
 def parse_variant_form_fields(form):
     """Parses input values provided by the user in the ClinVar add_one form
        and creates a Variant ClinVar dictionary to be saved in database (clinvar collection)
@@ -164,17 +192,18 @@ def parse_variant_form_fields(form):
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
     """
     clinvar_var = {"csv_type": "variant"}
+    LOG.warning(form)
     # Set values in clinvar_var
     for key in clinvar_variant:
         if key in form:
             clinvar_var[key] = form[key]
-        elif form.get("dbsnp_id"):
+        clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
+        _parse_tx_hgvs(clinvar_var, form)
+        _set_conditions(clinvar_var, form)
+        if form.get("dbsnp_id"):
             clinvar_var["variations_ids"] = form["dbsnp_id"]
-        else:
-            LOG.error(key)
 
     LOG.warning(clinvar_var)
-
     return clinvar_var
 
 

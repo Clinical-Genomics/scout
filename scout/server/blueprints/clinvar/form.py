@@ -39,13 +39,14 @@ class ClinVarVariantForm(FlaskForm):
     """Contains the key/values to fill in to specify a single general variant in the ClinVar submssion creation page"""
 
     # Variant-specific fields
+    case_id = HiddenField()
     category = HiddenField()
     local_id = HiddenField()
     linking_id = HiddenField()
     chromosome = HiddenField()
     ref = HiddenField()
     alt = HiddenField()
-    gene_symbols = StringField("Gene symbols")
+    gene_symbol = StringField("Gene symbols")
     inheritance_models = SelectField(
         "Inheritance models", choices=[(item, item) for item in CLINVAR_INHERITANCE_MODELS]
     )

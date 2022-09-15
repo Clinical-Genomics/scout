@@ -41,6 +41,7 @@
     <div class="card">
     <!-- Variant data form -->
     <!-- hidden fields -->
+    {{ variant_data.var_form.case_id() }}
     {{ variant_data.var_form.category() }}
     {{ variant_data.var_form.local_id() }}
     {{ variant_data.var_form.linking_id() }}
@@ -57,8 +58,8 @@
       <h5>Variant data</h5>
       <div class="row">
         <div class="col-3"><!-- gene symbols -->
-          <div class="col-4">{{variant_data.var_form.gene_symbols.label}}</div>
-          <div>{{variant_data.var_form.gene_symbols()}}</div>
+          <div class="col-4">{{variant_data.var_form.gene_symbol.label}}</div>
+          <div>{{variant_data.var_form.gene_symbol()}}</div>
         </div>
         <div class="col-2"><!-- Date last eveluation -->
           <div class="col-6">{{variant_data.var_form.last_evaluated.label}}</div>

@@ -24,8 +24,11 @@ clinvar_variant = {
     "local_id": str,  # _id of a scout variant
     "linking_id": str,  # same as local_id
     "gene_symbol": str,  # example: "POT1"
+    "ref_seq": str,  # example: "NM_001042594"
     "hgvs": str,  # example: "c.510G>T"
     "chromosome": str,
+    "condition_id_type": str,  # enum: "HPO", "OMIM"
+    "condition_id_value": str,  # example: HP:0001298;HP:0001250
     "start": int,
     "stop": int,
     "ref": str,
