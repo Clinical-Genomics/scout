@@ -3,6 +3,7 @@ from datetime import datetime
 
 from flask import flash
 
+from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.models.clinvar import clinvar_casedata, clinvar_variant
 from scout.server.extensions import store
 
@@ -295,3 +296,119 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
+
+
+def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
+    """Prepare content (header and lines) of a csv clinvar submission file
+    Args:
+        submission_id(str): the database id of a clinvar submission
+        csv_type(str): 'variant_data' or 'case_data'
+        clinvar_subm_id(str): The ID assigned to this submission by clinVar
+    Returns:
+        (filename, csv_header, csv_lines):
+            filename(str) name of file to be downloaded
+            csv_header(list) string list content of file header
+            csv_lines(list) string list content of file lines
+    """
+    if clinvar_subm_id == "None":
+        flash(
+            "In order to download a submission CSV file you should register a Clinvar submission Name first!",
+            "warning",
+        )
+        return
+
+    submission_objs = store.clinvar_objs(submission_id=submission_id, key_id=csv_type)
+
+    if submission_objs is None or len(submission_objs) == 0:
+        flash(
+            f"There are no submission objects of type '{csv_type}' to include in the csv file!",
+            "warning",
+        )
+        return
+
+    # Download file
+    csv_header_obj = _clinvar_submission_header(submission_objs, csv_type)
+    csv_lines = _clinvar_submission_lines(submission_objs, csv_header_obj)
+    csv_header = list(csv_header_obj.values())
+    csv_header = [
+        '"' + str(x) + '"' for x in csv_header
+    ]  # quote columns in header for csv rendering
+
+    today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    if csv_type == "variant_data":
+        filename = f"{clinvar_subm_id}_{today}.Variant.csv"
+    else:
+        filename = f"{clinvar_subm_id}_{today}.CaseData.csv"
+
+    return (filename, csv_header, csv_lines)
+
+
+def _clinvar_submission_lines(submission_objs, submission_header):
+    """Create the lines to include in a Clinvar submission csv file from a list of submission objects and a custom document header
+    Args:
+        submission_objs(list): a list of objects (variants or casedata) to include in a csv file
+        submission_header(dict) : as in constants CLINVAR_HEADER and CASEDATA_HEADER, but with required fields only
+    Returns:
+        submission_lines(list) a list of strings, each string represents a line of the clinvar csv file to be doenloaded
+    """
+    submission_lines = []
+    for (
+        submission_obj
+    ) in submission_objs:  # Loop over the submission objects. Each of these is a line
+        csv_line = []
+        for (
+            header_key,
+            header_value,
+        ) in submission_header.items():  # header_keys are the same keys as in submission_objs
+
+            if (
+                header_key in submission_obj
+            ):  # The field is filled in for this variant/casedata object
+                if (
+                    header_key in CLINVAR_SILENCE_IF_EXISTS.keys()
+                    and CLINVAR_SILENCE_IF_EXISTS[header_key] in submission_obj
+                ):  # ignore certain fields if other prioritised fields are also filled in
+                    # e.g. columns [chrom, start, stop] should not be used if the [hgvs] column is filled in
+                    csv_line.append('""')
+                else:
+                    csv_line.append('"' + submission_obj.get(header_key) + '"')
+            else:  # Empty field for this this variant/casedata object
+                csv_line.append('""')
+
+        submission_lines.append(",".join(csv_line))
+
+    return submission_lines
+
+
+def _clinvar_submission_header(submission_objs, csv_type):
+    """Determine which fields to include in csv header by checking a list of submission objects
+    Args:
+        submission_objs(list): a list of objects (variants or casedata) to include in a csv file
+        csv_type(str) : 'variant_data' or 'case_data'
+    Returns:
+        custom_header(dict): A dictionary with the fields required in the csv header. Keys and values are specified in CLINVAR_HEADER and CASEDATA_HEADER
+    """
+
+    complete_header = {}  # header containing all available fields
+    custom_header = {}  # header reflecting the real data included in the submission objects
+    if csv_type == "variant_data":
+        complete_header = CLINVAR_HEADER
+    else:
+        complete_header = CASEDATA_HEADER
+
+    for (
+        header_key,
+        header_value,
+    ) in complete_header.items():  # loop over the info fields provided in each submission object
+        for clinvar_obj in submission_objs:  # loop over the submission objects
+            for (
+                key,
+                value,
+            ) in clinvar_obj.items():  # loop over the keys and values of the clinvar objects
+
+                if (
+                    not header_key in custom_header and header_key == key
+                ):  # add to custom header if missing and specified in submission object
+                    custom_header[header_key] = header_value
+
+    return
