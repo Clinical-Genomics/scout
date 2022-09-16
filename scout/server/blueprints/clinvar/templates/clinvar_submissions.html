@@ -118,7 +118,7 @@
           <thead>
             <tr>
               <th width="5%"></th>
-              <th width="15%">ID</th>
+              <th width="15%">Name</th>
               <th></th>
               <th>Type</th>
               <th>Case</th>
@@ -191,7 +191,7 @@
       </div> <!--variant data div end -->
       {% if subm_obj.case_data and subm_obj.case_data | length > 0 %}
         <div id="cdata_{{subm_obj._id}}"> <!--case data div -->
-          <h4>Case data:</h4>
+          <h4>Observation data:</h4>
           <input type="hidden" name="oldSampleName" id="oldSampleName" value="">
           <input type="hidden" name="newSampleName" id="newSampleName" value="">
           <table class="table table-striped">
@@ -202,7 +202,7 @@
                 <th></th>
                 <th>Case ID</th>
                 <th>Clinical features</th>
-                <th>Variant ID</th>
+                <th>Variant</th>
                 <th>Allele origin</th>
                 <th></th>
               </tr>
@@ -211,9 +211,9 @@
               {% for case in subm_obj.case_data %}
                 <tr>
                   <td>{{loop.index}}</td>
-                  <form id="rename_cd_{{subm_obj._id}}" action="#" method="POST">
+                  <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
                   <td>
-                    <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1"><span class="fa fa-floppy-o" aria-hidden="true"></span></button>
+                    <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="fa fa-pencil-square-o" aria-hidden="true"></span></button>
                   </td>
                   </form>
                   <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>

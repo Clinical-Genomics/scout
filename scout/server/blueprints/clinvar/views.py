@@ -49,5 +49,13 @@ def clinvar_submissions(institute_id):
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
     }
-
     return render_template("clinvar_submissions.html", **data)
+
+
+@blueprint.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
+def clinvar_rename_casedata(submission, case, old_name):
+    """Rename one or more casedata individuals belonging to the same clinvar submission, same case"""
+
+    new_name = request.form.get("new_name")
+    controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
+    return redirect(request.referrer + f"#cdata_{submission}")

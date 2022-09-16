@@ -242,6 +242,7 @@ def parse_casedata_form_fields(form):
 
     for ind in inds_included:
         casedata_dict = {"csv_type": "casedata"}
+        casedata_dict["case_id"] = form["case_id"]
         casedata_dict["_id"] = "_".join([form["case_id"], form["local_id"], ind])
         casedata_dict["linking_id"] = form["local_id"]  # associate individual obs to a variant
         casedata_dict["individual_id"] = ind
@@ -254,3 +255,18 @@ def parse_casedata_form_fields(form):
         casedata_list.append(casedata_dict)
 
     return casedata_list
+
+
+def update_clinvar_sample_names(submission_id, case_id, old_name, new_name):
+    """Update casedata sample names
+    Args:
+        submission_id(str) the database id of a clinvar submission
+        case_id(str): case id
+        old_name(str): old name of an individual in case data
+        new_name(str): new name of an individual in case data
+    """
+    n_renamed = store.rename_casedata_samples(submission_id, case_id, old_name, new_name)
+    flash(
+        f"Renamed {n_renamed} case data individuals from '{old_name}' to '{new_name}'",
+        "info",
+    )
