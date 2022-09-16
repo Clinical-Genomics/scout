@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, render_template, request
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
@@ -33,4 +33,4 @@ def add_variant(institute_id, case_name):
     result = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
     if result:
         flash("An open ClinVar submission was updated correctly with submitted data", "success")
-    return
+    return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
