@@ -43,7 +43,6 @@ class ClinVarVariantForm(FlaskForm):
     category = HiddenField()
     local_id = HiddenField()
     linking_id = HiddenField()
-    chromosome = HiddenField()
     ref = HiddenField()
     alt = HiddenField()
     gene_symbol = StringField("Gene symbols")
@@ -66,6 +65,7 @@ class ClinVarVariantForm(FlaskForm):
 class SNVariantForm(ClinVarVariantForm):
     """Inherits fields from the general ClinVar variant form and adds fields specific to SNVs"""
 
+    chromosome = HiddenField()
     start = HiddenField()
     stop = HiddenField()
     tx_hgvs = RadioField("Transcipts and HGVS", choices=[], validators=[validators.Optional()])
@@ -82,8 +82,10 @@ class SVariantForm(ClinVarVariantForm):
     sv_type = SelectField("Type of structural variant", choices=[(item, item) for item in SV_TYPES])
     copy_number = IntegerField("Copy number")
     ref_copy_number = IntegerField("Reference copy number")
-    bp_1 = IntegerField("Breakpoint 1")
-    bp_2 = IntegerField("Breakpoint 2")
+    chromosome = StringField("Chromosome")
+    end_chromosome = StringField("End chromosome")
+    breakpoint1 = IntegerField("Breakpoint 1")
+    breakpoint2 = IntegerField("Breakpoint 2")
     outer_start = IntegerField("Outer start")
     inner_start = IntegerField("Inner start")
     inner_stop = IntegerField("Inner stop")

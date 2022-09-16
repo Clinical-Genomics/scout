@@ -67,6 +67,7 @@ def _get_snv_var_form(variant_obj, case_obj):
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
     var_form.tx_hgvs.choices = _get_var_tx_hgvs(variant_obj)
     var_form.variations_ids.data = variant_obj.get("dbsnp_id", "").split(";")[0]
+    var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.start.data = variant_obj.get("position")
     var_form.stop.data = variant_obj.get("position")
     return var_form
@@ -85,6 +86,11 @@ def _get_sv_var_form(variant_obj, case_obj):
     var_form = SVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
     var_form.ref_copy_number.data = 2
+    var_form.chromosome.data = variant_obj.get("chromosome")
+    var_form.end_chromosome.data = variant_obj.get("end_chrom")
+    var_form.breakpoint1.data = variant_obj.get("position")
+    var_form.breakpoint2.data = variant_obj.get("end")
+
     return var_form
 
 

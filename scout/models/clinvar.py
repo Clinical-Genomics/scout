@@ -27,6 +27,7 @@ clinvar_variant = {
     "ref_seq": str,  # example: "NM_001042594"
     "hgvs": str,  # example: "c.510G>T"
     "chromosome": str,
+    "end_chromosome": str,  # for SVs only
     "condition_id_type": str,  # enum: "HPO", "OMIM"
     "condition_id_value": str,  # example: HP:0001298;HP:0001250
     "condition_comment": str,

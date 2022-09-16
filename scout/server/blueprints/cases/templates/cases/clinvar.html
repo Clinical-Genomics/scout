@@ -30,7 +30,11 @@
         </ul>
       {% endif %}
       {% if case.clinvar_variants %}
-        <a href="#" class="mb-3 mt-3 btn btn-secondary btn-sm text-white" target="_blank" rel="noopener noreferrer">Modify clinvar submission</a>
+        <div class="d-flex justify-content-center">
+          <div>
+            <a href="{{url_for('clinvar.clinvar_submissions', institute_id=institute._id)}}" class="mb-3 mt-3 btn btn-secondary btn-sm text-white" target="_blank" rel="noopener noreferrer">ClinVar submissions</a>
+          </div>
+        </div>
       {% endif %}
     </div> <!--end of <div class="panel-body">-->
   </div>

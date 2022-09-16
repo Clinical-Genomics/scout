@@ -95,28 +95,43 @@
           </div>
           <div class="col-2"><!-- Reference copy number -->
             {{variant_data.var_form.ref_copy_number.label}}
-            {{variant_data.var_form.ref_copy_number()}}
-          </div>
-          <div class="col-2"><!-- Copy number -->
+            {{variant_data.var_form.ref_copy_number(size=5)}}
+            <br><br>
+            <!-- Copy number -->
             {{variant_data.var_form.copy_number.label}}
-            {{variant_data.var_form.copy_number()}}
+            {{variant_data.var_form.copy_number(size=5)}}
           </div>
-          <div class="col-6">
+          <div class="col-3"> <!--start and end chroms-->
+            {{variant_data.var_form.chromosome.label()}}
+            {{variant_data.var_form.chromosome(size=5)}}
+            <br><br>
+            {{variant_data.var_form.end_chromosome.label()}}
+            {{variant_data.var_form.end_chromosome(size=5)}}
+          </div>
+          <div class="col-2"><!-- breakpoints -->
+            {{variant_data.var_form.breakpoint1.label()}}
+            {{variant_data.var_form.breakpoint1()}}
+            <br><br>
+            {{variant_data.var_form.breakpoint2.label()}}
+            {{variant_data.var_form.breakpoint2()}}
+          </div>
+
+          <div class="col-3">
             <div class="d-flex justify-content-start"><!-- Outer start -->
-              <div class="col-3">{{variant_data.var_form.outer_start.label}}</div>
-              <div class="col-9">{{variant_data.var_form.outer_start(class="form-control")}}</div>
+              <div class="col-4">{{variant_data.var_form.outer_start.label}}</div>
+              <div class="col-8">{{variant_data.var_form.outer_start(size=20)}}</div>
             </div>
             <div class="d-flex justify-content-start"><!-- Inner start -->
-              <div class="col-3">{{variant_data.var_form.inner_start.label}}</div>
-              <div class="col-9">{{variant_data.var_form.inner_start(class="form-control")}}</div>
+              <div class="col-4">{{variant_data.var_form.inner_start.label}}</div>
+              <div class="col-8">{{variant_data.var_form.inner_start(size=20)}}</div>
             </div>
             <div class="d-flex justify-content-start"><!-- Inner stop -->
-              <div class="col-3">{{variant_data.var_form.inner_stop.label}}</div>
-              <div class="col-9">{{variant_data.var_form.inner_stop(class="form-control")}}</div>
+              <div class="col-4">{{variant_data.var_form.inner_stop.label}}</div>
+              <div class="col-8">{{variant_data.var_form.inner_stop(size=20)}}</div>
             </div>
             <div class="d-flex justify-content-start"><!-- Outer stop -->
-              <div class="col-3">{{variant_data.var_form.outer_stop.label}}</div>
-              <div class="col-9">{{variant_data.var_form.outer_stop(class="form-control")}}</div>
+              <div class="col-4">{{variant_data.var_form.outer_stop.label}}</div>
+              <div class="col-8">{{variant_data.var_form.outer_stop(size=20)}}</div>
             </div>
           </div>
         {% endif %}
