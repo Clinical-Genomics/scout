@@ -28,13 +28,13 @@
         <div class="modal-body">
           <h5>Requirements</h5>
           <p>
-            Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">ClinVar submission portal.</a><br>
+            Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank" rel="noopener">ClinVar submission portal.</a><br>
                         If your organization is not already present in ClinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
                         The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
           </p><br>
           <h5>Obtain a submission ID</h5>
           <p>
-            If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
+            If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank" rel="noopener">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
           </p><br>
           <h5>Fill in panel 1 and 2</h5>
           <p>
@@ -137,20 +137,20 @@
                   {% if subm_variant.category == 'sv' %}
                     {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.breakpoint1, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
                     <td width="15%">
-                      <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                      <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                     <td><div class="badge bg-warning">SV</div></td>
                   {% else %}
                   {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
                     <td width="15%">
-                      <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                      <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                     <td><div class="badge bg-success">SNV</div></td>
                   {% endif %}
                 </td>
-                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
                 <td>{{subm_variant.ref_seq or '-'}}</td>
                 <td>{{subm_variant.gene_symbol or '-'}}</td>
                 <td>{{subm_variant.hgvs or '-'}}</td>
@@ -167,9 +167,9 @@
                           <li class="list-group-item">
                             Variant
                             {% if subm_variant.category == 'sv' %}
-                              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank">{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</a>
+                              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener">{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</a>
                             {% else %}
-                              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank">{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</a>
+                              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener">{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</a>
                             {% endif %}
                           </li>
                         {% for key, value in variant_header_fields.items() %}
@@ -217,7 +217,7 @@
                   </td>
                   </form>
                   <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                  <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{subm_obj.cases[case.case_id]}}</a></td>
+                  <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[case.case_id]}}</a></td>
                   <td>{{case.clin_features}}</td>
                   <td>{{var_key_name[case.linking_id]}}</td>
                   <td>{{case.allele_origin}}</td>
