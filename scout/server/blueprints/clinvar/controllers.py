@@ -3,7 +3,6 @@ from datetime import datetime
 
 from flask import flash
 
-from scout.constants.clinvar import VARIANT_FIELDS
 from scout.models.clinvar import clinvar_casedata, clinvar_variant
 from scout.server.extensions import store
 
