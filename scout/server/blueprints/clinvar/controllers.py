@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime
 
+from flask import flash
+
 from scout.constants.clinvar import VARIANT_FIELDS
 from scout.models.clinvar import clinvar_casedata, clinvar_variant
 from scout.server.extensions import store
@@ -126,6 +128,7 @@ def _populate_case_data_form(variant_obj, case_obj):
         affected = ind.get("phenotype") == 2
         ind_form = CaseDataForm()
         ind_form.affected_status.data = "yes" if affected else "no"
+        ind_form.include_ind.render_kw = {"value": ind.get("display_name")}
         ind_form.include_ind.data = affected
         ind_form.individual_id.data = ind.get("display_name")
         ind_form.linking_id.data = variant_obj["_id"]
@@ -195,12 +198,10 @@ def parse_variant_form_fields(form):
     """
     clinvar_var = {"csv_type": "variant"}
 
-    # Set values in clinvar_var
+    # Set key/values in clinvar_var dictionary
     for key in clinvar_variant:
         if key in form:
             clinvar_var[key] = form[key]
-        else:
-            LOG.error(f"{key}")
         clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
         _parse_tx_hgvs(clinvar_var, form)
         _set_conditions(clinvar_var, form)
@@ -218,6 +219,33 @@ def parse_casedata_form_fields(form):
         form(werkzeug.datastructures.ImmutableMultiDic): form submitted by a user
 
     Returns:
-        clinvar_cd(dict): scout.models.clinvar.clinvar_casedata
+        casedata_list(list of dicts): [scout.models.clinvar.clinvar_casedata, ..]
     """
-    clinvar_cd = {"csv_type": "casedata"}
+    casedata_list = []
+
+    # Get the list of individuals to be included in CaseData
+    # Each individual will become a document in clinvar collection and a line in the CaseData CVS file
+    inds_included = form.getlist("include_ind")
+
+    if not inds_included:
+        return casedata_list
+
+    ind_ids = form.getlist("individual_id")
+    ind_affected = form.getlist("affected_status")
+    ind_allele_origin = form.getlist("allele_of_origin")
+    coll_methods = form.getlist("collection_method")
+
+    for ind in inds_included:
+        casedata_dict = {"csv_type": "casedata"}
+        casedata_dict["_id"] = "_".join([form["case_id"], form["local_id"], ind])
+        casedata_dict["linking_id"] = form["local_id"]  # associate individual obs to a variant
+        casedata_dict["individual_id"] = ind
+
+        indx = ind_ids.index(ind)  # collect items at this index from the form lists
+        casedata_dict["collection_method"] = coll_methods[indx]
+        casedata_dict["allele_origin"] = ind_allele_origin[indx]
+        casedata_dict["is_affected"] = ind_affected[indx]
+
+        casedata_list.append(casedata_dict)
+
+    return casedata_list

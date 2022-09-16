@@ -54,7 +54,6 @@ clinvar_casedata = {
     "_id": str,  # caseID_VariantID_individualID. Example: "internal_id_4c7d5c70d955875504db72ef8e1abe77_NA12882"
     "csv_type": str,  # "casedata"
     "case_id": str,
-    "category": str,  # "snv" or "sv"
     "linking_id": str,  # _id of a variant
     "individual_id": str,  # example: "NA12882"
     "collection_method": str,  # default: "clinical testing"

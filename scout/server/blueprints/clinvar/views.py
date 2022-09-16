@@ -25,7 +25,8 @@ def clinvar_add_variant(institute_id, case_name):
 def add_variant(institute_id, case_name):
     """Adds one variant to an open ClinVar submission"""
 
-    variant_data = controllers.parse_variant_form_fields(request.form)
-    casedata_data = controllers.parse_casedata_form_fields(request.form)
-
+    variant_data = controllers.parse_variant_form_fields(request.form)  # dictionary
+    casedata_list = controllers.parse_casedata_form_fields(request.form)  # a list of dictionaries
+    LOG.warning(variant_data)
+    LOG.error(casedata_list)
     return request.form
