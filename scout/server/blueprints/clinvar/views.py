@@ -31,4 +31,6 @@ def add_variant(institute_id, case_name):
     subm = store.get_open_clinvar_submission(institute_id)
     # save submission objects in submission:
     result = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
-    return request.form
+    if result:
+        flash("An open ClinVar submission was updated correctly with submitted data", "success")
+    return
