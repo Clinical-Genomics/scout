@@ -1,5 +1,6 @@
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
+NOT_PROVIDED = "not provided"
 
 # Header used to create the Variant .CSV file for the manual ClinVar submission
 CLINVAR_HEADER = {
@@ -90,7 +91,7 @@ CLNSIG_TERMS = {
     "confers sensitivity",
     "protective",
     "other",
-    "not provided",
+    NOT_PROVIDED,
 }
 
 REVSTAT_TERMS = {
@@ -140,7 +141,7 @@ SV_TYPES = [
     "Complex",
 ]
 
-AFFECTED_STATUS = ["yes", "no", "unknown", "not provided", "not applicable"]
+AFFECTED_STATUS = ["yes", "no", "unknown", NOT_PROVIDED, "not applicable"]
 
 ALLELE_OF_ORIGIN = [
     "germline",
@@ -165,5 +166,5 @@ COLLECTION_METHOD = [
     "in vitro",
     "in vivo",
     "research",
-    "not provided",
+    NOT_PROVIDED,
 ]
