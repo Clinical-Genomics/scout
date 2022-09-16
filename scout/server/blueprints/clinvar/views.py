@@ -59,3 +59,15 @@ def clinvar_rename_casedata(submission, case, old_name):
     new_name = request.form.get("new_name")
     controllers.update_clinvar_sample_names(submission, case, old_name, new_name)
     return redirect(request.referrer + f"#cdata_{submission}")
+
+
+@blueprint.route("/<submission>/<object_type>", methods=["POST"])
+def clinvar_delete_object(submission, object_type):
+    """Delete a single object (variant_data or case_data) associated with a clinvar submission"""
+
+    store.delete_clinvar_object(
+        object_id=request.form.get("delete_object"),
+        object_type=object_type,
+        submission_id=submission,
+    )
+    return redirect(request.referrer)

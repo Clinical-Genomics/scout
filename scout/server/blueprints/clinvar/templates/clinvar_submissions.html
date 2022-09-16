@@ -84,7 +84,7 @@
           <ol class="breadcrumb align-items-center">
             <li class="breadcrumb-item">
               <!-- Download the Variant data CSV file -->
-              <a href="# class="btn btn-primary btn-xs text-white">
+              <a href="#" class="btn btn-primary btn-xs text-white">
                 Download variants file
               </a>
               <a href="#" class="btn btn-primary btn-xs text-white">
@@ -155,7 +155,7 @@
                 <td>{{subm_variant.gene_symbol or '-'}}</td>
                 <td>{{subm_variant.hgvs or '-'}}</td>
                 <td>{{subm_variant.clinsig}}</td>
-                <form id="delete_variant_{{subm_variant._id}}" action="#" method="POST">
+                <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
                   <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
                 </form>
               </tr>
@@ -221,7 +221,7 @@
                   <td>{{case.clin_features}}</td>
                   <td>{{var_key_name[case.linking_id]}}</td>
                   <td>{{case.allele_origin}}</td>
-                  <form id="delete_casedata_{{case._id}}" action="#" method="POST">
+                  <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
                     <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
                   </form>
                 </tr>
