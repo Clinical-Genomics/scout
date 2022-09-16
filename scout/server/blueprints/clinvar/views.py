@@ -23,10 +23,12 @@ def clinvar_add_variant(institute_id, case_name):
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar_add_var", methods=["POST"])
 def add_variant(institute_id, case_name):
-    """Adds one variant to an open ClinVar submission"""
+    """Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission"""
 
     variant_data = controllers.parse_variant_form_fields(request.form)  # dictionary
     casedata_list = controllers.parse_casedata_form_fields(request.form)  # a list of dictionaries
-    LOG.warning(variant_data)
-    LOG.error(casedata_list)
+    # retrieve or create an open ClinVar submission:
+    subm = store.get_open_clinvar_submission(institute_id)
+    # save submission objects in submission:
+    result = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
     return request.form
