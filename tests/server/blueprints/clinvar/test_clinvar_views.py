@@ -159,7 +159,7 @@ def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
             ),
             data=clinvar_form,
         )
-
+        subm_obj = store.clinvar_submission_collection.find_one()
         ######### Test setting an official submission ID
         # GIVEN an ID provided by ClinVar
         data = dict(update_submission="register_id", clinvar_id="SUB000")
