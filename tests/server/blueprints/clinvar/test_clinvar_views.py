@@ -171,5 +171,74 @@ def test_delete_clinvar_object(app, institute_obj, case_obj, clinvar_form):
             data=data,
         )
 
-        # Document should be removed from database, clinvar collection
+        # THEN the document should be removed from database, clinvar collection
         assert store.clinvar_submission_collection.find_one({"csv_type": "casedata"}) is None
+
+
+def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
+    """Test the endpoint resposible for updating a ClinVar submission"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has at least one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+        ######### Test changing the submission status
+        # GIVEN that the submission has state "open"
+        subm_obj = store.clinvar_submission_collection.find_one()
+        assert subm_obj["status"] == "open"
+
+        # WHEN providing update_status = "closed"
+        data = dict(update_submission="closed")
+        client.post(
+            url_for(
+                "clinvar.clinvar_update_submission",
+                institute_id=institute_obj["internal_id"],
+                submission=subm_obj["_id"],
+            ),
+            data=data,
+        )
+        # THEN the submission status should change to closed
+        subm_obj = store.clinvar_submission_collection.find_one()
+        assert subm_obj["status"] == "closed"
+
+        ######### Test changing the ClinVar submission ID
+        # GIVEN that the submission has no official submission ID
+        assert subm_obj.get("clinvar_subm_id") is None
+
+        # WHEN the submission ID is modified using the form
+        data = dict(update_submission="register_id", clinvar_id="SUB000")
+        client.post(
+            url_for(
+                "clinvar.clinvar_update_submission",
+                institute_id=institute_obj["internal_id"],
+                submission=subm_obj["_id"],
+            ),
+            data=data,
+        )
+        # THEN the submission ID should be saved
+        subm_obj = store.clinvar_submission_collection.find_one()
+        assert subm_obj.get("clinvar_subm_id") == "SUB000"
+
+        ######### Test deleting the submission
+        # WHEN a submission is closed using the form
+        data = dict(update_submission="delete")
+        client.post(
+            url_for(
+                "clinvar.clinvar_update_submission",
+                institute_id=institute_obj["internal_id"],
+                submission=subm_obj["_id"],
+            ),
+            data=data,
+        )
+        # THEN the submission should be removed from the databasex
+        assert store.clinvar_submission_collection.find_one() is None
