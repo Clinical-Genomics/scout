@@ -77,6 +77,7 @@ from .variant_tags import (
     VARIANT_REPORT_VARIANT_FEATURES,
 )
 from .variants_export import (
+    CANCER_EXPORT_HEADER,
     EXPORT_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
