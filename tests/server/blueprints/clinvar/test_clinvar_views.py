@@ -229,19 +229,6 @@ def test_clinvar_download_csv(app, institute_obj, case_obj, clinvar_form):
         )
         subm_obj = store.clinvar_submission_collection.find_one()
 
-        # GIVEN that the submission has an official submission ID
-        data = dict(update_submission="register_id", clinvar_id="SUB000")
-        client.post(
-            url_for(
-                UPDATE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                submission=subm_obj["_id"],
-            ),
-            data=data,
-        )
-        subm_obj = store.clinvar_submission_collection.find_one()
-        assert subm_obj.get("clinvar_subm_id") == "SUB000"
-
         # It should be possible to download the Variant .CSV file
         resp = client.get(
             url_for(
