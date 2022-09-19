@@ -24,7 +24,7 @@ def clinvar_add_variant(institute_id, case_name):
 
 
 @blueprint.route("/<institute_id>/<case_name>/clinvar_add_var", methods=["POST"])
-def add_variant(institute_id, case_name):
+def clinvar_save(institute_id, case_name):
     """Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission"""
 
     variant_data = controllers.parse_variant_form_fields(request.form)  # dictionary

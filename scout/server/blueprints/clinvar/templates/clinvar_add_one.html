@@ -37,7 +37,7 @@
   {% endif %}
   <h5><span class="badge {% if variant_data.var_obj.category == 'sv'%} bg-warning {% else %} bg-secondary {% endif %}">{{variant_data.var_obj.category}}</span>&nbsp;&nbsp;{{variant_data.var_obj.simple_id|truncate(50, True) }}</h5>
 
-  <form method="POST" action="{{ url_for('clinvar.add_variant', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
+  <form method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
     <div class="card">
     <!-- Variant data form -->
     <!-- hidden fields -->
