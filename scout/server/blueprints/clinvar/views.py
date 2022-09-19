@@ -1,6 +1,7 @@
 import logging
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
+from werkzeug.datastructures import Headers
 
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.extensions import store

@@ -334,7 +334,7 @@ def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
         '"' + str(x) + '"' for x in csv_header
     ]  # quote columns in header for csv rendering
 
-    today = str(datetime.datetime.now().strftime("%Y-%m-%d"))
+    today = str(datetime.now().strftime("%Y-%m-%d"))
     if csv_type == "variant_data":
         filename = f"{clinvar_subm_id}_{today}.Variant.csv"
     else:
@@ -352,29 +352,17 @@ def _clinvar_submission_lines(submission_objs, submission_header):
         submission_lines(list) a list of strings, each string represents a line of the clinvar csv file to be doenloaded
     """
     submission_lines = []
-    for (
-        submission_obj
-    ) in submission_objs:  # Loop over the submission objects. Each of these is a line
+
+    for subm_obj in submission_objs:  # Loop over the submission objects. Each of these is a line
         csv_line = []
         for (
             header_key,
             header_value,
         ) in submission_header.items():  # header_keys are the same keys as in submission_objs
-
-            if (
-                header_key in submission_obj
-            ):  # The field is filled in for this variant/casedata object
-                if (
-                    header_key in CLINVAR_SILENCE_IF_EXISTS.keys()
-                    and CLINVAR_SILENCE_IF_EXISTS[header_key] in submission_obj
-                ):  # ignore certain fields if other prioritised fields are also filled in
-                    # e.g. columns [chrom, start, stop] should not be used if the [hgvs] column is filled in
-                    csv_line.append('""')
-                else:
-                    csv_line.append('"' + submission_obj.get(header_key) + '"')
-            else:  # Empty field for this this variant/casedata object
+            if header_key not in subm_obj:
                 csv_line.append('""')
-
+            else:
+                csv_line.append(f'"{subm_obj.get(header_key)}"')
         submission_lines.append(",".join(csv_line))
 
     return submission_lines
@@ -390,25 +378,15 @@ def _clinvar_submission_header(submission_objs, csv_type):
     """
 
     complete_header = {}  # header containing all available fields
-    custom_header = {}  # header reflecting the real data included in the submission objects
+    custom_header = {}  # header keys reflecting the real data included in the submission objects
     if csv_type == "variant_data":
         complete_header = CLINVAR_HEADER
     else:
         complete_header = CASEDATA_HEADER
 
-    for (
-        header_key,
-        header_value,
-    ) in complete_header.items():  # loop over the info fields provided in each submission object
-        for clinvar_obj in submission_objs:  # loop over the submission objects
-            for (
-                key,
-                value,
-            ) in clinvar_obj.items():  # loop over the keys and values of the clinvar objects
-
-                if (
-                    not header_key in custom_header and header_key == key
-                ):  # add to custom header if missing and specified in submission object
-                    custom_header[header_key] = header_value
-
-    return
+    for key, value in complete_header.items():
+        for clinvar_obj in submission_objs:
+            if key not in clinvar_obj or key in custom_header:
+                continue
+            custom_header[key] = value
+    return custom_header
