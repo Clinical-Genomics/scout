@@ -92,6 +92,7 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
             yield line + "\n"
 
     clinvar_file_data = controllers.clinvar_submission_file(submission, csv_type, clinvar_id)
+    LOG.error(clinvar_file_data)
 
     if clinvar_file_data is None:
         return redirect(request.referrer)

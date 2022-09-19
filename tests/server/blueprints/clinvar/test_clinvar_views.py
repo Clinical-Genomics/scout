@@ -3,6 +3,7 @@ from flask import url_for
 from scout.server.extensions import store
 
 SAVE_ENDPOINT = "clinvar.clinvar_save"
+UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
 
 
 def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):
@@ -30,40 +31,6 @@ def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
-def test_clinvar_save(app, institute_obj, case_obj, clinvar_form):
-    """Test the second step of saving a new variant to a ClinVar submission object:
-    saving to database the fields submitted in the clinvar_add_variant form by the user
-    """
-    # GIVEN a database with no ClinVar submissions
-    assert store.clinvar_submission_collection.find_one() is None
-    assert store.clinvar_collection.find_one() is None
-    # GIVEN a form submitted by the user
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # WHEN data is submitted to the clinvar_save endpoint
-        resp = client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-        # THEN the form should be submitted and the page should redirect
-        assert resp.status_code == 302
-
-        # AND a general submission should be saved in the database
-        assert store.clinvar_submission_collection.find_one()
-
-        # AND 2 submission objects (Variant, Casedata) should be saved in
-        subms = list(store.clinvar_collection.find())
-        assert len(subms) == 2
-
-
 def test_clinvar_submissions(app, institute_obj, case_obj, clinvar_form):
     """Test the page that shows all ClinVar submissions for an institute"""
 
@@ -72,7 +39,7 @@ def test_clinvar_submissions(app, institute_obj, case_obj, clinvar_form):
         # WITH a logged user
         client.get(url_for("auto_login"))
 
-        # GIVEN that institute has at least one ClinVar submission
+        # GIVEN that institute has one ClinVar submission
         client.post(
             url_for(
                 SAVE_ENDPOINT,
@@ -101,7 +68,7 @@ def test_clinvar_rename_casedata(app, institute_obj, case_obj, clinvar_form):
         # WITH a logged user
         client.get(url_for("auto_login"))
 
-        # GIVEN that institute has at least one ClinVar submission
+        # GIVEN that institute has one ClinVar submission
         client.post(
             url_for(
                 SAVE_ENDPOINT,
@@ -146,7 +113,7 @@ def test_delete_clinvar_object(app, institute_obj, case_obj, clinvar_form):
         # WITH a logged user
         client.get(url_for("auto_login"))
 
-        # GIVEN that institute has at least one ClinVar submission
+        # GIVEN that institute has one ClinVar submission
         client.post(
             url_for(
                 SAVE_ENDPOINT,
@@ -183,7 +150,7 @@ def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
         # WITH a logged user
         client.get(url_for("auto_login"))
 
-        # GIVEN that institute has at least one ClinVar submission
+        # GIVEN that institute has one ClinVar submission
         client.post(
             url_for(
                 SAVE_ENDPOINT,
@@ -192,6 +159,23 @@ def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
             ),
             data=clinvar_form,
         )
+
+        ######### Test setting an official submission ID
+        # GIVEN an ID provided by ClinVar
+        data = dict(update_submission="register_id", clinvar_id="SUB000")
+        # Invoking the endpoint with the right input data
+        client.post(
+            url_for(
+                UPDATE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                submission=subm_obj["_id"],
+            ),
+            data=data,
+        )
+        subm_obj = store.clinvar_submission_collection.find_one()
+        # Should result in the ID saved in the database
+        assert subm_obj.get("clinvar_subm_id") == "SUB000"
+
         ######### Test changing the submission status
         # GIVEN that the submission has state "open"
         subm_obj = store.clinvar_submission_collection.find_one()
@@ -201,7 +185,7 @@ def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
         data = dict(update_submission="closed")
         client.post(
             url_for(
-                "clinvar.clinvar_update_submission",
+                UPDATE_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
                 submission=subm_obj["_id"],
             ),
@@ -211,30 +195,12 @@ def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
         subm_obj = store.clinvar_submission_collection.find_one()
         assert subm_obj["status"] == "closed"
 
-        ######### Test changing the ClinVar submission ID
-        # GIVEN that the submission has no official submission ID
-        assert subm_obj.get("clinvar_subm_id") is None
-
-        # WHEN the submission ID is modified using the form
-        data = dict(update_submission="register_id", clinvar_id="SUB000")
-        client.post(
-            url_for(
-                "clinvar.clinvar_update_submission",
-                institute_id=institute_obj["internal_id"],
-                submission=subm_obj["_id"],
-            ),
-            data=data,
-        )
-        # THEN the submission ID should be saved
-        subm_obj = store.clinvar_submission_collection.find_one()
-        assert subm_obj.get("clinvar_subm_id") == "SUB000"
-
         ######### Test deleting the submission
         # WHEN a submission is closed using the form
         data = dict(update_submission="delete")
         client.post(
             url_for(
-                "clinvar.clinvar_update_submission",
+                UPDATE_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
                 submission=subm_obj["_id"],
             ),
@@ -242,3 +208,60 @@ def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
         )
         # THEN the submission should be removed from the databasex
         assert store.clinvar_submission_collection.find_one() is None
+
+
+def test_clinvar_download_csv(app, institute_obj, case_obj, clinvar_form):
+    """Test downloading the Variant and CaseData .CSV files from the ClinVar submissions page"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+        subm_obj = store.clinvar_submission_collection.find_one()
+
+        # GIVEN that the submission has an official submission ID
+        data = dict(update_submission="register_id", clinvar_id="SUB000")
+        client.post(
+            url_for(
+                UPDATE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                submission=subm_obj["_id"],
+            ),
+            data=data,
+        )
+        subm_obj = store.clinvar_submission_collection.find_one()
+        assert subm_obj.get("clinvar_subm_id") == "SUB000"
+
+        # It should be possible to download the Variant .CSV file
+        resp = client.get(
+            url_for(
+                "clinvar.clinvar_download_csv",
+                submission=subm_obj["_id"],
+                csv_type="variant_data",
+                clinvar_id="SUB000",
+            )
+        )
+        assert resp.status_code == 200
+        assert resp.mimetype == "text/csv"
+
+        # AND a a CaseData .CSV file
+        resp = client.get(
+            url_for(
+                "clinvar.clinvar_download_csv",
+                submission=subm_obj["_id"],
+                csv_type="case_data",
+                clinvar_id="SUB000",
+            )
+        )
+        assert resp.status_code == 200
+        assert resp.mimetype == "text/csv"
