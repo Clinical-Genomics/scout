@@ -2,6 +2,8 @@ from flask import url_for
 
 from scout.server.extensions import store
 
+SAVE_ENDPOINT = "clinvar.clinvar_save"
+
 
 def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):
     """Test endpoint that displays the user form to add a new ClinVar variant"""
@@ -45,7 +47,7 @@ def test_clinvar_save(app, institute_obj, case_obj, clinvar_form):
         # WHEN data is submitted to the clinvar_save endpoint
         resp = client.post(
             url_for(
-                "clinvar.clinvar_save",
+                SAVE_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
@@ -73,7 +75,7 @@ def test_clinvar_submissions(app, institute_obj, case_obj, clinvar_form):
         # GIVEN that institute has at least one ClinVar submission
         client.post(
             url_for(
-                "clinvar.clinvar_save",
+                SAVE_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
@@ -102,7 +104,7 @@ def test_clinvar_rename_casedata(app, institute_obj, case_obj, clinvar_form):
         # GIVEN that institute has at least one ClinVar submission
         client.post(
             url_for(
-                "clinvar.clinvar_save",
+                SAVE_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
             ),
@@ -134,3 +136,40 @@ def test_clinvar_rename_casedata(app, institute_obj, case_obj, clinvar_form):
         # THEN the individual in the submission should be renamed
         casedata_document = store.clinvar_collection.find_one({"csv_type": "casedata"})
         assert casedata_document["individual_id"] == "new_name"
+
+
+def test_delete_clinvar_object(app, institute_obj, case_obj, clinvar_form):
+    """Testing the endpoint used to remove one ClinVar submission object (CaseData or Variant)"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has at least one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+
+        subm_obj = store.clinvar_submission_collection.find_one()
+        # GIVEN a CaseData document that should be removed from the submission
+        casedata_obj = store.clinvar_collection.find_one({"csv_type": "casedata"})
+
+        data = {"delete_object": casedata_obj["_id"]}
+        # WHEN form is submitted
+        client.post(
+            url_for(
+                "clinvar.clinvar_delete_object",
+                submission=subm_obj["_id"],
+                object_type="casedata",
+            ),
+            data=data,
+        )
+
+        # Document should be removed from database, clinvar collection
+        assert store.clinvar_submission_collection.find_one({"csv_type": "casedata"}) is None
