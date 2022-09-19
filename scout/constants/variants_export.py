@@ -8,9 +8,12 @@ EXPORT_HEADER = [
     "Gene_name",
     "Canonical_transcript/HGVS/protein_change",
     "Primary_transcript/HGVS/protein_change",
+    "Consequence",
     "CADD",
     "GnomAD AF",
 ]
+
+CANCER_EXPORT_HEADER = EXPORT_HEADER + ["VAF TUMOR", "VAF NORMAL", "COSMIC ID"]
 
 MT_EXPORT_HEADER = [
     "Position",
