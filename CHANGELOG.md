@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Order of cells in variants tables
 - More evident links to gene coverage from Variant page
 - Gene panels sorted by display name in the entire Case page
+- Round CADD and GnomAD values in variants export files
 - Rewrote the ClinVar export module to simplify and prepare for ClinVar API submission feature
 ### Fixed
 - HPO filter button on SV variantS page
