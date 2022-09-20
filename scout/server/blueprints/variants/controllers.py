@@ -970,7 +970,7 @@ def variant_export_lines(store, case_obj, variants_query):
 
         for item in ["cadd_score", "gnomad_frequency"]:
             if variant.get(item):
-                variant_line.append(round(variant["cadd_score"], 2))
+                variant_line.append(round(variant[item], 2))
             else:
                 variant_line.append("N/A")
 
