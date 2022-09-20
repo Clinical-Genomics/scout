@@ -11,16 +11,16 @@ def parse_mitodel_file(lines):
         list(sma_info_per_individual(dict))
     """
     individuals = []
-    header = []
 
     for i, line in enumerate(lines):
         line = line.rstrip()
-        if i == 0:
-            # Header line
-            header = line.split("\t")
-        else:
-            ind_mitodel_info = dict(zip(header, line.split("\t")))
 
-            individuals.append(ind_mitodel_info)
+        HEADER = ["intermediate discordant", "normal", "ratio ppk"]
+        contents = re.match(
+            HEADER[0] + r"\s+(\d+)\s+" + HEADER[1] + r"\s+(\d+)\s+" + HEADER[2] + r"\s+([0-9.]+)"
+        )
+
+        ind_mitodel_info = dict(zip(HEADER, contents.groups()))
+        individuals.append(ind_mitodel_info)
 
     return individuals
