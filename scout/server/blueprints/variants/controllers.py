@@ -968,8 +968,15 @@ def variant_export_lines(store, case_obj, variants_query):
                 )  # empty HGNC id, empty gene name and empty transcripts columns
                 empty_col += 1
 
-        variant_line.append(variant.get("cadd_score", "N/A"))
-        variant_line.append(variant.get("gnomad_frequency", "N/A"))
+        if variant.get("cadd_score"):
+            variant_line.append(round(variant["cadd_score"], 2))
+        else:
+            variant_line.append("N/A")
+
+        if variant.get("gnomad_frequency"):
+            variant_line.append(round(variant["gnomad_frequency"], 5))
+        else:
+            variant_line.append("N/A")
 
         if case_obj.get("track") == "cancer":
             # Add cancer and normal VAFs
