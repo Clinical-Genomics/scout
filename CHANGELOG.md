@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
-## [unreleased]
+## [4.59]
 ### Added
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available
 - Button to go directly to HPO SV filter variantS page from case
@@ -25,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HPO filter button on SV variantS page
 - Spacing between region|function cells in SVs lists
 - Labels on gene panel Chanjo report
-- Fixed ambigious duplicated response headers when requesting a BAM file from /static
+- Fixed ambiguous duplicated response headers when requesting a BAM file from /static
 - Visited color link on gene coverage button (Variant page)
 
 ## [4.58.1]
