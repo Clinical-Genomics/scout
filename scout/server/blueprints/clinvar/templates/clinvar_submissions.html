@@ -201,7 +201,6 @@
                 <th>Individual ID</th>
                 <th></th>
                 <th>Case ID</th>
-                <th>Clinical features</th>
                 <th>Variant</th>
                 <th>Allele origin</th>
                 <th></th>
@@ -218,7 +217,6 @@
                   </form>
                   <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                   <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[case.case_id]}}</a></td>
-                  <td>{{case.clin_features}}</td>
                   <td>{{var_key_name[case.linking_id]}}</td>
                   <td>{{case.allele_origin}}</td>
                   <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
