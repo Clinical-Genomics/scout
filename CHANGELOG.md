@@ -4,7 +4,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [unreleased]
 ### Changed
 - Rewrote the ClinVar export module to simplify and add one variant at the time
@@ -27,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - HPO filter button on SV variantS page
 - Spacing between region|function cells in SVs lists
 - Labels on gene panel Chanjo report
-- Fixed ambigious duplicated response headers when requesting a BAM file from /static
+- Fixed ambiguous duplicated response headers when requesting a BAM file from /static
 - Visited color link on gene coverage button (Variant page)
 
 ## [4.58.1]
