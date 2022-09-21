@@ -52,7 +52,7 @@ class ClinVarVariantForm(FlaskForm):
     clinsig = SelectField("Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS])
     clinsig_comment = TextAreaField("Comment on clinical significance")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
-    last_evaluated = DateField("Date last evaluated")
+    last_evaluated = DateField("Date evaluated")
     hpo_terms = MultiCheckboxField("Variant-associated HPO terms", choices=[])
     omim_terms = MultiCheckboxField("Variant-associated OMIM terms", choices=[])
     condition_comment = TextAreaField("Additional comments describing condition")

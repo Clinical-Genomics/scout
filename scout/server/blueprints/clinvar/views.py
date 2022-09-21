@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 blueprint = Blueprint("clinvar", __name__, template_folder="templates")
 
 
-@blueprint.route("/<institute_id>/<case_name>/clinvar", methods=["POST"])
+@blueprint.route("/<institute_id>/<case_name>/clinvar/add_one", methods=["POST"])
 def clinvar_add_variant(institute_id, case_name):
     """Create a ClinVar submission document in database for one or more variants from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -23,11 +23,12 @@ def clinvar_add_variant(institute_id, case_name):
     return render_template("clinvar_add_one.html", **data)
 
 
-@blueprint.route("/<institute_id>/<case_name>/clinvar_add_var", methods=["POST"])
+@blueprint.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
 def clinvar_save(institute_id, case_name):
     """Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission"""
     variant_data = controllers.parse_variant_form_fields(request.form)  # dictionary
     casedata_list = controllers.parse_casedata_form_fields(request.form)  # a list of dictionaries
+
     # retrieve or create an open ClinVar submission:
     subm = store.get_open_clinvar_submission(institute_id)
     # save submission objects in submission:

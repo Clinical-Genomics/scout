@@ -37,8 +37,9 @@
   {% endif %}
   <h5><span class="badge {% if variant_data.var_obj.category == 'sv'%} bg-warning {% else %} bg-secondary {% endif %}">{{variant_data.var_obj.category}}</span>&nbsp;&nbsp;{{variant_data.var_obj.simple_id|truncate(50, True) }}</h5>
 
-  <form method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
+  <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
     <div class="card">
+    {{ variant_data.var_form.csrf_token }}
     <!-- Variant data form -->
     <!-- hidden fields -->
     {{ variant_data.var_form.case_id() }}
@@ -48,21 +49,23 @@
     {{ variant_data.var_form.chromosome() }}
     {{ variant_data.var_form.ref() }}
     {{ variant_data.var_form.alt() }}
+
     <!-- SNVs only -->
     {% if var_category == 'snv' %}
       {{ variant_data.var_form.start() }}
       {{ variant_data.var_form.stop() }}
     {% endif %}
+
     <!-- end of hidden fields -->
     <div class="card-body">
-      <h5>Variant data</h5>
+      <h5 class="panel-heading" data-bs-toggle='tooltip' title="Information provided by filling in these fields will be used to create the Variant.csv file">Variant data<span class="badge bg-light text-dark"><i class="fa fa-info-circle"></i></span></h5>
       <div class="row">
         <div class="col-3"><!-- gene symbols -->
-          <div class="col-4">{{variant_data.var_form.gene_symbol.label}}</div>
+          <div>{{variant_data.var_form.gene_symbol.label}}</div>
           <div>{{variant_data.var_form.gene_symbol()}}</div>
         </div>
-        <div class="col-2"><!-- Date last eveluation -->
-          <div class="col-6">{{variant_data.var_form.last_evaluated.label}}</div>
+        <div class="col-2"><!-- Date last evaluation -->
+          <div>{{variant_data.var_form.last_evaluated.label}}</div>
           <div>{{variant_data.var_form.last_evaluated()}}</div>
         </div>
         <div class="col-3"><!-- model of inherintance -->
@@ -82,7 +85,7 @@
         {% if var_category == 'snv' %}
           <div class="col-3"><!-- Transcripts & HGVS:(optional) -->
             {{variant_data.var_form.tx_hgvs.label}}
-            {{variant_data.var_form.tx_hgvs()}}
+            {{variant_data.var_form.tx_hgvs(style="list-style:none")}}
           </div>
           <div class="col-3"><!-- dbSNP identifier -->
             {{variant_data.var_form.variations_ids.label}}
@@ -137,29 +140,25 @@
         {% endif %}
       </div>
       <div class="row d-flex align-items-center mt-3">
-        <div class="col-3"><!-- Clinical significance -->
-          {{variant_data.var_form.clinsig.label}}
+        <!-- Clinsig section -->
+        <div class="col-6">
+          {{variant_data.var_form.clinsig.label}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
           {{variant_data.var_form.clinsig(class="form-control")}}
-        </div>
-        <div class="col-3"> <!-- Clinical significance comment -->
+          <br><br>
+          {{variant_data.var_form.clinsig_cit.label}}
+          {{variant_data.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
+          <br><br>
           {{variant_data.var_form.clinsig_comment.label}}
           {{variant_data.var_form.clinsig_comment(class="form-control", placeholder="(optional)")}}
         </div>
-        <div class="col-3"> <!-- Clinical significance citation -->
-          {{variant_data.var_form.clinsig_cit.label}}
-          {{variant_data.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
-        </div>
-      </div>
-      <div class="row d-flex align-items-center mt-3">
-        <div class="col-4"><!-- HPO terms -->
-          {{variant_data.var_form.hpo_terms.label}}
-          {{variant_data.var_form.hpo_terms()}}
-        </div>
-        <div class="col-4"><!-- OMIM terms -->
-          {{variant_data.var_form.omim_terms.label}}
-          {{variant_data.var_form.omim_terms}}
-        </div>
-        <div class="col-4"><!-- Additional comments for condition -->
+        <!-- Condition section -->
+        <div class="col-6">
+          {{variant_data.var_form.omim_terms.label}} <span class="text-danger" data-bs-toggle='tooltip' title="At least one OMIM condition or HPO term is required"><strong>*</strong></span>
+          {{variant_data.var_form.omim_terms(style="list-style:none")}}
+          <br><br>
+          {{variant_data.var_form.hpo_terms.label}} <span class="text-danger" data-bs-toggle='tooltip' title="At least one OMIM condition or HPO term is required"><strong>*</strong></span>
+          {{variant_data.var_form.hpo_terms(style="list-style:none")}}
+          <br><br>
           {{variant_data.var_form.condition_comment.label}}
           {{variant_data.var_form.condition_comment(class="form-control")}}
         </div>
@@ -169,7 +168,7 @@
   </div>
   <div class="card mt-3"> <!-- CaseData fields -->
     <div class="card-body mt-3">
-      <h5>Observation data</h5>
+      <h5 class="panel-heading" data-bs-toggle='tooltip' title="Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.">Observation data<span class="badge bg-light text-dark"><i class="fa fa-info-circle"></i></span></h5>
       <ul class="list-group">
       {% for cdata in variant_data.cdata_forms %}
         {{cdata.linking_id}} <!-- hidden field -->
@@ -181,7 +180,7 @@
             </div>
             <div class="col-2">
               {{ cdata.individual_id.label }}
-              {{ cdata.individual_id(class="form-control") }}
+              {{ cdata.individual_id(class="form-control", readonly=true) }}
             </div>
             <div class="col-2">
               {{ cdata.affected_status.label }}
@@ -212,4 +211,31 @@
 
 {% block scripts %}
 {{ super() }}
+<script>
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
+
+
+  $("#clinVarAdd").submit(function(){
+    // Make sure observation data from at least one individual/sample is included
+    var checkedSamples = $("[name='include_ind']:checked").length > 0;
+    if (!checkedSamples){
+        alert("Please include observations fromat least one individual/sample.");
+        return false;
+    }
+
+    // Make sure the condition (OMIM terms or HPO terms) for which the variant is interpreted is present
+    var checkedHPOs = $("[name='hpo_terms']:checked").length > 0;
+    var checkedOMIMs = $("[name='omim_terms']:checked").length > 0;
+    if (!checkedHPOs && !checkedOMIMs){
+        alert("Please include at least one condition for which the variant is interpreted (OMIM or HPO terms)");
+        return false;
+    }
+  });
+
+
+
+</script>
 {% endblock %}
