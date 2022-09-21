@@ -6,6 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [unreleased]
+### Changed
+- Rewrote the ClinVar export module to simplify and add one variant at the time
+
+## [4.59]
 ### Added
 - Button to go directly to HPO SV filter variantS page from case
 - `Scout-REViewer-Service` integration - show `REViewer` picture if available
@@ -19,7 +23,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More evident links to gene coverage from Variant page
 - Gene panels sorted by display name in the entire Case page
 - Round CADD and GnomAD values in variants export files
-- Rewrote the ClinVar export module to simplify and prepare for ClinVar API submission feature
 ### Fixed
 - HPO filter button on SV variantS page
 - Spacing between region|function cells in SVs lists
