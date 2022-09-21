@@ -207,7 +207,7 @@ def parse_variant_form_fields(form):
 
     # Set key/values in clinvar_var dictionary
     for key in clinvar_variant:
-        if key in form:
+        if key in form and form[key] != "":
             clinvar_var[key] = form[key]
         clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
         _parse_tx_hgvs(clinvar_var, form)
