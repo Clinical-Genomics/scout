@@ -8,19 +8,19 @@ def parse_mitodel_file(lines):
         lines(iterable(str))
 
     Returns:
-        list(sma_info_per_individual(dict))
+        list(mitodel_info_for_individual(dict))
     """
-    individuals = []
 
     for i, line in enumerate(lines):
         line = line.rstrip()
 
         HEADER = ["intermediate discordant", "normal", "ratio ppk"]
         contents = re.match(
-            HEADER[0] + r"\s+(\d+)\s+" + HEADER[1] + r"\s+(\d+)\s+" + HEADER[2] + r"\s+([0-9.]+)"
+            HEADER[0] + r"\s+(\d+)\s+" + HEADER[1] + r"\s+(\d+)\s+" + HEADER[2] + r"\s+([0-9.]+)",
+            line,
         )
 
-        ind_mitodel_info = dict(zip(HEADER, contents.groups()))
-        individuals.append(ind_mitodel_info)
+        HEADER_ABBREV = ["discordant", "normal", "ratioppk"]
+        ind_mitodel_info = dict(zip(HEADER_ABBREV, contents.groups()))
 
-    return individuals
+    return ind_mitodel_info
