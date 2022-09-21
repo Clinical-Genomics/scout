@@ -143,7 +143,7 @@
     <div class="card-title d-flex justify-content-between">
       <span><strong>{{ institute.display_name }}</strong> - Panels</span>
       <span>
-        <input type="checkbox" name="hideLine" checked onclick="toggleHidden(this)"> Hide removed panels</input
+        <input type="checkbox" name="hideLine" checked onclick="toggleRow(this)"> Hide removed panels</input
       </span>
     </div>
     <div class="card-body">
@@ -268,7 +268,7 @@
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script type="text/javascript">
 
-function toggleHidden(hideCheck) {
+function toggleRow(hideCheck) {
   var els = document.getElementsByClassName("hidableRow");
   for(var i=0;i<els.length;i++){
     if(hideCheck.checked){
