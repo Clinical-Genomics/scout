@@ -35,9 +35,6 @@
   </div>
 {% endblock %} <!-- end of content_main -->
 
-
-
-
 <!-- Create a Bootstrap card containing text bar and submit button for searching -->
 {% macro search_gene_card() %}
 <div class="container-float">
@@ -84,22 +81,18 @@
           </table>
           {% elif search_string  %}
           <strong> <em>{{search_string}} </em> not found. </strong>
-
-          {% else  %}
-          <!-- Do nothing -->
           {% endif %}
         </div>
       </div>
       </div>
     </div>
   </div>
-</div>
 {% endmacro %}
 
 
 {% macro new_panel() %}
 <div class="container-float">
-  <div class="card mt-3">
+  <div class="card">
     <div class="card-body">
       <form action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
         <div class="row">
@@ -147,24 +140,27 @@
 
 {% macro panel_view(institute, panels) %}
   <div class="card panel-default w-100 mt-3 justify-content-center">
-    <div class="panel-heading">
-      <strong>{{ institute.display_name }}</strong> - Panels
+    <div class="card-title d-flex justify-content-between">
+      <span><strong>{{ institute.display_name }}</strong> - Panels</span>
+      <span>
+        <input type="checkbox" name="hideLine" checked onclick="toggleHidden(this)"> Hide removed panels</input
+      </span>
     </div>
     <div class="card-body">
-        <table class="table table-striped">
+        <table class="table table-striped" id="panelTable" style="table-layout: fixed;"">
         <thead>
           <tr>
-            <th width="30%">Name</th>
-            <th width="20%">Version</th>
-            <th width="15%">Number of genes</th>
-            <th width="25%">History</th>
-            <th width="10%"></th>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Number of genes</th>
+            <th>History</th>
+            <th></th>
           </tr>
         </thead>
       {% for panel in panels|sort(attribute="display_name",case_sensitive=False) %}
         <!--create table for each panel-->
         <tbody>
-          <tr>
+          <tr {% if panel.hidden %} class="hidableRow" style="visibility:collapse;" {% endif %}>
             <td>
               <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
               {% if panel.hidden %}
@@ -272,6 +268,17 @@
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script type="text/javascript">
 
+function toggleHidden(hideCheck) {
+  var els = document.getElementsByClassName("hidableRow");
+  for(var i=0;i<els.length;i++){
+    if(hideCheck.checked){
+      els[i].style.visibility = 'collapse';
+    }
+    else{
+      els[i].style.visibility = 'visible';
+    }
+  }
+}
 
 $('.history_btn').on('click', function(){
     var bid = $(this)[0].id;
@@ -296,7 +303,6 @@ $('.modify_btn').on('click', function(){
 });
 
 $(function(){
-console.log("called!")
       function getNameTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
           process(data)
