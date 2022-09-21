@@ -46,19 +46,19 @@
     {{ variant_data.var_form.category() }}
     {{ variant_data.var_form.local_id() }}
     {{ variant_data.var_form.linking_id() }}
-    {{ variant_data.var_form.chromosome() }}
     {{ variant_data.var_form.ref() }}
     {{ variant_data.var_form.alt() }}
 
     <!-- SNVs only -->
     {% if var_category == 'snv' %}
+      {{ variant_data.var_form.chromosome() }}
       {{ variant_data.var_form.start() }}
       {{ variant_data.var_form.stop() }}
     {% endif %}
 
     <!-- end of hidden fields -->
     <div class="card-body">
-      <h5 class="panel-heading" data-bs-toggle='tooltip' title="Information provided by filling in these fields will be used to create the Variant.csv file">Variant data<span class="badge bg-light text-dark"><i class="fa fa-info-circle"></i></span></h5>
+      <h5 class="panel-heading" data-bs-toggle='tooltip' title="Information provided by filling in these fields will be used to create the Variant.csv file">Variant data<span class="badge bg-light text-dark"><em class="fa fa-info-circle"></em></span></h5>
       <div class="row">
         <div class="col-3"><!-- gene symbols -->
           <div>{{variant_data.var_form.gene_symbol.label}}</div>
@@ -168,7 +168,7 @@
   </div>
   <div class="card mt-3"> <!-- CaseData fields -->
     <div class="card-body mt-3">
-      <h5 class="panel-heading" data-bs-toggle='tooltip' title="Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.">Observation data<span class="badge bg-light text-dark"><i class="fa fa-info-circle"></i></span></h5>
+      <h5 class="panel-heading" data-bs-toggle='tooltip' title="Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.">Observation data<span class="badge bg-light text-dark"><em class="fa fa-info-circle"></em></span></h5>
       <ul class="list-group">
       {% for cdata in variant_data.cdata_forms %}
         {{cdata.linking_id}} <!-- hidden field -->
