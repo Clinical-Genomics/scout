@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
+- Hide removed gene panels by default in panels page
 - Rewrote the ClinVar export module to simplify and add one variant at the time
 
 ## [4.59]
