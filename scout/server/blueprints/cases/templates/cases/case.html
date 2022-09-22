@@ -339,7 +339,7 @@
 <!-- Iterate through Individuals, if chromograph_files is presenet add a panel for images -->
 {% set chromograph = namespace(available=false) %}
 {% macro insert_multi_image_panel() %}
-<div class="panel-group" id="accordion">
+<div class="panel-group no-animation" id="accordion">
   {% for i in case.individuals %}
     {% if i.chromograph_images and (i.chromograph_images.coverage or i.chromograph_images.autozygous or i.chromograph_images.upd_sites) %}
       {% set chromograph.available = true %}

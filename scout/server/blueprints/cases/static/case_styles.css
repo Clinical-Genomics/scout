@@ -31,3 +31,6 @@
     pointer-events: none;
 }
 
+.no-animation {
+  transition: none !important;
+}
