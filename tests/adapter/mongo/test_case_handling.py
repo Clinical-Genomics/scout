@@ -596,14 +596,15 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
     # Make sure user becomes assignee of the case
     assert user_obj["email"] in res["assignees"]
 
+    # WHEN rerun is reset using the same method:
     # And that a new rerun request triggers an error:
-    with pytest.raises(ValueError):
-        adapter.request_rerun(institute_obj, res, user_obj, "blank")
+    adapter.request_rerun(institute_obj, res, user_obj, "blank")
 
-    # and WHEN updating the case again
+    # THEN case rerun status should be reset
     res = adapter.update_case(case_obj)
+    assert res["rerun_requested"] is False
 
-    # THEN it is inactivated
+    # AND case it is inactivated
     res = adapter.case(case_obj["_id"])
     assert res["status"] == "inactive"
 
