@@ -309,7 +309,11 @@
     {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
-    <button type="button" class="btn btn-warning btn-sm form-control" data-bs-toggle="modal" data-bs-target="#rerun-modal">Request rerun</button>
+    {% if "RERUN_URL" in config %}
+      <form action="https://google.com" target="_blank">
+        <button class="btn btn-warning btn-sm form-control" type="submit">Request rerun</button>
+      </form>
+    {% endif %}
   </div>
 {% endif %}
 {% endmacro %}
@@ -459,31 +463,6 @@
         </div>
       </div>
 
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro rerun_modal(institute, case) %}
-  <form action="{{ url_for('cases.rerun', institute_id=institute._id,
-                           case_name=case.display_name) }}" method="POST">
-    <div id="rerun-modal" class="modal fade">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">Request rerun</h4>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Please confirm that you want to <strong>rerun {{ case.display_name }}</strong>. This will <strong>replace current variants</strong> with updated information.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Confirm</button>
-          </div>
-        </div>
-      </div>
     </div>
   </form>
 {% endmacro %}
