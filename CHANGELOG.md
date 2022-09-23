@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ## Changed
 - Hide removed gene panels by default in panels page
+- Remove rerun emails and redirect users to the analysis order portal instead
 
 ## [4.59]
 ### Added
