@@ -306,17 +306,19 @@
   </span>
 {% else %}
   <div id='submenu3' class="collapse">
+
     {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
     {% if "RERUN_URL" in config %}
-      <form action="https://google.com" target="_blank">
+      <form action="{{config['RERUN_URL']}}" target="_blank">
         <button class="btn btn-warning btn-sm form-control" type="submit">Request rerun</button>
       </form>
     {% endif %}
   </div>
 {% endif %}
 {% endmacro %}
+
 
 
 {% macro rerun_monitor_interact(institute, case) %}

@@ -7,7 +7,7 @@ from flask import current_app, json, url_for
 
 from scout.demo import delivery_report_path
 from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
-from scout.server.extensions import mail, store
+from scout.server.extensions import store
 
 TEST_TOKEN = "test_token"
 

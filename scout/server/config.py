@@ -102,7 +102,7 @@ SHOW_OBSERVED_VARIANT_ARCHIVE = True
 HIDE_ALAMUT_LINK = True
 
 # URL of a general web page where users can place orders for analyses or reruns
-# RERUN_URL = "https://clinical.scilifelab.se/"
+RERUN_URL = "https://clinical.scilifelab.se/"
 # Display case rerun monitoring toggle
 RERUN_MONITOR = True
 
