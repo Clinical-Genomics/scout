@@ -770,13 +770,23 @@ def share(institute_id, case_name):
     return redirect(request.referrer)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/update_rerun_status")
+def update_rerun_status(institute_id, case_name):
+    """Update rerun status for a case by setting rerun_requested to True or False"""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
+
+    store.request_rerun(institute_obj, case_obj, user_obj, link)
+    return redirect(link)
+
+
 @cases_bp.route("/<institute_id>/<case_name>/monitor", methods=["POST"])
 def rerun_monitor(institute_id, case_name):
     """Request a case to be monitored for future reruns."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
-
     if request.form.get("rerun_monitoring") == "monitor":
         store.monitor(institute_obj, case_obj, user_obj, link)
     else:

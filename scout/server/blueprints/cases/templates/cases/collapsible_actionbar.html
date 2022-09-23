@@ -304,9 +304,11 @@
   <span class="d-flex align-items-center">
     <em class="text-white mt-1 ms-3">Rerun pending</em>
   </span>
+  <form action="{{ url_for('cases.update_rerun_status', institute_id=institute._id, case_name=case.display_name) }}">
+    <button class="btn btn-info btn-sm form-control" type="submit" name="rerun_update">Reset rerun status</button>
+  </form>
 {% else %}
   <div id='submenu3' class="collapse">
-
     {% if 'RERUN_MONITOR' in config and config.RERUN_MONITOR == True %}
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
@@ -315,6 +317,9 @@
         <button class="btn btn-warning btn-sm form-control" type="submit">Request rerun</button>
       </form>
     {% endif %}
+    <form action="{{ url_for('cases.update_rerun_status', institute_id=institute._id, case_name=case.display_name) }}">
+      <button class="btn btn-info btn-sm form-control" type="submit" name="rerun_update">Set rerun as pending</button>
+    </form>
   </div>
 {% endif %}
 {% endmacro %}
