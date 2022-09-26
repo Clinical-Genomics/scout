@@ -1,7 +1,3 @@
-import logging
-
-LOG = logging.getLogger(__name__)
-
 # encoding: utf-8
 """
 parse_genotypes will try to collect and merge information from vcf with

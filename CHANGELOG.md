@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ## Changed
 - Hide removed gene panels by default in panels page
-- Parse and display AF values from cancer SVs in cancer SV variantS page (not retroactive)
+- Parse and display AF values for cancer SVs in cancer SV variantS page (only cases loaded after this change)
 
 ## [4.59]
 ### Added
