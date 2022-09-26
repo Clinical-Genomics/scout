@@ -31,6 +31,6 @@
     pointer-events: none;
 }
 
-.no-animation {
+.collapse {
   transition: none !important;
 }
