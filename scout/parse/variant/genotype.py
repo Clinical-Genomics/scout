@@ -1,3 +1,7 @@
+import logging
+
+LOG = logging.getLogger(__name__)
+
 # encoding: utf-8
 """
 parse_genotypes will try to collect and merge information from vcf with
@@ -106,6 +110,9 @@ def parse_genotype(variant, ind, pos):
     gt_call["ref_depth"] = ref_depth
     gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
     gt_call["alt_frequency"] = get_alt_frequency(variant, pos)
+    if gt_call["alt_frequency"] == -1 and -1 not in (gt_call["alt_depth"], gt_call["ref_depth"]):
+        gt_call["alt_frequency"] = gt_call["alt_depth"] / gt_call["ref_depth"]
+
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
 
     return gt_call
