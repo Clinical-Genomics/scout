@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import cancer_sv_filters,cell_rank, pagination_footer, pagination_hidden_div, filter_form_footer, filter_script_main, update_stash_filter_button_status, dismiss_variants_block %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell, allele_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
@@ -128,20 +128,6 @@
     <td>{{ allele_cell(variant.tumor or {}) }}</td>
     <td>{{ allele_cell(variant.normal or {}) }}</td>
   </tr>
-{% endmacro %}
-
-{% macro allele_cell(allele) %}
-  {% if 'alt_freq' in allele %}
-    {% if allele.alt_freq == -1 %}
-      <span class="text-muted">.</span>
-    {% else %}
-      {{ allele.alt_freq|round(4) }}
-    {% endif %}
-    <br>
-    <small class="text-muted">{% if allele.alt_depth >= 0 %}{{ allele.alt_depth }}{% else %}.{% endif %}|{% if allele.ref_depth >= 0 %}{{ allele.ref_depth }}{% else %}.{% endif %}</small>
-  {% else %}
-    <span class="text-muted">N/A</span>
-  {% endif %}
 {% endmacro %}
 
 
