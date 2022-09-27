@@ -684,7 +684,7 @@
           {{ form.size_shorter(class="form-check-input",type="checkbox") }}
         </div>
       </div>
-      <div class="col-1">
+      <div class="col-2">
         {{ form.gnomad_frequency.label(class="control-label") }}
         {{ form.gnomad_frequency(class="form-control") }}
       </div>
@@ -692,17 +692,9 @@
         {{ form.depth.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Tumor read depth") }}
         {{ form.depth(class="form-control") }}
       </div>
-      <div class="col-1">
+      <div class="col-2">
         {{ form.alt_count.label(class="control-label") }}
         {{ form.alt_count(class="form-control") }}
-      </div>
-      <div class="col-1">
-        {{ form.tumor_frequency.label(class="control-label") }}
-        {{ form.tumor_frequency(class="form-control") }}
-      </div>
-      <div class="col-1">
-        {{ form.control_frequency.label(class="control-label") }}
-        {{ form.control_frequency(class="form-control") }}
       </div>
     </div>
     <div id="chromosome_search">
