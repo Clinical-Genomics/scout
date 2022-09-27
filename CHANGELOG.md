@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ## Changed
 - Hide removed gene panels by default in panels page
+- Remove option for filtering cancer SVs by Tumor alt AF and Normal AF
 
 ## [4.59]
 ### Added
