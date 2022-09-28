@@ -90,24 +90,11 @@
 {% block scripts %}
   {{ super() }}
   {{ db_table_external_scripts() }}
-  <script type="text/javascript">
-
+  <script>
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-
-    $(document).ready(function() {
-      $('#verified_table').DataTable( {
-          paging: false,
-          dom: 'Bfrtip',
-          buttons: [
-              'copyHtml5',
-              'excelHtml5',
-          ]
-      } );
-
-      $('[data-toggle="tooltip"]').tooltip();
-    } );
   </script>
+  <script src="{{ url_for('overview.static', filename='variants_list_scripts.js') }}"></script>
 {% endblock %}

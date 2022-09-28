@@ -2,7 +2,6 @@
 import datetime
 import logging
 import operator
-import re
 from copy import deepcopy
 
 import pymongo
@@ -153,7 +152,7 @@ class CaseHandler(object):
         """
         order = None
         query_field = name_query.split(":")[0]  # example:status
-        query_term = re.escape(name_query[name_query.index(":") + 1 :].strip())
+        query_term = name_query[name_query.index(":") + 1 :].strip()
 
         if query_field == "case" and query_term != "":
             query["$or"] = [
@@ -230,9 +229,7 @@ class CaseHandler(object):
         if query_field == "user":
             query_terms = query_term.split(" ")
             user_query = {
-                "$and": [
-                    {"name": {"$regex": re.escape(term), "$options": "i"}} for term in query_terms
-                ]
+                "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
             }
             users = self.user_collection.find(user_query)
             query["assignees"] = {"$in": [user["email"] for user in users]}
@@ -260,6 +257,7 @@ class CaseHandler(object):
         yield_query=False,
         within_days=None,
         assignee=None,
+        verification_pending=None,
     ):
         """Fetches all cases from the backend.
 
@@ -279,11 +277,12 @@ class CaseHandler(object):
             phenotype_terms(bool): Fetch all cases with phenotype
             pinned(bool): Fetch all cases with pinned variants
             name_query(str): Could be hpo term, HPO-group, user, part of display name,
-                             part of inds or part of synopsis
+                             part of ids or part of synopsis
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
             within_days(int): timespan (in days) for latest event on case
             assignee(str): email of an assignee
+            verification_pending(bool): If search should be restricted to cases with verification_pending
 
         Returns:
             Cases ordered by date.
@@ -291,10 +290,8 @@ class CaseHandler(object):
                 instead returns corresponding query dict
                 that can be reused in compound queries or for testing.
         """
-        LOG.debug("Fetch all cases")
         query = query or {}
         order = None
-
         # Prioritize when both owner and collaborator params are present
         if collaborator and owner:
             collaborator = None
@@ -349,35 +346,21 @@ class CaseHandler(object):
             order = self._populate_name_query(query, name_query, owner, collaborator)
 
         if within_days:
-            verbs = set()
-
-            if has_causatives:
-                verbs.add("mark_causative")
-            if finished:
-                verbs.add("archive")
-                verbs.add("mark_causative")
-            if reruns:
-                verbs.add("rerun")
-            if research_requested:
-                verbs.add("open_research")
-            if status and status == "solved":
-                verbs.add("mark_causative")
-            verbs = list(verbs)
-
-            days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
-            # Look up 'mark_causative' events added since specified number days ago
-            event_query = {
-                "category": "case",
-                "verb": {"$in": verbs},
-                "created_at": {"$gte": days_datetime},
+            query["_id"] = {
+                "$in": self.last_modified_cases(
+                    within_days, has_causatives, finished, reruns, research_requested, status
+                )
             }
-            recent_events = self.event_collection.find(event_query)
-            recent_cases = set()
-            # Find what cases these events concern
-            for event in recent_events:
-                recent_cases.add(event["case"])
-            recent_cases = list(recent_cases)
-            query["_id"] = {"$in": recent_cases}
+
+        if verification_pending:  # Filter for cases with Sanger verification pending
+            sanger_pending_cases = self.verification_missing_cases(owner)
+            if query.get("_id"):  # Check if other filter already limits the search by case _id
+                preselected_ids = query["_id"].get("$in", [])
+                query["_id"]["$in"] = list(
+                    set(preselected_ids).intersection(set(sanger_pending_cases))
+                )  # limit also by Sanger pending
+            else:  # Apply only Sanger pending filter
+                query["_id"] = {"$in": sanger_pending_cases}
 
         if yield_query:
             return query
@@ -388,16 +371,85 @@ class CaseHandler(object):
 
         return self.case_collection.find(query).sort("updated_at", -1)
 
+    def last_modified_cases(
+        self, within_days, has_causatives, finished, reruns, research_requested, status
+    ):
+        """Retrieve cases that have been modified during the last n. days
+        Args:
+            within_days(int)
+            has_causatives(bool)
+            finished(bool)
+            reruns(bool)
+            research_requested(bool)
+            status(str)
+
+        Returns:
+            recent_cases(list): list of case _ids
+        """
+        verbs = set()
+        if has_causatives:
+            verbs.add("mark_causative")
+        if finished:
+            verbs.add("archive")
+            verbs.add("mark_causative")
+        if reruns:
+            verbs.add("rerun")
+        if research_requested:
+            verbs.add("open_research")
+        if status and status == "solved":
+            verbs.add("mark_causative")
+        verbs = list(verbs)
+
+        days_datetime = datetime.datetime.now() - datetime.timedelta(days=within_days)
+        # Look up 'mark_causative' events added since specified number days ago
+        event_query = {
+            "category": "case",
+            "verb": {"$in": verbs},
+            "created_at": {"$gte": days_datetime},
+        }
+        recent_events = self.event_collection.find(event_query)
+        recent_cases = set()
+        # Find what cases these events concern
+        for event in recent_events:
+            recent_cases.add(event["case"])
+        return list(recent_cases)
+
+    def verification_missing_cases(self, institute_id):
+        """Fetch all cases with at least a variant with validation ordered but still pending
+        Args:
+            institute_id(str): id of an institute
+
+        Returns:
+            sanger_missing_cases(list): a list of case _ids with variants having Sanger validation missing
+        """
+        sanger_missing_cases = []
+        sanger_ordered_by_case = self.sanger_ordered(
+            institute_id=institute_id
+        )  # a list of dictionaries like this: [{'_id': 'internal_id', 'vars': ['a1d6df24404c007570021531b80b1e1e']}, ..]
+        for case_variants in sanger_ordered_by_case:
+            if self.case(case_id=case_variants["_id"]) is None:
+                continue
+            for variant_id in case_variants["vars"]:
+                var_obj = self.variant(case_id=case_variants["_id"], document_id=variant_id)
+
+                if var_obj is None or var_obj.get("validation") in [
+                    "True positive",
+                    "False positive",
+                ]:
+                    continue
+                sanger_missing_cases.append(case_variants["_id"])
+
+        return sanger_missing_cases
+
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.
 
         Args:
-            collaborator(str): If collaborator should be considered
+            institute_id(str): id of an institute
         """
         query = {}
 
         if institute_id:
-            LOG.debug("Use collaborator {0}".format(institute_id))
             query["collaborators"] = institute_id
 
         query["status"] = "prioritized"

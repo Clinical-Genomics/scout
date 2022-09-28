@@ -4,6 +4,13 @@
   {{ super() }} - {{ current_user.name }} - Gene Panels
 {% endblock %}
 
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock %}
+
+
 {% block top_nav %}
   {{ super() }}
   <li class="nav-item">
@@ -28,9 +35,6 @@
   </div>
 {% endblock %} <!-- end of content_main -->
 
-
-
- 
 <!-- Create a Bootstrap card containing text bar and submit button for searching -->
 {% macro search_gene_card() %}
 <div class="container-float">
@@ -40,7 +44,7 @@
         <div class="row">
           <div class="col-5">
             <input type="text" name="search_for" class="form-control typeahead_gene mb-1" data-provide="typeahead" autocomplete="off" placeholder="Search Gene in Panels" required
-                   pattern="^[0-9]+\s*\|\s*.*" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
+                   pattern="^[0-9]+\s*\|\s*.*" title="Search for gene symbol. Type name or number and the field autocompletes a full description. Allowed patterns have a numerical hgnc id and a pipe character.">
           </div>
           <div class="col">
             <button type="submit" name="action" value="ADDGENE" class="btn btn-secondary">Search!</button>
@@ -77,22 +81,18 @@
           </table>
           {% elif search_string  %}
           <strong> <em>{{search_string}} </em> not found. </strong>
-          
-          {% else  %}
-          <!-- Do nothing -->
           {% endif %}
         </div>
       </div>
       </div>
     </div>
   </div>
-</div>
 {% endmacro %}
 
 
 {% macro new_panel() %}
 <div class="container-float">
-  <div class="card mt-3">
+  <div class="card">
     <div class="card-body">
       <form action="{{ url_for('panels.panels') }}" enctype="multipart/form-data" method="POST">
         <div class="row">
@@ -109,7 +109,7 @@
           </div>
           <div class="col-sm-3 text-center">
               <input type="text" name="new_panel_name" class="form-control" placeholder="Panel ID" required
-                pattern="^[a-zA-Z0-9_]*$" title="Only alphanumeric characters (A-Z+a-z+0-9) and underscores allowed.">
+                pattern="^[a-zA-Z0-9_-]*$" title="Only alphanumeric characters (A-Z+a-z+0-9), hyphens, and underscores allowed.">
             </div>
             <div class="col-sm-4 text-center">
               <input type="text" name="display_name" class="form-control" placeholder="Full name">
@@ -140,24 +140,27 @@
 
 {% macro panel_view(institute, panels) %}
   <div class="card panel-default w-100 mt-3 justify-content-center">
-    <div class="panel-heading">
-      <strong>{{ institute.display_name }}</strong> - Panels
+    <div class="card-title d-flex justify-content-between">
+      <span><strong>{{ institute.display_name }}</strong> - Panels</span>
+      <span>
+        <input type="checkbox" name="hideLine" checked onclick="toggleRow(this)"> Hide removed panels</input>
+      </span>
     </div>
     <div class="card-body">
-        <table class="table table-striped">
+        <table class="table table-striped" id="panelTable" style="table-layout: fixed;">
         <thead>
           <tr>
-            <th width="30%">Name</th>
-            <th width="20%">Version</th>
-            <th width="15%">Number of genes</th>
-            <th width="25%">History</th>
-            <th width="10%"></th>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Number of genes</th>
+            <th>History</th>
+            <th></th>
           </tr>
         </thead>
       {% for panel in panels|sort(attribute="display_name",case_sensitive=False) %}
         <!--create table for each panel-->
         <tbody>
-          <tr>
+          <tr {% if panel.hidden %} class="hidableRow" style="visibility:collapse;" {% endif %}>
             <td>
               <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
               {% if panel.hidden %}
@@ -260,11 +263,22 @@
 
 {% block scripts %}
 {{ super() }}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" referrerpolicy="no-referrer" crossorigin="anonymous"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script type="text/javascript">
 
+function toggleRow(hideCheck) {
+  var els = document.getElementsByClassName("hidableRow");
+  for(var i=0;i<els.length;i++){
+    if(hideCheck.checked){
+      els[i].style.visibility = 'collapse';
+    }
+    else{
+      els[i].style.visibility = 'visible';
+    }
+  }
+}
 
 $('.history_btn').on('click', function(){
     var bid = $(this)[0].id;
@@ -289,7 +303,6 @@ $('.modify_btn').on('click', function(){
 });
 
 $(function(){
-console.log("called!")
       function getNameTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
           process(data)

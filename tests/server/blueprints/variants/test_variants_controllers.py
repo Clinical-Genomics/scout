@@ -3,9 +3,10 @@ import logging
 
 from bson.objectid import ObjectId
 from flask_wtf import FlaskForm
+from pymongo import ReturnDocument
 from wtforms import SelectField, StringField
 
-from scout.constants import CHROMOSOMES_38, EXPORT_HEADER
+from scout.constants import CANCER_EXPORT_HEADER, CHROMOSOMES_38, EXPORT_HEADER
 from scout.server.blueprints.variants.controllers import (
     compounds_need_updating,
     gene_panel_choices,
@@ -697,6 +698,7 @@ def test_match_gene_txs_variant_txs():
 
 
 def test_variant_csv_export(real_variant_database, case_obj):
+    """Tests the download variants functionality for a few variants"""
     adapter = real_variant_database
     case_id = case_obj["_id"]
 
@@ -720,6 +722,47 @@ def test_variant_csv_export(real_variant_database, case_obj):
 
     # Given the lines of the document to be exported
     export_lines = variant_export_lines(adapter, case_obj, variants_to_export)
+
+    # Assert that all five variants are going to be exported to CSV
+    assert len(export_lines) == 5
+
+    # Assert that all of 5 variants contain the fields specified by the document header
+    for export_line in export_lines:
+        export_cols = export_line.split(",")
+        assert len(export_cols) == len(export_header)
+
+
+def test_variant_csv_export_cancer(real_variant_database, case_obj):
+    """Tests the download variants functionality for a few cancer variants"""
+    adapter = real_variant_database
+
+    # GIVEN a cancer case: (let's modify a RD case to mimic a cancer case)
+    case_id = case_obj["_id"]
+    updated_case = adapter.case_collection.find_one_and_update(
+        {"_id": case_id}, {"$set": {"track": "cancer"}}, return_document=ReturnDocument.AFTER
+    )
+    assert updated_case.get("track") == "cancer"
+
+    # GIVEN a database with variants from that case
+    snv_variants = adapter.variant_collection.find({"case_id": case_id, "category": "snv"})
+
+    # Given 5 variants to be exported
+    variants_to_export = []
+    for variant in snv_variants.limit(5):
+        variants_to_export.append(variant)
+
+    # Collect export header from variants controller
+    export_header = variants_export_header(updated_case)
+
+    # Assert that exported document has n fields:
+    # n = CANCER_EXPORT_HEADER items
+    for item in export_header:
+        assert item in CANCER_EXPORT_HEADER
+
+    assert len(export_header) == len(CANCER_EXPORT_HEADER)
+
+    # Given the lines of the document to be exported
+    export_lines = variant_export_lines(adapter, updated_case, variants_to_export)
 
     # Assert that all five variants are going to be exported to CSV
     assert len(export_lines) == 5

@@ -22,7 +22,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
 )
-from scout.constants.variants_export import EXPORT_HEADER
+from scout.constants.variants_export import CANCER_EXPORT_HEADER, EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
     clinsig_human,
     predictions,
@@ -39,6 +39,18 @@ from scout.server.utils import (
 from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
+
+
+def populate_force_show_unaffected_vars(institute_obj, form):
+    """Whenever a user institute contains the key/value check_show_all_vars=True,
+    then all variants (and not only those occurring in affected individuals) should be shown
+
+    Args:
+        institute_obj(dict): scout.models.institute
+        form(VariantFiltersForm)
+    """
+    if institute_obj.get("check_show_all_vars"):
+        form.show_unaffected.data = True
 
 
 def populate_chrom_choices(form, case_obj):
@@ -945,25 +957,52 @@ def variant_export_lines(store, case_obj, variants_query):
         gene_list = variant.get("genes")  # this is a list of gene objects
 
         # if variant is in genes
-        if gene_list is not None and len(gene_list) > 0:
+        if gene_list:
             gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
             variant_line += gene_info
         else:
             empty_col = 0
-            while empty_col < 3:
+            while empty_col < 4:
                 variant_line.append(
                     "-"
-                )  # empty HGNC id, emoty gene name and empty transcripts columns
+                )  # empty HGNC id, empty gene name and empty transcripts columns
                 empty_col += 1
 
-        variant_line.append(variant.get("cadd_score", "N/A"))
+        if variant.get("cadd_score"):
+            variant_line.append(round(variant["cadd_score"], 2))
+        else:
+            variant_line.append("N/A")
 
-        variant_line.append(variant.get("gnomad_frequency", "N/A"))
+        if variant.get("gnomad_frequency"):
+            variant_line.append(round(variant["gnomad_frequency"], 5))
+        else:
+            variant_line.append("N/A")
 
-        variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
-        for individual in case_obj["individuals"]:
-            for variant_gt in variant_gts:
-                if individual["individual_id"] == variant_gt["sample_id"]:
+        if case_obj.get("track") == "cancer":
+            # Add cancer and normal VAFs
+            for sample in ["tumor", "normal"]:
+                allele = variant.get(sample)
+                if not allele:
+                    variant_line.append("-")
+                    continue
+                alt_freq = round(allele.get("alt_freq", 0), 4)
+                alt_depth = allele.get("alt_depth")
+                ref_depth = allele.get("ref_depth")
+
+                vaf_sample = f"{alt_freq} ({alt_depth}|{ref_depth})"
+                variant_line.append(vaf_sample)
+
+            # ADD eventual COSMIC ID
+            cosmic_ids = variant.get("cosmic_ids") or ["-"]
+            variant_line.append(" | ".join(cosmic_ids))
+
+        else:
+            variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
+            for individual in case_obj["individuals"]:
+                for variant_gt in variant_gts:
+                    if individual["individual_id"] != variant_gt["sample_id"]:
+                        continue
+
                     variant_line.append(variant_gt["genotype_call"])
                     # gather coverage info
                     variant_line.append(variant_gt["allele_depths"][0])  # AD reference
@@ -1031,6 +1070,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     gene_names = []
     canonical_txs = []
     primary_txs = []
+    funct_annos = []
     gene_info = []
 
     for gene_obj in gene_list:
@@ -1045,8 +1085,10 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
 
         canonical_txs += gene_canonical_txs
         primary_txs += gene_primary_txs
+        funct_anno = gene_obj.get("functional_annotation", "-")
+        funct_annos.append(funct_anno.replace("_", " "))
 
-    for item in [gene_ids, gene_names, canonical_txs, primary_txs]:
+    for item in [gene_ids, gene_names, canonical_txs, primary_txs, funct_annos]:
         gene_info.append(" | ".join(str(x) for x in item))
 
     return gene_info
@@ -1061,14 +1103,17 @@ def variants_export_header(case_obj):
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
     header = []
-    header = header + EXPORT_HEADER
-    # Add fields specific for case samples
-    for individual in case_obj["individuals"]:
-        display_name = str(individual["display_name"])
-        header.append("GT_" + display_name)  # Add Genotype filed for a sample
-        header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
-        header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
-        header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+    if case_obj.get("track") == "cancer":
+        header = header + CANCER_EXPORT_HEADER
+    else:
+        header = header + EXPORT_HEADER
+        # Add fields specific for case samples
+        for individual in case_obj["individuals"]:
+            display_name = str(individual["display_name"])
+            header.append("GT_" + display_name)  # Add Genotype filed for a sample
+            header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
+            header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
+            header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
     return header
 
 
@@ -1424,13 +1469,15 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request_obj.args.get("chrom", "")
-        if variant_type == "clinical":
+        if form.gene_panels.data == [] and variant_type == "clinical":
             form.gene_panels.data = case_default_panels(case_obj)
 
     else:  # POST
         form = populate_filters_form(
             store, institute_obj, case_obj, user_obj, category, request_obj.form
         )
+
+    populate_force_show_unaffected_vars(institute_obj, form)
 
     # populate available panel choices
     form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)

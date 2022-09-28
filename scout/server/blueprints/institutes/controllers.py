@@ -9,15 +9,9 @@ from flask import current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
-from scout.constants import (
-    ACMG_COMPLETE_MAP,
-    ACMG_MAP,
-    CASE_SEARCH_TERMS,
-    CASE_STATUSES,
-    PHENOTYPE_GROUPS,
-)
+from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
 from scout.parse.clinvar import clinvar_submission_header, clinvar_submission_lines
-from scout.server.blueprints.variant.utils import update_representative_gene
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 from scout.utils.md5 import generate_md5_key
@@ -86,11 +80,12 @@ def verified_vars(institute_id):
     """
     verified = []
     for variant_obj in store.verified(institute_id=institute_id):
+        variant_genes = variant_obj.get("genes", [])
         if variant_obj["category"] in ["snv", "cancer"]:
             update_representative_gene(
-                variant_obj, variant_obj.get("genes", [])
+                variant_obj, variant_genes
             )  # required to display cDNA and protein change
-
+        variant_obj.update(predictions(variant_genes))
         verified.append(variant_obj)
 
     return verified
@@ -142,10 +137,12 @@ def causatives(institute_obj, request):
     causatives = []
 
     for variant_obj in store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
+        variant_genes = variant_obj.get("genes", [])
         if variant_obj["category"] in ["snv", "cancer"]:
             update_representative_gene(
-                variant_obj, variant_obj.get("genes", [])
+                variant_obj, variant_genes
             )  # required to display cDNA and protein change
+        variant_obj.update(predictions(variant_genes))
         case_obj = store.case(variant_obj["case_id"])
         if not case_obj:
             continue
@@ -337,6 +334,7 @@ def update_institute_settings(store, institute_obj, form):
         cohorts=cohorts,
         loqusdb_ids=form.getlist("loqusdb_id"),
         alamut_key=form.get("alamut_key"),
+        check_show_all_vars=form.get("check_show_all_vars"),
     )
     return updated_institute
 
@@ -395,25 +393,20 @@ def cases(store, request, institute_id):
         )
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
-    skip_assigned = request.args.get("skip_assigned")
     data["form"] = populate_case_filter_form(request.args)
-    data["skip_assigned"] = skip_assigned
-    is_research = request.args.get("is_research")
-    data["is_research"] = is_research
+
     prioritized_cases = store.prioritized_cases(institute_id=institute_id)
     all_cases = store.cases(
         collaborator=institute_id,
         name_query=name_query,
-        skip_assigned=skip_assigned,
-        is_research=is_research,
+        skip_assigned=request.args.get("skip_assigned"),
+        is_research=request.args.get("is_research"),
+        verification_pending=request.args.get("validation_ordered"),
     )
     all_cases = _sort_cases(data, request, all_cases)
 
     data["nr_cases"] = store.nr_cases(institute_id=institute_id)
-
-    sanger_unevaluated = get_sanger_unevaluated(store, institute_id, current_user.email)
-    if len(sanger_unevaluated) > 0:
-        data["sanger_unevaluated"] = sanger_unevaluated
+    data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0

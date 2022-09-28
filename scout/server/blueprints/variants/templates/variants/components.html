@@ -1,10 +1,10 @@
-{% macro sv_genes_cell(variant) %}
+{% macro variant_gene_symbols_cell(variant) %}
   <div class="d-flex justify-content-between align-items-center">
     <div>
       {% if variant.hgnc_symbols|length >= 5 %}
         <span class="badge bg-secondary mr-3">{{ variant.hgnc_symbols|length }}</span>
-        <a class="mr-3" data-bs-toggle="collapse" href="#_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">[...]</a>
-        <div class="collapse" id="_{{variant._id}}">
+        <a class="mr-3" data-bs-toggle="collapse" href="#_genes_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">[...]</a>
+        <div class="collapse" id="_genes_{{variant._id}}">
           {% for symbol in variant.hgnc_symbols|sort %}
             {{symbol}}<br>
           {% endfor %}
@@ -15,6 +15,44 @@
             <span class="badge bg-secondary mr-3">{{ variant.hgnc_symbols|length }}</span>
           {% endif %}
           {{variant.hgnc_symbols|sort|join(", ")}}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro variant_funct_anno_cell(variant) %}
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      {% if variant.functional_annotations|length >= 5 %}
+        <a class="mr-3" data-bs-toggle="collapse" href="#_functanno_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">{% if variant.missing_data %}[first 30 genes]{% else %}[...]{% endif %}</a>
+        <div class="collapse" id="_functanno_{{variant._id}}">
+          {% for annotation in variant.functional_annotations|sort %}
+            {{ annotation }}<br>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div>
+          {{ variant.functional_annotations|sort|join(", ") }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro variant_region_anno_cell(variant) %}
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      {% if variant.functional_annotations|length >= 5 %}
+        <a class="mr-3" data-bs-toggle="collapse" href="#_regionanno_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">{% if variant.missing_data %}[first 30 genes]{% else %}[...]{% endif %}</a>
+        <div class="collapse" id="_regionanno_{{variant._id}}">
+          {% for annotation in variant.region_annotations|sort %}
+            {{ annotation }}<br>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div>
+          {{ variant.region_annotations|sort|join(", ") }}
         </div>
       {% endif %}
     </div>

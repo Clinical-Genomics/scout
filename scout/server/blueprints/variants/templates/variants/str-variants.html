@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% from "utils.html" import comments_table, pedigree_panel %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general %}
+{% from "variant/buttons.html" import reviewer_button%}
+
 {% from "variants/utils.html" import cell_rank, dismiss_variants_block, filter_form_footer, update_stash_filter_button_status, pagination_footer, pagination_hidden_div, str_filters, filter_script_main %}
 
 {% block title %}
@@ -49,7 +51,7 @@
       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
           {{ str_filters(form, institute, case) }}
       </div>
-      {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length) }}
+      {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
     </div>
   </form>
   <div class="card mt-3">
@@ -63,7 +65,7 @@
           <th title="ReferenceSize">Reference size</th>
           <th title="Status">Status</th>
           <th title="GT">Genotype</th>
-          <th title="Chromosome">Chr.</th>
+          <th title="Chromosome" style="width:6%">Chr.</th>
           <th title="Position" style="width:20%">Position</th>
         </tr>
       </thead>
@@ -100,15 +102,16 @@
                   {% endif %}
                 {% endfor %}
             </td>
-            <td>{{ variant.chromosome }}</td>
-            <td>
+            <td class="text-end">{{ variant.chromosome }}</td>
+            <td class="text-end">
               {{ variant.position }}
+              {{ reviewer_button(case,variant,case_groups,institute._id) }}
               {% if case.bam_files %}
-                <span><a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" target="_blank">IGV viewer</a></span>
+                <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" rel="noopener" target="_blank">IGV viewer</a>
               {% else %}
-                <span class="text-muted">BAM file(s) missing</span>
+                <button title="BAM file(s) missing" class="btn btn-secondary btn-sm" disabled>IGV viewer</button>
               {% endif %}
-              </td>
+            </td>
         </tr>
         {% else %}
           <tr>

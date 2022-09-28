@@ -90,7 +90,6 @@ class GeneHandler(object):
             query["hgnc_symbol"] = hgnc_identifier
 
         query["build"] = build
-        LOG.debug("Fetching gene %s" % hgnc_identifier)
         gene_obj = self.hgnc_collection.find_one(query)
         if not gene_obj:
             return None

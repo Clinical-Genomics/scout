@@ -4,13 +4,46 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [unreleased]
+## Changed
+- Hide removed gene panels by default in panels page
+- Removed option for filtering cancer SVs by Tumor and Normal alt AF
+
+## [4.59]
+### Added
+- Button to go directly to HPO SV filter variantS page from case
+- `Scout-REViewer-Service` integration - show `REViewer` picture if available
+- Link to HPO panel coverage overview on Case page
+- Specify a confidence threshold (green|amber|red) when loading PanelApp panels
+- Functional annotations in variants lists exports (all variants)
+- Cancer/Normal VAFs and COSMIC ids in in variants lists exports (cancer variants)
+### Changed
+- Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
+- Order of cells in variants tables
+- More evident links to gene coverage from Variant page
+- Gene panels sorted by display name in the entire Case page
+- Round CADD and GnomAD values in variants export files
+### Fixed
+- HPO filter button on SV variantS page
+- Spacing between region|function cells in SVs lists
+- Labels on gene panel Chanjo report
+- Fixed ambiguous duplicated response headers when requesting a BAM file from /static
+- Visited color link on gene coverage button (Variant page)
+
+## [4.58.1]
+### Fixed
+- Case search with search strings that contain characters that can be escaped
+
+## [4.58]
 ### Added
 - Documentation on how to create/update PanelApp panels
 - Add filter by local observations (archive) to structural variants filters
 - Add more splicing consequences to SO term definitions
 - Search for a specific gene in all gene panels
+- Institute settings option to force show all variants on VariantS page for all cases of an institute
+- Filter cases by validation pending status
+- Link to The Clinical Knowledgebase (CKB) (https://ckb.jax.org/) in cancer variant's page
+
 ### Fixed
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
@@ -22,8 +55,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Search matching causatives also among research variants in other cases
 - Links to variants in Verified variants page
 - Broken filter institute cases by pinned gene
+- Better visualization of long lists of genes in large SVs on Causative and Verified Variants page
+- Reintroduced missing button to export Causative variants
+- Better linking and display of matching causatives and managed variants
 ### Changed
-- State that loqusdb observation is in current case if observations count is one and no cases are shown  
+- State that loqusdb observation is in current case if observations count is one and no cases are shown
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
 - Refactored and simplified code used for collecting gene variants for `Search SNVs and INDELs` page
 - Fix sidebar panel icons in Case view
@@ -36,6 +72,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Easier editing of HPO gene panel on case page
 - Assign phenotype panel less cramped on Case page
 - Causatives and Verified variants pages to use the same template macro
+- Allow hyphens in panel names
 - Reduce resolution of example images
 - Remove some animations in web gui which where rendered slow
 
