@@ -109,6 +109,7 @@ class ScoutIndividual(BaseModel):
     individual_id: str = Field(alias="sample_id")
     is_sma: Optional[str] = None
     is_sma_carrier: Optional[str] = None
+    mitodel_file: Optional[str] = None
     mitodel: Optional[Mitodel] = Mitodel()
     mother: Optional[str] = None
     msi: Optional[str] = None
