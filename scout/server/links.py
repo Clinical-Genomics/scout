@@ -22,7 +22,6 @@ def add_gene_links(gene_obj, build=37):
         build = 37
     # Add links that use the hgnc_id
     hgnc_id = gene_obj["hgnc_id"]
-
     gene_obj["hgnc_link"] = genenames(hgnc_id)
     gene_obj["omim_link"] = omim(hgnc_id)
     # Add links that use ensembl_id
@@ -50,7 +49,9 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["exac_link"] = exac(ensembl_id)
     gene_obj["gnomad_link"] = gnomad(ensembl_id, build)
     # Add links that use entrez_id
-    gene_obj["entrez_link"] = entrez(gene_obj.get("entrez_id"))
+    entrez_id = gene_obj.get("common", {}).get("entrez_id")
+    gene_obj["entrez_link"] = entrez(entrez_id)
+    gene_obj["ckb_link"] = ckb_gene(entrez_id)
     # Add links that use omim id
     gene_obj["omim_link"] = omim(gene_obj.get("omim_id"))
     # Add links that use hgnc_symbol
@@ -98,6 +99,13 @@ def gnomad_str_gene(hgnc_symbol):
         return "https://gnomad.broadinstitute.org/short-tandem-repeats?dataset=gnomad_r3"
 
     return link.format(hgnc_symbol)
+
+
+def ckb_gene(entrez_id):
+    link = "https://ckb.jax.org/gene/show?geneId={}"
+    if not entrez_id:
+        return None
+    return link.format(entrez_id)
 
 
 def civic_gene(hgnc_symbol):

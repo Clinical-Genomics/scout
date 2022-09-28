@@ -40,6 +40,7 @@ from .gene_tags import (
     MODELS_MAP,
     PANEL_GENE_INFO_MODELS,
     PANEL_GENE_INFO_TRANSCRIPTS,
+    PANELAPP_CONFIDENCE_EXCLUDE,
     UPDATE_GENES_RESOURCES,
     VALID_MODELS,
 )
@@ -72,6 +73,7 @@ from .variant_tags import (
     VARIANT_REPORT_VARIANT_FEATURES,
 )
 from .variants_export import (
+    CANCER_EXPORT_HEADER,
     EXPORT_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,

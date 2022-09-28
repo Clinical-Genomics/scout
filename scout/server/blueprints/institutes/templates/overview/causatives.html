@@ -28,7 +28,7 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    <div class="col">
+    <div class="col-12">
         {{ variant_list_content(institute, causatives, acmg_map, callers) }}
     </div>
   </div> <!-- end of div id body-row -->
@@ -38,21 +38,11 @@
 {% block scripts %}
   {{ super() }}
   {{ db_table_external_scripts() }}
-  <script type="text/javascript">
+  <script>
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
-
-    $(document).ready(function() {
-      $('#causatives_table').DataTable( {
-          paging: false,
-          dom: 'Bfrtip',
-          buttons: [
-              'copyHtml5',
-              'excelHtml5',
-          ]
-      } );
-    } );
   </script>
+  <script src="{{ url_for('overview.static', filename='variants_list_scripts.js') }}"></script>
 {% endblock %}
