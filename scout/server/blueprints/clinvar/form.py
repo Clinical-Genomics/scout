@@ -24,6 +24,7 @@ from scout.constants import (
     CLINVAR_INHERITANCE_MODELS,
     CLNSIG_TERMS,
     COLLECTION_METHOD,
+    PHENO_DBS,
     SV_TYPES,
 )
 
@@ -45,17 +46,20 @@ class ClinVarVariantForm(FlaskForm):
     linking_id = HiddenField()
     ref = HiddenField()
     alt = HiddenField()
-    gene_symbol = StringField("Gene symbols")
+    gene_symbol = StringField("Gene symbols, comma separated")
     inheritance_mode = SelectField(
-        "Inheritance models", choices=[(item, item) for item in CLINVAR_INHERITANCE_MODELS]
+        "Inheritance model", choices=[(item, item) for item in CLINVAR_INHERITANCE_MODELS]
     )
     clinsig = SelectField("Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS])
     clinsig_comment = TextAreaField("Comment on clinical significance")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
     last_evaluated = DateField("Date evaluated")
-    hpo_terms = MultiCheckboxField("Variant-associated HPO terms", choices=[])
-    omim_terms = MultiCheckboxField("Variant-associated OMIM terms", choices=[])
+    hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
+    omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
     condition_comment = TextAreaField("Additional comments describing condition")
+    condition_types = SelectField(
+        "Condition type", choices=[(key, value) for key, value in PHENO_DBS.items()]
+    )
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)

@@ -168,3 +168,13 @@ COLLECTION_METHOD = [
     "research",
     NOT_PROVIDED,
 ]
+
+# Available databases used to describe phenotypes (Key/Description)
+PHENO_DBS = {
+    "OMIM": "OMIM",
+    "MedGen": "MedGen",
+    "Orphanet": "MedGen",
+    "MeSH": "MeSH",
+    "HP": "HPO",
+    "MONDO": "MONDO",
+}

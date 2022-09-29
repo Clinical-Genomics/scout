@@ -11,16 +11,22 @@ from . import controllers
 
 LOG = logging.getLogger(__name__)
 
-blueprint = Blueprint("clinvar", __name__, template_folder="templates")
+blueprint = Blueprint(
+    "clinvar",
+    __name__,
+    template_folder="templates",
+    static_folder="static",
+    static_url_path="/clinvar/static",
+)
 
 
-@blueprint.route("/<institute_id>/<case_name>/clinvar/add_one", methods=["POST"])
+@blueprint.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
 def clinvar_add_variant(institute_id, case_name):
     """Create a ClinVar submission document in database for one or more variants from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = {"institute": institute_obj, "case": case_obj}
     controllers.set_clinvar_form(request.form.get("var_id"), data)
-    return render_template("clinvar_add_one.html", **data)
+    return render_template("multistep_add_variant.html", **data)
 
 
 @blueprint.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
