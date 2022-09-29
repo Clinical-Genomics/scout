@@ -73,6 +73,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Assign phenotype panel less cramped on Case page
 - Causatives and Verified variants pages to use the same template macro
 - Allow hyphens in panel names
+- Reduce resolution of example images
+- Remove some animations in web gui which where rendered slow
+
 
 ## [4.57.4]
 ### Fixed
