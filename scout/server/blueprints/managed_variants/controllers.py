@@ -133,21 +133,29 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
     total_variant_lines = 0
     new_managed_variants = 0
 
-    for managed_variant_info in parse_managed_variant_lines(lines):
-        total_variant_lines += 1
+    try:
+        for managed_variant_info in parse_managed_variant_lines(lines):
+            total_variant_lines += 1
 
-        if not validate_managed_variant(managed_variant_info):
-            flash(
-                f"Managed variant info line {total_variant_lines} has errors ({managed_variant_info})",
-                "warning",
-            )
-            continue
+            if not validate_managed_variant(managed_variant_info):
+                flash(
+                    f"Managed variant info line {total_variant_lines} has errors ({managed_variant_info})",
+                    "warning",
+                )
+                continue
 
-        managed_variant_info.update({"maintainer": [current_user_id], "institutes": institutes})
-        managed_variant_obj = build_managed_variant(managed_variant_info)
+            managed_variant_info.update({"maintainer": [current_user_id], "institutes": institutes})
+            managed_variant_obj = build_managed_variant(managed_variant_info)
 
-        if store.upsert_managed_variant(managed_variant_obj):
-            new_managed_variants += 1
+            if store.upsert_managed_variant(managed_variant_obj):
+                new_managed_variants += 1
+
+    except UnboundLocalError:
+        flash(
+            f"Bad format on variant file. Line {total_variant_lines}",
+            "warning",
+        )
+
 
     return new_managed_variants, total_variant_lines
 
