@@ -156,7 +156,6 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
             "warning",
         )
 
-
     return new_managed_variants, total_variant_lines
 
 
