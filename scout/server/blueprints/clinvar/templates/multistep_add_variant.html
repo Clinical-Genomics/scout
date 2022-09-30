@@ -167,8 +167,8 @@
 
                 <div class="row">
                   <div class="col-6">
-                    {{variant_data.var_form.condition_types.label(class="fw-bold")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
-                    {{variant_data.var_form.condition_types(class="form-control")}}
+                    {{variant_data.var_form.condition_type.label(class="fw-bold")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
+                    {{variant_data.var_form.condition_type(class="form-control")}}
                     <br>
                     {{variant_data.var_form.conditions.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from one database type only (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
                     <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">

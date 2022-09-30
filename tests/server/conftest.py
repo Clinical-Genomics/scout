@@ -605,6 +605,8 @@ def clinvar_form(request):
             "affected_status": ["yes", "no", "no"],
             "allele_of_origin": ["germline"] * 3,
             "collection_method": ["clinical testing"] * 3,
+            "condition_type": "HP",
+            "conditions": ["HP:0001298", "HP:0001250"],
         }
     )
     return data

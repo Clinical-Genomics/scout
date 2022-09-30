@@ -58,7 +58,7 @@ class ClinVarVariantForm(FlaskForm):
     hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
     condition_comment = TextAreaField("Additional comments describing condition")
-    condition_types = SelectField(
+    condition_type = SelectField(
         "Condition type", choices=[(key, value) for key, value in PHENO_DBS.items()]
     )
     conditions = SelectMultipleField("List of conditions, comma-separated)")
