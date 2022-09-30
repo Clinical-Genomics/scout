@@ -48,7 +48,8 @@ class ClinVarVariantForm(FlaskForm):
     alt = HiddenField()
     gene_symbol = StringField("Gene symbols, comma separated")
     inheritance_mode = SelectField(
-        "Inheritance model", choices=[(item, item) for item in CLINVAR_INHERITANCE_MODELS]
+        "Inheritance model",
+        choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
     )
     clinsig = SelectField("Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS])
     clinsig_comment = TextAreaField("Comment on clinical significance")
