@@ -91,7 +91,7 @@
         {% endif %}
         )
         {% if case.dynamic_gene_list_edited %} <span class="text-danger ml-3"> (edited) </span> {% endif %}
-        {% if config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
+        {% if case.track != 'cancer' and config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
           <span class="pull-right">
             <a href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage report</a>
             <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
