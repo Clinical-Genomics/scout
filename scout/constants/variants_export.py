@@ -32,7 +32,6 @@ MT_COV_STATS_HEADER = [
 ]
 
 MITODEL_HEADER = [
-    "Sample ID",
     "Normal MT read pair count",
     "Discordant MT read pair count",
     "MT discordant ratio (ppk)",
