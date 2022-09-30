@@ -110,6 +110,7 @@ def build_individual(ind):
     ind_obj["predicted_ancestry"] = ind.get("predicted_ancestry")
     ind_obj["chromograph_images"] = ind.get("chromograph_images")
     ind_obj["reviewer"] = ind.get("reviewer")
+    ind_obj["mitodel"] = ind.get("mitodel")
 
     # Check if the analysis type is ok
     # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')

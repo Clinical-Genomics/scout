@@ -73,7 +73,7 @@ def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case_config(scout_config)
-    # THEN the case should have a the parameter
+    # THEN the case should have the parameter
     assert case_data[param_name] == scout_config[param_name]
 
 

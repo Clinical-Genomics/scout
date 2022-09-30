@@ -128,7 +128,7 @@ def add_mitodel_info(config_data):
         )
 
         file_handle = open(mitodel_file, "r")
-        individual[mitodel] = parse_mitodel_file(file_handle)
+        individual["mitodel"] = parse_mitodel_file(file_handle)
 
 
 def add_smn_info(config_data):

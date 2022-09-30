@@ -1,3 +1,5 @@
+import re
+
 from scout.utils.convert import convert_number, make_bool_pass_none
 
 
