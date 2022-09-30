@@ -909,7 +909,8 @@ class CaseHandler(object):
             },
         }
         analysis_dates = [
-            analysis.get("date", [{"date": analysis_date}]) for analysis in old_case.get("analyses")
+            analysis.get("date", [{"date": analysis_date}])
+            for analysis in old_case.get("analyses", [])
         ]
         if analysis_date not in analysis_dates:  # avoid duplicates due to failed uploads
             update_actions["$addToSet"]["analyses"] = {
