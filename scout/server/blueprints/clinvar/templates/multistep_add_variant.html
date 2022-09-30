@@ -3,6 +3,8 @@
 {% block css %}
   {{ super() }}
   <link rel="stylesheet" href="{{ url_for('clinvar.static', filename='form_style.css') }}"></link>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 {% endblock %}
 
 {% block head %}
@@ -101,13 +103,11 @@
                         {{variant_data.var_form.ref_copy_number.label(class="fw-bold")}}
                         {{variant_data.var_form.ref_copy_number(size=5)}}
                         <!-- Copy number -->
-                        {{variant_data.var_form.copy_number.label(class="fw-bold")}}
+                        {{variant_data.var_form.copy_number.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
                         {{variant_data.var_form.copy_number(size=5)}}
                       <!--start and end chroms-->
                         {{variant_data.var_form.chromosome.label(class="fw-bold")}}
                         {{variant_data.var_form.chromosome(size=5)}}
-                        {{variant_data.var_form.end_chromosome.label(class="fw-bold")}}
-                        {{variant_data.var_form.end_chromosome(size=5)}}
                       </div>
                       <div class=col-6>
                         <!-- BP1 -->
@@ -165,36 +165,42 @@
                 <h2 class="fs-title">Associated Conditions</h2>
                 <h3 class="fs-subtitle">The condition for which the variant is interpreted. Detailed information about reporting condition is available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/faq_submitters/#pheno" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/clinvar/docs/faq_submitters/#pheno</a>. If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features.  If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records. i.e. this variant causes condition A in some individuals and causes disease B in other individuals. Provide only one name or identifier for a condition; do not provide multiple names or identifiers for the same condition."</h3>
 
-                {% if variant_data.var_form.omim_terms.choices %}
-                  {{variant_data.var_form.omim_terms.label(class="fw-bold")}}
-                  {% for item_row in variant_data.var_form.omim_terms | batch(4) %}
-                    <div class="row">
-                    {% for item in item_row %}
-                      <div class="col-4">{{ item() }} {{item.label }}</label></div>
-                    {% endfor %}
-                    </div>
-                  {% endfor %}
-                {% else %}
-                No OMIM terms associated with this case
-                {% endif %}
-                <br>
+                <div class="row">
+                  <div class="col-6">
+                    {{variant_data.var_form.condition_types.label(class="fw-bold")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
+                    {{variant_data.var_form.condition_types(class="form-control")}}
+                    <br>
+                    {{variant_data.var_form.conditions.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from one database type only (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
+                    <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
+                      {% if variant_data.var_form.omim_terms.choices %}
+                        {% for term, _ in variant_data.var_form.omim_terms.choices %}
+                          <option value="{{term}}" selected>{{term}}</option>
+                        {% endfor %}
+                      {% elif variant_data.var_form.hpo_terms.choices%}
+                        {% for term, _ in variant_data.var_form.hpo_terms.choices %}
+                          <option value="{{term}}" selected>{{term}}</option>
+                        {% endfor %}
+                      {% endif %}
+                      {
+                    </select>
 
-                {% if variant_data.var_form.hpo_terms.choices %}
-                  {{variant_data.var_form.hpo_terms.label(class="fw-bold")}}
-                  {% for item_row in variant_data.var_form.hpo_terms| batch(4) %}
-                    <div class="row">
-                    {% for item in item_row %}
-                      <div class="col-4">{{ item() }} {{item.label}}</label></div>
+                  </div>
+                  <div class="col-6">
+                    {{variant_data.var_form.omim_terms.label(class="fw-bold")}}<br>
+                    {% for term in variant_data.var_form.omim_terms %}
+                      {{ term.label }}<br>
+                    {% else %}
+                    n.a.
                     {% endfor %}
-                    </div>
-                  {% endfor %}
-                {% else %}
-                No HPO terms associated with this case
-                {% endif %}
-                <br>
-
-                {{variant_data.var_form.condition_comment.label(class="fw-bold")}}
-                {{variant_data.var_form.condition_comment(class="form-control")}}
+                    <br><br>
+                    {{variant_data.var_form.hpo_terms.label(class="fw-bold")}}<br>
+                    {% for term in variant_data.var_form.hpo_terms %}
+                      {{ term.label }}<br>
+                    {% else %}
+                    n.a.
+                    {% endfor %}
+                  </div>
+                </div>
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
@@ -248,6 +254,8 @@
 {% block scripts %}
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 
 // Enable tooltips
@@ -332,5 +340,14 @@ $(".previous").click(function(){
 		easing: 'easeInOutBack'
 	});
 });
+
+// Populate condition list
+$('#condition_tags').select2({
+  tags: true,
+  theme: 'bootstrap-5',
+  tokenSeparators: [','],
+  placeholder: "e.g. OMIM:604233,OMIM:300491,..",
+});
+
 </script>
 {% endblock %}

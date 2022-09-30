@@ -88,7 +88,6 @@ def _get_sv_var_form(variant_obj, case_obj):
     """
     var_form = SVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
-    var_form.ref_copy_number.data = 2
     var_form.chromosome.data = variant_obj.get("chromosome")
     var_form.end_chromosome.data = variant_obj.get("end_chrom")
     var_form.breakpoint1.data = variant_obj.get("position")
@@ -186,12 +185,8 @@ def _set_conditions(clinvar_var, form):
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
-    if form.getlist("omim_terms"):
-        clinvar_var["condition_id_type"] = "OMIM"
-        clinvar_var["condition_id_value"] = ";".join(form.getlist("omim_terms"))
-    elif form.getlist("hpo_terms"):
-        clinvar_var["condition_id_type"] = "HPO"
-        clinvar_var["condition_id_value"] = ";".join(form.getlist("hpo_terms"))
+    clinvar_var["condition_id_type"] = form.get("condition_types")
+    clinvar_var["condition_id_value"] = ";".join(form.getlist("conditions"))
 
 
 def parse_variant_form_fields(form):

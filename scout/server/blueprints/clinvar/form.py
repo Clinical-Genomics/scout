@@ -46,7 +46,7 @@ class ClinVarVariantForm(FlaskForm):
     linking_id = HiddenField()
     ref = HiddenField()
     alt = HiddenField()
-    gene_symbol = StringField("Gene symbols, comma separated")
+    gene_symbol = StringField("Gene symbols, comma-separated")
     inheritance_mode = SelectField(
         "Inheritance model",
         choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
@@ -61,6 +61,7 @@ class ClinVarVariantForm(FlaskForm):
     condition_types = SelectField(
         "Condition type", choices=[(key, value) for key, value in PHENO_DBS.items()]
     )
+    conditions = SelectMultipleField("List of conditions, comma-separated)")
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
