@@ -5,10 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-## Changed
+### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
 - Hide links to coverage repost if cancer analysis
+### Fixed
+- Avoid showing case as rerun when first attempt at case upload failed
 
 ## [4.59]
 ### Added
