@@ -50,30 +50,6 @@ from .utils import (
 LOG = logging.getLogger(__name__)
 
 
-def get_matching_variants(variant_obj, institute_obj, match_causatives=True):
-    """Retrieve matching causatives and managed variants for a given variant
-
-    Args:
-        variant_obj(scout.models.Variant)
-        institute_obj(scout.models.Institute)
-        match_causatives(bool): if True, return list of matching causatives from other cases
-    """
-
-    matching_causatives = []
-    matching_managed = []
-
-    if match_causatives:
-        matching_causatives = [
-            causative for causative in store.other_causatives(case_obj, variant_obj)
-        ]
-    store.find_managed_variant_id(variant_obj["variant_id"])
-
-    if variant_obj.get("category") == "cancer":
-        matching_tiered = store.matching_tiered(variant_obj, user_institutes(store, current_user))
-
-    return matching_causatives, matching_managed, matching_tiered
-
-
 def tx_overview(variant_obj):
     """Prepares the content of the transcript overview to be shown on variant and general report pages.
        Basically show transcripts that contain RefSeq or are canonical.
@@ -290,10 +266,14 @@ def variant(
         institute_obj, case=case_obj, variant_id=variant_id, comments=True
     )
 
-    # Add info about other causative/managed/tiered variants
-    matching_causatives, matching_managed = get_matching_variants(
-        variant_obj, institute_obj, add_other
-    )
+    # Adds information about other causative variants
+    other_causatives = []
+    if add_other:
+        other_causatives = [
+            causative for causative in store.other_causatives(case_obj, variant_obj)
+        ]
+
+    managed_variant = store.find_managed_variant_id(variant_obj["variant_id"])
 
     if variant_obj.get("category") == "cancer":
         variant_obj["matching_tiered"] = store.matching_tiered(
@@ -387,8 +367,8 @@ def variant(
         "case": case_obj,
         "variant": variant_obj,
         variant_category: True,
-        "causatives": matching_causatives,
-        "managed_variant": matching_managed,
+        "causatives": other_causatives,
+        "managed_variant": managed_variant,
         "events": events,
         "overlapping_vars": overlapping_vars,
         "manual_rank_options": MANUAL_RANK_OPTIONS,

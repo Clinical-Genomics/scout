@@ -76,7 +76,7 @@ class InstituteForm(FlaskForm):
     )
 
     gene_panels_matching = NonValidatingSelectMultipleField(
-        "Gene panels available for other variants matching (managed, causatives, tiered)",
+        "Gene panels available for other variants matching (managed and causatives variants)",
         validators=[validators.Optional()],
     )
 

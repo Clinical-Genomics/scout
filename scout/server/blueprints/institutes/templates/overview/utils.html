@@ -79,7 +79,7 @@
               </div>
 
               <div class="col-4">
-                {{ form.gene_panels_matching.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Limit incidental findings by looking for matching managed, causatives and tiered variants only in these panels") }}
+                {{ form.gene_panels_matching.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Limit incidental findings by looking for matching managed and causatives variants only in these panels") }}
                 <select multiple="multiple" name="gene_panels_matching" class="selectpicker ml-3" data-style="btn-secondary">
                   {% for choice in form.gene_panels_matching.choices or [] %}
                     <option value="{{choice[0]}}" {% if institute.gene_panels_matching and choice[0] in institute.gene_panels_matching.keys() %} selected {% endif %}>{{choice[1]}}</option>
