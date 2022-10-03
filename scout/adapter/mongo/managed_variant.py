@@ -31,6 +31,7 @@ class ManagedVariantHandler(object):
 
         return result.inserted_id
 
+
     def upsert_managed_variant(self, managed_variant_obj, original_obj_id=None):
         """Load or updated a managed variant object
 
@@ -44,30 +45,39 @@ class ManagedVariantHandler(object):
 
         LOG.debug("Upserting variant %s", managed_variant_obj["display_id"])
 
+        LOG.debug("MV: {}".format(managed_variant_obj))
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
 
         collision = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
 
-        # in GUI ooid is read when clicking 'edit'
-        #
-        #
-        if collision and not original_obj_id:
-            LOG.debug(
-                "Collision - new variant already exists but no original id given! Leaving variant unmodified."
-            )
-            return
-
-        if original_obj_id:
+        # edit from gui, may update key contruction values
+        if collision and original_obj_id:
+            LOG.debug("Update from GUI")
             result = self.managed_variant_collection.find_one_and_update(
                 {"_id": ObjectId(original_obj_id)},
                 {"$set": managed_variant_obj},
             )
-
             return result
+        
+        # edit from file, write if key construction values are unchanged
+        if collision:
+            if managed_variant_obj["managed_variant_id"] == collision["managed_variant_id"]:
+                LOG.debug("Update from FILE")
+                result = self.managed_variant_collection.find_one_and_update(
+                    {"_id": ObjectId(original_obj_id)},
+                    {"$set": managed_variant_obj},
+                )
+                return result
+            else:
+                LOG.debug(
+                "Collision -variant already exists but no original id given! Leaving variant unmodified."
+            )
+            return
 
         try:
+            LOG.debug("Update NEW")
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
         except DuplicateKeyError as err:
             LOG.debug(
@@ -77,6 +87,8 @@ class ManagedVariantHandler(object):
             )
 
         return result
+            
+            
 
     def managed_variant(self, document_id):
         """Retrieve a managed variant of known id.
