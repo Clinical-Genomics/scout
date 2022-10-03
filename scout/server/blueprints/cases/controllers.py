@@ -329,12 +329,19 @@ def case(store, institute_obj, case_obj):
             for img in case_obj["custom_images"][img_section]:
                 img["data"] = b64encode(img["data"]).decode("utf-8")
 
+    # Limit secondary findings according to institute settings
+    limit_genes = store.safe_genes_filter(institute_obj["_id"])
+
     data = {
         "institute": institute_obj,
         "case": case_obj,
         "status_class": STATUS_MAP.get(case_obj["status"]),
-        "other_causatives": [var for var in store.check_causatives(case_obj=case_obj)],
-        "managed_variants": [var for var in store.check_managed(case_obj=case_obj)],
+        "other_causatives": [
+            var for var in store.check_causatives(case_obj=case_obj, limit_genes=limit_genes)
+        ],
+        "managed_variants": [
+            var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
+        ],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
         "case_groups": case_groups,
