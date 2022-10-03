@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+## Added
+- Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
 ## Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
@@ -48,7 +50,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Institute settings option to force show all variants on VariantS page for all cases of an institute
 - Filter cases by validation pending status
 - Link to The Clinical Knowledgebase (CKB) (https://ckb.jax.org/) in cancer variant's page
-
 ### Fixed
 - Added a not-authorized `auto-login` fixture according to changes in Flask-Login 0.6.2
 - Renamed `cache_timeout` param name of flask.send_file function to `max_age` (Flask 2.2 compliant)
