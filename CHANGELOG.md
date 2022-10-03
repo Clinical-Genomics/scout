@@ -5,7 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-## Changed
+### Added
+- List of "safe" gene panels available for other variants matching in institute settings, to avoid secondary findings
+### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
 - Hide links to coverage repost if cancer analysis
