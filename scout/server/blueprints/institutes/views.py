@@ -216,6 +216,7 @@ def institute_settings(institute_id):
 
     # if institute is to be updated
     if request.method == "POST" and institute_form.validate_on_submit():
+        LOG.error(request.form)
         institute_obj = controllers.update_institute_settings(store, institute_obj, request.form)
         if isinstance(institute_obj, dict):
             flash("institute was updated ", "success")
