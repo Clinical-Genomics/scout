@@ -49,6 +49,10 @@ class ManagedVariantHandler(object):
         collision = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
+
+        # in GUI ooid is read when clicking 'edit'
+        # 
+        #
         if collision and not original_obj_id:
             LOG.debug(
                 "Collision - new variant already exists but no original id given! Leaving variant unmodified."
