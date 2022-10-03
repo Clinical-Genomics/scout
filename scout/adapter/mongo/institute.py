@@ -184,6 +184,8 @@ class InstituteHandler(object):
         """
         safe_genes = []
         institute_obj = self.institute(institute_id)
+        if not institute_obj:
+            return safe_genes
         for panel_name in institute_obj.get("gene_panels_matching", {}).keys():
             safe_genes += self.panel_to_genes(panel_name=panel_name, gene_format="hgnc_id")
         return safe_genes
