@@ -94,7 +94,6 @@ def parse_managed_variant_lines(csv_lines):
     return managed_variant_info_dicts
 
 
-
 def update_managed_variant_description(managed_variant_id, description):
     """Update description field of an existing managed_variant
 
@@ -106,11 +105,10 @@ def update_managed_variant_description(managed_variant_id, description):
         None
     """
 
-
     # 1. find
     # 2. override field
     # 3. write
-    
+
     return "_".join(
         [
             str(part)
@@ -125,4 +123,3 @@ def update_managed_variant_description(managed_variant_id, description):
             )
         ]
     )
-

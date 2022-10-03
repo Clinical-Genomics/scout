@@ -51,7 +51,7 @@ class ManagedVariantHandler(object):
         )
 
         # in GUI ooid is read when clicking 'edit'
-        # 
+        #
         #
         if collision and not original_obj_id:
             LOG.debug(
