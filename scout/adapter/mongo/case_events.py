@@ -388,13 +388,13 @@ class CaseEventHandler(object):
         Return:
             updated_case
         """
-        rerun_status = True
+        is_rerun = True
         verb = "rerun"
         if case.get("rerun_requested") is True:
-            rerun_status = False
+            is_rerun = False
             verb = "rerun_reset"
 
-        if rerun_status is True and case.get("status") == "archived":
+        if is_rerun is True and case.get("status") == "archived":
             # assign case to user requesting rerun
             self.assign(institute, case, user, link)
 
@@ -410,7 +410,7 @@ class CaseEventHandler(object):
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
-            {"$set": {"rerun_requested": rerun_status}},
+            {"$set": {"rerun_requested": is_rerun}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
         return updated_case
