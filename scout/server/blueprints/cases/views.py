@@ -777,7 +777,7 @@ def update_rerun_status(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
 
-    store.request_rerun(institute_obj, case_obj, user_obj, link)
+    store.update_rerun_status(institute_obj, case_obj, user_obj, link)
     return redirect(link)
 
 

@@ -586,7 +586,7 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
     assert res["status"] == "archived"
 
     # request rerun for test case
-    adapter.request_rerun(institute_obj, res, user_obj, "blank")
+    adapter.update_rerun_status(institute_obj, res, user_obj, "blank")
     res = adapter.case(case_obj["_id"])
     # THEN rerun_requested is flagged
     assert res["rerun_requested"] is True
@@ -598,7 +598,7 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
 
     # WHEN rerun is reset using the same method:
     # And that a new rerun request triggers an error:
-    adapter.request_rerun(institute_obj, res, user_obj, "blank")
+    adapter.update_rerun_status(institute_obj, res, user_obj, "blank")
 
     # THEN case rerun status should be reset
     res = adapter.update_case(case_obj)
