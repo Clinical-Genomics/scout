@@ -489,6 +489,7 @@ class CaseHandler(object):
         if institute_id:
             query["collaborators"] = institute_id
 
+        LOG.debug("Fetch all cases with query {0}".format(query))
         nr_cases = sum(1 for i in self.case_collection.find(query))
 
         return nr_cases
@@ -580,11 +581,13 @@ class CaseHandler(object):
         query = {}
         if case_id:
             query["_id"] = case_id
+            LOG.info("Fetching case %s", case_id)
         else:
             if not (institute_id and display_name):
                 raise ValueError(
                     "Please provide either case ID or both institute_id and display_name."
                 )
+            LOG.info("Fetching case %s institute %s", display_name, institute_id)
             query["owner"] = institute_id
             query["display_name"] = display_name
 
@@ -1035,6 +1038,7 @@ class CaseHandler(object):
         case_verif_variants = {"sanger_verified": [], "sanger_ordered": []}
 
         # Add the verified variants
+        LOG.info("Fetching all sanger variants and all validated variants")
         results = {
             "sanger_verified": self.validated(case_id=case_id),
             "sanger_ordered": self.sanger_ordered(case_id=case_id),
@@ -1049,6 +1053,15 @@ class CaseHandler(object):
                 if not variant_obj:
                     continue
                 case_verif_variants[category].append(variant_obj)
+
+        LOG.info(
+            "Nr variants with sanger verification found: %s",
+            len(case_verif_variants["sanger_verified"]),
+        )
+        LOG.info(
+            "Nr variants with sanger ordered found: %s",
+            len(case_verif_variants["sanger_ordered"]),
+        )
 
         return case_verif_variants
 

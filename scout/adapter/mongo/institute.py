@@ -180,7 +180,7 @@ class InstituteHandler(object):
             institute_id(str): _id of an institute
 
         Returns:
-            hgnc_list(list of HGNC ids)
+            safe_genes(list of HGNC ids)
         """
         safe_genes = []
         for panel_name in institute_obj.get("gene_panels_matching", {}).keys():
