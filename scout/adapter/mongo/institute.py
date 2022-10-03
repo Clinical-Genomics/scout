@@ -64,7 +64,7 @@ class InstituteHandler(object):
             remove_sanger(str): Email adress for sanger user to be removed
             phenotype_groups(iterable(str)): New phenotype groups
             gene_panels(dict): a dictionary of panels with key=panel_name and value=display_name
-            gene_panels_matching(dict): panels to limit search of matching variants (managed, causatives, tiered) to. Dict with key=panel_name and value=display_name
+            gene_panels_matching(dict): panels to limit search of matching variants (managed, causatives) to. Dict with key=panel_name and value=display_name
             group_abbreviations(iterable(str))
             add_groups(bool): If groups should be added. If False replace groups
             sharing_institutes(list(str)): Other institutes to share cases with
