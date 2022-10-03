@@ -80,6 +80,7 @@ from .variant_tags import (
 from .variants_export import (
     CANCER_EXPORT_HEADER,
     EXPORT_HEADER,
+    MITODEL_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
     VCF_HEADER,
