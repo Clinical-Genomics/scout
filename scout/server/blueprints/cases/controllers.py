@@ -11,7 +11,6 @@ import requests
 from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
-from flask_mail import Message
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
@@ -847,45 +846,6 @@ def hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols):
         unique_genes = unique_genes.intersection(set(clinical_symbols))
 
     return unique_genes
-
-
-def rerun(store, mail, current_user, institute_id, case_name, sender, recipient):
-    """Request a rerun by email."""
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    user_obj = store.user(current_user.email)
-    link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
-
-    if case_obj.get("rerun_requested") and case_obj["rerun_requested"] is True:
-        flash("Rerun already pending", "info")
-        return
-
-    store.request_rerun(institute_obj, case_obj, user_obj, link)
-
-    # this should send a JSON document to the SuSy API in the future
-    html = """
-        <p>{institute}: {case} ({case_id})</p>
-        <p>Re-run requested by: {name}</p>
-    """.format(
-        institute=institute_obj["display_name"],
-        case=case_obj["display_name"],
-        case_id=case_obj["_id"],
-        name=user_obj["name"].encode(),
-    )
-
-    # compose and send the email message
-    msg = Message(
-        subject=("SCOUT: request RERUN for {}".format(case_obj["display_name"])),
-        html=html,
-        sender=sender,
-        recipients=[recipient],
-        # cc the sender of the email for confirmation
-        cc=[user_obj["email"]],
-    )
-    if recipient:
-        mail.send(msg)
-    else:
-        LOG.error("Cannot send rerun message: no recipient defined in config.")
 
 
 def call_rerunner(store, institute_id, case_name, metadata):

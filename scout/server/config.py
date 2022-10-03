@@ -96,12 +96,13 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 REPORT_LANGUAGE = "en"
 ACCEPT_LANGUAGES = ["en", "sv"]
 
-# TICKET_SYSTEM_EMAIL = "support@test_service.com"
-
 # FEATURE FLAGS
 SHOW_CAUSATIVES = True
 SHOW_OBSERVED_VARIANT_ARCHIVE = True
 HIDE_ALAMUT_LINK = True
+
+# URL of a general web page where users can place orders for analyses or reruns
+RERUN_URL = "https://clinical.scilifelab.se/"
 # Display case rerun monitoring toggle
 RERUN_MONITOR = True
 

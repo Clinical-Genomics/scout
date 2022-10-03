@@ -376,8 +376,8 @@ class CaseEventHandler(object):
 
         return self.case_collection.find_one({"_id": case["_id"]})
 
-    def request_rerun(self, institute, case, user, link):
-        """Request a case to be re-analyzed.
+    def update_rerun_status(self, institute, case, user, link):
+        """Update rerun status of a case.
 
         Args:
             institute (dict): A Institute object
@@ -388,10 +388,13 @@ class CaseEventHandler(object):
         Return:
             updated_case
         """
-        if case.get("rerun_requested"):
-            raise ValueError("rerun already pending")
+        is_rerun = True
+        verb = "rerun"
+        if case.get("rerun_requested") is True:
+            is_rerun = False
+            verb = "rerun_reset"
 
-        if case.get("status") == "archived":
+        if is_rerun is True and case.get("status") == "archived":
             # assign case to user requesting rerun
             self.assign(institute, case, user, link)
 
@@ -401,16 +404,15 @@ class CaseEventHandler(object):
             user=user,
             link=link,
             category="case",
-            verb="rerun",
+            verb=verb,
             subject=case["display_name"],
         )
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
-            {"$set": {"rerun_requested": True}},
+            {"$set": {"rerun_requested": is_rerun}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def monitor(self, institute, case, user, link):
