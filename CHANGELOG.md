@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide links to coverage repost if cancer analysis
 - Rewrote the ClinVar export module to simplify and add one variant at the time
 - ClinVar submissions with phenotype conditions from: [OMIM, MedGen, Orphanet, MeSH, HP, MONDO]
+### Fixed
+- If trying to load a badly formatted .tsv file an error message is displayed.
 
 ## [4.59]
 ### Added
