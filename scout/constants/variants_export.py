@@ -31,6 +31,12 @@ MT_COV_STATS_HEADER = [
     "Estimated mtDNA copy number",
 ]
 
+MITODEL_HEADER = [
+    "Normal MT read pair count",
+    "Discordant MT read pair count",
+    "MT discordant ratio (ppk)",
+]
+
 VCF_HEADER = [
     "##fileformat=VCFv4.2",
     '##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the variant described in this record">',

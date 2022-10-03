@@ -4,6 +4,7 @@ from ped_parser import FamilyParser
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.exceptions import PedigreeError
+from scout.parse.mitodel import parse_mitodel_file
 from scout.parse.models import ScoutLoadConfig
 from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
@@ -79,10 +80,10 @@ def parse_case_data(**kwargs):
     # This will add information from peddy to the individuals
     add_peddy_information(config_dict)
 
-    ##################### Add multiqc information #####################
-    LOG.debug("Checking for SMN TSV..")
     if config_dict.get("smn_tsv"):
         add_smn_info(config_dict)
+
+    add_mitodel_info(config_dict)
 
     if config_dict.get("synopsis"):
         synopsis = (
@@ -94,7 +95,6 @@ def parse_case_data(**kwargs):
     if config_dict.get("case_id") is None:
         config_dict["case_id"] = config_dict["family"]
 
-    LOG.debug("Checking for SMN TSV..")
     if config_dict.get("smn_tsv"):
         LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
         add_smn_info_case(config_dict)
@@ -109,6 +109,26 @@ def parse_case_config(config):
         return {}
     parsed_config = ScoutLoadConfig(**config)
     return parsed_config.dict()
+
+
+def add_mitodel_info(config_data):
+    """Add mitodel data from short mitoSign txt files to individuals
+
+    Args:
+        config_data(dict)
+    """
+
+    for individual in config_data.get("individuals", []):
+        mitodel_file = individual.get("mitodel_file")
+        if not mitodel_file:
+            continue
+
+        LOG.info(
+            "Adding mitosign info from {} to {}".format(mitodel_file, individual["individual_id"])
+        )
+
+        file_handle = open(mitodel_file, "r")
+        individual["mitodel"] = parse_mitodel_file(file_handle)
 
 
 def add_smn_info(config_data):

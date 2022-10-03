@@ -20,6 +20,7 @@ from scout.constants import (
     CASE_REPORT_CASE_FEATURES,
     CASE_REPORT_CASE_IND_FEATURES,
     CASE_REPORT_VARIANT_TYPES,
+    MITODEL_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
     PHENOTYPE_GROUPS,
@@ -657,6 +658,15 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             # Write sample MT vs autosome coverage stats to excel sheet
             for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
                 Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
+
+        mitodel = sample.get("mitodel")
+
+        if mitodel:
+            for col, field in enumerate(MITODEL_HEADER):
+                Report_Sheet.write(row + 6, col, field)
+
+            for col, item in enumerate(["normal", "discordant", "ratioppk"]):
+                Report_Sheet.write(row + 7, col, mitodel.get(item))
 
         workbook.close()
 
