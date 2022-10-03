@@ -376,8 +376,8 @@ class CaseEventHandler(object):
 
         return self.case_collection.find_one({"_id": case["_id"]})
 
-    def request_rerun(self, institute, case, user, link):
-        """Request a case to be re-analyzed.
+    def update_rerun_status(self, institute, case, user, link):
+        """Update rerun status of a case.
 
         Args:
             institute (dict): A Institute object
@@ -413,7 +413,6 @@ class CaseEventHandler(object):
             {"$set": {"rerun_requested": rerun_status}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def monitor(self, institute, case, user, link):
