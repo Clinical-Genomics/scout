@@ -331,6 +331,7 @@ def case(store, institute_obj, case_obj):
 
     # Limit secondary findings according to institute settings
     limit_genes = store.safe_genes_filter(institute_obj["_id"])
+    LOG.error(limit_genes)
 
     data = {
         "institute": institute_obj,
