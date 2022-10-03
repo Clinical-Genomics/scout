@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
 - Hide links to coverage repost if cancer analysis
+- Remove rerun emails and redirect users to the analysis order portal instead
 - Rewrote the ClinVar export module to simplify and add one variant at the time
 - ClinVar submissions with phenotype conditions from: [OMIM, MedGen, Orphanet, MeSH, HP, MONDO]
 ### Fixed
