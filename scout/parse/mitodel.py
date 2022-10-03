@@ -1,6 +1,6 @@
 import re
 
-from scout.utils.convert import convert_number, make_bool_pass_none
+from scout.utils.convert import convert_number
 
 
 def parse_mitodel_file(lines):
@@ -24,5 +24,8 @@ def parse_mitodel_file(lines):
 
         HEADER_ABBREV = ["discordant", "normal", "ratioppk"]
         ind_mitodel_info = dict(zip(HEADER_ABBREV, contents.groups()))
+
+        for field in HEADER_ABBREV:
+            ind_mitodel_info[field] = convert_number(ind_mitodel_info[field])
 
     return ind_mitodel_info
