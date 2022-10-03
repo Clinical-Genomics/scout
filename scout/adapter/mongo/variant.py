@@ -521,7 +521,6 @@ class VariantHandler(VariantLoader):
         Returns:
             causatives(iterable(Variant))
         """
-        LOG.error("HELLO!")
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
         var_causative_events = self.event_collection.find(
             {
@@ -571,7 +570,6 @@ class VariantHandler(VariantLoader):
         Yields:
             other_causative(dict)
         """
-        LOG.error("HELLO BITCHES")
         # variant id without "*_[variant_type]"
         variant_prefix = variant_obj["simple_id"]
         clinical_variant = "".join([variant_prefix, "_clinical"])
