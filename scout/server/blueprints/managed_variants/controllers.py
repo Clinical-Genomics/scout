@@ -152,7 +152,7 @@ def upload_managed_variants(store, lines, institutes, current_user_id):
 
     except UnboundLocalError:
         flash(
-            f"Bad format on variant file. Line {total_variant_lines}",
+            f"Invalid format on variant file. Line {total_variant_lines}",
             "warning",
         )
 
