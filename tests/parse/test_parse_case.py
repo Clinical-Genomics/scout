@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from pprint import pprint as pp
 
 import pytest
 from pydantic import ValidationError
@@ -73,7 +72,7 @@ def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case_config(scout_config)
-    # THEN the case should have a the parameter
+    # THEN the case should have the parameter
     assert case_data[param_name] == scout_config[param_name]
 
 
@@ -103,6 +102,16 @@ def test_parse_case_madeline(scout_config):
     case_data = parse_case_config(scout_config)
     # THEN the case a correct case id
     assert case_data["madeline_info"]
+
+
+def test_parse_case_mitodel(scout_config):
+    """Test parsing of case with mitodel data"""
+    # GIVEN you load sample information from a scout config
+    # WHEN case is parsed
+    case_data = parse_case_data(config=scout_config, owner="cust000")
+
+    # THEN mitodel should be set for the individual who has the file
+    assert case_data.get("individuals")[0].get("mitodel").get("discordant") is not None
 
 
 def test_parse_custom_images(scout_config):
