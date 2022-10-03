@@ -31,7 +31,6 @@ class ManagedVariantHandler(object):
 
         return result.inserted_id
 
-
     def upsert_managed_variant(self, managed_variant_obj, original_obj_id=None):
         """Load or updated a managed variant object
 
@@ -60,7 +59,7 @@ class ManagedVariantHandler(object):
                 {"$set": managed_variant_obj},
             )
             return result
-        
+
         # edit from file, write if key construction values are unchanged
         if collision:
             if managed_variant_obj["managed_variant_id"] == collision["managed_variant_id"]:
@@ -72,8 +71,8 @@ class ManagedVariantHandler(object):
                 return result
             else:
                 LOG.debug(
-                "Collision -variant already exists but no original id given! Leaving variant unmodified."
-            )
+                    "Collision -variant already exists but no original id given! Leaving variant unmodified."
+                )
             return
 
         try:
@@ -87,8 +86,6 @@ class ManagedVariantHandler(object):
             )
 
         return result
-            
-            
 
     def managed_variant(self, document_id):
         """Retrieve a managed variant of known id.
