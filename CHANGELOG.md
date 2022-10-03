@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
 - Hide links to coverage repost if cancer analysis
+- Remove rerun emails and redirect users to the analysis order portal instead
 ### Fixed
 - If trying to load a badly formatted .tsv file an error message is displayed.
 

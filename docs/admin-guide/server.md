@@ -7,8 +7,10 @@ This document will explain how we like to run Scout in both development and prod
 In order to run the web server, it is usually necessary to provide a number of parameters. All available parameters should be specified in a python-formatted configuration file. This config file is passed as a parameter when the application is launched. The following example of a config file is is used for running the development server (read further down):
 
 ```python
+# -*- coding: utf-8 -*-
 SECRET_KEY = "this is not secret..."
-REMEMBER_COOKIE_NAME = "scout_remember_me"
+REMEMBER_COOKIE_NAME = "scout_remember_me"  # Prevent session timeout when user closes browser
+# SESSION_TIMEOUT_MINUTES = 60  # Minutes of inactivity before session times out
 
 # MONGO_URI = "mongodb://127.0.0.1:27011,127.0.0.1:27012,127.0.0.1:27013/?replicaSet=rs0&readPreference=primary"
 MONGO_DBNAME = "scout"
@@ -28,6 +30,15 @@ MAIL_USE_SSL = False
 # Filename of accrediation bagde image in server/bluprints/public/static
 # If null no badge is displayed in scout
 ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
+
+# LDAP login Settings
+# Complete list of accepted parameters available here: https://github.com/rroemhild/flask-ldapconn
+# LDAP_HOST = "localhost" # Can also be named LDAP_SERVER
+# LDAP_PORT = 389
+# LDAP_BASE_DN = 'cn=admin,dc=example,dc=com # Can also be named LDAP_BINDDN
+# LDAP_USER_LOGIN_ATTR = "mail" # Can also be named LDAP_SEARCH_ATTR
+# LDAP_USE_SSL = False
+# LDAP_USE_TLS = True
 
 # Parameters required for Google Oauth 2.0 login
 # GOOGLE = dict(
@@ -67,6 +78,10 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #    "loqus_api" : {"api_url": "http://127.0.0.1:9000"},
 # }
 
+# Connection details for Scout REViewer service
+# URL
+# SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
+
 #
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
 # CLOUD_IGV_TRACKS = [
@@ -90,12 +105,15 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 REPORT_LANGUAGE = "en"
 ACCEPT_LANGUAGES = ["en", "sv"]
 
-# TICKET_SYSTEM_EMAIL = "support@test_service.com"
-
 # FEATURE FLAGS
 SHOW_CAUSATIVES = True
 SHOW_OBSERVED_VARIANT_ARCHIVE = True
 HIDE_ALAMUT_LINK = True
+
+# URL of a general web page where users can place orders for analyses or reruns
+# RERUN_URL = "https://clinical.scilifelab.se/"
+# Display case rerun monitoring toggle
+RERUN_MONITOR = True
 
 # OMIM API KEY: Required for downloading definitions from OMIM (https://www.omim.org/api)
 # OMIM_API_KEY = 'valid_omim_api_key'
@@ -104,10 +122,10 @@ HIDE_ALAMUT_LINK = True
 # PHENOMIZER_USERNAME = "test_user"
 # PHENOMIZER_PASSWORD = "test_password"
 
-# Rank model links
-RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/rank_model_-v"
+# Rank model link
+RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/rank_model_-v"
 RANK_MODEL_LINK_POSTFIX = "-.ini"
-SV_RANK_MODEL_LINK_PREFIX = "https://github.com/Clinical-Genomics/reference-files/blob/master/rare-disease/rank_model/svrank_model_-v"
+SV_RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/svrank_model_-v"
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 ```
 ### Minimal config
