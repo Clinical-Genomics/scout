@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% from "cases/collapsible_actionbar.html" import action_bar, research_modal, rerun_modal, reanalysis_modal, solve_modal %}
+{% from "cases/collapsible_actionbar.html" import action_bar, research_modal, reanalysis_modal, solve_modal %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "cases/utils.html" import causatives_list, suspects_list, remove_form, matching_causatives, matching_managed_variants, beacon_modal, matchmaker_modal %}
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
@@ -170,7 +170,6 @@
 
       {{ modal_synopsis() }}
       {{ solve_modal(institute, case) }}
-      {{ rerun_modal(institute, case) }}
       {{ research_modal(institute, case) }}
       {{ reanalysis_modal(institute, case) }}
       {{ beacon_modal(institute, case) }}
