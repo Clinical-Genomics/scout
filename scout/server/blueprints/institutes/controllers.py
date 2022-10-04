@@ -426,10 +426,10 @@ def cases(store, request, institute_id):
         # Check if case was re-runned
         last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())
         all_analyses_dates = set()
-        for analysis in case_obj.get("analyses", [{"date": last_analysis}]):
-            all_analyses.add(analysis.get("date", last_analysis))
+        for analysis in case_obj.get("analyses", [{"date": last_analysis_date}]):
+            all_analyses_dates.add(analysis.get("date", last_analysis_date))
 
-        case_obj["is_rerun"] = len(all_analyses) > 1 or last_analysis > max(all_analyses)
+        case_obj["is_rerun"] = len(all_analyses_dates) > 1 or last_analysis_date > max(all_analyses)
 
         case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
         case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
