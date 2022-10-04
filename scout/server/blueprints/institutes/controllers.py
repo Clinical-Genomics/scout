@@ -424,7 +424,7 @@ def cases(store, request, institute_id):
             store.user(user_email) for user_email in case_obj.get("assignees", [])
         ]
         # Check if case was re-runned
-        last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())  
+        last_analysis_date = case_obj.get("analysis_date", datetime.datetime.now())
         all_analyses_dates = set()
         for analysis in case_obj.get("analyses", [{"date": last_analysis}]):
             all_analyses.add(analysis.get("date", last_analysis))
