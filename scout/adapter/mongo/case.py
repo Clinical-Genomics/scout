@@ -816,7 +816,10 @@ class CaseHandler(object):
         return self.case_collection.insert_one(case_obj)
 
     def update_case(self, case_obj, keep_date=False):
-        """Update a case in the database
+        """Update a case in the database.
+        While updating the case, it compares the date of the latest analysis (case_obj["analysis_date"]) against
+        the date of the analysis saved in db (old_case["analysis_date"]). If the 2 dates are different, it creates a new analysis
+        containing data from the old analysis under "analyses" in the updated case document.
 
         The following will be updated:
             - analysis_date: Is updated to the new date
@@ -873,44 +876,48 @@ class CaseHandler(object):
                 if ind.get("tissue_type") is None:
                     ind["tissue_type"] = old_ind.get("tissue_type")
 
+        analysis_date = case_obj["analysis_date"]
+        old_analysis_date = old_case["analysis_date"]
+        update_actions = {
+            "$addToSet": {"collaborators": {"$each": case_obj["collaborators"]}},
+            "$set": {
+                "analysis_date": analysis_date,
+                "custom_images": case_obj.get("custom_images"),
+                "cnv_report": case_obj.get("cnv_report"),
+                "coverage_qc_report": case_obj.get("coverage_qc_report"),
+                "delivery_report": case_obj.get("delivery_report"),
+                "gene_fusion_report": case_obj.get("gene_fusion_report"),
+                "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
+                "genome_build": case_obj.get("genome_build", "37"),
+                "has_strvariants": case_obj.get("has_strvariants"),
+                "has_svvariants": case_obj.get("has_svvariants"),
+                "individuals": case_obj["individuals"],
+                "is_research": case_obj.get("is_research", False),
+                "madeline_info": case_obj.get("madeline_info"),
+                "mme_submission": case_obj.get("mme_submission"),
+                "multiqc": case_obj.get("multiqc"),
+                "panels": case_obj.get("panels", []),
+                "rank_model_version": case_obj.get("rank_model_version"),
+                "rerun_requested": case_obj.get("rerun_requested", False),
+                "research_requested": case_obj.get("research_requested", False),
+                "smn_tsv": case_obj.get("smn_tsv"),
+                "status": case_obj.get("status"),
+                "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
+                "track": case_obj.get("track", "rare"),
+                "updated_at": updated_at,
+                "vcf_files": case_obj.get("vcf_files"),
+            },
+        }
+        analysis_dates = [analysis.get("date") for analysis in old_case.get("analyses", [])]
+        if analysis_date != old_analysis_date and old_analysis_date not in analysis_dates:
+            update_actions["$addToSet"]["analyses"] = {
+                "date": old_analysis_date,
+                "delivery_report": old_case.get("delivery_report"),
+            }
+
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
-            {
-                "$addToSet": {
-                    "collaborators": {"$each": case_obj["collaborators"]},
-                    "analyses": {
-                        "date": old_case["analysis_date"],
-                        "delivery_report": old_case.get("delivery_report"),
-                    },
-                },
-                "$set": {
-                    "analysis_date": case_obj["analysis_date"],
-                    "custom_images": case_obj.get("custom_images"),
-                    "cnv_report": case_obj.get("cnv_report"),
-                    "coverage_qc_report": case_obj.get("coverage_qc_report"),
-                    "delivery_report": case_obj.get("delivery_report"),
-                    "gene_fusion_report": case_obj.get("gene_fusion_report"),
-                    "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
-                    "genome_build": case_obj.get("genome_build", "37"),
-                    "has_strvariants": case_obj.get("has_strvariants"),
-                    "has_svvariants": case_obj.get("has_svvariants"),
-                    "individuals": case_obj["individuals"],
-                    "is_research": case_obj.get("is_research", False),
-                    "madeline_info": case_obj.get("madeline_info"),
-                    "mme_submission": case_obj.get("mme_submission"),
-                    "multiqc": case_obj.get("multiqc"),
-                    "panels": case_obj.get("panels", []),
-                    "rank_model_version": case_obj.get("rank_model_version"),
-                    "rerun_requested": case_obj.get("rerun_requested", False),
-                    "research_requested": case_obj.get("research_requested", False),
-                    "smn_tsv": case_obj.get("smn_tsv"),
-                    "status": case_obj.get("status"),
-                    "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
-                    "track": case_obj.get("track", "rare"),
-                    "updated_at": updated_at,
-                    "vcf_files": case_obj.get("vcf_files"),
-                },
-            },
+            update_actions,
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
