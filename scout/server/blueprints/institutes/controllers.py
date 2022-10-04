@@ -429,7 +429,9 @@ def cases(store, request, institute_id):
         for analysis in case_obj.get("analyses", [{"date": last_analysis_date}]):
             all_analyses_dates.add(analysis.get("date", last_analysis_date))
 
-        case_obj["is_rerun"] = len(all_analyses_dates) > 1 or last_analysis_date > max(all_analyses)
+        case_obj["is_rerun"] = len(all_analyses_dates) > 1 or last_analysis_date > max(
+            all_analyses_dates
+        )
 
         case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
         case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
