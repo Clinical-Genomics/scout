@@ -61,7 +61,6 @@ class ManagedVariantHandler(object):
             LOG.debug("RESULT: {}".format(result))
             return True
 
-
         # edit from file, write if key construction values are unchanged
         if collision:
             LOG.debug("COLLISION: {}".format(collision))
