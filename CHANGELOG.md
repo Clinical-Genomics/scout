@@ -5,15 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-## Added
+### Added
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
-## Changed
+### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
 - Hide links to coverage repost if cancer analysis
 - Remove rerun emails and redirect users to the analysis order portal instead
 ### Fixed
 - If trying to load a badly formatted .tsv file an error message is displayed.
+- Dynamic autocomplete search not working on phenomodels page
 
 ## [4.59]
 ### Added
