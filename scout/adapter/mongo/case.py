@@ -912,10 +912,7 @@ class CaseHandler(object):
                 "vcf_files": case_obj.get("vcf_files"),
             },
         }
-        analysis_dates = [
-            analysis.get("date", [{"date": analysis_date}])
-            for analysis in old_case.get("analyses", [])
-        ]
+        analysis_dates = [analysis.get("date") for analysis in old_case.get("analyses", [])]
         if analysis_date != old_analysis_date and old_analysis_date not in analysis_dates:
             update_actions["$addToSet"]["analyses"] = {
                 "date": old_analysis_date,
