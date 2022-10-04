@@ -39,8 +39,8 @@ def test_update_case_existing_collaborator(mock_app, case_obj):
     ## WHEN providing a case id and a valid collaborator
     result = runner.invoke(cli, ["update", "case", case_obj["_id"], "-c", "cust000"])
 
-    ## THEN assert that the case is fetched
-    assert "INFO Fetching case {}".format(case_obj["_id"]) in result.output
+    ## THEN command should have exit code 0 (success)
+    assert result.exit_code == 0
 
 
 def test_update_case_change_collaborator(mock_app, case_obj):
