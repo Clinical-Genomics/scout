@@ -12,7 +12,6 @@ def test_load_research(mock_app, case_obj):
     # Test command without case_id:
     result = runner.invoke(cli, ["load", "research"])
     assert result.exit_code == 0
-    assert "Get cases with query {'research_requested': True}" in result.output
 
     # Test command providing a case_id:
     result = runner.invoke(cli, ["load", "research", "-c", case_obj["_id"]])
