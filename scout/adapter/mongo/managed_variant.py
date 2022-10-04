@@ -31,7 +31,6 @@ class ManagedVariantHandler(object):
 
         return result.inserted_id
 
-
     def upsert_managed_variant(self, managed_variant_obj, original_obj_id=None):
         """Load or updated a managed variant object
 
@@ -59,26 +58,31 @@ class ManagedVariantHandler(object):
                 {"_id": ObjectId(original_obj_id)},
                 {"$set": managed_variant_obj},
             )
-            return result
-        
+            LOG.debug("RESULT: {}".format(result))
+            return True
+
         # edit from file, write if key construction values are unchanged
         if collision:
+            LOG.debug("COLLISION: {}".format(collision))
             if managed_variant_obj["managed_variant_id"] == collision["managed_variant_id"]:
-                LOG.debug("Update from FILE")
-                result = self.managed_variant_collection.find_one_and_update(
-                    {"_id": ObjectId(original_obj_id)},
-                    {"$set": managed_variant_obj},
-                )
-                return result
+                if not _equal(managed_variant_obj, collision):
+                    LOG.debug("Update from FILE")
+                    result = self.managed_variant_collection.find_one_and_update(
+                        {"_id": ObjectId(original_obj_id)},
+                        {"$set": managed_variant_obj},
+                    )
+                    LOG.debug("RESULT: {}".format(result))
+                    return True
             else:
                 LOG.debug(
-                "Collision -variant already exists but no original id given! Leaving variant unmodified."
-            )
-            return
+                    "Collision -variant already exists but no original id given! Leaving variant unmodified."
+                )
+            return False
 
         try:
             LOG.debug("Update NEW")
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
+            LOG.debug("RESULT: {}".format(result))
         except DuplicateKeyError as err:
             LOG.debug(
                 "Variant %s already exists in database with a document id %s.",
@@ -87,8 +91,6 @@ class ManagedVariantHandler(object):
             )
 
         return result
-            
-            
 
     def managed_variant(self, document_id):
         """Retrieve a managed variant of known id.
@@ -247,3 +249,23 @@ class ManagedVariantHandler(object):
             )
 
         return result
+
+    def _equal(managed_variant_a, managed_variant_b):
+        """Compare two managed variants"""
+        return (
+            managed_variant_a["alternative"] == managed_variant_b["alternative"]
+            and managed_variant_a["build"] == managed_variant_b["build"]
+            and managed_variant_a["category"] == managed_variant_b["category"]
+            and managed_variant_a["chromosome"] == managed_variant_b["chromosome"]
+            and managed_variant_a["date"] == managed_variant_b["date"]
+            and managed_variant_a["description"] == managed_variant_b["description"]
+            and managed_variant_a["display_id"] == managed_variant_b["display_id"]
+            and managed_variant_a["end"] == managed_variant_b["end"]
+            and managed_variant_a["institute"] == managed_variant_b["institute"]
+            and managed_variant_a["maintainer"] == managed_variant_b["maintainer"]
+            and managed_variant_a["managed_variant_id"] == managed_variant_b["managed_variant_id"]
+            and managed_variant_a["position"] == managed_variant_b["position"]
+            and managed_variant_a["reference"] == managed_variant_b["reference"]
+            and managed_variant_a["sub_category"] == managed_variant_b["sub_category"]
+            and managed_variant_a["variant_id"] == managed_variant_b["variant_id"]
+        )
