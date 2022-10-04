@@ -23,7 +23,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          {{terms|length}} OMIM terms (last updated {{last_updated.strftime('%d-%m-%Y %H:%M:%S')}})
+          {{terms|length}} OMIM terms (last updated {% if last_updated %}{{last_updated.strftime('%d-%m-%Y %H:%M:%S')}} {%else%} n.a.{%endif%})
         </div>
         <div class="card-body">
           {% if terms|length == 0 %}
