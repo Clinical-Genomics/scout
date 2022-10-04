@@ -11,6 +11,7 @@ import requests
 from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
+from phenopackets import Individual, OntologyClass, Phenopacket, PhenotypicFeature
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
