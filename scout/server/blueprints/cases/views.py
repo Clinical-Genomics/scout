@@ -533,7 +533,10 @@ def omimterms():
         return abort(500)
     terms = store.query_omim(query=query)
     json_terms = [
-        {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
+        {
+            "name": "{} | {}".format(term["disease_id"], term["description"]),
+            "id": term["disease_id"],
+        }
         for term in terms[:7]
     ]
     return jsonify(json_terms)

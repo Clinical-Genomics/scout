@@ -774,6 +774,7 @@ def _subpanel_omim_checkbox_add(model_dict, user_form):
     Returns:
         model_dict(dict): an updated phenotype model dictionary to be saved to database
     """
+    LOG.error(user_form)
     subpanel_id = user_form.get("omim_subpanel_id")
     omim_id = user_form.get("omim_term").split(" | ")[0]
     omim_obj = store.disease_term(omim_id)

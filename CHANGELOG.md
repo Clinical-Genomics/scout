@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
+- Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
@@ -25,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Specify a confidence threshold (green|amber|red) when loading PanelApp panels
 - Functional annotations in variants lists exports (all variants)
 - Cancer/Normal VAFs and COSMIC ids in in variants lists exports (cancer variants)
-- Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
 - Better visualization of regional annotation for long lists of genes in large SVs in Variants tables
 - Order of cells in variants tables

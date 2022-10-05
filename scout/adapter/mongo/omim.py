@@ -115,7 +115,7 @@ class DiagnosisHandler(object):
             disease_identifier = int(disease_identifier)
             query["disease_nr"] = disease_identifier
         except ValueError:
-            query["_id"] = disease_identifier
+            query["disease_id"] = disease_identifier
 
         return self.disease_term_collection.find_one(query)
 
@@ -150,7 +150,7 @@ class DiagnosisHandler(object):
             self.disease_term_collection.insert_one(disease_obj)
         except DuplicateKeyError as err:
             raise IntegrityError(
-                "Disease term %s already exists in database".format(disease_obj["_id"])
+                "Disease term %s already exists in database".format(disease_obj["disease_id"])
             )
 
         LOG.debug("Disease term saved")
