@@ -6,9 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- List of "safe" gene panels available for matching causatives and managed variants in institute settings, to avoid secondary findings
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
-## Changed
+- List of "safe" gene panels available for matching causatives and managed variants in institute settings, to avoid secondary findings
+### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
 - Hide links to coverage repost if cancer analysis
@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - If trying to load a badly formatted .tsv file an error message is displayed.
 - Avoid showing case as rerun when first attempt at case upload failed
+- Dynamic autocomplete search not working on phenomodels page
 
 ## [4.59]
 ### Added
