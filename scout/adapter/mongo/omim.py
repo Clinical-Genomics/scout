@@ -79,7 +79,7 @@ class DiagnosisHandler(object):
 
         """
         omim_ids = [dia["disease_id"] for dia in case_diagnoses]
-        res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}).sort(
+        res = self.disease_term_collection.find({"disease_id": {"$in": omim_ids}}).sort(
             "disease_nr", ASCENDING
         )
         return res

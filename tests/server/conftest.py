@@ -172,7 +172,7 @@ def hpo_checkboxes():
 def omim_checkbox():
     """Returns a dictionaries representing an OMIM checkboxe"""
     checkbox = {
-        "_id": "OMIM:121210",
+        "disease_id": "OMIM:121210",
         "description": "Febrile seizures familial 1",
     }
     return checkbox

@@ -310,7 +310,7 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
             omim_subpanel_id="subpanel_x",
             omimHasTitle="on",
             omimTermTitle="Title for term",
-            omim_term=" | ".join([omim_checkbox["_id"], omim_checkbox["description"]]),
+            omim_term=" | ".join([omim_checkbox["disease_id"], omim_checkbox["description"]]),
             omim_custom_name="Alternative OMIM name",
             add_omim="",
         )

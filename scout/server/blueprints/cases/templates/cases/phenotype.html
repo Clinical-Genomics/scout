@@ -87,7 +87,7 @@
         <span class="me-3">
           {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                 case_name=case.display_name, remove='yes'),
-                       hidden_input=('omim_term', diagnosis.disease_id)) }}
+                       hidden_input=('omim_term', diagnosis.disease_nr)) }}
         </span>
       </div>
     {% endfor %}
