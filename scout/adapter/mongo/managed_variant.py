@@ -43,31 +43,25 @@ class ManagedVariantHandler(object):
         """
 
         LOG.debug("Upserting variant %s", managed_variant_obj["display_id"])
-
-        LOG.debug("MV: {}".format(managed_variant_obj))
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
-
         collision = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
         if collision:
-            LOG.debug("COLLISION: {}".format(collision))
             # edit from gui, may update key contruction values
             if original_obj_id:
-                LOG.debug("Update from GUI")
                 result = self.managed_variant_collection.find_one_and_update(
                     {"_id": ObjectId(original_obj_id)},
                     {"$set": managed_variant_obj},
                 )
-                LOG.debug("RESULT: {}".format(result))
                 return True
 
-            # edit from file, write if key construction values are unchanged
+            # edit from file, write an update if key construction values are unchanged
             if _update_existing(managed_variant_obj, collision):
-                LOG.debug("Update from FILE")
-                # BUG is here:
-                result = self.managed_variant_collection.insert_one(managed_variant_obj)
-                LOG.debug("RESULT: {}".format(result))
+                result = self.managed_variant_collection.find_one_and_update(
+                    {"_id": collision["_id"]},
+                    {"$set": managed_variant_obj},
+                )
                 return True
             else:
                 LOG.debug(
@@ -76,9 +70,7 @@ class ManagedVariantHandler(object):
                 return False
 
         try:
-            LOG.debug("Update NEW")
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
-            LOG.debug("RESULT: {}".format(result))
         except DuplicateKeyError as err:
             LOG.debug(
                 "Variant %s already exists in database with a document id %s.",
@@ -248,8 +240,15 @@ class ManagedVariantHandler(object):
 
 
 def _update_existing(managed_variant_a, managed_variant_b):
-    """Compare two managed variants.
-    Only a change of timestamp is not enough to trigger an update
+    """Compare two managed variants. Return True if `managed_variant_id` is the
+    same and changes only occurred to description, institute or maintainer. Otherwise
+    return False.
+
+    Args:
+        managed_variant_a(dict)
+        managed_variant_b(dict)
+    Return:
+        Bool
     """
     if managed_variant_a == None or managed_variant_a == None:
         return False
