@@ -14,7 +14,7 @@ def test_phenomodel_checkgroups_filter(app, institute_obj, hpo_checkboxes, omim_
     # GIVEN a phenotype model with one panel and 3 checkboxes (checkbox2 nested inside checkbox1)
     hpo_id1 = hpo_checkboxes[0]["_id"]
     hpo_id2 = hpo_checkboxes[1]["_id"]
-    omim_id = omim_checkbox["_id"]
+    omim_id = omim_checkbox["disease_id"]
     checkbox2 = dict(
         name=hpo_id2,
         description=hpo_checkboxes[1]["description"],
