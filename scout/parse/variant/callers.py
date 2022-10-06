@@ -31,7 +31,6 @@ def parse_callers(variant, category="snv"):
                 for caller in callers:
                     if caller in call:
                         callers[caller] = "Filtered"
-
             elif call in set(callers.keys()):
                 callers[call] = "Pass"
     # The following is parsing of a custom made merge
