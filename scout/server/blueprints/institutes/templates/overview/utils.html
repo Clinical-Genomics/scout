@@ -1,5 +1,30 @@
 {% from "variants/components.html" import variant_gene_symbols_cell, variant_funct_anno_cell %}
 
+{% macro analysis_type(analysis_types) %}
+  {% for analysis_type in analysis_types %}
+    {% if analysis_type == 'wgs' %}
+      {% set badge_class = 'primary' %}
+    {% elif analysis_type == 'wes' %}
+      {% set badge_class = 'warning' %}
+    {% elif analysis_type == 'tga' %}
+      {% set badge_class = 'info' %}
+    {% elif analysis_type in ['panel', 'panel-umi'] %}
+      {% set badge_class = 'info' %}
+    {% elif analysis_type == 'mixed' %}
+      {% set badge_class = 'dark' %}
+    {% elif analysis_type == 'external' %}
+      {% set badge_class = 'danger' %}
+    {% else %}
+      {% set badge_class = 'default' %}
+    {% endif %}
+
+    <span class="badge bg-{{ badge_class }}">
+      {{ analysis_type|upper }}
+    </span>
+  {% endfor %}
+
+{% endmacro %}
+
 {% macro institute_settings(form, beacon_form, institute, current_user, loqus_instances) %}
 <div clas="card w-100">
   <form action="{{ url_for('overview.institute_settings', institute_id=institute._id) }}" method="POST"
@@ -223,12 +248,14 @@
           <th>Inheritance</th>
           <th>ACMG</th>
           <th>Case</th>
+          <th>Analysis type</th>
           <th>Validated status</th>
         </tr>
       </thead>
       <tbody>
         {% for variant in variants %}
           {% set case = variant["case_obj"] %}
+          {% set analysis_types = [] %} <!-- this will be used later in Analysis type column -->
           <tr>
             <td>{{ variant_gene_symbols_cell(variant) }}</td>
             <td><!-- Variant link -->
@@ -310,6 +337,9 @@
               {%- for sample in variant.samples -%}
                 {%- for ind in case.individuals -%}
                   {%- if sample.sample_id == ind.individual_id -%}
+                    {% if sample.genotype_call not in ['0/0', './.', '0/.', './0'] %}
+                      {% do analysis_types.append(ind.analysis_type) %} <!-- used later in Analysis type column -->
+                    {% endif %}
                     {% set allele_depths = ['ref depth', sample.allele_depths[0]]|join(":") + ' - ' + ['alt depth', sample.allele_depths[1]]|join(":") %}
                     <span data-bs-toggle='tooltip' data-bs-container='body' title="{{allele_depths}}" class="badge bg-{{'danger' if ind.phenotype == 2 else 'success' }}">{{sample.genotype_call}} GQ:{{sample.genotype_quality}} AD:{{sample.allele_depths[0]}}|{{sample.allele_depths[1]}}</span>
                   {%- endif -%}
@@ -343,6 +373,9 @@
               {% if (case.partial_causatives and variant._id in case.partial_causatives) %}
                 <span class="badge bg-warning" data-bs-toggle="tooltip" title="Partial causative variants explain part of the case phenotype">partial</span>
               {% endif %}
+            </td>
+            <td>
+              {{ analysis_type(analysis_types|unique) }}
             </td>
             <td><!-- Validated status -->
               {% if variant.validation %}
