@@ -1,6 +1,7 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
+{% from "overview/utils.html" import analysis_type %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - Cases
@@ -156,27 +157,7 @@
       {% endif %}
     </td>
     <td>
-      {% for analysis_type in case.analysis_types %}
-        {% if analysis_type == 'wgs' %}
-          {% set badge_class = 'primary' %}
-        {% elif analysis_type == 'wes' %}
-          {% set badge_class = 'warning' %}
-        {% elif analysis_type == 'tga' %}
-          {% set badge_class = 'info' %}
-        {% elif analysis_type in ['panel', 'panel-umi'] %}
-          {% set badge_class = 'info' %}
-        {% elif analysis_type == 'mixed' %}
-          {% set badge_class = 'dark' %}
-        {% elif analysis_type == 'external' %}
-          {% set badge_class = 'danger' %}
-        {% else %}
-          {% set badge_class = 'default' %}
-        {% endif %}
-
-        <span class="badge bg-{{ badge_class }}">
-          {{ analysis_type|upper }}
-        </span>
-      {% endfor %}
+      {{ analysis_type(case.analysis_types) }}
     </td>
     <td>
       {{ case.display_track }}
