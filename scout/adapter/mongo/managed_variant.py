@@ -62,9 +62,7 @@ class ManagedVariantHandler(object):
                 )
                 return True
             else:
-                LOG.debug(
-                    "Collision -variant in database identical to new variant. Won't update"
-                )
+                LOG.debug("Collision -variant in database identical to new variant. Won't update")
                 return False
 
         try:
@@ -238,7 +236,7 @@ class ManagedVariantHandler(object):
 
 
 def _non_id_values_updated(managed_variant_a, managed_variant_b):
-    """ Compare two managed variants. If non-id creating values are different the updated
+    """Compare two managed variants. If non-id creating values are different the updated
     variant is written to database.
 
     Args:
