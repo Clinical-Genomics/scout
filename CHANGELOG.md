@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
+- A `Type of analysis` column on Causatives and Validated variants pages
 ### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
