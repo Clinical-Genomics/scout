@@ -247,13 +247,10 @@ def _update_existing(managed_variant_a, managed_variant_b):
     Args:
         managed_variant_a(dict)
         managed_variant_b(dict)
+
     Return:
         Bool
     """
-    if managed_variant_a == None or managed_variant_a == None:
-        return False
-    # Implies that chromosome, position, reference, alternative, category, sub_category and build,
-    # are equal
     return managed_variant_a["managed_variant_id"] == managed_variant_b["managed_variant_id"] and (
         managed_variant_a["description"] != managed_variant_b["description"]
         or managed_variant_a["institute"] != managed_variant_b["institute"]
