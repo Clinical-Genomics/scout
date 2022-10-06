@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.utils.dict_utils import remove_nonetype
 from scout.utils.convert import call_safe
+from scout.utils.dict_utils import remove_nonetype
+
 from . import build_clnsig, build_compound, build_gene, build_genotype
 
 LOG = logging.getLogger(__name__)
@@ -208,6 +209,8 @@ def build_variant(
     add_hgnc_symbols(variant_obj, variant_obj["hgnc_ids"], hgncid_to_gene)
     link_gene_panels(variant_obj, gene_to_panels)
     add_clnsig_objects(variant_obj, variant.get("clnsig", []))
+
+    add_callers(variant_obj, variant.get("callers", {}))
 
     ### Add the conservation
     conservation_info = variant.get("conservation", {})
