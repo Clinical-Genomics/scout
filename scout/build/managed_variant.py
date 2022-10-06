@@ -18,12 +18,6 @@ def build_managed_variant(managed_variant_info):
     end = managed_variant_info.get("end", None)
     if end:
         managed_variant_info["end"] = int(end)
-        # ML: this is a good idea, but has a bug
-        # if end >= managed_variant_info["position"]:
-        #     managed_variant_info["end"] = int(end)
-        # else:
-        #     raise IntegrityError("End position before start")
-
     try:
         managed_variant = ManagedVariant(
             chromosome=str(managed_variant_info["chromosome"]),
