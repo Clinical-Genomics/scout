@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - If trying to load a badly formatted .tsv file an error message is displayed.
 - Avoid showing case as rerun when first attempt at case upload failed
 - Dynamic autocomplete search not working on phenomodels page
+- Missing preselected chromosome when editing a managed variant
 
 ## [4.59]
 ### Added
