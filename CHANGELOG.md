@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - If trying to load a badly formatted .tsv file an error message is displayed.
 - Avoid showing case as rerun when first attempt at case upload failed
 - Dynamic autocomplete search not working on phenomodels page
+- Callers added to variant when loading case
 
 ## [4.59]
 ### Added
@@ -66,6 +67,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Better visualization of long lists of genes in large SVs on Causative and Verified Variants page
 - Reintroduced missing button to export Causative variants
 - Better linking and display of matching causatives and managed variants
+- Reduced code complexity in `scout/parse/variant/variant.py`
+- Reduced complexity of code in `scout/build/variant/variant.py`
+
 ### Changed
 - State that loqusdb observation is in current case if observations count is one and no cases are shown
 - Better pagination and number of variants returned by queries in `Search SNVs and INDELs` page
@@ -88,8 +92,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.57.4]
 ### Fixed
 - Parsing of variant.FORMAT "DR" key in parse variant file
-- Reduced code complexity in `scout/parse/variant/variant.py`
-- Reduced complexity of code in `scout/build/variant/variant.py`
 
 ## [4.57.3]
 ### Fixed
