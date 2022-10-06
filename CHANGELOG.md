@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide links to coverage repost if cancer analysis
 ### Fixed
 - If trying to load a badly formatted .tsv file an error message is displayed.
+- Now possible to update managed variant from file without deleting it first
 
 ## [4.59]
 ### Added
