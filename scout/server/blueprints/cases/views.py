@@ -416,6 +416,9 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
+    if action == "EXPORT":
+        phenopacket_json = controllers.export_phenopacket(hpo_ids)
+
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
