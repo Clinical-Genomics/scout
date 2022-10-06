@@ -146,7 +146,7 @@
       <td>
         <select name="chromosome" class="form-control">
           {% for chr,_  in modify_form.chromosome.choices %}
-            <option value="{{chr}}" {% if variant.chromosome==chr or variant.chromosome=="M" and chr=="MT"%} selected {% endif %}>{{chr}}</option>
+            <option value="{{chr}}" {% if variant.chromosome==chr %} selected {% endif %}>{{chr}}</option>
           {% endfor %}
         </select>
       </td>
