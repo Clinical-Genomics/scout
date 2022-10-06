@@ -89,6 +89,7 @@ VERBS_MAP = {
     "share": "shared case with",
     "unshare": "revoked access for",
     "rerun": "requested rerun of",
+    "rerun_reset": "canceled rerun of",
     "rerun_monitor": "requested rerun monitoring for",
     "rerun_unmonitor": "disabled rerun monitoring for",
     "validate": "marked validation status for",
