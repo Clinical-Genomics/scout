@@ -55,9 +55,7 @@ class ManagedVariantHandler(object):
                     {"$set": managed_variant_obj},
                 )
                 return True
-
-            # edit from file, write an update if key construction values are unchanged
-            if _update_existing(managed_variant_obj, collision):
+            if _non_id_values_updated(managed_variant_obj, collision):
                 result = self.managed_variant_collection.find_one_and_update(
                     {"_id": collision["_id"]},
                     {"$set": managed_variant_obj},
@@ -65,7 +63,7 @@ class ManagedVariantHandler(object):
                 return True
             else:
                 LOG.debug(
-                    "Collision -variant already exists but no original id given! Leaving variant unmodified."
+                    "Collision -variant in database identical to new variant. Won't update"
                 )
                 return False
 
@@ -239,10 +237,9 @@ class ManagedVariantHandler(object):
         return result
 
 
-def _update_existing(managed_variant_a, managed_variant_b):
-    """Compare two managed variants. Return True if `managed_variant_id` is the
-    same and changes only occurred to description, institute or maintainer. Otherwise
-    return False.
+def _non_id_values_updated(managed_variant_a, managed_variant_b):
+    """ Compare two managed variants. If non-id creating values are different the updated
+    variant is written to database.
 
     Args:
         managed_variant_a(dict)
