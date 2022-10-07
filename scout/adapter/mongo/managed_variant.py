@@ -237,7 +237,7 @@ class ManagedVariantHandler(object):
 
 def _non_id_values_updated(managed_variant_a, managed_variant_b):
     """Compare two managed variants. If non-id creating values are different the updated
-    variant is written to database.
+    variant is returned, checked ok to be written to database.
 
     Args:
         managed_variant_a(dict)
