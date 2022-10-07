@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dynamic autocomplete search not working on phenomodels page
 - Callers added to variant when loading case
 - Now possible to update managed variant from file without deleting it first
+- Missing preselected chromosome when editing a managed variant
 
 ## [4.59]
 ### Added
