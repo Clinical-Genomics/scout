@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid showing case as rerun when first attempt at case upload failed
 - Dynamic autocomplete search not working on phenomodels page
 - Callers added to variant when loading case
+- Now possible to update managed variant from file without deleting it first
 
 ## [4.59]
 ### Added

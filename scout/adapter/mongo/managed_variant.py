@@ -43,25 +43,27 @@ class ManagedVariantHandler(object):
         """
 
         LOG.debug("Upserting variant %s", managed_variant_obj["display_id"])
-
         managed_variant_obj["date"] = managed_variant_obj.get("date", datetime.now())
-
         collision = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_obj["managed_variant_id"]}
         )
-        if collision and not original_obj_id:
-            LOG.debug(
-                "Collision - new variant already exists but no original id given! Leaving variant unmodified."
-            )
-            return
-
-        if original_obj_id:
-            result = self.managed_variant_collection.find_one_and_update(
-                {"_id": ObjectId(original_obj_id)},
-                {"$set": managed_variant_obj},
-            )
-
-            return result
+        if collision:
+            # edit from gui, may update key contruction values
+            if original_obj_id:
+                result = self.managed_variant_collection.find_one_and_update(
+                    {"_id": ObjectId(original_obj_id)},
+                    {"$set": managed_variant_obj},
+                )
+                return True
+            if _non_id_values_updated(managed_variant_obj, collision):
+                result = self.managed_variant_collection.find_one_and_update(
+                    {"_id": collision["_id"]},
+                    {"$set": managed_variant_obj},
+                )
+                return True
+            else:
+                LOG.debug("Collision -variant in database identical to new variant. Won't update")
+                return False
 
         try:
             result = self.managed_variant_collection.insert_one(managed_variant_obj)
@@ -231,3 +233,21 @@ class ManagedVariantHandler(object):
             )
 
         return result
+
+
+def _non_id_values_updated(managed_variant_a, managed_variant_b):
+    """Compare two managed variants. If non-id creating values are different the updated
+    variant is returned, checked ok to be written to database.
+
+    Args:
+        managed_variant_a(dict)
+        managed_variant_b(dict)
+
+    Return:
+        Bool
+    """
+    return managed_variant_a["managed_variant_id"] == managed_variant_b["managed_variant_id"] and (
+        managed_variant_a["description"] != managed_variant_b["description"]
+        or managed_variant_a["institute"] != managed_variant_b["institute"]
+        or managed_variant_a["maintainer"] != managed_variant_b["maintainer"]
+    )
