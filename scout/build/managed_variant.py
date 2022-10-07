@@ -1,5 +1,4 @@
 import logging
-from scout.exceptions import IntegrityError
 from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
