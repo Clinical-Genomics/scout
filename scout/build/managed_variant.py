@@ -1,5 +1,4 @@
 import logging
-
 from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
@@ -18,7 +17,6 @@ def build_managed_variant(managed_variant_info):
     end = managed_variant_info.get("end", None)
     if end:
         managed_variant_info["end"] = int(end)
-
     try:
         managed_variant = ManagedVariant(
             chromosome=str(managed_variant_info["chromosome"]),
