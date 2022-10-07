@@ -143,7 +143,13 @@
   <form id="modify_variant" method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
-      <td>{{ modify_form.chromosome(class_="form-control") }}</td>
+      <td>
+        <select name="chromosome" class="form-control">
+          {% for chr,_  in modify_form.chromosome.choices %}
+            <option value="{{chr}}" {% if variant.chromosome==chr %} selected {% endif %}>{{chr}}</option>
+          {% endfor %}
+        </select>
+      </td>
       <td><input type="number" class="form-control" name="position" id="position" value="{{ variant.position }}" required></td>
       <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
       <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}" required></td>
