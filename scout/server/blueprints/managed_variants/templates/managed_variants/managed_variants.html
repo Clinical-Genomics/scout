@@ -286,7 +286,7 @@
     setChromosomes();
     populateSubTypeSelect('add_variant');
     {% for variant in managed_variants %}
-      populateSubTypeSelect('modify_variant_'.concat('{{variant.variant_id|safe}}'));
+      populateSubTypeSelect('modify_variant_{{variant.variant_id|safe}}');
     {% endfor %}
   })
 
