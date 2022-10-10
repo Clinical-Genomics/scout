@@ -285,7 +285,9 @@
   $(document).ready(function(){
     setChromosomes();
     populateSubTypeSelect('add_variant');
-    populateSubTypeSelect('modify_variant')
+    {% for variant in managed_variants %}
+      populateSubTypeSelect('modify_variant_'.concat('{{variant.variant_id|safe}}'));
+    {% endfor %}
   })
 
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
