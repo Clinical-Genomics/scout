@@ -140,7 +140,7 @@
 {% endmacro %}
 
 {% macro modify_variant_form(variant) %}
-  <form id="modify_variant" method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
+  <form id="modify_variant_{{variant.variant_id}}" method="POST" action="{{ url_for('managed_variants.modify_managed_variant', variant_id=variant.managed_variant_id) }}" enctype="multipart/form-data" class="form-horizontal">
       {{ modify_form.csrf_token }}
       <input type="hidden" name="variant_id" value="{{ variant._id }}">
       <td>
@@ -154,8 +154,20 @@
       <td><input type="number" class="form-control" name="end" id="end" value="{{ variant.end }}"></td>
       <td><input type="text" class="form-control" name="reference" id="reference" value="{{ variant.reference }}" required></td>
       <td><input type="text" class="form-control" name="alternative" id="alternative" value="{{ variant.alternative }}" required></td>
-      <td>{{ modify_form.category(class_="form-control", onchange="populateSubTypeSelect('modify_variant')") }}</td>
-      <td>{{ modify_form.sub_category(class_="form-control") }}</td>
+      <td>
+        <select name="category" id="category" class="form-control" onchange="populateSubTypeSelect('modify_variant_{{variant.variant_id}}')">
+          {% for ctg,ctg_display in modify_form.category.choices %}
+            <option value="{{ctg}}" {% if ctg == variant.category %} selected {% endif %}>{{ctg_display}}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td>
+        <select name="sub_category" id="sub_category" class="form-control">
+          {% for subctg,subctg_display in modify_form.sub_category.choices %}
+            <option value="{{subctg}}" {% if subctg == variant.sub_category %} selected {% endif %}>{{subctg_display}}</option>
+          {% endfor %}
+        </select>
+      </td>
       <td>
          <div class="input-group">
            <input type="text" class="form-control" name="description" id="description" value="{{ variant.description }}">
@@ -273,7 +285,9 @@
   $(document).ready(function(){
     setChromosomes();
     populateSubTypeSelect('add_variant');
-    populateSubTypeSelect('modify_variant')
+    {% for variant in managed_variants %}
+      populateSubTypeSelect('modify_variant_{{variant.variant_id|safe}}');
+    {% endfor %}
   })
 
   var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
@@ -312,7 +326,7 @@
 
   // populate variant subtype select in add_variant form according to pre-selected variant category
   function populateSubTypeSelect(formId){
-    selectedCategory = document.forms[formId].elements["category"].value; // can be add_variant or modify_variant
+    selectedCategory = document.forms[formId].elements["category"].value;
     subCategorySelect = document.forms[formId].elements["sub_category"];
 
     clearSelect(subCategorySelect) // Reset subcategory select options
