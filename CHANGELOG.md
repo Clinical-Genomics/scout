@@ -21,6 +21,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Callers added to variant when loading case
 - Now possible to update managed variant from file without deleting it first
 - Missing preselected chromosome when editing a managed variant
+- Preselected variant type and subtype when editing a managed variant
+
 
 ## [4.59]
 ### Added
