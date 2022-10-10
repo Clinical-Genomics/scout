@@ -71,7 +71,7 @@ CLINVAR_SNV_38 = {
 # ClinVar CNVs track genome build 37
 CLINVAR_SV_37 = {
     "name": "ClinVar SVs",
-    "track_name": "ClinVar SVs",
+    "track_name": "clinvar_svs",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "SQUISHED",
@@ -84,7 +84,7 @@ CLINVAR_SV_37 = {
 # ClinVar CNVs track genome build 38
 CLINVAR_SV_38 = {
     "name": "ClinVar SVs",
-    "track_name": "ClinVar SVs",
+    "track_name": "clinvar_svs",
     "type": "annotation",
     "sourceType": "file",
     "displayMode": "SQUISHED",
