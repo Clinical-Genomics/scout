@@ -979,6 +979,23 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
 
 
+def phenopacket_hpo(store, institute, phenotype_inds, *hpo_ids):
+    """Generate Phenopacket json with selected HPO terms
+    Args:
+        store:  store
+        institute:
+        phenotype_inds: Individuals to export
+        *hpo_ids:       HPO term ids to export
+    Returns:
+        json: Phenopacket json
+    """
+
+    if not phenotype_inds:
+        return {}
+
+    return phenopacket_json
+
+
 def matchmaker_check_requirements(request):
     """Make sure requirements are fulfilled before submitting any request to MatchMaker Exchange
 

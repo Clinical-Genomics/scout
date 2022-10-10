@@ -417,7 +417,22 @@ def phenotypes_actions(institute_id, case_name):
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
     if action == "EXPORT":
-        phenopacket_json = controllers.export_phenopacket(hpo_ids)
+        phenotype_inds = request.form.getlist("phenotype_inds", [])
+
+        phenopacket_json = controllers.phenopacket_hpo(phenotype_inds, *hpo_ids)
+        file_name = "_".join(
+            [
+                case_obj["display_name"],
+                datetime.datetime.now().strftime("%Y-%m-%d"),
+                "scout_phenopacket.json",
+            ]
+        )
+        return send_file(
+            phenopacket_json,
+            download_name=file_name,
+            mimetype="application/json",
+            as_attachment=True,
+        )
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 

@@ -216,14 +216,17 @@
           </select>
         </div>
         <div class="mr-2">
-          <button class="ms-3 btn no-hover btn-secondary form-control"  id="assign-phenotype-button">Assign Phenotype</button>
+          <button class="ms-1 btn no-hover btn-secondary form-control" id="assign-phenotype-button">Assign Phenotype</button>
         </div>
-        <div class="mr-3">
-        <button class="ms-1 btn no-hover btn-secondary form-control" type="submit" name="action" value="EXPORT">Export Phenotype</button>
+        <div class="mr-2">
+          <button class="ms-1 btn btn-secondary form-control" id="export-phenotype-button" type="submit" name="action" value="EXPORT">Export Phenotype</button>
         </div>
+        <div class="mr-2">
+          <button class="ms-1 btn no-hover btn-secondary form-control" id="load-phenotype-modal">Load Phenotype</button>
+        </div>
+      </div>
     </form>
     <!-- End of add new HPO terms to case/individuals -->
-
 
     <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name)+'#phenotypes_panel' }}" method="POST">
 
@@ -247,7 +250,6 @@
               <button class="btn btn-secondary btn-sm" type="submit" name="action" value="PHENOMIZER"
               {%if case.phenotype_terms|length == 0 %} disabled {%endif%}>Phenomizer</button>
             {% endif %}
-            <button class="ms-3 btn no-hover btn-secondary form-control" id="load-phenotype-modal">Load Phenotype</button>
           </div>
           <div class="col-1">
             <button data-bs-toggle='tooltip' title="Remove selected HPO terms" class="btn btn-danger btn fa fa-trash float-end" type="submit" name="action" value="DELETE"></button>
