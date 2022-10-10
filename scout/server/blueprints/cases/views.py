@@ -416,10 +416,14 @@ def phenotypes_actions(institute_id, case_name):
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
 
+    if action == "LOAD":
+        phenotype_inds = request.form.getlist("phenotype_inds", [])
+        # hpo_ids
+
     if action == "EXPORT":
         phenotype_inds = request.form.getlist("phenotype_inds", [])
 
-        phenopacket_json = controllers.phenopacket_hpo(phenotype_inds, *hpo_ids)
+        phenopacket_json = controllers.phenopacket_hpo(phenotype_inds, hpo_ids)
         file_name = "_".join(
             [
                 case_obj["display_name"],
