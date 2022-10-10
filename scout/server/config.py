@@ -75,19 +75,26 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 #
 # Cloud IGV tracks can be configured here to allow users to enable them on their IGV views.
+# A number of publicly-available tracks can be found here: https://trackhubregistry.org/
 # CLOUD_IGV_TRACKS = [
 #    {
-#        "name": "custom_public_bucket",
+#        "name": "public_tracks",
 #        "access": "public",
 #        "tracks": [
 #            {
-#                "name": "dbVar Pathogenic or Likely Pathogenic",
-#                "type": "variant",
-#                "format": "vcf",
+#                "name": "dbVar common SVs (global)",
+#                "type": "annotation",
+#                "format": "bigbed",
 #                "build": "37",
-#                "url": "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/25777457/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz",
-#                "indexURL": "https://s3-eu-west-1.amazonaws.com/pfigshare-u-files/25777460/GRCh37.variant_call.clinical.pathogenic_or_likely_pathogenic.vcf.gz.tbi",
-#            }
+#                "url": "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhubtest/hg19/common_global.bb",
+#            },
+#            {
+#                "name": "dbVar common SVs (global)",
+#                "type": "annotation",
+#                "format": "bigbed",
+#                "build": "38",
+#                "url": "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhubtest/hg38/common_global.bb",
+#            },
 #        ],
 #    },
 # ]
