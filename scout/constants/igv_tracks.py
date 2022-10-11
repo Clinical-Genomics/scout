@@ -24,7 +24,7 @@ HG38CLINVAR_SVS_URL = (
     "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhub/hg38/clinvar_pathogenic.bb"
 )
 HG19CLINVAR_SVS_URL = (
-    "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhub/hg19/clinvar_pathogenic.bb "
+    "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhub/hg19/clinvar_pathogenic.bb"
 )
 
 # Human genome reference genome build 37. Always displayed
