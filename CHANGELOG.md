@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
 - Hide links to coverage repost if cancer analysis
 - Remove rerun emails and redirect users to the analysis order portal instead
+- Updated clinical SVs igv.js track (dbVar) and added example of external track from `https://trackhubregistry.org/`
 ### Fixed
 - If trying to load a badly formatted .tsv file an error message is displayed.
 - Avoid showing case as rerun when first attempt at case upload failed
