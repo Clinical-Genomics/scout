@@ -34,7 +34,7 @@ def parse_callers(variant, category="snv"):
             elif call in set(callers.keys()):
                 callers[call] = "Pass"
     # The following is parsing of a custom made merge
-    other_info = variant.INFO.get("FOUND_IN")
+    other_info = variant.INFO.get("FOUND_IN") or variant.INFO.get("svdb_origin")
     if other_info:
         for info in other_info.split(","):
             called_by = info.split("|")[0]
