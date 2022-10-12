@@ -34,13 +34,18 @@ def parse_callers(variant, category="snv"):
             elif call in set(callers.keys()):
                 callers[call] = "Pass"
     # The following is parsing of a custom made merge
-    other_info = variant.INFO.get("FOUND_IN") or variant.INFO.get("svdb_origin")
+    svdb_origin = variant.INFO.get("svdb_origin")
+    if svdb_origin:
+        for called_by in svdb_origin.split("|"):
+            callers[called_by] = "Pass"
+
+    other_info = variant.INFO.get("FOUND_IN")
     if other_info:
         for info in other_info.split(","):
             called_by = info.split("|")[0]
             callers[called_by] = "Pass"
 
-    if raw_info or other_info:
+    if raw_info or svdb_origin or other_info:
         return callers
     if category == "snv":
         # cyvcf2 FILTER is None if VCF file column FILTER is "PASS"
