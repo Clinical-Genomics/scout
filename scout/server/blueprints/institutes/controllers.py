@@ -274,6 +274,7 @@ def populate_institute_form(form, institute_obj):
     for panel in available_panels:
         panel_set.add((panel["panel_name"], panel["display_name"]))
     form.gene_panels.choices = sorted(panel_set, key=lambda tup: tup[1])
+    form.gene_panels_matching.choices = sorted(panel_set, key=lambda tup: tup[1])
 
     return default_phenotypes
 
@@ -294,6 +295,7 @@ def update_institute_settings(store, institute_obj, form):
     sharing_institutes = []
     phenotype_groups = []
     gene_panels = {}
+    gene_panels_matching = {}
     group_abbreviations = []
     cohorts = []
 
@@ -317,6 +319,12 @@ def update_institute_settings(store, institute_obj, form):
             continue
         gene_panels[panel_name] = panel_obj["display_name"]
 
+    for panel_name in form.getlist("gene_panels_matching"):
+        panel_obj = store.gene_panel(panel_name)
+        if panel_obj is None:
+            continue
+        gene_panels_matching[panel_name] = panel_obj["display_name"]
+
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
@@ -328,6 +336,7 @@ def update_institute_settings(store, institute_obj, form):
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
         gene_panels=gene_panels,
+        gene_panels_matching=gene_panels_matching,
         group_abbreviations=group_abbreviations,
         add_groups=False,
         sharing_institutes=sharing_institutes,
