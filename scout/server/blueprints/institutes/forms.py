@@ -72,7 +72,12 @@ class InstituteForm(FlaskForm):
     pheno_abbrev = StringField("Abbreviation", validators=[validators.Optional()])
 
     gene_panels = NonValidatingSelectMultipleField(
-        "Gene panels for variants filtering", validators=[validators.Optional()]
+        "Gene panels available for variants filtering", validators=[validators.Optional()]
+    )
+
+    gene_panels_matching = NonValidatingSelectMultipleField(
+        "Gene panels available for other variants matching (managed and causatives variants)",
+        validators=[validators.Optional()],
     )
 
     pheno_groups = NonValidatingSelectMultipleField("Custom phenotype groups", choices=hpo_tuples)

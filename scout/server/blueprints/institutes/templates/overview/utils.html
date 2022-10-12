@@ -86,6 +86,15 @@
             <div class="row mt-3 d-flex align-items-center">
 
               <div class="col-4">
+                {{ form.institutes.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Allow case sharing only with preselected institutes.") }}
+                <select multiple="multiple" class="selectpicker" name="institutes" data-style="btn-secondary">
+                {% for choice in form.institutes.choices %}
+                  <option value="{{choice[0]}}" {% if choice[0] in institute.get("collaborators", []) %} selected {% endif %}>{{choice[1]}}</option>
+                {% endfor %}
+                </select>
+              </div>
+
+              <div class="col-4">
                 {{ form.gene_panels.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Select gene panels that will be available for variants filtering.") }}
                 <select multiple="multiple" name="gene_panels" class="selectpicker ml-3" data-style="btn-secondary">
                   {% for choice in form.gene_panels.choices or [] %}
@@ -95,6 +104,19 @@
               </div>
 
               <div class="col-4">
+                {{ form.gene_panels_matching.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Limit incidental findings by looking for matching managed and causatives variants only in these panels") }}
+                <select multiple="multiple" name="gene_panels_matching" class="selectpicker ml-3" data-style="btn-secondary">
+                  {% for choice in form.gene_panels_matching.choices or [] %}
+                    <option value="{{choice[0]}}" {% if institute.gene_panels_matching and choice[0] in institute.gene_panels_matching.keys() %} selected {% endif %}>{{choice[1]}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+            <div>
+
+            <div class="row mt-3 d-flex align-items-center">
+
+              <div class="col-5">
                 {{ form.pheno_groups.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
                 <select multiple="multiple" name="pheno_groups" class="selectpicker" data-style="btn-secondary">
                   {% for choice in form.pheno_groups.choices or [] %}
@@ -103,7 +125,7 @@
                 </select>
               </div>
 
-              <div class="col-4">
+              <div class="col-7">
                 <div class="col-3">
                   {{form.cohorts.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Categories used to subdivide patients")}}
                 </div>
@@ -115,18 +137,9 @@
                   </select>
                 </div>
               </div>
-
             </div>
 
             <div class="row mt-3 d-flex align-items-center">
-              <div class="col-4">
-                {{ form.institutes.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Allow case sharing only with preselected institutes.") }}
-                <select multiple="multiple" class="selectpicker" name="institutes" data-style="btn-secondary">
-                {% for choice in form.institutes.choices %}
-                  <option value="{{choice[0]}}" {% if choice[0] in institute.get("collaborators", []) %} selected {% endif %}>{{choice[1]}}</option>
-                {% endfor %}
-                </select>
-              </div>
               {% if "admin" in current_user.roles %}
                 <!-- Admins can modify loqusdb settings -->
                 <div class="col-4">

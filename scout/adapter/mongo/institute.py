@@ -43,6 +43,7 @@ class InstituteHandler(object):
         remove_sanger=None,
         phenotype_groups=None,
         gene_panels=None,
+        gene_panels_matching=None,
         group_abbreviations=None,
         add_groups=None,
         sharing_institutes=None,
@@ -63,6 +64,7 @@ class InstituteHandler(object):
             remove_sanger(str): Email adress for sanger user to be removed
             phenotype_groups(iterable(str)): New phenotype groups
             gene_panels(dict): a dictionary of panels with key=panel_name and value=display_name
+            gene_panels_matching(dict): panels to limit search of matching variants (managed, causatives) to. Dict with key=panel_name and value=display_name
             group_abbreviations(iterable(str))
             add_groups(bool): If groups should be added. If False replace groups
             sharing_institutes(list(str)): Other institutes to share cases with
@@ -94,9 +96,6 @@ class InstituteHandler(object):
             )
             updates["$push"] = {"sanger_recipients": sanger_recipient}
 
-        if sanger_recipients is not None:
-            updates["$set"]["sanger_recipients"] = sanger_recipients  # can be empty list
-
         if remove_sanger:
             LOG.info(
                 "Removing sanger recipient {0} from institute: {1}".format(
@@ -105,27 +104,21 @@ class InstituteHandler(object):
             )
             updates["$pull"] = {"sanger_recipients": remove_sanger}
 
-        if coverage_cutoff:
-            LOG.info(
-                "Updating coverage cutoff for institute: {0} to {1}".format(
-                    internal_id, coverage_cutoff
-                )
-            )
-            updates["$set"]["coverage_cutoff"] = coverage_cutoff
-
-        if frequency_cutoff:
-            LOG.info(
-                "Updating frequency cutoff for institute: {0} to {1}".format(
-                    internal_id, frequency_cutoff
-                )
-            )
-            updates["$set"]["frequency_cutoff"] = frequency_cutoff
-
-        if display_name:
-            LOG.info(
-                "Updating display name for institute: {0} to {1}".format(internal_id, display_name)
-            )
-            updates["$set"]["display_name"] = display_name
+        # Set a number of items
+        GENERAL_SETTINGS = {
+            "cohorts": cohorts,
+            "collaborators": sharing_institutes,
+            "coverage_cutoff": coverage_cutoff,
+            "display_name": display_name,
+            "frequency_cutoff": frequency_cutoff,
+            "gene_panels": gene_panels,
+            "gene_panels_matching": gene_panels_matching,
+            "loqusdb_id": loqusdb_ids,
+            "sanger_recipients": sanger_recipients,
+        }
+        for key, value in GENERAL_SETTINGS.items():
+            if value not in [None, ""]:
+                updates["$set"][key] = value
 
         if phenotype_groups is not None:
             if group_abbreviations:
@@ -144,19 +137,6 @@ class InstituteHandler(object):
                     abbreviation = group_abbreviations[i]
                 existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
             updates["$set"]["phenotype_groups"] = existing_groups
-
-        if gene_panels is not None:
-            updates["$set"]["gene_panels"] = gene_panels
-
-        if sharing_institutes is not None:
-            updates["$set"]["collaborators"] = sharing_institutes
-
-        if cohorts is not None:
-            updates["$set"]["cohorts"] = cohorts
-
-        if loqusdb_ids:
-            LOG.warning("Updating loqusdb id for institute: %s to %s", internal_id, loqusdb_ids)
-            updates["$set"]["loqusdb_id"] = loqusdb_ids
 
         if alamut_key is not None:
             updates["$set"]["alamut_key"] = (
@@ -191,6 +171,24 @@ class InstituteHandler(object):
             LOG.debug("Could not find institute {0}".format(institute_id))
 
         return institute_obj
+
+    def safe_genes_filter(self, institute_id):
+        """Returns a list of "safe" HGNC IDs to filter variants with. These genes are retrieved from the institute.gene_panels_matching
+        Can be used to limit secondary findings when retrieving other causatives or matching managed variants
+
+        Args:
+            institute_id(str): _id of an institute
+
+        Returns:
+            safe_genes(list of HGNC ids)
+        """
+        safe_genes = []
+        institute_obj = self.institute(institute_id)
+        if not institute_obj:
+            return safe_genes  # return an empty list
+        for panel_name in institute_obj.get("gene_panels_matching", {}).keys():
+            safe_genes += self.panel_to_genes(panel_name=panel_name, gene_format="hgnc_id")
+        return safe_genes
 
     def institutes(self, institute_ids=None):
         """Fetch all institutes.
