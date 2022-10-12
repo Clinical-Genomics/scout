@@ -60,6 +60,21 @@ def test_parse_callers_intersection(cyvcf2_variant):
     assert callers["samtools"] == "Pass"
 
 
+def test_parse_callers_intersection_svdb_info(cyvcf2_variant):
+    variant = cyvcf2_variant
+    # GIVEN information that all callers agree on Pass
+    variant.INFO["svdb_origin"] = "gatk|deepvariant"
+    variant.INFO["set"] = "Intersection"
+
+    # WHEN parsing the information
+    callers = parse_callers(variant)
+
+    # THEN the svdb info selected callers should be passed
+    assert callers["gatk"] == "Pass"
+    assert callers["deepvariant"] == "Pass"
+    assert callers["samtools"] is None
+
+
 def test_parse_callers_filtered_all(cyvcf2_variant):
     variant = cyvcf2_variant
     # GIVEN information that all callers agree on filtered
