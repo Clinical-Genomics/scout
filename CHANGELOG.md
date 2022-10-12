@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
 - A `Type of analysis` column on Causatives and Validated variants pages
+- List of "safe" gene panels available for matching causatives and managed variants in institute settings, to avoid secondary findings
 - Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
 - Hide removed gene panels by default in panels page
