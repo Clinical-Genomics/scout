@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.60]
 ### Added
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
 - A `Type of analysis` column on Causatives and Validated variants pages
@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
-- Hide links to coverage repost if cancer analysis
+- Hide links to coverage report from case dynamic HPO panel if cancer analysis
 - Remove rerun emails and redirect users to the analysis order portal instead
 - Updated clinical SVs igv.js track (dbVar) and added example of external track from `https://trackhubregistry.org/`
 ### Fixed
