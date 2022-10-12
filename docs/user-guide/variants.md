@@ -40,7 +40,9 @@ This is the first a user looks at when assesing the variant.
   - CLINSIG number
 
 #### SV frequency - SVDB
-     Structural variant database freqency is annotated with [SVDB](https://github.com/J35P312/SVDB), using a clustering algorithm [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN). Variant type and chromosome are exact, but start and end positions for matches are approximate, and depend on previous cases from the database. In a region with multiple, inexactly positioned events, matching will be more relaxed than if only tightly clustered variants with near similar start and end coordinates have been found. Databases include research cases from Clinical genetics (WGS at NGI), clinical cases with arrayCGH (benign or pathogenic collections), Decipher, SweGen and local cases.
+Structural variant database freqency is annotated with [SVDB](https://github.com/J35P312/SVDB), using a clustering algorithm [DBSCAN](https://en.wikipedia.org/wiki/DBSCAN).
+Variant type and chromosome are exact, but start and end positions for matches are approximate, and depend on previous cases from the database. In a region with multiple, inexactly positioned events, matching will be more relaxed than if only tightly clustered variants with near similar start and end coordinates have been found.
+Databases include research cases from Clinical genetics (WGS at NGI), clinical cases with arrayCGH (benign or pathogenic collections), Decipher, SweGen and local cases.
 
 ## Details
 
