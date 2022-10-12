@@ -50,10 +50,9 @@ def parse_callers(variant, category="snv"):
             elif call in set(callers.keys()):
                 callers[call] = "Pass"
 
-    # The following is parsing of a custom made merge
-
     if raw_info or svdb_origin or other_info:
         return callers
+
     if category == "snv":
         # cyvcf2 FILTER is None if VCF file column FILTER is "PASS"
         filter_status = "Pass"
