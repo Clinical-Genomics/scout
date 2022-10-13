@@ -6,14 +6,18 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Display number of OMIM terms available and their last update on Diagnoses page
+
+## [4.60]
+### Added
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
 - A `Type of analysis` column on Causatives and Validated variants pages
 - List of "safe" gene panels available for matching causatives and managed variants in institute settings, to avoid secondary findings
-- Display number of OMIM terms available and their last update on Diagnoses page
+- `svdb_origin` as a synonym for `FOUND_IN` to complement `set` for variants found by all callers
 ### Changed
 - Hide removed gene panels by default in panels page
 - Removed option for filtering cancer SVs by Tumor and Normal alt AF
-- Hide links to coverage repost if cancer analysis
+- Hide links to coverage report from case dynamic HPO panel if cancer analysis
 - Remove rerun emails and redirect users to the analysis order portal instead
 - Updated clinical SVs igv.js track (dbVar) and added example of external track from `https://trackhubregistry.org/`
 ### Fixed
