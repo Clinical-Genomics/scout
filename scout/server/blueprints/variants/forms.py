@@ -93,7 +93,7 @@ class VariantFiltersForm(FlaskForm):
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
     functional_annotations = SelectMultipleField(choices=FUNC_ANNOTATIONS)
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
-    genotypes = SelectField(choices=VARIANT_GENOTYPES)
+    genotypes = NonValidatingSelectField(choices=VARIANT_GENOTYPES)
 
     cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
     compound_rank_score = IntegerField("Compound rank score")
