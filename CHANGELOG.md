@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Possibility to search RD variants by a specific genotype call
+- Possibility to filter RD variants by a specific genotype call
 
 ## [4.60]
 ### Added
