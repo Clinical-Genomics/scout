@@ -96,7 +96,9 @@ GENETIC_MODELS = (
     ("XD_dn", "X Linked Dominant De Novo"),
 )
 
+# Used for filter variants in blueprints.variants
 VARIANT_GENOTYPES = (
+    ("", ""),
     ("0/1", "Heterozygous (0/1)"),
     ("1/1", "Homozygous (1/1)"),
     ("0/0", "Homozygous ref (0/0)"),
