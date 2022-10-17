@@ -394,7 +394,7 @@
 {% macro sv_filters(form, institute, case) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="row mb-3">
-  <div class="col-4">
+  <div class="col-2">
     {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
     {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
   </div>
@@ -413,6 +413,10 @@
   <div class="col-2">
     {{ form.genetic_models.label(class="control-label") }}
     {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
+  </div>
+  <div class="col-2">
+    {{ form.genotypes.label(class="control-label") }}
+    {{ form.genotypes(class="selectpicker", data_style="btn-secondary") }}
   </div>
 </div>
 <div class="row mb-3">
