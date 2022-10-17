@@ -188,6 +188,7 @@ class QueryHandler(object):
                 'cadd_inclusive": boolean,
                 'tumor_frequency': float,
                 'genetic_models': list(str),
+                "genotype": str,
                 'hgnc_symbols': list,
                 'region_annotations': list,
                 'functional_annotations': list,
@@ -652,6 +653,9 @@ class QueryHandler(object):
 
                 mongo_secondary_query.append(cadd_query)
 
+            if criterion == "genotype":
+                _set_secondary_query_gt(mongo_secondary_query, query[criterion])
+
             if criterion in [
                 "genetic_models",
                 "functional_annotations",
@@ -715,3 +719,16 @@ class QueryHandler(object):
                 mongo_secondary_query.append({"cosmic_ids": {"$ne": None}})
 
         return mongo_secondary_query
+
+
+def _set_secondary_query_gt(secondary_query, value):
+    """Sets sample.genotype element of a query in variants collection
+
+    Args:
+        secondary_query(list): a list dictionaries for each of the eventual SECONDARY_CRITERIA
+        value(str): a string value for samples.genotype_call ("1/1", "0/1" ..,  or "other")
+    """
+    if value == "other":
+        secondary_query.append({"samples.genotype_call": {"$nin": ["0/1", "1/1", "0/0", "./."]}})
+    else:
+        secondary_query.append({"samples.genotype_call": value})

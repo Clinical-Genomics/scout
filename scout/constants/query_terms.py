@@ -37,6 +37,7 @@ SECONDARY_CRITERIA = [
     "spidex_human",
     "cadd_score",
     "genetic_models",
+    "genotype",
     "functional_annotations",
     "region_annotations",
     "size",
