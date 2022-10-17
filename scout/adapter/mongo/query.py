@@ -188,7 +188,7 @@ class QueryHandler(object):
                 'cadd_inclusive": boolean,
                 'tumor_frequency': float,
                 'genetic_models': list(str),
-                "genotype": str,
+                "genotypes": str,
                 'hgnc_symbols': list,
                 'region_annotations': list,
                 'functional_annotations': list,
@@ -362,7 +362,7 @@ class QueryHandler(object):
         Accepts:
             mongo_query(dict): a dictionary containing a query key/values
             case_id(str): _id of a case
-            gt_selected(dict or None): dict if user specified a genotype values in form.genotypes, else None
+            gt_selected(dict or None): dict if user specified a genotype value in genotypes form field, else None
         """
         case_obj = self.case(case_id=case_id)
         case_inds = case_obj.get("individuals", [])
