@@ -55,6 +55,7 @@
                   <div>
                     Set
                     <div class="btn-group">
+                      <!-- archived/active-->
                       {% if case.status != 'archived' %}
                         <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#archive_modal">
                           Archived
@@ -64,24 +65,24 @@
                           Unarchived
                         </button>
                       {% endif %}
-                    </div>
-                    {% if case.status != 'solved' %}
-                      <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#solve_modal">
-                        Solved
-                      </button>
-                    {% else %}
-                      <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
-                        Unsolved
-                      </button>
-                    {% endif %}
 
-                    <div class="btn-group">
+                      <!-- solved/active -->
+                      {% if case.status != 'solved' %}
+                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#solve_modal">
+                          Solved
+                        </button>
+                      {% else %}
+                        <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
+                          Unsolved
+                        </button>
+                      {% endif %}
+
+                      <!-- prioritized/active -->
                       <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-info btn-sm">
                         {{ 'de-prioritized' if case.status == 'prioritized' else 'prioritized' }}
                       </button>
-                    </div>
 
-                    <div class="btn-group">
+                        <!-- unused/active -->
                       <button name="status" value="{{ 'unused' if case.status == 'unused' else 'inactive' }}" type="submit" class="btn btn-light btn-sm">
                         {{ 'unused' if case.status != 'unused' else 'active' }}
                       </button>

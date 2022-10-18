@@ -16,7 +16,7 @@
           {{ genome_build(case, case_groups) }}
           {{ rank_model(case) }}
           <li class="list-group-item bg-dark sidebar-separator menu-collapsed"></li>
-          {{ status(institute, case) }}
+          {{ status(case) }}
           {{ assign(institute, case) }}
           {% if not (case.is_archived or case.is_research) %}
             {{ research(case) }}
@@ -192,7 +192,7 @@
 {% endif %}
 {% endmacro %}
 
-{% macro status(institute, case) %}
+{% macro status(case) %}
   <div class="list-group-item d-inline-block bg-dark">
     <div class="nav-sidebar-item" style="color: #FFFFFF;">
       <span class="fa fa-star fa-fw me-3"></span>
