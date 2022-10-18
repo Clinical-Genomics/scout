@@ -449,9 +449,7 @@ def cases(store, request, institute_id):
 
     for nr_cases, case_obj in enumerate(all_cases.limit(limit), 1):
         case_obj = populate_case_obj(case_obj)
-        status = case_obj["status"]
-        if status in case_groups:
-            case_groups[status].append(case_obj)
+        case_groups[case_obj["status"]].append(case_obj)
 
     if prioritized_cases:
         extra_prioritized = 0
