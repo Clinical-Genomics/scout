@@ -13,7 +13,6 @@ from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
 
 LOG = logging.getLogger(__name__)
-CASES_SEARCH_ACTIONS = {}
 
 
 class CaseHandler(object):
