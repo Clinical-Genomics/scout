@@ -256,7 +256,7 @@
         </div>
       {% endif %}
       <div>
-        {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', ] -%}
+        {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', 'unused'] -%}
         {% for status in ordered_statuses %}
           {% for group_name, case_group in cases %}
             {% if status == group_name and case_group|length > 0 %}
