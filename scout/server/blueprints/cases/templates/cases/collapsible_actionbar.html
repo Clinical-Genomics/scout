@@ -194,43 +194,11 @@
 
 {% macro status(institute, case) %}
   <div class="list-group-item d-inline-block bg-dark">
-    <form method="POST"
-          action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
-      <div class="nav-sidebar-item" style="color: #FFFFFF;">
-          <span class="fa fa-star fa-fw me-3"></span>
-          <span class="menu-collapsed">
-          Status: {{ case.status|capitalize }}<br><br>
-          <div class="btn-group btn-group-justified">
-            <div class="btn-group">
-              {% if case.status != 'archived' %}
-                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#archive_modal">
-                  Archive
-                </button>
-              {% else %}
-                <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
-                  Unarchive
-                </button>
-              {% endif %}
-            </div>
-            {% if case.status != 'solved' %}
-              <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#solve_modal">
-                Solve
-              </button>
-            {% else %}
-              <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
-                Unsolve
-              </button>
-            {% endif %}
-
-            <div class="btn-group">
-              <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-light btn-sm">
-                {{ 'De-prioritize' if case.status == 'prioritized' else 'Prioritize' }}
-              </button>
-            </div>
-          </div>
-        </span>
-      </div>
-    </form>
+    <div class="nav-sidebar-item" style="color: #FFFFFF;">
+      <span class="fa fa-star fa-fw me-3"></span>
+      <span class="menu-collapsed">
+      Status: {{ case.status|capitalize }}<br><br>
+    </div>
   </div>
 {% endmacro %}
 
