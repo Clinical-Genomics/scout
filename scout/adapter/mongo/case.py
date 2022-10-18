@@ -478,7 +478,7 @@ class CaseHandler(object):
         This function will change when we migrate to 3.7.1
 
         Args:
-            collaborator(str): Institute id
+            institute_id(str): Institute id
 
         Returns:
             nr_cases(int)
@@ -491,6 +491,21 @@ class CaseHandler(object):
         nr_cases = sum(1 for i in self.case_collection.find(query))
 
         return nr_cases
+
+    def nr_cases_by_status(self, institute_id=None):
+        """For an institute, retrieves number of cases in each case status category
+        Args:
+            institute_id(str): Institute id
+
+        Returns:
+            dict with case.status as keys and nr cases as value
+        """
+        pipeline = []
+        if institute_id:
+            pipeline.append({"$match": {"collaborators": institute_id}})
+        pipeline.append({"$group": {"_id": "$status", "count": {"$sum": 1}}})
+        result = self.case_collection.aggregate(pipeline)
+        return {res["_id"]: res["count"] for res in result}
 
     def update_dynamic_gene_list(
         self,

@@ -71,7 +71,7 @@
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
-          <th style="width: 25%">{{ group_name|capitalize }} cases</th>
+          <th style="width: 25%">{{ group_name|capitalize }} cases ({{cases|length}}/{{status_ncases[group_name]}})</th>
           <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='status' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='status' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort cases by 'status'"></i>
           </a></th>
