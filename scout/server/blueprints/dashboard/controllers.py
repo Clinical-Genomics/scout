@@ -10,6 +10,7 @@ from scout.server.utils import user_institutes
 from .forms import DashboardFilterForm
 
 LOG = logging.getLogger(__name__)
+CASE_STATUS = {"$ne": "unused"}
 
 
 def institute_select_choices():
@@ -162,7 +163,7 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     # Potentially sensitive slice queries are assumed allowed if we have got this far
     name_query = slice_query
 
-    cases = adapter.cases(owner=institute_id, name_query=name_query)
+    cases = adapter.cases(owner=institute_id, name_query=name_query, status=CASE_STATUS)
 
     phenotype_cases = 0
     causative_cases = 0
@@ -228,11 +229,13 @@ def get_case_groups(adapter, total_cases, institute_id=None, slice_query=None):
 
     subquery = {}
     if institute_id and slice_query:
-        subquery = adapter.cases(owner=institute_id, name_query=slice_query, yield_query=True)
+        subquery = adapter.cases(
+            owner=institute_id, name_query=slice_query, status=CASE_STATUS, yield_query=True
+        )
     elif institute_id:
-        subquery = adapter.cases(owner=institute_id, yield_query=True)
+        subquery = adapter.cases(owner=institute_id, status=CASE_STATUS, yield_query=True)
     elif slice_query:
-        subquery = adapter.cases(name_query=slice_query, yield_query=True)
+        subquery = adapter.cases(name_query=slice_query, status=CASE_STATUS, yield_query=True)
 
     query = {"$match": subquery} if subquery else {}
 

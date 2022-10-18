@@ -271,7 +271,7 @@ class CaseHandler(object):
             finished(bool)
             research_requested(bool)
             is_research(bool)
-            status(str)
+            status(str or dict expression)
             group(ObjectId): fetch all cases in a named case group
             cohort(bool): Fetch all cases with cohort tags
             phenotype_terms(bool): Fetch all cases with phenotype
