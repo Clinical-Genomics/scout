@@ -13,6 +13,7 @@ from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
 
 LOG = logging.getLogger(__name__)
+CASES_SEARCH_ACTIONS = {}
 
 
 class CaseHandler(object):
@@ -236,6 +237,21 @@ class CaseHandler(object):
 
         return order
 
+    def _update_case_id_query(self, query, id_list):
+        """Update a case query ["_id"]["$in"] values using an additional list of case _ids
+
+        Args:
+            query(dict): a query dictionary that contains a ["_id"]["$in"] key with case _ids as value
+            id_list(list): a list of case _ids to update query with
+        """
+        if query.get("_id"):  # Check if other filter already limits the search by case _id
+            preselected_ids = query["_id"].get("$in", [])
+            query["_id"]["$in"] = list(
+                set(preselected_ids).intersection(set(id_list))
+            )  # limit also by case _ids present in id_list
+        else:  # use id_list for filtering
+            query["_id"] = {"$in": id_list}
+
     def cases(
         self,
         owner=None,
@@ -258,6 +274,7 @@ class CaseHandler(object):
         within_days=None,
         assignee=None,
         verification_pending=None,
+        has_clinvar_submission=None,
     ):
         """Fetches all cases from the backend.
 
@@ -283,6 +300,7 @@ class CaseHandler(object):
             within_days(int): timespan (in days) for latest event on case
             assignee(str): email of an assignee
             verification_pending(bool): If search should be restricted to cases with verification_pending
+            has_clinvar_submission(bool): If search should be limited to cases with a ClinVar submission
 
         Returns:
             Cases ordered by date.
@@ -354,13 +372,11 @@ class CaseHandler(object):
 
         if verification_pending:  # Filter for cases with Sanger verification pending
             sanger_pending_cases = self.verification_missing_cases(owner)
-            if query.get("_id"):  # Check if other filter already limits the search by case _id
-                preselected_ids = query["_id"].get("$in", [])
-                query["_id"]["$in"] = list(
-                    set(preselected_ids).intersection(set(sanger_pending_cases))
-                )  # limit also by Sanger pending
-            else:  # Apply only Sanger pending filter
-                query["_id"] = {"$in": sanger_pending_cases}
+            self._update_case_id_query(query, sanger_pending_cases)
+
+        if has_clinvar_submission:
+            clinvar_subm_cases = self.clinvar_cases(collaborator or owner)
+            self._update_case_id_query(query, clinvar_subm_cases)
 
         if yield_query:
             return query
@@ -439,6 +455,21 @@ class CaseHandler(object):
                 sanger_missing_cases.append(case_variants["_id"])
 
         return sanger_missing_cases
+
+    def clinvar_cases(self, institute_id=None):
+        """Fetch all cases woth variants contained in a ClinVar submission object
+
+        Args:
+            institute_id(str): id of an institute
+        Returns:
+            clinvar_case_ids(list): list of case _ids
+        """
+        clinvar_case_ids = set()
+        inst_submissions = self.clinvar_submissions(institute_id=institute_id)
+        for subm in inst_submissions:
+            for var in subm.get("variant_data"):
+                clinvar_case_ids.add(var["case_id"])
+        return list(clinvar_case_ids)
 
     def prioritized_cases(self, institute_id=None):
         """Fetches any prioritized cases from the backend.
