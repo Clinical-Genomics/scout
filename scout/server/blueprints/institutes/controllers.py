@@ -416,7 +416,6 @@ def cases(store, request, institute_id):
 
     data["nr_cases"] = store.nr_cases(institute_id=institute_id)
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
-    LOG.error(data["status_ncases"])
     data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
 
     case_groups = {status: [] for status in CASE_STATUSES}
