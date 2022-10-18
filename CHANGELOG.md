@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Additional case category `unused`, to be used for cases that won't be analysed, as opposite to the archived ones
--  
+-  Display number of cases shown / total number of cases available for each category on Cases page
 
 ## [4.60]
 ### Added
