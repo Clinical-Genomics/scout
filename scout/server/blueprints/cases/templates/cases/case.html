@@ -50,7 +50,7 @@
             <div class="col-sm-4">
               <h4 class="">
                 Case: {{case.display_name}} <span class="badge bg-sm bg-secondary">{{case._id}}</span><br>
-                Status: {{case.status}} {%if case.status=="unused"%}<em class="fa fa-question-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Unused cases are excluded from the statistics shown on the dashboad page"></em>{%endif%}<br>
+                Status: {{case.status}}
                 <form method="POST" action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
                   <div>
                     Set
