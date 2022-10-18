@@ -416,3 +416,18 @@ class ClinVarHandler(object):
             submitted_vars[clinvar.get("local_id")] = clinvar
 
         return submitted_vars
+
+    def clinvar_cases(self, institute_id=None):
+        """Fetch all cases woth variants contained in a ClinVar submission object
+
+        Args:
+            institute_id(str): id of an institute
+        Returns:
+            clinvar_case_ids(list): list of case _ids
+        """
+        clinvar_case_ids = set()
+        inst_submissions = self.clinvar_submissions(institute_id=institute_id)
+        for subm in inst_submissions:
+            for var in subm.get("variant_data"):
+                clinvar_case_ids.add(var["case_id"])
+        return list(clinvar_case_ids)
