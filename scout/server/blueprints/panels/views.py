@@ -264,20 +264,19 @@ def panel_export(panel_id):
 @panels_bp.route("/panels/export-panel-case_hits/<panel_id>", methods=["POST"])
 def panel_export_case_hits(panel_id):
     """Export panel to PDF file"""
-    panel_obj = store.panel(panel_id)
     institute_id, case_name = request.form.get("case_name").strip().split(" - ")
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
-    """
-    data = controllers.panel_export(store, panel_obj)
-    data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d")
-    html_report = render_template("panels/panel_pdf_simple.html", **data)
-
+    data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
+    now = datetime.datetime.now().strftime("%Y-%m-%d")
+    data["report_created_at"] = now
+    html_report = render_template("panels/panel_pdf_case_hits.html", **data)
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
     file_name = "_".join(
         [
             data["panel"]["panel_name"],
             str(data["panel"]["version"]),
+            institute_id,
+            case_name,
             datetime.datetime.now().strftime("%Y-%m-%d"),
             "scout.pdf",
         ]
@@ -288,8 +287,6 @@ def panel_export_case_hits(panel_id):
         mimetype="application/pdf",
         as_attachment=True,
     )
-    """
-    return "hello bitches"
 
 
 def tx_choices(hgnc_id, panel_obj):

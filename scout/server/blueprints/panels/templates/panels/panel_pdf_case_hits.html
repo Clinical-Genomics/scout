@@ -3,47 +3,74 @@
 {% block body %}
 <br>
 <div class="container">
-  <h4>Scout - Gene panel report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
-  {{ genes_panel() }}
-  [END OF REPORT]<br><br>
+  <h4>Scout - Institute {{institute.display_name}} - case {{case.display_name}} - Gene panel variant hits</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+  {{ hits_panel() }}
+  <br>[END OF REPORT]<br><br>
   <a href="https://clinical-genomics.github.io/scout" target="_blank">clinical-genomics.github.io/scout</a>
 </div>
 {% endblock %}
 
-{% macro genes_panel() %}
-<div class="card border-dark mb-3">
-  <div class="card-header">
-    Panel: <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{panel.name_and_version}}</a>
-  </div>
-  <div class="card-body">
-    <table class="table table-sm">
-      <tr>
-        <td>Date:<span class="badge bg-secondary rounded-pill text-white">{{ panel.date.strftime('%Y-%m-%d') }}</span></td>
-      </tr>
-      <tr>
-        <td>Number of genes:<span class="badge bg-secondary rounded-pill text-white">{{ panel.genes|length }}</span></td>
-      </tr>
-      <tr>
-        <td>Institute: <span class="badge bg-secondary rounded-pill text-white">{{ panel.institute.display_name }}</span></td>
-      </tr>
-      <tr>
-        <td>Panel archived:
-          {% if panel.is_archived %}
-            <span class="badge bg-danger rounded-pill">True</span>
-          {% else %}
-            <span class="badge bg-secondary rounded-pill text-white">False</span>
-          {% endif %}
-        </td>
-      </tr>
-      <tr>
-        <td>Panel database ID: <span class="badge bg-secondary rounded-pill text-white">{{ panel._id }}</span></td>
-      </tr>
-    </table>
-  </div>
-</div>
-  <br>
-  <div>
-    
-  </div>
-</div>
+{% macro hits_panel() %}
+<table class="table table-sm">
+  <tr>
+    <th>Panel details</th>
+    <th>Case details</th>
+  </tr>
+  <tr>
+    <td>
+      Gene panel: <strong>{{panel.name_and_version}}</strong><br>
+      Last updated: <strong>{{ panel.date.strftime('%Y-%m-%d') }}</strong><br>
+      Database ID: {{ panel._id }}<br>
+      Description: {{ panel.description }}<br>
+      Number of genes: <strong>{{ panel.genes|length }}</strong><br>
+      Institute: {{ panel.institute }} <br>
+      Archived: {% if panel.is_archived %}<span class="badge bg-danger rounded-pill">True</span>{% else %}<span class="badge bg-secondary rounded-pill text-white">False</span>{% endif %}<br>
+    </td>
+    <td>
+      Case: <strong>{{case.display_name}}</strong><br>
+      Institute: <strong>{{institute.display_name}} - {{institute._id}}</strong><br>
+      Status: <strong>{{case.status}}</strong><br>
+      Analysis date: {{case.analysis_date}}<br>
+      Genome build: {{case.genome_build}}
+    </td>
+  </tr>
+</table>
+<br>
+<table>
+  <tr><th>SNV variants hits</th></tr>
+  <tr>
+    <td>
+      <em>{{ variant_hits.snv|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+<br>
+<table>
+  <tr><th>SV variants hits</th></tr>
+  <tr>
+    <td>
+      <em>{{ variant_hits.sv|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+<br>
+<table>
+  <tr><th>STR variants hits</th></tr>
+  <tr>
+    <td>
+      <em>{{ variant_hits.str|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+<br>
+{% if variant_hits.smn and case.smn_tsv %}
+<table>
+  <tr><th>SMN Copy Number</th></tr>
+  <tr>
+    <td>
+      <em>{{ variant_hits.smn|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+{% endif %}
 {% endmacro %}
