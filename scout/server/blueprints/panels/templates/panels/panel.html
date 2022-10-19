@@ -24,6 +24,7 @@
     <div class="col-md-6">{{ pending_panel() }}</div>
   </div>
   {{ genes_panel() }}
+  {{case_hits_export_modal()}}
 </div>
 {% endblock %}
 
@@ -100,7 +101,12 @@
         </li>
       {% endif %}
       <li class="list-group-item">
-        <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-warning btn-sm" download>Export to PDF</a>
+        <div class="d-flex justify-content-between">
+          <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits">
+            Export variant hits for case to PDF
+          </button>
+        </div>
       </li>
     </ul>
   </div>
@@ -230,6 +236,34 @@
       </div>
     {% endif %}
   </div>
+{% endmacro %}
+
+{% macro case_hits_export_modal() %}
+<div class="modal fade" id="exportCasePanelHits" tabindex="-1" role="dialog" aria-labelledby="exportCasePanelHitsModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="causativeLabel">Export gene panel hits for a case</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="#" method="POST">
+        <div class="modal-body">
+          Content of modal
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
+            Export
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endmacro %}
 
 {% block scripts %}

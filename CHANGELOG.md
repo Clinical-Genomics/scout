@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Gene panels PDF export with case variants hits by variant type
+### Fixed
+- Visibility of text on grey badges in gene panels PDF exports
+
 ## [4.60]
 ### Added
 - Mitochondrial deletion signatures (mitosign) can be uploaded and shown with mtDNA report
