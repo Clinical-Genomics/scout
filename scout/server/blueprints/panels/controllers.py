@@ -335,7 +335,6 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj):
         "hgnc_ids": None,
     }
 
-    smn_genes = False
     # Add variants found on panel genes info
     for gene in panel_obj.get("genes", []):
         variants_query["hgnc_ids"] = gene["hgnc_id"]

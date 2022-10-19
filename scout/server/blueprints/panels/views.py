@@ -31,6 +31,7 @@ from . import controllers
 from .forms import PanelGeneForm
 
 LOG = logging.getLogger(__name__)
+DATETIME_FORMATTER = "%Y-%m-%d"
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
 
 
@@ -241,7 +242,7 @@ def panel_export(panel_id):
     """Export panel to PDF file"""
     panel_obj = store.panel(panel_id)
     data = controllers.panel_export(store, panel_obj)
-    data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d")
+    data["report_created_at"] = datetime.datetime.now().strftime(DATETIME_FORMATTER)
     html_report = render_template("panels/panel_pdf_simple.html", **data)
 
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
@@ -249,7 +250,7 @@ def panel_export(panel_id):
         [
             data["panel"]["panel_name"],
             str(data["panel"]["version"]),
-            datetime.datetime.now().strftime("%Y-%m-%d"),
+            datetime.datetime.now().strftime(DATETIME_FORMATTER),
             "scout.pdf",
         ]
     )
@@ -267,7 +268,7 @@ def panel_export_case_hits(panel_id):
     institute_id, case_name = request.form.get("case_name").strip().split(" - ")
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
-    now = datetime.datetime.now().strftime("%Y-%m-%d")
+    now = datetime.datetime.now().strftime(DATETIME_FORMATTER)
     data["report_created_at"] = now
     html_report = render_template("panels/panel_pdf_case_hits.html", **data)
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
@@ -277,7 +278,7 @@ def panel_export_case_hits(panel_id):
             str(data["panel"]["version"]),
             institute_id,
             case_name,
-            datetime.datetime.now().strftime("%Y-%m-%d"),
+            datetime.datetime.now().strftime(DATETIME_FORMATTER),
             "scout.pdf",
         ]
     )
