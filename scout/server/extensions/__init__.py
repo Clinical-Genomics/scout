@@ -4,6 +4,7 @@ from authlib.integrations.flask_client import OAuth
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_wtf.csrf import CSRFProtect
 
 from scout.adapter import MongoAdapter
 from scout.utils.cloud_resources import AlignTrackHandler
@@ -20,6 +21,7 @@ bootstrap = Bootstrap()
 store = MongoAdapter()
 login_manager = LoginManager()
 ldap_manager = LdapManager()
+csrf = CSRFProtect()
 oauth_client = OAuth()
 mail = Mail()
 loqusdb = LoqusDB()

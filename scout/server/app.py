@@ -109,6 +109,7 @@ def configure_extensions(app):
     extensions.store.init_app(app)
     extensions.login_manager.init_app(app)
     extensions.mail.init_app(app)
+    extensions.csrf.init_app(app)
 
     Markdown(app)
 
