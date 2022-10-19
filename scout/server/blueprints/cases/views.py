@@ -494,7 +494,7 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
     return redirect(request.referrer)
 
 
-@cases_bp.route("/api/v1/<institute_id>/cases", defaults={"institute_id": None})
+@cases_bp.route("/api/v1/cases", defaults={"institute_id": None})
 @cases_bp.route("/api/v1/<institute_id>/cases")
 def caselist(institute_id):
     """Search for cases for autocompletion"""
