@@ -19,6 +19,7 @@ from flask_login import current_user
 from scout.server.extensions import store
 from scout.server.utils import (
     html_to_pdf_file,
+    institute_and_case,
     jsonconverter,
     public_endpoint,
     templated,
@@ -258,6 +259,37 @@ def panel_export(panel_id):
         mimetype="application/pdf",
         as_attachment=True,
     )
+
+
+@panels_bp.route("/panels/export-panel-case_hits/<panel_id>", methods=["POST"])
+def panel_export_case_hits(panel_id):
+    """Export panel to PDF file"""
+    panel_obj = store.panel(panel_id)
+    institute_id, case_name = request.form.get("case_name").strip().split(" - ")
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    """
+    data = controllers.panel_export(store, panel_obj)
+    data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d")
+    html_report = render_template("panels/panel_pdf_simple.html", **data)
+
+    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
+    file_name = "_".join(
+        [
+            data["panel"]["panel_name"],
+            str(data["panel"]["version"]),
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            "scout.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        download_name=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
+    )
+    """
+    return "hello bitches"
 
 
 def tx_choices(hgnc_id, panel_obj):

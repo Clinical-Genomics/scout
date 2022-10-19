@@ -1,0 +1,49 @@
+{% extends "report_base.html" %}
+
+{% block body %}
+<br>
+<div class="container">
+  <h4>Scout - Gene panel report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+  {{ genes_panel() }}
+  [END OF REPORT]<br><br>
+  <a href="https://clinical-genomics.github.io/scout" target="_blank">clinical-genomics.github.io/scout</a>
+</div>
+{% endblock %}
+
+{% macro genes_panel() %}
+<div class="card border-dark mb-3">
+  <div class="card-header">
+    Panel: <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{panel.name_and_version}}</a>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm">
+      <tr>
+        <td>Date:<span class="badge bg-secondary rounded-pill text-white">{{ panel.date.strftime('%Y-%m-%d') }}</span></td>
+      </tr>
+      <tr>
+        <td>Number of genes:<span class="badge bg-secondary rounded-pill text-white">{{ panel.genes|length }}</span></td>
+      </tr>
+      <tr>
+        <td>Institute: <span class="badge bg-secondary rounded-pill text-white">{{ panel.institute.display_name }}</span></td>
+      </tr>
+      <tr>
+        <td>Panel archived:
+          {% if panel.is_archived %}
+            <span class="badge bg-danger rounded-pill">True</span>
+          {% else %}
+            <span class="badge bg-secondary rounded-pill text-white">False</span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td>Panel database ID: <span class="badge bg-secondary rounded-pill text-white">{{ panel._id }}</span></td>
+      </tr>
+    </table>
+  </div>
+</div>
+  <br>
+  <div>
+    
+  </div>
+</div>
+{% endmacro %}

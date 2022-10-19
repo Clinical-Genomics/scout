@@ -500,13 +500,13 @@ def caselist(institute_id):
     query = request.args.get("query")
     if query is None:
         return abort(500)
-    user_institutes_ids = [inst["_id"] for inst in user_institutes(store, current_user)]
 
     matching_cases = store.cases(owner=institute_id, name_query="case:" + query)
     display_names = []
     if institute_id:  # called from case page, where institute_id is provided
         display_names = sorted([case["display_name"] for case in matching_cases])
     else:  # called from gene panel page, where institute_id is NOT provided
+        user_institutes_ids = [inst["_id"] for inst in user_institutes(store, current_user)]
         display_names = sorted(
             [
                 " - ".join([case["owner"], case["display_name"]])

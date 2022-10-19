@@ -103,7 +103,7 @@
       <li class="list-group-item">
         <div class="d-flex justify-content-between">
           <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits" download>
             Export variant hits for case to PDF
           </button>
         </div>
@@ -248,10 +248,10 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="#" method="POST">
+      <form action="{{ url_for('panels.panel_export_case_hits', panel_id=panel._id) }}" method="POST">
         <div class="modal-body">
           <label for="case">Case name</label>
-          <input type="text" name="case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10"></input>
+          <input type="text" name="case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10" required></input>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
