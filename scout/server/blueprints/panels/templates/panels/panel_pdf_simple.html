@@ -18,25 +18,25 @@
   <div class="card-body">
     <table class="table table-sm">
       <tr>
-        <td>Date:<span class="badge bg-secondary rounded-pill">{{ panel.date.strftime('%Y-%m-%d') }}</span></td>
+        <td>Date:<span class="badge bg-secondary rounded-pill text-white">{{ panel.date.strftime('%Y-%m-%d') }}</span></td>
       </tr>
       <tr>
-        <td>Number of genes:<span class="badge bg-secondary rounded-pill">{{ panel.genes|length }}</span></td>
+        <td>Number of genes:<span class="badge bg-secondary rounded-pill text-white">{{ panel.genes|length }}</span></td>
       </tr>
       <tr>
-        <td>Institute: <span class="badge bg-secondary rounded-pill">{{ panel.institute.display_name }}</span></td>
+        <td>Institute: <span class="badge bg-secondary rounded-pill text-white">{{ panel.institute.display_name }}</span></td>
       </tr>
       <tr>
         <td>Panel archived:
           {% if panel.is_archived %}
             <span class="badge bg-danger rounded-pill">True</span>
           {% else %}
-            <span class="badge bg-secondary rounded-pill">False</span>
+            <span class="badge bg-secondary rounded-pill text-white">False</span>
           {% endif %}
         </td>
       </tr>
       <tr>
-        <td>Panel database ID: <span class="badge bg-secondary rounded-pill">{{ panel._id }}</span></td>
+        <td>Panel database ID: <span class="badge bg-secondary rounded-pill text-white">{{ panel._id }}</span></td>
       </tr>
     </table>
   </div>
