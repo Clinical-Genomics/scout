@@ -250,13 +250,12 @@
       </div>
       <form action="#" method="POST">
         <div class="modal-body">
-          Content of modal
-
-
+          <label for="case">Case name</label>
+          <input type="text" name="case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10"></input>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button name="action" value="ADD" type="submit" class="btn btn-primary" title="Mark causative">
+          <button name="action" value="export" type="submit" class="btn btn-primary" title="Mark causative">
             Export
           </button>
         </div>
@@ -294,6 +293,16 @@
           process(data)
         });
       }
+      function getCases(query, process) {
+        $.get("{{ url_for('cases.caselist') }}", {query: query}, function(data) {
+          process(data)
+        });
+      }
+      $(".typeahead_cases").typeahead({
+        name: 'cases_list',
+        source: getCases,
+        minLength: 3,
+      });
       $(".typeahead").typeahead({
         source: getTerms,
         minLength: 2,

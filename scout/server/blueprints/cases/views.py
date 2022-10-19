@@ -494,18 +494,26 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
     return redirect(request.referrer)
 
 
-@cases_bp.route("/api/v1/<institute_id>/cases")
+@cases_bp.route("/api/v1/<institute_id>/cases", defaults={"institute_id": None})
 def caselist(institute_id):
     """Search for cases for autocompletion"""
     query = request.args.get("query")
     if query is None:
         return abort(500)
-    display_names = sorted(
-        [
-            case["display_name"]
-            for case in store.cases(owner=institute_id, name_query="case:" + query)
-        ]
-    )
+    user_institutes_ids = [inst["_id"] for inst in user_institutes(store, current_user)]
+
+    matching_cases = store.cases(owner=institute_id, name_query="case:" + query)
+    display_names = []
+    if institute_id:  # called from case page, where institute_id is provided
+        display_names = sorted([case["display_name"] for case in matching_cases])
+    else:  # called from gene panel page, where institute_id is NOT provided
+        display_names = sorted(
+            [
+                " - ".join([case["owner"], case["display_name"]])
+                for case in matching_cases
+                if case["owner"] in user_institutes_ids
+            ]
+        )
     json_terms = [{"name": "{}".format(display_name)} for display_name in display_names]
 
     return jsonify(json_terms)
