@@ -48,7 +48,7 @@ class InstituteHandler(object):
         add_groups=None,
         sharing_institutes=None,
         cohorts=None,
-        loqusdb_ids=[],
+        loqusdb_ids=None,
         alamut_key=None,
         check_show_all_vars=None,
     ):
