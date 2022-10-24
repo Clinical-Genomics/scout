@@ -328,6 +328,10 @@ def update_institute_settings(store, institute_obj, form):
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
+    loqusdb_ids = form.getlist("loqusdb_id")
+    if current_user.is_admin is False:
+        loqusdb_ids = None
+
     updated_institute = store.update_institute(
         internal_id=institute_obj["_id"],
         sanger_recipients=sanger_recipients,
@@ -341,7 +345,7 @@ def update_institute_settings(store, institute_obj, form):
         add_groups=False,
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
-        loqusdb_ids=form.getlist("loqusdb_id"),
+        loqusdb_ids=loqusdb_ids,
         alamut_key=form.get("alamut_key"),
         check_show_all_vars=form.get("check_show_all_vars"),
     )
