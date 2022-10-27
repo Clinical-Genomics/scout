@@ -418,7 +418,7 @@ class ClinVarHandler(object):
         return submitted_vars
 
     def clinvar_cases(self, institute_id=None):
-        """Fetch all cases woth variants contained in a ClinVar submission object
+        """Fetch all cases with variants contained in a ClinVar submission object
 
         Args:
             institute_id(str): id of an institute
