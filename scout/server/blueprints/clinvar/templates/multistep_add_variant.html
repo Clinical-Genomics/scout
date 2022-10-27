@@ -160,8 +160,16 @@
                 <h2 class="fs-title">Clinical Significance</h2>
                 <h3 class="fs-subtitle">The interpretation, or clinical significance, of the variant for the submitted condition</h3>
 
-                {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
-                {{variant_data.var_form.clinsig(class="form-control, bg-white")}}
+                <div class="row">
+                  <div class="col-4">
+                    Classification in Scout:<br>
+                    <span class="badge bg-secondary">{{variant_data.var_obj.classification|replace("_"," ")|upper or "n.a."}}</span>
+                  </div>
+                  <div class="col-8">
+                    {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
+                    {{variant_data.var_form.clinsig(class="form-control, bg-white")}}
+                  </div>
+                </div>
                 <br><br><br>
                 {{variant_data.var_form.clinsig_comment.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required only if you select 'drug response' or 'other' as clinical significance"><strong>?</strong></span>
                 {{variant_data.var_form.clinsig_comment(class="form-control, bg-white", placeholder="(optional)")}}

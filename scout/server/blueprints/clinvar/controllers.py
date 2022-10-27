@@ -3,7 +3,9 @@ from datetime import datetime
 
 from flask import flash
 
+from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_casedata, clinvar_variant
 from scout.server.extensions import store
 from scout.utils.scout_requests import fetch_refseq_version
@@ -146,6 +148,22 @@ def _populate_case_data_form(variant_obj, case_obj):
     return cdata_form_list
 
 
+def _variant_classification(var_obj):
+    """Set a 'classified_as' key/header_value in the variant object, to be displayed on
+    form page with the aim of aiding setting the mandatory 'clinsig' form field
+
+    Args:
+        var_obj(scout.model.Variant) Could be a SNV, Cancer SNV, SV or cancer SV
+
+    Returns:
+        classification(str): Human readable classification or None
+    """
+    if "acmg_classification" in var_obj:
+        return ACMG_MAP[var_obj["acmg_classification"]]
+    elif "manual_rank" in var_obj:
+        return MANUAL_RANK_OPTIONS[var_obj["manual_rank"]]["name"]
+
+
 def set_clinvar_form(var_id, data):
     """Adds form key/values to the form used in ClinVar create submission page
 
@@ -156,6 +174,9 @@ def set_clinvar_form(var_id, data):
     var_obj = store.variant(var_id)
     if not var_obj:
         return
+
+    var_obj["classification"] = _variant_classification(var_obj)
+
     var_form = _populate_variant_form(var_obj, data["case"])  # variant-associated form
     cdata_forms = _populate_case_data_form(var_obj, data["case"])  # CaseData form
     variant_data = {
