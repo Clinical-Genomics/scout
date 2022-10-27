@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Filter case list by cases with variants in ClinVar submission
 - Global CSRF protection to the app
 
 ## [4.60]
