@@ -9,8 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Filter case list by cases with variants in ClinVar submission
 - Additional case category `unused`, to be used for cases that won't be analysed, as opposite to the archived ones
 - Display number of cases shown / total number of cases available for each category on Cases page
-### Changed
 - Moved buttons to modify case status from sidebar to main case page
+### Fixed
+- Non-admin users saving institute settings would clear loqusdb instance selection
+
 
 ## [4.60]
 ### Added
