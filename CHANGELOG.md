@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
+### Fixed
+- Non-admin users saving institute settings would clear loqusdb instance selection
 
 ## [4.60]
 ### Added
