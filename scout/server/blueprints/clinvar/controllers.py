@@ -229,11 +229,17 @@ def parse_variant_form_fields(form):
     for key in clinvar_variant:
         if key in form and form[key] != "":
             clinvar_var[key] = form[key]
-        clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
-        _parse_tx_hgvs(clinvar_var, form)
-        _set_conditions(clinvar_var, form)
-        if form.get("dbsnp_id"):
-            clinvar_var["variations_ids"] = form["dbsnp_id"]
+
+    clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
+    _parse_tx_hgvs(clinvar_var, form)
+    _set_conditions(clinvar_var, form)
+    if form.get("dbsnp_id"):
+        clinvar_var["variations_ids"] = form["dbsnp_id"]
+
+    if clinvar_var.get("ref_seq") and clinvar_var.get("hgvs"):
+        # Variant is described by RefSeq and HGVS already, remove redundanti fields from submission
+        for item in ["chromosome", "start", "stop", "ref", "alt"]:
+            clinvar_var.pop(item)
 
     return clinvar_var
 
