@@ -188,7 +188,17 @@
                 <div class="row">
                   <div class="col-6">
                     {{variant_data.var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
-                    {{variant_data.var_form.condition_type(class="form-control, bg-white")}}
+                    <select class="form-control, bg-white" name="condition_type" id="condition_type">
+                      {% for dbtype, _ in variant_data.var_form.condition_type.choices %}
+                        {% if dbtype == "OMIM" and variant_data.var_form.omim_terms.choices %}
+                          <option value="{{dbtype}}" selected>{{dbtype}}</option>
+                        {% elif dbtype == "HP" and variant_data.var_form.hpo_terms.choices %}
+                          <option value="{{dbtype}}" selected>{{dbtype}}</option>
+                        {% else %}
+                          <option value="{{dbtype}}">{{dbtype}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
                     <br><br>
                     {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from one database type only (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
                     <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
@@ -207,17 +217,21 @@
                   </div>
                   <div class="col-6">
                     {{variant_data.var_form.omim_terms.label(class="fw-bold, text-dark")}}<br>
+                    <ul class="list-group">
                     {% for term in variant_data.var_form.omim_terms %}
-                      {{ term.label }}<br>
+                      <li class="list-group-item">{{ term.label }}</li>
                     {% else %}
                     n.a.
                     {% endfor %}
+                    </ul>
                     <br><br>
                     {{variant_data.var_form.hpo_terms.label(class="fw-bold, text-dark")}}<br>
+                    <ul class="list-group">
                     {% for term in variant_data.var_form.hpo_terms %}
-                      {{ term.label }}<br>
+                      <li class="list-group-item">{{ term.label }}</li>
                     {% else %}
                     n.a.
+                    </ul>
                     {% endfor %}
                   </div>
                 </div>
