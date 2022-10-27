@@ -143,7 +143,7 @@ class CaseFilterForm(FlaskForm):
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
-    clinvar_submitted = BooleanField("has ClinVar submissions")
+    clinvar_submitted = BooleanField("Has ClinVar submissions")
     validation_ordered = BooleanField("Validation pending")
     search = SubmitField(label="Search")
 
