@@ -34,8 +34,10 @@
               </ul>
               <!-- fieldsets -->
               <fieldset>
+                <p class="text-dark">
                 The form present on this page mirrors the fields on the Clinvar submission spreadsheets.<br>
                 After collecting the required fields, this variant gets saved in an open ClinVar submission object.<br>
+                </P>
                 <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="next action-button" style="text-decoration: none;">Back to Case</a>
                 <input type="button" name="next" class="next action-button" value="Start"/>
               </fieldset>
@@ -61,73 +63,83 @@
                 <h2 class="fs-title">Assertion Criteria</h2>
                 <h3 class="fs-subtitle"></h3>
 
-                  {{variant_data.var_form.last_evaluated.label(class="fw-bold")}}
-                  {{variant_data.var_form.last_evaluated}}
-
-                  {{variant_data.var_form.assertion_method.label(class="fw-bold")}}
-                  {{variant_data.var_form.assertion_method()}}
-
-                  {{variant_data.var_form.assertion_method_cit.label(class="fw-bold")}}
-                  {{variant_data.var_form.assertion_method_cit}}
+                  {{variant_data.var_form.last_evaluated.label(class="fw-bold text-dark")}}
+                  {{variant_data.var_form.last_evaluated(class="bg-white")}}
+                  <br><br>
+                  {{variant_data.var_form.assertion_method.label(class="fw-bold text-dark")}}
+                  {{variant_data.var_form.assertion_method(class="bg-white")}}
+                  <br><br>
+                  {{variant_data.var_form.assertion_method_cit.label(class="fw-bold text-dark")}}
+                  {{variant_data.var_form.assertion_method_cit(class="bg-white")}}
 
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
               <fieldset>
                   <h2 class="fs-title">Variant Details</h2>
 
-                  {{variant_data.var_form.gene_symbol.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
-                  {{variant_data.var_form.gene_symbol()}}
-
+                  {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
+                  {{variant_data.var_form.gene_symbol(class="bg-white")}}
+                  <br>
                   {% if var_category == 'snv' %}
+                    <br><br>
                     <!-- Transcripts & HGVS:(optional) -->
-                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold")}}
+                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark")}}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <div class="row">
                       {% for item in item_row %}
-                        <div class="col-4">{{ item() }} {{item.label}}</label></div>
+                        <div class="col-4"><p class="text-dark bg-white">{{ item() }} {{item.label}}</label></p></div>
                       {% endfor %}
                       </div>
                     {% endfor %}
-                    <br>
+                    <br><br>
                     <!-- dbSNP identifier -->
-                    {{variant_data.var_form.variations_ids.label(class="fw-bold")}}
-                    {{variant_data.var_form.variations_ids()}}
-
+                    {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}
+                    {{variant_data.var_form.variations_ids(class="bg-white")}}
+                    <br>
                   {% else %} <!--SV variant-->
                     <div class="row">
                       <div class="col-6">
                       <!-- Variant type -->
-                        {{variant_data.var_form.sv_type.label(class="fw-bold")}}
-                        {{variant_data.var_form.sv_type(class="form-control")}}
+                        {{variant_data.var_form.sv_type.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.sv_type(class="form-control, bg-white")}}
+                        <br><br>
                       <!-- Reference copy number -->
-                        {{variant_data.var_form.ref_copy_number.label(class="fw-bold")}}
-                        {{variant_data.var_form.ref_copy_number(size=5)}}
-                        <!-- Copy number -->
-                        {{variant_data.var_form.copy_number.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
-                        {{variant_data.var_form.copy_number(size=5)}}
+                        {{variant_data.var_form.ref_copy_number.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.ref_copy_number(size=5, class="bg-white")}}
+                        <br><br>
+                      <!-- Copy number -->
+                        {{variant_data.var_form.copy_number.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
+                        {{variant_data.var_form.copy_number(size=5, class="bg-white")}}
+                        <br><br>
                       <!--start and end chroms-->
-                        {{variant_data.var_form.chromosome.label(class="fw-bold")}}
-                        {{variant_data.var_form.chromosome(size=5)}}
+                        {{variant_data.var_form.chromosome.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.chromosome(size=5, class="bg-white")}}
+                        <br><br>
                       </div>
                       <div class=col-6>
                         <!-- BP1 -->
-                        {{variant_data.var_form.breakpoint1.label(class="fw-bold")}}
-                        {{variant_data.var_form.breakpoint1()}}
+                        {{variant_data.var_form.breakpoint1.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.breakpoint1(class="bg-white")}}
+                        <br><br>
                         <!-- BP2 -->
-                        {{variant_data.var_form.breakpoint2.label(class="fw-bold")}}
-                        {{variant_data.var_form.breakpoint2()}}
+                        {{variant_data.var_form.breakpoint2.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.breakpoint2(class="bg-white")}}
+                        <br><br>
                         <!-- Outer start -->
-                        {{variant_data.var_form.outer_start.label(class="fw-bold")}}
-                        {{variant_data.var_form.outer_start(size=20)}}
+                        {{variant_data.var_form.outer_start.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.outer_start(size=20, class="bg-white")}}
+                        <br><br>
                         <!-- Inner start -->
-                        {{variant_data.var_form.inner_start.label(class="fw-bold")}}
-                        {{variant_data.var_form.inner_start(size=20)}}
+                        {{variant_data.var_form.inner_start.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.inner_start(size=20, class="bg-white")}}
+                        <br><br>
                         <!-- Inner stop -->
-                        {{variant_data.var_form.inner_stop.label(class="fw-bold")}}
-                        {{variant_data.var_form.inner_stop(size=20)}}
+                        {{variant_data.var_form.inner_stop.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.inner_stop(size=20, class="bg-white")}}
+                        <br><br>
                         <!-- Outer stop -->
-                        {{variant_data.var_form.outer_stop.label(class="fw-bold")}}
-                        {{variant_data.var_form.outer_stop(size=20)}}
+                        {{variant_data.var_form.outer_stop.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.outer_stop(size=20, class="bg-white")}}
                       </div>
                     </div>
                   {% endif %}
@@ -138,8 +150,8 @@
               <fieldset>
                 <h2 class="fs-title">Inheritance model</h2>
                 <h3 class="fs-subtitle">The mode of inheritance specific to the variant-disease pair, not generally for the disease</h3>
-                {{variant_data.var_form.inheritance_mode.label(class="fw-bold")}}
-                {{variant_data.var_form.inheritance_mode(class="form-control")}}
+                {{variant_data.var_form.inheritance_mode.label(class="fw-bold, text-dark")}}
+                {{variant_data.var_form.inheritance_mode(class="form-control, bg-white")}}
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
@@ -148,14 +160,14 @@
                 <h2 class="fs-title">Clinical Significance</h2>
                 <h3 class="fs-subtitle">The interpretation, or clinical significance, of the variant for the submitted condition</h3>
 
-                {{variant_data.var_form.clinsig.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
-                {{variant_data.var_form.clinsig(class="form-control")}}
-
-                {{variant_data.var_form.clinsig_comment.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required only if you select 'drug response' or 'other' as clinical significance"><strong>?</strong></span>
-                {{variant_data.var_form.clinsig_comment(class="form-control", placeholder="(optional)")}}
-
-                {{variant_data.var_form.clinsig_cit.label(class="fw-bold")}}
-                {{variant_data.var_form.clinsig_cit(class="form-control", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
+                {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
+                {{variant_data.var_form.clinsig(class="form-control, bg-white")}}
+                <br><br><br>
+                {{variant_data.var_form.clinsig_comment.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required only if you select 'drug response' or 'other' as clinical significance"><strong>?</strong></span>
+                {{variant_data.var_form.clinsig_comment(class="form-control, bg-white", placeholder="(optional)")}}
+                <br><br>
+                {{variant_data.var_form.clinsig_cit.label(class="fw-bold, text-dark")}}
+                {{variant_data.var_form.clinsig_cit(class="form-control, bg-white", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
@@ -167,10 +179,10 @@
 
                 <div class="row">
                   <div class="col-6">
-                    {{variant_data.var_form.condition_type.label(class="fw-bold")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
-                    {{variant_data.var_form.condition_type(class="form-control")}}
-                    <br>
-                    {{variant_data.var_form.conditions.label(class="fw-bold")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from one database type only (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
+                    {{variant_data.var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
+                    {{variant_data.var_form.condition_type(class="form-control, bg-white")}}
+                    <br><br>
+                    {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from one database type only (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
                     <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
                       {% if variant_data.var_form.omim_terms.choices %}
                         {% for term, _ in variant_data.var_form.omim_terms.choices %}
@@ -186,14 +198,14 @@
 
                   </div>
                   <div class="col-6">
-                    {{variant_data.var_form.omim_terms.label(class="fw-bold")}}<br>
+                    {{variant_data.var_form.omim_terms.label(class="fw-bold, text-dark")}}<br>
                     {% for term in variant_data.var_form.omim_terms %}
                       {{ term.label }}<br>
                     {% else %}
                     n.a.
                     {% endfor %}
                     <br><br>
-                    {{variant_data.var_form.hpo_terms.label(class="fw-bold")}}<br>
+                    {{variant_data.var_form.hpo_terms.label(class="fw-bold, text-dark")}}<br>
                     {% for term in variant_data.var_form.hpo_terms %}
                       {{ term.label }}<br>
                     {% else %}
@@ -212,28 +224,28 @@
 
                 <ul class="list-group">
                 {% for cdata in variant_data.cdata_forms %}
-                  {{cdata.linking_id(class="fw-bold")}} <!-- hidden field -->
-                  <li class="list-group-item">
+                  {{cdata.linking_id(class="fw-bold, text-dark")}} <!-- hidden field -->
+                  <li class="list-group-item bg-white">
                     <div class="row">
                       <div class="col-2">
-                        {{ cdata.include_ind.label(class="fw-bold") }}
+                        {{ cdata.include_ind.label(class="fw-bold, text-dark") }}
                         {{ cdata.include_ind() }}
                       </div>
                       <div class="col-2">
-                        {{ cdata.individual_id.label(class="fw-bold") }}
-                        {{ cdata.individual_id(class="form-control", readonly=true) }}
+                        {{ cdata.individual_id.label(class="fw-bold, text-dark") }}
+                        {{ cdata.individual_id(class="form-control, bg-white", readonly=true) }}
                       </div>
                       <div class="col-2">
-                        {{ cdata.affected_status.label(class="fw-bold") }}
-                        {{ cdata.affected_status(class="form-control") }}
+                        {{ cdata.affected_status.label(class="fw-bold, text-dark") }}
+                        {{ cdata.affected_status(class="form-control, bg-white") }}
                       </div>
                       <div class="col-2">
-                        {{ cdata.allele_of_origin.label(class="fw-bold") }}
-                        {{ cdata.allele_of_origin(class="form-control") }}
+                        {{ cdata.allele_of_origin.label(class="fw-bold, text-dark") }}
+                        {{ cdata.allele_of_origin(class="form-control, bg-white") }}
                       </div>
                       <div class="col-2">
-                        {{ cdata.collection_method.label(class="fw-bold") }}
-                        {{ cdata.collection_method(class="form-control") }}
+                        {{ cdata.collection_method.label(class="fw-bold, text-dark") }}
+                        {{ cdata.collection_method(class="form-control, bg-white") }}
                       </div>
                     </div>
                   </li>
