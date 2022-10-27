@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Filter case list by cases with variants in ClinVar submission
 - Global CSRF protection to the app
+### Fixed
+- Non-admin users saving institute settings would clear loqusdb instance selection
+
 
 ## [4.60]
 ### Added
