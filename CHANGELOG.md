@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Filter case list by cases with variants in ClinVar submission
 - Display number of OMIM terms available and their last update on Diagnoses page
 
 ## [4.60]
