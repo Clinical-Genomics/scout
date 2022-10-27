@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panels PDF export with case variants hits by variant type
 ### Fixed
 - Visibility of text on grey badges in gene panels PDF exports
+- Filter case list by cases with variants in ClinVar submission
 
 ## [4.60]
 ### Added
