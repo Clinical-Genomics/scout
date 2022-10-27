@@ -52,6 +52,10 @@
       </div>
       <div class="col-2">
         <div class="form-check">
+          {{ form.clinvar_submitted(class="form-check-input") }}
+          {{ form.clinvar_submitted.label(class="form-check-label") }}
+        </div>
+        <div class="form-check">
           {{ form.validation_ordered(class="form-check-input") }}
           {{ form.validation_ordered.label(class="form-check-label") }}
         </div>

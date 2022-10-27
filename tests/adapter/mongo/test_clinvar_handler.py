@@ -217,3 +217,19 @@ def test_add_remove_subm_objects(adapter, institute_obj, case_obj):
     # assert that there are no objects left in clinvar collection
     submission_objects = list(adapter.clinvar_collection.find())
     assert len(submission_objects) == 0
+
+
+def test_clinvar_cases(adapter, institute_obj, case_obj):
+    """Test Mongo adapter functions that retrieves a list of case _ids with ClinVar submissions"""
+    # GIVEN a case with ClinVar submission:
+    adapter.case_collection.insert_one(case_obj)
+
+    submission_id = get_new_submission(adapter, institute_obj)
+    variant_data = [get_test_submission_variant(case_obj)]
+    case_data = [get_test_submission_case(case_obj)]  # a list of 1 dictionary element
+    subm_objs = (variant_data, case_data)
+    adapter.add_to_submission(submission_id, subm_objs)
+
+    # THEN the adapter clinvar_cases function should return the case _id
+    clinvar_case_ids = adapter.clinvar_cases(institute_id=institute_obj["_id"])
+    assert clinvar_case_ids[0] == case_obj["_id"]

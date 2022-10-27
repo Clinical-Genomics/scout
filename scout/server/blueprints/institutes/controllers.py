@@ -411,6 +411,7 @@ def cases(store, request, institute_id):
         skip_assigned=request.args.get("skip_assigned"),
         is_research=request.args.get("is_research"),
         verification_pending=request.args.get("validation_ordered"),
+        has_clinvar_submission=request.args.get("clinvar_submitted"),
     )
     all_cases = _sort_cases(data, request, all_cases)
 
