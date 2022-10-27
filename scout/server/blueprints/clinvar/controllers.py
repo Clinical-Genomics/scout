@@ -6,6 +6,7 @@ from flask import flash
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.models.clinvar import clinvar_casedata, clinvar_variant
 from scout.server.extensions import store
+from scout.utils.scout_requests import fetch_refseq_version
 
 from .form import CaseDataForm, SNVariantForm, SVariantForm
 
@@ -24,7 +25,9 @@ def _get_var_tx_hgvs(variant_obj):
         for tx in gene.get("transcripts", []):
             if tx.get("refseq_id") and tx.get("coding_sequence_name"):
                 for refseq in tx.get("refseq_identifiers"):
-                    tx_hgvs_list.append(" | ".join([refseq, tx["coding_sequence_name"]]))
+                    tx_hgvs_list.append(
+                        " | ".join([fetch_refseq_version(refseq), tx["coding_sequence_name"]])
+                    )
 
     return [(item, item) for item in tx_hgvs_list]
 
