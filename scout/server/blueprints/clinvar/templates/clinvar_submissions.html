@@ -84,10 +84,10 @@
           <ol class="breadcrumb align-items-center">
             <li class="breadcrumb-item">
               <!-- Download the Variant data CSV file -->
-              <a href="{{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" download>
+              <a href="{{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                 Download variants file
               </a>
-              <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" download>
+              <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                 Download casedata file
               </a>
             </li>
@@ -104,7 +104,7 @@
             <label for="clinvar_id" class="form-text">Submission name</label>
           </div>
           <div class="col-4">
-            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
+            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
           </div>
           <div class="col-2">
             <button type="submit" class="btn btn-primary form-control" name="update_submission" value="register_id">Update</button>

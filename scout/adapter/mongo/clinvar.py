@@ -353,9 +353,6 @@ class ClinVarHandler(object):
         Returns:
             updated_submission(obj): an updated clinvar submission
         """
-
-        LOG.info("Deleting clinvar object %s (%s)", object_id, object_type)
-
         # If it's a variant object to be removed:
         #   remove reference to it in the submission object 'variant_data' list field
         #   remove the variant object from clinvar collection
