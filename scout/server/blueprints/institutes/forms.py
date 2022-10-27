@@ -144,7 +144,7 @@ class CaseFilterForm(FlaskForm):
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
     clinvar_submitted = BooleanField("has ClinVar submissions")
-    validation_ordered = BooleanField("validation pending")
+    validation_ordered = BooleanField("Validation pending")
     search = SubmitField(label="Search")
 
 
