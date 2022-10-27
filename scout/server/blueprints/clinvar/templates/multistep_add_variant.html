@@ -163,7 +163,7 @@
                 <div class="row">
                   <div class="col-4">
                     Classification in Scout:<br>
-                    <span class="badge bg-secondary">{{variant_data.var_obj.classification|replace("_"," ")|upper or "n.a."}}</span>
+                    <span class="badge bg-secondary">{{variant_data.var_obj.classification|replace("_"," ")|upper if variant_data.var_obj.classification else "n.a."}}</span>
                   </div>
                   <div class="col-8">
                     {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>

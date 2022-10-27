@@ -84,10 +84,10 @@
           <ol class="breadcrumb align-items-center">
             <li class="breadcrumb-item">
               <!-- Download the Variant data CSV file -->
-              <a href="{{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white">
+              <a href="{{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" download>
                 Download variants file
               </a>
-              <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white">
+              <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" download>
                 Download casedata file
               </a>
             </li>
