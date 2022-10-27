@@ -83,7 +83,7 @@
                   {% if var_category == 'snv' %}
                     <br><br>
                     <!-- Transcripts & HGVS:(optional) -->
-                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any transcript, chromosome coordinates will be used to describe this variant instead (automatic)"><strong>?</strong></span><br><br>
+                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic)"><strong>?</strong></span><br><br>
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <div class="row">
                       {% for item in item_row %}
