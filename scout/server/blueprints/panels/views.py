@@ -265,8 +265,21 @@ def panel_export(panel_id):
 @panels_bp.route("/panels/export-panel-case_hits/<panel_id>", methods=["POST"])
 def panel_export_case_hits(panel_id):
     """Export panel to PDF file"""
-    institute_id, case_name = request.form.get("case_name").strip().split(" - ")
+    try:
+        institute_id, case_name = request.form.get("case_name").strip().split(" - ")
+    except ValueError:
+        flash(
+            "Could not parse case name, plase use format: 'cust000 - 643594' or use typing suggestions",
+            "warning",
+        )
+        return redirect(request.referrer)
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if None in [institute_obj, case_obj]:
+        flash(
+            f"Could not find a case with display name '{case_name}' for institute {institute_id}",
+            "warning",
+        )
+        return redirect(request.referrer)
     data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
     now = datetime.datetime.now().strftime(DATETIME_FORMATTER)
     data["report_created_at"] = now
