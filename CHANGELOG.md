@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Filter case list by cases with variants in ClinVar submission
 - Display number of OMIM terms available and their last update on Diagnoses page
+### Fixed
+- Non-admin users saving institute settings would clear loqusdb instance selection
 
 ## [4.60]
 ### Added
