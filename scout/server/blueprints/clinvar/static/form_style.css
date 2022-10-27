@@ -171,7 +171,6 @@ body {
     color: white;
 }
 
-
 /* Not relevant to this form */
 .dme_link {
     margin-top: 30px;
@@ -191,4 +190,12 @@ body {
 .dme_link a:hover, .dme_link a:focus {
     background: #C5C5F1;
     text-decoration: none;
+}
+
+/* Prevent usage of dark mode for checkboxes and radiobuttons */
+input[type='checkbox']{
+  color-scheme: only light;
+}
+input[type='radio']{
+  color-scheme: only light;
 }

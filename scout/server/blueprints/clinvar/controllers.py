@@ -19,7 +19,7 @@ def _get_var_tx_hgvs(variant_obj):
     Returns:
         list. example: ["NM_000277 | c.1241A>G", ...]
     """
-    tx_hgvs_list = []
+    tx_hgvs_list = [("Do not specify")]
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
             if tx.get("refseq_id") and tx.get("coding_sequence_name"):
@@ -172,7 +172,7 @@ def _parse_tx_hgvs(clinvar_var, form):
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
     tx_hgvs = form.get("tx_hgvs")
-    if not tx_hgvs:
+    if not tx_hgvs or tx_hgvs == "Do not specify":
         return
     clinvar_var["ref_seq"] = tx_hgvs.split(" | ")[0]
     clinvar_var["hgvs"] = tx_hgvs.split(" | ")[1]
