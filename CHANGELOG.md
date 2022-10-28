@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
+- Additional case category `Ignored`, to be used for cases that don't fall in the existing 'inactive', 'archived', 'solved', 'prioritized' categories
+- Display number of cases shown / total number of cases available for each category on Cases page
+- Moved buttons to modify case status from sidebar to main case page
 - Global CSRF protection to the app
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
