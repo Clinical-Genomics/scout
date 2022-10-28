@@ -490,7 +490,6 @@ class CaseHandler(object):
     def nr_cases(self, institute_id=None):
         """Return the number of cases
 
-        This function will change when we migrate to 3.7.1
 
         Args:
             institute_id(str): Institute id
