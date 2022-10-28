@@ -250,7 +250,7 @@
       </div>
       <form action="{{ url_for('panels.panel_export_case_hits', panel_id=panel._id) }}" method="POST" target="_blank">
         <div class="modal-body">
-          <label for="case">Case name</label>
+          <label for="case">Institute and case name (format: 'cust000 - 643594')</label>
           <input type="text" name="case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10" required></input>
         </div>
         <div class="modal-footer">
