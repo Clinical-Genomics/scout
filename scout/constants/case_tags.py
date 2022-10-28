@@ -57,7 +57,7 @@ PHENOTYPE_MAP = {1: "unaffected", 2: "affected", 0: "unknown", -9: "unknown"}
 CANCER_PHENOTYPE_MAP = {1: "normal", 2: "tumor", 0: "unknown", -9: "unknown"}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
 
-CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived")
+CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived", "ignored")
 
 VERBS_MAP = {
     "assign": "was assigned to",
