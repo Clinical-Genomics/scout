@@ -45,50 +45,50 @@
 {% macro case_page() %}
 <div class="col ms-3"> <!-- This is the main container -->
   <div class="container_spaced">
-      <div class="card-body {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-danger-light {% endif %}">
+      <div class="card-body {% if case.status == 'solved' %} bg-success {% elif case.status == 'archived' %} bg-warning {% elif case.status == 'prioritized' %} bg-info {% endif %}">
         <div class="row">
-            <div class="col-sm-4">
+          <div class="col-sm-4">
               <h4 class="">
                 Case: {{case.display_name}} <span class="badge bg-sm bg-secondary">{{case._id}}</span><br>
                 Status: {{case.status}}
-                <form method="POST" action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
-                  <div>
-                    Set
-                    <div class="btn-group">
-                      <!-- archived/active-->
-                      {% if case.status != 'archived' %}
-                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#archive_modal">
-                          Archived
-                        </button>
-                      {% else %}
-                        <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
-                          Unarchived
-                        </button>
-                      {% endif %}
-
-                      <!-- solved/active -->
-                      {% if case.status != 'solved' %}
-                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#solve_modal">
-                          Solved
-                        </button>
-                      {% else %}
-                        <button type="submit" class="btn btn-info btn-sm" name="status" value="active">
-                          Unsolved
-                        </button>
-                      {% endif %}
-
-                      <!-- prioritized/active -->
-                      <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-info btn-sm">
-                        {{ 'De-prioritized' if case.status == 'prioritized' else 'Prioritized' }}
-                      </button>
-
-                        <!-- unused/inactive -->
-                      <button name="status" value="{{ 'inactive' if case.status == 'unused' else 'unused' }}" type="submit" class="btn btn-light btn-sm">
-                        {{ 'Inactive' if case.status == 'unused' else 'Unused' }}
-                      </button>
-                    </div>
-                </form>
               </h4>
+              <br>
+              <form method="POST" action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
+                  Set:
+                  <div class="btn-group">
+                    <!-- archived/active-->
+                    {% if case.status != 'archived' %}
+                      <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#archive_modal">
+                        Archived
+                      </button>
+                    {% else %}
+                      <button type="submit" class="btn btn-warning btn-sm" name="status" value="active">
+                        Unarchived
+                      </button>
+                    {% endif %}
+
+                    <!-- solved/active -->
+                    {% if case.status != 'solved' %}
+                      <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#solve_modal">
+                        Solved
+                      </button>
+                    {% else %}
+                      <button type="submit" class="btn btn-success btn-sm" name="status" value="active">
+                        Unsolved
+                      </button>
+                    {% endif %}
+
+                    <!-- prioritized/active -->
+                    <button name="status" value="{{ 'active' if case.status == 'prioritized' else 'prioritized' }}" type="submit" class="btn btn-info btn-sm">
+                      {{ 'De-prioritized' if case.status == 'prioritized' else 'Prioritized' }}
+                    </button>
+
+                      <!-- unused/inactive -->
+                    <button name="status" value="{{ 'inactive' if case.status == 'ignored' else 'ignored' }}" type="submit" class="btn btn-light btn-sm">
+                      {{ 'Inactive' if case.status == 'ignored' else 'Ignored' }}
+                    </button>
+                  </div>
+              </form>
             </div>
             <div class="col-sm-6">
               {{ variants_buttons() }}
