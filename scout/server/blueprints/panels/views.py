@@ -265,6 +265,9 @@ def panel_export(panel_id):
 @panels_bp.route("/panels/export-panel-case_hits/<panel_id>", methods=["POST"])
 def panel_export_case_hits(panel_id):
     """Export panel to PDF file"""
+    institute_obj = None
+    case_obj = None
+
     try:
         institute_id, case_name = request.form.get("case_name").strip().split(" - ")
     except ValueError:
@@ -273,10 +276,11 @@ def panel_export_case_hits(panel_id):
             "warning",
         )
         return redirect(request.referrer)
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    if None in [institute_obj, case_obj]:
+    try:
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    except Exception:
         flash(
-            f"Could not find a case with display name '{case_name}' for institute {institute_id}",
+            f"Could not find a case named '{case_name}' associated to institute '{institute_id}'",
             "warning",
         )
         return redirect(request.referrer)
