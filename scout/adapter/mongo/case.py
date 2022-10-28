@@ -287,7 +287,7 @@ class CaseHandler(object):
             finished(bool)
             research_requested(bool)
             is_research(bool)
-            status(str)
+            status(str or dict expression)
             group(ObjectId): fetch all cases in a named case group
             cohort(bool): Fetch all cases with cohort tags
             phenotype_terms(bool): Fetch all cases with phenotype
@@ -490,10 +490,9 @@ class CaseHandler(object):
     def nr_cases(self, institute_id=None):
         """Return the number of cases
 
-        This function will change when we migrate to 3.7.1
 
         Args:
-            collaborator(str): Institute id
+            institute_id(str): Institute id
 
         Returns:
             nr_cases(int)
@@ -506,6 +505,21 @@ class CaseHandler(object):
         nr_cases = sum(1 for i in self.case_collection.find(query))
 
         return nr_cases
+
+    def nr_cases_by_status(self, institute_id=None):
+        """For an institute, retrieves number of cases in each case status category
+        Args:
+            institute_id(str): Institute id
+
+        Returns:
+            dict with case.status as keys and nr cases as value
+        """
+        pipeline = []
+        if institute_id:
+            pipeline.append({"$match": {"collaborators": institute_id}})
+        pipeline.append({"$group": {"_id": "$status", "count": {"$sum": 1}}})
+        result = self.case_collection.aggregate(pipeline)
+        return {res["_id"]: res["count"] for res in result}
 
     def update_dynamic_gene_list(
         self,
