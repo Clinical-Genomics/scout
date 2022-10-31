@@ -242,3 +242,12 @@ CASE_SEARCH_TERMS = {
         "placeholder": "example:John Doe",
     },
 }
+
+REPORT_TYPE = {
+    "delivery": "delivery_report",
+    "cnv": "cnv_report",
+    "qc": "coverage_qc_report",
+    "qc_rna": "coverage_qc_report_rna",
+    "gene_fusion": "gene_fusion_report",
+    "gene_fusion_research": "gene_fusion_report_research",
+}

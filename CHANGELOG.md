@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved buttons to modify case status from sidebar to main case page
 - Option to load RNA QC report using the command `scout load report qc_rna`
 ### Changed
-- Deprecated CLI commands `scout load [delivery_report, gene_fusion_report, coverage_qc_report, cnv_report]` to replace them with command `scout load report <report type>`
+- Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report <report type>`
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 
