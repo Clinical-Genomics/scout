@@ -10,6 +10,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Additional case category `Ignored`, to be used for cases that don't fall in the existing 'inactive', 'archived', 'solved', 'prioritized' categories
 - Display number of cases shown / total number of cases available for each category on Cases page
 - Moved buttons to modify case status from sidebar to main case page
+- Option to load RNA QC report using the command `scout load report qc_rna`
+### Changed
+- Deprecated CLI commands `scout load [delivery_report, gene_fusion_report, coverage_qc_report, cnv_report]` to replace them with command `scout load report <report type>`
+
+
+delivery": "delivery_report",
+    "cnv": "cnv_report",
+    "qc": "coverage_qc_report",
+    "qc_rna": "coverage_qc_report_rna",
+    "gene_fusion": "gene_fusion_report",
+    "gene_fusion_research": "gene_fusion_report_research",
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 
