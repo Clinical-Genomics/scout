@@ -10,31 +10,32 @@
     </div>
     <div class="card">
       {% if suspects %}
-      <div class="checkbox-group required ms-3">
-        <form id="clinvar_submit" action="{{ url_for('variant.clinvar_create', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-          <input type="hidden" name="old_submitted" value="{{case.clinvar_variants.keys()|list|join(',')}}">
-          <div class="checkbox-group required">
-          {% for variant in suspects %}
-            {% if variant._id %} <!-- variant was not removed after reupload -->
-              <input class="ml-3" type="checkbox" name="clinvar_variant" value="{{variant._id}}"
-              {% if variant.category == 'str' or variant._id in case.clinvar_variants.keys() %} disabled {% endif %}
-              >
-              {{pretty_variant(variant)}} {% if variant._id in case.clinvar_variants.keys() %} - <em>Already submitted</em> - {% endif %}
-
-              <br>
-            {% endif %}
-          {% endfor %}
-          </div>
-          <div class=btn-group" role="group" aria-label="ClinVar btns">
-            <button class="mb-3 mt-3 btn btn-secondary btn-sm" type="submit" name="submit_pinned" value="submit">
-              Submit variants
-            </button>
-            <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="mb-3 mt-3 btn btn-secondary btn-sm text-white" target="_blank">Link to submission</a>
-          </div>
-        </form>
-      {% elif case.clinvar_variants %}
-        <a href="{{ url_for('overview.clinvar_submissions', institute_id=institute._id) }}" class="mb-3 mt-3 btn btn-secondary btn-sm text-white" target="_blank" rel="noopener noreferrer">Modify clinvar submission</a>
+        <ul class="list-group">
+        {% for variant in suspects %}
+          {% if variant._id and variant.category != 'str' %}
+            <li class="list-group-item">
+              <div>
+              <form id="clinvar_submit" action="{{ url_for('clinvar.clinvar_add_variant', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+                {{pretty_variant(variant)}}
+                {% if case.clinvar_variants and variant._id in case.clinvar_variants.keys() %}
+                 (included in submission)
+                {% else %}
+                  <button type="submit" name="var_id" value="{{variant._id}}" class="btn btn-secondary btn-sm" style="float: right;">Add to submission</button>
+                {% endif %}
+              </form>
+              </div>
+            </li>
+          {% endif %}
+        {% endfor %}
+        </ul>
       {% endif %}
-    </div> <!--end of <div class="panel-body">-->
+      {% if case.clinvar_variants %}
+        <div class="d-flex justify-content-center">
+          <div>
+            <a href="{{url_for('clinvar.clinvar_submissions', institute_id=institute._id)}}" class="mb-3 mt-3 btn btn-secondary btn-sm text-white" target="_blank" rel="noopener noreferrer">ClinVar submissions</a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
   </div>
 {% endmacro %}

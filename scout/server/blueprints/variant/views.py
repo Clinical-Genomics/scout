@@ -6,7 +6,6 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
-from scout.server.blueprints.variant.controllers import build_clinvar_submission, clinvar_export
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
 from scout.server.blueprints.variant.controllers import variant as variant_controller
@@ -299,33 +298,6 @@ def acmg():
     criteria = request.args.getlist("criterion")
     classification = get_acmg(criteria)
     return jsonify(dict(classification=classification))
-
-
-@variant_bp.route("/<institute_id>/<case_name>/clinvar", methods=["POST"])
-@templated("variant/clinvar.html")
-def clinvar_create(institute_id, case_name):
-    """Create a ClinVar submission document in database for one or more variants from a case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
-    if request.form.get(
-        "submit_pinned"
-    ):  # Request received from case page, contains IDs of vars to export to CLinVar
-        pinned_selected = request.form.getlist("clinvar_variant")
-        if not pinned_selected:
-            flash(
-                "Please select at least one pinned variant to include in ClinVar submission",
-                "warning",
-            )
-            return redirect(request.referrer)
-
-        data = clinvar_export(store, institute_obj, case_obj, pinned_selected)
-        return data
-
-    # Request received from ClinVar page, contains complete info to save in ClinVar submission document
-    build_clinvar_submission(store, request, institute_id, case_name)
-
-    # Redirect to clinvar submissions handling page, to show the newest submission object
-    return redirect(url_for("overview.clinvar_submissions", institute_id=institute_id))
 
 
 @variant_bp.route(
