@@ -4,7 +4,8 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.load.report import CUSTOM_CASE_REPORTS, update_case_report
+from scout.constants import CUSTOM_CASE_REPORTS
+from scout.load.report import update_case_report
 
 LOG = logging.getLogger(__name__)
 

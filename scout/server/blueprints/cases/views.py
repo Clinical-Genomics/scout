@@ -699,7 +699,7 @@ def gene_fusion_report(institute_id, case_name, report_type):
     """Download gene fusion report"""
     _, case_obj = institute_and_case(store, institute_id, case_name)
     report_path = case_obj.get(report_type)
-    if report_path is None or report_type not in CUSTOM_CASE_REPORTS:
+    if report_path is None or report_type not in CUSTOM_CASE_REPORTS.values():
         return abort(404)
     out_dir = os.path.abspath(os.path.dirname(report_path))
     filename = os.path.basename(report_path)

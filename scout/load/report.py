@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants.case_tags import CUSTOM_CASE_REPORTS
+from scout.constants import CUSTOM_CASE_REPORTS
 from scout.exceptions import DataNotFoundError, IntegrityError
 from scout.server.extensions import store
 
