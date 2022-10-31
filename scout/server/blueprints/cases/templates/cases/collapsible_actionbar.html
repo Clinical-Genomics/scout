@@ -93,6 +93,18 @@
         </div>
       </div>
     {% endif %}
+    {% if case.multiqc_rna %}
+      <div href="#" class="bg-dark list-group-item text-white">
+        <div class="d-flex flex-row flex-fill bd-highlight">
+          <span class="menu-collapsed ms-2">MultiQC RNA</span>
+          {% if case.multiqc_rna is existing %}
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name, rna=True) }}" target="_blank"><span class="fa fa-link"></span></a>
+          {% else %}
+            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A MultiQC RNA report has been registered for the case but not found on the file system."></span>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
     {% if config.SQLALCHEMY_DATABASE_URI and case.track != "cancer" %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">

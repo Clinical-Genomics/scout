@@ -950,14 +950,16 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     return send_from_directory(outdir, filename, download_name=download_name, as_attachment=True)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/multiqc")
-def multiqc(institute_id, case_name):
+@cases_bp.route("/<institute_id>/<case_name>/multiqc", defaults={"rna": False})
+@cases_bp.route("/<institute_id>/<case_name>/multiqc/<rna>")
+def multiqc(institute_id, case_name, rna):
     """Load multiqc report for the case."""
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("multiqc") is None:
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    report = "multiqc" if rna is False else "multiqc_rna"
+    if case_obj[report] is None:
         return abort(404)
-    out_dir = os.path.abspath(os.path.dirname(data["case"]["multiqc"]))
-    filename = os.path.basename(data["case"]["multiqc"])
+    out_dir = os.path.abspath(os.path.dirname(case_obj[report]))
+    filename = os.path.basename(case_obj[report])
     return send_from_directory(out_dir, filename)
 
 
