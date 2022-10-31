@@ -4,7 +4,7 @@ import logging
 import click
 from flask.cli import with_appcontext
 
-from scout.load.report import REPORT_TYPE, update_case_report
+from scout.load.report import CUSTOM_CASE_REPORTS, update_case_report
 
 LOG = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ def gene_fusion_report(case_id, report_path, research, update):
 @click.option(
     "-t",
     "--report-type",
-    type=click.Choice(list(REPORT_TYPE.keys())),
+    type=click.Choice(list(CUSTOM_CASE_REPORTS.keys())),
     required=True,
     help="Type of report",
 )

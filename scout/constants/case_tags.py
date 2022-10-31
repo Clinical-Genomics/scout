@@ -1,12 +1,14 @@
 ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "panel-umi", "external")
 
-CUSTOM_CASE_REPORTS = [
-    "multiqc",
-    "cnv_report",
-    "coverage_qc_report",
-    "gene_fusion_report",
-    "gene_fusion_report_research",
-]
+CUSTOM_CASE_REPORTS = {
+    "delivery": "delivery_report",
+    "cnv": "cnv_report",
+    "cov_qc": "coverage_qc_report",
+    "multiqc": "multiqc",
+    "multiqc_rna": "multiqc_rna",
+    "gene_fusion": "gene_fusion_report",
+    "gene_fusion_research": "gene_fusion_report_research",
+}
 
 CASE_REPORT_CASE_FEATURES = [
     "display_name",
@@ -241,13 +243,4 @@ CASE_SEARCH_TERMS = {
         "prefix": "user:",
         "placeholder": "example:John Doe",
     },
-}
-
-REPORT_TYPE = {
-    "delivery": "delivery_report",
-    "cnv": "cnv_report",
-    "qc": "coverage_qc_report",
-    "qc_rna": "coverage_qc_report_rna",
-    "gene_fusion": "gene_fusion_report",
-    "gene_fusion_research": "gene_fusion_report_research",
 }

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from scout.constants.case_tags import REPORT_TYPE
+from scout.constants.case_tags import CUSTOM_CASE_REPORTS
 from scout.exceptions import DataNotFoundError, IntegrityError
 from scout.server.extensions import store
 
@@ -19,5 +19,5 @@ def update_case_report(case_id, report_path, report_key):
     case_obj = store.case(case_id=case_id)
     if case_obj is None:
         raise DataNotFoundError(f"No case with _id {case_id} found")
-    case_obj[REPORT_TYPE[report_key]] = report_path
+    case_obj[CUSTOM_CASE_REPORTS[report_key]] = report_path
     return store.replace_case(case_obj)
