@@ -32,7 +32,7 @@ def test_load_multiqc_rna_report(mock_app):
         # THEN the command should be succesful
         assert result.exit_code == 0
 
-        # And the gene fusion research report should have been updated
+        # And the report should have been loaded
         updated_case = store.case_collection.find_one()
         assert updated_case["multiqc_rna"]
 
