@@ -6,6 +6,37 @@ from scout.commands import cli
 from scout.server.extensions import store
 
 
+def test_load_multiqc_rna_report(mock_app):
+    """Test the command to load/update the RNA multiqc report for a case"""
+    # GIVEN a database with an existing case
+    case_obj = store.case_collection.find_one()
+    case_id = case_obj["_id"]
+
+    runner = mock_app.test_cli_runner()
+
+    with tempfile.NamedTemporaryFile(suffix=".html") as tf:
+        # WHEN the "scout load report -t multiqc_rna" command is executed
+        multiqc_rna_path = os.path.dirname(tf.name)
+        result = runner.invoke(
+            cli,
+            [
+                "load",
+                "report",
+                "-t",
+                "multiqc_rna",
+                case_id,
+                multiqc_rna_path,
+            ],
+        )
+
+        # THEN the command should be succesful
+        assert result.exit_code == 0
+
+        # And the gene fusion research report should have been updated
+        updated_case = store.case_collection.find_one()
+        assert updated_case["multiqc_rna"]
+
+
 def test_load_gene_fusion_report_research(mock_app):
     """Test command line function that load a gene fusion research report for an existing case"""
     # GIVEN a database with an existing case
