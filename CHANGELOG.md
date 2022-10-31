@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display number of cases shown / total number of cases available for each category on Cases page
 - Moved buttons to modify case status from sidebar to main case page
 - Option to manually load RNA MULTIQC report using the command `scout load report qc_rna`
-- Load automatically RNA MULTIQC for a case if config file contains the `multiqc_rna` key/value
+- Load RNA MULTIQC automatically for a case if config file contains the `multiqc_rna` key/value
 ### Changed
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report <report type>`
 ### Fixed
