@@ -460,65 +460,6 @@ def case_obj(request, parsed_case):
 
 
 #############################################################
-##################### Clinvar fixtures ######################
-#############################################################
-@pytest.fixture(scope="function")
-def clinvar_variant(request):
-
-    variant = {
-        "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77",
-        "csv_type": "variant",
-        "case_id": "internal_id",
-        "category": "snv",
-        "local_id": "4c7d5c70d955875504db72ef8e1abe77",
-        "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
-        "gene_symbol": "POT1",
-        "ref_seq": "NM_001042594.1",
-        "hgvs": "c.510G>T",
-        "chromosome": "7",
-        "start": "124491972",
-        "stop": "124491972",
-        "ref": "C",
-        "alt": "A",
-        "variations_ids": "rs116916706",
-        "clinsig": "Pathogenic",
-        "last_evaluated": "2020-06-09",
-        "assertion_method": "ACMG Guidelines, 2015",
-        "assertion_method_cit": "PMID:25741868",
-        "inheritance_mode": "Autosomal recessive inheritance",
-    }
-    return variant
-
-
-@pytest.fixture(scope="function")
-def clinvar_casedata(request):
-
-    casedata = {
-        "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77_NA12882",
-        "csv_type": "casedata",
-        "case_id": "internal_id",
-        "category": "snv",
-        "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
-        "individual_id": "NA12882",
-        "collection_method": "clinical testing",
-        "allele_origin": "germline",
-        "is_affected": "yes",
-        "sex": "male",
-        "fam_history": "no",
-        "is_proband": "yes",
-        "is_secondary_finding": "no",
-        "is_mosaic": "no",
-        "zygosity": "compound heterozygote",
-        "platform_type": "next-gen sequencing",
-        "platform_name": "Whole exome sequencing, Illumina",
-        "method_purpose": "discovery",
-        "reported_at": "2016-10-12",
-    }
-
-    return casedata
-
-
-#############################################################
 ##################### Institute fixtures ####################
 #############################################################
 @pytest.fixture(scope="function")

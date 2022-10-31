@@ -1,4 +1,8 @@
-# clinvar Variant sheet
+ASSERTION_METHOD = "ACMG Guidelines, 2015"
+ASSERTION_METHOD_CIT = "PMID:25741868"
+NOT_PROVIDED = "not provided"
+
+# Header used to create the Variant .CSV file for the manual ClinVar submission
 CLINVAR_HEADER = {
     "local_id": "##Local ID",
     "linking_id": "Linking ID",
@@ -37,7 +41,7 @@ CLINVAR_HEADER = {
     "funct_conseq_comment": "Comment on functional consequence",
 }
 
-# clinvar CaseData sheet
+# Header used to create the CaseData .CSV file for the manual ClinVar submission
 CASEDATA_HEADER = {
     "linking_id": "Linking ID",
     "individual_id": "Individual ID",
@@ -65,32 +69,29 @@ CASEDATA_HEADER = {
     "testing_lab": "Testing laboratory",
     "reported_at": "Date variant was reported to submitter",
 }
-# silence fields in ClinVar CSV output if other fields exist to avoid validation error - the latter are preferred
-CLINVAR_SILENCE_IF_EXISTS = {"chromosome": "hgvs", "start": "hgvs", "stop": "hgvs"}
 
+####################################################################
+# The following items are defined in the ClinVar API specifications:
+# https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
+####################################################################
 CLNSIG_TERMS = {
-    "affects",
-    "benign",
-    "benign/likely_benign",
-    "conflicting_interpretations_of_pathogenicity",
-    "likely_benign",
-    "likely_pathogenic",
-    "pathogenic",
-    "pathogenic/likely_pathogenic",
-    "uncertain_significance",
+    "Pathogenic",
+    "Likely pathogenic",
+    "Uncertain significance",
+    "Likely benign",
+    "Benign",
+    "Pathogenic, low penetrance",
+    "Uncertain risk allele",
+    "Likely pathogenic, low penetrance",
+    "Established risk allele",
+    "Likely risk allele",
     "affects",
     "association",
-    "drug_response",
-    "other",
+    "drug response",
+    "confers sensitivity",
     "protective",
-    "risk_factor",
-    "association",
-    "association_not_found",
-    "drug_response",
-    "not_provided",
     "other",
-    "protective",
-    "risk_factor",
+    NOT_PROVIDED,
 }
 
 REVSTAT_TERMS = {
@@ -105,13 +106,11 @@ REVSTAT_TERMS = {
     "reviewed_by_expert_panel",
 }
 
-# Models of inheritance are defined here:
-# https://ftp.ncbi.nlm.nih.gov/pub/GTR/standard_terms/Mode_of_inheritance.txt
 CLINVAR_INHERITANCE_MODELS = [
     "Autosomal dominant inheritance",
+    "Autosomal recessive inheritance",
     "Autosomal dominant inheritance with maternal imprinting",
     "Autosomal dominant inheritance with paternal imprinting",
-    "Autosomal recessive inheritance",
     "Autosomal unknown",
     "Codominant",
     "Genetic anticipation",
@@ -119,12 +118,63 @@ CLINVAR_INHERITANCE_MODELS = [
     "Multifactorial inheritance",
     "Oligogenic inheritance",
     "Other",
-    "Sex-limited autosomal dominant",
+    "Semidominant inheritance",
     "Somatic mutation",
     "Sporadic",
     "Unknown mechanism",
-    "X-linked dominant inheritance",
+    "Sex-limited autosomal dominant",
     "X-linked inheritance",
+    "X-linked dominant inheritance",
     "X-linked recessive inheritance",
     "Y-linked inheritance",
 ]
+
+SV_TYPES = [
+    "Insertion",
+    "Deletion",
+    "Duplication",
+    "Tandem duplication",
+    "copy number loss",
+    "copy number gain",
+    "Inversion",
+    "Translocation",
+    "Complex",
+]
+
+AFFECTED_STATUS = ["yes", "no", "unknown", NOT_PROVIDED, "not applicable"]
+
+ALLELE_OF_ORIGIN = [
+    "germline",
+    "somatic",
+    "de novo",
+    "unknown",
+    "inherited",
+    "maternal",
+    "paternal",
+    "biparental",
+    "not applicable",
+]
+
+COLLECTION_METHOD = [
+    "curation",
+    "literature only",
+    "reference population",
+    "provider interpretation",
+    "phenotyping only",
+    "case-control",
+    "clinical testing",
+    "in vitro",
+    "in vivo",
+    "research",
+    NOT_PROVIDED,
+]
+
+# Available databases used to describe phenotypes (Key/Description)
+PHENO_DBS = {
+    "HP": "HPO",
+    "OMIM": "OMIM",
+    "MedGen": "MedGen",
+    "Orphanet": "Orphanet",
+    "MeSH": "MeSH",
+    "MONDO": "MONDO",
+}

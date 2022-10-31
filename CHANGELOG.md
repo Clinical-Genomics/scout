@@ -27,6 +27,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide links to coverage report from case dynamic HPO panel if cancer analysis
 - Remove rerun emails and redirect users to the analysis order portal instead
 - Updated clinical SVs igv.js track (dbVar) and added example of external track from `https://trackhubregistry.org/`
+- Rewrote the ClinVar export module to simplify and add one variant at the time
+- ClinVar submissions with phenotype conditions from: [OMIM, MedGen, Orphanet, MeSH, HP, MONDO]
 ### Fixed
 - If trying to load a badly formatted .tsv file an error message is displayed.
 - Avoid showing case as rerun when first attempt at case upload failed

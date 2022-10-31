@@ -5,6 +5,7 @@ import uuid
 import pytest
 from flask import request
 from flask_login import login_user
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.server.app import create_app
 from scout.server.blueprints.login.models import LoginUser
@@ -569,3 +570,43 @@ def sv_var_obj():
         "cosmic_ids": null,
     }
     return sv_var
+
+
+#############################################################
+##################### Clinvar fixtures ######################
+#############################################################
+@pytest.fixture(scope="function")
+def clinvar_form(request):
+    """Mocks a ClinVar form compiled by the user. Contains Variant and CaseData input data"""
+    data = ImmutableMultiDict(
+        {
+            "case_id": "internal_id",
+            "category": "snv",
+            "local_id": "4c7d5c70d955875504db72ef8e1abe77",
+            "linking_id": "4c7d5c70d955875504db72ef8e1abe77",
+            "chromosome": "7",
+            "ref": "C",
+            "alt": "A",
+            "start": "124491972",
+            "stop": "124491972",
+            "gene_symbol": "POT1",
+            "last_evaluated": "2022-09-19",
+            "inheritance_mode": "Autosomal dominant inheritance",
+            "assertion_method": "ACMG Guidelines, 2015",
+            "assertion_method_cit": "PMID:25741868",
+            "variations_ids": "rs116916706",
+            "clinsig": "Likely pathogenic, low penetrance",
+            "clinsig_comment": "test clinsig comment",
+            "clinsig_cit": "test clinsig cit",
+            "hpo_terms": "HP:0001298",
+            "condition_comment": "test condition comment",
+            "include_ind": ["NA12882"],
+            "individual_id": ["NA12882", "NA12877", "NA12878"],
+            "affected_status": ["yes", "no", "no"],
+            "allele_of_origin": ["germline"] * 3,
+            "collection_method": ["clinical testing"] * 3,
+            "condition_type": "HP",
+            "conditions": ["HP:0001298", "HP:0001250"],
+        }
+    )
+    return data
