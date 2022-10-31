@@ -16,6 +16,7 @@ from .blueprints import (
     alignviewers,
     api,
     cases,
+    clinvar,
     dashboard,
     diagnoses,
     genes,
@@ -169,6 +170,7 @@ def register_blueprints(app):
     app.register_blueprint(public.public_bp)
     app.register_blueprint(genes.genes_bp)
     app.register_blueprint(cases.cases_bp)
+    app.register_blueprint(clinvar.clinvar_bp)
     app.register_blueprint(login.login_bp)
     app.register_blueprint(variant.variant_bp)
     app.register_blueprint(variants.variants_bp)
