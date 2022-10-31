@@ -15,6 +15,9 @@ def update_case_report(case_id, report_path, report_key):
         case_id(str): _id of a case
         report_path(str): Path to report on disk
         report_key(str): any key from REPORT_TYPE
+
+    Returns:
+        dict: a case dictionary (scout.models.Case)
     """
     case_obj = store.case(case_id=case_id)
     if case_obj is None:
