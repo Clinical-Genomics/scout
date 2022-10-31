@@ -22,10 +22,12 @@ def update_case_report(case_id, report_path, report_key):
     Args:
         case_id(str): _id of a case
         report_path(str): Path to report on disk
-        report_key(str):
+        report_key(str): any key from REPORT_TYPE
     """
     case_obj = store.case(case_id=case_id)
     if case_obj is None:
         raise DataNotFoundError(f"No case with _id {case_id} found")
+    LOG.error(f"{REPORT_TYPE[report_key]} - {report_path}")
     case_obj[REPORT_TYPE[report_key]] = report_path
+    LOG.error(f"{case_obj['gene_fusion_report_research']}")
     return store.replace_case(case_obj)

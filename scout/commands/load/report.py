@@ -68,7 +68,7 @@ def gene_fusion_report(case_id, report_path, research, update):
 
     try:
         if research:
-            update_case_report(case_id, report_path, "gene_fusion")
+            update_case_report(case_id, report_path, "gene_fusion_research")
         else:
             update_case_report(case_id, report_path, "gene_fusion")
 
