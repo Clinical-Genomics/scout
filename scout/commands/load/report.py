@@ -51,7 +51,7 @@ def coverage_qc_report(case_id, report_path, update):
     """Add coverage and qc report to an existing case."""
 
     try:
-        update_case_report(case_id, report_path, "qc")
+        update_case_report(case_id, report_path, "cov_qc")
         LOG.info("saved report to case!")
     except Exception as err:
         LOG.error(err)
