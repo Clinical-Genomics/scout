@@ -28,13 +28,13 @@
         <div class="modal-body">
           <h5>Requirements</h5>
           <p>
-            Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank">ClinVar submission portal.</a><br>
+            Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank" rel="noopener">ClinVar submission portal.</a><br>
                         If your organization is not already present in ClinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
                         The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
           </p><br>
           <h5>Obtain a submission ID</h5>
           <p>
-            If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
+            If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank" rel="noopener">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
           </p><br>
           <h5>Fill in panel 1 and 2</h5>
           <p>
@@ -75,19 +75,19 @@
 
 {% macro submission_panel(subm_obj) %}
   <div class="card w-100 mt-3">
-    <div class="card-header {{ 'bg-primary' if subm_obj.status=='open' else 'bg-warning' }}">
+    <div class="card-header, text-white {{ 'bg-primary' if subm_obj.status=='open' else 'bg-secondary' }}">
       Submission <strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong> / Created: <strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong> / Last updated: <strong>{{subm_obj.updated_at.strftime('%Y-%m-%d')}}</strong>
     </div><!-- end of card header-->
     <div class="card-body">
-      <form id="update_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
+      <form id="update_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb align-items-center">
             <li class="breadcrumb-item">
               <!-- Download the Variant data CSV file -->
-              <a href="{{url_for('overview.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None')}}" class="btn btn-primary btn-xs text-white">
+              <a href="{{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                 Download variants file
               </a>
-              <a href="{{url_for('overview.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None')}}" class="btn btn-primary btn-xs text-white">
+              <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                 Download casedata file
               </a>
             </li>
@@ -104,7 +104,7 @@
             <label for="clinvar_id" class="form-text">Submission name</label>
           </div>
           <div class="col-4">
-            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}">
+            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
           </div>
           <div class="col-2">
             <button type="submit" class="btn btn-primary form-control" name="update_submission" value="register_id">Update</button>
@@ -117,8 +117,8 @@
         <table class="table table-striped">
           <thead>
             <tr>
-              <th width="5%"></th>
-              <th width="15%">ID</th>
+              <th></th>
+              <th>Name</th>
               <th></th>
               <th>Type</th>
               <th>Case</th>
@@ -133,29 +133,33 @@
             {% set var_key_name = {} %}
             {% for subm_variant in subm_obj.variant_data  %} <!-- loop over the submitted variants-->
               <tr>
-                <td width="5%">{{loop.index}}</td>
+                <td>{{loop.index}}</td>
                   {% if subm_variant.category == 'sv' %}
                     {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.breakpoint1, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
-                    <td width="15%">
-                      <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                    <td>
+                      <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                     <td><div class="badge bg-warning">SV</div></td>
-                  {% else %}
-                    {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
-                    <td width="15%">
-                      <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                  {% else %} <!-- SNV -->
+                    {% if subm_variant.ref_seq and subm_variant.hgvs %}
+                      {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.ref_seq, subm_variant.hgvs])} ) %}
+                    {% else %}
+                      {% do var_key_name.update({subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
+                    {% endif %}
+                    <td>
+                      <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                     <td><div class="badge bg-success">SNV</div></td>
                   {% endif %}
                 </td>
-                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
+                <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
                 <td>{{subm_variant.ref_seq or '-'}}</td>
                 <td>{{subm_variant.gene_symbol or '-'}}</td>
                 <td>{{subm_variant.hgvs or '-'}}</td>
                 <td>{{subm_variant.clinsig}}</td>
-                <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('overview.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
+                <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
                   <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
                 </form>
               </tr>
@@ -163,17 +167,21 @@
                 <td colspan=9>
                   <div class="vardata">
                     <div id="vardiv{{subm_variant._id}}" class="panel-body" style="display:none;">
-                        {% if subm_variant.category == 'sv' %}
-                          <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</h4></a>
-                        {% else %}
-                          <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank"><h4>{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</h4></a>
-                          {% endif %}
-
+                        <ul class="list-group">
+                          <li class="list-group-item">
+                            Variant
+                            {% if subm_variant.category == 'sv' %}
+                              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener">{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</a>
+                            {% else %}
+                              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener">{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</a>
+                            {% endif %}
+                          </li>
                         {% for key, value in variant_header_fields.items() %}
                           {% if subm_variant[key]%}
-                            <li>{{ value }}: <strong>{{ subm_variant[key]|replace(subm_variant[key][75:], '..') if subm_variant[key]|length > 75 else subm_variant[key]}}</strong></li>
+                            <li class="list-group-item">{{ value }}: <strong>{{ subm_variant[key]|replace(subm_variant[key][75:], '..') if subm_variant[key]|length > 75 else subm_variant[key]}}</strong></li>
                             {% endif %}
                         {% endfor %}
+                        </ul>
                     </div>
                   </div>
                 </td>
@@ -187,7 +195,7 @@
       </div> <!--variant data div end -->
       {% if subm_obj.case_data and subm_obj.case_data | length > 0 %}
         <div id="cdata_{{subm_obj._id}}"> <!--case data div -->
-          <h4>Case data:</h4>
+          <h4>Observation data:</h4>
           <input type="hidden" name="oldSampleName" id="oldSampleName" value="">
           <input type="hidden" name="newSampleName" id="newSampleName" value="">
           <table class="table table-striped">
@@ -197,8 +205,7 @@
                 <th>Individual ID</th>
                 <th></th>
                 <th>Case ID</th>
-                <th>Clinical features</th>
-                <th>Variant ID</th>
+                <th>Variant</th>
                 <th>Allele origin</th>
                 <th></th>
               </tr>
@@ -207,28 +214,29 @@
               {% for case in subm_obj.case_data %}
                 <tr>
                   <td>{{loop.index}}</td>
-                  <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('overview.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
+                  <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
                   <td>
-                    <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1"><span class="fa fa-floppy-o" aria-hidden="true"></span></button>
+                    <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="fa fa-pencil-square-o" aria-hidden="true"></span></button>
                   </td>
                   </form>
                   <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
-                  <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank">{{subm_obj.cases[case.case_id]}}</a></td>
-                  <td>{{case.clin_features}}</td>
+                  <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[case.case_id]}}</a></td>
                   <td>{{var_key_name[case.linking_id]}}</td>
                   <td>{{case.allele_origin}}</td>
-                  <form id="delete_casedata_{{case._id}}" action="{{ url_for('overview.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
+                  <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
                     <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
                   </form>
                 </tr>
                 <tr>
                   <td colspan=8>
                     <div id="cddiv{{case._id}}" class="panel-body" style="display:none;">
+                      <ul class="list-group">
                       {% for key, value in casedata_header_fields.items() %}
                         {% if case[key]%}
-                          <li>{{ value }}: <strong>{{ case[key] }}</strong></li>
+                          <li class="list-group-item">{{ value }}: <strong>{{ case[key] }}</strong></li>
                         {% endif %}
                       {% endfor %}
+                      </ul>
                     </div>
                   </td>
                 </tr>
