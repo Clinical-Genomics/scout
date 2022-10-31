@@ -1,0 +1,386 @@
+{% extends "bootstrap_global.html" %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('clinvar.static', filename='form_style.css') }}"></link>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+{% endblock head %}
+
+{% block content %}
+{% if variant_data.var_obj.category in ["snv", "cancer"]%}
+  {% set var_category = 'snv' %}
+{% else %}
+  {% set var_category = 'sv' %}
+{% endif %}
+<div class="container-fluid">
+  <!-- MultiStep Form -->
+  <div class="row d-flex justify-content-center">
+      <div class="col-md-10">
+          <form id="clinVarAdd" method="POST" action="{{ url_for('clinvar.clinvar_save', institute_id=institute._id, case_name=case.display_name) }}" id="{{variant_data.var_id}}_form">
+              <!-- progressbar -->
+              <ul id="progressbar">
+                  <li class="active">Start</li>
+                  <li>Assertion Criteria</li>
+                  <li>Variant Details</li>
+                  <li>Inheritance Model</li>
+                  <li>Clinical Significance</li>
+                  <li>Associated conditions</li>
+                  <li>Observation Data</li>
+              </ul>
+              <!-- fieldsets -->
+              <fieldset>
+                <p class="text-dark">
+                The form present on this page mirrors the fields on the Clinvar submission spreadsheets.<br>
+                After collecting the required fields, this variant gets saved in an open ClinVar submission object.<br>
+                </p>
+                <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="next action-button" style="text-decoration: none;">Back to Case</a>
+                <input type="button" name="next" class="next action-button" value="Start"/>
+              </fieldset>
+
+              <fieldset>
+                <!-- hidden fields -->
+                {{ variant_data.var_form.csrf_token }}
+                <!-- Variant data form -->
+                {{ variant_data.var_form.case_id() }}
+                {{ variant_data.var_form.category() }}
+                {{ variant_data.var_form.local_id() }}
+                {{ variant_data.var_form.linking_id() }}
+                {{ variant_data.var_form.ref() }}
+                {{ variant_data.var_form.alt() }}
+
+                <!-- SNVs only -->
+                {% if var_category == 'snv' %}
+                  {{ variant_data.var_form.chromosome() }}
+                  {{ variant_data.var_form.start() }}
+                  {{ variant_data.var_form.stop() }}
+                {% endif %}
+                <!-- end hidden fields -->
+                <h2 class="fs-title">Assertion Criteria</h2>
+                <h3 class="fs-subtitle"></h3>
+                  {{variant_data.var_form.last_evaluated.label(class="fw-bold text-dark")}}
+                  {{variant_data.var_form.last_evaluated(class="bg-white")}}
+                  <br><br>
+                  {{variant_data.var_form.assertion_method.label(class="fw-bold text-dark")}}
+                  {{variant_data.var_form.assertion_method(class="bg-white")}}
+                  <br><br>
+                  {{variant_data.var_form.assertion_method_cit.label(class="fw-bold text-dark")}}
+                  {{variant_data.var_form.assertion_method_cit(class="bg-white")}}
+
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+              <fieldset>
+                  <h2 class="fs-title">Variant Details</h2>
+
+                  {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
+                  {{variant_data.var_form.gene_symbol(class="bg-white")}}
+                  <br>
+                  {% if var_category == 'snv' %}
+                    <br><br>
+                    <!-- Transcripts & HGVS:(optional) -->
+                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic)"><strong>?</strong></span><br><br>
+                    {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
+                      <div class="row">
+                      {% for item in item_row %}
+                        <div class="col-4"><p class="text-white bg-secondary">{{ item() }} {{item.label}}</label></p></div>
+                      {% endfor %}
+                      </div>
+                    {% endfor %}
+                    <br><br>
+                    <!-- dbSNP identifier -->
+                    {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}
+                    {{variant_data.var_form.variations_ids(class="bg-white")}}
+                    <br>
+                  {% else %} <!--SV variant-->
+                    <div class="row">
+                      <div class="col-6">
+                      <!-- Variant type -->
+                        {{variant_data.var_form.sv_type.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.sv_type(class="form-control, bg-white")}}
+                        <br><br>
+                      <!-- Reference copy number -->
+                        {{variant_data.var_form.ref_copy_number.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.ref_copy_number(size=5, class="bg-white")}}
+                        <br><br>
+                      <!-- Copy number -->
+                        {{variant_data.var_form.copy_number.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
+                        {{variant_data.var_form.copy_number(size=5, class="bg-white")}}
+                        <br><br>
+                      <!--start and end chroms-->
+                        {{variant_data.var_form.chromosome.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.chromosome(size=5, class="bg-white")}}
+                        <br><br>
+                      </div>
+                      <div class=col-6>
+                        <!-- BP1 -->
+                        {{variant_data.var_form.breakpoint1.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.breakpoint1(class="bg-white")}}
+                        <br><br>
+                        <!-- BP2 -->
+                        {{variant_data.var_form.breakpoint2.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.breakpoint2(class="bg-white")}}
+                        <br><br>
+                        <!-- Outer start -->
+                        {{variant_data.var_form.outer_start.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.outer_start(size=20, class="bg-white")}}
+                        <br><br>
+                        <!-- Inner start -->
+                        {{variant_data.var_form.inner_start.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.inner_start(size=20, class="bg-white")}}
+                        <br><br>
+                        <!-- Inner stop -->
+                        {{variant_data.var_form.inner_stop.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.inner_stop(size=20, class="bg-white")}}
+                        <br><br>
+                        <!-- Outer stop -->
+                        {{variant_data.var_form.outer_stop.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.outer_stop(size=20, class="bg-white")}}
+                      </div>
+                    </div>
+                  {% endif %}
+                  <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                  <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset>
+                <h2 class="fs-title">Inheritance model</h2>
+                <h3 class="fs-subtitle">The mode of inheritance specific to the variant-disease pair, not generally for the disease</h3>
+                {{variant_data.var_form.inheritance_mode.label(class="fw-bold, text-dark")}}
+                {{variant_data.var_form.inheritance_mode(class="form-control, bg-white")}}
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset>
+                <h2 class="fs-title">Clinical Significance</h2>
+                <h3 class="fs-subtitle">The interpretation, or clinical significance, of the variant for the submitted condition</h3>
+
+                <div class="row">
+                  <div class="col-4">
+                    Classification in Scout:<br>
+                    <span class="badge bg-secondary">{{variant_data.var_obj.classification|replace("_"," ")|upper if variant_data.var_obj.classification else "n.a."}}</span>
+                  </div>
+                  <div class="col-8">
+                    {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
+                    {{variant_data.var_form.clinsig(class="form-control, bg-white")}}
+                  </div>
+                </div>
+                <br><br><br>
+                {{variant_data.var_form.clinsig_comment.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required only if you select 'drug response' or 'other' as clinical significance"><strong>?</strong></span>
+                {{variant_data.var_form.clinsig_comment(class="form-control, bg-white", placeholder="(optional)")}}
+                <br><br>
+                {{variant_data.var_form.clinsig_cit.label(class="fw-bold, text-dark")}}
+                {{variant_data.var_form.clinsig_cit(class="form-control, bg-white", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset>
+                <h2 class="fs-title">Associated Conditions</h2>
+                <h3 class="fs-subtitle">The condition for which the variant is interpreted. Detailed information about reporting condition is available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/faq_submitters/#pheno" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/clinvar/docs/faq_submitters/#pheno</a>. If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features.  If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records. i.e. this variant causes condition A in some individuals and causes disease B in other individuals. Provide only one name or identifier for a condition; do not provide multiple names or identifiers for the same condition."</h3>
+
+                <div class="row">
+                  <div class="col-6">
+                    {{variant_data.var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
+                    <select class="form-control, bg-white" name="condition_type" id="condition_type">
+                      {% for dbtype, _ in variant_data.var_form.condition_type.choices %}
+                        {% if dbtype == "OMIM" and variant_data.var_form.omim_terms.choices %}
+                          <option value="{{dbtype}}" selected>{{dbtype}}</option>
+                        {% elif dbtype == "HP" and variant_data.var_form.hpo_terms.choices %}
+                          <option value="{{dbtype}}" selected>{{dbtype}}</option>
+                        {% else %}
+                          <option value="{{dbtype}}">{{dbtype}}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                    <br><br>
+                    {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from one database type only (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
+                    <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
+                      {% if variant_data.var_form.omim_terms.choices %}
+                        {% for term, _ in variant_data.var_form.omim_terms.choices %}
+                          <option value="{{term}}" selected>{{term}}</option>
+                        {% endfor %}
+                      {% elif variant_data.var_form.hpo_terms.choices%}
+                        {% for term, _ in variant_data.var_form.hpo_terms.choices %}
+                          <option value="{{term}}" selected>{{term}}</option>
+                        {% endfor %}
+                      {% endif %}
+                      {
+                    </select>
+
+                  </div>
+                  <div class="col-6">
+                    {{variant_data.var_form.omim_terms.label(class="fw-bold, text-dark")}}<br>
+                    <ul class="list-group">
+                    {% for term in variant_data.var_form.omim_terms %}
+                      <li class="list-group-item">{{ term.label }}</li>
+                    {% else %}
+                    n.a.
+                    {% endfor %}
+                    </ul>
+                    <br><br>
+                    {{variant_data.var_form.hpo_terms.label(class="fw-bold, text-dark")}}<br>
+                    <ul class="list-group">
+                    {% for term in variant_data.var_form.hpo_terms %}
+                      <li class="list-group-item">{{ term.label }}</li>
+                    {% else %}
+                    n.a.
+                    </ul>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="button" name="next" class="next action-button" value="Next"/>
+              </fieldset>
+
+              <fieldset>
+                <h2 class="fs-title">Observation Data</h2>
+                <h3 class="fs-subtitle">Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.</h3>
+
+                <ul class="list-group">
+                {% for cdata in variant_data.cdata_forms %}
+                  {{cdata.linking_id(class="fw-bold, text-dark")}} <!-- hidden field -->
+                  <li class="list-group-item bg-white">
+                    <div class="row">
+                      <div class="col-2">
+                        {{ cdata.include_ind.label(class="fw-bold, text-dark") }}
+                        {{ cdata.include_ind() }}
+                      </div>
+                      <div class="col-2">
+                        {{ cdata.individual_id.label(class="fw-bold, text-dark") }}
+                        {{ cdata.individual_id(class="form-control, bg-white", readonly=true) }}
+                      </div>
+                      <div class="col-2">
+                        {{ cdata.affected_status.label(class="fw-bold, text-dark") }}
+                        {{ cdata.affected_status(class="form-control, bg-white") }}
+                      </div>
+                      <div class="col-2">
+                        {{ cdata.allele_of_origin.label(class="fw-bold, text-dark") }}
+                        {{ cdata.allele_of_origin(class="form-control, bg-white") }}
+                      </div>
+                      <div class="col-2">
+                        {{ cdata.collection_method.label(class="fw-bold, text-dark") }}
+                        {{ cdata.collection_method(class="form-control, bg-white") }}
+                      </div>
+                    </div>
+                  </li>
+                {% endfor %}
+                </ul>
+
+                <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
+                <input type="submit" name="submit" class="submit action-button" value="Submit"/>
+              </fieldset>
+
+          </form>
+      </div>
+  </div>
+  <!-- /.MultiStep Form -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha512-0QbL0ph8Tc8g5bLhfVzSqxe9GERORsKhIn1IrpxDAgUsbBGz/V7iSav2zzW325XGd1OMLdL4UiqRJj702IeqnQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+// Enable tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  return new bootstrap.Tooltip(tooltipTriggerEl)
+})
+
+var current_fs, next_fs, previous_fs; //fieldsets
+var left, opacity, scale; //fieldset properties which we will animate
+var animating; //flag to prevent quick multi-click glitches
+
+$(".next").click(function(){
+	if(animating) return false;
+	animating = true;
+
+	current_fs = $(this).parent();
+	next_fs = $(this).parent().next();
+
+	//activate next step on progressbar using the index of next_fs
+	$("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
+
+	//show the next fieldset
+	next_fs.show();
+	//hide the current fieldset with style
+	current_fs.animate({opacity: 0}, {
+		step: function(now, mx) {
+			//as the opacity of current_fs reduces to 0 - stored in "now"
+			//1. scale current_fs down to 80%
+			scale = 1 - (1 - now) * 0.2;
+			//2. bring next_fs from the right(50%)
+			left = (now * 50)+"%";
+			//3. increase opacity of next_fs to 1 as it moves in
+			opacity = 1 - now;
+			current_fs.css({
+        'transform': 'scale('+scale+')',
+        'position': 'absolute'
+      });
+			next_fs.css({'left': left, 'opacity': opacity});
+		},
+		duration: 800,
+		complete: function(){
+			current_fs.hide();
+			animating = false;
+		},
+		//this comes from the custom easing plugin
+		easing: 'easeInOutBack'
+	});
+});
+
+$(".previous").click(function(){
+	if(animating) return false;
+	animating = true;
+
+	current_fs = $(this).parent();
+	previous_fs = $(this).parent().prev();
+
+	//de-activate current step on progressbar
+	$("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+	//show the previous fieldset
+	previous_fs.show();
+	//hide the current fieldset with style
+	current_fs.animate({opacity: 0}, {
+		step: function(now, mx) {
+			//as the opacity of current_fs reduces to 0 - stored in "now"
+			//1. scale previous_fs from 80% to 100%
+			scale = 0.8 + (1 - now) * 0.2;
+			//2. take current_fs to the right(50%) - from 0%
+			left = ((1-now) * 50)+"%";
+			//3. increase opacity of previous_fs to 1 as it moves in
+			opacity = 1 - now;
+			current_fs.css({'left': left});
+			previous_fs.css({'transform': 'scale('+scale+')', 'opacity': opacity});
+		},
+		duration: 800,
+		complete: function(){
+			current_fs.hide();
+			animating = false;
+		},
+		//this comes from the custom easing plugin
+		easing: 'easeInOutBack'
+	});
+});
+
+// Populate condition list
+$('#condition_tags').select2({
+  tags: true,
+  theme: 'bootstrap-5',
+  tokenSeparators: [','],
+  placeholder: "e.g. OMIM:604233,OMIM:300491,..",
+});
+
+</script>
+{% endblock %}

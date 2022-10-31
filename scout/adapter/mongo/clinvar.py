@@ -131,7 +131,7 @@ class ClinVarHandler(object):
 
         Args:
             submission_id(str) : id of the submission to be updated
-            submission_objects(tuple): a tuple of 2 elements coresponding to a list of variants and a list of case data objects to add to submission
+            submission_objects(tuple): a tuple of 2 elements of this type: (scout.models.clinvar.clinvar_variant, [scout.models.clinvar.clinvar_casedata1, ..] )
 
         Returns:
             updated_submission(obj): an open clinvar submission object, updated
@@ -144,23 +144,23 @@ class ClinVarHandler(object):
 
         # Insert variant submission_objects into clinvar collection
         # Loop over the objects
-        for var_obj in submission_objects[0]:
-            try:
-                result = self.clinvar_collection.insert_one(var_obj)
-                self.clinvar_submission_collection.update_one(
-                    {"_id": submission_id},
-                    {"$push": {"variant_data": str(result.inserted_id)}},
-                    upsert=True,
-                )
-            except pymongo.errors.DuplicateKeyError:
-                LOG.error("Attepted to insert a clinvar variant which is already in DB!")
+        var_dict = submission_objects[0]
+        try:
+            result = self.clinvar_collection.insert_one(var_dict)
+            self.clinvar_submission_collection.update_one(
+                {"_id": submission_id},
+                {"$push": {"variant_data": str(result.inserted_id)}},
+                upsert=True,
+            )
+        except pymongo.errors.DuplicateKeyError:
+            LOG.error("Attepted to insert a clinvar variant which is already in DB!")
 
         # Insert casedata submission_objects into clinvar collection
         if submission_objects[1]:
             # Loop over the objects
-            for case_obj in submission_objects[1]:
+            for casedata_obj in submission_objects[1]:
                 try:
-                    result = self.clinvar_collection.insert_one(case_obj)
+                    result = self.clinvar_collection.insert_one(casedata_obj)
                     self.clinvar_submission_collection.update_one(
                         {"_id": submission_id},
                         {"$push": {"case_data": str(result.inserted_id)}},
@@ -353,9 +353,6 @@ class ClinVarHandler(object):
         Returns:
             updated_submission(obj): an updated clinvar submission
         """
-
-        LOG.info("Deleting clinvar object %s (%s)", object_id, object_type)
-
         # If it's a variant object to be removed:
         #   remove reference to it in the submission object 'variant_data' list field
         #   remove the variant object from clinvar collection
