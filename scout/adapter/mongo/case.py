@@ -263,6 +263,7 @@ class CaseHandler(object):
         finished=False,
         research_requested=False,
         is_research=False,
+        has_rna_data=False,
         status=None,
         phenotype_terms=False,
         group=None,
@@ -287,6 +288,7 @@ class CaseHandler(object):
             finished(bool)
             research_requested(bool)
             is_research(bool)
+            has_rna_data(bool): if case has RNA-seq data associated
             status(str or dict expression)
             group(ObjectId): fetch all cases in a named case group
             cohort(bool): Fetch all cases with cohort tags
@@ -307,56 +309,91 @@ class CaseHandler(object):
                 instead returns corresponding query dict
                 that can be reused in compound queries or for testing.
         """
+
+        def _set_query_value(self, query, var, set_key, set_value):
+            """Adds kes/values to a growing query dictionary for selecting cases from db.
+            Checks if 'var' has a value. If it does, adds set_key/set_value as key/value to the growing
+            query dictionary
+
+            Args:
+                query(dict): case query dictionary
+                var(misc): could have a value or be None
+                set_key(str): new query key query[set_key]
+                set_value(misc): value to assign to query[set_key]
+            """
+            if var:
+                query[set_key] = set_value
+
         query = query or {}
         order = None
         # Prioritize when both owner and collaborator params are present
         if collaborator and owner:
             collaborator = None
 
-        if collaborator:
-            query["collaborators"] = collaborator
+        _set_query_value(
+            query=query, var=collaborator, set_key="collaborators", set_value=collaborator
+        )
 
-        if owner:
-            query["owner"] = owner
+        _set_query_value(query=query, var=owner, set_key="owner", set_value=owner)
 
-        if skip_assigned:
-            query["assignees"] = {"$exists": False}
+        _set_query_value(
+            query=query, var=skip_assigned, set_key="assignees", set_value={"$exists": False}
+        )
 
-        if has_causatives:
-            query["causatives"] = {"$exists": True, "$ne": []}
+        _set_query_value(
+            query=query,
+            var=has_causatives,
+            set_key="causatives",
+            set_value={"$exists": True, "$ne": []},
+        )
 
-        if reruns:
-            query["rerun_requested"] = True
+        _set_query_value(query=query, var=reruns, set_key="rerun_requested", set_value=True)
 
-        if rerun_monitor:
-            query["rerun_monitoring"] = True
+        _set_query_value(query=query, var=rerun_monitor, set_key="rerun_monitoring", set_value=True)
 
-        if status:
-            query["status"] = status
+        _set_query_value(query=query, var=status, set_key="status", set_value=status)
 
-        elif finished:
-            query["status"] = {"$in": ["solved", "archived"]}
+        _set_query_value(
+            query=query, var=finished, set_key="status", set_value={"$in": ["solved", "archived"]}
+        )
 
-        if research_requested:
-            query["research_requested"] = True
+        _set_query_value(
+            query=query, var=research_requested, set_key="research_requested", set_value=True
+        )
 
-        if is_research:
-            query["is_research"] = {"$exists": True, "$eq": True}
+        _set_query_value(
+            query=query,
+            var=is_research,
+            set_key="is_research",
+            set_value={"$exists": True, "$eq": True},
+        )
 
-        if phenotype_terms:
-            query["phenotype_terms"] = {"$exists": True, "$ne": []}
+        _set_query_value(
+            query=query,
+            var=phenotype_terms,
+            set_key="phenotype_terms",
+            set_value={"$exists": True, "$ne": []},
+        )
 
-        if pinned:
-            query["suspects"] = {"$exists": True, "$ne": []}
+        _set_query_value(
+            query=query,
+            var=pinned,
+            set_key="suspects",
+            set_value={"$exists": True, "$ne": []},
+        )
 
-        if cohort:
-            query["cohorts"] = {"$exists": True, "$ne": []}
+        _set_query_value(
+            query=query,
+            var=cohort,
+            set_key="cohorts",
+            set_value={"$exists": True, "$ne": []},
+        )
 
-        if group:
-            query["group"] = {"$in": [group]}
+        _set_query_value(query=query, var=group, set_key="group", set_value={"$in": [group]})
 
-        if assignee:
-            query["assignees"] = {"$in": [assignee]}
+        _set_query_value(
+            query=query, var=assignee, set_key="assignees", set_value={"$in": [assignee]}
+        )
 
         if name_query:
             # Case search filter form query
