@@ -310,7 +310,7 @@ class CaseHandler(object):
                 that can be reused in compound queries or for testing.
         """
 
-        def _set_query_value(self, query, value, set_key, set_value):
+        def _set_query_value(query, value, set_key, set_value):
             """Adds kes/values to a growing query dictionary for selecting cases from db.
             Checks if 'value' has a value. If it does, adds set_key/set_value as key/value to the growing
             query dictionary
@@ -321,7 +321,7 @@ class CaseHandler(object):
                 set_key(str): new query key query[set_key]
                 set_value(misc): value to assign to query[set_key]
             """
-            if var:
+            if value:
                 query[set_key] = set_value
 
         query = query or {}
@@ -416,6 +416,10 @@ class CaseHandler(object):
             clinvar_subm_cases = self.clinvar_cases(collaborator or owner)
             self._update_case_id_query(query, clinvar_subm_cases)
 
+        if has_rna_data:
+            cases_with_rna = self.rna_cases(collaborator or owner)
+            self._update_case_id_query(query, cases_with_rna)
+
         if yield_query:
             return query
 
@@ -423,6 +427,26 @@ class CaseHandler(object):
             return self.case_collection.find(query)
 
         return self.case_collection.find(query).sort("updated_at", -1)
+
+    def rna_cases(self, owner):
+        """Retrieve all cases with RNA-seq data for a given institute
+
+        Args:
+            owner(str): _id of an institute
+
+        Returns:
+            list of case _ids
+        """
+        EXISTS_NOT_NULL = {"$exists": True, "$ne": None}
+        query = {
+            "owner": owner,
+            "$or": [
+                {"gene_fusion_report": EXISTS_NOT_NULL},
+                {"individuals.splice_junctions_bed": EXISTS_NOT_NULL},
+                {"individuals.rna_coverage_bigwig": EXISTS_NOT_NULL},
+            ],
+        }
+        return [case["_id"] for case in self.case_collection.find(query)]
 
     def last_modified_cases(
         self, within_days, has_causatives, finished, reruns, research_requested, status
