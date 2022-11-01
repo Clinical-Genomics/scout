@@ -437,7 +437,7 @@ class CaseHandler(object):
         Returns:
             list of case _ids
         """
-        EXISTS_NOT_NULL = {"$exists": True, "$nin": [null, ""]}
+        EXISTS_NOT_NULL = {"$exists": True, "$nin": [None, ""]}
         query = {
             "owner": owner,
             "$or": [
