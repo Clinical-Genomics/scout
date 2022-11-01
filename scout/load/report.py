@@ -14,7 +14,7 @@ def update_case_report(case_id, report_path, report_key):
     Args:
         case_id(str): _id of a case
         report_path(str): Path to report on disk
-        report_key(str): any key from REPORT_TYPE
+        report_key(str): any key from CUSTOM_CASE_REPORTS
 
     Returns:
         dict: a case dictionary (scout.models.Case)
