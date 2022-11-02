@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display number of cases shown / total number of cases available for each category on Cases page
 - Moved buttons to modify case status from sidebar to main case page
 - Global CSRF protection to the app
+### Changed
+- Instructions on how to call dibs on scout-stage server in pull request template
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 
