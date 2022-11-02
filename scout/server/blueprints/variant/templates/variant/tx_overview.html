@@ -89,6 +89,10 @@
               </td> <!-- end of HGVS Description col -->
 
               <td class="text-center"> <!-- links col -->
+                {% if tx.mutalyzer_link %}
+                  <a href="{{ tx.mutalyzer_link }}" class="badge bg-secondary text-white" target="_blank"
+                    data-bs-toggle="tooltip" title="Mutalyzer">M</a>
+                {% endif %}
                 {% if tx.varsome_link %}
                   <a href="{{ tx.varsome_link }}" class="badge bg-secondary text-white" target="_blank"
                     data-bs-toggle="tooltip" title="Varsome">V</a>

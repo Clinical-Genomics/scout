@@ -110,6 +110,7 @@ def tx_overview(variant_obj):
 
             # ---- create content for links column -----#
             ovw_tx["varsome_link"] = tx.get("varsome_link")
+            ovw_tx["mutalyzer_link"] = tx.get("mutalyzer_link")
             ovw_tx["tp53_link"] = tx.get("tp53_link")
             ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
             ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
