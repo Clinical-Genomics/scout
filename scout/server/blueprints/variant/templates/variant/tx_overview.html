@@ -45,7 +45,7 @@
           {% for tx in variant.overview_transcripts %}
             <tr {% if tx.is_primary %} class="bg-info-light" {% endif %}>
               <td class="d-flex justify-content-between align-items-center"> <!-- gene col-->
-                <a href="{{ url_for('genes.gene', hgnc_id=tx.hgnc_id) }}" target="_blank">
+                <a href="{{ url_for('genes.gene', hgnc_id=tx.hgnc_id) }}" target="_blank" rel="noopener">
                   {{ tx.hgnc_symbol if tx.hgnc_symbol else tx.hgnc_id }}
                 </a>
               </td> <!-- end of gene symbol col-->
@@ -90,23 +90,23 @@
 
               <td class="text-center"> <!-- links col -->
                 {% if tx.mutalyzer_link %}
-                  <a href="{{ tx.mutalyzer_link }}" class="badge bg-secondary text-white" target="_blank"
+                  <a href="{{ tx.mutalyzer_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
                     data-bs-toggle="tooltip" title="Mutalyzer">M</a>
                 {% endif %}
                 {% if tx.varsome_link %}
-                  <a href="{{ tx.varsome_link }}" class="badge bg-secondary text-white" target="_blank"
+                  <a href="{{ tx.varsome_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
                     data-bs-toggle="tooltip" title="Varsome">V</a>
                 {% endif %}
                 {% if tx.tp53_link %}
-                  <a href="{{ tx.tp53_link }}" class="badge bg-secondary text-white" target="_blank"
+                  <a href="{{ tx.tp53_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
                     data-bs-toggle="tooltip" title="MutanTP53">TP53</a>
                 {% endif %}
                 {% if tx.cbioportal_link %}
-                  <a href="{{ tx.cbioportal_link }}" class="badge bg-secondary text-white" target="_blank"
+                  <a href="{{ tx.cbioportal_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
                     data-bs-toggle="tooltip" title="cBioPortal">CBP</a>
                 {% endif %}
                 {% if tx.mycancergenome_link %}
-                  <a href="{{ tx.mycancergenome_link }}" class="badge bg-secondary text-white" target="_blank"
+                  <a href="{{ tx.mycancergenome_link }}" class="badge bg-secondary text-white" target="_blank" rel="noopener"
                     data-bs-toggle="tooltip" title="MyCancerGenome">MCG</a>
                 {% endif %}
               </td> <!-- end of links col -->

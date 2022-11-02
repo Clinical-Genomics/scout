@@ -1,7 +1,6 @@
 import logging
 import os
 from base64 import b64encode
-from datetime import date
 
 import requests
 from flask import Markup, current_app, flash, url_for
@@ -14,7 +13,6 @@ from scout.constants import (
     ACMG_OPTIONS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
-    CLINVAR_INHERITANCE_MODELS,
     DISMISS_VARIANT_OPTIONS,
     IGV_TRACKS,
     MANUAL_RANK_OPTIONS,
@@ -31,7 +29,6 @@ from scout.server.utils import (
     user_institutes,
     variant_case,
 )
-from scout.utils.scout_requests import fetch_refseq_version
 
 from .utils import (
     add_gene_info,
