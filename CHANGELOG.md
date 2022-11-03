@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Additional case category `Ignored`, to be used for cases that don't fall in the existing 'inactive', 'archived', 'solved', 'prioritized' categories
 - Display number of cases shown / total number of cases available for each category on Cases page
 - Moved buttons to modify case status from sidebar to main case page
+- Link to Mutalyzer Normalizer tool on variant's transcripts overview to retrieve official HVGS descriptions
 - Option to manually load RNA MULTIQC report using the command `scout load report -t multiqc_rna`
 - Load RNA MULTIQC automatically for a case if config file contains the `multiqc_rna` key/value
 ### Changed
