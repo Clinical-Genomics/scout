@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Additional case category `Ignored`, to be used for cases that don't fall in the existing 'inactive', 'archived', 'solved', 'prioritized' categories
 - Display number of cases shown / total number of cases available for each category on Cases page
 - Moved buttons to modify case status from sidebar to main case page
+- Link to Mutalyzer Normalizer tool on variant's transcripts overview to retrieve official HVGS descriptions
 - Gene panels PDF export with case variants hits by variant type
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
