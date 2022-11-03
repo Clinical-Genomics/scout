@@ -1,7 +1,6 @@
 import logging
 import os
 from base64 import b64encode
-from datetime import date
 
 import requests
 from flask import Markup, current_app, flash, url_for
@@ -14,7 +13,6 @@ from scout.constants import (
     ACMG_OPTIONS,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
-    CLINVAR_INHERITANCE_MODELS,
     DISMISS_VARIANT_OPTIONS,
     IGV_TRACKS,
     MANUAL_RANK_OPTIONS,
@@ -31,7 +29,6 @@ from scout.server.utils import (
     user_institutes,
     variant_case,
 )
-from scout.utils.scout_requests import fetch_refseq_version
 
 from .utils import (
     add_gene_info,
@@ -110,6 +107,7 @@ def tx_overview(variant_obj):
 
             # ---- create content for links column -----#
             ovw_tx["varsome_link"] = tx.get("varsome_link")
+            ovw_tx["mutalyzer_link"] = tx.get("mutalyzer_link")
             ovw_tx["tp53_link"] = tx.get("tp53_link")
             ovw_tx["cbioportal_link"] = tx.get("cbioportal_link")
             ovw_tx["mycancergenome_link"] = tx.get("mycancergenome_link")
