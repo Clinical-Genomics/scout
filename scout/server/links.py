@@ -304,6 +304,9 @@ def add_tx_links(tx_obj, build=37, hgnc_symbol=None):
     tx_obj["varsome_link"] = varsome(
         build, tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name")
     )
+    tx_obj["mutalyzer_link"] = mutalyzer(
+        tx_obj.get("refseq_id"), tx_obj.get("coding_sequence_name")
+    )
     tx_obj["tp53_link"] = mutantp53(tx_obj.get("hgnc_id"), tx_obj.get("protein_sequence_name"))
     tx_obj["cbioportal_link"] = cbioportal(hgnc_symbol, tx_obj.get("protein_sequence_name"))
     tx_obj["mycancergenome_link"] = mycancergenome(hgnc_symbol, tx_obj.get("protein_sequence_name"))
@@ -382,6 +385,20 @@ def varsome(build, refseq_id, protein_sequence_name):
     link = "https://varsome.com/variant/hg{}/{}:{}"
 
     return link.format(build, refseq_id, protein_sequence_name)
+
+
+def mutalyzer(refseq_id, hgvs):
+    """Return a string corresponding to a link to the Normalizer tool of Mutalyzer
+
+    Args:
+        refseq_id(str): transcript refseq id
+        hgvs(str): hgvs
+    """
+    if not all([refseq_id, hgvs]):
+        return None
+
+    link = "https://mutalyzer.nl/normalizer/{}:{}"
+    return link.format(refseq_id, hgvs)
 
 
 def iarctp53(hgnc_symbol):
