@@ -7,6 +7,7 @@ from scout.server.links import (
     alamut_link,
     cbioportal,
     ckb_gene,
+    mutalyzer,
     mycancergenome,
     snp_links,
 )
@@ -70,6 +71,15 @@ def test_ucsc_link():
     # THEN assert some links are added
     link = gene_obj.get("ucsc_link")
     assert link is not None
+
+
+def test_mutalyzer_link(app):
+    """Test if Mutalyzer link is made correctly"""
+
+    refseq = "NM_001042594"
+    hgvs = "c.510G>T"
+    link = mutalyzer(refseq, hgvs)
+    assert link
 
 
 def test_cbioportal_link():
