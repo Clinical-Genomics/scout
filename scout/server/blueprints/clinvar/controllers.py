@@ -8,6 +8,7 @@ from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_casedata, clinvar_variant
 from scout.server.extensions import store
+from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
 
 from .form import CaseDataForm, SNVariantForm, SVariantForm
@@ -15,23 +16,34 @@ from .form import CaseDataForm, SNVariantForm, SVariantForm
 LOG = logging.getLogger(__name__)
 
 
-def _get_var_tx_hgvs(variant_obj):
+def _get_var_tx_hgvs(case_obj, variant_obj):
     """Retrieve all transcripts / hgvs for a given variant
     Args:
+        case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
     Returns:
-        list. example: ["NM_000277 | c.1241A>G", ...]
+        list. example: ["NM_000277.4 | c.1241A>G", ...]
     """
-    tx_hgvs_list = [("Do not specify")]
+    build = str(case_obj.get("genome_build", "37"))
+    tx_hgvs_list = [(None, "Do not specify. Use chromosome coordinates instead")]
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
             if tx.get("refseq_id") and tx.get("coding_sequence_name"):
                 for refseq in tx.get("refseq_identifiers"):
-                    tx_hgvs_list.append(
-                        " | ".join([fetch_refseq_version(refseq), tx["coding_sequence_name"]])
-                    )
 
-    return [(item, item) for item in tx_hgvs_list]
+                    refseq_version = fetch_refseq_version(refseq)  # adds version to a refseq ID
+                    hgvs_simple = ":".join([refseq_version, tx["coding_sequence_name"]])
+
+                    # Validate descriptor using VariantValidator
+                    validated = validate_hgvs(build, hgvs_simple)
+
+                    label = hgvs_simple
+                    if validated:
+                        label += " (validated)"
+                    LOG.warning(validated)
+                    tx_hgvs_list.append((hgvs_simple, label))
+
+    return tx_hgvs_list
 
 
 def _set_var_form_common_fields(var_form, variant_obj, case_obj):
@@ -72,7 +84,7 @@ def _get_snv_var_form(variant_obj, case_obj):
     """
     var_form = SNVariantForm()
     _set_var_form_common_fields(var_form, variant_obj, case_obj)
-    var_form.tx_hgvs.choices = _get_var_tx_hgvs(variant_obj)
+    var_form.tx_hgvs.choices = _get_var_tx_hgvs(case_obj, variant_obj)
     var_ids = variant_obj.get("dbsnp_id") or ""
     var_form.variations_ids.data = var_ids.split(";")[0]
     var_form.chromosome.data = variant_obj.get("chromosome")
@@ -198,8 +210,8 @@ def _parse_tx_hgvs(clinvar_var, form):
     tx_hgvs = form.get("tx_hgvs")
     if not tx_hgvs or tx_hgvs == "Do not specify":
         return
-    clinvar_var["ref_seq"] = tx_hgvs.split(" | ")[0]
-    clinvar_var["hgvs"] = tx_hgvs.split(" | ")[1]
+    clinvar_var["ref_seq"] = tx_hgvs.split(":")[0]
+    clinvar_var["hgvs"] = tx_hgvs.split(":")[1]
 
 
 def _set_conditions(clinvar_var, form):
