@@ -28,7 +28,7 @@ def _get_var_tx_hgvs(case_obj, variant_obj):
     tx_hgvs_list = [(None, "Do not specify")]
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
-            if tx.get("refseq_id") and tx.get("coding_sequence_name"):
+            if all([tx.get("refseq_id"), tx.get("coding_sequence_name")]):
                 for refseq in tx.get("refseq_identifiers"):
 
                     refseq_version = fetch_refseq_version(refseq)  # adds version to a refseq ID
