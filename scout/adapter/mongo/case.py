@@ -317,11 +317,11 @@ class CaseHandler(object):
 
             Args:
                 query(dict): case query dictionary
-                value(misc): a variable that could have a value or be None
+                condition(misc): a variable that could have a value or be None
                 set_key(str): new query key query[set_key]
                 set_value(misc): value to assign to query[set_key]
             """
-            if value:
+            if condition:
                 query[set_key] = set_value
 
         query = query or {}
@@ -330,71 +330,80 @@ class CaseHandler(object):
         if collaborator and owner:
             collaborator = None
 
-        _set_query_value(
-            query=query, value=collaborator, set_key="collaborators", set_value=collaborator
+        _conditional_set_query_value(
+            query=query, condition=collaborator, set_key="collaborators", set_value=collaborator
         )
 
-        _set_query_value(query=query, value=owner, set_key="owner", set_value=owner)
+        _conditional_set_query_value(query=query, condition=owner, set_key="owner", set_value=owner)
 
-        _set_query_value(
-            query=query, value=skip_assigned, set_key="assignees", set_value={"$exists": False}
+        _conditional_set_query_value(
+            query=query, condition=skip_assigned, set_key="assignees", set_value={"$exists": False}
         )
 
-        _set_query_value(
+        _conditional_set_query_value(
             query=query,
-            value=has_causatives,
+            condition=has_causatives,
             set_key="causatives",
             set_value={"$exists": True, "$ne": []},
         )
 
-        _set_query_value(query=query, value=reruns, set_key="rerun_requested", set_value=True)
-
-        _set_query_value(
-            query=query, value=rerun_monitor, set_key="rerun_monitoring", set_value=True
+        _conditional_set_query_value(
+            query=query, condition=reruns, set_key="rerun_requested", set_value=True
         )
 
-        _set_query_value(query=query, value=status, set_key="status", set_value=status)
-
-        _set_query_value(
-            query=query, value=finished, set_key="status", set_value={"$in": ["solved", "archived"]}
+        _conditional_set_query_value(
+            query=query, condition=rerun_monitor, set_key="rerun_monitoring", set_value=True
         )
 
-        _set_query_value(
-            query=query, value=research_requested, set_key="research_requested", set_value=True
+        _conditional_set_query_value(
+            query=query, condition=status, set_key="status", set_value=status
         )
 
-        _set_query_value(
+        _conditional_set_query_value(
             query=query,
-            value=is_research,
+            condition=finished,
+            set_key="status",
+            set_value={"$in": ["solved", "archived"]},
+        )
+
+        _conditional_set_query_value(
+            query=query, condition=research_requested, set_key="research_requested", set_value=True
+        )
+
+        _conditional_set_query_value(
+            query=query,
+            condition=is_research,
             set_key="is_research",
             set_value={"$exists": True, "$eq": True},
         )
 
-        _set_query_value(
+        _conditional_set_query_value(
             query=query,
-            value=phenotype_terms,
+            condition=phenotype_terms,
             set_key="phenotype_terms",
             set_value={"$exists": True, "$ne": []},
         )
 
-        _set_query_value(
+        _conditional_set_query_value(
             query=query,
-            value=pinned,
+            condition=pinned,
             set_key="suspects",
             set_value={"$exists": True, "$ne": []},
         )
 
-        _set_query_value(
+        _conditional_set_query_value(
             query=query,
-            value=cohort,
+            condition=cohort,
             set_key="cohorts",
             set_value={"$exists": True, "$ne": []},
         )
 
-        _set_query_value(query=query, value=group, set_key="group", set_value={"$in": [group]})
+        _conditional_set_query_value(
+            query=query, condition=group, set_key="group", set_value={"$in": [group]}
+        )
 
-        _set_query_value(
-            query=query, value=assignee, set_key="assignees", set_value={"$in": [assignee]}
+        _conditional_set_query_value(
+            query=query, condition=assignee, set_key="assignees", set_value={"$in": [assignee]}
         )
 
         if name_query:
