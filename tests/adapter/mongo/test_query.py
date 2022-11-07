@@ -131,15 +131,25 @@ def test_gene_panel_query(adapter, case_obj):
     }
 
 
-def test_genotype_query(adapter, case_obj):
-    """Test variants query using a 'genotypes' field in variants filter form"""
+def test_genotype_query_heterozygous(adapter, case_obj):
+    """Test variants query using a 'genotypes' field in variants filter to filter for heterozygous variants"""
+
+    # WHEN a value is provided for 'genotypes' in variants query
+    query = {"genotypes": "0/1 or 1/0", "show_unaffected": True}
+    mongo_query = adapter.build_query(case_obj["_id"], query=query)
+    # THEN mongo query should contain the expected value
+    assert mongo_query["$and"] == [{"samples.genotype_call": {"$in": ["0/1", "1/0"]}}]
+
+
+def test_genotype_query_other(adapter, case_obj):
+    """Test variants query using a 'genotypes' field in variants filter form with value: other"""
 
     # WHEN a value is provided for 'genotypes' in variants query
     query = {"genotypes": "other", "show_unaffected": True}
     mongo_query = adapter.build_query(case_obj["_id"], query=query)
     # THEN mongo query should contain the expected value
     assert mongo_query["$and"] == [
-        {"samples.genotype_call": {"$nin": ["0/1", "1/1", "0/0", "./."]}}
+        {"samples.genotype_call": {"$nin": ["0/1", "1/1", "0/0", "1/0", "./."]}}
     ]
 
 
