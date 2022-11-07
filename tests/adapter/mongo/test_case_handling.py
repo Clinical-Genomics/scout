@@ -757,6 +757,19 @@ def test_verification_missing_cases(real_adapter, case_obj, user_obj, institute_
     assert len(adapter.verification_missing_cases(institute_obj["_id"])) == 1
 
 
+def test_rna_cases(real_adapter, case_obj):
+    """Test filter for cases with RNA-seq data available"""
+
+    adapter = real_adapter
+
+    # GIVEN a case with RNA data
+    assert case_obj["gene_fusion_report"]
+    assert adapter.case_collection.insert_one(case_obj)
+
+    # The adapter function rna_cases should return test case _id
+    assert adapter.rna_cases(owner=case_obj["owner"]) == [case_obj["_id"]]
+
+
 def test_keep_manual_rank_tag_after_reupload(
     adapter, case_obj, variant_obj, user_obj, institute_obj
 ):
