@@ -102,7 +102,7 @@ VARIANT_GENOTYPES = (
     ("0/1 or 1/0", "Heterozygous (0/1 or 1/0)"),
     ("1/1", "Homozygous (1/1)"),
     ("0/0", "Homozygous ref (0/0)"),
-    ("./.", "Alleles missing (./.)"),
+    ("./.", "Both alleles missing (./.)"),
     ("other", "Other"),
 )
 
