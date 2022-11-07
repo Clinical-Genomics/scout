@@ -451,6 +451,7 @@ class CaseHandler(object):
             "owner": owner,
             "$or": [
                 {"gene_fusion_report": EXISTS_NOT_NULL},
+                {"gene_fusion_report_research": EXISTS_NOT_NULL},
                 {"individuals.splice_junctions_bed": EXISTS_NOT_NULL},
                 {"individuals.rna_coverage_bigwig": EXISTS_NOT_NULL},
             ],
