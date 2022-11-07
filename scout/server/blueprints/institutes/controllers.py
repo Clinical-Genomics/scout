@@ -413,6 +413,7 @@ def cases(store, request, institute_id):
         name_query=name_query,
         skip_assigned=request.args.get("skip_assigned"),
         is_research=request.args.get("is_research"),
+        has_rna_data=request.args.get("has_rna"),
         verification_pending=request.args.get("validation_ordered"),
         has_clinvar_submission=request.args.get("clinvar_submitted"),
     )
