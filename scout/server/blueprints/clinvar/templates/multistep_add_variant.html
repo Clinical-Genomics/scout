@@ -87,7 +87,7 @@
                     <span class="badge bg-primary float-end"><a class="text-white" href="https://variantvalidator.org/service/validate/" target="_blank" rel="noopener">VariantValidator</a></span>
                     <br><br>
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
-                      <div class="row">
+                      <div class="row mt-1">
                       {% for item in item_row %}
                         {% if "Do not specify" in item.label.text  %}
                           <div class="col-4 bg-secondary">
