@@ -6,7 +6,7 @@ from flask import flash
 from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
-from scout.models.clinvar import clinvar_casedata, clinvar_variant
+from scout.models.clinvar import clinvar_variant
 from scout.server.extensions import store
 from scout.utils.hgvs import validate_hgvs
 from scout.utils.scout_requests import fetch_refseq_version
@@ -22,7 +22,7 @@ def _get_var_tx_hgvs(case_obj, variant_obj):
         case_obj(scout.models.Case)
         variant_obj(scout.models.Variant)
     Returns:
-        list. example: ["NM_000277.4 | c.1241A>G", ...]
+        list of tuples. example: [("NM_002340.6:c.1840C>T", "NM_002340.6:c.1840C>T (validated)" ), ("NM_001145436.2:c.1840C>T", "NM_001145436.2:c.1840C>T"), .. ]
     """
     build = str(case_obj.get("genome_build", "37"))
     tx_hgvs_list = [(None, "Do not specify")]
