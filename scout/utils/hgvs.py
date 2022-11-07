@@ -22,7 +22,7 @@ def validate_hgvs(build, desc):
     try:
         res = get_request_json(url)
         validated = res["content"]["flag"] == "gene_variant"
-    except Exception as ex:
+    except Exception as ex:  # WHEN validation fails res["content"]["flag"] == "warning"
         LOG.warning(ex)
 
     return validated
