@@ -733,5 +733,7 @@ def _get_query_genotype(query):
     q_value = query.get("genotypes")
     if q_value == "other":
         return {"$nin": ["0/1", "1/1", "0/0", "./."]}
+    elif q_value == "0/1 or 1/0":
+        return {"$in": ["0/1", "1/0"]}
     elif q_value:
         return q_value
