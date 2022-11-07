@@ -144,6 +144,7 @@ class CaseFilterForm(FlaskForm):
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
     clinvar_submitted = BooleanField("Has ClinVar submissions")
+    has_rna = BooleanField("Has RNA-seq data")
     validation_ordered = BooleanField("Validation pending")
     search = SubmitField(label="Search")
 
