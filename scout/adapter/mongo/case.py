@@ -312,7 +312,7 @@ class CaseHandler(object):
 
         def _conditional_set_query_value(query, condition, set_key, set_value):
             """Adds kes/values to a growing query dictionary for selecting cases from db.
-            Checks if 'value' has a value. If it does, adds set_key/set_value as key/value to the growing
+            Checks if 'condition' has a value. If it does, adds set_key/set_value as key/value to the growing
             query dictionary
 
             Args:
