@@ -310,7 +310,7 @@ class CaseHandler(object):
                 that can be reused in compound queries or for testing.
         """
 
-        def _set_query_value(query, value, set_key, set_value):
+        def _conditional_set_query_value(query, condition, set_key, set_value):
             """Adds kes/values to a growing query dictionary for selecting cases from db.
             Checks if 'value' has a value. If it does, adds set_key/set_value as key/value to the growing
             query dictionary
