@@ -197,12 +197,10 @@
     <div class="card-body">
       <ul class="list-group">
         <li class="list-group-item">
-          <div class="row d-flex justify-content-between">
-            <div>Position</div>
-            <div>
-              {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
-            </div>
-          </div>
+          <span class="d-inline">Position</span>
+          <span class="d-inline ms-3">
+            {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
+          </span>
         </li>
         {% if gens_info.display %}
         <li class="list-group-item">
@@ -227,16 +225,14 @@
           </div>
         </li>
         <li class="list-group-item">
-          <div class="row d-flex align-items-center">
-          <div>Cytoband</div>
-            <div class="offset-9">
-              {% if variant.end_chrom == variant.chromosome %}
-                {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
-              {% else %}
-                ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
-              {% endif %}
-            </div>
-          </div>
+          <span class="d-inline">Cytoband</span>
+          <span class="d-inline ms-3">
+            {% if variant.end_chrom == variant.chromosome %}
+              {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
+            {% else %}
+              ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
+            {% endif %}
+          </span>
         </li>
         <li class="list-group-item">
           <div class="row d-flex align-items-center">
@@ -255,9 +251,8 @@
           </li>
         {% endif %}
       <li class="list-group-item">
-        <div class="row d-flex justify-content-between">
-          <div class="col d-flex justify-content-between align-items-center"><div>Type</div><div>{{ variant.sub_category|upper }}</div></div>
-        </div>
+        <span class="d-inline">Type</span>
+        <span class="d-inline ms-3">{{ variant.sub_category|upper }}</span>
       </li>
       {% if variant.custom %}
         {% for pair in variant.custom %}
