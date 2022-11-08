@@ -683,53 +683,28 @@ def delivery_report(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/cnv-report")
-def cnv_report(institute_id, case_name):
-    """Display CNV report."""
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("cnv_report") is None:
-        return abort(404)
-    out_dir = os.path.abspath(os.path.dirname(data["case"]["cnv_report"]))
-    filename = os.path.basename(data["case"]["cnv_report"])
-    return send_from_directory(out_dir, filename)
+@cases_bp.route("/<institute_id>/<case_name>/<report_type>")
+def custom_report(institute_id, case_name, report_type):
+    """Display/download a custom report for a case"""
 
-
-@cases_bp.route("/<institute_id>/<case_name>/gene-fusion-report/<report_type>")
-def gene_fusion_report(institute_id, case_name, report_type):
-    """Download gene fusion report"""
-    _, case_obj = institute_and_case(store, institute_id, case_name)
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     report_path = case_obj.get(report_type)
-    if report_path is None or report_type not in CUSTOM_CASE_REPORTS.values():
+    if report_path is None:
         return abort(404)
+
     out_dir = os.path.abspath(os.path.dirname(report_path))
     filename = os.path.basename(report_path)
-    return send_from_directory(out_dir, filename)
 
-
-@cases_bp.route("/<institute_id>/<case_name>/coverage-qc-report")
-def coverage_qc_report(institute_id, case_name):
-    """Display coverage and qc report."""
-    _, case_obj = institute_and_case(store, institute_id, case_name)
-    coverage_qc_report = case_obj.get("coverage_qc_report")
-
-    if coverage_qc_report is None:
-        return abort(404)
-
-    report_format = request.args.get("format", "html")
-
-    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
-    filename = os.path.basename(coverage_qc_report)
-
-    if report_format == "pdf":
+    if request.args.get("report_format") == "pdf":
         try:
-            with open(os.path.abspath(coverage_qc_report), "r") as html_file:
+            with open(os.path.abspath(report_path), "r") as html_file:
                 source_code = html_file.read()
                 bytes_file = html_to_pdf_file(source_code, "landscape", 300)
                 file_name = "_".join(
                     [
                         case_obj["display_name"],
                         datetime.datetime.now().strftime("%Y-%m-%d"),
-                        "coverage_qc_report.pdf",
+                        ".".join([report_type, "pdf"]),
                     ]
                 )
                 return send_file(
@@ -741,7 +716,7 @@ def coverage_qc_report(institute_id, case_name):
         except Exception as ex:
             flash(
                 "An error occurred while converting report to PDF: {} -- {}".format(
-                    coverage_qc_report, ex
+                    report_type, ex
                 ),
                 "warning",
             )
@@ -948,19 +923,6 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     )
     LOG.debug("Attempt to deliver file {0} from dir {1}".format(download_name, outdir))
     return send_from_directory(outdir, filename, download_name=download_name, as_attachment=True)
-
-
-@cases_bp.route("/<institute_id>/<case_name>/multiqc", defaults={"rna": False})
-@cases_bp.route("/<institute_id>/<case_name>/multiqc/<rna>")
-def multiqc(institute_id, case_name, rna):
-    """Load multiqc report for the case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    report = "multiqc" if rna is False else "multiqc_rna"
-    if case_obj[report] is None:
-        return abort(404)
-    out_dir = os.path.abspath(os.path.dirname(case_obj[report]))
-    filename = os.path.basename(case_obj[report])
-    return send_from_directory(out_dir, filename)
 
 
 @cases_bp.route(
