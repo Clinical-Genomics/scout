@@ -976,12 +976,6 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
 
 
-def multiqc(store, institute_id, case_name):
-    """Find MultiQC report for the case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    return dict(institute=institute_obj, case=case_obj)
-
-
 def matchmaker_check_requirements(request):
     """Make sure requirements are fulfilled before submitting any request to MatchMaker Exchange
 

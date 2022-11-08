@@ -72,7 +72,7 @@
           <span class="menu-collapsed ms-2">General</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener">
                 <span class="fa fa-link"></span></a>
         </div>
         <div>
@@ -86,9 +86,21 @@
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ms-2">MultiQC</span>
           {% if case.multiqc is existing %}
-            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
           {% else %}
             <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></span>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    {% if case.multiqc_rna %}
+      <div href="#" class="bg-dark list-group-item text-white">
+        <div class="d-flex flex-row flex-fill bd-highlight">
+          <span class="menu-collapsed ms-2">MultiQC RNA</span>
+          {% if case.multiqc_rna is existing %}
+            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name, rna=True) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
+          {% else %}
+            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A MultiQC RNA report has been registered for the case but not found on the file system."></span>
           {% endif %}
         </div>
       </div>
@@ -97,7 +109,7 @@
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
           <span class="menu-collapsed ms-2">Coverage</span>
-            <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
+            <form method="POST" id="coverage_html" target="_blank" rel="noopener" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
                 <span class="fa fa-link"></span></a>
@@ -112,7 +124,7 @@
           <span class="menu-collapsed ms-2">mtDNA report</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-file-excel-o"></span></a>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="fa fa-file-excel-o"></span></a>
         </div>
       </div>
     </div>
@@ -166,7 +178,7 @@
 </div>
 <div href="#" class="bg-dark list-group-item d-inline-block text-white">
   {% if case.bam_files %}
-    <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank">
+    <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
       <button role="submit" class="btn btn-xs form-control btn-secondary">IGV viewer</button>
     </form>
   {% else %}
@@ -281,7 +293,7 @@
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
     {% if "RERUN_URL" in config %}
-      <form action="{{config['RERUN_URL']}}" target="_blank">
+      <form action="{{config['RERUN_URL']}}" target="_blank" rel="noopener">
         <button class="btn btn-warning btn-sm form-control" type="submit">Request rerun</button>
       </form>
     {% endif %}
@@ -575,7 +587,7 @@
       {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><span class="fa fa-link"></span></a>
+                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
         </div>
         <div>
           <a href="{{ url_for('cases.delivery_report', institute_id=institute,
@@ -600,7 +612,7 @@
     {% if case.delivery_report is existing %}
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None) }}" target="_blank"><span class="fa fa-link"></span></a>
+                          case_name=case.display_name, date=None) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
       </div>
       <div>
         <a href="{{ url_for('cases.delivery_report', institute_id=institute,
@@ -622,7 +634,7 @@
     <div>
       {% if case.cnv_report is existing %}
         <a href="{{ url_for('cases.cnv_report', institute_id=institute,
-                        case_name=case.display_name, format='pdf') }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
+                        case_name=case.display_name, format='pdf') }}" target="_blank" rel="noopener"><span class="fa fa-file-pdf-o"></span></a>
       {% else %}
         <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></span>
       {% endif %}
@@ -643,7 +655,7 @@
         <div>
           {% if case[report_type] is existing %}
             <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
-                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
+                            case_name=case.display_name, report_type=report_type) }}" target="_blank" rel="noopener"><span class="fa fa-file-pdf-o"></span></a>
           {% else %}
             <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></span>
           {% endif %}
@@ -664,7 +676,7 @@
     {% if case.coverage_qc_report is existing %}
       <div>
         <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                          case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
+                          case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
       </div>
       <div>
         <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
