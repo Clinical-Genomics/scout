@@ -253,7 +253,7 @@ def build_case(case_data, adapter):
     case_obj["madeline_info"] = case_data.get("madeline_info")
 
     case_obj["custom_images"] = case_data.get("custom_images")
-    for custom_report in CUSTOM_CASE_REPORTS:
+    for custom_report in CUSTOM_CASE_REPORTS.values():
         if custom_report in case_data:
             case_obj[custom_report] = case_data.get(custom_report)
 
