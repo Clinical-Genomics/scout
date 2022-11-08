@@ -197,21 +197,33 @@
     <div class="card-body">
       <ul class="list-group">
         <li class="list-group-item">
-          <div class="row d-flex justify-content-between">
-            <div>Position</div>
-            <div>
-              {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
-            </div>
-          </div>
+          <span class="d-inline">Position</span>
+          <span class="d-inline float-end">
+            {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
+          </span>
+        </li>
+        <li class="list-group-item">
+          <span class="d-inline">Cytoband</span>
+          <span class="d-inline float-end">
+            {% if variant.end_chrom == variant.chromosome %}
+              {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
+            {% else %}
+              ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
+            {% endif %}
+          </span>
+        </li>
+        <li class="list-group-item">
+          <span class="d-inline">Type</span>
+          <span class="d-inline float-end">{{ variant.sub_category|upper }}</span>
         </li>
         {% if gens_info.display %}
         <li class="list-group-item">
-          Copy number profile
-          <div class="float-end">
+          <span class="d-inline">Copy number profile</span>
+          <span class="d-inline ms-3">
             {% for sample in variant.samples %}
               <a class="btn btn-secondary" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
             {% endfor %}
-          </div>
+          </span>
         </li>
         {% endif %}
         <li class="list-group-item">
@@ -224,18 +236,6 @@
           <div class="row d-flex align-items-center">
             <div>Breakpoint 2</div>
             {{ sv_alignments(variant, case, "end") }}
-          </div>
-        </li>
-        <li class="list-group-item">
-          <div class="row d-flex align-items-center">
-          <div>Cytoband</div>
-            <div class="offset-9">
-              {% if variant.end_chrom == variant.chromosome %}
-                {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
-              {% else %}
-                ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
-              {% endif %}
-            </div>
           </div>
         </li>
         <li class="list-group-item">
@@ -254,11 +254,6 @@
             {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
           </li>
         {% endif %}
-      <li class="list-group-item">
-        <div class="row d-flex justify-content-between">
-          <div class="col d-flex justify-content-between align-items-center"><div>Type</div><div>{{ variant.sub_category|upper }}</div></div>
-        </div>
-      </li>
       {% if variant.custom %}
         {% for pair in variant.custom %}
         <li class="list-group-item">
