@@ -683,7 +683,7 @@ def delivery_report(institute_id, case_name):
     return send_from_directory(out_dir, filename)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/<report_type>")
+@cases_bp.route("/<institute_id>/<case_name>/report/<report_type>")
 def custom_report(institute_id, case_name, report_type):
     """Display/download a custom report for a case"""
 
