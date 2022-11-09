@@ -44,7 +44,7 @@ def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_upd
 
 
 def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
-    """test the case sidebar macro"""
+    """Test the case sidebar macro items for a RD case"""
 
     # GIVEN a case with several delivery reports, both in "delivery_report" field and "analyses" field
     today = datetime.datetime.now()
@@ -94,11 +94,11 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
         assert "Reports" in html
         assert "General" in html
         assert "mtDNA report" in html
-        assert "CNV report" in html
         assert "Gene Fusion Report" in html
 
         # only 2 delivery reports should be showed
-        assert f"Delivery Report" in html  # Latest report
+        today = str(today).split(" ")[0]
+        assert f"Delivery" in html
 
         five_years_ago = str(five_years_ago).split(" ")[0]
         assert f"Delivery ({five_years_ago})" in html
@@ -114,3 +114,20 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
         assert "Research list" in html
         assert "Reruns" in html
         assert "Share case" in html
+
+
+def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
+    """Test the case sidebar macro items for a cancer case"""
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WHEN the case sidebar macro is called
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "action_bar")
+        html = macro(
+            institute=institute_obj,
+            case=cancer_case_obj,
+            current_user=user_obj,
+        )
+
+        # It should show the expected items:
+        assert "Cnv report" in html
+        assert "Coverage Qc Report" in html
