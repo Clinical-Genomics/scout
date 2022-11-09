@@ -126,8 +126,9 @@ def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
             institute=institute_obj,
             case=cancer_case_obj,
             current_user=user_obj,
+            report_types=CUSTOM_CASE_REPORTS,
         )
 
         # It should show the expected items:
-        assert "Cnv report" in html
+        assert "Cnv Report" in html
         assert "Coverage Qc Report" in html
