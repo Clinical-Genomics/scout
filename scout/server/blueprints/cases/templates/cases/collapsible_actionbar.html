@@ -142,7 +142,7 @@
           </div>
           <div>
             <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
-                              case_name=case.display_name, report_type=report_type, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+                              case_name=case.display_name, report_type=report_type, report_format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
           </div>
         {% else %}
           <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A report of this type has been registered for the case but not found on the file system."></span></div>
