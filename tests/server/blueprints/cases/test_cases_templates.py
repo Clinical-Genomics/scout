@@ -3,6 +3,8 @@ import datetime
 
 from flask import get_template_attribute, url_for
 
+from scout.constants import CUSTOM_CASE_REPORTS
+
 
 def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_updated_info):
     """Test the variant_transcripts macro present in the general report page"""
@@ -85,6 +87,7 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
             institute=institute_obj,
             case=case_obj,
             current_user=user_obj,
+            report_types=CUSTOM_CASE_REPORTS,
         )
 
         # It should show the expected items:

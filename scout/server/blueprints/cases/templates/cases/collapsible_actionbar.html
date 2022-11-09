@@ -113,7 +113,7 @@
 
     <!-- Custom case reports as in constants.CUSTOM_CASE_REPORTS -->
     {% for _, report_type in report_types.items() %}
-      {{custom_case_report(institute, case, report_type)}}
+      {{ custom_case_report(institute, case, report_type) }}
     {% endfor %}
 
     <!-- Delivery reports for old analyses -->
