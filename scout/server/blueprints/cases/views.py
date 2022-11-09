@@ -628,67 +628,21 @@ def check_case(institute_id, case_name):
     return redirect(request.referrer)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/delivery-report")
-def delivery_report(institute_id, case_name):
-    """Display delivery report."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    if case_obj.get("delivery_report") is None:
-        return abort(404)
-
-    date_str = request.args.get("date")
-    if date_str is not None:
-        delivery_report = None
-        for analysis_data in case_obj.get("analyses", []):
-            if str(analysis_data["date"].date()) == date_str:
-                delivery_report = analysis_data["delivery_report"]
-        if delivery_report is None:
-            return abort(404)
-    else:
-        delivery_report = case_obj["delivery_report"]
-
-    out_dir = os.path.abspath(os.path.dirname(delivery_report))
-    filename = os.path.basename(delivery_report)
-
-    report_format = request.args.get("format", "html")
-    if report_format == "pdf":
-        try:  # file could not be available
-            html_file = open(delivery_report, "r")
-            source_code = html_file.read()
-
-            bytes_file = html_to_pdf_file(source_code, "portrait", 300)
-            file_name = "_".join(
-                [
-                    case_obj["display_name"],
-                    datetime.datetime.now().strftime("%Y-%m-%d"),
-                    "scout_delivery.pdf",
-                ]
-            )
-            return send_file(
-                bytes_file,
-                download_name=file_name,
-                mimetype="application/pdf",
-                as_attachment=True,
-            )
-        except Exception as ex:
-            flash(
-                "An error occurred while downloading delivery report {} -- {}".format(
-                    delivery_report, ex
-                ),
-                "warning",
-            )
-            LOG.error(
-                f"An error occurred while downloading delivery report {delivery_report} -- {ex}"
-            )
-
-    return send_from_directory(out_dir, filename)
-
-
 @cases_bp.route("/<institute_id>/<case_name>/report/<report_type>")
 def custom_report(institute_id, case_name, report_type):
     """Display/download a custom report for a case"""
 
+    report_path = None
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    report_path = case_obj.get(report_type)
+
+    date_str = request.args.get("date")  # Provided only when downloading old delivery reports
+    if date_str is None:
+        report_path = case_obj.get(report_type)
+    else:
+        for analysis_data in case_obj.get("analyses", []):
+            if str(analysis_data["date"].date()) == date_str:
+                report_path = analysis_data["delivery_report"]
+
     if report_path is None:
         return abort(404)
 

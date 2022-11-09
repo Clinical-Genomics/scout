@@ -120,7 +120,7 @@
     {% if case.analyses %}
       {% for analysis in case.analyses %}
         {% if analysis.delivery_report %}
-          {{ analysis_report( institute._id, case, analysis) }}
+          {{ analysis_report( institute._id, case, analysis ) }}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -584,12 +584,12 @@
       </div>
       {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
         <div>
-          <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
+          <a href="{{ url_for('cases.custom_report', institute_id=institute,
+                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date()) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
         </div>
         <div>
-          <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+          <a href="{{ url_for('cases.custom_report', institute_id=institute,
+                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
         <div><span class="fa fa-exclamation-circle ms-1" data-bs-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>
