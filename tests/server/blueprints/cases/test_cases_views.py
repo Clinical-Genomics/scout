@@ -1,14 +1,59 @@
 # -*- coding: utf-8 -*-
 import datetime
+import tempfile
 
+import pytest
 import requests
 from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 
+from scout.constants import CUSTOM_CASE_REPORTS
 from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
 from scout.server.extensions import store
 
 TEST_TOKEN = "test_token"
+
+
+@pytest.mark.parametrize("report_types", list(CUSTOM_CASE_REPORTS.keys()))
+def test_custom_report(app, institute_obj, case_obj, report_types):
+    """Test the function that serves custom report data with all types of report in CUSTOM_CASE_REPORTS"""
+
+    with tempfile.NamedTemporaryFile(suffix=".html") as tf:
+        # GIVEN that the case contains the given report (for convenience load also cancer case report types in RD demo case)
+        case_obj[report_types] = tf.name
+        store.replace_case(case_obj)
+
+        # GIVEN an initialized app and a valid user and institute
+        with app.test_client() as client:
+            # GIVEN that the user could be logged in
+            client.get(url_for("auto_login"))
+
+            # WHEN displaying an HTML report:
+            resp = client.get(
+                url_for(
+                    "cases.custom_report",
+                    institute_id=institute_obj["internal_id"],
+                    case_name=case_obj["display_name"],
+                    report_type=report_types,
+                )
+            )
+            # THEN a successful response should be returned
+            assert resp.status_code == 200
+            assert resp.mimetype == "text/html"
+
+            # WHEN displaying a PDF report:
+            resp = client.get(
+                url_for(
+                    "cases.custom_report",
+                    institute_id=institute_obj["internal_id"],
+                    case_name=case_obj["display_name"],
+                    report_type=report_types,
+                    report_format="pdf",
+                )
+            )
+            # THEN a successful response should be returned
+            assert resp.status_code == 200
+            assert resp.mimetype == "application/pdf"
 
 
 def test_add_individual_phenotype(app, institute_obj):
