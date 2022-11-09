@@ -129,13 +129,13 @@
 {% endmacro %}
 
 {% macro custom_case_report(institute, case, report_type) %}
-  {% if case["{}".format(report_type)] %}
+  {% if case.get(report_type) %}
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row bd-highlight">
         <div>
           <span class="menu-collapsed ms-2">{{report_type|replace("_"," ")|title}}</span>
         </div>
-        {% if case["{}".format(report_type)] is existing %}
+        {% if case.get(report_type) is existing %}
           <div>
             <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
                               case_name=case.display_name, report_type=report_type) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
