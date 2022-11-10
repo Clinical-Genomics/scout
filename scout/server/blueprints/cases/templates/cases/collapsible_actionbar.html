@@ -112,8 +112,8 @@
     {% endif %}
 
     <!-- Custom case reports as in constants.CUSTOM_CASE_REPORTS -->
-    {% for _, report_type in report_types.items() %}
-      {{ custom_case_report(institute, case, report_type) }}
+    {% for _, report_data in report_types.items() %}
+      {{ custom_case_report(institute, case, report_data) }}
     {% endfor %}
 
     <!-- Delivery reports for old analyses -->
@@ -128,22 +128,25 @@
 <!-- end reports macro -->
 {% endmacro %}
 
-{% macro custom_case_report(institute, case, report_type) %}
-  {% if case.get(report_type) %}
+{% macro custom_case_report(institute, case, report_data) %}
+  {% set report_key = report_data.key_name %}
+  {% if case.get(report_key) %}
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row bd-highlight mt-1">
         <div>
-          <span class="menu-collapsed">{{report_type|replace("_"," ")|title}}</span>
+          <span class="menu-collapsed">{{report_key|replace("_"," ")|title}}</span>
         </div>
-        {% if case.get(report_type) is existing %}
+        {% if case.get(report_key) is existing %}
           <div>
             <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
-                              case_name=case.display_name, report_type=report_type) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
+                              case_name=case.display_name, report_type=report_key) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
           </div>
-          <div>
-            <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
-                              case_name=case.display_name, report_type=report_type, report_format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
-          </div>
+          {% if report_data.pdf_export %}
+            <div>
+              <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
+                                case_name=case.display_name, report_type=report_key, report_format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+            </div>
+          {% endif %}
         {% else %}
           <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A report of this type has been registered for the case but not found on the file system."></span></div>
         {% endif %}
