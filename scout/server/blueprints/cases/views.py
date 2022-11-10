@@ -637,108 +637,37 @@ def check_case(institute_id, case_name):
     return redirect(request.referrer)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/delivery-report")
-def delivery_report(institute_id, case_name):
-    """Display delivery report."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    if case_obj.get("delivery_report") is None:
-        return abort(404)
+@cases_bp.route("/<institute_id>/<case_name>/report/<report_type>")
+def custom_report(institute_id, case_name, report_type):
+    """Display/download a custom report for a case"""
 
-    date_str = request.args.get("date")
-    if date_str is not None:
-        delivery_report = None
+    report_path = None
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
+    date_str = request.args.get("date")  # Provided only when downloading old delivery reports
+    if date_str is None:
+        report_path = case_obj.get(report_type)
+    else:
         for analysis_data in case_obj.get("analyses", []):
             if str(analysis_data["date"].date()) == date_str:
-                delivery_report = analysis_data["delivery_report"]
-        if delivery_report is None:
-            return abort(404)
-    else:
-        delivery_report = case_obj["delivery_report"]
+                report_path = analysis_data["delivery_report"]
 
-    out_dir = os.path.abspath(os.path.dirname(delivery_report))
-    filename = os.path.basename(delivery_report)
-
-    report_format = request.args.get("format", "html")
-    if report_format == "pdf":
-        try:  # file could not be available
-            html_file = open(delivery_report, "r")
-            source_code = html_file.read()
-
-            bytes_file = html_to_pdf_file(source_code, "portrait", 300)
-            file_name = "_".join(
-                [
-                    case_obj["display_name"],
-                    datetime.datetime.now().strftime("%Y-%m-%d"),
-                    "scout_delivery.pdf",
-                ]
-            )
-            return send_file(
-                bytes_file,
-                download_name=file_name,
-                mimetype="application/pdf",
-                as_attachment=True,
-            )
-        except Exception as ex:
-            flash(
-                "An error occurred while downloading delivery report {} -- {}".format(
-                    delivery_report, ex
-                ),
-                "warning",
-            )
-            LOG.error(
-                f"An error occurred while downloading delivery report {delivery_report} -- {ex}"
-            )
-
-    return send_from_directory(out_dir, filename)
-
-
-@cases_bp.route("/<institute_id>/<case_name>/cnv-report")
-def cnv_report(institute_id, case_name):
-    """Display CNV report."""
-    data = controllers.multiqc(store, institute_id, case_name)
-    if data["case"].get("cnv_report") is None:
+    if report_path is None:
         return abort(404)
-    out_dir = os.path.abspath(os.path.dirname(data["case"]["cnv_report"]))
-    filename = os.path.basename(data["case"]["cnv_report"])
-    return send_from_directory(out_dir, filename)
 
-
-@cases_bp.route("/<institute_id>/<case_name>/gene-fusion-report/<report_type>")
-def gene_fusion_report(institute_id, case_name, report_type):
-    """Download gene fusion report"""
-    _, case_obj = institute_and_case(store, institute_id, case_name)
-    report_path = case_obj.get(report_type)
-    if report_path is None or report_type not in CUSTOM_CASE_REPORTS.values():
-        return abort(404)
     out_dir = os.path.abspath(os.path.dirname(report_path))
     filename = os.path.basename(report_path)
-    return send_from_directory(out_dir, filename)
 
-
-@cases_bp.route("/<institute_id>/<case_name>/coverage-qc-report")
-def coverage_qc_report(institute_id, case_name):
-    """Display coverage and qc report."""
-    _, case_obj = institute_and_case(store, institute_id, case_name)
-    coverage_qc_report = case_obj.get("coverage_qc_report")
-
-    if coverage_qc_report is None:
-        return abort(404)
-
-    report_format = request.args.get("format", "html")
-
-    out_dir = os.path.abspath(os.path.dirname(coverage_qc_report))
-    filename = os.path.basename(coverage_qc_report)
-
-    if report_format == "pdf":
+    if request.args.get("report_format") == "pdf":
         try:
-            with open(os.path.abspath(coverage_qc_report), "r") as html_file:
+            with open(os.path.abspath(report_path), "r") as html_file:
                 source_code = html_file.read()
                 bytes_file = html_to_pdf_file(source_code, "landscape", 300)
                 file_name = "_".join(
                     [
                         case_obj["display_name"],
                         datetime.datetime.now().strftime("%Y-%m-%d"),
-                        "coverage_qc_report.pdf",
+                        ".".join([report_type, "pdf"]),
                     ]
                 )
                 return send_file(
@@ -750,7 +679,7 @@ def coverage_qc_report(institute_id, case_name):
         except Exception as ex:
             flash(
                 "An error occurred while converting report to PDF: {} -- {}".format(
-                    coverage_qc_report, ex
+                    report_type, ex
                 ),
                 "warning",
             )
@@ -957,19 +886,6 @@ def vcf2cytosure(institute_id, case_name, individual_id):
     )
     LOG.debug("Attempt to deliver file {0} from dir {1}".format(download_name, outdir))
     return send_from_directory(outdir, filename, download_name=download_name, as_attachment=True)
-
-
-@cases_bp.route("/<institute_id>/<case_name>/multiqc", defaults={"rna": False})
-@cases_bp.route("/<institute_id>/<case_name>/multiqc/<rna>")
-def multiqc(institute_id, case_name, rna):
-    """Load multiqc report for the case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    report = "multiqc" if rna is False else "multiqc_rna"
-    if case_obj[report] is None:
-        return abort(404)
-    out_dir = os.path.abspath(os.path.dirname(case_obj[report]))
-    filename = os.path.basename(case_obj[report])
-    return send_from_directory(out_dir, filename)
 
 
 @cases_bp.route(
