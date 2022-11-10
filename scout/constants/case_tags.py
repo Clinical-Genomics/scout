@@ -9,7 +9,7 @@ CUSTOM_CASE_REPORTS = {
     "multiqc_rna": {"key_name": "multiqc_rna", "format": "HTML", "pdf_export": False},
     "gene_fusion": {"key_name": "gene_fusion_report", "format": "PDF", "pdf_export": False},
     "gene_fusion_research": {
-        "key_name": "gene_fusion_research",
+        "key_name": "gene_fusion_report_research",
         "format": "PDF",
         "pdf_export": False,
     },
