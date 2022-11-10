@@ -3,6 +3,8 @@ import datetime
 
 from flask import get_template_attribute, url_for
 
+from scout.constants import CUSTOM_CASE_REPORTS
+
 
 def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_updated_info):
     """Test the variant_transcripts macro present in the general report page"""
@@ -42,7 +44,7 @@ def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_upd
 
 
 def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
-    """test the case sidebar macro"""
+    """Test the case sidebar macro items for a RD case"""
 
     # GIVEN a case with several delivery reports, both in "delivery_report" field and "analyses" field
     today = datetime.datetime.now()
@@ -85,16 +87,18 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
             institute=institute_obj,
             case=case_obj,
             current_user=user_obj,
+            report_types=CUSTOM_CASE_REPORTS,
         )
 
         # It should show the expected items:
         assert "Reports" in html
         assert "General" in html
         assert "mtDNA report" in html
+        assert "Gene Fusion Report" in html
 
         # only 2 delivery reports should be showed
         today = str(today).split(" ")[0]
-        assert f"Delivery ({today})" in html
+        assert f"Delivery" in html
 
         five_years_ago = str(five_years_ago).split(" ")[0]
         assert f"Delivery ({five_years_ago})" in html
@@ -113,6 +117,7 @@ def test_sidebar_macro(app, institute_obj, case_obj, user_obj):
 
 
 def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
+    """Test the case sidebar macro items for a cancer case"""
     # GIVEN an initialized app
     with app.test_client() as client:
         # WHEN the case sidebar macro is called
@@ -121,7 +126,9 @@ def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
             institute=institute_obj,
             case=cancer_case_obj,
             current_user=user_obj,
+            report_types=CUSTOM_CASE_REPORTS,
         )
 
         # It should show the expected items:
-        assert "CNV report" in html
+        assert "Cnv Report" in html
+        assert "Coverage Qc Report" in html

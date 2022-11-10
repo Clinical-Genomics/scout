@@ -38,7 +38,7 @@ def test_load_case_report(mock_app, report_types):
 
         # And the report should have been loaded
         updated_case = store.case_collection.find_one()
-        assert updated_case[CUSTOM_CASE_REPORTS[report_types]] == report_path
+        assert updated_case[CUSTOM_CASE_REPORTS[report_types]["key_name"]] == report_path
 
 
 def test_load_gene_fusion_report_research(mock_app):
