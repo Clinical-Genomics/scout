@@ -31,6 +31,7 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **lims_id** _String_ Case ID in Lims
 - **madeline** _String_ Path to a madeline pedigree file in XML format.
 - **multiqc** _String_ Path to a [multiqc][multiqc] report with arbitrary information.
+- **multiqc_rna** _String_ Path to a [nf-core/rnafusion multiqc][rna-multiqc] report with arbitrary information.
 - **owner(*)**  _String_ Institute who owns current case. Must refer to existing institute.
 - **peddy_check** _String_ Path to a [peddy][peddy] ped check file.
 - **peddy_ped** _String_ Path to a [peddy][peddy] ped file with an analysis of the pedigree based on variant information.
@@ -124,6 +125,7 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 
 [arriba]: https://arriba.readthedocs.io/en/latest/
 [multiqc]: https://github.com/ewels/multiqc
+[rna-multiqc]: https://nf-co.re/rnafusion/output#multiqc
 [peddy]: https://github.com/brentp/peddy
 [rhocall]: https://github.com/dnil/rhocall
 [srs]: https://github.com/Clinical-Genomics/Scout-REViewer-service
