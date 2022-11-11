@@ -1,27 +1,5 @@
-#Loading Scout
+# Loading Scout cases
 
-## Institute
-
-To load a institute into scout use the command `scout load institute`. As mentioned in the user guide an [institute](../user-guide/institutes.md) has to have a unique internal id, this is specified on the command line with `-i/--internal-id`. Also a display name could be used if there is a need for that: specify with `-d/--display-name`. If no display name is chosen it will default to internal id.
-Note that internal id is unique.
-
-## User
-
-To load a user into scout use the command `scout load user`. A user has to:
-
-- belong to an *institute*
-- have a *name*
-- have a *email adress*
-
-An example could look like:
-
-```bash
-scout load user --institute-id cust000 --user-name "Clark Kent" --user-mail clark@mail.com
-```
-
-See `scout load user --help` or the [user guide user section](../user-guide/users.md) for more information.
-
-## Case
 When loading a case into scout it is possible to use either a config file or to specify parameters on the command line.
 
 ### Scout Load Config
@@ -86,9 +64,42 @@ human_genome_build: 37
 
 ```
 
+#### Adding custom reports to the case
+A number of case-associated reports (supported formats: HTML, PDF, Excel) can be loaded and displayed/downloaded on the case sidebar page:
+
+<img width="227" alt="image" src="https://user-images.githubusercontent.com/28093618/201290117-33b1ea53-eb8e-4e80-a5df-edba8b6595fe.png">
+
+While case General report and mtDNA report (the latter only available for non-cancer cases) are generated the moment a user clicks on their link, other types of reports are pre-existing documents that can be associated with the case the moment the case is loaded in Scout (by adding them to the case load config file) or in a second moment, using the command line.
+
+Available types or case reports:
+- **delivery**: Delivery Report (HTML)
+- **cnv**: Copy Number Variants Report (PDF), available only for cancer cases
+- **cov_qc**: Coverage QC Report (HTML), available only for cancer cases
+- **multiqc**: [MultiQC](https://multiqc.info/) Report (HTML)
+- **multiqc_rna**: MultiQC RNA report (HTML)
+- **gene_fusion**: A report (PDF) showing gene fusions from RNA-Seq data, analysis limited to the clinical gene list
+- **gene_fusion_research**: A report (PDF) showing gene fusions from RNA-Seq data, performed on all genes
+
+All these reports reflect the items present in [this dictionary](https://github.com/Clinical-Genomics/scout/blob/a494edd64090fd4f613c72308ff5623442792af1/scout/constants/case_tags.py#L4)
+
+Use the following command to load/update a report for a pre-existing case:
+
+```
+scout load report -t <report-type>
+
+Usage: scout load report [OPTIONS] CASE_ID REPORT_PATH
+
+  Load a report document for a case.
+
+Options:
+  -t, --report-type [delivery|cnv|cov_qc|multiqc|multiqc_rna|gene_fusion|gene_fusion_research]
+                                  Type of report  [required]
+
+```
+
 #### Adding custom images to a case
 
-Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a seperate pipeline. The custom images are defined in the case config file and stored in the database. Scout currently supports     `gif`, `jpeg`, `png` and `svg` images.
+Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a cases_updatedrate pipeline. The custom images are defined in the case config file and stored in the database. Scout currently supports     `gif`, `jpeg`, `png` and `svg` images.
 
 The syntax for loading an image differed depending on where they are going to be displayed. Images on the caes view can be grouped into different groups that are displayed as accordion-type UI elemment named after the group. Images can be associated with stru    ctural variants with a given hgnc symbol.
 
