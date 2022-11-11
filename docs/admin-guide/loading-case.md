@@ -69,7 +69,7 @@ A number of case-associated reports (supported formats: HTML, PDF, Excel) can be
 
 <img width="227" alt="image" src="https://user-images.githubusercontent.com/28093618/201290117-33b1ea53-eb8e-4e80-a5df-edba8b6595fe.png">
 
-While case General report and mtDNA report (the latter only available for non-cancer cases) are generated the moment a user clicks on their link, other types of reports are pre-existing documents that can be associated with the case the moment the case is loaded in Scout (by adding them to the case load config file) or in a second moment, using the command line.
+While case General report and mtDNA report (the latter only available for non-cancer cases) are generated the moment a user clicks on their link, other types of reports are pre-existing documents that can be associated with the case immediately when it is loaded in Scout (by adding them to the case load config file) or later, using the command line.
 
 Available types or case reports:
 - **delivery**: Delivery Report (HTML)
