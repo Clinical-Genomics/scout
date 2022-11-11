@@ -1,3 +1,5 @@
+from .gene_tags import INHERITANCE_PALETTE
+
 VARIANT_REPORT_VARIANT_FEATURES = [
     "_id",
     "variant_id",
@@ -96,6 +98,20 @@ GENETIC_MODELS = (
     ("XD_dn", "X Linked Dominant De Novo"),
 )
 
+# Associates an inheritance model with a color, using the same colors categories as scout.constants.gene_tags.INHERITANCE_PALETTE
+# The colors of this palette are the same as the MatPlotLib Tableau palette (https://matplotlib.org/3.4.1/gallery/color/named_colors.html)
+GENETIC_MODELS_PALETTE = {
+    "AR_hom": INHERITANCE_PALETTE["AR"],
+    "AR_hom_dn": INHERITANCE_PALETTE["AR"],
+    "AR_comp": INHERITANCE_PALETTE["AR"],
+    "AR_comp_dn": INHERITANCE_PALETTE["AR"],
+    "AD": INHERITANCE_PALETTE["AD"],
+    "AD_dn": INHERITANCE_PALETTE["AD"],
+    "XR": INHERITANCE_PALETTE["XR"],
+    "XR_dn": INHERITANCE_PALETTE["XR"],
+    "XD": INHERITANCE_PALETTE["XD"],
+    "XD_dn": INHERITANCE_PALETTE["XD"],
+}
 
 VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")
 
