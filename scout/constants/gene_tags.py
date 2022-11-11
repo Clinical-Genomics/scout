@@ -15,6 +15,20 @@ GENE_PANELS_INHERITANCE_MODELS = (
     ("other", "other - Other"),
 )
 
+# Associates an inheritance model with a color, for displaying inheritance on Variant page
+INHERITANCE_PALETTE = {
+    "AD": {"color": "#1f77b4", "text_color": "text-white"},
+    "AR": {"color": "#ff7f0e", "text_color": "text-black"},
+    "XL": {"color": "#2ca02c", "text_color": "text-white"},
+    "XD": {"color": "#d62728", "text_color": "text-white"},
+    "XR": {"color": "#9467bd", "text_color": "text-white"},
+    "NA": {"color": "#8c564b", "text_color": "text-white"},
+    "AD (imprinting)": {"color": "#e377c2", "text_color": "text-black"},
+    "digenic": {"color": "#7f7f7f", "text_color": "text-white"},
+    "AEI": {"color": "#bcbd22", "text_color": "text-black"},
+    "other": {"color": "#17becf", "text_color": "text-black"},
+}
+
 VALID_MODELS = ("AR", "AD", "MT", "XD", "XR", "X", "Y")
 
 INCOMPLETE_PENETRANCE_MAP = {"unknown": None, "Complete": None, "Incomplete": True}
