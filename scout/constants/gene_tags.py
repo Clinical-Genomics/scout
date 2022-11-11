@@ -19,7 +19,7 @@ GENE_PANELS_INHERITANCE_MODELS = (
 # The colors of this palette are the same as the MatPlotLib Tableau palette (https://matplotlib.org/3.4.1/gallery/color/named_colors.html)
 INHERITANCE_PALETTE = {
     "AD": {"color": "#1f77b4", "text_color": "text-white"},
-    "AR": {"color": "#ff7f0e", "text_color": "text-dark"},
+    "AR": {"color": "#ff7f0e", "text_color": "text-white"},
     "XL": {"color": "#2ca02c", "text_color": "text-white"},
     "XD": {"color": "#d62728", "text_color": "text-white"},
     "XR": {"color": "#9467bd", "text_color": "text-white"},
