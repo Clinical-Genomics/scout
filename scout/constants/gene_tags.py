@@ -19,15 +19,15 @@ GENE_PANELS_INHERITANCE_MODELS = (
 # The colors of this palette are the same as the MatPlotLib Tableau palette (https://matplotlib.org/3.4.1/gallery/color/named_colors.html)
 INHERITANCE_PALETTE = {
     "AD": {"color": "#1f77b4", "text_color": "text-white"},
-    "AR": {"color": "#ff7f0e", "text_color": "text-black"},
+    "AR": {"color": "#ff7f0e", "text_color": "text-dark"},
     "XL": {"color": "#2ca02c", "text_color": "text-white"},
     "XD": {"color": "#d62728", "text_color": "text-white"},
     "XR": {"color": "#9467bd", "text_color": "text-white"},
     "NA": {"color": "#8c564b", "text_color": "text-white"},
-    "AD (imprinting)": {"color": "#e377c2", "text_color": "text-black"},
+    "AD (imprinting)": {"color": "#e377c2", "text_color": "text-dark"},
     "digenic": {"color": "#7f7f7f", "text_color": "text-white"},
-    "AEI": {"color": "#bcbd22", "text_color": "text-black"},
-    "other": {"color": "#17becf", "text_color": "text-black"},
+    "AEI": {"color": "#bcbd22", "text_color": "text-dark"},
+    "other": {"color": "#17becf", "text_color": "text-dark"},
 }
 
 VALID_MODELS = ("AR", "AD", "MT", "XD", "XR", "X", "Y")
