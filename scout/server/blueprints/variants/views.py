@@ -1,5 +1,4 @@
 """Views for the variants"""
-import datetime
 import io
 import logging
 
