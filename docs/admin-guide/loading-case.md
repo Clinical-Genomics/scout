@@ -99,7 +99,7 @@ Options:
 
 #### Adding custom images to a case
 
-Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a cases_updatedrate pipeline. The custom images are defined in the case config file and stored in the database. Scout currently supports     `gif`, `jpeg`, `png` and `svg` images.
+Scout can display custom images as new panels on the case view or variant view which could be used to display analysis results from a separate pipeline. The custom images are defined in the case config file and stored in the database. Scout currently supports     `gif`, `jpeg`, `png` and `svg` images.
 
 The syntax for loading an image differed depending on where they are going to be displayed. Images on the caes view can be grouped into different groups that are displayed as accordion-type UI elemment named after the group. Images can be associated with stru    ctural variants with a given hgnc symbol.
 
