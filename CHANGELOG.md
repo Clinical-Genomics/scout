@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to Mutalyzer Normalizer tool on variant's transcripts overview to retrieve official HVGS descriptions
 - Option to manually load RNA MULTIQC report using the command `scout load report -t multiqc_rna`
 - Load RNA MULTIQC automatically for a case if config file contains the `multiqc_rna` key/value
+- Distinct colors for different inheritance models on RD Variant page
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`
