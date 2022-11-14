@@ -92,12 +92,6 @@ def clinvar_update_submission(institute_id, submission):
 def clinvar_download_csv(submission, csv_type, clinvar_id):
     """Download a csv (Variant file or CaseData file) for a clinVar submission"""
 
-    def generate_csv(header, lines):
-        """Return downloaded header and lines with quoted fields"""
-        yield header + "\n"
-        for line in lines:
-            yield line + "\n"
-
     clinvar_file_data = controllers.clinvar_submission_file(submission, csv_type, clinvar_id)
 
     if clinvar_file_data is None:
@@ -106,7 +100,7 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
     headers = Headers()
     headers.add("Content-Disposition", "attachment", filename=clinvar_file_data[0])
     return Response(
-        generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
+        controllers.generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
         mimetype="text/csv",
         headers=headers,
     )

@@ -1,5 +1,7 @@
+import csv
 import logging
 from datetime import datetime
+from tempfile import NamedTemporaryFile
 
 from flask import flash
 
@@ -7,7 +9,7 @@ from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_casedata, clinvar_variant
-from scout.server.extensions import store
+from scout.server.extensions import clinvar_api, store
 from scout.utils.scout_requests import fetch_refseq_version
 
 from .form import CaseDataForm, SNVariantForm, SVariantForm
@@ -324,12 +326,50 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
             "info",
         )
     elif update_status == "validate":
-        validate_submission()
+        validate_submission(submission_id)
 
 
-def validate_submission():
-    """Validate a submission object and documents using the ClinVar API"""
-    LOG.error("hello bitches")
+def validate_submission(submission_id):
+    """Validate a submission object and documents using the ClinVar API
+
+    Args:
+        submission_id(str): the database id of a clinvar submission
+    """
+    # Create 2 temp files corresponding to Variant.csv and Casedata.csv
+    variants_filename, variants_header, variants_lines = clinvar_submission_file(
+        submission_id, "variant_data", "SUB000"
+    )
+    casedata_filename, casedata_header, casedata_lines = clinvar_submission_file(
+        submission_id, "case_data", "SUB000"
+    )
+
+    with NamedTemporaryFile(mode="a+", suffix=".csv") as v_file, NamedTemporaryFile(
+        mode="a+", suffix=".csv"
+    ) as c_file:
+
+        v_file_lines = generate_csv(variants_header, variants_lines)
+        csv.writer(v_file, delimiter="\t", quoting=csv.QUOTE_ALL)
+
+        c_file_lines = generate_csv(casedata_header, casedata_lines)
+        csv.writer(c_file, delimiter="\t", quoting=csv.QUOTE_ALL)
+
+        conversion_res = clinvar_api.convert_to_json(v_file.name, c_file.name)
+        LOG.error(conversion_res)
+
+
+def generate_csv(header, lines):
+    """Return downloaded header and lines with quoted fields
+
+    Args:
+        header(list of strings): content of file header
+        lines(list of strings): content of file lines
+
+    Returns:
+        a generator containing header and lines of a CSV lines
+    """
+    yield header + "\n"
+    for line in lines:
+        yield line + "\n"
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
@@ -337,7 +377,7 @@ def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
     Args:
         submission_id(str): the database id of a clinvar submission
         csv_type(str): 'variant_data' or 'case_data'
-        clinvar_subm_id(str): The ID assigned to this submission by clinVar
+        clinvar_subm_id(str): The ID assigned to this submission by ClinVar
     Returns:
         (filename, csv_header, csv_lines):
             filename(str) name of file to be downloaded
