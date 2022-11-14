@@ -1,5 +1,8 @@
+import logging
+
 import requests
 
+LOG = logging.getLogger(__name__)
 SERVICE_URL = "https://preclinvar-stage.scilifelab.se/"
 
 
@@ -21,7 +24,7 @@ class ClinVarApi:
 
         Returns:
             resp_res(tuple): example -> 400, "Created json file contains validation errors"
-                                     -> 200, dict representing the submission object
+                                     -> 200, {dict representation of the submission}
         """
         url = "".join([SERVICE_URL, "csv_2_json"])
         files = [
@@ -30,6 +33,7 @@ class ClinVarApi:
         ]
         try:
             resp = requests.post(url, files=files)
-            return resp.status_code, resp.json()
+            LOG.error(resp)
+            return resp.status_code, resp
         except Exception as ex:
             return None, ex
