@@ -323,6 +323,13 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
+    elif update_status == "validate":
+        validate_submission()
+
+
+def validate_submission():
+    """Validate a submission object and documents using the ClinVar API"""
+    LOG.error("hello bitches")
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
