@@ -1,12 +1,19 @@
 ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "panel-umi", "external")
 
-CUSTOM_CASE_REPORTS = [
-    "multiqc",
-    "cnv_report",
-    "coverage_qc_report",
-    "gene_fusion_report",
-    "gene_fusion_report_research",
-]
+# keys are used in the load report cli, while key_name is saved in case database documents
+CUSTOM_CASE_REPORTS = {
+    "delivery": {"key_name": "delivery_report", "format": "HTML", "pdf_export": True},
+    "cnv": {"key_name": "cnv_report", "format": "PDF", "pdf_export": True},
+    "cov_qc": {"key_name": "coverage_qc_report", "format": "HTML", "pdf_export": True},
+    "multiqc": {"key_name": "multiqc", "format": "HTML", "pdf_export": False},
+    "multiqc_rna": {"key_name": "multiqc_rna", "format": "HTML", "pdf_export": False},
+    "gene_fusion": {"key_name": "gene_fusion_report", "format": "PDF", "pdf_export": False},
+    "gene_fusion_research": {
+        "key_name": "gene_fusion_report_research",
+        "format": "PDF",
+        "pdf_export": False,
+    },
+}
 
 CASE_REPORT_CASE_FEATURES = [
     "display_name",

@@ -20,6 +20,7 @@ from scout.constants import (
     CASE_REPORT_CASE_FEATURES,
     CASE_REPORT_CASE_IND_FEATURES,
     CASE_REPORT_VARIANT_TYPES,
+    CUSTOM_CASE_REPORTS,
     MITODEL_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
@@ -357,6 +358,7 @@ def case(store, institute_obj, case_obj):
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
         "tissue_types": SAMPLE_SOURCE,
+        "report_types": CUSTOM_CASE_REPORTS,
         "mme_nodes": matchmaker.connected_nodes,
         "gens_info": gens.connection_settings(case_obj.get("genome_build")),
         "display_rerunner": rerunner.connection_settings.get("display", False),
@@ -974,12 +976,6 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
             individual_obj = individual
 
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
-
-
-def multiqc(store, institute_id, case_name):
-    """Find MultiQC report for the case."""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    return dict(institute=institute_obj, case=case_obj)
 
 
 def matchmaker_check_requirements(request):

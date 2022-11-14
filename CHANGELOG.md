@@ -7,14 +7,21 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
+- Filter case list by cases containing RNA-seq data - gene_fusion_reports and sample-level tracks (splice junctions and RNA coverage)
 - Additional case category `Ignored`, to be used for cases that don't fall in the existing 'inactive', 'archived', 'solved', 'prioritized' categories
 - Display number of cases shown / total number of cases available for each category on Cases page
 - Moved buttons to modify case status from sidebar to main case page
+- Link to Mutalyzer Normalizer tool on variant's transcripts overview to retrieve official HVGS descriptions
+- Option to manually load RNA MULTIQC report using the command `scout load report -t multiqc_rna`
+- Load RNA MULTIQC automatically for a case if config file contains the `multiqc_rna` key/value
+- Instructions in admin-guide on how to load case reports via the command line
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
+- Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`
+- Refactored code to display and download custom case reports
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
-
+- Layout of variant position, cytoband and type in SV variant summary
 
 ## [4.60]
 ### Added

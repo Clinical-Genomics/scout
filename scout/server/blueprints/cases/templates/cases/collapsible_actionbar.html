@@ -1,4 +1,4 @@
-{% macro action_bar(institute, case, causatives, collaborators, current_user) %}
+{% macro action_bar(institute, case, causatives, collaborators, current_user, report_types) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -10,7 +10,7 @@
               </div>
           </a>
           <!-- Menu with submenu -->
-          {{ reports(institute,case) }}
+          {{ reports(institute,case, report_types) }}
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
           {{ genome_build(case, case_groups) }}
@@ -56,7 +56,7 @@
   {% endfor %}
 {% endmacro %}
 
-{% macro reports(institute,case) %}
+{% macro reports(institute, case, report_types) %}
 <a href="#submenu1" aria-controls="submenu1" data-bs-toggle="collapse" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-start align-items-center">
         <span class="fa fa-book fa-fw me-3"></span>
@@ -65,14 +65,15 @@
     </div>
 </a>
 <!-- Submenu content -->
+<!-- General report -->
 <div id='submenu1' class="collapse sidebar-submenu">
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div>
-          <span class="menu-collapsed ms-2">General</span>
+          <span class="menu-collapsed">General</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">
+          <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener">
                 <span class="fa fa-link"></span></a>
         </div>
         <div>
@@ -81,23 +82,13 @@
         </div>
       </div>
     </div>
-    {% if case.multiqc %}
-      <div href="#" class="bg-dark list-group-item text-white">
-        <div class="d-flex flex-row flex-fill bd-highlight">
-          <span class="menu-collapsed ms-2">MultiQC</span>
-          {% if case.multiqc is existing %}
-            <a href="{{ url_for('cases.multiqc', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
-          {% else %}
-            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A MultiQC report has been registered for the case but not found on the file system."></span>
-          {% endif %}
-        </div>
-      </div>
-    {% endif %}
+
+    <!-- If connected to a chanjo instance, display coverage report -->
     {% if config.SQLALCHEMY_DATABASE_URI and case.track != "cancer" %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
-          <span class="menu-collapsed ms-2">Coverage</span>
-            <form method="POST" id="coverage_html" target="_blank" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
+          <span class="menu-collapsed">Coverage</span>
+            <form method="POST" id="coverage_html" target="_blank" rel="noopener" action="{{ url_for('report.report', sample_id=case.individual_ids, level=institute.coverage_cutoff, panel_name=case.panel_names|join(', ')) }}">
               <input type="hidden" name="gene_ids" value="{{ case.default_genes|join(',') }}"></input>
               <a href="javascript:;" onclick="document.getElementById('coverage_html').submit();">
                 <span class="fa fa-link"></span></a>
@@ -105,39 +96,63 @@
         </div>
       </div>
     {% endif %}
+
+    <!-- Display mtDNA report for non-cancer cases -->
     {% if case.track != "cancer" %}
     <div href="#" class="bg-dark list-group-item text-white">
       <div class="d-flex flex-row flex-fill bd-highlight">
         <div>
-          <span class="menu-collapsed ms-2">mtDNA report</span>
+          <span class="menu-collapsed">mtDNA report</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><span class="fa fa-file-excel-o"></span></a>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="fa fa-file-excel-o"></span></a>
         </div>
       </div>
     </div>
     {% endif %}
-    {% if case.cnv_report %}
-      {{ cnv_report(institute._id, case) }}
-    {% endif %}
-    {% if case.gene_fusion_report or case.gene_fusion_report_research %}
-      {{ gene_fusion_reports(institute._id, case) }}
-    {% endif %}
-    {% if case.coverage_qc_report %}
-      {{ coverage_qc_report(institute._id, case) }}
-    {% endif %}
-    {% if case.delivery_report %}
-      {{ delivery_report(institute._id, case) }}
-    {% endif %}
+
+    <!-- Custom case reports as in constants.CUSTOM_CASE_REPORTS -->
+    {% for _, report_data in report_types.items() %}
+      {{ custom_case_report(institute, case, report_data) }}
+    {% endfor %}
+
+    <!-- Delivery reports for old analyses -->
     {% if case.analyses %}
       {% for analysis in case.analyses %}
         {% if analysis.delivery_report %}
-          {{ analysis_report( institute._id, case, analysis) }}
+          {{ analysis_report( institute._id, case, analysis ) }}
         {% endif %}
       {% endfor %}
     {% endif %}
 </div>
 <!-- end reports macro -->
+{% endmacro %}
+
+{% macro custom_case_report(institute, case, report_data) %}
+  {% set report_key = report_data.key_name %}
+  {% if case.get(report_key) %}
+    <div href="#" class="bg-dark list-group-item text-white">
+      <div class="d-flex flex-row bd-highlight mt-1">
+        <div>
+          <span class="menu-collapsed">{{report_key|replace("_"," ")|title}}</span>
+        </div>
+        {% if case.get(report_key) is existing %}
+          <div>
+            <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
+                              case_name=case.display_name, report_type=report_key) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
+          </div>
+          {% if report_data.pdf_export %}
+            <div>
+              <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
+                                case_name=case.display_name, report_type=report_key, report_format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+            </div>
+          {% endif %}
+        {% else %}
+          <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A report of this type has been registered for the case but not found on the file system."></span></div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 {% endmacro %}
 
 {% macro analysis_date(case) %}
@@ -166,7 +181,7 @@
 </div>
 <div href="#" class="bg-dark list-group-item d-inline-block text-white">
   {% if case.bam_files %}
-    <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank">
+    <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
       <button role="submit" class="btn btn-xs form-control btn-secondary">IGV viewer</button>
     </form>
   {% else %}
@@ -281,7 +296,7 @@
       {{ rerun_monitor_interact(institute, case) }}
     {% endif %}
     {% if "RERUN_URL" in config %}
-      <form action="{{config['RERUN_URL']}}" target="_blank">
+      <form action="{{config['RERUN_URL']}}" target="_blank" rel="noopener">
         <button class="btn btn-warning btn-sm form-control" type="submit">Request rerun</button>
       </form>
     {% endif %}
@@ -291,8 +306,6 @@
   </div>
 {% endif %}
 {% endmacro %}
-
-
 
 {% macro rerun_monitor_interact(institute, case) %}
   <div class="ms-3 mt-1">
@@ -356,7 +369,7 @@
   {% endif %}
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fab fa-watchman-monitoring"></span>
-      <span class="menu-collapsed ms-3">{% if case.beacon %}Beacon submission {% else %} Share to Beacon {% endif %}</span>
+      <span class="menu-collapsed">{% if case.beacon %}Beacon submission {% else %} Share to Beacon {% endif %}</span>
       <span class="submenu-icon ms-auto"></span>
     </div>
   </a>
@@ -372,7 +385,7 @@
   {% endif %}
     <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fas fa-people-arrows"></span>
-      <span class="menu-collapsed ms-3">Matchmaker</span>
+      <span class="menu-collapsed">Matchmaker</span>
       <span class="submenu-icon ms-auto"></span>
     </div>
   </a>
@@ -570,16 +583,16 @@
   <div href="#" class="bg-dark list-group-item text-white">
     <div class="d-flex flex-row flex-fill bd-highlight">
       <div>
-        <span class="menu-collapsed ms-2">Delivery ({{ analysis.date.date() }})</span>
+        <span class="menu-collapsed">Delivery ({{ analysis.date.date() }})</span>
       </div>
       {% if analysis.delivery_report != case.delivery_report and analysis.delivery_report is existing %}
         <div>
-          <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date()) }}" target="_blank"><span class="fa fa-link"></span></a>
+          <a href="{{ url_for('cases.custom_report', institute_id=institute,
+                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date()) }}" target="_blank" rel="noopener"><span class="fa fa-link"></span></a>
         </div>
         <div>
-          <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                            case_name=case.display_name, date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+          <a href="{{ url_for('cases.custom_report', institute_id=institute,
+                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
         <div><span class="fa fa-exclamation-circle ms-1" data-bs-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>
@@ -589,90 +602,4 @@
     </div>
   </div>
 {% endif %}
-{% endmacro %}
-
-{% macro delivery_report(institute, case) %}
-<div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight">
-    <div>
-      <span class="menu-collapsed ms-2">Delivery ({{ case.analysis_date.date() }})</span>
-    </div>
-    {% if case.delivery_report is existing %}
-      <div>
-        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None) }}" target="_blank"><span class="fa fa-link"></span></a>
-      </div>
-      <div>
-        <a href="{{ url_for('cases.delivery_report', institute_id=institute,
-                          case_name=case.display_name, date=None, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
-      </div>
-    {% else %}
-      <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A delivery report has been registered for the case but not found on the file system."></span></div>
-    {% endif %}
-  </div>
-</div>
-{% endmacro %}
-
-{% macro cnv_report(institute, case) %}
-<div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight">
-    <div>
-      <span class="menu-collapsed ms-2">CNV report</span>
-    </div>
-    <div>
-      {% if case.cnv_report is existing %}
-        <a href="{{ url_for('cases.cnv_report', institute_id=institute,
-                        case_name=case.display_name, format='pdf') }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
-      {% else %}
-        <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A CNV report has been registered for the case but not found on the file system."></span>
-      {% endif %}
-    </div>
-  </div>
-</div>
-{% endmacro %}
-
-{% macro gene_fusion_reports(institute, case) %}
-{% set fusion_reports = ["gene_fusion_report", "gene_fusion_report_research"] %}
-{% for report_type in fusion_reports %}
-  {% if case[report_type] %}
-    <div href="#" class="bg-dark list-group-item text-white">
-      <div class="d-flex flex-row flex-fill bd-highlight">
-        <div class="text-nowrap">
-          <span class="menu-collapsed ms-2">{{ report_type|replace("_report","")|replace("_"," ")|capitalize }}</span>
-        </div>
-        <div>
-          {% if case[report_type] is existing %}
-            <a href="{{ url_for('cases.gene_fusion_report', institute_id=institute,
-                            case_name=case.display_name, report_type=report_type) }}" target="_blank"><span class="fa fa-file-pdf-o"></span></a>
-          {% else %}
-            <span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A fusion report has been registered for the case but not found on the file system."></span>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  {% endif %}
-{% endfor %}
-{% endmacro %}
-
-{% macro coverage_qc_report(institute, case) %}
-<div href="#" class="bg-dark list-group-item text-white">
-  <div class="d-flex flex-row flex-fill bd-highlight">
-    <div>
-      <span class="menu-collapsed ms-2">Coverage and QC report</span>
-    </div>
-
-    {% if case.coverage_qc_report is existing %}
-      <div>
-        <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                          case_name=case.display_name) }}" target="_blank"><span class="fa fa-link"></span></a>
-      </div>
-      <div>
-        <a href="{{ url_for('cases.coverage_qc_report', institute_id=institute,
-                          case_name=case.display_name, format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
-      </div>
-    {% else %}
-         <div><span class="fa fa-exclamation-triangle ms-1" data-bs-toggle="tooltip" title="A QC report has been registered for the case but not found on the file system."></span></div>
-    {% endif %}
-  </div>
-</div>
 {% endmacro %}
