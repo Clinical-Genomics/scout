@@ -83,7 +83,7 @@
 
 {% macro inheritance_badge(model,inherit_palette) %}
   {% if inherit_palette.get(model) %}
-    <span class="badge {{inherit_palette[model].text_color}}" style="background-color:{{inherit_palette[model].color}};">{{ model }}</span>
+    <span class="badge {{inherit_palette[model].bgcolor}} {{inherit_palette[model].text_color}}">{{ model }}</span>
   {% else %}
     <span class="badge bg-info">{{ model }}</span>
   {% endif %}
