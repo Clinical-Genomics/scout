@@ -20,6 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Instructions on how to call dibs on scout-stage server in pull request template
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`
 - Refactored code to display and download custom case reports
+- Do not export `Assertion method` and `Assertion method citation` to ClinVar submission files according to changes to ClinVar's submission spreadsheet templates.
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 - Layout of variant position, cytoband and type in SV variant summary
