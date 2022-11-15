@@ -75,6 +75,7 @@ from .variant_tags import (
     SV_TYPES,
     VARIANT_CALL,
     VARIANT_FILTERS,
+    VARIANT_GENOTYPES,
     VARIANT_REPORT_VARIANT_FEATURES,
 )
 from .variants_export import (
