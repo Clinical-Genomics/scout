@@ -3,7 +3,7 @@ import logging
 import requests
 
 LOG = logging.getLogger(__name__)
-SERVICE_URL = "https://preclinvar-stage.scilifelab.se/"
+SERVICE_URL = "http://127.0.0.1:8000/"
 
 
 class ClinVarApi:
@@ -16,7 +16,7 @@ class ClinVarApi:
         self.service = SERVICE_URL
 
     def convert_to_json(self, variant_file, casedata_file):
-        """Sends a POST request to the API and tries to convert Variant and Casedata csv files to a JSON submission object(dict)
+        """Sends a POST request to the API (csv_2_json endpoint) and tries to convert Variant and Casedata csv files to a JSON submission object(dict)
 
         Args:
             variant_file(tempfile._TemporaryFileWrapper): a tempfile containing Variant data
@@ -33,7 +33,7 @@ class ClinVarApi:
         ]
         try:
             resp = requests.post(url, files=files)
-            LOG.error(resp)
+            LOG.error(str(resp.json()))
             return resp.status_code, resp
         except Exception as ex:
             return None, ex
