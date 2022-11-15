@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to manually load RNA MULTIQC report using the command `scout load report -t multiqc_rna`
 - Load RNA MULTIQC automatically for a case if config file contains the `multiqc_rna` key/value
 - Instructions in admin-guide on how to load case reports via the command line
+- Possibility to filter RD variants by a specific genotype call
 - Pre-Validate refseq:HGVS items using VariantValidator in ClinVar submission form
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
