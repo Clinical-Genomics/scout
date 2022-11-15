@@ -268,6 +268,6 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [closed-issues-url]: https://GitHub.com/Clinical-Genomics/scout/issues?q=is%3Aissue+is%3Aclosed
 [codecov-img]: https://codecov.io/gh/Clinical-Genomics/scout/branch/main/graph/badge.svg?token=BOhMTZ4T3c
 [codecov-url]: https://codecov.io/gh/Clinical-Genomics/scout
-[actions-build-status]: https://github.com/Clinical-Genomics/scout/workflows/Scout%20tests/badge.svg
+[actions-build-status]: https://github.com/Clinical-Genomics/scout/actions/workflows/build_and_publish.yml/badge.svg
 [black-image]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black-url]: https://github.com/psf/black
