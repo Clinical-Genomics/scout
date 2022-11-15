@@ -38,7 +38,7 @@
                 The form present on this page mirrors the fields on the Clinvar submission spreadsheets.<br>
                 After collecting the required fields, this variant gets saved in an open ClinVar submission object.<br>
                 </p>
-                <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="next action-button" style="text-decoration: none;">Back to Case</a>
+                <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="previous action-button-previous" style="text-decoration: none;">Back to Case</a>
                 <input type="button" name="next" class="next action-button" value="Start"/>
               </fieldset>
 
@@ -60,7 +60,8 @@
                   {{ variant_data.var_form.stop() }}
                 {% endif %}
                 <!-- end hidden fields -->
-                <h2 class="fs-title">Assertion Criteria</h2>
+                <h2 class="fs-title">Assertion Criteria <span class="text-danger" data-bs-toggle='tooltip' title="The new ClinVar spreadsheet templates (versions L1.7 and 4.3) no longer include the following columns: Assertion method and Assertion method citation.
+                  New files for assertion criteria will be uploaded on your landing page in the ClinVar Submission Portal, independent of a submission. For this reason Scout will collect this information but will not export it as columns in the submission Variant file."><strong>?</strong></span></h2>
                 <h3 class="fs-subtitle"></h3>
                   {{variant_data.var_form.last_evaluated.label(class="fw-bold text-dark")}}
                   {{variant_data.var_form.last_evaluated(class="bg-white")}}
