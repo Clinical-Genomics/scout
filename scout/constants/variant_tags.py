@@ -113,6 +113,16 @@ GENETIC_MODELS_PALETTE = {
     "XD_dn": INHERITANCE_PALETTE["XD"],
 }
 
+# Used for filtering variants in blueprints.variants
+VARIANT_GENOTYPES = (
+    ("", ""),
+    ("0/1 or 1/0", "Heterozygous (0/1 or 1/0)"),
+    ("1/1", "Homozygous (1/1)"),
+    ("0/0", "Homozygous ref (0/0)"),
+    ("./.", "Both alleles missing (./.)"),
+    ("other", "Other"),
+)
+
 VARIANT_CALL = ("Pass", "Filtered", "Not Found", "Not Used")
 
 # Formatting for different filters in the vcf file
