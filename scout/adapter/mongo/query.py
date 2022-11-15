@@ -188,6 +188,7 @@ class QueryHandler(object):
                 'cadd_inclusive": boolean,
                 'tumor_frequency': float,
                 'genetic_models': list(str),
+                "genotypes": str,
                 'hgnc_symbols': list,
                 'region_annotations': list,
                 'functional_annotations': list,
@@ -287,8 +288,9 @@ class QueryHandler(object):
             if criterion == "hide_dismissed" and query.get(criterion) is True:
                 mongo_query["dismiss_variant"] = {"$in": [None, []]}
 
+            gt_query = _get_query_genotype(query)
             if criterion == "show_unaffected" and query.get(criterion) is False:
-                self.affected_inds_query(mongo_query, case_id)
+                self.affected_inds_query(mongo_query, case_id, gt_query)
 
             ##### end of fundamental query params
 
@@ -354,15 +356,19 @@ class QueryHandler(object):
         LOG.info("mongo query: %s", mongo_query)
         return mongo_query
 
-    def affected_inds_query(self, mongo_query, case_id):
+    def affected_inds_query(self, mongo_query, case_id, gt_query):
         """Add info to variants query to filter out variants which are only in unaffected individuals
 
         Accepts:
             mongo_query(dict): a dictionary containing a query key/values
             case_id(str): _id of a case
+            gt_selected(dict or None): dict if user specified a genotype value in genotypes form field, else None
         """
         case_obj = self.case(case_id=case_id)
         case_inds = case_obj.get("individuals", [])
+
+        gt_query = gt_query or {"$nin": ["0/0", "./.", "./0", "0/."]}
+
         if len(case_inds) == 1:  # No point in adding this filter
             return
 
@@ -374,12 +380,9 @@ class QueryHandler(object):
         for ind in case_inds:
             if ind["phenotype"] in [1, "unaffected"]:  # 1=unaffected, 2=affected
                 continue
-            affected_query["$elemMatch"]["$or"].append(
-                {
-                    "sample_id": ind["individual_id"],
-                    "genotype_call": {"$nin": ["0/0", "./.", "./0", "0/."]},
-                }
-            )
+            affected_match = {"sample_id": ind["individual_id"], "genotype_call": gt_query}
+            affected_query["$elemMatch"]["$or"].append(affected_match)
+
         if affected_query["$elemMatch"][
             "$or"
         ]:  # Consider situation where all individuals are unaffected
@@ -652,6 +655,10 @@ class QueryHandler(object):
 
                 mongo_secondary_query.append(cadd_query)
 
+            gt_query = _get_query_genotype(query)
+            if gt_query and query.get("show_unaffected") is True:
+                mongo_secondary_query.append({"samples.genotype_call": gt_query})
+
             if criterion in [
                 "genetic_models",
                 "functional_annotations",
@@ -715,3 +722,18 @@ class QueryHandler(object):
                 mongo_secondary_query.append({"cosmic_ids": {"$ne": None}})
 
         return mongo_secondary_query
+
+
+def _get_query_genotype(query):
+    """Query helper that returns the specific genotype selected by the user for a variantS query
+
+    Args:
+        query(dict): form dictionary with variantS query terms
+    """
+    q_value = query.get("genotypes")
+    if q_value == "other":
+        return {"$nin": ["0/1", "1/1", "0/0", "1/0", "./."]}
+    elif q_value == "0/1 or 1/0":
+        return {"$in": ["0/1", "1/0"]}
+    elif q_value:
+        return q_value

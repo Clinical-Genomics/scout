@@ -186,30 +186,43 @@
   </table>
 {% endmacro %}
 
+{% macro variants_common_filters(form, type) %}
+<div class="row mb-2">
+  <div class="col-2">
+    {{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
+    {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+  </div>
+  <div class="col-2">
+  {% if type == "snv" %}
+    {{ form.symbol_file.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Load an HGNC gene symbol list file; a text file with one gene symbol starting each row. Extra columns separated with tab are ignored. Comment rows starting with # are ignored.") }}
+    {{ form.symbol_file(class="form-control-file") }}
+  {% elif type == "sv" %}
+    {{ form.svtype.label(class="control-label") }}
+    {{ form.svtype(class="form-control selectpicker", data_style="btn-secondary") }}
+  {% endif %}
+  </div>
+  <div class="col-2">
+    {{ form.region_annotations.label(class="control-label") }}
+    {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
+  </div>
+  <div class="col-2">
+    {{ form.functional_annotations.label(class="control-label") }}
+    {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
+  </div>
+  <div class="col-2">
+    {{ form.genetic_models.label(class="control-label") }}
+    {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
+  </div>
+  <div class="col-2">
+    {{ form.genotypes.label(class="control-label") }}
+    {{ form.genotypes(class="selectpicker", data_style="btn-secondary") }}
+  </div>
+</div>
+{% endmacro %}
+
 {% macro snv_filters(form, institute, case, filters)%}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
-  <div class="row mb-2">
-    <div class="col-2">
-      {{ form.gene_panels.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
-      {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
-    </div>
-    <div class="col-2">
-      {{ form.symbol_file.label(class="control-label", data_bs_toggle="tooltip", data_bs_placement="left", title="Load an HGNC gene symbol list file; a text file with one gene symbol starting each row. Extra columns separated with tab are ignored. Comment rows starting with # are ignored.") }}
-      {{ form.symbol_file(class="form-control-file") }}
-    </div>
-    <div class="col-2">
-      {{ form.region_annotations.label(class="control-label") }}
-      {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
-    </div>
-    <div class="col-2">
-      {{ form.functional_annotations.label(class="control-label") }}
-      {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
-    </div>
-    <div class="col-2">
-      {{ form.genetic_models.label(class="control-label") }}
-      {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
-    </div>
-  </div>
+  {{ variants_common_filters(form, "snv") }}
   <div class="row mb-2">
     <div class="col-3">
       {{ form.hgnc_symbols.label(class="control-label") }}
@@ -390,27 +403,7 @@
 {% macro sv_filters(form, institute, case) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
 <div class="row mb-3">
-  <div class="col-4">
-    {{ form.gene_panels.label(data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
-    {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
-  </div>
-  <div class="col-2">
-    {{ form.svtype.label(class="control-label") }}
-    {{ form.svtype(class="form-control selectpicker", data_style="btn-secondary") }}
-  </div>
-  <div class="col-2">
-    {{ form.region_annotations.label(class="control-label") }}
-    {{ form.region_annotations(class="selectpicker", data_style="btn-secondary") }}
-  </div>
-  <div class="col-2">
-    {{ form.functional_annotations.label(class="control-label") }}
-    {{ form.functional_annotations(class="selectpicker", data_style="btn-secondary") }}
-  </div>
-  <div class="col-2">
-    {{ form.genetic_models.label(class="control-label") }}
-    {{ form.genetic_models(class="selectpicker", data_style="btn-secondary") }}
-  </div>
-</div>
+  {{ variants_common_filters(form, "sv") }}
 <div class="row mb-3">
   <div class="col-3">
     {{ form.hgnc_symbols.label(class="control-label") }}
