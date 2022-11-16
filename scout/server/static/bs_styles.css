@@ -49,6 +49,44 @@ a.dropdown-item:visited {
     background-color: var(--bs-info);
 }
 
+/* define colors to be used as class items */
+.bg-red {
+ background-color: var(--bs-red);
+}
+
+.bg-blue {
+ background-color: var(--bs-blue);
+}
+
+.bg-teal {
+ background-color: var(--bs-teal);
+}
+
+.bg-green {
+ background-color: var(--bs-green);
+}
+
+.bg-gray {
+ background-color:: var(--bs-gray);
+}
+
+.bg-pink {
+ background-color:: var(--bs-pink);
+}
+
+.bg-cyan {
+ background-color:: var(--bs-cyan);
+}
+
+.bg-gray-dark {
+ background-color:: var(--bs-gray-dark);
+}
+
+.bg-yellow {
+ background-color:: var(--bs-yellow);
+}
+/* End of css colors */
+
 @media (prefers-color-scheme: dark) {
 	a {
 		color: #778abf;
