@@ -104,7 +104,7 @@ GENETIC_MODELS_PALETTE = {
     "AR_hom_dn": INHERITANCE_PALETTE["AR"],
     "AR_comp_dn": {"bgcolor": "bg-red", "text_color": "text-white"},
     "AR_hom": {"bgcolor": "bg-orange", "text_color": "text-white"},
-    "AR_comp": {"bgcolor": "bg-yellow", "text_color": "text-white"},
+    "AR_comp": {"bgcolor": "bg-yellow", "text_color": "text-dark"},
     "AD_dn": INHERITANCE_PALETTE["AD"],
     "AD": {"bgcolor": "bg-cyan", "text_color": "text-dark"},
     "XR_dn": INHERITANCE_PALETTE["XR"],

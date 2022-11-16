@@ -18,14 +18,14 @@ GENE_PANELS_INHERITANCE_MODELS = (
 # Associates an inheritance model with a color, for displaying inheritance on Variant page
 INHERITANCE_PALETTE = {
     "AD": {"bgcolor": "bg-blue", "text_color": "text-white"},
+    "AD (imprinting)": {"bgcolor": "bg-cyan", "text_color": "text-dark"},
     "AR": {"bgcolor": "bg-pink", "text_color": "text-white"},
     "XL": {"bgcolor": "bg-purple", "text_color": "text-white"},
     "XD": {"bgcolor": "bg-gray-dark", "text_color": "text-white"},
     "XR": {"bgcolor": "bg-green", "text_color": "text-white"},
-    "NA": {"bgcolor": "bg-gray", "text_color": "text-white"},
-    "AD (imprinting)": {"bgcolor": "bg-gray-400", "text_color": "text-dark"},
-    "digenic": {"bgcolor": "bg-cyan", "text_color": "text-dark"},
-    "AEI": {"bgcolor": "bg-gray-dark", "text_color": "text-white"},
+    "NA": {"bgcolor": "bg-light", "text_color": "text-dark"},
+    "digenic": {"bgcolor": "bg-secondary", "text_color": "text-white"},
+    "AEI": {"bgcolor": "bg-light", "text_color": "text-white"},
     "other": {"bgcolor": "bg-light", "text_color": "text-dark"},
 }
 
