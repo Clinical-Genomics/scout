@@ -18,7 +18,7 @@ GENE_PANELS_INHERITANCE_MODELS = (
 # Associates an inheritance model with a color, for displaying inheritance on Variant page
 INHERITANCE_PALETTE = {
     "AD": {"bgcolor": "bg-blue", "text_color": "text-white"},
-    "AR": {"bgcolor": "bg-red", "text_color": "text-white"},
+    "AR": {"bgcolor": "bg-pink", "text_color": "text-white"},
     "XL": {"bgcolor": "bg-purple", "text_color": "text-white"},
     "XD": {"bgcolor": "bg-gray-dark", "text_color": "text-white"},
     "XR": {"bgcolor": "bg-green", "text_color": "text-white"},
