@@ -25,7 +25,7 @@ INHERITANCE_PALETTE = {
     "XR": {"bgcolor": "bg-green", "text_color": "text-white"},
     "NA": {"bgcolor": "bg-light", "text_color": "text-dark"},
     "digenic": {"bgcolor": "bg-secondary", "text_color": "text-white"},
-    "AEI": {"bgcolor": "bg-light", "text_color": "text-white"},
+    "AEI": {"bgcolor": "bg-light", "text_color": "text-dark"},
     "other": {"bgcolor": "bg-light", "text_color": "text-dark"},
 }
 
