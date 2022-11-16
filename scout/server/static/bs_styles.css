@@ -63,7 +63,7 @@ a.dropdown-item:visited {
 }
 
 .bg-green {
- background-color:: var(--bs-green);
+ background-color: var(--bs-green);
 }
 
 .bg-gray {
