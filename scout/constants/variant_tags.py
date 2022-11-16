@@ -101,16 +101,16 @@ GENETIC_MODELS = (
 # Associates an inheritance model with a color, using the same colors categories as scout.constants.gene_tags.INHERITANCE_PALETTE
 # The colors of this palette are the same as the MatPlotLib Tableau palette (https://matplotlib.org/3.4.1/gallery/color/named_colors.html)
 GENETIC_MODELS_PALETTE = {
-    "AR_hom": INHERITANCE_PALETTE["AD"],
-    "AR_hom_dn": INHERITANCE_PALETTE["AR"],
-    "AR_comp": INHERITANCE_PALETTE["XL"],
-    "AR_comp_dn": INHERITANCE_PALETTE["XD"],
-    "AD": INHERITANCE_PALETTE["XR"],
-    "AD_dn": INHERITANCE_PALETTE["NA"],
-    "XR": INHERITANCE_PALETTE["AD (imprinting)"],
-    "XR_dn": INHERITANCE_PALETTE["digenic"],
-    "XD": INHERITANCE_PALETTE["AEI"],
-    "XD_dn": INHERITANCE_PALETTE["other"],
+    "AR_hom": INHERITANCE_PALETTE["AR"],
+    "AR_hom_dn": {"bgcolor": "bg-pink", "text_color": "text-white"},
+    "AR_comp": {"bgcolor": "bg-orange", "text_color": "text-white"},
+    "AR_comp_dn": {"bgcolor": "bg-yellow", "text_color": "text-dark"},
+    "AD": INHERITANCE_PALETTE["AD"],
+    "AD_dn": {"bgcolor": "bg-cyan", "text_color": "text-dark"},
+    "XR": INHERITANCE_PALETTE["XR"],
+    "XR_dn": {"bgcolor": "bg-teal", "text_color": "text-white"},
+    "XD": INHERITANCE_PALETTE["XD"],
+    "XD_dn": {"bgcolor": "bg-gray-400", "text_color": "text-dark"},
 }
 
 # Used for filtering variants in blueprints.variants

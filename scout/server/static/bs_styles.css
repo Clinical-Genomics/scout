@@ -54,6 +54,10 @@ a.dropdown-item:visited {
  background-color: var(--bs-red);
 }
 
+.bg-orange {
+  background-color: var(--bs-orange);
+}
+
 .bg-blue {
  background-color: var(--bs-blue);
 }
@@ -67,27 +71,35 @@ a.dropdown-item:visited {
 }
 
 .bg-gray {
- background-color:: var(--bs-gray);
+ background-color: var(--bs-gray);
 }
 
 .bg-pink {
- background-color:: var(--bs-pink);
+ background-color: var(--bs-pink);
 }
 
 .bg-purple {
- background-color:: var(--bs-purple);
+ background-color: var(--bs-purple);
 }
 
 .bg-cyan {
- background-color:: var(--bs-cyan);
+ background-color: var(--bs-cyan);
+}
+
+.bg-gray-400 {
+   background-color: var(--bs-gray-400);
 }
 
 .bg-gray-dark {
- background-color:: var(--bs-gray-dark);
+ background-color: var(--bs-gray-dark);
 }
 
 .bg-yellow {
- background-color:: var(--bs-yellow);
+ background-color: var(--bs-yellow);
+}
+
+.bg-light {
+   background-color: var(--bs-light);
 }
 /* End of css colors */
 

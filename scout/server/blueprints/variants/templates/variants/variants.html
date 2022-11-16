@@ -143,14 +143,24 @@
 {% macro cell_models(variant) %}
   {% for model in (variant.genetic_models or []) %}
     {% if model in genetic_models_palette %}
+      <span class="badge {{genetic_models_palette[model]['bgcolor']}} {{genetic_models_palette[model]['text_color']}}">{{model}}</span>
+      <!--
       {% for key, model in genetic_models_palette.items() %}
         <span class="badge {{model.bgcolor}} {{model.text_color}}">{{key}}</span>
       {% endfor %}
+      -->
       <!--<span class="badge {{genetic_models_palette[model].bgcolor}} {genetic_models_palette[model].text_color}}">{{ model }}</span>-->
     {% else %}
       <span class="badge bg-secondary">{{ model }}</span>
     {% endif %}
   {% endfor %}
+
+  {% if variant.mosaic_tags %}
+    <span class="badge bg-warning">mosaic</span>
+  {% endif %}
+{% endmacro %}
+
+{% macro overlapping_cell(variant) %}
 
   {% if variant.compounds %}
     {% set ns=namespace(show_compounds=false) %}
@@ -163,18 +173,11 @@
         data-bs-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
     {% endif %}
   {% endif %}
-  {% if variant.mosaic_tags %}
-    <span class="badge bg-warning">mosaic</span>
-  {% endif %}
-{% endmacro %}
 
-{% macro overlapping_cell(variant) %}
   {% if variant.overlapping %}
   <a href="#" class="badge bg-warning" data-bs-toggle="popover" data-bs-placement="left"
     data-bs-html="true" data-bs-trigger="hover click"
     data-bs-content="{{ svs_table(institute, case, variant.overlapping[:20]) }}">Overlapping SVs</a>
-  {% else %}
-    -
   {% endif %}
 {% endmacro %}
 
