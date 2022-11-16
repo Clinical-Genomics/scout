@@ -334,7 +334,6 @@ body {
 /* Closed submenu icon */
 #sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
   content: " \f0d7";
-  font-family: FontAwesome;
   display: inline;
   text-align: right;
   padding-left: 10px;
@@ -342,7 +341,6 @@ body {
 /* Opened submenu icon */
 #sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
   content: " \f0da";
-  font-family: FontAwesome;
   display: inline;
   text-align: right;
   padding-left: 10px;
@@ -354,7 +352,6 @@ option {
 }
 
 .panel-btn  a:before {
-   font-family: 'Glyphicons Halflings';
    content: "\e114";
    float: right;
    transition: all 0.5s;
