@@ -74,6 +74,10 @@ a.dropdown-item:visited {
  background-color:: var(--bs-pink);
 }
 
+.bg-purple {
+ background-color:: var(--bs-purple);
+}
+
 .bg-cyan {
  background-color:: var(--bs-cyan);
 }

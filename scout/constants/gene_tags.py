@@ -20,7 +20,7 @@ INHERITANCE_PALETTE = {
     "AD": {"bgcolor": "bg-red", "text_color": "text-white"},
     "AR": {"bgcolor": "bg-blue", "text_color": "text-white"},
     "XL": {"bgcolor": "bg-purple", "text_color": "text-white"},
-    "XD": {"bgcolor": "bg-teal", "text_color": "text-dark"},
+    "XD": {"bgcolor": "bg-teal", "text_color": "text-white"},
     "XR": {"bgcolor": "bg-green", "text_color": "text-white"},
     "NA": {"bgcolor": "bg-gray", "text_color": "text-white"},
     "AD (imprinting)": {"bgcolor": "bg-pink", "text_color": "text-dark"},
