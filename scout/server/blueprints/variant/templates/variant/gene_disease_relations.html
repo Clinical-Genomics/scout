@@ -81,7 +81,16 @@
   </div>
 {% endmacro %}
 
-{% macro genemodels_panel(variant) %}
+{% macro inheritance_badge(model,inherit_palette) %}
+  {% if inherit_palette.get(model) %}
+    <span class="badge {{inherit_palette[model].bgcolor}} {{inherit_palette[model].text_color}}">{{ model }}</span>
+  {% else %}
+    <span class="badge bg-info">{{ model }}</span>
+  {% endif %}
+
+{% endmacro %}
+
+{% macro genemodels_panel(variant, inherit_palette) %}
   <div class="card panel-default">
     <div class="panel-heading">Gene models</div>
     <div class="card-body">
@@ -105,12 +114,12 @@
               <td>{{ gene.hgnc_symbol }}</td>
               <td>
                 {% for model in gene.omim_inheritance %}
-                  <span class="badge bg-info">{{ model }}</span>
+                  {{ inheritance_badge(model,inherit_palette) }}
                 {% endfor %}
               </td>
               <td>
                 {% for model in gene.manual_inheritance %}
-                  <span class="badge bg-info">{{ model }}</span>
+                  {{ inheritance_badge(model,inherit_palette) }}
                 {% endfor %}
               </td>
               <td>

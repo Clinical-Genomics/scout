@@ -95,7 +95,7 @@
           {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
         </div>
         {{ omim_phenotypes(variant) }}
-        {{ genemodels_panel(variant) }}
+        {{ genemodels_panel(variant, inherit_palette) }}
         {{ inheritance_panel(variant) }}
 
       </div>
