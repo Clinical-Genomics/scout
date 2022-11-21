@@ -24,7 +24,7 @@
     <div class="col-md-6">{{ pending_panel() }}</div>
   </div>
   {{ genes_panel() }}
-  {{case_hits_export_modal()}}
+  {{ case_hits_export_modal(case) }}
 </div>
 {% endblock %}
 
@@ -238,12 +238,12 @@
   </div>
 {% endmacro %}
 
-{% macro case_hits_export_modal() %}
+{% macro case_hits_export_modal(case) %}
 <div class="modal fade" id="exportCasePanelHits" tabindex="-1" role="dialog" aria-labelledby="exportCasePanelHitsModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="causativeLabel">Export gene panel hits for a case</h5>
+        <h5 class="modal-title" id="causativeLabel">Export STR and SMN panel hits for a case</h5>
         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -251,7 +251,7 @@
       <form action="{{ url_for('panels.panel_export_case_hits', panel_id=panel._id) }}" method="POST" target="_blank">
         <div class="modal-body">
           <label for="case">Institute and case name (format: 'cust000 - 643594')</label>
-          <input type="text" name="case_name" class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10" required></input>
+          <input type="text" name="case_name" {% if case %} value="{{case.owner}} - {{case.display_name}}" {% endif %} class="typeahead_cases form-control" data-provide="typeahead" autocomplete="off" placeholder="Search for case name..." cols="30" rows="10" required></input>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

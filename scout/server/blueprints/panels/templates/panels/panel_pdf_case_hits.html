@@ -3,7 +3,7 @@
 {% block body %}
 <br>
 <div class="container">
-  <h4>Scout - Institute {{institute.display_name}} - case {{case.display_name}} - Gene Panel STR and SMN variants</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+  <h4>Scout - Institute {{institute.display_name}} - case {{case.display_name}} - {{panel.name_and_version}}: STR and SMN variants</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
   {{ hits_panel() }}
   <br>[END OF REPORT]<br><br>
   <a href="https://clinical-genomics.github.io/scout" target="_blank" rel="noopener">clinical-genomics.github.io/scout</a>
