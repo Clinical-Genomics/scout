@@ -16,6 +16,7 @@ from flask import (
 )
 from flask_login import current_user
 
+from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
 from scout.server.utils import (
     html_to_pdf_file,
@@ -164,7 +165,21 @@ def panel(panel_id):
             panel_obj = store.add_pending(panel_obj, gene_obj, action="delete")
     data = controllers.panel(store, panel_obj)
     if request.args.get("case_id"):
-        data["case"] = store.case(request.args["case_id"])
+        case_obj = store.case(request.args["case_id"])
+
+        case_obj["outdated_panels"] = {}
+        panel_name = panel_obj["panel_name"]
+        latest_panel = store.gene_panel(panel_name)
+        if panel_obj["version"] < latest_panel["version"]:
+            extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
+            if extra_genes or missing_genes:
+                case_obj["outdated_panels"][panel_name] = {
+                    "missing_genes": missing_genes,
+                    "extra_genes": extra_genes,
+                }
+
+        data["case"] = case_obj
+
     if request.args.get("institute_id"):
         data["institute"] = store.institute(request.args["institute_id"])
     return data

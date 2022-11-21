@@ -65,6 +65,9 @@
       <li class="list-group-item">
         <label for="version">Version</label>
         <span class="float-end" id="version">{{ panel.version }}</span>
+         {% if case and case.outdated_panels and panel.panel_name in case.outdated_panels %}
+              <a><span class="badge rounded-pill badge-sm bg-warning" data-bs-toggle="popover" data-bs-placement="left" data-bs-html="true" data-bs-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
+         {% endif %}
       </li>
       <li class="list-group-item">
         <label for="n_genes">Number of genes</label>
@@ -104,7 +107,7 @@
         <div class="d-flex justify-content-between">
           <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
           <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits">
-            Case-specific STR and SMN variant hits
+            Case specific STR and SMN extent PDF
           </button>
         </div>
       </li>
@@ -268,6 +271,7 @@
 {% block scripts %}
   {{ super() }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha512-HWlJyU4ut5HkEj0QsK/IxBCY55n5ZpskyjVlAoV9Z7XQwwkqXoYdCIC93/htL3Gu5H3R4an/S0h2NXfbZk3g7w==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script>
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
