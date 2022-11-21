@@ -327,8 +327,8 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj):
     """
     panel_obj = store.panel(panel_id)
     panel_obj["name_and_version"] = "{}({})".format(panel_obj["display_name"], panel_obj["version"])
-    data = {"institute": institute_obj, "case": case_obj, "panel": panel_obj}
-    variant_categories = {"snv": set(), "sv": set(), "str": set(), "smn": None}
+    data = {"institute": institute_obj, "case": case_obj, "panel": panel_obj, "panel_genes": set()}
+    variant_categories = {"str": set(), "smn": None}
     variants_query = {
         "case_id": case_obj["_id"],
         "category": None,
@@ -337,6 +337,7 @@ def panel_export_case_hits(panel_id, institute_obj, case_obj):
 
     # Add variants found on panel genes info
     for gene in panel_obj.get("genes", []):
+        data["panel_genes"].add(gene["symbol"])
         variants_query["hgnc_ids"] = gene["hgnc_id"]
         for cat, _ in variant_categories.items():
             variants_query["category"] = cat

@@ -3,7 +3,7 @@
 {% block body %}
 <br>
 <div class="container">
-  <h4>Scout - Institute {{institute.display_name}} - case {{case.display_name}} - Gene panel variant hits</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+  <h4>Scout - Institute {{institute.display_name}} - case {{case.display_name}} - Gene Panel STR and SMN variants</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
   {{ hits_panel() }}
   <br>[END OF REPORT]<br><br>
   <a href="https://clinical-genomics.github.io/scout" target="_blank" rel="noopener">clinical-genomics.github.io/scout</a>
@@ -37,25 +37,16 @@
 </table>
 <br>
 <table>
-  <tr><th>SNV variants hits</th></tr>
+  <tr><th>Panel genes</th></tr>
   <tr>
     <td>
-      <em>{{ variant_hits.snv|sort|join(", ") }}</em>
+      <em>{{ panel_genes|sort|join(", ") }}</em>
     </td>
   </tr>
 </table>
 <br>
 <table>
-  <tr><th>SV variants hits</th></tr>
-  <tr>
-    <td>
-      <em>{{ variant_hits.sv|sort|join(", ") }}</em>
-    </td>
-  </tr>
-</table>
-<br>
-<table>
-  <tr><th>STR variant calls to panel genes</th></tr>
+  <tr><th>STR variants found in panel genes</th></tr>
   <tr>
     <td>
       <em>{{ variant_hits.str|sort|join(", ") }}</em>

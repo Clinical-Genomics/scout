@@ -288,6 +288,8 @@ def panel_export_case_hits(panel_id):
     now = datetime.datetime.now().strftime(DATETIME_FORMATTER)
     data["report_created_at"] = now
     html_report = render_template("panels/panel_pdf_case_hits.html", **data)
+    return html_report
+    """
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
     file_name = "_".join(
         [
@@ -305,6 +307,7 @@ def panel_export_case_hits(panel_id):
         mimetype="application/pdf",
         as_attachment=True,
     )
+    """
 
 
 def tx_choices(hgnc_id, panel_obj):
