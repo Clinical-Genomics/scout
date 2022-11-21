@@ -40,26 +40,32 @@
 </table>
 <br>
 <table>
-  <tr><th>Panel genes</th></tr>
+  <tr><th scope="col">Panel genes</th></tr>
   <tr>
     <td>
       <em>{{ panel_genes|sort|join(", ") }}</em>
     </td>
   </tr>
-  {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
-      <tr><th><span class="badge rounded-pill badge-sm bg-warning">!</span>Outdated panel</th></tr>
-      <tr><td>
-        Panel version used in the analysis ({{panel.version}}) is outdated.<br>
-        <strong>Genes present in case panel and not in latest version</strong><br>
-        {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}<br>
-        <strong>Genes present only in latest version</strong>
-        <br>{{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.
-      </td></tr>
-  {% endif %}<br>
 </table>
 <br>
+{% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
 <table>
-  <tr><th>Panel genes investigated for STRs</th></tr>
+  <tr><th scope="col">
+      <span class="badge rounded-pill badge-sm bg-warning">!</span>Outdated panel</th>
+  </tr>
+  <tr>
+    <td>
+      Panel version used in the analysis ({{panel.version}}) is outdated.<br>
+      <strong>Genes present in case panel and not in latest version</strong><br>
+      {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}<br>
+      <strong>Genes present only in latest version</strong>
+      <br>{{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.
+    </td>
+  </tr>
+</table><br>
+{% endif %}
+<table>
+  <tr><th scope="col">Panel genes investigated for STRs</th></tr>
   <tr>
     <td>
       <em>{{ variant_hits.str|sort|join(", ") }}</em>
@@ -69,7 +75,7 @@
 <br>
 {% if variant_hits.smn and case.smn_tsv %}
 <table>
-  <tr><th>SMN Copy Number</th></tr>
+  <tr><th scope="col">SMN Copy Number</th></tr>
   <tr>
     <td>
       <em>{{ variant_hits.smn|sort|join(", ") }}</em>
