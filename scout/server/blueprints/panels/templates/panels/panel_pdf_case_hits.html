@@ -1,0 +1,86 @@
+{% extends "report_base.html" %}
+
+{% block body %}
+<br>
+<div class="container">
+  <h4>Scout - Institute {{institute.display_name}} - case {{case.display_name}} - {{panel.name_and_version}}: panel extent report</h4> - created on:&nbsp;<strong>{{report_created_at}}</strong><br><br>
+  {{ hits_panel() }}
+  <br>[END OF REPORT]<br><br>
+  <a href="https://clinical-genomics.github.io/scout" target="_blank" rel="noopener">clinical-genomics.github.io/scout</a>
+</div>
+{% endblock %}
+
+{% macro hits_panel() %}
+<table class="table table-sm">
+  <tr>
+    <th>Panel details</th>
+    <th>Case details</th>
+  </tr>
+  <tr>
+    <td>
+      Gene panel: <strong>{{panel.name_and_version}}</strong><br>
+      Last updated: <strong>{{ panel.date.strftime('%Y-%m-%d') }}</strong>
+      {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
+              <a><span class="badge rounded-pill badge-sm bg-warning" data-bs-toggle="popover" data-bs-placement="left" data-bs-html="true" data-bs-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
+      {% endif %}<br>
+      Panel ID: {{ panel.panel_name }}<br>
+      Description: {{ panel.description }}<br>
+      Number of genes: <strong>{{ panel.genes|length }}</strong><br>
+      Institute: {{ panel.institute }} <br>
+      Archived: {% if panel.is_archived %}<span class="badge bg-danger rounded-pill">True</span>{% else %}<span class="badge bg-secondary rounded-pill text-white">False</span>{% endif %}<br>
+    </td>
+    <td>
+      Case: <strong>{{case.display_name}}</strong><br>
+      Institute: <strong>{{institute.display_name}} - {{institute._id}}</strong><br>
+      Status: <strong>{{case.status}}</strong><br>
+      Analysis date: {{case.analysis_date}}<br>
+      Genome build: {{case.genome_build}}
+    </td>
+  </tr>
+</table>
+<br>
+<table>
+  <tr><th scope="col">Panel genes</th></tr>
+  <tr>
+    <td>
+      <em>{{ panel_genes|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+<br>
+{% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
+<table>
+  <tr><th scope="col">
+      <span class="badge rounded-pill badge-sm bg-warning">!</span>Outdated panel</th>
+  </tr>
+  <tr>
+    <td>
+      Panel version used in the analysis ({{panel.version}}) is outdated.<br>
+      <strong>Genes present in case panel and not in latest version</strong><br>
+      {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}<br>
+      <strong>Genes present only in latest version</strong>
+      <br>{{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.
+    </td>
+  </tr>
+</table><br>
+{% endif %}
+<table>
+  <tr><th scope="col">Panel genes investigated for STRs</th></tr>
+  <tr>
+    <td>
+      <em>{{ variant_hits.str|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+<br>
+{% if variant_hits.smn and case.smn_tsv %}
+<table>
+  <tr><th scope="col">SMN Copy Number</th></tr>
+  <tr>
+    <td>
+      <em>{{ variant_hits.smn|sort|join(", ") }}</em>
+    </td>
+  </tr>
+</table>
+{% endif %}
+{% endmacro %}

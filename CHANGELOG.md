@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Instructions in admin-guide on how to load case reports via the command line
 - Possibility to filter RD variants by a specific genotype call
 - Distinct colors for different inheritance models on RD Variant page
+- Gene panels PDF export with case variants hits by variant type
 - Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
@@ -27,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Non-admin users saving institute settings would clear loqusdb instance selection
 - Layout of variant position, cytoband and type in SV variant summary
 - Broken `Build Status - GitHub badge` on GitHub README page 
+- Visibility of text on grey badges in gene panels PDF exports
 
 ## [4.60]
 ### Added
