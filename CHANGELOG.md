@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Instructions in admin-guide on how to load case reports via the command line
 - Possibility to filter RD variants by a specific genotype call
 - Distinct colors for different inheritance models on RD Variant page
+- Gene panels PDF export with case variants hits by variant type
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`
@@ -26,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Non-admin users saving institute settings would clear loqusdb instance selection
 - Layout of variant position, cytoband and type in SV variant summary
 - Broken `Build Status - GitHub badge` on GitHub README page 
+- Visibility of text on grey badges in gene panels PDF exports
 
 ## [4.60]
 ### Added
