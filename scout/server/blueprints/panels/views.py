@@ -16,9 +16,11 @@ from flask import (
 )
 from flask_login import current_user
 
+from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
 from scout.server.utils import (
     html_to_pdf_file,
+    institute_and_case,
     jsonconverter,
     public_endpoint,
     templated,
@@ -30,6 +32,7 @@ from . import controllers
 from .forms import PanelGeneForm
 
 LOG = logging.getLogger(__name__)
+DATETIME_FORMATTER = "%Y-%m-%d"
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
 
 
@@ -162,7 +165,21 @@ def panel(panel_id):
             panel_obj = store.add_pending(panel_obj, gene_obj, action="delete")
     data = controllers.panel(store, panel_obj)
     if request.args.get("case_id"):
-        data["case"] = store.case(request.args["case_id"])
+        case_obj = store.case(request.args["case_id"])
+
+        case_obj["outdated_panels"] = {}
+        panel_name = panel_obj["panel_name"]
+        latest_panel = store.gene_panel(panel_name)
+        if panel_obj["version"] < latest_panel["version"]:
+            extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
+            if extra_genes or missing_genes:
+                case_obj["outdated_panels"][panel_name] = {
+                    "missing_genes": missing_genes,
+                    "extra_genes": extra_genes,
+                }
+
+        data["case"] = case_obj
+
     if request.args.get("institute_id"):
         data["institute"] = store.institute(request.args["institute_id"])
     return data
@@ -240,7 +257,7 @@ def panel_export(panel_id):
     """Export panel to PDF file"""
     panel_obj = store.panel(panel_id)
     data = controllers.panel_export(store, panel_obj)
-    data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d")
+    data["report_created_at"] = datetime.datetime.now().strftime(DATETIME_FORMATTER)
     html_report = render_template("panels/panel_pdf_simple.html", **data)
 
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
@@ -248,7 +265,52 @@ def panel_export(panel_id):
         [
             data["panel"]["panel_name"],
             str(data["panel"]["version"]),
-            datetime.datetime.now().strftime("%Y-%m-%d"),
+            datetime.datetime.now().strftime(DATETIME_FORMATTER),
+            "scout.pdf",
+        ]
+    )
+    return send_file(
+        bytes_file,
+        download_name=file_name,
+        mimetype="application/pdf",
+        as_attachment=True,
+    )
+
+
+@panels_bp.route("/panels/export-panel-case_hits/<panel_id>", methods=["POST"])
+def panel_export_case_hits(panel_id):
+    """Export panel genes and case-specific hits in STRs and SMN variant categories to PDF file"""
+    institute_obj = None
+    case_obj = None
+
+    try:
+        institute_id, case_name = request.form.get("case_name").strip().split(" - ")
+    except ValueError:
+        flash(
+            "Could not parse case name, plase use format: 'cust000 - 643594' or use typing suggestions",
+            "warning",
+        )
+        return redirect(request.referrer)
+    try:
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    except Exception:
+        flash(
+            f"Could not find a case named '{case_name}' associated to institute '{institute_id}'",
+            "warning",
+        )
+        return redirect(request.referrer)
+    data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
+    now = datetime.datetime.now().strftime(DATETIME_FORMATTER)
+    data["report_created_at"] = now
+    html_report = render_template("panels/panel_pdf_case_hits.html", **data)
+    bytes_file = html_to_pdf_file(html_report, "portrait", 300)
+    file_name = "_".join(
+        [
+            data["panel"]["panel_name"],
+            str(data["panel"]["version"]),
+            institute_id,
+            case_name,
+            datetime.datetime.now().strftime(DATETIME_FORMATTER),
             "scout.pdf",
         ]
     )
