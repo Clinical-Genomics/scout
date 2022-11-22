@@ -45,5 +45,3 @@ python-dateutil
 # Required by scripts
 tabulate
 
-# Setup
-setuptools
