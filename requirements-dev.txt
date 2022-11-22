@@ -17,3 +17,6 @@ black
 mkdocs
 mkdocs-material
 markdown-include
+
+# Setup
+setuptools
