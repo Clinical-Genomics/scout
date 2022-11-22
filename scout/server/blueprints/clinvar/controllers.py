@@ -343,31 +343,51 @@ def validate_submission(submission_id):
         submission_id, "case_data", "SUB000"
     )
 
-    with NamedTemporaryFile(mode="a+", suffix=".csv") as v_file, NamedTemporaryFile(
-        mode="a+", suffix=".csv"
-    ) as c_file:
+    with NamedTemporaryFile(
+        mode="a+", prefix="Variant", suffix=".csv"
+    ) as v_file, NamedTemporaryFile(mode="a+", prefix="CaseData", suffix=".csv") as c_file:
 
+        # Write temp Variant CSV file
         writes = csv.writer(v_file, delimiter="\t", quoting=csv.QUOTE_ALL)
+        writes.writerow(variants_header)
+        for line in variants_lines:
+            row_content = line[1:-1].split(",")
+            writes.writerow(row_content)
+        v_file.flush()
+        v_file.seek(0)
+
+        # Write temp CaseData CSV file
+        writes = csv.writer(c_file, delimiter="\t", quoting=csv.QUOTE_ALL)
+        writes.writerow(casedata_header)
+        for line in casedata_lines:
+            row_content = line[1:-1].split(",")
+            writes.writerow(row_content)
+        c_file.flush()
+        c_file.seek(0)
+
+        conversion_res = clinvar_api.convert_to_json(v_file.name, c_file.name)
+        flash(str(conversion_res))
+
+    """
+
+        for row in [variants_header+]
+
+        writes.writerows
+
         v_file_lines = generate_csv(variants_header, variants_lines)
         for l in v_file_lines:
             LOG.warning(l)
-        """
         writes.writerows(variants_header, variants_lines)
-        v_file.flush()
-        v_file.seek(0)
-        """
+
 
         writes = csv.writer(c_file, delimiter="\t", quoting=csv.QUOTE_ALL)
         c_file_lines = generate_csv(casedata_header, casedata_lines)
 
-        """
         writes.writerows(c_file_lines)
-        c_file.flush()
-        c_file.seek(0)
-        """
 
-        conversion_res = clinvar_api.convert_to_json(v_file.name, c_file.name)
-        flash(str(conversion_res))
+
+
+        """
 
 
 def generate_csv(header, lines):
