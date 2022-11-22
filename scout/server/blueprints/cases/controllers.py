@@ -239,7 +239,7 @@ def case(store, institute_obj, case_obj):
 
         # Check if case-specific panel is up-to-date with latest version of the panel
         if panel_obj["version"] < latest_panel["version"]:
-            extra_genes, missing_genes = _check_outdated_gene_panel(panel_obj, latest_panel)
+            extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
             if extra_genes or missing_genes:
                 case_obj["outdated_panels"][panel_name] = {
                     "missing_genes": missing_genes,
@@ -385,7 +385,7 @@ def _populate_assessments(variants_list):
         variant["clinical_assessments"] = get_manual_assessments(variant)
 
 
-def _check_outdated_gene_panel(panel_obj, latest_panel):
+def check_outdated_gene_panel(panel_obj, latest_panel):
     """Compare genes of a case gene panel with the latest panel version and return differences
 
     Args:
