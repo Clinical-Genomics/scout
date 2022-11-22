@@ -5,6 +5,7 @@ CUSTOM_CASE_REPORTS = {
     "delivery": {"key_name": "delivery_report", "format": "HTML", "pdf_export": True},
     "cnv": {"key_name": "cnv_report", "format": "PDF", "pdf_export": True},
     "cov_qc": {"key_name": "coverage_qc_report", "format": "HTML", "pdf_export": True},
+    "exe_ver": {"key_name": "exe_ver", "format": "YAML", "pdf_export": True},
     "multiqc": {"key_name": "multiqc", "format": "HTML", "pdf_export": False},
     "multiqc_rna": {"key_name": "multiqc_rna", "format": "HTML", "pdf_export": False},
     "gene_fusion": {"key_name": "gene_fusion_report", "format": "PDF", "pdf_export": False},
@@ -13,6 +14,7 @@ CUSTOM_CASE_REPORTS = {
         "format": "PDF",
         "pdf_export": False,
     },
+    "reference_info": {"key_name": "reference_info", "format": "YAML", "pdf_export": True},
 }
 
 CASE_REPORT_CASE_FEATURES = [
