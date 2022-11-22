@@ -102,7 +102,7 @@ def clinvar_download_csv(submission, csv_type, clinvar_id):
     tmp_csv = NamedTemporaryFile(
         mode="a+", prefix=clinvar_file_data[0].split(".")[0], suffix=".csv"
     )
-    writes = csv.writer(tmp_csv, delimiter="\t", quoting=csv.QUOTE_ALL)
+    writes = csv.writer(tmp_csv, delimiter=",", quoting=csv.QUOTE_ALL)
     writes.writerow(clinvar_file_data[1])  # Write header
     writes.writerows(clinvar_file_data[2])  # Write lines
     tmp_csv.flush()
