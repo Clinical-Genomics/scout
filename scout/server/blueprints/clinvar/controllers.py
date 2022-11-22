@@ -6,7 +6,7 @@ from flask import flash
 from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
-from scout.models.clinvar import clinvar_casedata, clinvar_variant
+from scout.models.clinvar import clinvar_variant
 from scout.server.extensions import store
 from scout.utils.scout_requests import fetch_refseq_version
 

@@ -2,8 +2,7 @@ import csv
 import logging
 from tempfile import NamedTemporaryFile
 
-from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
-from werkzeug.datastructures import Headers
+from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.server.extensions import store
