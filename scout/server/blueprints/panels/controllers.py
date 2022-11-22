@@ -7,6 +7,8 @@ from flask_login import current_user
 
 from scout.build.panel import build_panel
 from scout.parse.panel import parse_genes
+from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
+from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
 
@@ -310,6 +312,60 @@ def panel_export(store, panel_obj):
     panel_obj["name_and_version"] = full_name
 
     return dict(panel=panel_obj)
+
+
+def panel_export_case_hits(panel_id, institute_obj, case_obj):
+    """Fetch information required to populate the PDF report containing
+    info on actual panel coverage. Currently this is approximated with three parts:
+        1) the genes on the panel for SNV and SV
+        2) the genes on the panel with any calls reported for STRs
+        3) the availability of an SMN Copy Number report if SMN1 or SMN2 is on the gene panel.
+
+    Args:
+        panel_id(str): _id of a gene panel
+        institute_obj(dict): scout.models.Institute
+        case_obj(dict): scout.models.Case
+
+    Returns:
+        data(dict): dictionary containing data to be displayed on PDF report
+    """
+    panel_obj = store.panel(panel_id)
+    panel_obj["name_and_version"] = "{}({})".format(panel_obj["display_name"], panel_obj["version"])
+
+    case_obj["outdated_panels"] = {}
+    panel_name = panel_obj["panel_name"]
+    latest_panel = store.gene_panel(panel_name)
+    if panel_obj["version"] < latest_panel["version"]:
+        extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
+        if extra_genes or missing_genes:
+            case_obj["outdated_panels"][panel_name] = {
+                "missing_genes": missing_genes,
+                "extra_genes": extra_genes,
+            }
+
+    data = {"institute": institute_obj, "case": case_obj, "panel": panel_obj, "panel_genes": set()}
+    variant_categories = {"str": set(), "smn": set()}
+    variants_query = {
+        "case_id": case_obj["_id"],
+        "category": None,
+        "hgnc_ids": None,
+    }
+
+    for gene in panel_obj.get("genes", []):
+        data["panel_genes"].add(gene["symbol"])
+        variants_query["hgnc_ids"] = gene["hgnc_id"]
+        for cat, _ in variant_categories.items():
+            variants_query["category"] = cat
+            res = store.variant_collection.find_one(variants_query)
+            if res:
+                variant_categories[cat].add(gene["symbol"])
+
+        if gene["symbol"] in ["SMN1", "SMN2"] and case_obj.get("smn_tsv"):
+            variant_categories["smn"].add(gene["symbol"])
+
+    data["variant_hits"] = variant_categories
+
+    return data
 
 
 def get_panels(store, panel_name):
