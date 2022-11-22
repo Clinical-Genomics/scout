@@ -3,7 +3,7 @@ import logging
 import requests
 
 LOG = logging.getLogger(__name__)
-SERVICE_URL = "http://127.0.0.1:8000/"
+SERVICE_URL = "https://preclinvar-stage.scilifelab.se/"
 
 
 class ClinVarApi:

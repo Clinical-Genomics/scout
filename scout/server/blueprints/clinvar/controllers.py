@@ -347,18 +347,27 @@ def validate_submission(submission_id):
         mode="a+", suffix=".csv"
     ) as c_file:
 
+        writes = csv.writer(v_file, delimiter="\t", quoting=csv.QUOTE_ALL)
         v_file_lines = generate_csv(variants_header, variants_lines)
-        csv.writer(v_file, delimiter="\t", quoting=csv.QUOTE_ALL)
+        for l in v_file_lines:
+            LOG.warning(l)
+        """
+        writes.writerows(variants_header, variants_lines)
         v_file.flush()
         v_file.seek(0)
+        """
 
+        writes = csv.writer(c_file, delimiter="\t", quoting=csv.QUOTE_ALL)
         c_file_lines = generate_csv(casedata_header, casedata_lines)
-        csv.writer(c_file, delimiter="\t", quoting=csv.QUOTE_ALL)
+
+        """
+        writes.writerows(c_file_lines)
         c_file.flush()
         c_file.seek(0)
+        """
 
         conversion_res = clinvar_api.convert_to_json(v_file.name, c_file.name)
-        LOG.error(conversion_res)
+        flash(str(conversion_res))
 
 
 def generate_csv(header, lines):
