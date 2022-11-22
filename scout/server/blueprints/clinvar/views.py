@@ -1,6 +1,8 @@
+import csv
 import logging
+from tempfile import NamedTemporaryFile
 
-from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, flash, redirect, render_template, request, send_file, url_for
 from werkzeug.datastructures import Headers
 
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
@@ -92,21 +94,24 @@ def clinvar_update_submission(institute_id, submission):
 def clinvar_download_csv(submission, csv_type, clinvar_id):
     """Download a csv (Variant file or CaseData file) for a clinVar submission"""
 
-    def generate_csv(header, lines):
-        """Return downloaded header and lines with quoted fields"""
-        yield header + "\n"
-        for line in lines:
-            yield line + "\n"
-
     clinvar_file_data = controllers.clinvar_submission_file(submission, csv_type, clinvar_id)
 
     if clinvar_file_data is None:
         return redirect(request.referrer)
 
-    headers = Headers()
-    headers.add("Content-Disposition", "attachment", filename=clinvar_file_data[0])
-    return Response(
-        generate_csv(",".join(clinvar_file_data[1]), clinvar_file_data[2]),
+    # Write temp CSV file and serve it in response
+    tmp_csv = NamedTemporaryFile(
+        mode="a+", prefix=clinvar_file_data[0].split(".")[0], suffix=".csv"
+    )
+    writes = csv.writer(tmp_csv, delimiter="\t", quoting=csv.QUOTE_ALL)
+    writes.writerow(clinvar_file_data[1])  # Write header
+    writes.writerows(clinvar_file_data[2])  # Write lines
+    tmp_csv.flush()
+    tmp_csv.seek(0)
+
+    return send_file(
+        tmp_csv.name,
+        download_name=clinvar_file_data[0],
         mimetype="text/csv",
-        headers=headers,
+        as_attachment=True,
     )
