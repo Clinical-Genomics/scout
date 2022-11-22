@@ -29,10 +29,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Broken `Build Status - GitHub badge` on GitHub README page
 - Visibility of text on grey badges in gene panels PDF exports
 - Labels for dashboard search controls
-<<<<<<< HEAD
-=======
-
->>>>>>> 19f3662e8 (Dashboard control label)
 
 
 ## [4.60]
