@@ -21,7 +21,7 @@
       Gene panel: <strong>{{panel.name_and_version}}</strong><br>
       Last updated: <strong>{{ panel.date.strftime('%Y-%m-%d') }}</strong>
       {% if case.outdated_panels and panel.panel_name in case.outdated_panels %}
-              <a><span class="badge rounded-pill badge-sm bg-warning" data-bs-toggle="popover" data-bs-placement="left" data-bs-html="true" data-bs-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(',') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(',') or '-'}}.">!</span></a>
+              <a><span class="badge rounded-pill badge-sm bg-warning" data-bs-toggle="popover" data-bs-placement="left" data-bs-html="true" data-bs-content="Panel version used in the analysis ({{panel.version}}) is outdated. Latest panel version is used in variants filtering.<br /><strong>Genes present in case panel and not in latest version</strong>: {{case.outdated_panels[panel.panel_name]['extra_genes']|join(', ') or '-'}}.<br /><strong>Genes present only in latest version</strong>: {{case.outdated_panels[panel.panel_name]['missing_genes']|join(', ') or '-'}}.">!</span></a>
       {% endif %}<br>
       Panel ID: {{ panel.panel_name }}<br>
       Description: {{ panel.description }}<br>
