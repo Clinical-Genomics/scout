@@ -8,10 +8,10 @@
 ![Build Status - GitHub][actions-build-status]
 [![PyPI Version][pypi-img]][pypi-url]
 ![GitHub Release Date][github-release-date]
-[![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![GitHub commits latest](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/latest)](https://GitHub.com/Clinical-Genomics/scout/commit/)
 [![GitHub commit rate](https://img.shields.io/github/commit-activity/w/Clinical-Genomics/scout)](https://GitHub.com/Clinical-Genomics/scout/pulse/)
 [![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
+[![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
 [![Coverage Status][codecov-img]][codecov-url]
