@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not export `Assertion method` and `Assertion method citation` to ClinVar submission files according to changes to ClinVar's submission spreadsheet templates.
 - Simplified code to create and download ClinVar CSV files
 - Colorize inheritance models badges by category on VariantS page
+- `Safe variants matching` badge more visible on case page
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 - Layout of variant position, cytoband and type in SV variant summary
