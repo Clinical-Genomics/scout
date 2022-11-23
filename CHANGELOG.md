@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to filter RD variants by a specific genotype call
 - Distinct colors for different inheritance models on RD Variant page
 - Gene panels PDF export with case variants hits by variant type
+- A couple of additional README badges for GitHub stats
 - Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
