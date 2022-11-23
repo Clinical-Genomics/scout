@@ -7,14 +7,17 @@
 
 ![Build Status - GitHub][actions-build-status]
 [![PyPI Version][pypi-img]][pypi-url]
-[![Coverage Status][codecov-img]][codecov-url]
+![GitHub Release Date][github-release-date]
+[![GitHub commits latest](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/latest)](https://GitHub.com/Clinical-Genomics/scout/commit/)
+[![GitHub commit rate](https://img.shields.io/github/commit-activity/w/Clinical-Genomics/scout)](https://GitHub.com/Clinical-Genomics/scout/pulse/)
+[![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.0.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
 [![GitHub issues-closed][closed-issues-img]][closed-issues-url]
 [![Average time to resolve an issue][ismaintained-resolve-img]][ismaintained-resolve-url]
 [![Percentage of issues still open][ismaintained-open-rate-img]][ismaintained-open-rate-url]
-[![GitHub commit rate](https://img.shields.io/github/commit-activity/w/Clinical-Genomics/scout)](https://GitHub.com/Clinical-Genomics/scout/pulse/)
-[![GitHub commits](https://img.shields.io/github/commits-since/Clinical-Genomics/scout/v4.8.0.svg)](https://GitHub.com/Clinical-Genomics/scout/commit/)
+[![Coverage Status][codecov-img]][codecov-url]
 [![CodeFactor](https://www.codefactor.io/repository/github/clinical-genomics/scout/badge)](https://www.codefactor.io/repository/github/clinical-genomics/scout)
 [![Code style: black][black-image]][black-url]
+[![Woke][woke-image]][woke-url]
 
 
 ## What is Scout?
@@ -253,6 +256,7 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [loqusdb-scout]: docs/admin-guide/loqusdb_integration.md
 [gens]: https://github.com/Clinical-Genomics-Lund/gens
 [gens-scout]: docs/admin-guide/gens_integration.md
+[github-release-date]: https://img.shields.io/github/release-date/Clinical-Genomics/scout
 [matchmaker-pub]: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6016856/
 [matchmaker-scout]: docs/admin-guide/matchmaker_exchange_integration.md
 [matchmaker-scout-sharing]: docs/user-guide/cases.md#matchmaker-exchange-integration
@@ -271,3 +275,5 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [actions-build-status]: https://github.com/Clinical-Genomics/scout/actions/workflows/build_and_publish.yml/badge.svg
 [black-image]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black-url]: https://github.com/psf/black
+[woke-image]: https://github.com/Clinical-Genomics/scout/actions/workflows/woke.yml/badge.svg
+[woke-url]: https://github.com/Clinical-Genomics/scout/actions/workflows/woke.yml
