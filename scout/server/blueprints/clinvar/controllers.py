@@ -346,8 +346,8 @@ def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
     Returns:
         (filename, csv_header, csv_lines):
             filename(str) name of file to be downloaded
-            csv_header(list) string list content of file header
-            csv_lines(list) string list content of file lines
+            csv_header(list) content of header cells
+            csv_lines(list of lists) content of file lines, one for each variant/case data
     """
     if clinvar_subm_id == "None":
         flash(
@@ -369,9 +369,6 @@ def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
     csv_header_obj = _clinvar_submission_header(submission_objs, csv_type)
     csv_lines = _clinvar_submission_lines(submission_objs, csv_header_obj)
     csv_header = list(csv_header_obj.values())
-    csv_header = [
-        '"' + str(x) + '"' for x in csv_header
-    ]  # quote columns in header for csv rendering
 
     today = str(datetime.now().strftime("%Y-%m-%d"))
     if csv_type == "variant_data":
@@ -399,10 +396,10 @@ def _clinvar_submission_lines(submission_objs, submission_header):
             header_value,
         ) in submission_header.items():  # header_keys are the same keys as in submission_objs
             if header_key not in subm_obj:
-                csv_line.append('""')
+                csv_line.append("")
             else:
-                csv_line.append(f'"{subm_obj.get(header_key)}"')
-        submission_lines.append(",".join(csv_line))
+                csv_line.append(subm_obj.get(header_key))
+        submission_lines.append(csv_line)
 
     return submission_lines
 
