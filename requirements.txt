@@ -44,4 +44,3 @@ python-dateutil
 
 # Required by scripts
 tabulate
-
