@@ -30,7 +30,7 @@
                   <li>Inheritance Model</li>
                   <li>Clinical Significance</li>
                   <li>Associated conditions</li>
-                  <li>Observation Data</li>
+                   <li>Observation Data</li>
               </ul>
               <!-- fieldsets -->
               <fieldset>
@@ -165,7 +165,7 @@
                 <h2 class="fs-title">Inheritance model</h2>
                 <h3 class="fs-subtitle">The mode of inheritance specific to the variant-disease pair, not generally for the disease</h3>
                 {{variant_data.var_form.inheritance_mode.label(class="fw-bold, text-dark")}}
-                {{variant_data.var_form.inheritance_mode(class="form-control, bg-white")}}
+                {{variant_data.var_form.inheritance_mode(class="form-control, btn-secondary")}}
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
@@ -176,12 +176,12 @@
 
                 <div class="row">
                   <div class="col-4">
-                    Classification in Scout:<br>
+                    <span class="text-dark">Classification in Scout:</span><br>
                     <span class="badge bg-secondary">{{variant_data.var_obj.classification|replace("_"," ")|upper if variant_data.var_obj.classification else "n.a."}}</span>
                   </div>
                   <div class="col-8">
                     {{variant_data.var_form.clinsig.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field"><strong>*</strong></span>
-                    {{variant_data.var_form.clinsig(class="form-control, bg-white")}}
+                    {{variant_data.var_form.clinsig(class="form-control, btn-secondary")}}
                   </div>
                 </div>
                 <br><br><br>
@@ -202,7 +202,7 @@
                 <div class="row">
                   <div class="col-6">
                     {{variant_data.var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
-                    <select class="form-control, bg-white" name="condition_type" id="condition_type">
+                    <select class="form-control, btn-secondary" name="condition_type" id="condition_type">
                       {% for dbtype, _ in variant_data.var_form.condition_type.choices %}
                         {% if dbtype == "OMIM" and variant_data.var_form.omim_terms.choices %}
                           <option value="{{dbtype}}" selected>{{dbtype}}</option>
@@ -225,7 +225,6 @@
                           <option value="{{term}}" selected>{{term}}</option>
                         {% endfor %}
                       {% endif %}
-                      {
                     </select>
 
                   </div>
@@ -235,7 +234,7 @@
                     {% for term in variant_data.var_form.omim_terms %}
                       <li class="list-group-item">{{ term.label }}</li>
                     {% else %}
-                    n.a.
+                      <span class="text-dark">n.a.</span>
                     {% endfor %}
                     </ul>
                     <br><br>
@@ -273,15 +272,15 @@
                       </div>
                       <div class="col-2">
                         {{ cdata.affected_status.label(class="fw-bold, text-dark") }}
-                        {{ cdata.affected_status(class="form-control, bg-white") }}
+                        {{ cdata.affected_status(class="form-control, btn-secondary") }}
                       </div>
                       <div class="col-2">
                         {{ cdata.allele_of_origin.label(class="fw-bold, text-dark") }}
-                        {{ cdata.allele_of_origin(class="form-control, bg-white") }}
+                        {{ cdata.allele_of_origin(class="form-control, btn-secondary") }}
                       </div>
                       <div class="col-2">
                         {{ cdata.collection_method.label(class="fw-bold, text-dark") }}
-                        {{ cdata.collection_method(class="form-control, bg-white") }}
+                        {{ cdata.collection_method(class="form-control, btn-secondary") }}
                       </div>
                     </div>
                   </li>
