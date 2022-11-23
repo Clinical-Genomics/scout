@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.61]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
 - Filter case list by cases containing RNA-seq data - gene_fusion_reports and sample-level tracks (splice junctions and RNA coverage)
@@ -26,7 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 - Layout of variant position, cytoband and type in SV variant summary
-- Broken `Build Status - GitHub badge` on GitHub README page 
+- Broken `Build Status - GitHub badge` on GitHub README page
 - Visibility of text on grey badges in gene panels PDF exports
 
 ## [4.60]
