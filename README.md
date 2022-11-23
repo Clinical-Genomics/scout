@@ -17,6 +17,7 @@
 [![Coverage Status][codecov-img]][codecov-url]
 [![CodeFactor](https://www.codefactor.io/repository/github/clinical-genomics/scout/badge)](https://www.codefactor.io/repository/github/clinical-genomics/scout)
 [![Code style: black][black-image]][black-url]
+[![Woke][woke-image]][woke-url]
 
 
 ## What is Scout?
@@ -274,3 +275,5 @@ be found in [CONTRIBUTING](CONTRIBUTING.md).
 [actions-build-status]: https://github.com/Clinical-Genomics/scout/actions/workflows/build_and_publish.yml/badge.svg
 [black-image]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black-url]: https://github.com/psf/black
+[woke-image]: https://github.com/Clinical-Genomics/scout/actions/workflows/woke.yml/badge.svg
+[woke-url]: https://github.com/Clinical-Genomics/scout/actions/workflows/woke.yml
