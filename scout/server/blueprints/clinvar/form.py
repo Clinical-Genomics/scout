@@ -9,7 +9,6 @@ from wtforms import (
     SelectField,
     SelectMultipleField,
     StringField,
-    SubmitField,
     TextAreaField,
     validators,
     widgets,
