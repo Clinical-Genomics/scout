@@ -27,8 +27,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 - Layout of variant position, cytoband and type in SV variant summary
-- Broken `Build Status - GitHub badge` on GitHub README page 
+- Broken `Build Status - GitHub badge` on GitHub README page
 - Visibility of text on grey badges in gene panels PDF exports
+- Labels for dashboard search controls
 
 ## [4.60]
 ### Added
