@@ -1,5 +1,4 @@
 """Views for the variants"""
-import datetime
 import io
 import logging
 
@@ -12,6 +11,7 @@ from scout.constants import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     DISMISS_VARIANT_OPTIONS,
+    GENETIC_MODELS_PALETTE,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
 )
@@ -140,6 +140,7 @@ def variants(institute_id, case_name):
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
         severe_so_terms=SEVERE_SO_TERMS,
+        genetic_models_palette=GENETIC_MODELS_PALETTE,
         cytobands=cytobands,
         page=page,
         expand_search=expand_search,
