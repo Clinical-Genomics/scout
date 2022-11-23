@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visibility of text on grey badges in gene panels PDF exports
 - Labels for dashboard search controls
 - Dark mode visibility for ClinVar submission
+- Whitespaces on outdated panel in extent report
 
 ## [4.60]
 ### Added
