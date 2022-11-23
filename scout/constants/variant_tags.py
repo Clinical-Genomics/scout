@@ -1,3 +1,5 @@
+from .gene_tags import INHERITANCE_PALETTE
+
 VARIANT_REPORT_VARIANT_FEATURES = [
     "_id",
     "variant_id",
@@ -95,6 +97,21 @@ GENETIC_MODELS = (
     ("XD", "X Linked Dominant"),
     ("XD_dn", "X Linked Dominant De Novo"),
 )
+
+# Associates an inheritance model with a color, using the same colors categories as scout.constants.gene_tags.INHERITANCE_PALETTE
+# The colors of this palette are the same as the MatPlotLib Tableau palette (https://matplotlib.org/3.4.1/gallery/color/named_colors.html)
+GENETIC_MODELS_PALETTE = {
+    "AR_hom_dn": INHERITANCE_PALETTE["AR"],
+    "AR_comp_dn": {"bgcolor": "bg-red", "text_color": "text-white"},
+    "AR_hom": {"bgcolor": "bg-orange", "text_color": "text-white"},
+    "AR_comp": {"bgcolor": "bg-yellow", "text_color": "text-dark"},
+    "AD_dn": INHERITANCE_PALETTE["AD"],
+    "AD": {"bgcolor": "bg-cyan", "text_color": "text-dark"},
+    "XR_dn": INHERITANCE_PALETTE["XR"],
+    "XR": {"bgcolor": "bg-teal", "text_color": "text-white"},
+    "XD_dn": INHERITANCE_PALETTE["XD"],
+    "XD": {"bgcolor": "bg-gray-400", "text_color": "text-dark"},
+}
 
 # Used for filtering variants in blueprints.variants
 VARIANT_GENOTYPES = (
