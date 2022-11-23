@@ -56,7 +56,7 @@ sv_svdb_query_db_files:
   /home/proj/stage/rare-disease/references/references_11.0/grch37_svdb_query_decipher_-v1.0.0-.vcf: decipher|AF|OCC|FRQ|OCC
   /home/proj/stage/rare-disease/references/references_11.0/grch37_swegen_concat_sort_-20170830-.vcf: swegen|AF|OCC|FRQ|OCC|1
 sv_vcfanno_config: /home/proj/stage/rare-disease/references/references_11.0/grch37_sv_vcfanno_config_-v1.4-.toml
-vcf2cytosure_blacklist: /home/proj/stage/rare-disease/references/references_11.0/grch37_cytosure_blacklist_-1.0-.bed
+vcf2cytosure_excludelist: /home/proj/stage/rare-disease/references/references_11.0/grch37_cytosure_excludelist_-1.0-.bed
 vcfanno_config: /home/proj/stage/rare-disease/references/references_11.0/grch37_vcfanno_config_-v1.17-.toml
 vcfparser_pli_score_file: /home/proj/stage/rare-disease/references/references_11.0/gnomad_pli_per_gene_-_r2.1.1-.txt
 vep_custom_annotation:
