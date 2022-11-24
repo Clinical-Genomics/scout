@@ -1,0 +1,47 @@
+bedtools: v2.30.0
+arriba: 2.1.0
+chanjo: 4.6.0
+bam_stat.py: 4.0.0
+mip: 11.0.2
+tabix: 1.13
+trim_galore: 0.6.4
+hmtnote: 0.7.2
+bam2wig.py: 4.0.0
+sambamba: 0.6.8
+STAR-Fusion: 1.10.1
+bwa: 0.7.17-r1188
+varg: 1.6.7
+vcfanno: 0.3.2
+peddy: 0.4.3
+STAR: 2.7.8a
+telomerecat: 3.4.0
+inner_distance.py: 4.0.0
+multiqc: 1.11
+gffcompare: 0.11.2
+read_distribution.py: 4.0.0
+svdb: 2.6.4,
+bcftools: 1.13 (using htslib 1.13)
+run_deepvariant: 1.1.0
+preseq: 3.1.1
+upd: 0.1
+samtools: 1.13 (using htslib 1.13)
+salmon: 1.4.0
+pigz: 2.3.4
+stranger: 0.8.0
+genmod: 3.7.3
+vep: 104
+picard: 2.25.0-SNAPSHOT
+configManta.py: 1.6.0
+junction_annotation.py: 4.0.0
+geneBody_coverage2.py: 4.0.0
+vcf2cytosure: 0.5.1
+read_duplication.py: 4.0.0
+wigToBigWig: 4
+fastqc: v0.11.9
+bgzip: 1.13
+plink2: v1.90p 64-bit (25 Mar 2016)
+ExpansionHunter: v5.0.0
+gatk: v4.2.2.0
+rhocall: 0.5.1
+TIDDIT.py: 2.12.1
+stringtie: 2.1.3b
