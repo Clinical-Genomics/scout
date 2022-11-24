@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Distinct colors for different inheritance models on RD Variant page
 - Gene panels PDF export with case variants hits by variant type
 - A couple of additional README badges for GitHub stats
+- Testing CLI on hasta in PR template
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`
