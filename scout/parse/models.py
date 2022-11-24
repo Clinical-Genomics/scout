@@ -296,6 +296,7 @@ class ScoutLoadConfig(BaseModel):
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(alias="family_name")
+    exe_ver: Optional[str] = None
     family: str = None
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
@@ -305,6 +306,7 @@ class ScoutLoadConfig(BaseModel):
     lims_id: Optional[str] = None
     madeline_info: Optional[str] = Field(None, alias="madeline")  #!
     multiqc: Optional[str] = None
+    multiqc_rna: Optional[str] = None
     owner: str = None
     peddy_ped: Optional[str] = None
     peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")
@@ -312,6 +314,7 @@ class ScoutLoadConfig(BaseModel):
     phenotype_terms: Optional[List[str]] = None
     rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
+    reference_info: Optional[str] = None
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
     synopsis: Union[List[str], str] = None
