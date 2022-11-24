@@ -929,6 +929,7 @@ class CaseHandler(object):
             - collaborators: If new collaborators these will be added to the old ones
             - coverage_qc_report: path to the static coverage and qc report file
             - delivery_report: path to the static delivery report file
+            - exe_ver: path to the pipeline executable version report file
             - gene_fusion_report: path to the gene fusions report
             - gene_fusion_report_research: path to the research gene fusions report
             - genome_build: If there is a new genome build
@@ -941,6 +942,7 @@ class CaseHandler(object):
             - multiqc: If there's an updated multiqc report location
             - panels: The new gene panels are added
             - rank_model_version: If there is a new rank model
+            - reference_info: path to the pipeline reference version report file
             - rerun_requested: Is set to False since that is probably what happened
             - research_requested: Boolean, if research variants where requested for this case
             - smn_tsv: path to static SMN TSV file
@@ -988,6 +990,7 @@ class CaseHandler(object):
                 "cnv_report": case_obj.get("cnv_report"),
                 "coverage_qc_report": case_obj.get("coverage_qc_report"),
                 "delivery_report": case_obj.get("delivery_report"),
+                "exe_ver": case_obj.get("exe_ver"),
                 "gene_fusion_report": case_obj.get("gene_fusion_report"),
                 "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
                 "genome_build": case_obj.get("genome_build", "37"),
@@ -998,10 +1001,12 @@ class CaseHandler(object):
                 "madeline_info": case_obj.get("madeline_info"),
                 "mme_submission": case_obj.get("mme_submission"),
                 "multiqc": case_obj.get("multiqc"),
+                "multiqc_rna": case_obj.get("multiqc_rna"),
                 "panels": case_obj.get("panels", []),
                 "rank_model_version": case_obj.get("rank_model_version"),
                 "rerun_requested": case_obj.get("rerun_requested", False),
                 "research_requested": case_obj.get("research_requested", False),
+                "reference_info": case_obj.get("reference_info"),
                 "smn_tsv": case_obj.get("smn_tsv"),
                 "status": case_obj.get("status"),
                 "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
@@ -1028,12 +1033,15 @@ class CaseHandler(object):
         for key in [
             "custom_images",
             "cnv_report",
+            "exe_ver",
             "coverage_qc_report",
             "gene_fusion_report",
             "gene_fusion_report_research",
             "mme_submission",
             "multiqc",
+            "multiqc_rna",
             "rank_model_version",
+            "reference_info",
             "smn_tsv",
             "sv_rank_model_version",
         ]:
