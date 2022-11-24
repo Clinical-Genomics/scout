@@ -697,14 +697,36 @@ class VariantLoader(object):
             rank_threshold = rank_threshold or 0
 
         # Parallels here! region per chr if no region..
-        if region == "":
-            chromosomes = (
-                CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
-            )
+        try:
+            if region == "":
+                chromosomes = (
+                    CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+                )
 
-            nr_inserted_chr = Parallel(n_jobs=12, prefer="threads")(
-                delayed(self._insert_counting)(
-                    variants=vcf_obj(chromosome),
+                nr_inserted_chr = Parallel(n_jobs=12, prefer="threads")(
+                    delayed(self._insert_counting)(
+                        variants=vcf_obj(chromosome),
+                        variant_type=variant_type,
+                        case_obj=case_obj,
+                        individual_positions=individual_positions,
+                        rank_threshold=rank_threshold,
+                        institute_id=institute_id,
+                        build=build,
+                        rank_results_header=rank_results_header,
+                        vep_header=vep_header,
+                        category=category,
+                        sample_info=sample_info,
+                        custom_images=custom_images,
+                        local_archive_info=local_archive_info,
+                    )
+                    for chromosome in chromosomes
+                )
+
+                nr_inserted = sum(nr_inserted_chr)
+            else:
+                variants = vcf_obj(region)
+                nr_inserted = self._insert_counting(
+                    variants=variants,
                     variant_type=variant_type,
                     case_obj=case_obj,
                     individual_positions=individual_positions,
@@ -718,27 +740,11 @@ class VariantLoader(object):
                     custom_images=custom_images,
                     local_archive_info=local_archive_info,
                 )
-                for chromosome in chromosomes
-            )
-
-            nr_inserted = sum(nr_inserted_chr)
-        else:
-            variants = vcf_obj(region)
-            nr_inserted = self._insert_counting(
-                variants=variants,
-                variant_type=variant_type,
-                case_obj=case_obj,
-                individual_positions=individual_positions,
-                rank_threshold=rank_threshold,
-                institute_id=institute_id,
-                build=build,
-                rank_results_header=rank_results_header,
-                vep_header=vep_header,
-                category=category,
-                sample_info=sample_info,
-                custom_images=custom_images,
-                local_archive_info=local_archive_info,
-            )
+        except Exception as error:
+            LOG.exception("unexpected error")
+            LOG.warning("Deleting inserted variants")
+            self.delete_variants(case_obj["_id"], variant_type)
+            raise error
 
         self.update_variant_rank(case_obj, variant_type, category=category)
 
@@ -760,26 +766,21 @@ class VariantLoader(object):
         custom_images,
         local_archive_info,
     ):
-        try:
-            nr_inserted = self._load_variants(
-                variants=variants,
-                variant_type=variant_type,
-                case_obj=case_obj,
-                individual_positions=individual_positions,
-                rank_threshold=rank_threshold,
-                institute_id=institute_id,
-                build=build,
-                rank_results_header=rank_results_header,
-                vep_header=vep_header,
-                category=category,
-                sample_info=sample_info,
-                custom_images=custom_images,
-                local_archive_info=local_archive_info,
-            )
-        except Exception as error:
-            LOG.exception("unexpected error")
-            LOG.warning("Deleting inserted variants")
-            self.delete_variants(case_obj["_id"], variant_type)
-            raise error
+
+        nr_inserted = self._load_variants(
+            variants=variants,
+            variant_type=variant_type,
+            case_obj=case_obj,
+            individual_positions=individual_positions,
+            rank_threshold=rank_threshold,
+            institute_id=institute_id,
+            build=build,
+            rank_results_header=rank_results_header,
+            vep_header=vep_header,
+            category=category,
+            sample_info=sample_info,
+            custom_images=custom_images,
+            local_archive_info=local_archive_info,
+        )
 
         return nr_inserted
