@@ -75,6 +75,8 @@ Available types or case reports:
 - **delivery**: Delivery Report (HTML)
 - **cnv**: Copy Number Variants Report (PDF), available only for cancer cases
 - **cov_qc**: Coverage QC Report (HTML), available only for cancer cases
+- **exe_ver**: Pipeline detailed software versions (YAML)
+- **reference_info**: Pipeline detailed reference file versions (YAML)
 - **multiqc**: [MultiQC](https://multiqc.info/) Report (HTML)
 - **multiqc_rna**: MultiQC RNA report (HTML)
 - **gene_fusion**: A report (PDF) showing gene fusions from RNA-Seq data, analysis limited to the clinical gene list
@@ -92,7 +94,7 @@ Usage: scout load report [OPTIONS] CASE_ID REPORT_PATH
   Load a report document for a case.
 
 Options:
-  -t, --report-type [delivery|cnv|cov_qc|multiqc|multiqc_rna|gene_fusion|gene_fusion_research]
+  -t, --report-type [delivery|cnv|cov_qc|exe_ver|multiqc|multiqc_rna|gene_fusion|gene_fusion_research|reference_info]
                                   Type of report  [required]
 
 ```

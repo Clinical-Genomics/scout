@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Distinct colors for different inheritance models on RD Variant page
 - Gene panels PDF export with case variants hits by variant type
 - A couple of additional README badges for GitHub stats
+- Upload and display of pipeline reference info and executable version yaml files as custom reports
 - Testing CLI on hasta in PR template
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
