@@ -6,6 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Global CSRF protection to the app
+
+
+## [unreleased]
+### Added
 - Filter case list by cases with variants in ClinVar submission
 - Filter case list by cases containing RNA-seq data - gene_fusion_reports and sample-level tracks (splice junctions and RNA coverage)
 - Additional case category `Ignored`, to be used for cases that don't fall in the existing 'inactive', 'archived', 'solved', 'prioritized' categories
@@ -20,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Gene panels PDF export with case variants hits by variant type
 - A couple of additional README badges for GitHub stats
 - Upload and display of pipeline reference info and executable version yaml files as custom reports
-- Global CSRF protection to the app
+- Testing CLI on hasta in PR template
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`
