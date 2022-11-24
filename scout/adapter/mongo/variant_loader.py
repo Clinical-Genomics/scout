@@ -697,28 +697,26 @@ class VariantLoader(object):
             rank_threshold = rank_threshold or 0
 
         # Parallels here! region per chr if no region..
-        if region != "":
+        if region == "":
             chromosomes = (
                 CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
             )
 
-            nr_inserted_chr = Parallel(n_jobs=24)(
-                delayed(
-                    self._insert_counting(
-                        variants=vcf_obj(chromosome),
-                        variant_type=variant_type,
-                        case_obj=case_obj,
-                        individual_positions=individual_positions,
-                        rank_threshold=rank_threshold,
-                        institute_id=institute_id,
-                        build=build,
-                        rank_results_header=rank_results_header,
-                        vep_header=vep_header,
-                        category=category,
-                        sample_info=sample_info,
-                        custom_images=custom_images,
-                        local_archive_info=local_archive_info,
-                    )
+            nr_inserted_chr = Parallel(n_jobs=12, prefer="threads")(
+                delayed(self._insert_counting)(
+                    variants=vcf_obj(chromosome),
+                    variant_type=variant_type,
+                    case_obj=case_obj,
+                    individual_positions=individual_positions,
+                    rank_threshold=rank_threshold,
+                    institute_id=institute_id,
+                    build=build,
+                    rank_results_header=rank_results_header,
+                    vep_header=vep_header,
+                    category=category,
+                    sample_info=sample_info,
+                    custom_images=custom_images,
+                    local_archive_info=local_archive_info,
                 )
                 for chromosome in chromosomes
             )
