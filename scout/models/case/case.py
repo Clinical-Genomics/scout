@@ -54,6 +54,7 @@ case = dict(
     diagnosis_phenotypes=list,  # List of dictionaries with OMIM disease data
     display_name=str,  # required. This is the case name that will be shown in scout.
     dynamic_gene_list=list,  # List of genes
+    exe_ver=str,  # Path to the pipeline executable versions report file
     gene_fusion_report=str,  # Path to the gene fusions report file
     gene_fusion_report_research=str,  # Path to the gene fusions research report file
     genome_build=str,  # This should be 37 or 38
@@ -65,6 +66,7 @@ case = dict(
     is_research=bool,  # default=False
     madeline_info=str,  # madeline info is a full xml file
     multiqc=str,  # path to multiqc report
+    multiqc_rna=str,  # path to multiqc RNA report
     owner=str,  # required. Internal_id for the owner of the case. E.g. 'cust000'
     panels=list,  # list of dictionaries with panel information.
     phenotype_groups=list,  # List of dictionaries with phenotype information
@@ -72,6 +74,7 @@ case = dict(
     rank_model_version=str,
     rank_score_threshold=int,  # default=8
     rerun_requested=bool,  # default=False
+    reference_info=str,  # Path to the pipeline reference files versions report file
     research_requested=bool,  # default=False
     smn_tsv=str,  # path to an SMN TSV file
     status=str,  # default='inactive', choices=STATUS
