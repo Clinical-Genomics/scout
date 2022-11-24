@@ -7,6 +7,7 @@ from datetime import datetime
 import pymongo
 from cyvcf2 import VCF
 from intervaltree import IntervalTree
+from joblib import Parallel, delayed
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
@@ -695,8 +696,72 @@ class VariantLoader(object):
         else:
             rank_threshold = rank_threshold or 0
 
-        variants = vcf_obj(region)
+        # Parallels here! region per chr if no region..
+        if region != "":
+            chromosomes = (
+                CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+            )
 
+            nr_inserted_chr = Parallel(n_jobs=24)(
+                delayed(
+                    self._insert_counting(
+                        variants=vcf_obj(chromosome),
+                        variant_type=variant_type,
+                        case_obj=case_obj,
+                        individual_positions=individual_positions,
+                        rank_threshold=rank_threshold,
+                        institute_id=institute_id,
+                        build=build,
+                        rank_results_header=rank_results_header,
+                        vep_header=vep_header,
+                        category=category,
+                        sample_info=sample_info,
+                        custom_images=custom_images,
+                        local_archive_info=local_archive_info,
+                    )
+                )
+                for chromosome in chromosomes
+            )
+
+            nr_inserted = sum(nr_inserted_chr)
+        else:
+            variants = vcf_obj(region)
+            nr_inserted = self._insert_counting(
+                variants=variants,
+                variant_type=variant_type,
+                case_obj=case_obj,
+                individual_positions=individual_positions,
+                rank_threshold=rank_threshold,
+                institute_id=institute_id,
+                build=build,
+                rank_results_header=rank_results_header,
+                vep_header=vep_header,
+                category=category,
+                sample_info=sample_info,
+                custom_images=custom_images,
+                local_archive_info=local_archive_info,
+            )
+
+        self.update_variant_rank(case_obj, variant_type, category=category)
+
+        return nr_inserted
+
+    def _insert_counting(
+        self,
+        variants,
+        variant_type,
+        case_obj,
+        individual_positions,
+        rank_threshold,
+        institute_id,
+        build,
+        rank_results_header,
+        vep_header,
+        category,
+        sample_info,
+        custom_images,
+        local_archive_info,
+    ):
         try:
             nr_inserted = self._load_variants(
                 variants=variants,
@@ -718,7 +783,5 @@ class VariantLoader(object):
             LOG.warning("Deleting inserted variants")
             self.delete_variants(case_obj["_id"], variant_type)
             raise error
-
-        self.update_variant_rank(case_obj, variant_type, category=category)
 
         return nr_inserted

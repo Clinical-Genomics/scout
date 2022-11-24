@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+##[unreleased]
+### Changed
+- Parallelize variant loading for each chromosome
+
 ## [4.61]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
