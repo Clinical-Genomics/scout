@@ -11,7 +11,7 @@ from joblib import Parallel, delayed
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
-from scout.constants import CHROMOSOMES, FILE_TYPE_MAP
+from scout.constants import CHROMOSOMES, CHROMOSOMES_38, FILE_TYPE_MAP
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
