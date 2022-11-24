@@ -663,7 +663,7 @@ def custom_report(institute_id, case_name, report_type):
             with open(os.path.abspath(report_path), "r") as html_file:
                 source_code = html_file.read()
                 if CUSTOM_CASE_REPORTS[report_type]["format"] == "YAML":
-                    source_code = "<html><code>" + source_code + "</code></html>"
+                    source_code = "<html><code><pre>" + source_code + "</pre></code></html>"
 
                 bytes_file = html_to_pdf_file(source_code, "landscape", 300)
                 file_name = "_".join(
