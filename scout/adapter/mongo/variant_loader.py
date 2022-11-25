@@ -11,7 +11,13 @@ from joblib import Parallel, delayed
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
-from scout.constants import CHROMOSOMES, CHROMOSOMES_38, FILE_TYPE_MAP
+from scout.constants import (
+    CHROMOSOMES,
+    CHROMOSOMES_38,
+    CYVCF2_THREADS,
+    FILE_TYPE_MAP,
+    LOADER_THREADS,
+)
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
@@ -702,11 +708,10 @@ class VariantLoader(object):
                 chromosomes = (
                     CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
                 )
-                local_vcf_obj = VCF(variant_file, threads=2)
 
-                nr_inserted_chr = Parallel(n_jobs=1, prefer="threads")(
+                nr_inserted_chr = Parallel(n_jobs=LOADER_THREADS, prefer="threads")(
                     delayed(self._insert_counting)(
-                        variants=local_vcf_obj(chromosome),
+                        variants=None,
                         variant_type=variant_type,
                         case_obj=case_obj,
                         individual_positions=individual_positions,
@@ -719,6 +724,8 @@ class VariantLoader(object):
                         sample_info=sample_info,
                         custom_images=custom_images,
                         local_archive_info=local_archive_info,
+                        variant_file=variant_file,
+                        chromosome=chromosome,
                     )
                     for chromosome in chromosomes
                 )
@@ -766,7 +773,13 @@ class VariantLoader(object):
         sample_info,
         custom_images,
         local_archive_info,
+        variant_file=None,
+        chromosome=None,
     ):
+        if variant_file:
+            local_vcf_obj = VCF(variant_file, threads=CYVCF2_THREADS)
+            variants = local_vcf_obj(chromosome)
+
         nr_inserted = self._load_variants(
             variants=variants,
             variant_type=variant_type,

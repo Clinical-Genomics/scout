@@ -90,6 +90,9 @@ from .variants_export import (
     VERIFIED_VARIANTS_HEADER,
 )
 
+LOADER_THREADS = 6
+CYVCF2_THREADS = 2
+
 cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
 cytobands_38_handle = get_file_handle(cytoband_files.get("38"))
 
