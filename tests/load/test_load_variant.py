@@ -211,7 +211,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
     )
 
     # THEN assert any variant is loaded
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
 
     ## THEN assert that the variant has been loaded
     query = adapter.build_query(
@@ -225,7 +225,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
         category="snv",
     )
     print("Query: {}".format(query))
-    assert sum(1 for i in adapter.variant_collection.find(query)) == 1
+    assert sum(1 for _ in adapter.variant_collection.find(query)) == 1
 
 
 def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):

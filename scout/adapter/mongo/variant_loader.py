@@ -702,10 +702,11 @@ class VariantLoader(object):
                 chromosomes = (
                     CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
                 )
+                local_vcf_obj = VCF(variant_file, threads=2)
 
-                nr_inserted_chr = Parallel(n_jobs=12, prefer="threads")(
+                nr_inserted_chr = Parallel(n_jobs=1, prefer="threads")(
                     delayed(self._insert_counting)(
-                        variants=vcf_obj(chromosome),
+                        variants=local_vcf_obj(chromosome),
                         variant_type=variant_type,
                         case_obj=case_obj,
                         individual_positions=individual_positions,
@@ -766,7 +767,6 @@ class VariantLoader(object):
         custom_images,
         local_archive_info,
     ):
-
         nr_inserted = self._load_variants(
             variants=variants,
             variant_type=variant_type,
