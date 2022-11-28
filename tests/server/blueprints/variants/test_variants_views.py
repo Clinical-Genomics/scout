@@ -33,7 +33,7 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
         {"_id": test_var["_id"]},
         {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
         {
-            "return_document": pymongo.ReturnDocument.AFTER,
+            "returnDocument": pymongo.ReturnDocument.AFTER,
             "sort": {"rank": -1},
         },
     )
