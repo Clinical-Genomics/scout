@@ -294,9 +294,9 @@ def test_case_variant_check_causatives(app, real_variant_database):
     # THEN an app will find the matching causative
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        other_causatives = adapter.check_causatives(
-            case_obj=other_case, institute_obj=institute_obj
-        )
+        other_causatives = [
+            adapter.check_causatives(case_obj=other_case, institute_obj=institute_obj)
+        ]
         LOG.debug("other causatives: {}".format(other_causatives))
         assert sum(1 for i in other_causatives) > 0
 

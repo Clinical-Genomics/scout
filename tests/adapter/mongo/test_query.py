@@ -812,7 +812,7 @@ def test_query_svs_by_coordinates(real_populated_database, sv_variant_objs, case
     assert list(results)[0] == updated_variant
 
 
-def test_get_overlapping_variant(real_variant_database, case_obj, variant_objs):
+def test_get_overlapping_variant(real_variant_database, case_obj):
     """Test function that finds SVs overlapping to a given SNV"""
 
     ## GIVEN a database with snv variants

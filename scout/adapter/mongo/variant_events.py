@@ -434,7 +434,9 @@ class VariantEventHandler(object):
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
-        LOG.info("Creating case event for marking {0}" " causative".format(variant["display_name"]))
+        LOG.debug(
+            "Creating case event for marking {0}" " causative".format(variant["display_name"])
+        )
 
         self.create_event(
             institute=institute,
@@ -447,7 +449,10 @@ class VariantEventHandler(object):
             subject=variant["display_name"],
         )
 
-        LOG.info("Creating variant event for marking {0}" " causative".format(case["display_name"]))
+        LOG.debug(
+            "Creating variant event for marking variant {0}"
+            " causative in {0}".format(variant["display_name"], case["display_name"])
+        )
 
         self.create_event(
             institute=institute,
