@@ -161,7 +161,7 @@ def get_vcf_entry(variant_obj, case_id=None):
     Returns:
         variant_string(str): string representing variant in vcf format
     """
-    if variant_obj["category"] == "snv":
+    if variant_obj.get("category") == "snv":
         var_type = "TYPE"
     else:
         var_type = "SVTYPE"
@@ -169,24 +169,24 @@ def get_vcf_entry(variant_obj, case_id=None):
     info_field = ";".join(
         [
             "END=" + str(variant_obj["end"]),
-            var_type + "=" + variant_obj["sub_category"].upper(),
+            var_type + "=" + variant_obj.get("sub_category").upper(),
         ]
     )
 
     variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
         variant_obj["chromosome"],
         variant_obj["position"],
-        variant_obj["dbsnp_id"],
-        variant_obj["reference"],
-        variant_obj["alternative"],
-        variant_obj["quality"],
-        ";".join(variant_obj["filters"]),
+        variant_obj.get("dbsnp_id"),
+        variant_obj.get("reference"),
+        variant_obj.get("alternative"),
+        variant_obj.get("quality"),
+        ";".join(variant_obj.get("filters")),
         info_field,
     )
 
     if case_id:
         variant_string += "\tGT"
-        for sample in variant_obj["samples"]:
-            variant_string += "\t" + sample["genotype_call"]
+        for sample in variant_obj.get("samples"):
+            variant_string += "\t" + sample.get("genotype_call")
 
     return variant_string
