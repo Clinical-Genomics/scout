@@ -2,8 +2,7 @@
 from urllib.parse import urlencode
 
 import pymongo
-from flask import current_app, url_for
-from flask_login import current_user
+from flask import url_for
 
 from scout.server.extensions import store
 
@@ -33,7 +32,10 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
     updated_var = store.variant_collection.find_one_and_update(
         {"_id": test_var["_id"]},
         {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
-        return_document=pymongo.ReturnDocument.AFTER,
+        {
+            "return_document": pymongo.ReturnDocument.AFTER,
+            "sort": {"rank": -1},
+        },
     )
 
     # GIVEN an initialized app
