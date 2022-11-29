@@ -16,7 +16,7 @@ class ClinVarApi:
     """
 
     def __init__(self):
-        self.convert_service = "/".join([SERVICE_URL, "tsv_2_json"])
+        self.convert_service = "/".join([SERVICE_URL, "csv_2_json"])
         self.validate_service = "/".join([SERVICE_URL, "validate"])
 
     def convert_to_json(self, variant_file, casedata_file):

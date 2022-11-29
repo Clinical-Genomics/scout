@@ -212,7 +212,7 @@ def _set_conditions(clinvar_var, form):
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
     clinvar_var["condition_id_type"] = form.get("condition_type")
-    clinvar_var["condition_id_value"] = ";".join(form.getlist("condition"))
+    clinvar_var["condition_id_value"] = ";".join(form.getlist("conditions"))
 
 
 def parse_variant_form_fields(form):
@@ -337,7 +337,7 @@ def validate_submission(submission_id):
     """
 
     def _write_file(afile, header, lines):  # Write temp CSV file
-        writes = csv.writer(afile, delimiter="\t", quoting=csv.QUOTE_ALL)
+        writes = csv.writer(afile, delimiter=",", quoting=csv.QUOTE_ALL)
         writes.writerow(header)
         for line in lines:
             writes.writerow(line)
