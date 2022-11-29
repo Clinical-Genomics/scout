@@ -211,8 +211,8 @@ def _set_conditions(clinvar_var, form):
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
-    clinvar_var["condition_id_type"] = form.get("condition_types")
-    clinvar_var["condition_id_value"] = ";".join(form.getlist("conditions"))
+    clinvar_var["condition_id_type"] = form.get("condition_type")
+    clinvar_var["condition_id_value"] = ";".join(form.getlist("condition"))
 
 
 def parse_variant_form_fields(form):
@@ -364,7 +364,7 @@ def validate_submission(submission_id):
 
         code, conversion_res = clinvar_api.convert_to_json(variant_file.name, casedata_file.name)
         if code != 200:  # Connection or conversion object errors
-            flash(conversion_res, "warning")
+            flash(conversion_res.json(), "warning")
             return
 
         code, valid_res = clinvar_api.validate_json(
