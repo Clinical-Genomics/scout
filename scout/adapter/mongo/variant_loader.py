@@ -368,6 +368,10 @@ class VariantLoader(object):
         sample_info=None,
         custom_images=None,
         local_archive_info=None,
+        genes=None,
+        gene_to_panels=None,
+        hgncid_to_gene=None,
+        genomic_intervals=None,
     ):
         """Perform the loading of variants
 
@@ -395,10 +399,14 @@ class VariantLoader(object):
         """
         build = build or "37"
 
-        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-        gene_to_panels = self.gene_to_panels(case_obj)
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+        if not genes:
+            genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        if not gene_to_panels:
+            gene_to_panels = self.gene_to_panels(case_obj)
+        if not hgncid_to_gene:
+            hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        if not genomic_intervals:
+            genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
         LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
@@ -711,6 +719,10 @@ class VariantLoader(object):
                     chromosomes = (
                         CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
                     )
+                    genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+                    gene_to_panels = self.gene_to_panels(case_obj)
+                    hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+                    genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
 
                     nr_inserted_chr = Parallel(n_jobs=threads, prefer="threads")(
                         delayed(self._insert_counting)(
@@ -729,6 +741,10 @@ class VariantLoader(object):
                             local_archive_info=local_archive_info,
                             variant_file=variant_file,
                             chromosome=chromosome,
+                            genes=genes,
+                            gene_to_panels=gene_to_panels,
+                            hgncid_to_gene=hgncid_to_gene,
+                            genomic_intervals=genomic_intervals,
                         )
                         for chromosome in chromosomes
                     )
@@ -797,6 +813,10 @@ class VariantLoader(object):
         variant_file=None,
         chromosome=None,
         cyvcf2threads=CYVCF2_THREADS,
+        genes=None,
+        gene_to_panels=None,
+        hgncid_to_gene=None,
+        genomic_intervals=None,
     ):
         if variant_file:
             local_vcf_obj = VCF(variant_file, threads=cyvcf2threads)
@@ -816,6 +836,10 @@ class VariantLoader(object):
             sample_info=sample_info,
             custom_images=custom_images,
             local_archive_info=local_archive_info,
+            genes=genes,
+            gene_to_panels=gene_to_panels,
+            hgncid_to_gene=hgncid_to_gene,
+            genomic_intervals=genomic_intervals,
         )
 
         return nr_inserted
