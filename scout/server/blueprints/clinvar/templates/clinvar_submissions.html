@@ -101,19 +101,19 @@
         </nav>
         </form>
         <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-          <div class="row mb-3">
-            <div class="col-2">
-              <label for="clinvar_id" class="form-text">Submission name</label>
-            </div>
-            <div class="col-4">
-              <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
-            </div>
-            <div class="col-2">
-              <button type="submit" class="btn btn-primary form-control" name="update_submission" value="register_id">Update</button>
-            </div>
+        <div class="row mb-3">
+          <div class="col-2">
+            <label for="clinvar_id" class="form-text">Submission name</label>
           </div>
-        </form>
-        <div> <!--variant data div -->
+          <div class="col-4">
+            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-primary form-control" name="update_submission" value="register_id">Update</button>
+          </div>
+        </div>
+      </form>
+      <div> <!--variant data div -->
         <h4>Variant data:</h4>
         {% if subm_obj.variant_data and subm_obj.variant_data | length > 0 %}
         <table class="table table-striped">
