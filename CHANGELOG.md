@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Added `UMLS` as an option of `Condition ID type` in ClinVar Variant downloaded files
+### Fixed
+- Missing value for `Condition ID type` in ClinVar Variant downloaded files
+
 ## [4.61]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
