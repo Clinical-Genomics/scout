@@ -6,6 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Added `UMLS` as an option of `Condition ID type` in ClinVar Variant downloaded files
+### Fixed
+- Missing value for `Condition ID type` in ClinVar Variant downloaded files
+
+## [4.61]
+### Added
 - Filter case list by cases with variants in ClinVar submission
 - Filter case list by cases containing RNA-seq data - gene_fusion_reports and sample-level tracks (splice junctions and RNA coverage)
 - Additional case category `Ignored`, to be used for cases that don't fall in the existing 'inactive', 'archived', 'solved', 'prioritized' categories
