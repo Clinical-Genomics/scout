@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.61]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
 - Filter case list by cases containing RNA-seq data - gene_fusion_reports and sample-level tracks (splice junctions and RNA coverage)
@@ -18,16 +18,25 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to filter RD variants by a specific genotype call
 - Distinct colors for different inheritance models on RD Variant page
 - Gene panels PDF export with case variants hits by variant type
+- A couple of additional README badges for GitHub stats
+- Upload and display of pipeline reference info and executable version yaml files as custom reports
+- Testing CLI on hasta in PR template
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`
 - Refactored code to display and download custom case reports
 - Do not export `Assertion method` and `Assertion method citation` to ClinVar submission files according to changes to ClinVar's submission spreadsheet templates.
+- Simplified code to create and download ClinVar CSV files
+- Colorize inheritance models badges by category on VariantS page
+- `Safe variants matching` badge more visible on case page
 ### Fixed
 - Non-admin users saving institute settings would clear loqusdb instance selection
 - Layout of variant position, cytoband and type in SV variant summary
-- Broken `Build Status - GitHub badge` on GitHub README page 
+- Broken `Build Status - GitHub badge` on GitHub README page
 - Visibility of text on grey badges in gene panels PDF exports
+- Labels for dashboard search controls
+- Dark mode visibility for ClinVar submission
+- Whitespaces on outdated panel in extent report
 
 ## [4.60]
 ### Added
