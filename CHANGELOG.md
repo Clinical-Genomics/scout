@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Possibility to open, close or delete a ClinVar submission even if it doesn't have an associated name
+
 ## [4.61]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
