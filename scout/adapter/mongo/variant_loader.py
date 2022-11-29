@@ -394,6 +394,7 @@ class VariantLoader(object):
             nr_inserted(int)
         """
         build = build or "37"
+
         genes = [gene_obj for gene_obj in self.all_genes(build=build)]
         gene_to_panels = self.gene_to_panels(case_obj)
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
@@ -733,6 +734,8 @@ class VariantLoader(object):
                     )
                     nr_inserted = sum(nr_inserted_chr)
                 else:
+                    if cyvcf2threads > 1:
+                        vcf_obj = VCF(variant_file, threads=cyvcf2threads)
                     variants = vcf_obj()
                     nr_inserted = self._insert_counting(
                         variants=variants,
