@@ -170,8 +170,8 @@ COLLECTION_METHOD = [
 # Available databases used to describe phenotypes (Key/Description)
 PHENO_DBS = {
     "HPO": "HPO",
-    "MeSH": "MeSH",
     "MedGen": "MedGen",
+    "MeSH": "MeSH",
     "MONDO": "MONDO",
     "OMIM": "OMIM",
     "Orphanet": "Orphanet",
