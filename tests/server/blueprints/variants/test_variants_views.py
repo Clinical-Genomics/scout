@@ -7,18 +7,22 @@ from flask import url_for
 from scout.server.extensions import store
 
 
-def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
+def test_variants_clinical_filter(
+    app, real_variant_database, institute_obj, case_obj, mocker, mock_redirect
+):
 
     mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
-    # GIVEN a variant without clinVar annotations
+    # GIVEN a variant without clinVar annotations. Also needs to be present in affected individual, have gene id in panel,
+    # be sufficiently early in the ranking to appear once it is given a clnsig, but not appear before - actually just pick
+    # a known one that goes from no clnsig to having clnsig.
     test_var = store.variant_collection.find_one(
         {
+            "document_id": "fd645bd4394f98a50bb7e58f98134fc5",
             "clnsig": {"$exists": False},
             "variant_type": "clinical",
             "category": "snv",
-            "panels": {"$in": ["panel1"]},
-        }
+        },
     )
     assert test_var
 
@@ -31,8 +35,12 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
 
     updated_var = store.variant_collection.find_one_and_update(
         {"_id": test_var["_id"]},
-        {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
-        sort=[("rank", pymongo.DESCENDING)],
+        {
+            "$set": {
+                "clnsig": [clinsig_criteria],
+                "panels": ["panel1"],
+            }
+        },
         return_document=pymongo.collection.ReturnDocument.AFTER,
     )
 
@@ -62,6 +70,8 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
         # THEN it should return a page
         assert resp.status_code == 200
 
+        print(updated_var)
+        print(resp.data)
         # containing the variant above
         assert updated_var["_id"] in str(resp.data)
 
