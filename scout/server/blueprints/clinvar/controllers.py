@@ -221,7 +221,7 @@ def _set_conditions(clinvar_var, form):
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
-    clinvar_var["condition_id_type"] = form.get("condition_types")
+    clinvar_var["condition_id_type"] = form.get("condition_type")
     clinvar_var["condition_id_value"] = ";".join(form.getlist("conditions"))
 
 

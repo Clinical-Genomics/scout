@@ -6,10 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Added `UMLS` as an option of `Condition ID type` in ClinVar Variant downloaded files
 - Pre-Validate refseq:HGVS items using VariantValidator in ClinVar submission form
+### Fixed
+- Missing value for `Condition ID type` in ClinVar Variant downloaded files
 
-
-## [unreleased]
+## [4.61]
 ### Added
 - Filter case list by cases with variants in ClinVar submission
 - Filter case list by cases containing RNA-seq data - gene_fusion_reports and sample-level tracks (splice junctions and RNA coverage)
