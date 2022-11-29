@@ -1,4 +1,6 @@
+import json
 import logging
+from tempfile import NamedTemporaryFile
 
 import requests
 
@@ -38,15 +40,26 @@ class ClinVarApi:
         except Exception as ex:
             return None, ex
 
-    def validate_json(self, submission_obj, api_key):
+    def validate_json(self, subm_data, api_key):
         """Sends a POST request to the API (validate endpoint) and tries to validate a json submission object.
         Requires a valid ClinVar API key (obtained from scout config file in order to be able to forward the request)
 
         Args:
-            submission_obj(dict): the json-like ClinVar submission object to be validated
+            subm_data(dict): the json-like ClinVar submission object to be validated
         """
         try:
-            resp = requests.post(self.validate_service, files=files)
-            return resp.status_code, resp
+            tmp = NamedTemporaryFile(prefix="submission", suffix=".json")
+
+            # write data to file
+            with open(tmp.name, "w") as f:
+                json.dump(subm_data, f)
+
+            with open(tmp.name) as f:  # read from file
+                json_file = {"json_file": open(f.name, "rb")}
+                resp = requests.post(
+                    self.validate_service, data={"api_key": api_key}, files=json_file
+                )
+                return resp.status_code, resp
+
         except Exception as ex:
             return None, ex

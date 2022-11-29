@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 
-from flask import flash
+from flask import current_app, flash
 
 from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
@@ -366,6 +366,16 @@ def validate_submission(submission_id):
         if code != 200:  # Connection or conversion object errors
             flash(conversion_res, "warning")
             return
+
+        code, valid_res = clinvar_api.validate_json(
+            subm_data=conversion_res.json(), api_key=current_app.config.get("CLINVAR_API_KEY")
+        )
+
+        if code != 200:  # Connection or conversion object errors
+            flash(str(valid_res.__dict__), "warning")
+            return
+
+        flash(valid_res.__dict__)
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
