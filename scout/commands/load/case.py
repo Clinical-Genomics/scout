@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 import traceback
-from pprint import pprint as pp
 
 import click
 import yaml
-from cyvcf2 import VCF
 from flask.cli import with_appcontext
 
-from scout.exceptions import ConfigError, IntegrityError
-from scout.load import load_scout
+from scout.constants import CYVCF2_THREADS, LOADER_THREADS
 from scout.parse.case import parse_case_data
 from scout.server.extensions import store
 
@@ -51,6 +48,22 @@ LOG = logging.getLogger(__name__)
 @click.option("--peddy-ped", type=click.Path(exists=True), help="path to a peddy.ped file")
 @click.option("--peddy-sex", type=click.Path(exists=True), help="path to a sex_check.csv file")
 @click.option("--peddy-check", type=click.Path(exists=True), help="path to a ped_check.csv file")
+@click.option(
+    "-t",
+    "--threads",
+    type=int,
+    default=LOADER_THREADS,
+    help="number of threads in variant loader",
+    show_default=True,
+)
+@click.option(
+    "-c",
+    "--cyvcf2threads",
+    type=int,
+    default=CYVCF2_THREADS,
+    help="number of threads in cyvcf2 vcf reader",
+    show_default=True,
+)
 @with_appcontext
 def case(
     vcf,
@@ -67,6 +80,8 @@ def case(
     peddy_sex,
     peddy_check,
     keep_actions,
+    threads,
+    cyvcf2threads,
 ):
     """Load a case into the database.
 
@@ -120,7 +135,7 @@ def case(
     LOG.info("Use family %s" % config_data["family"])
 
     try:
-        adapter.load_case(config_data, update, keep_actions)
+        adapter.load_case(config_data, update, keep_actions, threads, cyvcf2threads)
     except SyntaxError as err:
         LOG.error(
             "SyntaxError {} missing when loading '{}' {}".format(

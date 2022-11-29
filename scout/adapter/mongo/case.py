@@ -7,7 +7,7 @@ from copy import deepcopy
 import pymongo
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP
+from scout.constants import ACMG_MAP, CYVCF2_THREADS, LOADER_THREADS
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -782,7 +782,14 @@ class CaseHandler(object):
             # collect all variants with user actions for this case
             return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
 
-    def load_case(self, config_data, update=False, keep_actions=True):
+    def load_case(
+        self,
+        config_data,
+        update=False,
+        keep_actions=True,
+        threads=LOADER_THREADS,
+        cyvcf2threads=CYVCF2_THREADS,
+    ):
         """Load a case into the database
 
         Check if the owner and the institute exists.
@@ -881,6 +888,8 @@ class CaseHandler(object):
                     build=genome_build,
                     rank_threshold=case_obj.get("rank_score_threshold", 5),
                     custom_images=custom_images,
+                    threads=threads,
+                    cyvcf2threads=cyvcf2threads,
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:

@@ -599,6 +599,8 @@ class VariantLoader(object):
         gene_obj=None,
         custom_images=None,
         build="37",
+        threads=LOADER_THREADS,
+        cyvcf2threads=CYVCF2_THREADS,
     ):
         """Load variants for a case into scout.
 
@@ -702,16 +704,38 @@ class VariantLoader(object):
         else:
             rank_threshold = rank_threshold or 0
 
-        # Parallels here! region per chr if no region..
         try:
             if region == "":
-                chromosomes = (
-                    CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
-                )
+                if threads > 1:
+                    chromosomes = (
+                        CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+                    )
 
-                nr_inserted_chr = Parallel(n_jobs=LOADER_THREADS, prefer="threads")(
-                    delayed(self._insert_counting)(
-                        variants=None,
+                    nr_inserted_chr = Parallel(n_jobs=threads, prefer="threads")(
+                        delayed(self._insert_counting)(
+                            variants=None,
+                            variant_type=variant_type,
+                            case_obj=case_obj,
+                            individual_positions=individual_positions,
+                            rank_threshold=rank_threshold,
+                            institute_id=institute_id,
+                            build=build,
+                            rank_results_header=rank_results_header,
+                            vep_header=vep_header,
+                            category=category,
+                            sample_info=sample_info,
+                            custom_images=custom_images,
+                            local_archive_info=local_archive_info,
+                            variant_file=variant_file,
+                            chromosome=chromosome,
+                        )
+                        for chromosome in chromosomes
+                    )
+                    nr_inserted = sum(nr_inserted_chr)
+                else:
+                    variants = vcf_obj()
+                    nr_inserted = self._insert_counting(
+                        variants=variants,
                         variant_type=variant_type,
                         case_obj=case_obj,
                         individual_positions=individual_positions,
@@ -724,13 +748,7 @@ class VariantLoader(object):
                         sample_info=sample_info,
                         custom_images=custom_images,
                         local_archive_info=local_archive_info,
-                        variant_file=variant_file,
-                        chromosome=chromosome,
                     )
-                    for chromosome in chromosomes
-                )
-
-                nr_inserted = sum(nr_inserted_chr)
             else:
                 variants = vcf_obj(region)
                 nr_inserted = self._insert_counting(
@@ -775,9 +793,10 @@ class VariantLoader(object):
         local_archive_info,
         variant_file=None,
         chromosome=None,
+        cyvcf2threads=CYVCF2_THREADS,
     ):
         if variant_file:
-            local_vcf_obj = VCF(variant_file, threads=CYVCF2_THREADS)
+            local_vcf_obj = VCF(variant_file, threads=cyvcf2threads)
             variants = local_vcf_obj(chromosome)
 
         nr_inserted = self._load_variants(

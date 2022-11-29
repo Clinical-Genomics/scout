@@ -4,6 +4,7 @@ from pprint import pprint as pp
 import click
 from flask.cli import with_appcontext
 
+from scout.constants import CYVCF2_THREADS, LOADER_THREADS
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -38,6 +39,22 @@ LOG = logging.getLogger(__name__)
 )
 @click.option("-f", "--force", is_flag=True, help="upload without request")
 @click.option(
+    "-t",
+    "--threads",
+    type=int,
+    default=LOADER_THREADS,
+    help="number of threads in variant loader",
+    show_default=True,
+)
+@click.option(
+    "-c",
+    "--cyvcf2threads",
+    type=int,
+    default=CYVCF2_THREADS,
+    help="number of threads in cyvcf2 vcf reader",
+    show_default=True,
+)
+@click.option(
     "--keep-actions/--no-keep-actions",
     default=True,
     help="Export user actions from old variants to the new",
@@ -63,6 +80,8 @@ def variants(
     rank_treshold,
     force,
     keep_actions,
+    threads,
+    cyvcf2threads,
 ):
     """Upload variants to a case
 
@@ -153,6 +172,8 @@ def variants(
                 end=end,
                 gene_obj=gene_obj,
                 build=case_obj["genome_build"],
+                threads=threads,
+                cyvcf2threads=cyvcf2threads,
             )
             # Update case variants count
             adapter.case_variants_count(case_obj["_id"], institute_id, force_update_case=True)
