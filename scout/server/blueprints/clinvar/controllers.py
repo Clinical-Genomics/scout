@@ -9,7 +9,7 @@ from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
-from scout.server.extensions import store
+from scout.server.extensions import clinvar_api, store
 from scout.utils.scout_requests import fetch_refseq_version
 
 from .form import CaseDataForm, SNVariantForm, SVariantForm
@@ -335,74 +335,37 @@ def validate_submission(submission_id):
     Args:
         submission_id(str): the database id of a clinvar submission
     """
-    # Create 2 temp files corresponding to Variant.csv and Casedata.csv
-    variants_filename, variants_header, variants_lines = clinvar_submission_file(
-        submission_id, "variant_data", "SUB000"
-    )
-    casedata_filename, casedata_header, casedata_lines = clinvar_submission_file(
-        submission_id, "case_data", "SUB000"
-    )
+
+    def _write_file(afile, header, lines):  # Write temp CSV file
+        writes = csv.writer(afile, delimiter="\t", quoting=csv.QUOTE_ALL)
+        writes.writerow(header)
+        for line in lines:
+            writes.writerow(line)
+        afile.flush()
+        afile.seek(0)
 
     with NamedTemporaryFile(
         mode="a+", prefix="Variant", suffix=".csv"
-    ) as v_file, NamedTemporaryFile(mode="a+", prefix="CaseData", suffix=".csv") as c_file:
+    ) as variant_file, NamedTemporaryFile(
+        mode="a+", prefix="CaseData", suffix=".csv"
+    ) as casedata_file:
 
         # Write temp Variant CSV file
-        writes = csv.writer(v_file, delimiter="\t", quoting=csv.QUOTE_ALL)
-        writes.writerow(variants_header)
-        for line in variants_lines:
-            row_content = line[1:-1].split(",")
-            writes.writerow(row_content)
-        v_file.flush()
-        v_file.seek(0)
+        _, variants_header, variants_lines = clinvar_submission_file(
+            submission_id, "variant_data", "SUB000"
+        )
+        _write_file(variant_file, variants_header, variants_lines)
 
         # Write temp CaseData CSV file
-        writes = csv.writer(c_file, delimiter="\t", quoting=csv.QUOTE_ALL)
-        writes.writerow(casedata_header)
-        for line in casedata_lines:
-            row_content = line[1:-1].split(",")
-            writes.writerow(row_content)
-        c_file.flush()
-        c_file.seek(0)
+        _, casedata_header, casedata_lines = clinvar_submission_file(
+            submission_id, "case_data", "SUB000"
+        )
+        _write_file(casedata_file, casedata_header, casedata_lines)
 
-        conversion_res = clinvar_api.convert_to_json(v_file.name, c_file.name)
-        flash(str(conversion_res))
-
-    """
-
-        for row in [variants_header+]
-
-        writes.writerows
-
-        v_file_lines = generate_csv(variants_header, variants_lines)
-        for l in v_file_lines:
-            LOG.warning(l)
-        writes.writerows(variants_header, variants_lines)
-
-
-        writes = csv.writer(c_file, delimiter="\t", quoting=csv.QUOTE_ALL)
-        c_file_lines = generate_csv(casedata_header, casedata_lines)
-
-        writes.writerows(c_file_lines)
-
-
-
-        """
-
-
-def generate_csv(header, lines):
-    """Return downloaded header and lines with quoted fields
-
-    Args:
-        header(list of strings): content of file header
-        lines(list of strings): content of file lines
-
-    Returns:
-        a generator containing header and lines of a CSV lines
-    """
-    yield header + "\n"
-    for line in lines:
-        yield line + "\n"
+        code, conversion_res = clinvar_api.convert_to_json(variant_file.name, casedata_file.name)
+        if code != 200:  # Connection or conversion object errors
+            flash(conversion_res, "warning")
+            return
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
