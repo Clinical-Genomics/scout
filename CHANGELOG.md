@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Added `UMLS` as an option of `Condition ID type` in ClinVar Variant downloaded files
+- Export Phenopacket for affected individual
 ### Fixed
 - Missing value for `Condition ID type` in ClinVar Variant downloaded files
 
