@@ -200,32 +200,40 @@
       <h6 class="mt-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype terms (<a target="_blank" class="" href="{{ url }}" rel="noopener">HPO</a>)</h6>
     </div>
 
-    <!-- Add new HPO terms to case/individuals -->
-    <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
-      <div class="d-flex justify-content-around">
-        <div>
-          <input name="hpo_term" id="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search..." oninput="toggleClickableButtons('assign-phenotype-button', 'hpo_term');">
+    <!-- Add new HPO terms to case/individuals or export phenopacket -->
+      <div class="row">
+        <div class="col-9">
+          <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
+          <div class="d-flex justify-content-around">
+            <div>
+            <input name="hpo_term" id="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search..." oninput="toggleClickableButtons('assign-phenotype-button', 'hpo_term');">
+            </div>
+            <div>
+              <select name="phenotype_inds" multiple class="selectpicker" data-style="btn-secondary">
+                {% for ind in case.individuals %}
+                  <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
+                    {{ind.display_name}}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mr-2">
+              <button class="ms-1 btn no-hover btn-secondary form-control" id="assign-phenotype-button">Assign</button>
+            </div>
+            <div class="mr-2">
+              <button class="ms-1 btn no-hover btn-secondary form-control" id="load-phenotype-modal" type="submit">Load</button>
+            </div>
+          </div>
+        </form>
         </div>
-        <div>
-          <select name="phenotype_inds" multiple class="selectpicker" data-style="btn-secondary">
-            {% for ind in case.individuals %}
-              <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
-                {{ind.display_name}}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="mr-2">
-          <button class="ms-1 btn no-hover btn-secondary form-control" id="assign-phenotype-button">Assign Phenotype</button>
-        </div>
-        <div class="mr-2">
-          <button class="ms-1 btn btn-secondary form-control" id="export-phenotype-button" type="submit" name="action" value="EXPORT">Export Phenotype</button>
-        </div>
-        <div class="mr-2">
-          <button class="ms-1 btn no-hover btn-secondary form-control" id="load-phenotype-modal" type="submit">Load Phenotype</button>
+        <div class="col-3">
+        <form method="POST" action="{{ url_for('cases.phenotype_export', institute_id=institute._id, case_name=case.display_name) }}">
+          <div class="mr-2">
+            <button class="ms-1 btn btn-secondary form-control" id="export-phenotype-button" type="submit" data-bs-toggle='tooltip' title="Export Phenopacket JSON for affected individual">Export</button>
+          </div>
+        </form>
         </div>
       </div>
-    </form>
     <!-- End of add new HPO terms to case/individuals -->
 
     <form action="{{ url_for('cases.phenotypes_actions', institute_id=institute._id, case_name=case.display_name)+'#phenotypes_panel' }}" method="POST">

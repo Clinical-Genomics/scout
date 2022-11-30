@@ -11,6 +11,7 @@ import requests
 from bson.objectid import ObjectId
 from flask import current_app, flash, redirect, request, url_for
 from flask_login import current_user
+from google.protobuf.json_format import MessageToJson, Parse
 from phenopackets import Individual, OntologyClass, Phenopacket, PhenotypicFeature
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
@@ -979,21 +980,44 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
 
 
-def phenopacket_hpo(store, institute, phenotype_inds, *hpo_ids):
+def phenopacket_hpo(institute, case):
     """Generate Phenopacket json with selected HPO terms
     Args:
         store:  store
-        institute:
-        phenotype_inds: Individuals to export
-        *hpo_ids:       HPO term ids to export
+        institute:  institute
+        case: case
     Returns:
         json: Phenopacket json
     """
 
-    if not phenotype_inds:
-        return {}
+    phenotype_terms = case.get("phenotype_terms")
 
-    return phenopacket_json
+    p_individual = None
+    p_features = []
+
+    for ind in case.get("individuals", []):
+        if PHENOTYPE_MAP[int(ind.get("phenotype"))] != "affected":
+            continue
+
+        sex = SEX_MAP[int(ind.get("sex"))].upper()
+        name = ind.get("display_name")
+        p_individual = Individual(id=name, sex=sex)
+
+        for term in phenotype_terms:
+            if name in [term_ind.get("individual_name") for term_ind in term.get("individuals")]:
+                p_features.append(
+                    PhenotypicFeature(
+                        type=OntologyClass(id=term.get("phenotype_id"), label=term.get("feature"))
+                    )
+                )
+
+    if not p_individual:
+        return None
+
+    phenopacket = Phenopacket(
+        id=case.get("display_name"), subject=p_individual, phenotypic_features=p_features
+    )
+    return MessageToJson(phenopacket)
 
 
 def matchmaker_check_requirements(request):

@@ -4,6 +4,7 @@ import json
 import logging
 import os.path
 import shutil
+from io import BytesIO
 from operator import itemgetter
 
 from cairosvg import svg2png
@@ -362,6 +363,34 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
 
+@cases_bp.route("/<institute_id>/<case_name>/phenotype_export", methods=["POST"])
+def phenotype_export(institute_id, case_name):
+    """Export phenopacket JSON for affected individual."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
+
+    phenopacket_json = controllers.phenopacket_hpo(institute_obj, case_obj)
+
+    if not phenopacket_json:
+        return redirect("#".join([case_url, "phenotypes_panel"]))
+
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            "scout_phenopacket.json",
+        ]
+    )
+    json_file = BytesIO(bytes(phenopacket_json, "utf-8"))
+
+    return send_file(
+        json_file,
+        download_name=file_name,
+        mimetype="application/json",
+        as_attachment=True,
+    )
+
+
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes/actions", methods=["POST"])
 def phenotypes_actions(institute_id, case_name):
     """Perform actions on multiple phenotypes."""
@@ -419,24 +448,6 @@ def phenotypes_actions(institute_id, case_name):
     if action == "LOAD":
         phenotype_inds = request.form.getlist("phenotype_inds", [])
         # hpo_ids
-
-    if action == "EXPORT":
-        phenotype_inds = request.form.getlist("phenotype_inds", [])
-
-        phenopacket_json = controllers.phenopacket_hpo(phenotype_inds, hpo_ids)
-        file_name = "_".join(
-            [
-                case_obj["display_name"],
-                datetime.datetime.now().strftime("%Y-%m-%d"),
-                "scout_phenopacket.json",
-            ]
-        )
-        return send_file(
-            phenopacket_json,
-            download_name=file_name,
-            mimetype="application/json",
-            as_attachment=True,
-        )
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
