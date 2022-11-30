@@ -385,9 +385,9 @@ def phenotype_export(institute_id, case_name):
 
     return send_file(
         json_file,
-        download_name=file_name,
         mimetype="application/json",
         as_attachment=True,
+        download_name=file_name,
     )
 
 
