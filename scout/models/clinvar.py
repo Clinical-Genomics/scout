@@ -48,6 +48,10 @@ clinvar_variant = {
     "ncopy": int,  # (only for SVs) Copy number in alternative allele
     "breakpoint1": int,  # (only for SVs)
     "breakpoint2": int,  # (only for SVs)
+    "outer_start": int,  # (only for SVs)
+    "inner_start": int,  # (only for SVs)
+    "inner_stop": int,  # (only for SVs)
+    "outer_stop": int,  # (only for SVs)
 }
 
 """Model of one document that gets saved in the `clinvar` collection. Relative to a CaseData object"""
