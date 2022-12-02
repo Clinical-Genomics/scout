@@ -137,7 +137,7 @@
               <tr>
                 <td>{{loop.index}}</td>
                   {% if subm_variant.category == 'sv' %}
-                    {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.breakpoint1, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
+                    {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.var_type, subm_variant.chromosome, subm_variant.breakpoint1 or subm_variant.outer_start or ""]) }) %}
                     <td>
                       <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>
@@ -170,14 +170,6 @@
                   <div class="vardata">
                     <div id="vardiv{{subm_variant._id}}" class="panel-body" style="display:none;">
                         <ul class="list-group">
-                          <li class="list-group-item">
-                            Variant
-                            {% if subm_variant.category == 'sv' %}
-                              <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener">{{subm_variant.chromosome}}_{{subm_variant.breakpoint1}}_{{subm_variant.var_type}}</a>
-                            {% else %}
-                              <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener">{{subm_variant.chromosome}}_{{subm_variant.start}}_{{subm_variant.ref}}>{{subm_variant.alt}}</a>
-                            {% endif %}
-                          </li>
                         {% for key, value in variant_header_fields.items() %}
                           {% if subm_variant[key]%}
                             <li class="list-group-item">{{ value }}: <strong>{{ subm_variant[key]|replace(subm_variant[key][75:], '..') if subm_variant[key]|length > 75 else subm_variant[key]}}</strong></li>

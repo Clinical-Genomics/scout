@@ -127,7 +127,7 @@ CLINVAR_INHERITANCE_MODELS = [
     "Y-linked inheritance",
 ]
 
-SV_TYPES = [
+CLINVAR_SV_TYPES = [
     "Insertion",
     "Deletion",
     "Duplication",
