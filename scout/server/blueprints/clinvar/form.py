@@ -21,10 +21,10 @@ from scout.constants import (
     ASSERTION_METHOD,
     ASSERTION_METHOD_CIT,
     CLINVAR_INHERITANCE_MODELS,
+    CLINVAR_SV_TYPES,
     CLNSIG_TERMS,
     COLLECTION_METHOD,
     PHENO_DBS,
-    SV_TYPES,
 )
 
 LOG = logging.getLogger(__name__)
@@ -84,7 +84,9 @@ class SVariantForm(ClinVarVariantForm):
         "Functional consequence (based on experimental evidence, leave blank if unsure)",
         choices=[],
     )
-    sv_type = SelectField("Type of structural variant", choices=[(item, item) for item in SV_TYPES])
+    var_type = SelectField(
+        "Type of structural variant", choices=[(item, item) for item in CLINVAR_SV_TYPES]
+    )
     copy_number = IntegerField("Copy number")
     ref_copy_number = IntegerField("Reference copy number")
     chromosome = StringField("Chromosome")
