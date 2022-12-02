@@ -100,16 +100,16 @@
                     <div class="row">
                       <div class="col-6">
                       <!-- Variant type -->
-                        {{variant_data.var_form.sv_type.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.sv_type(class="form-control, bg-white")}}
+                        {{variant_data.var_form.var_type.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.var_type(class="form-control, bg-white")}}
                         <br><br>
                       <!-- Reference copy number -->
-                        {{variant_data.var_form.ref_copy_number.label(class="fw-bold, text-dark")}}
-                        {{variant_data.var_form.ref_copy_number(size=5, class="bg-white")}}
+                        {{variant_data.var_form.ref_copy.label(class="fw-bold, text-dark")}}
+                        {{variant_data.var_form.ref_copy(size=5, class="bg-white")}}
                         <br><br>
                       <!-- Copy number -->
-                        {{variant_data.var_form.copy_number.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
-                        {{variant_data.var_form.copy_number(size=5, class="bg-white")}}
+                        {{variant_data.var_form.ncopy.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="For copy number variants, both the reference copy number and the observed copy number can be provided."><strong>?</strong></span>
+                        {{variant_data.var_form.ncopy(size=5, class="bg-white")}}
                         <br><br>
                       <!--start and end chroms-->
                         {{variant_data.var_form.chromosome.label(class="fw-bold, text-dark")}}
@@ -152,6 +152,7 @@
                 <h3 class="fs-subtitle">The mode of inheritance specific to the variant-disease pair, not generally for the disease</h3>
                 {{variant_data.var_form.inheritance_mode.label(class="fw-bold, text-dark")}}
                 {{variant_data.var_form.inheritance_mode(class="form-control, btn-secondary")}}
+                <br>
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
