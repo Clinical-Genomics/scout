@@ -87,8 +87,8 @@ class SVariantForm(ClinVarVariantForm):
     var_type = SelectField(
         "Type of structural variant", choices=[(item, item) for item in CLINVAR_SV_TYPES]
     )
-    copy_number = IntegerField("Copy number")
-    ref_copy_number = IntegerField("Reference copy number")
+    ncopy = IntegerField("Copy number")
+    ref_copy = IntegerField("Reference copy number")
     chromosome = StringField("Chromosome")
     end_chromosome = StringField("End chromosome")
     breakpoint1 = IntegerField("Breakpoint 1")

@@ -137,7 +137,7 @@
               <tr>
                 <td>{{loop.index}}</td>
                   {% if subm_variant.category == 'sv' %}
-                    {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.breakpoint1, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
+                    {% do var_key_name.update( {subm_variant.local_id : '_'.join(["chr", subm_variant.chromosome, subm_variant.var_type]) }) %}
                     <td>
                       <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
                     </td>

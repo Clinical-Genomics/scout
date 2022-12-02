@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Missing value for `Condition ID type` in ClinVar Variant downloaded files
 - Possibility to open, close or delete a ClinVar submission even if it doesn't have an associated name
+- Save SV type, ref and alt n. copies to exported ClinVar files
+- ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 
 
 ## [4.61]
