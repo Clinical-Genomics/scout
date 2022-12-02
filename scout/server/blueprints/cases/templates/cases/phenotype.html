@@ -202,36 +202,38 @@
 
     <!-- Add new HPO terms to case/individuals or export phenopacket -->
       <div class="row">
-        <div class="col-9">
+        <div class="col-6">
           <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name) }}">
-          <div class="d-flex justify-content-around">
-            <div>
-            <input name="hpo_term" id="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search..." oninput="toggleClickableButtons('assign-phenotype-button', 'hpo_term');">
+            <div class="d-flex justify-content-around">
+              <div>
+              <input name="hpo_term" id="hpo_term" class="typeahead_hpo form-control" data-provide="typeahead" autocomplete="off" required placeholder="Search..." oninput="toggleClickableButtons('assign-phenotype-button', 'hpo_term');">
+              </div>
+              <div>
+                <select name="phenotype_inds" multiple class="selectpicker" data-style="btn-secondary">
+                  {% for ind in case.individuals %}
+                    <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
+                      {{ind.display_name}}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="mr-2">
+                <button class="ms-1 btn no-hover btn-secondary form-control" id="assign-phenotype-button">Assign</button>
+              </div>
             </div>
-            <div>
-              <select name="phenotype_inds" multiple class="selectpicker" data-style="btn-secondary">
-                {% for ind in case.individuals %}
-                  <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
-                    {{ind.display_name}}
-                  </option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="mr-2">
-              <button class="ms-1 btn no-hover btn-secondary form-control" id="assign-phenotype-button">Assign</button>
-            </div>
-            <div class="mr-2">
-              <button class="ms-1 btn no-hover btn-secondary form-control" id="load-phenotype-modal" type="submit">Load</button>
-            </div>
-          </div>
-        </form>
+          </form>
         </div>
         <div class="col-3">
-        <form method="POST" action="{{ url_for('cases.phenotype_export', institute_id=institute._id, case_name=case.display_name) }}">
           <div class="mr-2">
-            <button class="ms-1 btn btn-secondary form-control" id="export-phenotype-button" type="submit" data-bs-toggle='tooltip' title="Export Phenopacket JSON for affected individual">Export</button>
+              <button class="ms-1 btn btn-secondary form-control" id="import-phenotype-modal-btn" data-bs-toggle="modal" data-bs-target="#import-phenotype">Import</button>
           </div>
-        </form>
+        </div>
+        <div class="col-3">
+          <form method="POST" action="{{ url_for('cases.phenotype_export', institute_id=institute._id, case_name=case.display_name) }}">
+            <div class="mr-2">
+              <button class="ms-1 btn btn-secondary form-control" id="export-phenotype-button" type="submit" data-bs-toggle='tooltip' title="Export Phenopacket JSON for affected individual">Export</button>
+            </div>
+          </form>
         </div>
       </div>
     <!-- End of add new HPO terms to case/individuals -->
@@ -300,4 +302,32 @@
     &nbsp;&nbsp;&nbsp;&nbsp;
   {% else %}
   {% endif %}
+{% endmacro %}
+
+{% macro import_phenotype_modal(institute, case) %}
+<div class="modal fade" id="import-phenotype" tabindex="-1" role="dialog" aria-labelledby="importPhenotypeLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="importPhenotypeLabel">Import phenotype case</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <div class="modal-body">
+          Import phenopacket JSON files, or connect to a tip2toe phenotype backend giving a
+          packet hash key to retrieve.
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form method="POST"
+            action="{{ url_for('cases.phenotype_import', institute_id=institute._id, case_name=case.display_name) }}">
+            <button type="submit" class="btn btn-primary" value="import" name="status">Import</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </form>
+        </div>
+    </div>
+  </div>
+</div>
 {% endmacro %}

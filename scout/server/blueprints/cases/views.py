@@ -391,6 +391,19 @@ def phenotype_export(institute_id, case_name):
     )
 
 
+@cases_bp.route("/<institute_id>/<case_name>/phenotype_import", methods=["POST"])
+def phenotype_import(institute_id, case_name):
+    """Import phenopacket JSON for affected individual."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
+
+    file = request.form.get("file_name")
+
+    controllers.import_phenopacket_json(store, institute_obj, case_obj, file)
+
+    return redirect("#".join([case_url, "phenotypes_panel"]))
+
+
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes/actions", methods=["POST"])
 def phenotypes_actions(institute_id, case_name):
     """Perform actions on multiple phenotypes."""
@@ -444,10 +457,6 @@ def phenotypes_actions(institute_id, case_name):
         hpo_count = int(request.form.get("min_match") or 1)
         hgnc_ids = [result[0] for result in results if result[1] >= hpo_count]
         store.update_dynamic_gene_list(case_obj, hgnc_ids=hgnc_ids, phenotype_ids=hpo_ids)
-
-    if action == "LOAD":
-        phenotype_inds = request.form.getlist("phenotype_inds", [])
-        # hpo_ids
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
