@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pre-Validate refseq:HGVS items using VariantValidator in ClinVar submission form
 ### Fixed
 - Missing value for `Condition ID type` in ClinVar Variant downloaded files
+- Possibility to open, close or delete a ClinVar submission even if it doesn't have an associated name
+
 
 ## [4.61]
 ### Added
