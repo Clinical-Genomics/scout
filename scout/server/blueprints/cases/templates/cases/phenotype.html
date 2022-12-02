@@ -316,6 +316,19 @@
         </button>
       </div>
         <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-3">Upload managed variants file</div>
+              <div class="col-sm-7 text-center">
+                <input type="file" name="csv_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
+                <label class="custom-file-label" for="csv_file">Choose file</label><br>
+                <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/variants/#Managed-variants-upload-file-format" rel="noopener" target="_blank">managed variants file</a>?</p>
+              </div>
+            <div class="col-sm-2 text-center">
+          <button type="submit" class="btn btn-secondary">Upload</button>
+        </div>
+      </div>
+    </div>
+
           Import phenopacket JSON files, or connect to a tip2toe phenotype backend giving a
           packet hash key to retrieve.
         </div>
