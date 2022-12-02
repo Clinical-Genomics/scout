@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import io
 import itertools
 import json
 import logging
@@ -1018,6 +1019,47 @@ def phenopacket_hpo(institute, case):
         id=case.get("display_name"), subject=p_individual, phenotypic_features=p_features
     )
     return MessageToJson(phenopacket)
+
+
+def phenopacket_file_import(institute_obj, case_obj, user_obj, case_url, phenopacket_file):
+    """Import Phenopacket json and add HPO terms found to affected individual
+    Args:
+        store:  store object
+        institute_obj:  institute object
+        case_obj: case object
+        user_obj: user object
+        case_url: case url
+        phenopacket_file: werkzeug FileStorage object
+    """
+
+    phenopacket = Parse(
+        message=Phenopacket(),
+        text=phenopacket_file.read(),
+    )
+
+    # add a new phenotype item/group to the case
+    hpo_term = None
+    omim_term = None
+
+    for feature in phenopacket.phenotypic_features:
+        phenotype_term = feature.type
+        LOG.debug(f"found phenopacket term {phenotype_term.id} labelled {phenotype_term.label}")
+
+        if phenotype_term.id.startswith("HP:") or len(phenotype_term.id) == 7:
+            hpo_term = phenotype_term.id
+        else:
+            omim_term = phenotype_term.id
+
+        store.add_phenotype(
+            institute=institute_obj,
+            case=case_obj,
+            user=user_obj,
+            link=case_url,
+            hpo_term=hpo_term,
+            omim_term=omim_term,
+            is_group=False,
+            phenotype_inds=[],
+        )
 
 
 def matchmaker_check_requirements(request):

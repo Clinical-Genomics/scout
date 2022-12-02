@@ -315,32 +315,29 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <form method="POST" action="{{ url_for('cases.phenotype_import', institute_id=institute._id, case_name=case.display_name) }}" enctype="multipart/form-data">
         <div class="modal-body">
+
           <div class="row">
-            <div class="col-sm-3">Upload managed variants file</div>
-              <div class="col-sm-7 text-center">
-                <input type="file" name="csv_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
-                <label class="custom-file-label" for="csv_file">Choose file</label><br>
-                <p class="help-block">How do I format my <a href="https://clinical-genomics.github.io/scout/user-guide/variants/#Managed-variants-upload-file-format" rel="noopener" target="_blank">managed variants file</a>?</p>
+            Import phenopacket JSON files, or connect to a tip2toe phenotype backend giving a
+            packet hash key to retrieve.
+
+            <span>Upload phenopackets JSON file</span>
+              <div class="col-sm-8 text-center">
+                <input type="file" name="phenopacket_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
+                <label class="custom-file-label" for="phenopacket_file">Choose file</label><br>
+                <p class="help-block">How do I format my <a href="https://phenopacket-schema.readthedocs.io/en/latest/index.html" rel="noopener" target="_blank">phenopacket</a> JSON file?</p>
               </div>
-            <div class="col-sm-2 text-center">
-          <button type="submit" class="btn btn-secondary">Upload</button>
+            <div class="col-sm-4 text-center">
+              <button type="submit" class="btn btn-secondary">Upload</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-
-          Import phenopacket JSON files, or connect to a tip2toe phenotype backend giving a
-          packet hash key to retrieve.
-        </div>
-
         <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Import</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <form method="POST"
-            action="{{ url_for('cases.phenotype_import', institute_id=institute._id, case_name=case.display_name) }}">
-            <button type="submit" class="btn btn-primary" value="import" name="status">Import</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </form>
         </div>
+      </form>
     </div>
   </div>
 </div>

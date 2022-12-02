@@ -395,11 +395,13 @@ def phenotype_export(institute_id, case_name):
 def phenotype_import(institute_id, case_name):
     """Import phenopacket JSON for affected individual."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
 
-    file = request.form.get("file_name")
+    file = request.files["phenopacket_file"]
 
-    controllers.import_phenopacket_json(store, institute_obj, case_obj, file)
+    if file:
+        controllers.phenopacket_file_import(institute_obj, case_obj, user_obj, case_url, file)
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
@@ -412,6 +414,7 @@ def phenotypes_actions(institute_id, case_name):
     action = request.form["action"]
     hpo_ids = request.form.getlist("hpo_id")
     user_obj = store.user(current_user.email)
+    is_group = request.args.get("is_group") == "yes"
 
     if action == "PHENOMIZER":
         diseases = controllers.phenomizer_diseases(hpo_ids, case_obj)
