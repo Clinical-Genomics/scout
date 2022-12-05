@@ -213,6 +213,12 @@ def register_filters(app):
         return round(number, ndigits)
 
     @app.template_filter()
+    def tuples_element_n(tuple_list, n):
+        """Return a list containing the element at position n of each tuple in a list of tuples"""
+        LOG.warning(tuple_list)
+        return [tup[n] for tup in tuple_list]
+
+    @app.template_filter()
     def url_decode(string):
         """Decode a string with encoded hex values."""
         return unquote(string)

@@ -206,7 +206,7 @@
                         {% for term, _ in variant_data.var_form.omim_terms.choices %}
                           <option value="{{term}}" selected>{{term}}</option>
                         {% endfor %}
-                      {% elif variant_data.var_form.hpo_terms.choices%}
+                      {% elif variant_data.var_form.hpo_terms.choices %}
                         {% for term, _ in variant_data.var_form.hpo_terms.choices %}
                           <option value="{{term}}" selected>{{term}}</option>
                         {% endfor %}
@@ -381,17 +381,32 @@ $('#condition_tags').select2({
   tags: true,
   theme: 'bootstrap-5',
   tokenSeparators: [','],
-  allowClear: true
+  allowClear: true,
 });
 
 // reset and modify conditions field's placeholder when condition ID type changes
 $(function(){
   $("#condition_type").change(function(){
-    $('#condition_tags').val(null).trigger('change');
+    $('#condition_tags').val(null).trigger('change'); // reset conditions multiselect
+
+    var choices = [];
+    // Load preselected choices for OMIM and HPO terms, if available
+    if ($('#condition_type').val() == 'OMIM'){
+      choices = {{ variant_data.var_form.omim_terms.choices|tuples_element_n(0)|safe }};
+    }
+    if ($('#condition_type').val() == 'HPO'){
+      choices = {{ variant_data.var_form.hpo_terms.choices|tuples_element_n(0)|safe }};
+    }
+
+    $('#condition_tags').val(choices);
+    $('#condition_tags').trigger('change'); // Notify any JS components that the value changed
+
+    // Change placeholder
     selectedCondId = $("#condition_type option:selected").text();
     $('#condition_tags').select2({
-      placeholder: conditionsPlaceHolders[selectedCondId]
+      placeholder: conditionsPlaceHolders[selectedCondId],
     });
+
   });
 });
 
