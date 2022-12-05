@@ -31,7 +31,7 @@ def test_coverage_report_contents(app, institute_obj, case_obj):
     assert coverage_report_contents(base_url, institute_obj, case_obj) == "This is a test"
 
 
-def test_phenopacket_hpo(institute_obj, test_case, hpo_term):
+def test_phenopacket_hpo(test_case, hpo_term):
     """Test phenopacket JSON export for case individuals with HPO terms assigned."""
 
     # GIVEN that the test case has an affected individual
@@ -48,7 +48,7 @@ def test_phenopacket_hpo(institute_obj, test_case, hpo_term):
     ]
 
     # WHEN asking for a phenopacket JSON
-    phenopacket_json = phenopacket_hpo(institute_obj, test_case)
+    phenopacket_json = phenopacket_hpo(test_case)
 
     # THEN the HPO term ID should appear in the produced JSON string
     assert hpo_term["hpo_id"] in phenopacket_json

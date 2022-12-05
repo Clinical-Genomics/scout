@@ -980,7 +980,7 @@ def vcf2cytosure(store, institute_id, case_name, individual_id):
     return (individual_obj["display_name"], individual_obj["vcf2cytosure"])
 
 
-def phenopacket_hpo(institute, case):
+def phenopacket_hpo(case):
     """Generate Phenopacket json with selected HPO terms
     Args:
         store:  store
