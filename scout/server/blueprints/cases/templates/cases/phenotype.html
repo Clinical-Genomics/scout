@@ -60,8 +60,8 @@
   <div class="col-6">
   {% if "diagnosis_phenotypes" in case %}
     {% for diagnosis in case.diagnosis_phenotypes %}
-      <div class="row d-flex justify-content-between ms-3">
-        <div>
+      <div class="row">
+        <div class="col-11">
           {% if diagnosis.disease_id and diagnosis.description %}
             <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
               {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
@@ -84,11 +84,11 @@
         </div>
 
         <!--option to remove OMIM term for case-->
-        <span class="me-3">
+        <div class="col-1">
           {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                 case_name=case.display_name, remove='yes'),
                        hidden_input=('omim_term', diagnosis.disease_id)) }}
-        </span>
+        </div>
       </div>
     {% endfor %}
   {% else %}
