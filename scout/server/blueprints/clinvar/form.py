@@ -60,7 +60,7 @@ class ClinVarVariantForm(FlaskForm):
     condition_type = SelectField(
         "Condition ID type", choices=[(key, value) for key, value in PHENO_DBS.items()]
     )
-    conditions = SelectMultipleField("Condition ID values, comma separated)")
+    conditions = SelectMultipleField("Condition ID values, comma-separated)")
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
