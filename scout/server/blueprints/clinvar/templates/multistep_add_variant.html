@@ -404,7 +404,7 @@ $(function(){
       choices = {{ variant_data.var_form.hpo_terms.choices|tuple_list_to_dict(0,1)|safe }};
     }
     for (var key in choices) {
-      var newOption = new Option(key, choices[key], true, true);
+      var newOption = new Option(key, key, true, true);
       $('#condition_tags').append(newOption).trigger('change');
     }
 
