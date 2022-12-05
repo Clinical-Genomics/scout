@@ -213,10 +213,10 @@ def register_filters(app):
         return round(number, ndigits)
 
     @app.template_filter()
-    def tuples_element_n(tuple_list, n):
-        """Return a list containing the element at position n of each tuple in a list of tuples"""
-        LOG.warning(tuple_list)
-        return [tup[n] for tup in tuple_list]
+    def tuple_list_to_dict(tuple_list, key_elem, value_elem):
+        """Accepts a list of tuples and returns a dictionary with tuple element = key_elem as keys and tuple element = value_elem as values"""
+
+        return {tup[key_elem]: tup[value_elem] for tup in tuple_list}
 
     @app.template_filter()
     def url_decode(string):

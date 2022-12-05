@@ -389,23 +389,24 @@ $(function(){
   $("#condition_type").change(function(){
     $('#condition_tags').val(null).trigger('change'); // reset conditions multiselect
 
-    var choices = [];
-    // Load preselected choices for OMIM and HPO terms, if available
-    if ($('#condition_type').val() == 'OMIM'){
-      choices = {{ variant_data.var_form.omim_terms.choices|tuples_element_n(0)|safe }};
-    }
-    if ($('#condition_type').val() == 'HPO'){
-      choices = {{ variant_data.var_form.hpo_terms.choices|tuples_element_n(0)|safe }};
-    }
-
-    $('#condition_tags').val(choices);
-    $('#condition_tags').trigger('change'); // Notify any JS components that the value changed
-
     // Change placeholder
     selectedCondId = $("#condition_type option:selected").text();
     $('#condition_tags').select2({
       placeholder: conditionsPlaceHolders[selectedCondId],
     });
+
+    // repopulate option values according to the selected condition ID
+    choices = {};
+    if ($('#condition_type').val() == 'OMIM'){
+      choices = {{ variant_data.var_form.omim_terms.choices|tuple_list_to_dict(0,1)|safe }};
+    }
+    if ($('#condition_type').val() == 'HPO'){
+      choices = {{ variant_data.var_form.hpo_terms.choices|tuple_list_to_dict(0,1)|safe }};
+    }
+    for (var key in choices) {
+      var newOption = new Option(key, choices[key], true, true);
+      $('#condition_tags').append(newOption).trigger('change');
+    }
 
   });
 });
