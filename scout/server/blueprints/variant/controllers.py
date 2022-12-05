@@ -581,7 +581,10 @@ def str_variant_reviewer(
 
         srs_query_data = {
             "reads": ind_reviewer.get("alignment"),
-            "reads_index": ind_reviewer.get("alignment_index"),
+            "reads_index": ind_reviewer.get("alignment_index")
+            or f"{ind_reviewer.get('alignment').bai}"
+            if f"{ind_reviewer.get('alignment').bai}"
+            else None,
             "vcf": ind_reviewer.get("vcf"),
             "catalog": ind_reviewer.get("catalog"),
             "locus": str_repid,
