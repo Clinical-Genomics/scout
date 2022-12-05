@@ -400,7 +400,7 @@ def phenotype_import(institute_id, case_name):
 
     phenopacket_file = request.files["phenopacket_file"]
 
-    if file:
+    if phenopacket_file:
         controllers.phenopacket_file_import(
             institute_obj, case_obj, user_obj, case_url, phenopacket_file
         )
