@@ -47,9 +47,6 @@ def test_phenopacket_hpo(institute_obj, test_case, hpo_term):
         }
     ]
 
-    # GIVEN that the case is inserted into a database
-    # assert adapter.case_collection.insert_one(institute_obj, test_case)
-
     # WHEN asking for a phenopacket JSON
     phenopacket_json = phenopacket_hpo(institute_obj, test_case)
 
