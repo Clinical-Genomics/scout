@@ -76,7 +76,6 @@
               </fieldset>
               <fieldset>
                   <h2 class="fs-title">Variant Details</h2>
-
                   {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
                   {{variant_data.var_form.gene_symbol(class="bg-white")}}
                   <br>
@@ -184,7 +183,7 @@
 
               <fieldset>
                 <h2 class="fs-title">Associated Conditions</h2>
-                <h3 class="fs-subtitle">The condition for which the variant is interpreted. Detailed information about reporting condition is available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/faq_submitters/#pheno" target="_blank" rel="noopener">https://www.ncbi.nlm.nih.gov/clinvar/docs/faq_submitters/#pheno</a>. If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features.  If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records. i.e. this variant causes condition A in some individuals and causes disease B in other individuals. Provide only one name or identifier for a condition; do not provide multiple names or identifiers for the same condition."</h3>
+                <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a>"</h3>
 
                 <div class="row">
                   <div class="col-6">
@@ -201,7 +200,7 @@
                       {% endfor %}
                     </select>
                     <br><br>
-                    {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from one database type only (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
+                    {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from ONE DATABASE TYPE ONLY (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
                     <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
                       {% if variant_data.var_form.omim_terms.choices %}
                         {% for term, _ in variant_data.var_form.omim_terms.choices %}
@@ -375,12 +374,25 @@ $(".previous").click(function(){
 	});
 });
 
+var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. HP:0002839, ..", "MedGen": "e.g. C0001080, ..", "Mesh": "e.g. D000130, ..", "MONDO": "e.g. MONDO:0007947, ..", "Orphanet": "e.g. ORPHA155, .."};
+
 // Populate condition list
 $('#condition_tags').select2({
   tags: true,
   theme: 'bootstrap-5',
   tokenSeparators: [','],
-  placeholder: "e.g. OMIM:604233,OMIM:300491,..",
+  allowClear: true
+});
+
+// reset and modify conditions field's placeholder when condition ID type changes
+$(function(){
+  $("#condition_type").change(function(){
+    $('#condition_tags').val(null).trigger('change');
+    selectedCondId = $("#condition_type option:selected").text();
+    $('#condition_tags').select2({
+      placeholder: conditionsPlaceHolders[selectedCondId]
+    });
+  });
 });
 
 </script>
