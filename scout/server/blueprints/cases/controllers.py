@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-import io
 import itertools
 import json
 import logging
@@ -988,7 +987,7 @@ def phenopacket_hpo(institute, case):
         institute:  institute
         case: case
     Returns:
-        json: Phenopacket json
+        json: Phenopacket json string
     """
 
     phenotype_terms = case.get("phenotype_terms")

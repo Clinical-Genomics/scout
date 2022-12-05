@@ -5,9 +5,9 @@ from flask import Blueprint, Flask, url_for
 
 from scout.server.blueprints.cases.controllers import (
     case,
-    case_report_content,
     coverage_report_contents,
     mt_coverage_stats,
+    phenopacket_hpo,
     phenotypes_genes,
 )
 from scout.server.extensions import store
@@ -29,6 +29,32 @@ def test_coverage_report_contents(app, institute_obj, case_obj):
 
     # THEN the returned result should be the HTML content included in the <body> of the HTML response
     assert coverage_report_contents(base_url, institute_obj, case_obj) == "This is a test"
+
+
+def test_phenopacket_hpo(institute_obj, test_case, hpo_term):
+    """Test phenopacket JSON export for case individuals with HPO terms assigned."""
+
+    # GIVEN that the test case has an affected individual
+    affected_ind = test_case["individuals"][0]
+    assert affected_ind["phenotype"] == 2
+
+    # GIVEN that the test case has an associated phenotype term
+    test_case["phenotype_terms"] = [
+        {
+            "phenotype_id": hpo_term["hpo_id"],
+            "feature": hpo_term["description"],
+            "individuals": [{"individual_id": affected_ind["individual_id"]}],
+        }
+    ]
+
+    # GIVEN that the case is inserted into a database
+    # assert adapter.case_collection.insert_one(institute_obj, test_case)
+
+    # WHEN asking for a phenopacket JSON
+    phenopacket_json = phenopacket_hpo(institute_obj, test_case)
+
+    # THEN the HPO term ID should appear in the produced JSON string
+    assert hpo_term["hpo_id"] in phenopacket_json
 
 
 def test_phenotypes_genes_research(gene_database, case_obj, hpo_term, gene_list):
