@@ -58,9 +58,9 @@ class ClinVarVariantForm(FlaskForm):
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
     condition_comment = TextAreaField("Additional comments describing condition")
     condition_type = SelectField(
-        "Condition type", choices=[(key, value) for key, value in PHENO_DBS.items()]
+        "Condition ID type", choices=[(key, value) for key, value in PHENO_DBS.items()]
     )
-    conditions = SelectMultipleField("List of conditions, comma-separated)")
+    conditions = SelectMultipleField("Condition ID values, comma-separated)")
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)

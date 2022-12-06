@@ -68,7 +68,7 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
         for hpo in case_obj.get("phenotype_terms", [])
     ]
     var_form.omim_terms.choices = [
-        (omim.get("disease_id"), " - ".join([omim.get("disease_id"), omim.get("description")]))
+        (omim.get("disease_nr"), " - ".join([str(omim.get("disease_nr")), omim.get("description")]))
         for omim in case_obj.get("diagnosis_phenotypes", [])
     ]
 
