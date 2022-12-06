@@ -214,6 +214,12 @@ def register_filters(app):
         return round(number, ndigits)
 
     @app.template_filter()
+    def tuple_list_to_dict(tuple_list, key_elem, value_elem):
+        """Accepts a list of tuples and returns a dictionary with tuple element = key_elem as keys and tuple element = value_elem as values"""
+
+        return {tup[key_elem]: tup[value_elem] for tup in tuple_list}
+
+    @app.template_filter()
     def url_decode(string):
         """Decode a string with encoded hex values."""
         return unquote(string)
