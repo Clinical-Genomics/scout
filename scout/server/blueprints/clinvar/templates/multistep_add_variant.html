@@ -393,6 +393,10 @@ $(function(){
     selectedCondId = $("#condition_type option:selected").text();
     $('#condition_tags').select2({
       placeholder: conditionsPlaceHolders[selectedCondId],
+      theme: 'bootstrap-5',
+      tags: true,
+      tokenSeparators: [','],
+      allowClear: true,
     });
 
     // repopulate option values according to the selected condition ID
