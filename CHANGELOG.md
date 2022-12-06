@@ -13,8 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Inner and outer start and stop SV coordinates not exported in ClinVar files
 - ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 - Align OMIM diagnoses with delete diagnosis button on case page
+- In ClinVar form, reset condition list and customize help when condition ID changes
 - Fallback for empty alignment index for REViewer service
-
 
 ## [4.61]
 ### Added
