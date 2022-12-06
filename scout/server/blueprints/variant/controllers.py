@@ -583,7 +583,7 @@ def str_variant_reviewer(
             "reads": ind_reviewer.get("alignment"),
             "reads_index": ind_reviewer.get("alignment_index")
             or f"{ind_reviewer.get('alignment').bai}"
-            if f"{ind_reviewer.get('alignment').bai}"
+            if os.path.exists(ind_reviewer.get("alignment").bai)
             else None,
             "vcf": ind_reviewer.get("vcf"),
             "catalog": ind_reviewer.get("catalog"),
