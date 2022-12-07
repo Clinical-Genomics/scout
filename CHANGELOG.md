@@ -4,11 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
-### Added
-- Added `UMLS` as an option of `Condition ID type` in ClinVar Variant downloaded files
+
+## [4.61.1]
 ### Fixed
+- Added `UMLS` as an option of `Condition ID type` in ClinVar Variant downloaded files
 - Missing value for `Condition ID type` in ClinVar Variant downloaded files
+- Possibility to open, close or delete a ClinVar submission even if it doesn't have an associated name
+- Save SV type, ref and alt n. copies to exported ClinVar files
+- Inner and outer start and stop SV coordinates not exported in ClinVar files
+- ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
+- Align OMIM diagnoses with delete diagnosis button on case page
+- In ClinVar form, reset condition list and customize help when condition ID changes
+
 
 ## [4.61]
 ### Added

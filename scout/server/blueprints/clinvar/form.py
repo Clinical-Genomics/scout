@@ -21,10 +21,10 @@ from scout.constants import (
     ASSERTION_METHOD,
     ASSERTION_METHOD_CIT,
     CLINVAR_INHERITANCE_MODELS,
+    CLINVAR_SV_TYPES,
     CLNSIG_TERMS,
     COLLECTION_METHOD,
     PHENO_DBS,
-    SV_TYPES,
 )
 
 LOG = logging.getLogger(__name__)
@@ -58,9 +58,9 @@ class ClinVarVariantForm(FlaskForm):
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
     condition_comment = TextAreaField("Additional comments describing condition")
     condition_type = SelectField(
-        "Condition type", choices=[(key, value) for key, value in PHENO_DBS.items()]
+        "Condition ID type", choices=[(key, value) for key, value in PHENO_DBS.items()]
     )
-    conditions = SelectMultipleField("List of conditions, comma-separated)")
+    conditions = SelectMultipleField("Condition ID values, comma-separated)")
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
@@ -84,9 +84,11 @@ class SVariantForm(ClinVarVariantForm):
         "Functional consequence (based on experimental evidence, leave blank if unsure)",
         choices=[],
     )
-    sv_type = SelectField("Type of structural variant", choices=[(item, item) for item in SV_TYPES])
-    copy_number = IntegerField("Copy number")
-    ref_copy_number = IntegerField("Reference copy number")
+    var_type = SelectField(
+        "Type of structural variant", choices=[(item, item) for item in CLINVAR_SV_TYPES]
+    )
+    ncopy = IntegerField("Copy number")
+    ref_copy = IntegerField("Reference copy number")
     chromosome = StringField("Chromosome")
     end_chromosome = StringField("End chromosome")
     breakpoint1 = IntegerField("Breakpoint 1")

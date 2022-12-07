@@ -45,9 +45,13 @@ clinvar_variant = {
     "assertion_method_cit": str,  # default: "PMID:25741868"
     "var_type": str,  # (only for SVs) example: "deletion"
     "ref_copy": int,  # (only for SVs) Copy number in reference allele
-    "alt_copy": int,  # (only for SVs) Copy number in alternative allele
+    "ncopy": int,  # (only for SVs) Copy number in alternative allele
     "breakpoint1": int,  # (only for SVs)
     "breakpoint2": int,  # (only for SVs)
+    "outer_start": int,  # (only for SVs)
+    "inner_start": int,  # (only for SVs)
+    "inner_stop": int,  # (only for SVs)
+    "outer_stop": int,  # (only for SVs)
 }
 
 """Model of one document that gets saved in the `clinvar` collection. Relative to a CaseData object"""
