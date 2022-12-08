@@ -19,12 +19,13 @@ class ClinVarApi:
         self.convert_service = "/".join([SERVICE_URL, "csv_2_json"])
         self.validate_service = "/".join([SERVICE_URL, "validate"])
 
-    def convert_to_json(self, variant_file, casedata_file):
+    def convert_to_json(self, variant_file, casedata_file, extra_params={}):
         """Sends a POST request to the API (tsv_2_json endpoint) and tries to convert Variant and Casedata csv files to a JSON submission object(dict)
 
         Args:
             variant_file(tempfile._TemporaryFileWrapper): a tempfile containing Variant data
             casedata_file(tempfile._TemporaryFileWrapper): a tempfile containing CaseData data
+            extra_params(dict): a dictionary containing key/values to be sent as extra params to the csv_2_json endpoint (assertion criteria, genome assembly etc)
 
         Returns:
             resp_res(tuple): example -> 400, "Created json file contains validation errors"
@@ -35,7 +36,7 @@ class ClinVarApi:
             ("files", (casedata_file, open(casedata_file, "r"))),
         ]
         try:
-            resp = requests.post(self.convert_service, files=files)
+            resp = requests.post(self.convert_service, params=extra_params, files=files)
             return resp.status_code, resp
         except Exception as ex:
             return None, ex
@@ -46,6 +47,7 @@ class ClinVarApi:
 
         Args:
             subm_data(dict): the json-like ClinVar submission object to be validated
+            api_key: A ClinVar submission API key (https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/)
         """
         try:
             tmp = NamedTemporaryFile(prefix="submission", suffix=".json")

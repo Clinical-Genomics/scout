@@ -52,7 +52,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # ClinVar API key - used for validating (not submitting) ClinVar submissions for all institutes
 # Obtain a key by following these instructions: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
-CLINVAR_API_KEY = "testClinVarApiKey"
+CLINVAR_API_KEY = "esnGvDPfhSKooMZrGNl3gH6RXObq0FA9KIrFlFJIuYv0jYb72HYDxXIoqm8yk5PE"
 
 # Matchmaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -

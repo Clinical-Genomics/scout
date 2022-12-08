@@ -336,6 +336,17 @@ def validate_submission(submission_id):
         submission_id(str): the database id of a clinvar submission
     """
 
+    variant_subm_docs = store.clinvar_objs(submission_id, "variant_data")
+    if not variant_subm_docs:
+        flash("Submission does not contain variants", "warning")
+        return
+
+    # Retrieve eventual assertion criteria for the submission
+    extra_params = store.clinvar_assertion_criteria(variant_subm_docs[0]) or {}
+    # Retrieve genome build for the cases submitted
+    case_obj = store.case(case_id=variant_subm_docs[0].get("case_id", {"genome_build": 37}))
+    extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"
+
     def _write_file(afile, header, lines):  # Write temp CSV file
         writes = csv.writer(afile, delimiter=",", quoting=csv.QUOTE_ALL)
         writes.writerow(header)
@@ -362,7 +373,9 @@ def validate_submission(submission_id):
         )
         _write_file(casedata_file, casedata_header, casedata_lines)
 
-        code, conversion_res = clinvar_api.convert_to_json(variant_file.name, casedata_file.name)
+        code, conversion_res = clinvar_api.convert_to_json(
+            variant_file.name, casedata_file.name, extra_params
+        )
         if code != 200:  # Connection or conversion object errors
             flash(conversion_res.json(), "warning")
             return
