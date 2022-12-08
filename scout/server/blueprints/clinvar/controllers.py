@@ -325,8 +325,6 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
-    elif update_status == "validate":
-        validate_submission(submission_id)
 
 
 def validate_submission(submission_id):
