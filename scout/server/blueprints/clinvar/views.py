@@ -81,11 +81,11 @@ def clinvar_delete_object(submission, object_type):
     return redirect(request.referrer)
 
 
-@blueprint.route("/<institute_id>/<submission>/validate", methods=["GET"])
-def clinvar_validate(nstitute_id, submission):
+@blueprint.route("/<submission>/validate", methods=["GET"])
+def clinvar_validate(submission):
     """Validate a ClinVar submission object using the ClinVar API"""
 
-    controllers.update_clinvar_submission_status(request, institute_id, submission)
+    controllers.validate_submission(submission)
     return redirect(request.referrer)
 
 
