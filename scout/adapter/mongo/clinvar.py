@@ -289,9 +289,9 @@ class ClinVarHandler(object):
         return submissions
 
     def clinvar_assertion_criteria(self, variant_data):
-        """Retrieve assertion criteria from a the variant data of a submission.
-           ClinVar no longer support Assertion Criteria data as CSV columns,
-           So it has to be passed apart in the request to the ClinVar API
+        """Retrieve assertion criteria from the variant data of a submission.
+           ClinVar no longer supports Assertion Criteria data as columns of the CSV file,
+           so it has to be passed as optional parameters the the ClinVar API helper (preClinVar)
 
         Args:
             variant_data(dict): a document from the store.clinvar collection

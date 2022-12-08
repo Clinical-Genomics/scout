@@ -343,8 +343,8 @@ def validate_submission(submission_id):
 
     # Retrieve eventual assertion criteria for the submission
     extra_params = store.clinvar_assertion_criteria(variant_subm_docs[0]) or {}
-    # Retrieve genome build for the cases submitted
-    case_obj = store.case(case_id=variant_subm_docs[0].get("case_id", {"genome_build": 37}))
+    # Retrieve genome build for the case submitted
+    case_obj = store.case(case_id=variant_subm_docs[0].get("case_id")) or {"genome_build": 37}
     extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"
 
     def _write_file(afile, header, lines):  # Write temp CSV file
@@ -384,11 +384,14 @@ def validate_submission(submission_id):
             subm_data=conversion_res.json(), api_key=current_app.config.get("CLINVAR_API_KEY")
         )
 
-        if code != 200:  # Connection or conversion object errors
+        if code != 201:  # Connection or conversion object errors
             flash(str(valid_res.__dict__), "warning")
             return
 
-        flash(valid_res.__dict__)
+        flash(
+            f"Validation OK. You can save the submission with the following ID: {valid_res.json().get('id')}",
+            "success",
+        )
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
