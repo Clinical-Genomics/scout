@@ -298,12 +298,11 @@ def test_clinvar_validate(app, institute_obj, case_obj, clinvar_form):
             status=201,
         )
 
-        # Then the validation should return a submission ID
+        # Then the validation should result in a redirect to submissions page (code 302)
         resp = client.get(
             url_for(
                 VALIDATE_ENDPOINT,
                 submission=subm_obj["_id"],
             )
         )
-        # The response should redirect to submission page
         assert resp.status_code == 302
