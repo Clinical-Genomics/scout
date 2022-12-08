@@ -28,8 +28,8 @@ class ClinVarApi:
             extra_params(dict): a dictionary containing key/values to be sent as extra params to the csv_2_json endpoint (assertion criteria, genome assembly etc)
 
         Returns:
-            resp_res(tuple): example -> 400, "Created json file contains validation errors"
-                                     -> 200, {dict representation of the submission}
+            tuple: example -> 400, "Created json file contains validation errors"
+                           -> 200, {dict representation of the submission}
         """
         files = [
             ("files", (variant_file, open(variant_file, "r"))),
@@ -48,6 +48,10 @@ class ClinVarApi:
         Args:
             subm_data(dict): the json-like ClinVar submission object to be validated
             api_key: A ClinVar submission API key (https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/)
+
+        Returns:
+            tuple: example -> 400, "{Validation errors}"
+                           -> 201, {"id": "SUB12387166"} # Success is 201 - Created - According to the ClinVar API
         """
         try:
             tmp = NamedTemporaryFile(prefix="submission", suffix=".json")
