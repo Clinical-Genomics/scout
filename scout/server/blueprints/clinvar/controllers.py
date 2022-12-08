@@ -388,7 +388,6 @@ def validate_submission(submission_id):
         if code != 201:  # Connection or conversion object errors
             flash(str(valid_res.__dict__), "warning")
             return
-        LOG.error(f"HERE BITCHES--->{valid_res.json()}")
         flash(
             f"Validation OK. You can save the submission with the following ID: {valid_res.json().get('id')}",
             "success",
