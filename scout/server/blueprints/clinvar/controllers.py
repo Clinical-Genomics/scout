@@ -335,16 +335,16 @@ def validate_submission(submission_id):
     Args:
         submission_id(str): the database id of a clinvar submission
     """
-
-    variant_subm_docs = store.clinvar_objs(submission_id, "variant_data")
-    if not variant_subm_docs:
-        flash("Submission does not contain variants", "warning")
+    variant_data = store.clinvar_objs(submission_id, "variant_data")
+    obs_data = store.clinvar_objs(submission_id, "case_data")
+    if not variant_data or not obs_data:
+        flash("Submission must contain both Variant and CaseData info", "warning")
         return
 
     # Retrieve eventual assertion criteria for the submission
-    extra_params = store.clinvar_assertion_criteria(variant_subm_docs[0]) or {}
+    extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
     # Retrieve genome build for the case submitted
-    case_obj = store.case(case_id=variant_subm_docs[0].get("case_id")) or {"genome_build": 37}
+    case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
     extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"
 
     def _write_file(afile, header, lines):  # Write temp CSV file
