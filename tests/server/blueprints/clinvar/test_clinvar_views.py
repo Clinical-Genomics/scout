@@ -1,9 +1,14 @@
+import responses
 from flask import url_for
 
+from scout.constants.clinvar import PRECLINVAR_URL
 from scout.server.extensions import store
 
 SAVE_ENDPOINT = "clinvar.clinvar_save"
 UPDATE_ENDPOINT = "clinvar.clinvar_update_submission"
+VALIDATE_ENDPOINT = "clinvar.clinvar_validate"
+API_CSV_2_JSON_URL = "/".join([PRECLINVAR_URL, "csv_2_json"])
+API_VALIDATE_ENDPOINT = "/".join([PRECLINVAR_URL, "validate"])
 
 
 def test_clinvar_add_variant(app, institute_obj, case_obj, variant_obj):
@@ -252,3 +257,53 @@ def test_clinvar_download_csv(app, institute_obj, case_obj, clinvar_form):
         )
         assert resp.status_code == 200
         assert resp.mimetype == "text/csv"
+
+
+@responses.activate
+def test_clinvar_validate(app, institute_obj, case_obj, clinvar_form):
+    """Test the endpoint that validates a ClinVar submission using the ClinVar API"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+        subm_obj = store.clinvar_submission_collection.find_one()
+        # That contains both variant and casedata info:
+        assert subm_obj["variant_data"]
+        assert subm_obj["case_data"]
+
+        # WHEN the submission is validated using the proxy service to the ClinVar API
+        # GIVEN a mocked proxy service - csv_2_json
+        responses.add(
+            responses.POST,
+            API_CSV_2_JSON_URL,
+            json={"clinvarSubmission": "test"},
+            status=200,
+        )
+        # GIVEN a mocked proxy service - validate
+        responses.add(
+            responses.POST,
+            API_VALIDATE_ENDPOINT,
+            json={"id": "SUB1234567"},
+            status=201,
+        )
+
+        # Then the validation should return a submission ID
+        resp = client.get(
+            url_for(
+                VALIDATE_ENDPOINT,
+                submission=subm_obj["_id"],
+            )
+        )
+        # The response should redirect to submission page
+        assert resp.status_code == 302

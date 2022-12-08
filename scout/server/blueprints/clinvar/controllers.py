@@ -333,6 +333,7 @@ def validate_submission(submission_id):
     Args:
         submission_id(str): the database id of a clinvar submission
     """
+
     variant_data = store.clinvar_objs(submission_id, "variant_data")
     obs_data = store.clinvar_objs(submission_id, "case_data")
     if not variant_data or not obs_data:
@@ -341,6 +342,7 @@ def validate_submission(submission_id):
 
     # Retrieve eventual assertion criteria for the submission
     extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
+
     # Retrieve genome build for the case submitted
     case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
     extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"
@@ -374,8 +376,9 @@ def validate_submission(submission_id):
         code, conversion_res = clinvar_api.convert_to_json(
             variant_file.name, casedata_file.name, extra_params
         )
+
         if code != 200:  # Connection or conversion object errors
-            flash(conversion_res.json(), "warning")
+            flash(str(conversion_res), "warning")
             return
 
         code, valid_res = clinvar_api.validate_json(
@@ -385,7 +388,7 @@ def validate_submission(submission_id):
         if code != 201:  # Connection or conversion object errors
             flash(str(valid_res.__dict__), "warning")
             return
-
+        LOG.error(f"HERE BITCHES--->{valid_res.json()}")
         flash(
             f"Validation OK. You can save the submission with the following ID: {valid_res.json().get('id')}",
             "success",

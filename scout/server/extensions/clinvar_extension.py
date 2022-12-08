@@ -4,9 +4,9 @@ from tempfile import NamedTemporaryFile
 
 import requests
 
-LOG = logging.getLogger(__name__)
+from scout.constants.clinvar import PRECLINVAR_URL as SERVICE_URL
 
-SERVICE_URL = "https://preclinvar-stage.scilifelab.se"
+LOG = logging.getLogger(__name__)
 
 
 class ClinVarApi:
