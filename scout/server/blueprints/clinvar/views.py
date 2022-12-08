@@ -78,6 +78,7 @@ def clinvar_delete_object(submission, object_type):
         object_type=object_type,
         submission_id=submission,
     )
+    return redirect(request.referrer)
 
 
 @blueprint.route("/<institute_id>/<submission>/update_status", methods=["POST"])
