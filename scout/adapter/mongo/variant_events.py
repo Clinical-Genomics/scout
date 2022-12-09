@@ -406,7 +406,7 @@ class VariantEventHandler(object):
         )
         return updated_case
 
-    def mark_causative(self, institute, case, user, link, variant, partial_causative=False):
+    def mark_causative(self, institute, case, user, link, variant):
         """Create an event for marking a variant causative.
 
         Arguments:
