@@ -282,6 +282,9 @@ def test_clinvar_validate(app, institute_obj, case_obj, clinvar_form):
         assert subm_obj["variant_data"]
         assert subm_obj["case_data"]
 
+        # But is missing a clinvar submission ID:
+        assert subm_obj.get("clinvar_subm_id") is None
+
         # WHEN the submission is validated using the proxy service to the ClinVar API
         # GIVEN a mocked proxy service - csv_2_json
         responses.add(
@@ -299,10 +302,9 @@ def test_clinvar_validate(app, institute_obj, case_obj, clinvar_form):
         )
 
         # Then the validation should result in a redirect to submissions page (code 302)
-        resp = client.get(
-            url_for(
-                VALIDATE_ENDPOINT,
-                submission=subm_obj["_id"],
-            )
-        )
+        resp = client.get(url_for(VALIDATE_ENDPOINT, submission=subm_obj["_id"], save_id="y"))
         assert resp.status_code == 302
+
+        # AND the submission object in database should be updated with a ClinVar ID
+        updated_submission = store.clinvar_submission_collection.find_one()
+        assert updated_submission["clinvar_subm_id"]
