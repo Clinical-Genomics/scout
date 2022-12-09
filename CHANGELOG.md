@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
 ### Fixed
-- Avoid duplicated causatives and pinned variants
+- Avoid duplicate causatives and pinned variants
 
 ## [4.61.1]
 ### Fixed
