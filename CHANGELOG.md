@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Validate ClinVar submission objects using the ClinVar API
 
 ## [4.61.1]
 ### Fixed
