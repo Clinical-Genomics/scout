@@ -369,7 +369,7 @@ def phenotype_export(institute_id, case_name):
     _, case_obj = institute_and_case(store, institute_id, case_name)
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
 
-    phenopacket_json = phenopacketapi.phenopacket_hpo(case_obj)
+    phenopacket_json = phenopacketapi.phenopacket_from_case(case_obj)
 
     if not phenopacket_json:
         return redirect("#".join([case_url, "phenotypes_panel"]))

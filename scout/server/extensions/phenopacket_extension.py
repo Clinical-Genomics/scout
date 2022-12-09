@@ -91,16 +91,18 @@ class PhenopacketAPI:
         # Select mentioned individual(s)
         selected_individuals = []
         for ind in case_obj.get("individuals", []):
-            if phenopacket.id == ind.get("individual_id") or phenopacket.individual.name == ind.get(
+            if phenopacket.id == ind.get("individual_id") or phenopacket.subject.id == ind.get(
                 "display_name"
             ):
-                selected_individuals.add(f"{ind.get('individual_id')}|{ind.get('display_name')}")
+                selected_individuals.append(f"{ind.get('individual_id')}|{ind.get('display_name')}")
 
         # Otherwise select affected individuals
         if not selected_individuals:
             for ind in case_obj.get("individuals", []):
                 if PHENOTYPE_MAP[int(ind.get("phenotype"))] == "affected":
-                    selected_individual.add(f"{ind.get('individual_id')}|{ind.get('display_name')}")
+                    selected_individual.append(
+                        f"{ind.get('individual_id')}|{ind.get('display_name')}"
+                    )
 
         # add a new phenotype item/group to the case
         hpo_term = None
