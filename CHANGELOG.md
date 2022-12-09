@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
+- Wrote tests for case and variant API endpoints
 
 ## [4.61.1]
 ### Fixed
