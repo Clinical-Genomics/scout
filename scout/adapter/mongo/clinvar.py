@@ -288,6 +288,25 @@ class ClinVarHandler(object):
 
         return submissions
 
+    def clinvar_assertion_criteria(self, variant_data):
+        """Retrieve assertion criteria from the variant data of a submission.
+           ClinVar no longer supports Assertion Criteria data as columns of the CSV file,
+           so it has to be passed as optional parameters the the ClinVar API helper (preClinVar)
+
+        Args:
+            variant_data(dict): a document from the store.clinvar collection
+
+        Returns:
+            criteria (dict): a dict containing assertionCriteriaDB and assertionCriteriaID key/values
+                             or None
+        """
+        amc = variant_data.get("assertion_method_cit", "")
+        if ":" in amc:
+            amc_db = amc.split(":")[0].replace("PMID", "PubMed")
+            amc_id = amc.split(":")[1]
+            criteria = {"assertionCriteriaDB": amc_db, "assertionCriteriaID": amc_id}
+            return criteria
+
     def clinvar_objs(self, submission_id, key_id):
         """Collects a list of objects from the clinvar collection (variants of case data) as specified by the key_id in the clinvar submission
 
