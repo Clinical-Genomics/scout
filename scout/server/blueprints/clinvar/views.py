@@ -81,6 +81,27 @@ def clinvar_delete_object(submission, object_type):
     return redirect(request.referrer)
 
 
+@blueprint.route("/<submission>/validate")
+@blueprint.route("/<submission>/<save_id>/validate")
+def clinvar_validate(submission, save_id=False):
+    """Validate a ClinVar submission object using the ClinVar API"""
+
+    clinvar_id = controllers.validate_submission(submission)
+    if clinvar_id and save_id:
+        store.update_clinvar_id(clinvar_id=clinvar_id, submission_id=submission)
+        flash(
+            f"Validation OK. ClinVar submission ID was updated correctly",
+            "success",
+        )
+    elif clinvar_id:
+        flash(
+            f"Validation OK. You can save the submission with the following ID: {clinvar_id}",
+            "success",
+        )
+
+    return redirect(request.referrer)
+
+
 @blueprint.route("/<institute_id>/<submission>/update_status", methods=["POST"])
 def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
