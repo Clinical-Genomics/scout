@@ -333,9 +333,6 @@ def case(store, institute_obj, case_obj):
     # Limit secondary findings according to institute settings
     limit_genes = store.safe_genes_filter(institute_obj["_id"])
 
-    # Make sure build is either "37" or "38"
-    build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
-
     data = {
         "institute": institute_obj,
         "case": case_obj,
@@ -363,7 +360,7 @@ def case(store, institute_obj, case_obj):
         "tissue_types": SAMPLE_SOURCE,
         "report_types": CUSTOM_CASE_REPORTS,
         "mme_nodes": matchmaker.connected_nodes,
-        "gens_info": gens.connection_settings(build),
+        "gens_info": gens.connection_settings(case_obj["genome_build"]),
         "display_rerunner": rerunner.connection_settings.get("display", False),
     }
 
