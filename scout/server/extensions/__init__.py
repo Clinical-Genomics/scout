@@ -9,6 +9,7 @@ from scout.adapter import MongoAdapter
 from scout.utils.cloud_resources import AlignTrackHandler
 
 from .beacon_extension import Beacon
+from .clinvar_extension import ClinVarApi
 from .gens_extension import GensViewer
 from .ldap_extension import LdapManager
 from .loqus_extension import LoqusDB
@@ -18,6 +19,7 @@ from .rerunner_extension import RerunnerError, RerunnerService
 
 bootstrap = Bootstrap()
 store = MongoAdapter()
+clinvar_api = ClinVarApi()
 login_manager = LoginManager()
 ldap_manager = LdapManager()
 oauth_client = OAuth()

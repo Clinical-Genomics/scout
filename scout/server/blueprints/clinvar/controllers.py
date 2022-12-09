@@ -1,14 +1,17 @@
+import csv
 import logging
 from datetime import datetime
+from tempfile import NamedTemporaryFile
 
-from flask import flash
+from flask import current_app, flash
 
 from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
-from scout.server.extensions import store
+from scout.server.extensions import clinvar_api, store
 from scout.utils.hgvs import validate_hgvs
+
 from scout.utils.scout_requests import fetch_refseq_version
 
 from .form import CaseDataForm, SNVariantForm, SVariantForm
@@ -337,12 +340,77 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
         )
 
 
+def validate_submission(submission_id):
+    """Validate a submission object and documents using the ClinVar API
+
+    Args:
+        submission_id(str): the database id of a clinvar submission
+    """
+
+    variant_data = store.clinvar_objs(submission_id, "variant_data")
+    obs_data = store.clinvar_objs(submission_id, "case_data")
+    if not variant_data or not obs_data:
+        flash("Submission must contain both Variant and CaseData info", "warning")
+        return
+
+    # Retrieve eventual assertion criteria for the submission
+    extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
+
+    # Retrieve genome build for the case submitted
+    case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
+    extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"
+
+    def _write_file(afile, header, lines):  # Write temp CSV file
+        writes = csv.writer(afile, delimiter=",", quoting=csv.QUOTE_ALL)
+        writes.writerow(header)
+        for line in lines:
+            writes.writerow(line)
+        afile.flush()
+        afile.seek(0)
+
+    with NamedTemporaryFile(
+        mode="a+", prefix="Variant", suffix=".csv"
+    ) as variant_file, NamedTemporaryFile(
+        mode="a+", prefix="CaseData", suffix=".csv"
+    ) as casedata_file:
+
+        # Write temp Variant CSV file
+        _, variants_header, variants_lines = clinvar_submission_file(
+            submission_id, "variant_data", "SUB000"
+        )
+        _write_file(variant_file, variants_header, variants_lines)
+
+        # Write temp CaseData CSV file
+        _, casedata_header, casedata_lines = clinvar_submission_file(
+            submission_id, "case_data", "SUB000"
+        )
+        _write_file(casedata_file, casedata_header, casedata_lines)
+
+        code, conversion_res = clinvar_api.convert_to_json(
+            variant_file.name, casedata_file.name, extra_params
+        )
+
+        if code != 200:  # Connection or conversion object errors
+            flash(str(conversion_res), "warning")
+            return
+
+        code, valid_res = clinvar_api.validate_json(
+            subm_data=conversion_res.json(), api_key=current_app.config.get("CLINVAR_API_KEY")
+        )
+
+        if code != 201:  # Connection or conversion object errors
+            flash(str(valid_res.__dict__), "warning")
+            return
+
+        return valid_res.json().get("id")
+
+
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
     """Prepare content (header and lines) of a csv clinvar submission file
     Args:
         submission_id(str): the database id of a clinvar submission
         csv_type(str): 'variant_data' or 'case_data'
-        clinvar_subm_id(str): The ID assigned to this submission by clinVar
+        clinvar_subm_id(str): The ID assigned to this submission by ClinVar
     Returns:
         (filename, csv_header, csv_lines):
             filename(str) name of file to be downloaded
