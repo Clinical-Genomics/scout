@@ -1,4 +1,4 @@
-PRECLINVAR_URL = "https://preclinvar-stage.scilifelab.se"
+PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
 
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
