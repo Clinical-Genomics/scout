@@ -23,7 +23,7 @@ class PhenopacketAPI:
         # Also API key at some point, but not yet supported on the backend (uses IP filter)
         self.api_key = app.config.get("PHENOPACKET_API_KEY")
 
-    def phenopacket_hpo(self, case, export_ind_id=None):
+    def phenopacket_from_case(self, case, export_ind_id=None):
         """Generate Phenopacket JSON for a Scout case.
         HPO terms associated with the first affected individual (or optionally a selected individual), and the IDs of that individual,
         is exported.
@@ -50,7 +50,7 @@ class PhenopacketAPI:
             p_individual = Individual(id=name, sex=sex)
 
             for term in phenotype_terms:
-                if name in [
+                if term.get("individuals") and name in [
                     term_ind.get("individual_name") for term_ind in term.get("individuals")
                 ]:
                     p_features.append(
