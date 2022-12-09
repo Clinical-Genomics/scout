@@ -8,6 +8,8 @@ import logging
 from google.protobuf.json_format import MessageToJson, Parse
 from phenopackets import Individual, OntologyClass, Phenopacket, PhenotypicFeature
 
+from scout.constants import PHENOTYPE_MAP, SEX_MAP
+
 LOG = logging.getLogger(__name__)
 
 
@@ -21,7 +23,7 @@ class PhenopacketAPI:
         # Also API key at some point, but not yet supported on the backend (uses IP filter)
         self.api_key = app.config.get("PHENOPACKET_API_KEY")
 
-    def phenopacket_hpo(case, export_ind_id=None):
+    def phenopacket_hpo(self, case, export_ind_id=None):
         """Generate Phenopacket JSON for a Scout case.
         HPO terms associated with the first affected individual (or optionally a selected individual), and the IDs of that individual,
         is exported.
@@ -68,7 +70,7 @@ class PhenopacketAPI:
         return MessageToJson(phenopacket)
 
     def phenopacket_file_import(
-        store, institute_obj, case_obj, user_obj, case_url, phenopacket_file
+        self, store, institute_obj, case_obj, user_obj, case_url, phenopacket_file
     ):
         """Import Phenopacket json and add HPO terms found to affected individual
         Args:
