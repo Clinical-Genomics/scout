@@ -72,7 +72,8 @@ class PhenopacketAPI:
     def phenopacket_file_import(
         self, store, institute_obj, case_obj, user_obj, case_url, phenopacket_file
     ):
-        """Import Phenopacket json and add HPO terms found to affected individual
+        """Import Phenopacket json and add HPO terms found to individual mentioned in file,
+            or all case affected individuals.
         Args:
             store:  store object
             institute_obj:  institute object
@@ -86,6 +87,20 @@ class PhenopacketAPI:
             message=Phenopacket(),
             text=phenopacket_file.read(),
         )
+
+        # Select mentioned individual(s)
+        selected_individuals = []
+        for ind in case_obj.get("individuals", []):
+            if phenopacket.id == ind.get("individual_id") or phenopacket.individual.name == ind.get(
+                "display_name"
+            ):
+                selected_individuals.add(f"{ind.get('individual_id')}|{ind.get('display_name')}")
+
+        # Otherwise select affected individuals
+        if not selected_individuals:
+            for ind in case_obj.get("individuals", []):
+                if PHENOTYPE_MAP[int(ind.get("phenotype"))] == "affected":
+                    selected_individual.add(f"{ind.get('individual_id')}|{ind.get('display_name')}")
 
         # add a new phenotype item/group to the case
         hpo_term = None
@@ -108,5 +123,5 @@ class PhenopacketAPI:
                 hpo_term=hpo_term,
                 omim_term=omim_term,
                 is_group=False,
-                phenotype_inds=[],
+                phenotype_inds=selected_individuals,
             )
