@@ -334,7 +334,7 @@ def case(store, institute_obj, case_obj):
     limit_genes = store.safe_genes_filter(institute_obj["_id"])
 
     # Make sure build is either "37" or "38"
-    build = "38" if "38" in str(case_obj["genome_build"]) else "37"
+    build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
 
     data = {
         "institute": institute_obj,
