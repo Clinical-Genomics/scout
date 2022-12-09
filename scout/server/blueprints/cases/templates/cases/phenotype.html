@@ -304,7 +304,7 @@
 
 {% macro import_phenotype_modal(institute, case) %}
 <div class="modal fade" id="import-phenotype" tabindex="-1" role="dialog" aria-labelledby="importPhenotypeLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="importPhenotypeLabel">Import phenotype case</h5>
@@ -314,19 +314,20 @@
       </div>
       <form method="POST" action="{{ url_for('cases.phenotype_import', institute_id=institute._id, case_name=case.display_name) }}" enctype="multipart/form-data">
         <div class="modal-body">
-
-          <div class="row">
-            Import phenopacket JSON files, or connect to a tip2toe phenotype backend giving a
-            packet hash key to retrieve.
-
+          <div class="row mb-3">
+            <span>Import phenopacket JSON files, or connect to a tip2toe phenotype backend giving a
+              packet hash key to retrieve.</span>
+          </div>
+          <div class="row mb-3">
             <span>Upload phenopackets JSON file</span>
-              <div class="col-sm-8 text-center">
-                <input type="file" name="phenopacket_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
-                <label class="custom-file-label" for="phenopacket_file">Choose file</label><br>
-                <p class="help-block">How do I format my <a href="https://phenopacket-schema.readthedocs.io/en/latest/index.html" rel="noopener" target="_blank">phenopacket</a> JSON file?</p>
-              </div>
-            <div class="col-sm-4 text-center">
-              <button type="submit" class="btn btn-secondary">Upload</button>
+          </div>
+          <div class="row mb-3">
+            <div class="col-8 text-center">
+              <input type="file" name="phenopacket_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
+              <p class="help-block">How do I format my <a href="https://phenopacket-schema.readthedocs.io/en/latest/index.html" rel="noopener" target="_blank">phenopacket</a> JSON file?</p>
+            </div>
+            <div class="col-4 text-center">
+             <button type="submit" class="btn btn-secondary">Upload</button>
             </div>
           </div>
         </div>
