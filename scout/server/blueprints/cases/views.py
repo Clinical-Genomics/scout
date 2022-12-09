@@ -24,7 +24,7 @@ from flask import (
 from flask_login import current_user
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.extensions import beacon, store
+from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
@@ -369,7 +369,7 @@ def phenotype_export(institute_id, case_name):
     _, case_obj = institute_and_case(store, institute_id, case_name)
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
 
-    phenopacket_json = controllers.phenopacket_hpo(case_obj)
+    phenopacket_json = phenopacketapi.phenopacket_hpo(case_obj)
 
     if not phenopacket_json:
         return redirect("#".join([case_url, "phenotypes_panel"]))
@@ -401,8 +401,8 @@ def phenotype_import(institute_id, case_name):
     phenopacket_file = request.files["phenopacket_file"]
 
     if phenopacket_file:
-        controllers.phenopacket_file_import(
-            institute_obj, case_obj, user_obj, case_url, phenopacket_file
+        phenopacketapi.phenopacket_file_import(
+            store, institute_obj, case_obj, user_obj, case_url, phenopacket_file
         )
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
