@@ -31,7 +31,7 @@ class VariantEventHandler(object):
         # add variant to list of pinned references in the case model
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
-            {"$push": {"suspects": variant["_id"]}},
+            {"$addToSet": {"suspects": variant["_id"]}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
@@ -430,7 +430,7 @@ class VariantEventHandler(object):
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
-            {"$push": {"causatives": variant["_id"]}, "$set": {"status": "solved"}},
+            {"$addToSet": {"causatives": variant["_id"]}, "$set": {"status": "solved"}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
 
