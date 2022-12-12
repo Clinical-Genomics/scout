@@ -460,8 +460,7 @@ def str_source_link(variant_obj):
     if source["id"] is None:
         return None
 
-    if source["type"] is None:
-        url_template = "{}"
+    url_template = "{}"
     if source["type"] == "GeneReviews":
         url_template = "https://www.ncbi.nlm.nih.gov/books/{}/"
     if source["type"] == "PubMed":

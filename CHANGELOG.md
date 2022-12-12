@@ -10,6 +10,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Wrote tests for case and variant API endpoints
 - Fallback for empty alignment index for REViewer service
 - Parallelize variant loading for each chromosome
+### Fixed
+- Source link out for MIP 11.1 reference STR annotation
+
 
 ## [4.61.1]
 ### Fixed
