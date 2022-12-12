@@ -416,9 +416,6 @@ def send_api_submission(submission_id, key):
     Args:
         submission_id(str): the database id of a clinvar submission
         key(str): a 64 alphanumeric characters' key
-
-    Returns:
-        str/None: A submission ID (i.e. SUB2192122) or None if submission contained errors
     """
     # Convert submission objects to json:
     code, conversion_res = json_api_submission(submission_id)
