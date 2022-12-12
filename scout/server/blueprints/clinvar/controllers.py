@@ -11,7 +11,6 @@ from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
 from scout.server.extensions import clinvar_api, store
 from scout.utils.hgvs import validate_hgvs
-
 from scout.utils.scout_requests import fetch_refseq_version
 
 from .form import CaseDataForm, SNVariantForm, SVariantForm

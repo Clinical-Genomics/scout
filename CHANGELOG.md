@@ -8,11 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
-
-## [unreleased]
-### Added
-- Pre-Validate refseq:HGVS items using VariantValidator in ClinVar submission form
-
+- Pre-validate refseq:HGVS items using VariantValidator in ClinVar submission form
 
 ## [4.61.1]
 ### Fixed
