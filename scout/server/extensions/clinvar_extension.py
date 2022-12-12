@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 
 import requests
 
-from scout.constants.clinvar import PRECLINVAR_URL as SERVICE_URL
+from scout.constants.clinvar import CLINVAR_API_URL, PRECLINVAR_URL
 
 LOG = logging.getLogger(__name__)
 
@@ -16,8 +16,22 @@ class ClinVarApi:
     """
 
     def __init__(self):
-        self.convert_service = "/".join([SERVICE_URL, "csv_2_json"])
-        self.validate_service = "/".join([SERVICE_URL, "validate"])
+        self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
+        self.validate_service = "/".join([PRECLINVAR_URL, "validate"])
+        self.submit_service = CLINVAR_API_URL
+
+    def build_header(self, api_key):
+        """Creates a header to be submitted a in a POST rquest to the CLinVar API
+        Args:
+            api_key(str): API key to be used to submit to ClinVar (64 alphanumeric characters)
+        Returns:
+            header(dict): contains "Content-type: application/json" and "SP-API-KEY: <API-KEY>" key/values
+        """
+        header = {
+            "Content-Type": "application/json",
+            "SP-API-KEY": api_key,
+        }
+        return header
 
     def convert_to_json(self, variant_file, casedata_file, extra_params={}):
         """Sends a POST request to the API (tsv_2_json endpoint) and tries to convert Variant and Casedata csv files to a JSON submission object(dict)
@@ -37,7 +51,7 @@ class ClinVarApi:
         ]
         try:
             resp = requests.post(self.convert_service, params=extra_params, files=files)
-            return resp.status_code, resp
+            return resp.status_code, resp.json()
         except Exception as ex:
             return None, ex
 
@@ -65,7 +79,30 @@ class ClinVarApi:
                 resp = requests.post(
                     self.validate_service, data={"api_key": api_key}, files=json_file
                 )
-                return resp.status_code, resp
+                return resp.status_code, resp.json()
+
+        except Exception as ex:
+            return None, ex
+
+    def submit_json(self, json_data, api_key=None):
+        """Submit a ClinVar submission object using the official ClinVar API
+
+        Args:
+            json_data(dict): a json submission object compliant with the ClinVar API
+            api_key(str): institute or user specific ClinVar submission key
+
+        Returns:
+            tuple: example -> 400, "{Validation errors}"
+                           -> 201, {"id": "SUB12387166"} # Success is 201 - Created - According to the ClinVar API
+
+        """
+        header = self.build_header(api_key)
+        data = {
+            "actions": [{"type": "AddData", "targetDb": "clinvar", "data": {"content": json_data}}]
+        }
+        try:
+            resp = requests.post(CLINVAR_API_URL, data=json.dumps(data), headers=header)
+            return resp.status_code, resp.json()
 
         except Exception as ex:
             return None, ex

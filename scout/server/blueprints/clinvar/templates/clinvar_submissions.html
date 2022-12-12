@@ -105,18 +105,25 @@
         </form>
         <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
         <div class="row mb-3">
-          <div class="col-2">
+          <div class="col-1">
             <label for="clinvar_id" class="form-text">Submission ID</label>
           </div>
-          <div class="col-3">
+          <div class="col-2">
             <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button>
           </div>
-          <div class="col-2">
-            <a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a>
-          </div>
+          {% if config.CLINVAR_API_KEY %}
+            <div class="col-3">
+              <a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a>
+            </div>
+            {% if subm_obj.clinvar_subm_id and subm_obj.status != "submitted" %}
+              <div class="col-2">
+                <a href="{{ url_for('clinvar.clinvar_submit', submission=subm_obj._id) }}" class="btn btn-sm btn-success text-white">Submit to ClinVar</a>
+              </div>
+            {% endif %}
+          {% endif %}
         </div>
       </form>
       <div> <!--variant data div -->

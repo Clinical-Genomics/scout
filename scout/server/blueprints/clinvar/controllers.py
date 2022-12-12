@@ -327,13 +327,16 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
         )
 
 
-def validate_submission(submission_id):
-    """Validate a submission object and documents using the ClinVar API
+def json_api_submission(submission_id):
+    """Converts submission objects (Variant and Casedata database documents) to a json submission using
+    the PreClinVar service
 
     Args:
         submission_id(str): the database id of a clinvar submission
-    """
 
+    Returns:
+        A tuple: code(int), conversion_res(dict) - corresponding to response.status and response.__dict__ from preClinVar
+    """
     variant_data = store.clinvar_objs(submission_id, "variant_data")
     obs_data = store.clinvar_objs(submission_id, "case_data")
     if not variant_data or not obs_data:
@@ -373,23 +376,60 @@ def validate_submission(submission_id):
         )
         _write_file(casedata_file, casedata_header, casedata_lines)
 
-        code, conversion_res = clinvar_api.convert_to_json(
-            variant_file.name, casedata_file.name, extra_params
-        )
+        return clinvar_api.convert_to_json(variant_file.name, casedata_file.name, extra_params)
 
-        if code != 200:  # Connection or conversion object errors
-            flash(str(conversion_res), "warning")
-            return
 
-        code, valid_res = clinvar_api.validate_json(
-            subm_data=conversion_res.json(), api_key=current_app.config.get("CLINVAR_API_KEY")
-        )
+def validate_submission(submission_id):
+    """Validate a submission object and documents using the ClinVar API
 
-        if code != 201:  # Connection or conversion object errors
-            flash(str(valid_res.__dict__), "warning")
-            return
+    Args:
+        submission_id(str): the database id of a clinvar submission
 
-        return valid_res.json().get("id")
+    Returns:
+        str/None: A submission ID (i.e. SUB2192122) or None if submission was not validated
+    """
+    # Convert submission objects to json:
+    code, conversion_res = json_api_submission(submission_id)
+
+    if code != 200:  # Connection or conversion object errors
+        flash(str(conversion_res), "warning")
+        return
+
+    code, valid_res = clinvar_api.validate_json(
+        subm_data=conversion_res, api_key=current_app.config.get("CLINVAR_API_KEY")
+    )
+
+    if code != 201:  # Connection or conversion object errors
+        flash(str(valid_res.__dict__), "warning")
+        return
+
+    return valid_res.get("id")
+
+
+def send_api_submission(submission_id):
+    """Convert and validate ClinVar submission data to json.
+       If json submission is validated, submit it using the ClinVar API
+
+    Args:
+        submission_id(str): the database id of a clinvar submission
+
+    Returns:
+        str/None: A submission ID (i.e. SUB2192122) or None if submission contained errors
+    """
+    # Convert submission objects to json:
+    code, conversion_res = json_api_submission(submission_id)
+
+    if code != 200:  # Connection or conversion object errors
+        flash(str(conversion_res), "warning")
+        return
+
+    code, submit_res = clinvar_api.submit_json(json_data=conversion_res)
+
+    if code != 201:  # Connection or conversion object errors
+        flash(str(submit_res), "warning")
+        return
+
+    return submit_res.get("id")
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):
