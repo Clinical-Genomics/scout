@@ -424,10 +424,8 @@ def send_api_submission(submission_id, key):
         flash(str(conversion_res), "warning")
         return
 
-    # Check is user has already received an ID for this submission from ClinVar
-    subm_id = store.get_clinvar_id(submission_id)
-    if subm_id:
-        conversion_res["submissionName"] = subm_id
+    # Send submission with the same name (SUBxyz) that was assigned by ClinVar
+    conversion_res["submissionName"] = store.get_clinvar_id(submission_id)
 
     code, submit_res = clinvar_api.submit_json(conversion_res, key)
 
