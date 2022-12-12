@@ -9,6 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
 - Pre-validate refseq:HGVS items using VariantValidator in ClinVar submission form
+### Fixed
+- Fallback for empty alignment index for REViewer service
+- Source link out for MIP 11.1 reference STR annotation
+
 
 ## [4.61.1]
 ### Fixed
@@ -20,7 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 - Align OMIM diagnoses with delete diagnosis button on case page
 - In ClinVar form, reset condition list and customize help when condition ID changes
-- Fallback for empty alignment index for REViewer service
+
 
 ## [4.61]
 ### Added
