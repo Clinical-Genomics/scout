@@ -100,7 +100,7 @@ class PhenopacketAPI:
         if not selected_individuals:
             for ind in case_obj.get("individuals", []):
                 if PHENOTYPE_MAP[int(ind.get("phenotype"))] == "affected":
-                    selected_individual.append(
+                    selected_individuals.append(
                         f"{ind.get('individual_id')}|{ind.get('display_name')}"
                     )
 
