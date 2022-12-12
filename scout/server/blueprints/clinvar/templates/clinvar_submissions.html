@@ -109,7 +109,7 @@
             <label for="clinvar_id" class="form-text">Submission ID</label>
           </div>
           <div class="col-2">
-            <input type="password" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
+            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
           </div>
           <div class="col-2">
             <button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button>
@@ -269,7 +269,7 @@
       </div>
       <div class="modal-body">
         <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
-        <input type="text" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" required>
+        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" required>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

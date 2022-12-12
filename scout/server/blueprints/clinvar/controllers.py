@@ -406,7 +406,7 @@ def validate_submission(submission_id):
         flash(str(valid_res.__dict__), "warning")
         return
 
-    return valid_res.get("id")
+    return valid_res.json().get("id")
 
 
 def send_api_submission(submission_id, key):
@@ -427,13 +427,17 @@ def send_api_submission(submission_id, key):
         flash(str(conversion_res), "warning")
         return
 
+    # Check is user has already received an ID for this submission from ClinVar
+    subm_id = store.get_clinvar_id(submission_id)
+    if subm_id:
+        conversion_res["submissionName"] = subm_id
+
     code, submit_res = clinvar_api.submit_json(conversion_res, key)
 
-    if code != 201:  # Connection or conversion object errors
-        flash(str(submit_res), "warning")
-        return
-
-    return submit_res.get("id")
+    if code in [200, 201, 204]:  # 204 is returned only for dry runs - used for testing
+        flash("Submission saved successfully", "success")
+    else:
+        flash(str(submit_res.json()), "warning")
 
 
 def clinvar_submission_file(submission_id, csv_type, clinvar_subm_id):

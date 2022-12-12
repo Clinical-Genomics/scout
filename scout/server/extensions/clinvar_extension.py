@@ -79,7 +79,7 @@ class ClinVarApi:
                 resp = requests.post(
                     self.validate_service, data={"api_key": api_key}, files=json_file
                 )
-                return resp.status_code, resp.json()
+                return resp.status_code, resp
 
         except Exception as ex:
             return None, ex
@@ -89,12 +89,12 @@ class ClinVarApi:
 
         Args:
             json_data(dict): a json submission object compliant with the ClinVar API
-            api_key(str): institute or user specific ClinVar submission key
+            api_key(str): institute or user-specific ClinVar submission key.
+                          Provided by user in ClinVar submission form.
 
         Returns:
             tuple: example -> 400, "{Validation errors}"
-                           -> 201, {"id": "SUB12387166"} # Success is 201 - Created - According to the ClinVar API
-
+                           -> 201, {} # Success is 201 - Created - According to the ClinVar API
         """
         header = self.set_header(api_key)
         data = {
@@ -102,7 +102,7 @@ class ClinVarApi:
         }
         try:
             resp = requests.post(self.submit_service, data=json.dumps(data), headers=header)
-            return resp.status_code, resp.json()
+            return resp.status_code, resp
 
         except Exception as ex:
             return None, ex
