@@ -20,7 +20,7 @@ class ClinVarApi:
         self.validate_service = "/".join([PRECLINVAR_URL, "validate"])
         self.submit_service = CLINVAR_API_URL
 
-    def build_header(self, api_key):
+    def set_header(self, api_key):
         """Creates a header to be submitted a in a POST rquest to the CLinVar API
         Args:
             api_key(str): API key to be used to submit to ClinVar (64 alphanumeric characters)
@@ -96,12 +96,12 @@ class ClinVarApi:
                            -> 201, {"id": "SUB12387166"} # Success is 201 - Created - According to the ClinVar API
 
         """
-        header = self.build_header(api_key)
+        header = self.set_header(api_key)
         data = {
             "actions": [{"type": "AddData", "targetDb": "clinvar", "data": {"content": json_data}}]
         }
         try:
-            resp = requests.post(CLINVAR_API_URL, data=json.dumps(data), headers=header)
+            resp = requests.post(self.submit_service, data=json.dumps(data), headers=header)
             return resp.status_code, resp.json()
 
         except Exception as ex:

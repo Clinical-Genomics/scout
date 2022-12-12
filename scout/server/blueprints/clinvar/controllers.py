@@ -325,6 +325,9 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
             f"Removed {deleted_objects} objects and {deleted_submissions} submission from database",
             "info",
         )
+    if update_status == "submit":
+        submitter_key = request_obj.form.get("apiKey")
+        send_api_submission(submission_id, submitter_key)
 
 
 def json_api_submission(submission_id):
@@ -406,12 +409,13 @@ def validate_submission(submission_id):
     return valid_res.get("id")
 
 
-def send_api_submission(submission_id):
+def send_api_submission(submission_id, key):
     """Convert and validate ClinVar submission data to json.
        If json submission is validated, submit it using the ClinVar API
 
     Args:
         submission_id(str): the database id of a clinvar submission
+        key(str): a 64 alphanumeric characters' key
 
     Returns:
         str/None: A submission ID (i.e. SUB2192122) or None if submission contained errors
@@ -423,7 +427,7 @@ def send_api_submission(submission_id):
         flash(str(conversion_res), "warning")
         return
 
-    code, submit_res = clinvar_api.submit_json(json_data=conversion_res)
+    code, submit_res = clinvar_api.submit_json(conversion_res, key)
 
     if code != 201:  # Connection or conversion object errors
         flash(str(submit_res), "warning")
