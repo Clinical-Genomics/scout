@@ -94,7 +94,7 @@ class ClinVarApi:
 
         Returns:
             tuple: example -> 400, "{Validation errors}"
-                           -> 201, {} # Success is 201 - Created - According to the ClinVar API
+                           -> [201, 200, 204], Response object
         """
         header = self.set_header(api_key)
         data = {
