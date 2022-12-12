@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
+- Fallback for empty alignment index for REViewer service
+- Parallelize variant loading for each chromosome
 
 ## [4.61.1]
 ### Fixed
@@ -20,8 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 - Align OMIM diagnoses with delete diagnosis button on case page
 - In ClinVar form, reset condition list and customize help when condition ID changes
-### Changed
-- Parallelize variant loading for each chromosome
+
 
 ## [4.61]
 ### Added
