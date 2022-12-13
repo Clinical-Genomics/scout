@@ -9,6 +9,7 @@ from google.protobuf.json_format import MessageToJson, Parse
 from phenopackets import Individual, OntologyClass, Phenopacket, PhenotypicFeature
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
+from scout.utils.scout_requests import get_request_json
 
 LOG = logging.getLogger(__name__)
 
@@ -20,8 +21,13 @@ class PhenopacketAPI:
 
     def init_app(self, app):
         self.url = app.config.get("PHENOPACKET_API_URL")
-        # Also API key at some point, but not yet supported on the backend (uses IP filter)
+        # Also API key in cookie at some point, but not yet fully implemented on the backend (uses IP filter)
         self.api_key = app.config.get("PHENOPACKET_API_KEY")
+
+    def link_out(self):
+        """Generate a link for a UDNI tip2toe as a sample frontend where
+        phenopackets can be generated."""
+        return "https://udni-tip2toe.vercel.app"
 
     def phenopacket_from_case(self, case, export_ind_id=None):
         """Generate Phenopacket JSON for a Scout case.
@@ -69,24 +75,50 @@ class PhenopacketAPI:
         )
         return MessageToJson(phenopacket)
 
-    def phenopacket_file_import(
-        self, store, institute_obj, case_obj, user_obj, case_url, phenopacket_file
-    ):
-        """Import Phenopacket json and add HPO terms found to individual mentioned in file,
-            or all case affected individuals.
+    def phenopacket_file_import(self, phenopacket_file):
+        """Import Phenopacket from JSON file.
         Args:
-            store:  store object
-            institute_obj:  institute object
-            case_obj: case object
-            user_obj: user object
             case_url: case url
             phenopacket_file: werkzeug FileStorage object
+        Returns:
+            phenopacket: Phenopacket object
         """
 
         phenopacket = Parse(
             message=Phenopacket(),
             text=phenopacket_file.read(),
         )
+
+        return phenopacket
+
+    def phenopacket_api_get_hash(self, hash):
+        """Retrieve phenopacket from backend using hash."""
+
+        query = f"{self.url}/api/v1/phenopacket?hash={hash}"
+        try:
+            json_response = get_request_json(query)
+        except Exception as e:
+            LOG.warning(e)
+
+        return Parse(
+            message=Phenopacket(),
+            text=str(json_response.get("content")),
+        )
+
+    def add_phenopacket_to_case(
+        self, store, institute_obj, case_obj, user_obj, case_url, phenopacket
+    ):
+        """
+        Im json and add HPO terms found to individual mentioned in file,
+        or all case affected individuals.
+
+        store: store object
+        institute_obj: institute object for the case
+        case_obj: case object to receive phenotypes
+        user_obj: user object for user to associate action with
+        case_url: case url to store on action
+        phenopacket: Phenopacket obj
+        """
 
         # Select mentioned individual(s)
         selected_individuals = []

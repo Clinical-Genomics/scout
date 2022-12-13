@@ -124,6 +124,9 @@ RERUN_MONITOR = True
 # PHENOMIZER_USERNAME = "test_user"
 # PHENOMIZER_PASSWORD = "test_password"
 
+# Parameters for Phenopacket-api backend
+PHENOPACKET_API_URL = "https://phenopacket-stage.scilifelab.se"
+
 # Rank model link
 RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/rank_model_-v"
 RANK_MODEL_LINK_POSTFIX = "-.ini"

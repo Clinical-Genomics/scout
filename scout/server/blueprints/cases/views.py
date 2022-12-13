@@ -401,8 +401,10 @@ def phenotype_import(institute_id, case_name):
     phenopacket_file = request.files["phenopacket_file"]
 
     if phenopacket_file:
-        phenopacketapi.phenopacket_file_import(
-            store, institute_obj, case_obj, user_obj, case_url, phenopacket_file
+        phenopacket = phenopacketapi.phenopacket_file_import(phenopacket_file)
+
+        phenopacketapi.add_phenopacket_to_case(
+            store, institute_obj, case_obj, user_obj, case_url, phenopacket
         )
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
