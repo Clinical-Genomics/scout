@@ -310,6 +310,10 @@ def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
         # SHOULD result in a redirect to submissions page (code 302)
         assert resp.status_code == 302
 
+        # AND the submission object in database should be marked as submitted
+        updated_submission = store.clinvar_submission_collection.find_one()
+        assert updated_submission["status"] == "submitted"
+
 
 @responses.activate
 def test_clinvar_validate(app, institute_obj, case_obj, clinvar_form):
