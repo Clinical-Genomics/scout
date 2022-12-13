@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Fallback for empty alignment index for REViewer service
 - Source link out for MIP 11.1 reference STR annotation
+- Avoid duplicate causatives and pinned variants
+
 
 
 ## [4.61.1]
