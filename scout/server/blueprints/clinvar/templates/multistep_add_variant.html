@@ -71,7 +71,6 @@
                   <br><br>
                   {{variant_data.var_form.assertion_method_cit.label(class="fw-bold text-dark")}}
                   {{variant_data.var_form.assertion_method_cit(class="bg-white")}}
-
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
               <fieldset>
@@ -415,5 +414,22 @@ $(function(){
   });
 });
 
+// Modify variant classification options based on selected assertion_method_cit (ACMG-based or not)
+$(function(){
+  $("#assertion_method_cit").change(function(){
+    var assertCit = document.getElementById('assertion_method_cit').value;
+    var choices = {{clinsig_terms|safe}};
+    if (assertCit.includes("PMID:2574186")){ // populate select with ACMG terms only
+      choices = {{clinsig_terms[:5]|safe}};
+    }
+    $("#clinsig").empty(); // remove all options from clinsig select
+    //Create and append the conditional options to the clinsig select
+    for (var i = 0; i < choices.length; i++){
+      var newOption = new Option(choices[i], choices[i], true, false);
+      $('#clinsig').append(newOption).trigger('change');
+    }
+
+  });
+});
 </script>
 {% endblock %}
