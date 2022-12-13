@@ -418,7 +418,7 @@ $(function(){
 $(function(){
   $("#assertion_method_cit").change(function(){
     var assertCit = document.getElementById('assertion_method_cit').value;
-    var choices = {{clinsig_terms|safe}};
+    var choices = {{clinsig_terms|safe}}; // all clinsig terms
     if (assertCit.includes("PMID:2574186")){ // populate select with ACMG terms only
       choices = {{clinsig_terms[:5]|safe}};
     }
