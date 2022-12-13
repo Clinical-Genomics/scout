@@ -3,15 +3,18 @@ Extension to Scout for Phenopacket integration (http://phenopackets.org).
 Write and read JSON Phenopackets, and interact with phenopacket-api backend
 (https://github.com/squeezeday/phenopacket-api).
 """
+import json as json_lib
 import logging
 
 from google.protobuf.json_format import MessageToJson, Parse
 from phenopackets import Individual, OntologyClass, Phenopacket, PhenotypicFeature
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
+from scout.server.utils import jsonconverter
 from scout.utils.scout_requests import get_request_json
 
-LOG = logging.getLogger(__name__)
+# LOG = logging.getLogger(__name__)
+LOG = logging.getLogger("gunicorn.error")
 
 
 class PhenopacketAPI:
@@ -75,7 +78,7 @@ class PhenopacketAPI:
         )
         return MessageToJson(phenopacket)
 
-    def phenopacket_file_import(self, phenopacket_file):
+    def file_import(self, phenopacket_file):
         """Import Phenopacket from JSON file.
         Args:
             case_url: case url
@@ -91,18 +94,47 @@ class PhenopacketAPI:
 
         return phenopacket
 
-    def phenopacket_api_get_hash(self, hash):
-        """Retrieve phenopacket from backend using hash."""
+    def get_hash(self, hash):
+        """Retrieve phenopacket from backend using hash.
+
+        The retrieved serialized json phenopacket may not convert back easily to a phenopacket object.
+        We simplify it a bit first, potentially dropping some data that we anyway do not save or use
+        downstream, before actually converting it to a message string that can be parsed into a Phenopacket.
+        """
 
         query = f"{self.url}/api/v1/phenopacket?hash={hash}"
+
+        LOG.debug(f"Fetching: {query}")
+
         try:
             json_response = get_request_json(query)
         except Exception as e:
             LOG.warning(e)
 
+        json_content = json_response.get("content")[0]
+
+        selected_json = {}
+        valid_phenopacket_fields = [
+            "id",
+            "subject",
+            "phenotypicFeatures",
+        ]
+        for field in valid_phenopacket_fields:
+            if field in json_content:
+                if field == "subject":
+                    # We only use the subject id, and parsing time, eg dateOfBirth, is complicated
+                    subject = json_content["subject"]
+                    subject_id = subject.get("id")
+                    selected_json["subject"] = {"id": subject_id}
+                else:
+                    selected_json[field] = json_content[field]
+
+        json_str = json_lib.dumps(selected_json, default=jsonconverter)
+        LOG.debug(f"Phenopacket json converted to: {json_str}")
+
         return Parse(
             message=Phenopacket(),
-            text=str(json_response.get("content")),
+            text=json_str,
         )
 
     def add_phenopacket_to_case(
@@ -148,6 +180,9 @@ class PhenopacketAPI:
                 hpo_term = phenotype_term.id
             else:
                 omim_term = phenotype_term.id
+
+            if feature.excluded == True:
+                continue
 
             store.add_phenotype(
                 institute=institute_obj,

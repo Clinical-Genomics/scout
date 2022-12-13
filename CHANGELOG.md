@@ -8,14 +8,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
+- Export Phenopacket for affected individual
+- Import Phenopacket from JSON file or Phenopacket API backend server
 ### Fixed
 - Source link out for MIP 11.1 reference STR annotation
 - Avoid duplicate causatives and pinned variants
 
-
-## [unreleased]
-### Added
-- Export Phenopacket for affected individual
 
 ## [4.61.1]
 ### Fixed

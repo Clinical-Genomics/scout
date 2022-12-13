@@ -322,12 +322,24 @@
             <span>Upload phenopackets JSON file</span>
           </div>
           <div class="row mb-3">
-            <div class="col-8 text-center">
-              <input type="file" name="phenopacket_file" class="custom-file-input" required onchange="this.nextElementSibling.innerText = this.files[0].name">
+            <div class="col-8">
+              <input type="file" name="phenopacket_file" class="custom-file-input form-control" onchange="this.nextElementSibling.innerText = this.files[0].name">
               <p class="help-block">How do I format my <a href="https://phenopacket-schema.readthedocs.io/en/latest/index.html" rel="noopener" target="_blank">phenopacket</a> JSON file?</p>
             </div>
-            <div class="col-4 text-center">
+            <div class="col-4">
              <button type="submit" class="btn btn-secondary">Upload</button>
+            </div>
+            <div class="row mb-3">
+              <span>Fetch phenopackets from UDNI tip2toe</span>
+            </div>
+            <div class="row mb-3">
+              <div class="col-8">
+                <input type="string" name="phenopacket_hash" class="text-input form-control">
+                <p class="help-block">Fill in phenotype hash from <a href="https://udni-tip2toe.vercel.app" rel="noopener" target="_blank">UDNI tip2toe</a>.</p>
+              </div>
+                <div class="col-4">
+                  <button type="submit" class="btn btn-secondary">Upload</button>
+                </div>
             </div>
           </div>
         </div>
