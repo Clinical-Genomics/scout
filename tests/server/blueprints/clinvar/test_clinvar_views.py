@@ -1,7 +1,8 @@
 import responses
+from bson.objectid import ObjectId
 from flask import url_for
 
-from scout.constants.clinvar import PRECLINVAR_URL
+from scout.constants.clinvar import CLINVAR_API_URL, PRECLINVAR_URL
 from scout.server.extensions import store
 
 SAVE_ENDPOINT = "clinvar.clinvar_save"
@@ -257,6 +258,57 @@ def test_clinvar_download_csv(app, institute_obj, case_obj, clinvar_form):
         )
         assert resp.status_code == 200
         assert resp.mimetype == "text/csv"
+
+
+@responses.activate
+def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
+    """Test the endpoint used to submit to ClinVar using the API"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+        subm_obj = store.clinvar_submission_collection.find_one()
+
+        # WHEN the submission is validated using the to the ClinVar API
+        # GIVEN a mocked proxy service - csv_2_json
+        responses.add(
+            responses.POST,
+            API_CSV_2_JSON_URL,
+            json={"clinvarSubmission": "test"},
+            status=200,
+        )
+
+        # GIVEN a mocked ClinVar API service
+        responses.add(
+            responses.POST,
+            CLINVAR_API_URL,
+            json={"id": "SUB1234567"},
+            status=201,
+        )
+
+        # Then a request to the UPDATE_ENDPOINT with the right data ("update_submission": "submit")
+        data = dict(update_submission="submit")
+        resp = client.post(
+            url_for(
+                UPDATE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                submission=subm_obj["_id"],
+            ),
+            data=data,
+        )
+        # SHOULD result in a redirect to submissions page (code 302)
+        assert resp.status_code == 302
 
 
 @responses.activate
