@@ -75,7 +75,7 @@
 
 {% macro submission_panel(subm_obj) %}
   <div class="card w-100 mt-3">
-    <div class="card-header, text-white {{ 'bg-primary' if subm_obj.status=='open' else 'bg-secondary' }}">
+    <div class="card-header, text-white {% if subm_obj.status=='open' %} bg-primary {% elif subm_obj.status=='submitted' %} bg-success {% else %} bg-secondary {% endif%}">
       Submission <strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong> / Created: <strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong> / Last updated: <strong>{{subm_obj.updated_at.strftime('%Y-%m-%d')}}</strong>
     </div><!-- end of card header-->
     <div class="card-body">

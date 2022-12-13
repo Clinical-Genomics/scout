@@ -182,20 +182,19 @@ class ClinVarHandler(object):
         """Set a clinvar submission ID to 'closed'
 
         Args:
-            submission_id(str): the ID of the clinvar submission to close
+            submission_id(str): the ID of the clinvar submission to updte status for
 
         Return
             updated_submission(obj): the submission object with a 'closed' status
 
         """
-        LOG.info('closing clinvar submission "%s"', submission_id)
 
         if (
             status == "open"
         ):  # just close the submission its status does not affect the other submissions
             # Close all other submissions for this institute and then open the desired one
             self.clinvar_submission_collection.update_many(
-                {"institute_id": institute_id},
+                {"institute_id": institute_id, "status": "open"},
                 {"$set": {"status": "closed", "updated_at": datetime.now()}},
             )
         updated_submission = self.clinvar_submission_collection.find_one_and_update(

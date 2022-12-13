@@ -327,7 +327,7 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
         )
     if update_status == "submit":
         submitter_key = request_obj.form.get("apiKey")
-        send_api_submission(submission_id, submitter_key)
+        send_api_submission(institute_id, submission_id, submitter_key)
 
 
 def json_api_submission(submission_id):
@@ -409,11 +409,12 @@ def validate_submission(submission_id):
     return valid_res.json().get("id")
 
 
-def send_api_submission(submission_id, key):
+def send_api_submission(institute_id, submission_id, key):
     """Convert and validate ClinVar submission data to json.
        If json submission is validated, submit it using the ClinVar API
 
     Args:
+        institute_id(str): _id of an institute
         submission_id(str): the database id of a clinvar submission
         key(str): a 64 alphanumeric characters' key
     """
@@ -431,6 +432,10 @@ def send_api_submission(submission_id, key):
 
     if code in [200, 201, 204]:  # 204 is returned only for dry runs - used for testing
         flash("Submission saved successfully", "success")
+        store.update_clinvar_submission_status(
+            institute_id=institute_id, submission_id=submission_id, status="submitted"
+        )
+
     else:
         flash(str(submit_res.json()), "warning")
 
