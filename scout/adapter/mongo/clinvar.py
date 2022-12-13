@@ -188,11 +188,9 @@ class ClinVarHandler(object):
             updated_submission(obj): the submission object with a 'closed' status
 
         """
-
-        if (
-            status == "open"
-        ):  # just close the submission its status does not affect the other submissions
-            # Close all other submissions for this institute and then open the desired one
+        # When setting one submission as open
+        # Close all other submissions for this institute first
+        if status == "open":
             self.clinvar_submission_collection.update_many(
                 {"institute_id": institute_id, "status": "open"},
                 {"$set": {"status": "closed", "updated_at": datetime.now()}},
