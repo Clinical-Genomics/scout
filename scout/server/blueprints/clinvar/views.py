@@ -4,7 +4,7 @@ from tempfile import NamedTemporaryFile
 
 from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 
-from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, CLNSIG_TERMS
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
 
@@ -25,7 +25,7 @@ blueprint = Blueprint(
 def clinvar_add_variant(institute_id, case_name):
     """Create a ClinVar submission document in database for one or more variants from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {"institute": institute_obj, "case": case_obj}
+    data = {"institute": institute_obj, "case": case_obj, "clinsig_terms": CLNSIG_TERMS}
     controllers.set_clinvar_form(request.form.get("var_id"), data)
     return render_template("multistep_add_variant.html", **data)
 
@@ -105,7 +105,6 @@ def clinvar_validate(submission, save_id=False):
 @blueprint.route("/<institute_id>/<submission>/update_status", methods=["POST"])
 def clinvar_update_submission(institute_id, submission):
     """Update a submission status to open/closed, register an official SUB number or delete the entire submission"""
-
     controllers.update_clinvar_submission_status(request, institute_id, submission)
     return redirect(request.referrer)
 

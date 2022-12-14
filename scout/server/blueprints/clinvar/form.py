@@ -50,7 +50,9 @@ class ClinVarVariantForm(FlaskForm):
         "Inheritance model",
         choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
     )
-    clinsig = SelectField("Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS])
+    clinsig = SelectField(
+        "Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS[:5]]
+    )
     clinsig_comment = TextAreaField("Comment on clinical significance")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")
     last_evaluated = DateField("Date evaluated")
