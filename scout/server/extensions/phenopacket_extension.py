@@ -104,7 +104,6 @@ class PhenopacketAPI:
 
         query = f"{self.url}/api/v1/phenopacket?hash={hash}"
 
-        LOG.debug(f"Fetching: {query}")
 
         try:
             json_response = get_request_json(query)
