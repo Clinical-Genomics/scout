@@ -81,7 +81,6 @@ class PhenopacketAPI:
     def file_import(self, phenopacket_file):
         """Import Phenopacket from JSON file.
         Args:
-            case_url: case url
             phenopacket_file: werkzeug FileStorage object
         Returns:
             phenopacket: Phenopacket object
