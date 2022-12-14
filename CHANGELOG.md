@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fallback for empty alignment index for REViewer service
 - Source link out for MIP 11.1 reference STR annotation
 - Avoid duplicate causatives and pinned variants
+- ClinVar clinical significance displays only the ACMG terms when user selects ACMG 2015 as assertion criteria
 
 
 ## [4.61.1]

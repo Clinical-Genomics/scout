@@ -75,7 +75,7 @@ CASEDATA_HEADER = {
 # The following items are defined in the ClinVar API specifications:
 # https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
 ####################################################################
-CLNSIG_TERMS = {
+CLNSIG_TERMS = [
     "Pathogenic",
     "Likely pathogenic",
     "Uncertain significance",
@@ -93,7 +93,7 @@ CLNSIG_TERMS = {
     "protective",
     "other",
     NOT_PROVIDED,
-}
+]
 
 REVSTAT_TERMS = {
     "conflicting_interpretations",
