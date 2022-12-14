@@ -13,8 +13,7 @@ from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.server.utils import jsonconverter
 from scout.utils.scout_requests import get_request_json
 
-# LOG = logging.getLogger(__name__)
-LOG = logging.getLogger("gunicorn.error")
+LOG = logging.getLogger(__name__)
 
 
 class PhenopacketAPI:
@@ -24,8 +23,6 @@ class PhenopacketAPI:
 
     def init_app(self, app):
         self.url = app.config.get("PHENOPACKET_API_URL")
-        # Also API key in cookie at some point, but not yet fully implemented on the backend (uses IP filter)
-        self.api_key = app.config.get("PHENOPACKET_API_KEY")
 
     def link_out(self):
         """Generate a link for a UDNI tip2toe as a sample frontend where
@@ -38,7 +35,8 @@ class PhenopacketAPI:
         is exported.
 
         Args:
-            case: Scout case object dict
+            case(dict): Scout case object
+            export_ind_id(str): individual id selecting an individual for export. Leave unset to pick affected individuals.
         Returns:
             json: Phenopacket json string
         """
@@ -59,7 +57,7 @@ class PhenopacketAPI:
             p_individual = Individual(id=name, sex=sex)
 
             for term in phenotype_terms:
-                if term.get("individuals") and name in [
+                if not term.get("individuals") or name in [
                     term_ind.get("individual_name") for term_ind in term.get("individuals")
                 ]:
                     p_features.append(
@@ -138,7 +136,7 @@ class PhenopacketAPI:
         self, store, institute_obj, case_obj, user_obj, case_url, phenopacket
     ):
         """
-        Im json and add HPO terms found to individual mentioned in file,
+        Given a Phenopacket, add HPO terms found to individual in packet with matching ID,
         or all case affected individuals.
 
         store: store object
@@ -149,7 +147,7 @@ class PhenopacketAPI:
         phenopacket: Phenopacket obj
         """
 
-        # Select mentioned individual(s)
+        # Select individual(s) mentioned in phenopacket
         selected_individuals = []
         for ind in case_obj.get("individuals", []):
             if phenopacket.id == ind.get("individual_id") or phenopacket.subject.id == ind.get(
