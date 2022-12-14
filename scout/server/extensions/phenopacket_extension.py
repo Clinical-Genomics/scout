@@ -104,7 +104,6 @@ class PhenopacketAPI:
 
         query = f"{self.url}/api/v1/phenopacket?hash={hash}"
 
-
         try:
             json_response = get_request_json(query)
         except Exception as e:
