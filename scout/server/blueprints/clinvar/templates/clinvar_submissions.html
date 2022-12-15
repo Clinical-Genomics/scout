@@ -75,7 +75,7 @@
 
 {% macro submission_panel(subm_obj) %}
   <div class="card w-100 mt-3">
-    <div class="card-header, text-white {{ 'bg-primary' if subm_obj.status=='open' else 'bg-secondary' }}">
+    <div class="card-header, text-white {% if subm_obj.status=='open' %} bg-primary {% elif subm_obj.status=='submitted' %} bg-success {% else %} bg-secondary {% endif%}">
       Submission <strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong> / Created: <strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong> / Last updated: <strong>{{subm_obj.updated_at.strftime('%Y-%m-%d')}}</strong>
     </div><!-- end of card header-->
     <div class="card-body">
@@ -105,19 +105,27 @@
         </form>
         <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
         <div class="row mb-3">
-          <div class="col-2">
+          <div class="col-1">
             <label for="clinvar_id" class="form-text">Submission ID</label>
           </div>
-          <div class="col-3">
+          <div class="col-2">
             <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
           </div>
-          <div class="col-1">
+          <div class="col-2">
             <button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button>
           </div>
-          <div class="col-2">
-            <a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a>
-          </div>
+          {% if config.CLINVAR_API_KEY %}
+            <div class="col-3">
+              <a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a>
+            </div>
+            {% if subm_obj.clinvar_subm_id and subm_obj.status != "submitted" %}
+              <div class="col-2">
+                <button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button>
+              </div>
+            {% endif %}
+          {% endif %}
         </div>
+        {{ submit_modal(subm_obj) }}
       </form>
       <div> <!--variant data div -->
         <h4>Variant data:</h4>
@@ -249,6 +257,27 @@
       {% endif %}
     </div><!-- end of card body-->
   </div><!-- end of card -->
+{% endmacro %}
+
+{% macro submit_modal(subm_obj) %}
+<div class="modal fade" id="submitModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">ClinVar API submission</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
+        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" name="update_submission" value="submit" class="btn btn-primary">Submit variants</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endmacro %}
 
 {% block content_main %}
