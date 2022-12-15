@@ -174,7 +174,7 @@ class PhenopacketAPI:
 
         # Otherwise select affected individuals
         if not selected_individuals:
-            selected_individuals = phenotype_individuals_affected_in_case(case_obj)
+            selected_individuals = self.phenotype_individuals_affected_in_case(case_obj)
 
         # add a new phenotype item/group to the case
         hpo_term = None
