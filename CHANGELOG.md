@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
+- Create ClinVar submissions from Scout using the ClinVar API
 - Export Phenopacket for affected individual
 - Import Phenopacket from JSON file or Phenopacket API backend server
 ### Fixed
