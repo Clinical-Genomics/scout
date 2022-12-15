@@ -4,6 +4,7 @@ import json
 import logging
 import os.path
 import shutil
+from io import BytesIO
 from operator import itemgetter
 
 from cairosvg import svg2png
@@ -23,7 +24,7 @@ from flask import (
 from flask_login import current_user
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.extensions import beacon, store
+from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
@@ -358,6 +359,58 @@ def phenotypes(institute_id, case_name, phenotype_id=None):
                 "warning",
             )
             return redirect(case_url)
+
+    return redirect("#".join([case_url, "phenotypes_panel"]))
+
+
+@cases_bp.route("/<institute_id>/<case_name>/phenotype_export", methods=["POST"])
+def phenotype_export(institute_id, case_name):
+    """Export phenopacket JSON for affected individual."""
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
+
+    phenopacket_json = phenopacketapi.phenopacket_from_case(case_obj)
+
+    if not phenopacket_json:
+        return redirect("#".join([case_url, "phenotypes_panel"]))
+
+    file_name = "_".join(
+        [
+            case_obj["display_name"],
+            datetime.datetime.now().strftime("%Y-%m-%d"),
+            "scout_phenopacket.json",
+        ]
+    )
+    json_file = BytesIO(bytes(phenopacket_json, "utf-8"))
+
+    return send_file(
+        json_file,
+        mimetype="application/json",
+        as_attachment=True,
+        download_name=file_name,
+    )
+
+
+@cases_bp.route("/<institute_id>/<case_name>/phenotype_import", methods=["POST"])
+def phenotype_import(institute_id, case_name):
+    """Import phenopacket JSON for affected individual."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    user_obj = store.user(current_user.email)
+    case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
+
+    phenopacket_file = request.files["phenopacket_file"]
+
+    if phenopacket_file:
+        phenopacket = phenopacketapi.file_import(phenopacket_file)
+
+    phenopacket_hash = request.form.get("phenopacket_hash")
+
+    if phenopacket_hash:
+        phenopacket = phenopacketapi.get_hash(phenopacket_hash)
+
+    phenopacketapi.add_phenopacket_to_case(
+        store, institute_obj, case_obj, user_obj, case_url, phenopacket
+    )
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 

@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
 - Create ClinVar submissions from Scout using the ClinVar API
+- Export Phenopacket for affected individual
+- Import Phenopacket from JSON file or Phenopacket API backend server
 ### Fixed
 - Fallback for empty alignment index for REViewer service
 - Source link out for MIP 11.1 reference STR annotation
