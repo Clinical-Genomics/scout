@@ -165,6 +165,10 @@ def configure_extensions(app):
         LOG.info("Collecting IGV tracks from cloud resources")
         extensions.cloud_tracks.init_app(app)
 
+    if app.config.get("PHENOPACKET_API_URL"):
+        LOG.info("Enable Phenopacket API")
+        extensions.phenopacketapi.init_app(app)
+
 
 def register_blueprints(app):
     """Register Flask blueprints."""
