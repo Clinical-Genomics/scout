@@ -85,7 +85,7 @@
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <div class="row">
                       {% for item in item_row %}
-                        <div class="col-4"><p class="text-white bg-secondary">{{ item() }} {{item.label|truncate(25,true,'..')}}</label></p></div>
+                        <div class="col-4"><p class="text-white bg-secondary">{{ item() }} {{item.label.text|truncate(25,true,'..')}}</label></p></div>
                       {% endfor %}
                       </div>
                     {% endfor %}
