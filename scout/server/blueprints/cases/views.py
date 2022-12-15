@@ -403,10 +403,10 @@ def phenotype_import(institute_id, case_name):
     if phenopacket_file:
         phenopacket = phenopacketapi.file_import(phenopacket_file)
 
-    hash = request.form.get("phenopacket_hash")
+    phenopacket_hash = request.form.get("phenopacket_hash")
 
-    if hash:
-        phenopacket = phenopacketapi.get_hash(hash)
+    if phenopacket_hash:
+        phenopacket = phenopacketapi.get_hash(phenopacket_hash)
 
     phenopacketapi.add_phenopacket_to_case(
         store, institute_obj, case_obj, user_obj, case_url, phenopacket

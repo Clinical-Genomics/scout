@@ -91,7 +91,7 @@ class PhenopacketAPI:
 
         return phenopacket
 
-    def get_hash(self, hash):
+    def get_hash(self, phenopacket_hash):
         """Retrieve phenopacket from backend using hash.
 
         The retrieved serialized json phenopacket may not convert back easily to a phenopacket object.
@@ -99,7 +99,7 @@ class PhenopacketAPI:
         downstream, before actually converting it to a message string that can be parsed into a Phenopacket.
         """
 
-        query = f"{self.url}/api/v1/phenopacket?hash={hash}"
+        query = f"{self.url}/api/v1/phenopacket?hash={phenopacket_hash}"
 
         try:
             json_response = get_request_json(query)
@@ -125,12 +125,28 @@ class PhenopacketAPI:
                     selected_json[field] = json_content[field]
 
         json_str = json_lib.dumps(selected_json, default=jsonconverter)
-        LOG.debug(f"Phenopacket json converted to: {json_str}")
 
         return Parse(
             message=Phenopacket(),
             text=json_str,
         )
+
+    def phenotype_individuals_affected_in_case(self, case_obj):
+        """Return a list of phenotype individual strings for affected individuals.
+
+        This type of strings (individual id + "|" + display name) are used to assign phenotypes to
+        individuals on the case object.
+
+        Args:
+            case_obj: case object to get individuals
+        Returns:
+            selected_individuals(list(str)): a list of phenotype ind strings
+        """
+        selected_individuals = []
+        for ind in case_obj.get("individuals", []):
+            if PHENOTYPE_MAP[int(ind.get("phenotype"))] == "affected":
+                selected_individuals.append(f"{ind.get('individual_id')}|{ind.get('display_name')}")
+        return selected_individuals
 
     def add_phenopacket_to_case(
         self, store, institute_obj, case_obj, user_obj, case_url, phenopacket
@@ -139,12 +155,13 @@ class PhenopacketAPI:
         Given a Phenopacket, add HPO terms found to individual in packet with matching ID,
         or all case affected individuals.
 
-        store: store object
-        institute_obj: institute object for the case
-        case_obj: case object to receive phenotypes
-        user_obj: user object for user to associate action with
-        case_url: case url to store on action
-        phenopacket: Phenopacket obj
+        Args:
+            store: store object
+            institute_obj: institute object for the case
+            case_obj: case object to receive phenotypes
+            user_obj: user object for user to associate action with
+            case_url: case url to store on action
+            phenopacket: Phenopacket obj
         """
 
         # Select individual(s) mentioned in phenopacket
@@ -157,11 +174,7 @@ class PhenopacketAPI:
 
         # Otherwise select affected individuals
         if not selected_individuals:
-            for ind in case_obj.get("individuals", []):
-                if PHENOTYPE_MAP[int(ind.get("phenotype"))] == "affected":
-                    selected_individuals.append(
-                        f"{ind.get('individual_id')}|{ind.get('display_name')}"
-                    )
+            selected_individuals = phenotype_individuals_affected_in_case(case_obj)
 
         # add a new phenotype item/group to the case
         hpo_term = None
@@ -169,7 +182,6 @@ class PhenopacketAPI:
 
         for feature in phenopacket.phenotypic_features:
             phenotype_term = feature.type
-            LOG.debug(f"found phenopacket term {phenotype_term.id} labelled {phenotype_term.label}")
 
             if phenotype_term.id.startswith("HP:") or len(phenotype_term.id) == 7:
                 hpo_term = phenotype_term.id
