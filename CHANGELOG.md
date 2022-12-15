@@ -8,6 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
+- Create ClinVar submissions from Scout using the ClinVar API
+- Export Phenopacket for affected individual
+- Import Phenopacket from JSON file or Phenopacket API backend server
 - Pre-validate refseq:HGVS items using VariantValidator in ClinVar submission form
 ### Fixed
 - Fallback for empty alignment index for REViewer service
@@ -15,7 +18,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid duplicate causatives and pinned variants
 - ClinVar clinical significance displays only the ACMG terms when user selects ACMG 2015 as assertion criteria
 - Spacing between icon and text on Beacon and MatchMaker links on case page sidebar
-
 
 
 ## [4.61.1]
@@ -28,7 +30,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 - Align OMIM diagnoses with delete diagnosis button on case page
 - In ClinVar form, reset condition list and customize help when condition ID changes
-
 
 ## [4.61]
 ### Added

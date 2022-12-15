@@ -74,7 +74,6 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # }
 
 # Connection details for Scout REViewer service
-# URL
 # SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
 
 #
@@ -123,6 +122,9 @@ RERUN_MONITOR = True
 # Parameters for enabling Phenomizer queries
 # PHENOMIZER_USERNAME = "test_user"
 # PHENOMIZER_PASSWORD = "test_password"
+
+# Parameters for Phenopacket-api backend
+PHENOPACKET_API_URL = "https://phenopacket-stage.scilifelab.se"
 
 # Rank model link
 RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/rank_model_-v"

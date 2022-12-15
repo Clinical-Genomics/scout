@@ -5,7 +5,6 @@ from flask import Blueprint, Flask, url_for
 
 from scout.server.blueprints.cases.controllers import (
     case,
-    case_report_content,
     coverage_report_contents,
     mt_coverage_stats,
     phenotypes_genes,
