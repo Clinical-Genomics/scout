@@ -360,7 +360,7 @@ def case(store, institute_obj, case_obj):
         "tissue_types": SAMPLE_SOURCE,
         "report_types": CUSTOM_CASE_REPORTS,
         "mme_nodes": matchmaker.connected_nodes,
-        "gens_info": gens.connection_settings(case_obj["genome_build"]),
+        "gens_info": gens.connection_settings(case_obj.get("genome_build")),
         "display_rerunner": rerunner.connection_settings.get("display", False),
     }
 
