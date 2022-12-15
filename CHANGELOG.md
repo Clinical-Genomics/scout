@@ -8,9 +8,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
+- Create ClinVar submissions from Scout using the ClinVar API
 ### Changed
 - Use the new case name option for GENS requests
 ### Fixed
+- Fallback for empty alignment index for REViewer service
 - Source link out for MIP 11.1 reference STR annotation
 - Avoid duplicate causatives and pinned variants
 - ClinVar clinical significance displays only the ACMG terms when user selects ACMG 2015 as assertion criteria
@@ -28,7 +30,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 - Align OMIM diagnoses with delete diagnosis button on case page
 - In ClinVar form, reset condition list and customize help when condition ID changes
-- Fallback for empty alignment index for REViewer service
 
 ## [4.61]
 ### Added
