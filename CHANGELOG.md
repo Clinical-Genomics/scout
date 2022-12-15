@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Source link out for MIP 11.1 reference STR annotation
 - Avoid duplicate causatives and pinned variants
 - ClinVar clinical significance displays only the ACMG terms when user selects ACMG 2015 as assertion criteria
-- Truncate HGVS representations in ClinVar pages if longer than 25 characters
+- Truncate IDs and HGVS representations in ClinVar pages if longer than 25 characters
 
 
 ## [4.61.1]
