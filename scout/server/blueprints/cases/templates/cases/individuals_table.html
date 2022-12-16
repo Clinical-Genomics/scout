@@ -126,7 +126,7 @@
                   </div>
                 </label>
                 {% if gens_info.display %}
-                  <a style="font-size: .8rem;" class="btn btn-secondary btn-sm" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}">CN profile</a>
+                  <a style="font-size: .8rem;" class="btn btn-secondary btn-sm float-end" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}">CN profile</a>
                 {% endif %}
                 </td>
               <td>

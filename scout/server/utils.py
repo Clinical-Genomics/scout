@@ -113,6 +113,9 @@ def institute_and_case(store, institute_id, case_name=None):
         if case_obj is None:
             return abort(404)
 
+        # Make sure build is either "37" or "38"
+        case_obj["genome_build"] = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+
     # validate that user has access to the institute
 
     if not current_user.is_admin:
