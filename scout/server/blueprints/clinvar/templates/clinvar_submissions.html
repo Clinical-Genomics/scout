@@ -115,11 +115,12 @@
             </form>
             {% if config.CLINVAR_API_KEY %}
               <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-              </form>
+              {{ submit_modal(subm_obj) }}
               <td style="width: 20%"><a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a></td>
               {% if subm_obj.clinvar_subm_id and subm_obj.status != "submitted" %}
                 <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
               {% endif %}
+              </form>
             {% endif %}
           </tr>
         </table>
