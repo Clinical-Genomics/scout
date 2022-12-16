@@ -17,6 +17,7 @@ python-dateutil
 pymongo>=3.7,<4.0
 pathlib
 pdfkit
+phenopackets
 xlsxwriter
 click
 cryptography<3.4

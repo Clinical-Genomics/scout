@@ -9,6 +9,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Validate ClinVar submission objects using the ClinVar API
 - Wrote tests for case and variant API endpoints
 - Create ClinVar submissions from Scout using the ClinVar API
+- Export Phenopacket for affected individual
+- Import Phenopacket from JSON file or Phenopacket API backend server
 - Parallelize variant loading for each chromosome
 ### Fixed
 - Fallback for empty alignment index for REViewer service
@@ -16,7 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid duplicate causatives and pinned variants
 - ClinVar clinical significance displays only the ACMG terms when user selects ACMG 2015 as assertion criteria
 - Spacing between icon and text on Beacon and MatchMaker links on case page sidebar
-
+- Truncate IDs and HGVS representations in ClinVar pages if longer than 25 characters
 
 
 ## [4.61.1]
