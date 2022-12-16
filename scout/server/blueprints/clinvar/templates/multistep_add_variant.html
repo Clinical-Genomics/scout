@@ -90,16 +90,16 @@
                       {% for item in item_row %}
                         {% if "Do not specify" in item.label.text  %}
                           <div class="col-4 bg-secondary">
-                            <p class="text-white">
+                            <p class="text-white"
                         {% elif "validated" in item.label.text %}
                           <div class="col-4 bg-success">
-                            <p class="text-white">
+                            <p class="text-white"
                         {% else %}
                           <div class="col-4 bg-warning">
-                            <p class="text-black">
+                            <p class="text-black"
                         {% endif %}
-                          {{ item() }} {{item.label}}</label></p>
-                          </div>
+                        {% if item.label.text|length > 25 %} data-bs-toggle="tooltip" title="{{item.label.text}}" {% endif%} >{{ item() }} {{item.label.text|truncate(25,true,'..')}}</label></p>
+                        </div>
                       {% endfor %}
                       </div>
                     {% endfor %}
