@@ -17,7 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid duplicate causatives and pinned variants
 - ClinVar clinical significance displays only the ACMG terms when user selects ACMG 2015 as assertion criteria
 - Spacing between icon and text on Beacon and MatchMaker links on case page sidebar
-
+- Truncate IDs and HGVS representations in ClinVar pages if longer than 25 characters
 
 ## [4.61.1]
 ### Fixed

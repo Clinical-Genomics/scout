@@ -153,7 +153,7 @@
                   {% if subm_variant.category == 'sv' %}
                     {% do var_key_name.update( {subm_variant.local_id : '_'.join([subm_variant.var_type, subm_variant.chromosome, subm_variant.breakpoint1 or subm_variant.outer_start or ""]) }) %}
                     <td>
-                      <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                      <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                     <td><div class="badge bg-warning">SV</div></td>
@@ -164,7 +164,7 @@
                       {% do var_key_name.update({subm_variant.local_id : '_'.join([subm_variant.chromosome, subm_variant.start, subm_variant.ref[0:5], subm_variant.alt[0:5]]) }) %}
                     {% endif %}
                     <td>
-                      <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]}}</strong></a>
+                      <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id], variant_id=subm_variant.local_id) }}" target="_blank" rel="noopener"><strong>{{var_key_name[subm_variant.local_id]|truncate(25,true,'..')}}</strong></a>
                     </td>
                     <td><button id="{{subm_variant._id}}" type="button" class="btn btn-primary btn-xs var_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                     <td><div class="badge bg-success">SNV</div></td>
@@ -173,7 +173,7 @@
                 <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[subm_variant.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[subm_variant.case_id]}}</a></td>
                 <td>{{subm_variant.ref_seq or '-'}}</td>
                 <td>{{subm_variant.gene_symbol or '-'}}</td>
-                <td>{{subm_variant.hgvs or '-'}}</td>
+                <td>{{subm_variant.hgvs|truncate(25,true,'..') or '-'}}</td>
                 <td>{{subm_variant.clinsig}}</td>
                 <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
                   <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
@@ -229,7 +229,7 @@
                   </form>
                   <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
                   <td><a href="{{ url_for('cases.case', institute_id=institute._id, case_name=subm_obj.cases[case.case_id]) }}" target="_blank" rel="noopener">{{subm_obj.cases[case.case_id]}}</a></td>
-                  <td>{{var_key_name[case.linking_id]}}</td>
+                  <td>{{var_key_name[case.linking_id]|truncate(25,true,'..')}}</td>
                   <td>{{case.allele_origin}}</td>
                   <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
                     <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash-o fa-lg" aria-hidden="true"></span></button></td>
