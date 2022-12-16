@@ -114,7 +114,9 @@
           <div class="col-2">
             <button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button>
           </div>
+          </form>
           {% if config.CLINVAR_API_KEY %}
+            <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
             <div class="col-3">
               <a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a>
             </div>
@@ -122,11 +124,11 @@
               <div class="col-2">
                 <button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button>
               </div>
+              {{ submit_modal(subm_obj) }}
             {% endif %}
+            </form>
           {% endif %}
         </div>
-        {{ submit_modal(subm_obj) }}
-      </form>
       <div> <!--variant data div -->
         <h4>Variant data:</h4>
         {% if subm_obj.variant_data and subm_obj.variant_data | length > 0 %}
