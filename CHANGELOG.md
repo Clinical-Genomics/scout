@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Export Phenopacket for affected individual
 - Import Phenopacket from JSON file or Phenopacket API backend server
 - Use the new case name option for GENS requests
+- Pre-validate refseq:HGVS items using VariantValidator in ClinVar submission form
 ### Fixed
 - Fallback for empty alignment index for REViewer service
 - Source link out for MIP 11.1 reference STR annotation
