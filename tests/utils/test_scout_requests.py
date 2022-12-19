@@ -461,6 +461,37 @@ def test_fetch_resource_json():
 
 
 @responses.activate
+def test_fetch_refseq_version_timeout():
+    """Test a connection error when retrieving refseq version from entrez utils service"""
+
+    # GIVEN a refseq accession number
+    refseq_acc = "NM_020533"
+    # GIVEN the base url
+    base_url = (
+        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&"
+        "term={}&idtype=acc"
+    )
+    url = base_url.format(refseq_acc)
+
+    # GIVEN a patched request that triggers timeout
+    def exception_callback():
+        return requests.exceptions.Timeout("Connection timed out.")
+
+    responses.add(
+        responses.GET,
+        url,
+        body=exception_callback(),
+        status=200,
+    )
+
+    # WHEN fetching complete refseq version for accession that has version
+    refseq_version = scout_requests.fetch_refseq_version(refseq_acc)
+
+    # THEN refseq returned is the same as refseq provided
+    assert refseq_acc == refseq_version
+
+
+@responses.activate
 def test_fetch_refseq_version(refseq_response):
     """Test utils service from entrez that retrieves refseq version"""
 

@@ -105,6 +105,7 @@ def get_request(url):
     Returns:
         decoded_data(str): Decoded response
     """
+    response = None
     try:
         LOG.info("Requesting %s", url)
         response = requests.get(url, timeout=TIMEOUT)
@@ -113,13 +114,10 @@ def get_request(url):
         LOG.info("Encoded to %s", response.encoding)
     except requests.exceptions.HTTPError as err:
         LOG.warning("Something went wrong, perhaps the api key is not valid?")
-        raise err
     except requests.exceptions.MissingSchema as err:
         LOG.warning("Something went wrong, perhaps url is invalid?")
-        raise err
     except requests.exceptions.Timeout as err:
         LOG.error("socket timed out - URL %s", url)
-        raise err
 
     return response
 
