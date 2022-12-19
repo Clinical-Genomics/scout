@@ -3,7 +3,6 @@ import tempfile
 import zlib
 from urllib.error import HTTPError
 
-import pytest
 import requests
 import responses
 
