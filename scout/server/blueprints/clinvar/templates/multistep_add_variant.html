@@ -81,14 +81,41 @@
                   {% if var_category == 'snv' %}
                     <br><br>
                     <!-- Transcripts & HGVS:(optional) -->
-                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic)"><strong>?</strong></span><br><br>
+                    {{variant_data.var_form.tx_hgvs.label(class="fw-bold, text-dark")}}
+                    <span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic). HGVS expressions were validated using VariantValidator"><strong>?</strong></span>
+                    <span class="badge bg-primary float-end"><a class="text-white" href="https://variantvalidator.org/service/validate/" target="_blank" rel="noopener">VariantValidator</a></span>
+                    <br><br>
+
+                    <table role="presentation" style="width:100%; table-layout: auto; border-collapse: collapse;">
+                    {% set ns = namespace(label='', validated=false) %}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
-                      <div class="row">
+                      <tr>
                       {% for item in item_row %}
-                        <div class="col-4"><p class="text-white bg-secondary" {% if item.label.text|length > 25 %} data-bs-toggle="tooltip" title="{{item.label.text}}" {% endif%} >{{ item() }} {{item.label.text|truncate(25,true,'..')}}</label></p></div>
+                        <td style="width: 3%; text-align: right; vertical-align: baseline;">{{item()}}</td>
+
+                        {% if "(validated)" in item.label.text %}
+                          {% set ns.validated = true %}
+                        {% else %}
+                          {% set ns.validated = false %}
+                        {% endif %}
+                        {% set ns.label = item.label.text | replace(" (validated)", "") %}
+
+                        <td style="width: 30%; text-align: left; ">
+                          <p
+                          {% if ns.label|length > 25 %}
+                           data-bs-toggle="tooltip" title="{{ns.label}}">{{ ns.label|truncate(25,true,'..') }}
+                          {% else %}
+                            >{{ ns.label }}
+                          {% endif %}
+                          {% if ns.validated %}
+                            <em class="fa fa-check text-success" aria-hidden="true" data-bs-toggle="tooltip" title="Verified by VariantValidator"></em>
+                          {% endif %}
+                          </p>
+                        </td>
                       {% endfor %}
-                      </div>
+                      </tr>
                     {% endfor %}
+                    </table>
                     <br><br>
                     <!-- dbSNP identifier -->
                     {{variant_data.var_form.variations_ids.label(class="fw-bold, text-dark")}}
