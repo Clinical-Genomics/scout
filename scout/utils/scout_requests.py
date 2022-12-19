@@ -120,7 +120,6 @@ def get_request(url):
         error = f"socket timed out - URL {url}"
 
     if error:
-        flash(error, "warning")
         LOG.error(error)
 
     return response
@@ -438,6 +437,8 @@ def fetch_refseq_version(refseq_acc):
 
     try:
         resp = get_request(base_url.format(refseq_acc))
+        if resp is None:
+            flash("Could not retrieve HGVS descriptors from Entrez eutils", "warning")
         tree = ElementTree.fromstring(resp.content)
         version = tree.find("IdList").find("Id").text or version
 
