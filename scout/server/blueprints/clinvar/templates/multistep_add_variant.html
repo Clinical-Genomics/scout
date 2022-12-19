@@ -85,7 +85,8 @@
                     <span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic). HGVS expressions were validated using VariantValidator"><strong>?</strong></span>
                     <span class="badge bg-primary float-end"><a class="text-white" href="https://variantvalidator.org/service/validate/" target="_blank" rel="noopener">VariantValidator</a></span>
                     <br><br>
-                    <table style="width:100%; table-layout: auto;">
+
+                    <table role="presentation" style="width:100%; table-layout: auto; border-collapse: collapse;">
                     {% set ns = namespace(label='', validated=false) %}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <tr>
