@@ -94,9 +94,7 @@ def test_get_request_bad_url():
 
     # test function with a url that is not valid
     url = "fakeyurl"
-    with pytest.raises(requests.exceptions.MissingSchema):
-        # function should raise error
-        assert scout_requests.get_request(url)
+    assert scout_requests.get_request(url) == None
 
 
 @responses.activate
@@ -111,10 +109,9 @@ def test_get_request_bad_request():
         status=404,
     )
     # WHEN requesting
-    with pytest.raises(requests.exceptions.HTTPError):
-        response = scout_requests.get_request(url)
-        # THEN assert that the a httperror is raised
-        assert response.status_code == 404
+    response = scout_requests.get_request(url)
+    # THEN response should have 404 code
+    assert response.status_code == 404
 
 
 @responses.activate
@@ -128,9 +125,10 @@ def test_send_request_timout():
         body=requests.exceptions.Timeout(),
     )
     # WHEN requesting
-    with pytest.raises(requests.exceptions.Timeout):
-        # THEN assert that the a Timeout is raised
-        scout_requests.get_request(url)
+
+    # THEN assert that the a Timeout is raised
+    resp = scout_requests.get_request(url)
+    assert resp == None
 
 
 @responses.activate
@@ -460,8 +458,7 @@ def test_fetch_resource_json():
     assert data[0]["first"] == "second"
 
 
-@responses.activate
-def test_fetch_refseq_version_timeout():
+def test_fetch_refseq_version_timeout(mocker):
     """Test a connection error when retrieving refseq version from entrez utils service"""
 
     # GIVEN a refseq accession number
@@ -473,15 +470,9 @@ def test_fetch_refseq_version_timeout():
     )
     url = base_url.format(refseq_acc)
 
-    # GIVEN a patched request that triggers timeout
-    def exception_callback():
-        return requests.exceptions.Timeout("Connection timed out.")
-
-    responses.add(
-        responses.GET,
-        url,
-        body=exception_callback(),
-        status=200,
+    mocker.patch(
+        "requests.get",
+        return_value=requests.exceptions.Timeout("Connection timed out."),
     )
 
     # WHEN fetching complete refseq version for accession that has version
