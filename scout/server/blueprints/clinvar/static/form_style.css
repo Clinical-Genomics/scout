@@ -195,9 +195,7 @@ body {
 /* Prevent usage of dark mode for checkboxes and radiobuttons */
 input[type='checkbox']{
   color-scheme: only light;
-  transform: scale(1.5);
 }
 input[type='radio']{
   color-scheme: only light;
-  transform: scale(1.5); 
 }
