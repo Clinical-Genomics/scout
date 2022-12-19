@@ -79,6 +79,7 @@
       Submission <strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong> / Created: <strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong> / Last updated: <strong>{{subm_obj.updated_at.strftime('%Y-%m-%d')}}</strong>
     </div><!-- end of card header-->
     <div class="card-body">
+      <div class="row">
       <form id="updateStatus_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb align-items-center">
@@ -103,30 +104,27 @@
           </ol>
         </nav>
         </form>
-        <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
-        <div class="row mb-3">
-          <div class="col-1">
-            <label for="clinvar_id" class="form-text">Submission ID</label>
-          </div>
-          <div class="col-2">
-            <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required>
-          </div>
-          <div class="col-2">
-            <button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button>
-          </div>
-          {% if config.CLINVAR_API_KEY %}
-            <div class="col-3">
-              <a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a>
-            </div>
-            {% if subm_obj.clinvar_subm_id and subm_obj.status != "submitted" %}
-              <div class="col-2">
-                <button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button>
-              </div>
+      </div>
+      <div class="row">
+        <table role="presentation">
+          <tr>
+            <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
+            <td style="width: 10%"><label for="clinvar_id">Submission ID</label></td>
+            <td style="width: 25%"> <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required></td>
+            <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button></td>
+            </form>
+            {% if config.CLINVAR_API_KEY %}
+              <form id="useApi_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
+              {{ submit_modal(subm_obj) }}
+              <td style="width: 20%"><a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id, save_id='y') }}" class="btn btn-sm btn-primary text-white">Validate and obtain ID from ClinVar</a></td>
+              {% if subm_obj.clinvar_subm_id and subm_obj.status != "submitted" %}
+                <td style="width: 20%"><button type="button" class="btn btn-sm btn-success form-control" name="update_submission" value="api_submit" data-bs-toggle="modal" data-bs-target="#submitModal">Submit to ClinVar</button></td>
+              {% endif %}
+              </form>
             {% endif %}
-          {% endif %}
-        </div>
-        {{ submit_modal(subm_obj) }}
-      </form>
+          </tr>
+        </table>
+      </div>
       <div> <!--variant data div -->
         <h4>Variant data:</h4>
         {% if subm_obj.variant_data and subm_obj.variant_data | length > 0 %}
