@@ -112,11 +112,11 @@ def get_request(url):
         if response.status_code != 200:
             response.raise_for_status()
         LOG.info("Encoded to %s", response.encoding)
-    except requests.exceptions.HTTPError as err:
+    except requests.exceptions.HTTPError:
         LOG.warning("Something went wrong, perhaps the api key is not valid?")
-    except requests.exceptions.MissingSchema as err:
+    except requests.exceptions.MissingSchema:
         LOG.warning("Something went wrong, perhaps url is invalid?")
-    except requests.exceptions.Timeout as err:
+    except requests.exceptions.Timeout:
         LOG.error("socket timed out - URL %s", url)
 
     return response
