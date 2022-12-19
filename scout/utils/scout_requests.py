@@ -7,6 +7,7 @@ from urllib.error import HTTPError
 
 import requests
 from defusedxml import ElementTree
+from flask import flash
 
 from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
@@ -106,18 +107,21 @@ def get_request(url):
         decoded_data(str): Decoded response
     """
     response = None
+    error = None
     try:
-        LOG.info("Requesting %s", url)
         response = requests.get(url, timeout=TIMEOUT)
         if response.status_code != 200:
             response.raise_for_status()
-        LOG.info("Encoded to %s", response.encoding)
     except requests.exceptions.HTTPError:
-        LOG.warning("Something went wrong, perhaps the api key is not valid?")
+        error = "Something went wrong, perhaps the api key is not valid?"
     except requests.exceptions.MissingSchema:
-        LOG.warning("Something went wrong, perhaps url is invalid?")
+        error = "Something went wrong, perhaps url is invalid?"
     except requests.exceptions.Timeout:
-        LOG.error("socket timed out - URL %s", url)
+        error = f"socket timed out - URL {url}"
+
+    if error:
+        flash(error, "warning")
+        LOG.error(error)
 
     return response
 
