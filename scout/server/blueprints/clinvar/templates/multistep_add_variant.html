@@ -85,7 +85,7 @@
                     <span class="text-danger" data-bs-toggle='tooltip' title="If you do not provide any HGVS expression, chromosome coordinates will be used to describe this variant instead (automatic). HGVS expressions were validated using VariantValidator"><strong>?</strong></span>
                     <span class="badge bg-primary float-end"><a class="text-white" href="https://variantvalidator.org/service/validate/" target="_blank" rel="noopener">VariantValidator</a></span>
                     <br><br>
-                    <table style="width:100%; table-layout: auto;">
+                    <table style="width:100%; table-layout: auto; border-collapse: collapse;">
                     {% set ns = namespace(label='', validated=false) %}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <tr>
@@ -100,14 +100,16 @@
                         {% set ns.label = item.label.text | replace(" (validated)", "") %}
 
                         <td style="width: 30%; text-align: left;">
+                          <p
                           {% if ns.label|length > 25 %}
-                          <p data-bs-toggle="tooltip" title="{{ns.label}}">{{ ns.label|truncate(25,true,'..') }}</p>
+                           data-bs-toggle="tooltip" title="{{ns.label}}">{{ ns.label|truncate(25,true,'..') }}
                           {% else %}
-                            {{ ns.label }}
+                            >{{ ns.label }}
                           {% endif %}
                           {% if ns.validated %}
                             <em class="fa fa-check text-success" aria-hidden="true" data-bs-toggle="tooltip" title="Verified by VariantValidator"></em>
                           {% endif %}
+                          </p>
                         </td>
                       {% endfor %}
                       </tr>
