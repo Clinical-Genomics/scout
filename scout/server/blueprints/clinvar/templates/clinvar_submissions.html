@@ -26,37 +26,40 @@
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-body">
-          <h5>Requirements</h5>
-          <p>
+            <h4>Requirements</h4>
             Make sure to <strong>register a user</strong> to the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/submission_portal/" target="_blank" rel="noopener">ClinVar submission portal.</a><br>
-                        If your organization is not already present in ClinVar you should follow the instructions to <strong>register a submitting organization</strong> to the same portal.
-                        The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
-          </p><br>
-          <h5>Obtain a submission ID</h5>
-          <p>
-            If the requirements above are fullfilled, you can start a new submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank" rel="noopener">submission page</a>.<br>This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
-          </p><br>
-          <h5>Fill in panel 1 and 2</h5>
-          <p>
+                          If your Organization is not already present in ClinVar you should follow the instructions to <strong>register a submitting Organization</strong> to the same portal.
+                          The first time an organization is registered in the ClinVar Submission Portal, the content will be reviewed, so it will take some time before getting approved in order to start a variant submission.
+            <br><br>
+            <h5>Automatic submission</h4>
+            Once the requirements above are fulfilled you could submit manually using files uploaded to the ClinVar submission portal. See the heading below. You can avoid this extra file handling step by submitting directly via API instead. Submission by API requires a <strong>service account key</strong> for the submitting organization and an API key associated with it.
+            Follow the instructions provided on the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API pages</a> to obtain a valid key for the service account.<br>
+            Once you are satisfied with the content of your submission, you could validate it and obtain a submission ID from the ClinVar API by clicking on the <strong>Validate and obtain ID from ClinVar</strong> button as in the image below. This does not require an institute specific API key.<br><br>
+
+            <img width="202" alt="image" src="https://user-images.githubusercontent.com/28093618/208666249-2bfe457d-a194-4d5f-a856-97e75da14681.png"><br><br>
+
+            If the validation is successful, a submission name will be saved for your submission. Alternatively validation errors will be displayed on the page.
+            To submit your variants using the ClinVar API, you'll need to click on the <strong>Submit to ClinVar</strong> button:<br><br>
+
+            <img width="264" alt="image" src="https://user-images.githubusercontent.com/28093618/208666318-0efac91e-c5d2-42a0-9ceb-d7fc68c6d920.png"><br><br>
+
+            <h5>Manual submission</h5>
+            Once you have registered to the ClinVar portal as a submitter for a given Organization, you can start a new manual submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank" rel="noopener">submission page</a>.<br>
+            This button is a link to a multi-panel (4 panels) submission page. The first panel (submission information) has a precompiled field named "<strong>Submission name</strong>".
             Fill in submission forms in panel 1 and 2, respectively named "Submission information" and "Organization". In the "<strong>Submission format</strong>" in panel 1 make sure to select the value "<strong>Comma-separated values</strong>".<br>
-            <strong>Assemby name</strong> fields should be filled in before proceding further with the submission.
-          </p><br>
-          <h5>Download the files</h5>
-          <p>
-            You'll need to register the <strong>Submission Name</strong> obtained from the ClinVar portal in order to download variants and casedata submission files.
-          </p><br>
-          <h5>Upload the files to ClinVar</h5>
-          <p>
-            Upload the files obtained above (either the variants .csv file or the variants .csv + the casedata .csv files) in the "<strong>Submission Files</strong>" field in the third panel of the submission.
-          The field named <strong>"Assertion Criteria File" should be left blank</strong>, since the default information is already filled in the "Variants sheet" <strong>(ACMG Guidelines, 2015)</strong>.<br>
-          <text class="text-danger"> Note that if you edit these files in Excel you need to save them in the correct format: <strong>comma-separated columns</strong>. Default settings should probably work fine if your software's locale is US English.
-          If this is not the case you might need to change your software's region settings to use US English before exporting these tables.</text>
-          </p>
+            <strong>Assemby name</strong> fields should be filled in before proceeding further with the submission.<br>
+            You'll need to register the <strong>Submission Name</strong> obtained from the ClinVar portal in order to download variants and casedata submission files.<br>
+
+            <img width="286" alt="image" src="https://user-images.githubusercontent.com/28093618/208641060-dbd91bc8-6801-43c7-842c-3cd5dac49809.png"><br>
+
+            Download the files above (either the variants .csv file or the variants .csv + the casedata .csv files) from Scout and upload them in the "<strong>Submission Files</strong>" field in the third panel of the submission.<br>
+            <text class="text-danger"> Note that if you edit these files in Excel you need to save them in the correct format: <strong>comma-separated columns</strong>. Default settings should probably work fine if your software's locale is US English.
+            If this is not the case you might need to change your software's region settings to use US English before exporting these tables.</text>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
         </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-      </div>
     </div>
   </div>
   <!-- Modal end -->
