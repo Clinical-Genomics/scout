@@ -469,7 +469,7 @@ def test_fetch_refseq_version_timeout(mocker, mock_app):
         return_value=requests.exceptions.Timeout("Connection timed out."),
     )
 
-    with mock_app.app_context():
+    with mock_app.test_request_context():
 
         # WHEN fetching complete refseq version for accession that has version
         refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
