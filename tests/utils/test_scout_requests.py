@@ -3,11 +3,13 @@ import tempfile
 import zlib
 from urllib.error import HTTPError
 
-import pytest
 import requests
 import responses
 
 from scout.utils import scout_requests
+
+REFSEQ_ACC = "NM_020533"
+ETILS_NUCCORE_SEARCH_URL = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&term={REFSEQ_ACC}&idtype=acc"
 
 
 def test_get_request_json_error():
@@ -94,9 +96,7 @@ def test_get_request_bad_url():
 
     # test function with a url that is not valid
     url = "fakeyurl"
-    with pytest.raises(requests.exceptions.MissingSchema):
-        # function should raise error
-        assert scout_requests.get_request(url)
+    assert scout_requests.get_request(url) == None
 
 
 @responses.activate
@@ -111,10 +111,9 @@ def test_get_request_bad_request():
         status=404,
     )
     # WHEN requesting
-    with pytest.raises(requests.exceptions.HTTPError):
-        response = scout_requests.get_request(url)
-        # THEN assert that the a httperror is raised
-        assert response.status_code == 404
+    response = scout_requests.get_request(url)
+    # THEN response should have 404 code
+    assert response == None
 
 
 @responses.activate
@@ -128,9 +127,10 @@ def test_send_request_timout():
         body=requests.exceptions.Timeout(),
     )
     # WHEN requesting
-    with pytest.raises(requests.exceptions.Timeout):
-        # THEN assert that the a Timeout is raised
-        scout_requests.get_request(url)
+
+    # THEN assert that the a Timeout is raised
+    resp = scout_requests.get_request(url)
+    assert resp == None
 
 
 @responses.activate
@@ -460,28 +460,38 @@ def test_fetch_resource_json():
     assert data[0]["first"] == "second"
 
 
+def test_fetch_refseq_version_timeout(mocker, empty_mock_app):
+    """Test a connection error when retrieving refseq version from entrez utils service"""
+
+    # GIVEN a patched requests module
+    mocker.patch(
+        "requests.get",
+        return_value=requests.exceptions.Timeout("Connection timed out."),
+    )
+
+    with empty_mock_app.test_request_context():
+
+        # WHEN fetching complete refseq version for accession that has version
+        refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
+
+        # THEN refseq returned is the same as refseq provided
+        assert REFSEQ_ACC == refseq_version
+
+
 @responses.activate
 def test_fetch_refseq_version(refseq_response):
     """Test utils service from entrez that retrieves refseq version"""
 
-    # GIVEN a refseq accession number
-    refseq_acc = "NM_020533"
-    # GIVEN the base url
-    base_url = (
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&"
-        "term={}&idtype=acc"
-    )
-    url = base_url.format(refseq_acc)
     responses.add(
         responses.GET,
-        url,
+        ETILS_NUCCORE_SEARCH_URL,
         body=refseq_response,
         status=200,
     )
     # WHEN fetching complete refseq version for accession that has version
-    refseq_version = scout_requests.fetch_refseq_version(refseq_acc)
+    refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
     # THEN assert that the refseq identifier is the same
-    assert refseq_acc in refseq_version
+    assert REFSEQ_ACC in refseq_version
     # THEN assert that there is a version that is a digit
     version_n = refseq_version.split(".")[1]
     assert version_n.isdigit()
@@ -490,21 +500,14 @@ def test_fetch_refseq_version(refseq_response):
 @responses.activate
 def test_fetch_refseq_version_non_existing(refseq_response_non_existing):
     """Test to fetch version for non existing transcript"""
-    # GIVEN a accession without refseq version
-    refseq_acc = "NM_000000"
-    # GIVEN the base url
-    base_url = (
-        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&"
-        "term={}&idtype=acc"
-    )
-    url = base_url.format(refseq_acc)
+
     responses.add(
         responses.GET,
-        url,
+        ETILS_NUCCORE_SEARCH_URL,
         body=refseq_response_non_existing,
         status=200,
     )
-    refseq_version = scout_requests.fetch_refseq_version(refseq_acc)
+    refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
 
     # THEN assert that the same ref seq was returned
-    assert refseq_version == refseq_acc
+    assert refseq_version == REFSEQ_ACC
