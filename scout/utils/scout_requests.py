@@ -118,9 +118,12 @@ def get_request(url):
         error = "Something went wrong, perhaps url is invalid?"
     except requests.exceptions.Timeout:
         error = f"socket timed out - URL {url}"
+    except Exception as ex:
+        error = f"Exception while connecting to {url}: {ex}"
 
     if error:
         LOG.error(error)
+        return
 
     return response
 
@@ -438,7 +441,8 @@ def fetch_refseq_version(refseq_acc):
     try:
         resp = get_request(base_url.format(refseq_acc))
         if resp is None:
-            flash("Could not retrieve HGVS descriptors from Entrez eutils", "warning")
+            flash(f"Error: could not retrieve HGVS version for {refseq_acc} from Entrez eutils!")
+            return version
         tree = ElementTree.fromstring(resp.content)
         version = tree.find("IdList").find("Id").text or version
 
