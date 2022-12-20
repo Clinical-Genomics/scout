@@ -544,6 +544,7 @@
         container: 'body'})
   })
 
+
   $(function(){
       function getHpoTerms(query, process) {
         $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
@@ -596,6 +597,11 @@
 
   });
 
+function StopSpinner() {
+   // Avoid page spinner being stuck on file download
+  $(window).unbind('beforeunload');
+  return true;
+}
 function SidebarCollapse () {
     $('.menu-collapsed').toggleClass('d-none');
     $('.sidebar-submenu').toggleClass('d-none');
