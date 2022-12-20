@@ -7,6 +7,7 @@ from urllib.error import HTTPError
 
 import requests
 from defusedxml import ElementTree
+from flask import flash
 
 from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
@@ -105,21 +106,24 @@ def get_request(url):
     Returns:
         decoded_data(str): Decoded response
     """
+    response = None
+    error = None
     try:
-        LOG.info("Requesting %s", url)
         response = requests.get(url, timeout=TIMEOUT)
         if response.status_code != 200:
             response.raise_for_status()
-        LOG.info("Encoded to %s", response.encoding)
-    except requests.exceptions.HTTPError as err:
-        LOG.warning("Something went wrong, perhaps the api key is not valid?")
-        raise err
-    except requests.exceptions.MissingSchema as err:
-        LOG.warning("Something went wrong, perhaps url is invalid?")
-        raise err
-    except requests.exceptions.Timeout as err:
-        LOG.error("socket timed out - URL %s", url)
-        raise err
+    except requests.exceptions.HTTPError:
+        error = "Something went wrong, perhaps the api key is not valid?"
+    except requests.exceptions.MissingSchema:
+        error = "Something went wrong, perhaps url is invalid?"
+    except requests.exceptions.Timeout:
+        error = f"socket timed out - URL {url}"
+    except Exception as ex:
+        error = f"Exception while connecting to {url}: {ex}"
+
+    if error:
+        LOG.error(error)
+        return
 
     return response
 
@@ -436,6 +440,9 @@ def fetch_refseq_version(refseq_acc):
 
     try:
         resp = get_request(base_url.format(refseq_acc))
+        if resp is None:
+            flash(f"Error: could not retrieve HGVS version for {refseq_acc} from Entrez eutils!")
+            return version
         tree = ElementTree.fromstring(resp.content)
         version = tree.find("IdList").find("Id").text or version
 
