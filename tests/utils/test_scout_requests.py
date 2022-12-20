@@ -5,7 +5,6 @@ from urllib.error import HTTPError
 
 import requests
 import responses
-from flask import url_for
 
 from scout.utils import scout_requests
 
@@ -114,7 +113,7 @@ def test_get_request_bad_request():
     # WHEN requesting
     response = scout_requests.get_request(url)
     # THEN response should have 404 code
-    assert response.status_code == 404
+    assert response == None
 
 
 @responses.activate
