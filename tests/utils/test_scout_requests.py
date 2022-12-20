@@ -5,6 +5,7 @@ from urllib.error import HTTPError
 
 import requests
 import responses
+from flask import url_for
 
 from scout.utils import scout_requests
 
@@ -460,7 +461,7 @@ def test_fetch_resource_json():
     assert data[0]["first"] == "second"
 
 
-def test_fetch_refseq_version_timeout(mocker):
+def test_fetch_refseq_version_timeout(mocker, mock_app):
     """Test a connection error when retrieving refseq version from entrez utils service"""
 
     # GIVEN a patched requests module
@@ -469,11 +470,13 @@ def test_fetch_refseq_version_timeout(mocker):
         return_value=requests.exceptions.Timeout("Connection timed out."),
     )
 
-    # WHEN fetching complete refseq version for accession that has version
-    refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
+    with mock_app.app_context():
 
-    # THEN refseq returned is the same as refseq provided
-    assert REFSEQ_ACC == refseq_version
+        # WHEN fetching complete refseq version for accession that has version
+        refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
+
+        # THEN refseq returned is the same as refseq provided
+        assert REFSEQ_ACC == refseq_version
 
 
 @responses.activate
