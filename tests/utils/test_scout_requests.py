@@ -460,7 +460,7 @@ def test_fetch_resource_json():
     assert data[0]["first"] == "second"
 
 
-def test_fetch_refseq_version_timeout(mocker, mock_app):
+def test_fetch_refseq_version_timeout(mocker, empty_mock_app):
     """Test a connection error when retrieving refseq version from entrez utils service"""
 
     # GIVEN a patched requests module
@@ -469,7 +469,7 @@ def test_fetch_refseq_version_timeout(mocker, mock_app):
         return_value=requests.exceptions.Timeout("Connection timed out."),
     )
 
-    with mock_app.test_request_context():
+    with empty_mock_app.test_request_context():
 
         # WHEN fetching complete refseq version for accession that has version
         refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
