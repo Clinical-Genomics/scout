@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Truncate IDs and HGVS representations in ClinVar pages if longer than 25 characters
 - Update ClinVar submission ID form
 - Handle connection timeout when sending requests requests to external web services
+- Validate any ClinVar submission regardless of its status
 
 ## [unreleased]
 ### Added
