@@ -228,8 +228,8 @@
         <button class="btn btn-secondary form-control" id="import-phenotype-modal-btn" data-bs-toggle="modal" data-bs-target="#import-phenotype">Import</button>
       </div>
       <div class="col">
-        <form method="POST" action="{{ url_for('cases.phenotype_export', institute_id=institute._id, case_name=case.display_name) }}">
-            <button class="btn btn-secondary form-control" id="export-phenotype-button" type="submit" data-bs-toggle='tooltip' title="Export Phenopacket JSON for affected individual">Export</button>
+        <form method="POST" action="{{ url_for('cases.phenotype_export', institute_id=institute._id, case_name=case.display_name) }}" onsubmit="return StopSpinner()">
+            <button class="btn btn-secondary form-control" id="export-phenotype-button" type="submit" data-bs-toggle="tooltip" title="Export Phenopacket JSON for affected individual">Export</button>
         </form>
       </div>
     </div>
