@@ -228,8 +228,8 @@
         <button class="btn btn-secondary form-control" id="import-phenotype-modal-btn" data-bs-toggle="modal" data-bs-target="#import-phenotype">Import</button>
       </div>
       <div class="col">
-        <form method="POST" action="{{ url_for('cases.phenotype_export', institute_id=institute._id, case_name=case.display_name) }}">
-            <button class="btn btn-secondary form-control" id="export-phenotype-button" type="submit" data-bs-toggle='tooltip' title="Export Phenopacket JSON for affected individual">Export</button>
+        <form method="POST" action="{{ url_for('cases.phenotype_export', institute_id=institute._id, case_name=case.display_name) }}" onsubmit="return StopSpinner()">
+            <button class="btn btn-secondary form-control" id="export-phenotype-button" type="submit" data-bs-toggle="tooltip" title="Export Phenopacket JSON for affected individual">Export</button>
         </form>
       </div>
     </div>
@@ -327,7 +327,7 @@
               <p class="help-block">How do I format my <a href="https://phenopacket-schema.readthedocs.io/en/latest/index.html" rel="noopener" target="_blank">phenopacket</a> JSON file?</p>
             </div>
             <div class="col-4">
-             <button type="submit" class="btn btn-secondary">Upload</button>
+             <button type="submit" class="btn btn-secondary">Import</button>
             </div>
             <div class="row mb-3">
               <span>Fetch phenopackets from UDNI tip2toe</span>
@@ -338,7 +338,7 @@
                 <p class="help-block">Fill in phenotype hash from <a href="https://udni-tip2toe.vercel.app" rel="noopener" target="_blank">UDNI tip2toe</a>.</p>
               </div>
                 <div class="col-4">
-                  <button type="submit" class="btn btn-secondary">Upload</button>
+                  <button type="submit" class="btn btn-secondary">Import</button>
                 </div>
             </div>
           </div>
