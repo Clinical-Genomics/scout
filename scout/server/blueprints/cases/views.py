@@ -399,6 +399,11 @@ def phenotype_import(institute_id, case_name):
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
 
     phenopacket_file = request.files["phenopacket_file"]
+    phenopacket_hash = request.form.get("phenopacket_hash")
+
+    if not phenopacket_file or phenopacket_hash:
+        flash("Please provide a phenotype file (json or hash format)", "warning")
+        return redirect("#".join([case_url, "phenotypes_panel"]))
 
     if phenopacket_file:
         phenopacket = phenopacketapi.file_import(phenopacket_file)
