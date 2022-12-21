@@ -101,10 +101,11 @@ class PhenopacketAPI:
 
         query = f"{self.url}/api/v1/phenopacket?hash={phenopacket_hash}"
 
-        try:
-            json_response = get_request_json(query)
-        except Exception as e:
-            LOG.warning(e)
+        json_response = get_request_json(query)
+
+        if json_response.get("message"):
+            LOG.warning(json_response["message"])
+            return
 
         json_content = json_response.get("content")[0]
 
