@@ -397,8 +397,14 @@ def phenotype_import(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     case_url = url_for(".case", institute_id=institute_id, case_name=case_name)
+    phenopacket = None
 
     phenopacket_file = request.files["phenopacket_file"]
+    phenopacket_hash = request.form.get("phenopacket_hash")
+
+    if not phenopacket_file and not phenopacket_hash:
+        flash("Please provide a phenotype file (json or hash format)", "warning")
+        return redirect("#".join([case_url, "phenotypes_panel"]))
 
     if phenopacket_file:
         phenopacket = phenopacketapi.file_import(phenopacket_file)
@@ -408,9 +414,13 @@ def phenotype_import(institute_id, case_name):
     if phenopacket_hash:
         phenopacket = phenopacketapi.get_hash(phenopacket_hash)
 
-    phenopacketapi.add_phenopacket_to_case(
-        store, institute_obj, case_obj, user_obj, case_url, phenopacket
-    )
+    if phenopacket is None:
+        flash("An error occurred while retrieving Phenopacket info", "warning")
+
+    else:
+        phenopacketapi.add_phenopacket_to_case(
+            store, institute_obj, case_obj, user_obj, case_url, phenopacket
+        )
 
     return redirect("#".join([case_url, "phenotypes_panel"]))
 
