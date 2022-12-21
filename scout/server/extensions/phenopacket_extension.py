@@ -105,6 +105,7 @@ class PhenopacketAPI:
 
         if json_response.get("message"):
             LOG.warning(json_response["message"])
+            return
 
         json_content = json_response.get("content")[0]
 
