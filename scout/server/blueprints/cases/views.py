@@ -402,7 +402,7 @@ def phenotype_import(institute_id, case_name):
     phenopacket_file = request.files["phenopacket_file"]
     phenopacket_hash = request.form.get("phenopacket_hash")
 
-    if not phenopacket_file or phenopacket_hash:
+    if not phenopacket_file and not phenopacket_hash:
         flash("Please provide a phenotype file (json or hash format)", "warning")
         return redirect("#".join([case_url, "phenotypes_panel"]))
 
