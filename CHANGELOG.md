@@ -23,7 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update ClinVar submission ID form
 - Handle connection timeout when sending requests requests to external web services
 - Validate any ClinVar submission regardless of its status
-- Errors in Phenomizer fetch feature
+- Errors in Phenomizer import feature
 ### Changed
 - Updated ClinVar submission instructions
 
