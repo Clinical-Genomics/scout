@@ -914,7 +914,9 @@
             <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
               <td colspan="1"></td>
               <td colspan="3"><!-- display dismissed variant comments -->
-                {{ comments_table(institute, case, variant.comments) }}
+                {% if variant.comments %}
+                  {{ comments_table(institute, case, variant.comments) }}
+                {% endif %}
               </td>
             </tr>
     {% endfor %}
