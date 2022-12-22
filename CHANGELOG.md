@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Display dismissed variants comments on general case report
+
 ## [4.62]
 ### Added
 - Validate ClinVar submission objects using the ClinVar API

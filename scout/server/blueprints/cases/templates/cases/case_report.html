@@ -1,4 +1,5 @@
 {% from "cases/utils.html" import variant_transcripts %}
+{% from "utils.html" import comments_table %}
 
 {% extends "report_base.html" %}
 
@@ -760,7 +761,7 @@
     </div>
     <div class="card-body">
       {% if variants.dismissed_detailed %}
-        <table class="table table-striped table-sm" style="background-color: transparent">
+        <table class="table table-sm" style="background-color: transparent">
           <thead>
             <tr>
                 <td width="5%"></td>
@@ -771,7 +772,7 @@
             </tr>
           </thead>
           {% for variant in variants.dismissed_detailed|sort(attribute='variant_rank') %}
-            <tr>
+            <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
               <td width="5%">#{{loop.index}}</td>
               <td width="25%">
                 {% if variant.category == 'snv' %}
@@ -784,12 +785,12 @@
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>rep. {{variant.str_repid}}</strong></a>
                 {% endif %}
               </td>
-              <td width="5%">{{variant.category|upper}}</td>
+              <td width="5%">{{variant.category|upper}}
+              </td>
               <td width="15%">
                 {{ dismissed_gene_list(variant) }}
               </td>
-
-              <td>
+              <td rowspan="2">
                 <ul>
                   {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
                     <li>{{dismissed_options[reason|int]['description']}}
@@ -871,7 +872,7 @@
                         {% endif %})
                         <br>
                       {% elif reason== '23' %} <!-- inherited from unaffected -->
-                        <table id="panel-table" class="table-borderless table-sm" >
+                        <table id="panel-table" class="table-borderless table-sm" rowspan=2>
                           <thead>
                             <tr style="background-color: transparent">
                               <th rowspan="2">Sample</th>
@@ -910,8 +911,14 @@
                 </ul>
               </td>
             </tr>
-    {% endfor %}
-  </table>
+            <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
+              <td colspan="1"></td>
+              <td colspan="3"><!-- display dismissed variant comments -->
+                {{ comments_table(institute, case, variant.comments) }}
+              </td>
+            </tr>
+          {% endfor %}
+      </table>
   {% else %}
     No dismissed variants for this case
   {% endif %}
