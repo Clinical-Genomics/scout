@@ -756,11 +756,11 @@
 {% macro dismissed_panel() %}
   <div class="card border-danger mb-3" style="border-width: 5px; display: block;">
     <div class="card-header bg-danger text-black">
-      <a name="dismissed_variants"><strong>Dismissed Variants</strong></a>
+      <p id="dismissedDesc"><a name="dismissed_variants"><strong>Dismissed Variants</strong></a></p>
     </div>
     <div class="card-body">
       {% if variants.dismissed_detailed %}
-        <table class="table table-striped table-sm" style="background-color: transparent">
+        <table class="table table-striped table-sm" style="background-color: transparent" aria-describedby="dismissedDesc">
           <thead>
             <tr>
                 <th width="5%"></th>
