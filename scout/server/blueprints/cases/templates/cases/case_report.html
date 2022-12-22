@@ -785,8 +785,7 @@
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>rep. {{variant.str_repid}}</strong></a>
                 {% endif %}
               </td>
-              <td width="5%">{{variant.category|upper}}
-              </td>
+              <td width="5%">{{variant.category|upper}}</td>
               <td width="15%">
                 {{ dismissed_gene_list(variant) }}
               </td>
