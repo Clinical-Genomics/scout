@@ -74,7 +74,7 @@
 {% macro phenotype_panel() %}
 	<div class="card mb-3" style="border-width: 5px; display: block;">
 	  <div class="card-header">
-	    <a id="phenotype" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
+	    <a id="phenotype" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
 	  </div>
 	  <div class="card-body">
 	    <table class="table table-sm" style="table-layout:fixed;">
