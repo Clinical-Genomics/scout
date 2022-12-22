@@ -1,5 +1,4 @@
 {% from "cases/utils.html" import variant_transcripts %}
-{% from "utils.html" import comments_table %}
 
 {% extends "report_base.html" %}
 
@@ -761,18 +760,18 @@
     </div>
     <div class="card-body">
       {% if variants.dismissed_detailed %}
-        <table class="table table-sm" style="background-color: transparent">
+        <table class="table table-striped table-sm" style="background-color: transparent">
           <thead>
             <tr>
-                <td width="5%"></td>
-                <td width="25%"><strong>Variant</strong></td>
-                <td width="5%"><strong>Category</strong></td>
-  	            <td width="25%"><strong>Genes</strong></td>
-                <td width="45%"><strong>Dismissed description</strong></td>
+                <th width="5%"></th>
+                <th width="25%"><strong>Variant</strong></th>
+                <th width="5%"><strong>Category</strong></th>
+  	            <th width="25%"><strong>Genes</strong></th>
+                <th width="45%"><strong>Dismissed description</strong></th>
             </tr>
           </thead>
           {% for variant in variants.dismissed_detailed|sort(attribute='variant_rank') %}
-            <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
+            <tr>
               <td width="5%">#{{loop.index}}</td>
               <td width="25%">
                 {% if variant.category == 'snv' %}
@@ -789,7 +788,8 @@
               <td width="15%">
                 {{ dismissed_gene_list(variant) }}
               </td>
-              <td rowspan="2">
+
+              <td>
                 <ul>
                   {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
                     <li>{{dismissed_options[reason|int]['description']}}
@@ -871,7 +871,7 @@
                         {% endif %})
                         <br>
                       {% elif reason== '23' %} <!-- inherited from unaffected -->
-                        <table id="panel-table" class="table-borderless table-sm" rowspan="2">
+                        <table id="panel-table" class="table-borderless table-sm" >
                           <thead>
                             <tr style="background-color: transparent">
                               <th rowspan="2">Sample</th>
@@ -910,14 +910,8 @@
                 </ul>
               </td>
             </tr>
-            <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
-              <td colspan="1"></td>
-              <td colspan="3"><!-- display dismissed variant comments -->
-                {{ comments_table(institute, case, variant.comments) }}
-              </td>
-            </tr>
-          {% endfor %}
-      </table>
+    {% endfor %}
+  </table>
   {% else %}
     No dismissed variants for this case
   {% endif %}
