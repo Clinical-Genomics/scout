@@ -764,11 +764,11 @@
         <table class="table table-sm" style="background-color: transparent" aria-describedby="dismissedDesc">
           <thead>
             <tr>
-                <th width="5%"></th>
-                <th width="25%"><strong>Variant</strong></th>
-                <th width="5%"><strong>Category</strong></th>
-  	            <th width="25%"><strong>Genes</strong></th>
-                <th width="45%"><strong>Dismissed description</strong></th>
+                <th class="w-5"></th>
+                <th class="w-25"><strong>Variant</strong></th>
+                <th class="w-5"><strong>Category</strong></th>
+  	            <th class="w-25"><strong>Genes</strong></th>
+                <th class="w-45"><strong>Dismissed description</strong></th>
             </tr>
           </thead>
           {% for variant in variants.dismissed_detailed|sort(attribute='variant_rank') %}
