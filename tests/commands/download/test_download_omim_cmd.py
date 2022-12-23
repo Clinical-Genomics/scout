@@ -44,7 +44,7 @@ def test_download_omim_cmd(empty_mock_app):
         the_dir = pathlib.Path(dir_name)
         # WHEN running the command
         result = runner.invoke(omim_cmd, ["-o", the_dir, "--api-key", "a key"])
-        # THEN command should run successful
+        # THEN command should run successfully
         assert result.exit_code == 0
         assert "Download OMIM" in result.output
 
