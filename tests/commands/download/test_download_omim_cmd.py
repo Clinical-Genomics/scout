@@ -17,7 +17,7 @@ def test_download_omim_cmd(mocker, empty_mock_app):
 
     runner = empty_mock_app.test_cli_runner()
 
-    # GIVEN a patched response from OMIM to obtain mim2gene file
+    # GIVEN a patched response from OMIM to obtain genemap2 file
     url = "https://data.omim.org/downloads/a%20key/genemap2.txt"
     with open(genemap2_reduced_path, "r") as hpo_file:
         content = hpo_file.read()
@@ -28,7 +28,7 @@ def test_download_omim_cmd(mocker, empty_mock_app):
         status=200,
     )
 
-    # GIVEN a patched response from OMIM to obtain genemap2 file
+    # GIVEN a patched response from OMIM to obtain mim2gene file
     url = "https://omim.org/static/omim/data/mim2gene.txt"
     with open(mim2gene_reduced_path, "r") as hpo_file:
         content = hpo_file.read()
