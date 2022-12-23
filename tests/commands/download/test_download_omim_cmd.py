@@ -12,7 +12,7 @@ from scout.demo.resources import genemap2_reduced_path, mim2gene_reduced_path
 
 
 @responses.activate
-def test_download_omim_cmd(mocker, empty_mock_app):
+def test_download_omim_cmd(empty_mock_app):
     """Test download omim command"""
 
     runner = empty_mock_app.test_cli_runner()
