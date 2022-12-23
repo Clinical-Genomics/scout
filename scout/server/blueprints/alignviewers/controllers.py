@@ -7,6 +7,7 @@ from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import cloud_tracks, store
+from scout.server.utils import case_append_alignments
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
