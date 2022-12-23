@@ -48,7 +48,7 @@ def test_download_omim_cmd(mocker, empty_mock_app):
         assert result.exit_code == 0
         assert "Download OMIM" in result.output
 
-        # AND the path should contain 2 files
+        # AND the directory should contain the 2 expected files
         downloaded_files = os.listdir(dir_name)
         assert "genemap2.txt" in downloaded_files
         assert "mim2genes.txt" in downloaded_files
