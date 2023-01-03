@@ -15,7 +15,11 @@ CUSTOM_CASE_REPORTS = {
         "pdf_export": False,
     },
     "reference_info": {"key_name": "reference_info", "format": "YAML", "pdf_export": True},
-    "RNAfusion_inspector": {"key_name": "RNAfusion_inspector", "format": "HTML", "pdf_export": False},
+    "RNAfusion_inspector": {
+        "key_name": "RNAfusion_inspector",
+        "format": "HTML",
+        "pdf_export": False,
+    },
     "RNAfusion_report": {"key_name": "RNAfusion_report", "format": "HTML", "pdf_export": False},
 }
 
