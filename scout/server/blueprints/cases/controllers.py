@@ -921,7 +921,7 @@ def add_case_group(store, current_user, institute_id, case_name, group=None):
     """
     try:
         institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    except:
+    except Exception:
         flash(f"Could not find a case named {case_name} for institute {institute_id}", "warning")
         return
 
