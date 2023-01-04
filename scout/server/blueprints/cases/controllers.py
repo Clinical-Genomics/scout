@@ -919,8 +919,12 @@ def add_case_group(store, current_user, institute_id, case_name, group=None):
     Returns:
         updated_case    (InsertOneResult)
     """
+    try:
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    except Exception:
+        flash(f"Could not find a case named {case_name} for institute {institute_id}", "warning")
+        return
 
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
     user_obj = store.user(current_user.email)
 
