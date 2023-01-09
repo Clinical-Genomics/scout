@@ -79,19 +79,20 @@
     <table class="table table-hover table-bordered">
       <thead>
         <tr>
-          <th style="width: 25%">{{ group_name|capitalize }} cases ({{cases|length}}/{{status_ncases[group_name]}})</th>
-          <th style="width: 10%">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='status' else 'grey'}};background-color:white;">
+          <th class="w-25">{{ group_name|capitalize }} cases ({{cases|length}}/{{status_ncases[group_name]}})</th>
+          <th class="w-10">Status <a href="" id="{{group_name}}_status" onclick="updateArgs('{{group_name}}','sort=status','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='status' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='status' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort cases by 'status'"></i>
           </a></th>
-          <th style="width: 15%">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='analysis_date' else 'grey'}};background-color:white;">
+          <th class="w-15">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='analysis_date' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis date"></i>
           </a></th>
-          <th style="width: 20%">Link</th>
-          <th style="width: 5%">Sequencing</th>
-          <th style="width: 15%">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
+          <th class="w-20">Link</th>
+          <th class="w-5">Sequencing</th>
+          <th class="w-15">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
           </a></th>
-          <th style="width: 10%">Clinvar</th>
+          <th class="w-10">Sharing</th>
+          <th>
         </tr>
       </thead>
       <tbody>
@@ -172,33 +173,13 @@
     </td>
     <td>
       {% if case.clinvar_variants %}
-        <a href="#clinvar_{{case.display_name}}" data-bs-toggle="modal">{{case.clinvar_variants|length}} {% if case.clinvar_variants|length >1 %} variants {% else %} variant {% endif %}</a>
-        <!-- Modal -->
-        <div class="modal fade" id="clinvar_{{case.display_name}}" tabindex="-1" role="dialog" aria-labelledby="variantModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="variantModalLabel">Variants included in Clinvar submissions:</h5>
-              </div>
-              <div class="modal-body">
-                <ul>
-                  {% for varname, clinvar in case.clinvar_variants.items() %}
-                    <li>
-                    {% if clinvar.category == 'snv' %}
-                      <a href="{{ url_for('variant.variant', institute_id=case.owner, case_name=case.display_name, variant_id=clinvar.local_id) }}" target="_blank">chr{{clinvar.chromosome}}:{{clinvar.start}}_{{clinvar.ref}}>{{clinvar.alt}}</a>
-                    {% else %}
-                      <a href="{{ url_for('variant.sv_variant', institute_id=case.owner, case_name=case.display_name, variant_id=clinvar.local_id) }}" target="_blank">chr{{clinvar.chromosome}}:{{clinvar.breakpoint1}}_{{clinvar.var_type}}</a>
-                    {% endif %}
-                    </li>
-                  {% endfor %}
-                </ul>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="ClinVar - info about submitted variants available on Case page or ClinVar submissions page (Institute sidebar)"><em class="fas fa-database"></em></span>
+      {% endif %}
+      {% if case.mme_submission %}
+        <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="Matchmaker Exchange - info about submitted variants available on Case page (sidebar)"><em class="fas fa-network-wired"></em></span>
+      {% endif %}
+      {% if case.beacon %}
+        <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="Beacon - info available on Case page (sidebar)"><em class="fab fa-watchman-monitoring"></em></span>
       {% endif %}
     </td>
   </tr>
@@ -294,5 +275,10 @@
     // Reset search
     searchTerm.value="";
   };
+
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
   </script>
 {% endblock %}
