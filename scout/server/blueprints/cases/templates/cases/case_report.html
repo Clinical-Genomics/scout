@@ -914,7 +914,7 @@
             <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
               <td colspan="1"></td>
               <td colspan="3"><!-- display dismissed variant comments -->
-                {% if variant.comments %}
+                {% if variant.comments | count_cursor > 0 %}
                   {{ comments_table(institute, case, variant.comments) }}
                 {% endif %}
               </td>
