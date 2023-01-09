@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Display data sharing info for ClinVar, Matchmaker Exchange and Beacon in a dedicated column on Cases page
 - Support for nf-core/rnafusion reports
 
 ## [4.62.1]
