@@ -7,7 +7,7 @@ from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import cloud_tracks, store
-from scout.server.utils import case_append_alignments, institute_and_case
+from scout.server.utils import case_append_alignments
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -215,7 +215,9 @@ def set_common_tracks(display_obj, build):
     display_obj["reference_track"] = HUMAN_REFERENCE[build]  # Human reference is always present
 
     # if user settings for igv tracks exist -> use these settings, otherwise display all tracks
-    custom_tracks_names = user_obj.get("igv_tracks") or CUSTOM_TRACK_NAMES
+    custom_tracks_names = (
+        user_obj.get("igv_tracks") if "igv_tracks" in user_obj else CUSTOM_TRACK_NAMES
+    )
 
     display_obj["custom_tracks"] = []
     for track in IGV_TRACKS[build]:
