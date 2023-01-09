@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Test for `commands.download.omim.print_omim`
 - Display dismissed variants comments on general case report
 - Support for nf-core/rnafusion reports
+### Changed
+- Display chrY for sex unknown
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
 
