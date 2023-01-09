@@ -4,9 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [unreleased]
 ### Added
 - Test for `commands.download.omim.print_omim`
+
+## [4.62.1]
+### Fixed
+- Case page crashing when adding a case to a group without providing a valid case name
 
 ## [4.62]
 ### Added
