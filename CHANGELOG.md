@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display data sharing info for ClinVar, Matchmaker Exchange and Beacon in a dedicated column on Cases page
 - Test for `commands.download.omim.print_omim`
 - Display dismissed variants comments on general case report
+### Changed
+- Display chrY for sex unknown
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
 

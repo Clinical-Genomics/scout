@@ -247,13 +247,13 @@ function chromosome_text(text, x, y){
  * Males shall display 24 png:s. Females shall display 23 png:s
  *
  */
-function get_chromosomes(sex){
-    if(sex=="1"){
-        return CHROMSPECS_LIST}
-    else{
-        return CHROMSPECS_LIST.slice(0, CHROMSPECS_LIST.length-1)}
-    }
-
+function get_chromosomes(sex) {
+	if (sex == "2") {
+		return CHROMSPECS_LIST.slice(0, CHROMSPECS_LIST.length - 1)
+	} else {
+		return CHROMSPECS_LIST
+	}
+}
 
 /**
  * Create a polygon path. Used to give cytoband images -rectangular- rounded
