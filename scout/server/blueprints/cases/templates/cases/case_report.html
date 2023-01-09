@@ -1,4 +1,5 @@
 {% from "cases/utils.html" import variant_transcripts %}
+{% from "utils.html" import comments_table %}
 
 {% extends "report_base.html" %}
 
@@ -73,7 +74,7 @@
 {% macro phenotype_panel() %}
 	<div class="card mb-3" style="border-width: 5px; display: block;">
 	  <div class="card-header">
-	    <a name="phenotype" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
+	    <a id="phenotype" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
 	  </div>
 	  <div class="card-body">
 	    <table class="table table-sm" style="table-layout:fixed;">
@@ -278,7 +279,7 @@
 {% macro gene_panels_panel() %}
 <div class="card mb-3" style="border-width: 5px; display: block;">
   <div class="card-header">
-    <a name="gene_panels"><strong>Default gene panels</strong></a>
+    <a id="gene_panels"><strong>Default gene panels</strong></a>
   </div>
   <div class="card-body">
     <table id="panel-table" class="table table-sm">
@@ -316,7 +317,7 @@
 {% macro causatives_panel() %}
 <div class="card border-success mb-3" style="border-width: 5px; display: block;">
   <div class="card-header bg-success text-white">
-    <a name="causative_variants"><strong>Causative Variants</strong></a>
+    <a id="causative_variants"><strong>Causative Variants</strong></a>
   </div>
   <div class="card-body">
     {% if variants.causatives_detailed or variants.partial_causatives_detailed %}
@@ -335,7 +336,7 @@
 {% macro pinned_panel() %}
 <div class="card border-info mb-3" style="border-width: 5px; display: block;">
   <div class="card-header bg-info text-white">
-    <a name="pinned_variants"><strong>Pinned Variants</strong></a>
+    <a id="pinned_variants"><strong>Pinned Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -362,7 +363,7 @@
 {% macro classified_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
   <div class="card-header bg-warning text-black">
-    <a name="acmg_variants"><strong>Other ACMG-classified Variants</strong></a>
+    <a id="acmg_variants"><strong>Other ACMG-classified Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -389,7 +390,7 @@
 {% macro tagged_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
   <div class="card-header bg-warning text-black">
-    <a name="manual_ranked_variants"><strong>Other Manual Ranked (Tagged) Variants</strong></a>
+    <a id="manual_ranked_variants"><strong>Other Manual Ranked (Tagged) Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -440,7 +441,7 @@
 {% macro commented_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
   <div class="card-header bg-warning text-black">
-    <a name="commented_variants"><strong>Other Commented Variants</strong></a>
+    <a id="commented_variants"><strong>Other Commented Variants</strong></a>
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
@@ -756,22 +757,22 @@
 {% macro dismissed_panel() %}
   <div class="card border-danger mb-3" style="border-width: 5px; display: block;">
     <div class="card-header bg-danger text-black">
-      <a name="dismissed_variants"><strong>Dismissed Variants</strong></a>
+      <p id="dismissedDesc"><a id="dismissed_variants"><strong>Dismissed Variants</strong></a></p>
     </div>
     <div class="card-body">
       {% if variants.dismissed_detailed %}
-        <table class="table table-striped table-sm" style="background-color: transparent">
+        <table class="table table-sm" style="background-color: transparent" aria-describedby="dismissedDesc">
           <thead>
             <tr>
-                <td width="5%"></td>
-                <td width="25%"><strong>Variant</strong></td>
-                <td width="5%"><strong>Category</strong></td>
-  	            <td width="25%"><strong>Genes</strong></td>
-                <td width="45%"><strong>Dismissed description</strong></td>
+                <th class="w-5"></th>
+                <th class="w-25"><strong>Variant</strong></th>
+                <th class="w-5"><strong>Category</strong></th>
+  	            <th class="w-25"><strong>Genes</strong></th>
+                <th class="w-45"><strong>Dismissed description</strong></th>
             </tr>
           </thead>
           {% for variant in variants.dismissed_detailed|sort(attribute='variant_rank') %}
-            <tr>
+            <tr{% if loop.index0 % 2 %} class="light-grey" {% endif %}>
               <td width="5%">#{{loop.index}}</td>
               <td width="25%">
                 {% if variant.category == 'snv' %}
@@ -789,7 +790,7 @@
                 {{ dismissed_gene_list(variant) }}
               </td>
 
-              <td>
+              <td rowspan="2">
                 <ul>
                   {% for reason in variant.dismiss_variant if not reason == "Select a tag"  %}
                     <li>{{dismissed_options[reason|int]['description']}}
@@ -908,6 +909,14 @@
                     </li>
                   {% endfor %}
                 </ul>
+              </td>
+            </tr>
+            <tr{% if loop.index0 % 2 %} class="light-grey" {% endif %}>
+              <td colspan="1"></td>
+              <td colspan="3"><!-- display dismissed variant comments -->
+                {% if variant.comments | count_cursor > 0 %}
+                  {{ comments_table(institute, case, variant.comments) }}
+                {% endif %}
               </td>
             </tr>
     {% endfor %}
