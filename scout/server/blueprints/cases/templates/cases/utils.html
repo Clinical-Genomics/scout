@@ -256,13 +256,13 @@
       {% if transcript.refseq_identifiers and n_primary_txs.count <= 5 or transcript.is_canonical or transcript.is_disease_associated or transcript.is_primary %}
         <li>{{transcript.transcript_id}}, RefSeq:[{{ transcript.refseq_identifiers|join(", ") or "-" }}], {{ (transcript.coding_sequence_name or '')|truncate(20, True) }},  {{ (transcript.protein_sequence_name or '')|truncate(20, True) }}
           {% if transcript.is_canonical %}
-            <span class="badge rounded-pill bg-info" title="canonical">C</span>
+            <span class="badge rounded-pill bg-info text-white" title="canonical">C</span>
           {% endif %}
           {% if transcript.is_disease_associated %}
-            <span class="badge rounded-pill bg-danger" title="disease_associated">D</span>
+            <span class="badge rounded-pill bg-danger text-white" title="disease_associated">D</span>
           {% endif %}
           {% if transcript.is_primary %}
-            <span class="badge rounded-pill bg-primary" title="primary_ref_transcript">hgnc primary:{{transcript.refseq_id}}</span>
+            <span class="badge rounded-pill bg-primary text-white" title="primary_ref_transcript">hgnc primary:{{transcript.refseq_id}}</span>
           {% endif %}
         </li>
       {% endif %}
