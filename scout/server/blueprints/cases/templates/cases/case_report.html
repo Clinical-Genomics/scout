@@ -772,7 +772,7 @@
             </tr>
           </thead>
           {% for variant in variants.dismissed_detailed|sort(attribute='variant_rank') %}
-            <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
+            <tr{% if loop.index0 % 2 %} class="light-grey" {% endif %}>
               <td width="5%">#{{loop.index}}</td>
               <td width="25%">
                 {% if variant.category == 'snv' %}
@@ -911,7 +911,7 @@
                 </ul>
               </td>
             </tr>
-            <tr{% if loop.index0 % 2 %} style="background-color: #d1d5db;" {% endif %}>
+            <tr{% if loop.index0 % 2 %} class="light-grey" {% endif %}>
               <td colspan="1"></td>
               <td colspan="3"><!-- display dismissed variant comments -->
                 {% if variant.comments | count_cursor > 0 %}
