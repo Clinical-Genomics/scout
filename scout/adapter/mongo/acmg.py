@@ -37,6 +37,7 @@ class ACMGHandler(object):
                                         {
                                         'term': str,
                                         'comment': str,
+                                        'modifier': str,
                                         'links': list(str)
                                         },
                                         .
