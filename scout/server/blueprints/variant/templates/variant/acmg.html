@@ -80,20 +80,20 @@
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
                       <div class="row">
-                        <select name="modifier" class="form-control form-select">
+                        <select {{ 'disabled' if evaluation }} id="modifier-{{ criterion_code }}" class="form-control form-select">
                           <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
                           {% for level in "Strong", "Moderate", "Supporting" %}
                             {% if(level != evidence) %}
-                              <option id="{{criterion_code}}-{{level}}" value={{level}} {% if modifier == level %}selected{% endif%}>{{ level }}</option>
+                              <option id="{{criterion_code}}-{{level}}" value="{{level}}" {% if modifier == level %}selected{% endif%}>{{ level }}</option>
                             {% endif %}
                           {% endfor %}
                         </select>
                       </div>
                       <div class="row">
-                        <textarea {{ 'disabled' if comment }} class="form-control"
+                        <textarea {{ 'disabled' if evaluation }} class="form-control"
                           name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
                       </div>
-                      <input type="url" {{ 'disabled' if link or comment }} class="form-control" name="link-{{ criterion_code }}"
+                      <input type="url" {{ 'disabled' if evaluation }} class="form-control" name="link-{{ criterion_code }}"
                         placeholder="{{ link or 'Supporting link (optional)' }}" value="">
                     </div>
                   </div>

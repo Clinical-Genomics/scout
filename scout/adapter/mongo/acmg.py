@@ -54,7 +54,13 @@ class ACMGHandler(object):
         institute_id = institute_obj["_id"]
         case_id = case_obj["_id"]
 
-        evaluation_terms = [evluation_info["term"] for evluation_info in criteria]
+        evaluation_terms = []
+        for evaluation_info in criteria:
+            term = evaluation_info["term"]
+            if evaluation_info.get("modifier"):
+                term += "_" + evaluation_info.get("modifier")
+                print(f"Modifier found: term is now {term}")
+            evaluation_terms.append(term)
 
         if classification is None:
             classification = get_acmg(evaluation_terms)
