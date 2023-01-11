@@ -20,7 +20,6 @@ from scout.utils.acmg import get_acmg
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
-gunicorn_log = logging.getLogger("gunicorn.error")
 
 variant_bp = Blueprint(
     "variant",

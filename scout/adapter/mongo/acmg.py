@@ -9,7 +9,6 @@ from scout.constants import ACMG_MAP
 from scout.utils.acmg import get_acmg
 
 log = logging.getLogger(__name__)
-gunicorn_log = logging.getLogger("gunicorn.error")
 
 
 class ACMGHandler(object):
