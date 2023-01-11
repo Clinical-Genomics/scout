@@ -9,6 +9,7 @@ from scout.constants import ACMG_MAP
 from scout.utils.acmg import get_acmg
 
 log = logging.getLogger(__name__)
+gunicorn_log = logging.getLogger("gunicorn.error")
 
 
 class ACMGHandler(object):
@@ -24,7 +25,7 @@ class ACMGHandler(object):
     ):
         """Submit an evaluation to the database
 
-        Get all the relevant information, build a evaluation_obj
+        Get all the relevant information, build an evaluation_obj
 
         Args:
             variant_obj(dict)
@@ -59,7 +60,6 @@ class ACMGHandler(object):
             term = evaluation_info["term"]
             if evaluation_info.get("modifier"):
                 term += "_" + evaluation_info.get("modifier")
-                print(f"Modifier found: term is now {term}")
             evaluation_terms.append(term)
 
         if classification is None:

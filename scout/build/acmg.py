@@ -24,7 +24,7 @@ def build_evaluation(
         institute_id(str)
         case_id(str)
         classification(str): The ACMG classification
-        criteria(list(dict)): A list of dictionaries with ACMG criterias
+        criteria(list(dict)): A list of dictionaries with ACMG criteria
 
     Returns:
         evaluation_obj(dict): Correctly formatted evaluation object

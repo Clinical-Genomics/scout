@@ -1,5 +1,4 @@
 import logging
-import re
 
 from flask import Blueprint, current_app, flash, jsonify, redirect, request, url_for
 from flask_login import current_user
@@ -21,6 +20,7 @@ from scout.utils.acmg import get_acmg
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
+gunicorn_log = logging.getLogger("gunicorn.error")
 
 variant_bp = Blueprint(
     "variant",
