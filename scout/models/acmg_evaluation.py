@@ -20,7 +20,7 @@ evaluation = dict(
     # All evaluations will have an author
     user_id=str,  # user email, required
     user_name=str,  # user name
-    criterias=list,  # List of dictionaries with criterias
+    criteria=list,  # List of dictionaries with criterias
     # timestamps
     created_at=datetime,
 )
