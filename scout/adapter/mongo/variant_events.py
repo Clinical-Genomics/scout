@@ -273,7 +273,7 @@ class VariantEventHandler(object):
                 ranked_matching_variant is None
                 or ranked_matching_variant["_id"] == query_variant["_id"]
                 or ranked_matching_variant.get("manual_rank") is None
-                or ranked_matching_variant.get("case_id") in exclude_case
+                or ranked_matching_variant.get("case_id") in exclude_cases
             ):
                 continue
 

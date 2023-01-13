@@ -174,16 +174,16 @@
   {% endif %}
   {% if not managed_variant and not causatives %}
     <div class="card mt-3">
-      <div class="card-body mt-1 ms-1" style="padding: 0;">
-        <h6>No matching causative or managed variants</h6>
+      <div class="card-body mt-1 ms-3" style="padding: 0;">
+        No matching causative or managed variants
       </div> <!--end of card body-->
     </div><!--end of card-->
   {% endif %}
 
   {% if matching_manual_ranked %}
     <div class="card">
-      <div class="card-body mt-1 ms-3 mb-1 d-flex align-items-center" style="padding: 0;">
-        Matching previous manually ranked variants:
+      <div class="card-body mt-1 ms-3 mb-1 d-flex" style="padding: 0;">
+        Matching manually ranked variants:&nbsp;
         {% for manual_rank, manual_rank_info in matching_manual_ranked.items() %}
           <a class="btn btn-{{manual_rank_info.label}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{manual_rank}}" role="button" aria-expanded="false" aria-controls="collapseExample">
             {{manual_rank}} ({{manual_rank_info.links|length}}x)
