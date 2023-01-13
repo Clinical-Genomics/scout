@@ -160,6 +160,9 @@ def is_likely_benign(bs_terms, bp_terms):
 def get_acmg(acmg_terms):
     """Use the algorithm described in ACMG paper to get a ACMG calssification
 
+    Modifying strength of a term is possible by adding a string describing its new level: "PP1_Strong" or
+    "PVS1_Moderate".
+
     If no terms return None
 
     Args:
@@ -188,7 +191,13 @@ def get_acmg(acmg_terms):
     # Collection of terms with supporting Benign evidence
     bp_terms = []
     for term in acmg_terms:
-        if term.startswith("PVS"):
+        if term.endswith("_Strong"):
+            ps_terms.append(term)
+        elif term.endswith("_Moderate"):
+            pm_terms.append(term)
+        elif term.endswith("_Supporting"):
+            pp_terms.append(term)
+        elif term.startswith("PVS"):
             pvs = True
         elif term.startswith("PS"):
             ps_terms.append(term)

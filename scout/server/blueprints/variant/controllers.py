@@ -638,7 +638,7 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
         case_name(str): case_obj['display_name']
         variant_id(str): variant_obj['document_id']
         user_mail(str)
-        criteris()
+        criteria()
 
     Returns:
         data(dict): Things for the template

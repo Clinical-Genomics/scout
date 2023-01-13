@@ -24,7 +24,7 @@ def build_evaluation(
         institute_id(str)
         case_id(str)
         classification(str): The ACMG classification
-        criteria(list(dict)): A list of dictionaries with ACMG criterias
+        criteria(list(dict)): A list of dictionaries with ACMG criteria
 
     Returns:
         evaluation_obj(dict): Correctly formatted evaluation object
@@ -45,13 +45,9 @@ def build_evaluation(
     criteria_objs = []
     for info in criteria:
         criteria_obj = {}
-        # This allways has to exist
-        # We might want to check if the term is valid here...
-        criteria_obj["term"] = info["term"]
-        if "comment" in info:
-            criteria_obj["comment"] = info["comment"]
-        if "links" in info:
-            criteria_obj["links"] = info["links"]
+        for criterion_key in ["term", "comment", "links", "modifier"]:
+            if criterion_key in info:
+                criteria_obj[criterion_key] = info[criterion_key]
         criteria_objs.append(criteria_obj)
 
     evaluation_obj["criteria"] = criteria_objs

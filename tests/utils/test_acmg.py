@@ -393,6 +393,16 @@ def test_get_acmg_pathogenic():
     assert res == "pathogenic"
 
 
+def test_get_acmg_modifier():
+    acmg_terms = ["PVS1", "PS1"]
+    res = get_acmg(acmg_terms)
+    assert res == "pathogenic"
+
+    acmg_terms = ["PVS1_Moderate", "PS1"]
+    res = get_acmg(acmg_terms)
+    assert res == "likely_pathogenic"
+
+
 def test_get_acmg_uncertain():
     acmg_terms = ["PVS1"]
     res = get_acmg(acmg_terms)
