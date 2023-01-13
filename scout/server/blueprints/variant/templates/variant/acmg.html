@@ -63,6 +63,9 @@
                   {% if evaluation and evaluation.criteria.get(criterion_code).links %}
                     {% set link = evaluation.criteria.get(criterion_code).links[0] %}
                   {% endif %}
+                  {% if evaluation and evaluation.criteria.get(criterion_code).modifier %}
+                    {% set modifier = evaluation.criteria.get(criterion_code).modifier %}
+                  {% endif %}
 
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
@@ -75,12 +78,22 @@
                         <label class="form-check-label" for="checkbox-{{ criterion_code }}"></label>
                       </div>
                     </div>
-                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link) }} mt-2">
+                    <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
                       <div class="row">
-                        <textarea {{ 'disabled' if comment }} class="form-control"
+                        <select {{ 'disabled' if evaluation }} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
+                          <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
+                          {% for level in "Strong", "Moderate", "Supporting" %}
+                            {% if(level != evidence) %}
+                              <option id="{{criterion_code}}-{{level}}" value="{{level}}" {% if modifier == level %}selected{% endif%}>{{ level }}</option>
+                            {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="row">
+                        <textarea {{ 'disabled' if evaluation }} class="form-control"
                           name="comment-{{ criterion_code }}" rows="3" placeholder="Comment (optional)">{{ comment }}</textarea>
                       </div>
-                      <input type="url" {{ 'disabled' if link or comment }} class="form-control" name="link-{{ criterion_code }}"
+                      <input type="url" {{ 'disabled' if evaluation }} class="form-control" name="link-{{ criterion_code }}"
                         placeholder="{{ link or 'Supporting link (optional)' }}" value="">
                     </div>
                   </div>
@@ -121,12 +134,31 @@
 
         update_classification()
       });
+
+      $('.form-select').change(function(event) {
+            update_classification()
+      });
     });
+
 
     function update_classification() {
       var criteria = $(':checked').map(function(idx, elem) {
+        const modifiers = ["Strong", "Moderate", "Supporting"];
+        for (possible_modifier of modifiers) {
+          var modifier_option;
+          if(elem.value !== null && elem.value !== '') {
+            modifier_option = document.getElementById(elem.value + '-' + possible_modifier)
+          }
+          if(modifier_option) {
+            if (modifier_option.selected) {
+              return 'criterion=' + elem.value + '_' + possible_modifier
+            }
+          }
+        }
         return 'criterion=' + elem.value
       });
+
+
       $.getJSON('/api/v1/acmg?' + criteria.toArray().join('&'), function(data) {
         // reset the selection
         $('.acmg-preview').removeClass('btn-primary');

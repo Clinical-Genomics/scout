@@ -1,5 +1,4 @@
 import logging
-import re
 
 from flask import Blueprint, current_app, flash, jsonify, redirect, request, url_for
 from flask_login import current_user
@@ -141,6 +140,7 @@ def variant_acmg(institute_id, case_name, variant_id):
                 term=term,
                 comment=request.form.get("comment-{}".format(term)),
                 links=[request.form.get("link-{}".format(term))],
+                modifier=request.form.get("modifier-{}".format(term)),
             )
         )
     acmg = variant_acmg_post(
