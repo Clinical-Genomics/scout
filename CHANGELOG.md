@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display data sharing info for ClinVar, Matchmaker Exchange and Beacon in a dedicated column on Cases page
 - Test for `commands.download.omim.print_omim`
 - Display dismissed variants comments on general case report
+- Modify ACMG pathogenicity impact (most commonly PVS1, PS3) based on strength of evidence with lab director's professional judgement
 - Support for nf-core/rnafusion reports
 ### Changed
 - Display chrY for sex unknown
