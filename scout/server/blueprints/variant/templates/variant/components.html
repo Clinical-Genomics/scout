@@ -138,7 +138,7 @@
 {% endmacro %}
 
 
-{% macro matching_variants(managed_variant, causatives, matching_tiered=None) %}
+{% macro matching_variants(managed_variant, causatives, matching_manual_ranked=None, matching_tiered=None) %}
   {% if causatives %}
     <div class="card mt-3">
       <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
@@ -178,6 +178,28 @@
         <h6>No matching causative or managed variants</h6>
       </div> <!--end of card body-->
     </div><!--end of card-->
+  {% endif %}
+
+  {% if matching_manual_ranked %}
+    <div class="card">
+      <div class="card-body mt-1 ms-3 mb-1 d-flex align-items-center" style="padding: 0;">
+        Matching previous manually ranked variants:
+        {% for manual_rank, manual_rank_info in matching_manual_ranked.items() %}
+          <a class="btn btn-{{manual_rank_info.label}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{manual_rank}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+            {{manual_rank}} ({{manual_rank_info.links|length}}x)
+          </a>
+          <div class="collapse" id="collapse_{{manual_rank}}">
+            <div>
+              {{manual_rank}}:
+              {% for link in manual_rank_info["links"] %}
+                {% set match_case = link.split('/') %}
+                  <a href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   {% endif %}
 
   {% if matching_tiered %}
