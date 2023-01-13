@@ -295,6 +295,24 @@ CANCER_TIER_OPTIONS = {
 }
 
 MANUAL_RANK_OPTIONS = {
+    12: {
+        "label": "URF",
+        "name": "Uncertain Risk Factor",
+        "description": "Uncertain risk allele - uncertain evidence for a small risk increase",
+        "label_class": "default",
+    },
+    11: {
+        "label": "LRF",
+        "name": "Likely Risk Factor",
+        "description": "Likely risk allele - some evidence for a small risk increase",
+        "label_class": "default",
+    },
+    10: {
+        "label": "RF",
+        "name": "Risk Factor",
+        "description": "Established risk allele - strong evidence for a small risk increase",
+        "label_class": "default",
+    },
     9: {
         "label": "VUS",
         "name": "Unknown Significance",

@@ -3,7 +3,7 @@ from collections import Counter
 
 import pymongo
 
-from scout.constants import CANCER_TIER_OPTIONS, REV_ACMG_MAP
+from scout.constants import CANCER_TIER_OPTIONS, MANUAL_RANK_OPTIONS, REV_ACMG_MAP
 
 SANGER_OPTIONS = ["True positive", "False positive", "Not validated"]
 
@@ -244,6 +244,49 @@ class VariantEventHandler(object):
 
         sanger_ordered = [item for item in results]
         return sanger_ordered
+
+    def get_matching_manual_ranked_variants(self, query_variant, user_institutes, exclude_cases=[]):
+        """
+        Args:
+            query_variant: variant_obj to match against
+            user_institutes: institutes the user has access to
+            exclude_cases: list of cases to exclude variants from, e.g. the original variant_obj case
+        Returns:
+            matching_ranked(set(dict)): dictionary keyed by manual_rank_id, with found manual ranks as "links"
+            and "label" for display label class.
+        """
+
+        ranked = {}
+        query = {
+            "category": "variant",
+            "verb": "manual_rank",
+            "subject": query_variant["display_name"],
+            "institute": {"$in": [inst["_id"] for inst in user_institutes]},
+        }
+
+        for ranked_event in self.event_collection.find(query):
+            # Check if variant is still ranked as suggested by the event
+            ranked_matching_variant = self.variant(
+                case_id=ranked_event["case"], document_id=ranked_event["variant_id"]
+            )
+            if (
+                ranked_matching_variant is None
+                or ranked_matching_variant["_id"] == query_variant["_id"]
+                or ranked_matching_variant.get("manual_rank") is None
+                or ranked_matching_variant.get("case_id") in exclude_case
+            ):
+                continue
+
+            rank_id = ranked_matching_variant["manual_rank"]
+
+            if rank_id in ranked:
+                ranked[rank_id]["links"].add(ranked_event["link"])
+            else:
+                ranked[rank_id] = {
+                    "links": {ranked_event["link"]},
+                    "label": MANUAL_RANK_OPTIONS.get(rank_id, {}).get("label_class", "secondary"),
+                }
+        return ranked
 
     def matching_tiered(self, query_variant, user_institutes):
         """Retrieve all tiered tags assigned to a cancer variant in other cases (accessible to the user)

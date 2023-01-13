@@ -278,6 +278,10 @@ def variant(
             variant_obj, user_institutes(store, current_user)
         )
 
+    variant_obj["matching_ranked"] = store.get_matching_manual_ranked_variants(
+        variant_obj, user_institutes(store, current_user), exclude_cases=[case_obj["_id"]]
+    )
+
     # Gather display information for the genes
     variant_obj.update(predictions(variant_obj.get("genes", [])))
 

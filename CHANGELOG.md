@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Test for `commands.download.omim.print_omim`
 - Display dismissed variants comments on general case report
 - Modify ACMG pathogenicity impact (most commonly PVS1, PS3) based on strength of evidence with lab director's professional judgement
+- Added Manual Ranks Risk Factor, Likely Risk Factor and Uncertain Risk Factor
+- Display matching manual ranks from previous cases the user has access to on VariantS and Variant pages
 ### Changed
 - Display chrY for sex unknown
 ### Fixed
