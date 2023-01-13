@@ -284,7 +284,10 @@ class VariantEventHandler(object):
             else:
                 ranked[rank_id] = {
                     "links": {ranked_event["link"]},
-                    "label": MANUAL_RANK_OPTIONS.get(rank_id, {}).get("label_class", "secondary"),
+                    "label_class": MANUAL_RANK_OPTIONS.get(rank_id, {}).get(
+                        "label_class", "secondary"
+                    ),
+                    "label": MANUAL_RANK_OPTIONS.get(rank_id, {}).get("label", "NOS"),
                 }
         return ranked
 

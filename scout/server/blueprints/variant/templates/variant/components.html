@@ -185,12 +185,12 @@
       <div class="card-body mt-1 ms-3 mb-1 d-flex" style="padding: 0;">
         Matching manually ranked variants:&nbsp;
         {% for manual_rank, manual_rank_info in matching_manual_ranked.items() %}
-          <a class="btn btn-{{manual_rank_info.label}} btn-xs" data-bs-toggle="collapse" href="#collapse_{{manual_rank}}" role="button" aria-expanded="false" aria-controls="collapseExample">
-            {{manual_rank}} ({{manual_rank_info.links|length}}x)
+          <a class="btn btn-{{manual_rank_info.label_class}} btn-xs" data-bs-toggle="collapse" href="#collapse_mr{{manual_rank}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+            {{manual_rank_info.label}} ({{manual_rank_info.links|length}}x)
           </a>
-          <div class="collapse" id="collapse_{{manual_rank}}">
+          <div class="collapse" id="collapse_mr{{manual_rank}}">
             <div>
-              {{manual_rank}}:
+              {{manual_rank_info.label}}:
               {% for link in manual_rank_info["links"] %}
                 {% set match_case = link.split('/') %}
                   <a href="{{link}}" target="_blank">{{match_case[4]}}</a>&nbsp;
