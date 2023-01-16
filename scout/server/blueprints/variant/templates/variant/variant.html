@@ -391,34 +391,6 @@
   </form>
 {% endmacro %}
 
-{% macro acmg_classification_item(data) %}
-  {% set current_variant = (data.variant_specific == variant._id) %}
-  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
-    <div class="d-flex">
-      <span>
-        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
-          {{ data.classification.label }}
-        </a>
-        <span class="badge bg-info">{{ data.classification.short }}</span>
-      </span>
-      <span>
-        {% if not current_variant %}
-          <small>{{ data.case.display_name }}</small>
-        {% endif %}
-      </span>
-    </div>
-    <small class="text-muted">
-      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
-      {{ data.user_name }} on {{ data.created_at.date() }}
-      {% if current_variant %}
-        <button class="btn btn-xs btn-link">Delete</button>
-      {% endif %}
-      </form>
-    </small>
-  </li>
-{% endmacro %}
-
-
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
