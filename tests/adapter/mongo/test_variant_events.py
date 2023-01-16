@@ -1,11 +1,4 @@
-import datetime
-import logging
 from copy import deepcopy
-
-import pymongo
-import pytest
-
-from scout.constants import VERBS_MAP
 
 
 def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj):
