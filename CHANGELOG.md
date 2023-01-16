@@ -14,7 +14,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - REViewer button on str variant page
 ### Changed
 - Display chrY for sex unknown
-- REViewer button opens new window
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
 - Freeze Flask-Babel below v3.0 due to issue with a locale decorator
