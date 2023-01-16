@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import traceback
-from pprint import pprint as pp
 
 import click
 import yaml
-from cyvcf2 import VCF
 from flask.cli import with_appcontext
 
 from scout.parse.case import parse_case_data
@@ -60,7 +58,6 @@ def case(
     ped,
     update,
     config,
-    no_variants,
     peddy_ped,
     peddy_sex,
     peddy_check,
