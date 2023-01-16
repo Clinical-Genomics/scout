@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display chrY for sex unknown
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
+- Freeze Flask-Babel below v3.0 due to issue with a locale decorator
 
 ## [4.62.1]
 ### Fixed
