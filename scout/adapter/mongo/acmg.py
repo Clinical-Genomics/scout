@@ -127,6 +127,6 @@ class ACMGHandler(object):
         Returns:
             pymongo.cursor: database cursor
         """
-        query = dict(variant_specific=document_id])
+        query = dict(variant_specific=document_id)
         res = self.acmg_collection.find(query).sort([("created_at", pymongo.DESCENDING)])
         return res

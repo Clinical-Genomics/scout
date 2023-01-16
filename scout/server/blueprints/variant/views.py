@@ -268,19 +268,35 @@ def variant_update(institute_id, case_name, variant_id):
 @templated("variant/acmg.html")
 def evaluation(evaluation_id):
     """Show or delete an ACMG evaluation."""
+
     evaluation_obj = store.get_evaluation(evaluation_id)
     if evaluation_obj is None:
         flash("Evaluation was not found in database", "warning")
         return redirect(request.referrer)
     evaluation_controller(store, evaluation_obj)
     if request.method == "POST":
+        link = url_for(
+            ".variant",
+            institute_id=evaluation_obj["institute"]["_id"],
+            case_name=evaluation_obj["case"]["display_name"],
+            variant_id=evaluation_obj["variant_specific"],
+        )
+        store.delete_evaluation(evaluation_obj)
 
-        # check if this is the last acmg evaluation left on the variant
-        if len(list(get_evaluations_case_specific(self, evaluation_obj["variant_specific"]))) == 0:
+        # check if this was the last acmg evaluation left on the variant
+        if len(list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))) == 0:
             # If there is still a classification we want to remove the classification
             variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
             acmg_classification = variant_obj.get("acmg_classification")
             if isinstance(acmg_classification, int):
+
+                institute_obj, case_obj = institute_and_case(
+                    store,
+                    evaluation_obj["institute"]["_id"],
+                    evaluation_obj["case"]["display_name"],
+                )
+                user_obj = store.user(current_user.email)
+
                 new_acmg = None
                 store.submit_evaluation(
                     variant_obj=variant_obj,
@@ -291,14 +307,6 @@ def evaluation(evaluation_id):
                     classification=new_acmg,
                 )
             flash("Cleared ACMG classification.", "info")
-
-        link = url_for(
-            ".variant",
-            institute_id=evaluation_obj["institute"]["_id"],
-            case_name=evaluation_obj["case"]["display_name"],
-            variant_id=evaluation_obj["variant_specific"],
-        )
-        store.delete_evaluation(evaluation_obj)
 
         return redirect(link)
     return dict(
