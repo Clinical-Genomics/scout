@@ -117,3 +117,16 @@ class ACMGHandler(object):
         query = dict(variant_id=variant_obj["variant_id"])
         res = self.acmg_collection.find(query).sort([("created_at", pymongo.DESCENDING)])
         return res
+
+    def get_evaluations_case_specific(self, document_id):
+        """Return all evaluations for a certain variant, in a certain case as determined by document id.
+
+        Args:
+            document_id: variant document id from the db; an md5 hash including the case id.
+
+        Returns:
+            pymongo.cursor: database cursor
+        """
+        query = dict(variant_specific=document_id])
+        res = self.acmg_collection.find(query).sort([("created_at", pymongo.DESCENDING)])
+        return res
