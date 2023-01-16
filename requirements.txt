@@ -10,8 +10,8 @@ Flask-WTF
 Flask-Mail
 coloredlogs<=14.0
 query_phenomizer
-Flask-Babel
 joblib
+Flask-Babel<3
 livereload
 python-dateutil
 pymongo>=3.7,<4.0
