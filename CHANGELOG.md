@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - REViewer button on STR variant page
 ### Changed
 - Display chrY for sex unknown
+- Deprecate legacy scout_load() method API call.
 - When all ACMG classifications are deleted from a variant, the current variant classification status is also reset.
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
