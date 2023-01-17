@@ -184,12 +184,9 @@ def variant_update(institute_id, case_name, variant_id):
             institute_obj, case_obj, user_obj, link, variant_obj, new_manual_rank
         )
         if new_manual_rank:
-            flash("updated variant tag: {}".format(new_manual_rank), "info")
+            flash("Variant tag updated", "info")
         else:
-            flash(
-                "reset variant tag: {}".format(variant_obj.get("manual_rank", "NA")),
-                "info",
-            )
+            flash("Variant tag was reset", "info")
     elif cancer_tier:
         try:
             new_cancer_tier = cancer_tier if cancer_tier != "-1" else None
