@@ -71,10 +71,11 @@
 
    <div class="row">
      <div class="col-12">
-      {% if variant.category == "cancer_sv" %}
+       {% if variant.category == "cancer_sv" %}
         {{matching_variants(managed_variant, causatives, variant.matching_tiered) }}
        {% else %}
         {{matching_variants(managed_variant, causatives) }}
+       {% endif %}
       </div>
    </div>
 
