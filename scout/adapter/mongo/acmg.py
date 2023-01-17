@@ -125,7 +125,7 @@ class ACMGHandler(object):
             document_id: variant document id from the db; an md5 hash including the case id.
 
         Returns:
-            pymongo.cursor: database cursor
+            res: pymongo.cursor
         """
         query = dict(variant_specific=document_id)
         res = self.acmg_collection.find(query).sort([("created_at", pymongo.DESCENDING)])
