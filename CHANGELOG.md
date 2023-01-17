@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display matching manual ranks from previous cases the user has access to on VariantS and Variant pages
 ### Changed
 - Display chrY for sex unknown
+- Deprecate legacy scout_load() method API call.
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
 - Freeze Flask-Babel below v3.0 due to issue with a locale decorator

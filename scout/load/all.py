@@ -145,7 +145,10 @@ def load_scout(adapter, config, ped=None, update=False):
         ped(Iterable(str)): Pedigree ingformation
         update(bool): If existing case should be updated
 
+    DEPRECATED method, historically used by the CG monolith, which has since switched to call the Scout CLI instead.
     """
+    LOG.warning("Deprecated method. Be advised it will no longer available in Scout v5.")
+
     LOG.info("Check that the panels exists")
     if not check_panels(adapter, config.get("gene_panels", []), config.get("default_gene_panels")):
         raise ConfigError("Some panel(s) does not exist in the database")
