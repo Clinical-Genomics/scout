@@ -11,7 +11,7 @@ Flask-Mail
 coloredlogs<=14.0
 query_phenomizer
 joblib
-Flask-Babel<3
+Flask-Babel>=3
 livereload
 python-dateutil
 pymongo>=3.7,<4.0
