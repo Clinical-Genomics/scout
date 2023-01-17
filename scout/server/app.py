@@ -303,9 +303,8 @@ def configure_coverage(app):
         # register chanjo report blueprint
         app.register_blueprint(report_bp, url_prefix="/reports")
 
-    babel = Babel(app)
+    babel = Babel()
 
-    @babel.localeselector
     def get_locale():
         """Determine locale to use for translations."""
         accept_languages = current_app.config.get("ACCEPT_LANGUAGES", ["en"])
@@ -325,3 +324,5 @@ def configure_coverage(app):
         # the browser transmits.  We support de/fr/en in this example.
         # The best match wins.
         return request.accept_languages.best_match(accept_languages)
+
+    babel.init_app(app, locale_selector=get_locale)
