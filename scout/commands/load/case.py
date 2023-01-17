@@ -58,6 +58,7 @@ def case(
     ped,
     update,
     config,
+    no_variants,
     peddy_ped,
     peddy_sex,
     peddy_check,
