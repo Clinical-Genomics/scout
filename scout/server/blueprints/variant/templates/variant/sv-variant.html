@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
 {% from "variant/variant_details.html" import old_observations %}
-{% from "variant/components.html" import external_scripts, external_stylesheets %}
+{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants %}
 {% from "variant/utils.html" import modal_causative, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
@@ -67,8 +67,17 @@
          {{variant.hgnc_symbols|sort|join(", ")}}
        </div>
     </div>
-
   {% endif %}
+
+   <div class="row">
+     <div class="col-12">
+      {% if variant.category == "cancer_sv" %}
+        {{matching_variants(managed_variant, causatives, variant.matching_tiered) }}
+       {% else %}
+        {{matching_variants(managed_variant, causatives) }}
+      </div>
+   </div>
+
   <div class="row">
     <div class="col-md-4">
       {{ panel_basics() }}
