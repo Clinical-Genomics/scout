@@ -201,10 +201,7 @@ def variant_update(institute_id, case_name, variant_id):
         if new_cancer_tier:
             flash("Variant tag was updated", "info")
         else:
-            flash(
-                "Variant tag was reset",
-                "info",
-            )
+            flash("Variant tag was reset", "info")
     elif request.form.get("acmg_classification"):
         new_acmg = request.form["acmg_classification"]
         acmg_classification = variant_obj.get("acmg_classification")
