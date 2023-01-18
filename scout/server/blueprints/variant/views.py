@@ -88,7 +88,7 @@ def cancer_variant(institute_id, case_name, variant_id):
 @templated("variant/sv-variant.html")
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
-    data = variant_controller(store, institute_id, case_name, variant_id, add_other=False)
+    data = variant_controller(store, institute_id, case_name, variant_id)
 
     if data is None:
         flash("An error occurred while retrieving variant object", "danger")
