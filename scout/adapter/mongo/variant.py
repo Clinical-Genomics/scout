@@ -446,9 +446,7 @@ class VariantHandler(VariantLoader):
         if len(positional_variant_ids) == 0:
             return []
 
-        return self.match_affected_gt(
-            [case_obj], institute_obj, positional_variant_ids, limit_genes
-        )
+        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
 
     def _find_affected(self, case_obj):
         """Internal method to find affected individuals.
@@ -471,28 +469,29 @@ class VariantHandler(VariantLoader):
 
         return affected_ids
 
-    def match_affected_gt(self, case_objs, institute_obj, positional_variant_ids, limit_genes):
+    def match_affected_gt(self, case_obj, institute_obj, positional_variant_ids, limit_genes):
         """Match positional_variant_ids against variants from affected individuals
         in a case, ensuring that they at least are carriers.
 
         Args:
-            case_objs(list): list of case objects to use in variant filtering
+            case_obj (dict): A Case object.
             institute_obj (dict): An Institute object.
             positional_variant_ids (iterable): A set of possible variant_ids (md5 key based upon a list like this: [ "17", "7577559", "G" "A", "research"]
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
-            gt_matches(list): a list of variant objects with affected individuals
+            causatives(iterable(Variant))
         """
-        gt_var_matches = []
+
         if len(positional_variant_ids) == 0:
             return []
 
-        for case_obj in case_objs:
-            filters = {"variant_id": {"$in": list(positional_variant_ids)}}
+        filters = {"variant_id": {"$in": list(positional_variant_ids)}}
+        if case_obj:
             affected_ids = self._find_affected(case_obj)
             if len(affected_ids) == 0:
-                continue
+                return []
+
             filters["case_id"] = case_obj["_id"]
             filters["samples"] = {
                 "$elemMatch": {
@@ -500,11 +499,12 @@ class VariantHandler(VariantLoader):
                     "genotype_call": {"$regex": "1"},
                 }
             }
-            if limit_genes:
-                filters["genes.hgnc_id"] = {"$in": limit_genes}
-            gt_var_matches.append(self.variant_collection.find_one(filters))
+        else:
+            filters["institute"] = institute_obj["_id"]
+        if limit_genes:
+            filters["genes.hgnc_id"] = {"$in": limit_genes}
 
-        return gt_var_matches
+        return self.variant_collection.find(filters)
 
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
         """Check if there are any variants that are previously marked causative
@@ -519,8 +519,9 @@ class VariantHandler(VariantLoader):
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
-            causatives(iterable(Variant))
+            causatives(list[Variant])
         """
+        causatives = []
         institute_id = case_obj["owner"] if case_obj else institute_obj["_id"]
         var_causative_events = self.event_collection.find(
             {
@@ -529,8 +530,7 @@ class VariantHandler(VariantLoader):
                 "category": "variant",
             }
         )
-        positional_variant_ids = set()
-        case_objs = []
+
         for var_event in var_causative_events:
             if case_obj and var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
@@ -548,15 +548,24 @@ class VariantHandler(VariantLoader):
                 and other_causative_id not in other_case.get("partial_causatives", {}).keys()
             ):
                 continue
-            case_objs.append(other_case)
+
             other_var_simple = var_event.get("subject").split("_")[
                 0:4
             ]  # example: [ "17", "7577559", "G" "A"]
 
+            positional_variant_ids = set()
             for variant_type in ["clinical", "reseach"]:
                 positional_variant_ids.add(generate_md5_key(other_var_simple + [variant_type]))
 
-        return self.match_affected_gt(case_objs, institute_obj, positional_variant_ids, limit_genes)
+            causatives.append(
+                list(
+                    self.match_affected_gt(
+                        other_case, institute_obj, positional_variant_ids, limit_genes
+                    )
+                )[0]
+            )
+
+        return causatives
 
     def other_causatives(self, case_obj, variant_obj):
         """Find the same variant marked causative in other cases.
