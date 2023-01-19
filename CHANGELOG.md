@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Freeze Flask-Babel below v3.0 due to issue with a locale decorator
 - Thaw Flask-Babel and fix according to v3 standard. Thank you @TkTech!
 - Show matching causatives on somatic structural variant page
+- Causatives page showing also non-causative variants matching causatives in other cases
 
 ## [4.62.1]
 ### Fixed

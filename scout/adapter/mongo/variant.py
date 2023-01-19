@@ -476,13 +476,13 @@ class VariantHandler(VariantLoader):
         in a case, ensuring that they at least are carriers.
 
         Args:
-            case_objs(list): set of case objects to use in variant filtering
+            case_objs(list): list of case objects to use in variant filtering
             institute_obj (dict): An Institute object.
             positional_variant_ids (iterable): A set of possible variant_ids (md5 key based upon a list like this: [ "17", "7577559", "G" "A", "research"]
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
-            gt_var_matches(list)
+            gt_matches(list): a list of variant objects with affected individuals
         """
         gt_var_matches = []
         if len(positional_variant_ids) == 0:
@@ -504,7 +504,6 @@ class VariantHandler(VariantLoader):
                 filters["genes.hgnc_id"] = {"$in": limit_genes}
             gt_var_matches.append(self.variant_collection.find_one(filters))
 
-        LOG.warning(len(gt_var_matches))
         return gt_var_matches
 
     def check_causatives(self, case_obj=None, institute_obj=None, limit_genes=None):
