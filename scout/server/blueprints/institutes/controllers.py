@@ -151,7 +151,6 @@ def causatives(institute_obj, request):
             "status": case_obj.get("status"),
             "partial_causatives": case_obj.get("partial_causatives", []),
         }
-
         causatives.append(variant_obj)
 
     return causatives
