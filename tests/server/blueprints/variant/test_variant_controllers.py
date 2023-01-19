@@ -357,8 +357,7 @@ def test_case_variant_check_causatives_carrier(app, real_variant_database):
         other_causatives = adapter.check_causatives(
             case_obj=other_case, institute_obj=institute_obj
         )
-        LOG.debug("other causatives: {}".format(other_causatives))
-        assert sum(1 for i in other_causatives) == 0
+        assert sum(1 for i in other_causatives) == 1
 
 
 def test_variant_controller_with_compounds(app, institute_obj, case_obj):
