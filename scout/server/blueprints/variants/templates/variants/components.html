@@ -29,13 +29,15 @@
       {% if variant.functional_annotations|length >= 5 %}
         <a class="mr-3" data-bs-toggle="collapse" href="#_functanno_{{variant._id}}" role="button" aria-expanded="false" aria-controls="_{{variant._id}}">{% if variant.missing_data %}[first 30 genes]{% else %}[...]{% endif %}</a>
         <div class="collapse" id="_functanno_{{variant._id}}">
+          <span class="text-body">
           {% for annotation in variant.functional_annotations|sort %}
             {{ annotation }}<br>
           {% endfor %}
+          </span>
         </div>
       {% else %}
         <div>
-          {{ variant.functional_annotations|sort|join(", ") }}
+          <span class="text-body">{{ variant.functional_annotations|sort|join(", ") }}</span>
         </div>
       {% endif %}
     </div>
