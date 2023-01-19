@@ -557,13 +557,12 @@ class VariantHandler(VariantLoader):
             for variant_type in ["clinical", "reseach"]:
                 positional_variant_ids.add(generate_md5_key(other_var_simple + [variant_type]))
 
-            causatives.append(
-                list(
-                    self.match_affected_gt(
-                        other_case, institute_obj, positional_variant_ids, limit_genes
-                    )
-                )[0]
-            )
+            causatives += [
+                var
+                for var in self.match_affected_gt(
+                    other_case, institute_obj, positional_variant_ids, limit_genes
+                )
+            ]
 
         return causatives
 
