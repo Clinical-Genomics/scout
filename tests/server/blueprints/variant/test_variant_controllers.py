@@ -311,7 +311,7 @@ def test_case_variant_check_causatives_carrier(
 
     # GIVEN that the another case has the variant in an unaffected individual
     for ind in other_case["individuals"]:
-        ind["phenotype"] == 1  # unaffected
+        ind["phenotype"] = 1  # unaffected
 
     # insert this case into database
     adapter.case_collection.insert_one(other_case)
