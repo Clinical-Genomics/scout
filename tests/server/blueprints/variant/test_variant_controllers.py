@@ -247,15 +247,21 @@ def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdbu
     assert data[loqus_id]["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
 
 
-def test_case_matching_causatives(
-    app, real_variant_database, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_case_matching_causatives(app, real_variant_database):
     """Testing the case_matching_causatives function, that returns variants for a case that
     were found causatives in other cases from the same institutet.
     - given that the variant is found in an affected individual of the case
     """
-    # GIVEN a populated database with variants
+    # GIVEN a populated database
     adapter = real_variant_database
+    case_obj = adapter.case_collection.find_one()
+    assert case_obj
+    institute_obj = adapter.institute_collection.find_one()
+    assert institute_obj
+    user_obj = adapter.user_collection.find_one()
+    assert user_obj
+    variant_obj = adapter.variant_collection.find_one()
+    assert variant_obj
 
     # WHEN inserting another case into the database,
     other_case = copy.deepcopy(case_obj)
@@ -299,14 +305,20 @@ def test_case_matching_causatives(
         assert sum(1 for _ in other_causatives) == 1
 
 
-def test_case_matching_causatives_carrier(
-    app, real_variant_database, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_case_matching_causatives_carrier(app, real_variant_database):
     """Testing the case_matching_causatives function, which should NOT return matching causatives
     when the the case has not affected individuals with the variant"""
 
-    # GIVEN a populated database with variants
+    # GIVEN a populated database
     adapter = real_variant_database
+    case_obj = adapter.case_collection.find_one()
+    assert case_obj
+    institute_obj = adapter.institute_collection.find_one()
+    assert institute_obj
+    user_obj = adapter.user_collection.find_one()
+    assert user_obj
+    variant_obj = adapter.variant_collection.find_one()
+    assert variant_obj
 
     # WHEN inserting another case into the database,
     other_case = copy.deepcopy(case_obj)
