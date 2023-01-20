@@ -500,9 +500,11 @@ class VariantHandler(VariantLoader):
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
+        LOG.error(filters)
+
         return self.variant_collection.find(filters)
 
-    def instutute_causatives(self, institute_obj, limit_genes=None):
+    def institute_causatives(self, institute_obj, limit_genes=None):
         """Return all causative variants for an institute - eventually within the provided list of genes
 
         Args:
@@ -513,29 +515,31 @@ class VariantHandler(VariantLoader):
             causatives(list): a list of variant objects
         """
         causatives = []
-        var_causative_events = self.event_collection.find(
+        causative_events = self.event_collection.find(
             {
                 "institute": institute_obj["_id"],
                 "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
-                "category": "variant",
+                "category": "case",
             }
         )
-        for var_event in var_causative_events:
-            other_var_simple = var_event.get("subject").split("_")[
-                0:4
-            ]  # example: [ "17", "7577559", "G" "A"]
+        causative_ids = set()
+        for case_event in causative_events:
 
-            positional_variant_ids = set()
-            for variant_type in ["clinical", "reseach"]:
-                positional_variant_ids.add(generate_md5_key(other_var_simple + [variant_type]))
-            filters = {"variant_id": {"$in": list(positional_variant_ids)}}
-            filters["institute"] = institute_obj["_id"]
-            if limit_genes:
-                filters["genes.hgnc_id"] = {"$in": limit_genes}
+            case_obj = self.case(case_event.get("case"))
+            if case_obj is None:
+                continue
 
-            causatives += list(self.variant_collection.find(filters))
+            for var_id in case_obj.get("causatives", []):
+                causative_ids.add(var_id)
 
-        return causatives
+            for var_id, _ in case_obj.get("patial_causatives", {}).items():
+                causative_ids.add(var_id)
+
+        filters = {"_id": {"$in": list(causative_ids)}}
+        if limit_genes:
+            filters["genes.hgnc_id"] = {"$in": limit_genes}
+
+        return self.variant_collection.find(filters)
 
     def case_matching_causatives(self, case_obj=None, limit_genes=None):
         """Returns the variants of a case that were marked as causatives in other cases of the same institute.
