@@ -487,20 +487,23 @@ class VariantHandler(VariantLoader):
             return []
 
         filters = {"variant_id": {"$in": list(positional_variant_ids)}}
-        if case_obj:
-            affected_ids = self._find_affected(case_obj)
-            if len(affected_ids) == 0:
-                return []
 
-            filters["case_id"] = case_obj["_id"]
-            filters["samples"] = {
-                "$elemMatch": {
-                    "sample_id": {"$in": affected_ids},
-                    "genotype_call": {"$regex": "1"},
-                }
+        affected_ids = self._find_affected(case_obj)
+        if len(affected_ids) == 0:
+            return []
+
+        has_allele = re.compile(
+            "1|2"
+        )  # a non wild-type allele is called at least once in this sample
+
+        filters["case_id"] = case_obj["_id"]
+        filters["samples"] = {
+            "$elemMatch": {
+                "sample_id": {"$in": affected_ids},
+                "genotype_call": {"$regex": has_allele},
             }
-        else:
-            filters["institute"] = institute_obj["_id"]
+        }
+
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
@@ -560,7 +563,7 @@ class VariantHandler(VariantLoader):
             causatives += [
                 var
                 for var in self.match_affected_gt(
-                    other_case, institute_obj, positional_variant_ids, limit_genes
+                    case_obj, institute_obj, positional_variant_ids, limit_genes
                 )
             ]
 
