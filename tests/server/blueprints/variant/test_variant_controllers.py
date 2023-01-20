@@ -251,7 +251,7 @@ def test_case_variant_check_causatives(
     app, real_variant_database, institute_obj, case_obj, user_obj, variant_obj
 ):
     """Testing the function that returns a matching causative from another case
-    - given that the other case has at least one affected individual
+    - given that the variant is found in an affected individual
     """
     # GIVEN a populated database with variants
     adapter = real_variant_database
@@ -298,7 +298,7 @@ def test_case_variant_check_causatives_carrier(
     app, real_variant_database, institute_obj, case_obj, user_obj, variant_obj
 ):
     """Testing the check_causatives function, which should NOT return matching causatives
-    when the other case has not affected individuals with the variant"""
+    when the the case has not affected individuals with the variant"""
 
     # GIVEN a populated database with variants
     adapter = real_variant_database
