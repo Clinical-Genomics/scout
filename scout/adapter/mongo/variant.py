@@ -446,7 +446,7 @@ class VariantHandler(VariantLoader):
         if len(positional_variant_ids) == 0:
             return []
 
-        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
+        return self.match_affected_gt(case_obj, positional_variant_ids, limit_genes)
 
     def _find_affected(self, case_obj):
         """Internal method to find affected individuals.
@@ -469,13 +469,12 @@ class VariantHandler(VariantLoader):
 
         return affected_ids
 
-    def match_affected_gt(self, case_obj, institute_obj, positional_variant_ids, limit_genes):
+    def match_affected_gt(self, case_obj, positional_variant_ids, limit_genes):
         """Match positional_variant_ids against variants from affected individuals
         in a case, ensuring that they at least are carriers.
 
         Args:
             case_obj (dict): A Case object.
-            institute_obj (dict): An Institute object.
             positional_variant_ids (iterable): A set of possible variant_ids (md5 key based upon a list like this: [ "17", "7577559", "G" "A", "research"]
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
@@ -561,10 +560,7 @@ class VariantHandler(VariantLoader):
                 positional_variant_ids.add(generate_md5_key(other_var_simple + [variant_type]))
 
             causatives += [
-                var
-                for var in self.match_affected_gt(
-                    case_obj, institute_obj, positional_variant_ids, limit_genes
-                )
+                var for var in self.match_affected_gt(case_obj, positional_variant_ids, limit_genes)
             ]
 
         return causatives
