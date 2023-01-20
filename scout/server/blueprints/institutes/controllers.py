@@ -135,7 +135,7 @@ def causatives(institute_obj, request):
 
     causatives = []
 
-    for variant_obj in store.check_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
+    for variant_obj in store.instutute_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
         variant_genes = variant_obj.get("genes", [])
         if variant_obj["category"] in ["snv", "cancer"]:
             update_representative_gene(

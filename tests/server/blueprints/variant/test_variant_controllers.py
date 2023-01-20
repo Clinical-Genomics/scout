@@ -247,7 +247,7 @@ def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdbu
     assert data[loqus_id]["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
 
 
-def test_case_variant_check_causatives(
+def test_case_matching_causatives(
     app, real_variant_database, institute_obj, case_obj, user_obj, variant_obj
 ):
     """Testing the function that returns a matching causative from another case
@@ -288,13 +288,13 @@ def test_case_variant_check_causatives(
     # THEN an function will find the matching causative
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        other_causatives = adapter.check_causatives(
-            case_obj=other_case, institute_obj=institute_obj
+        other_causatives = adapter.case_matching_causatives(
+            case_obj=other_case,
         )
         assert sum(1 for _ in other_causatives) == 1
 
 
-def test_case_variant_check_causatives_carrier(
+def test_case_matching_causatives_carrier(
     app, real_variant_database, institute_obj, case_obj, user_obj, variant_obj
 ):
     """Testing the check_causatives function, which should NOT return matching causatives
@@ -335,7 +335,7 @@ def test_case_variant_check_causatives_carrier(
     # THEN the function will NOT return the matching causative from the first case
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        other_causatives = adapter.check_causatives(
+        other_causatives = adapter.case_matching_causatives(
             case_obj=other_case, institute_obj=institute_obj
         )
         assert sum(1 for _ in other_causatives) == 0
