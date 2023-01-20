@@ -502,7 +502,7 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(filters)
 
-    def instutute_causatives(institute_obj, limit_genes=None):
+    def instutute_causatives(self, institute_obj, limit_genes=None):
         """Return all causative variants for an institute - eventually within the provided list of genes
 
         Args:
@@ -515,7 +515,7 @@ class VariantHandler(VariantLoader):
         causatives = []
         var_causative_events = self.event_collection.find(
             {
-                "institute": institute_id,
+                "institute": institute_obj["_id"],
                 "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
                 "category": "variant",
             }
