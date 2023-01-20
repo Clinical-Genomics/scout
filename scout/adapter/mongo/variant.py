@@ -510,9 +510,8 @@ class VariantHandler(VariantLoader):
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
         Returns:
-            a list of variant objects
+            iterable(Variant)
         """
-        causatives = []
         causative_events = self.event_collection.find(
             {
                 "institute": institute_obj["_id"],
@@ -550,7 +549,6 @@ class VariantHandler(VariantLoader):
         Returns:
             iterable(Variant)
         """
-        causatives = []
         var_causative_events = self.event_collection.find(
             {
                 "institute": case_obj["owner"],
