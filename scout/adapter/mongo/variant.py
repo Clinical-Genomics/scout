@@ -448,7 +448,7 @@ class VariantHandler(VariantLoader):
         if len(positional_variant_ids) == 0:
             return []
 
-        return self.match_affected_gt(case_obj, positional_variant_ids, limit_genes)
+        return self.match_affected_gt(case_obj, institute_obj, positional_variant_ids, limit_genes)
 
     def _find_affected(self, case_obj):
         """Internal method to find affected individuals.
@@ -471,12 +471,13 @@ class VariantHandler(VariantLoader):
 
         return affected_ids
 
-    def match_affected_gt(self, case_obj, positional_variant_ids, limit_genes):
+    def match_affected_gt(self, case_obj, institute_obj, positional_variant_ids, limit_genes):
         """Match positional_variant_ids against variants from affected individuals
         in a case, ensuring that they at least are carriers.
 
         Args:
             case_obj (dict): A Case object.
+            nstitute_obj (dict): an Institute object
             positional_variant_ids (iterable): A set of possible variant_ids (md5 key based upon a list like this: [ "17", "7577559", "G" "A", "research"]
             limit_genes (list): list of gene hgnc_ids to limit the search to
 
@@ -489,18 +490,19 @@ class VariantHandler(VariantLoader):
 
         filters = {"variant_id": {"$in": list(positional_variant_ids)}}
 
-        affected_ids = self._find_affected(case_obj)
-        if len(affected_ids) == 0:
-            return []
-
-        filters["case_id"] = case_obj["_id"]
-        filters["samples"] = {
-            "$elemMatch": {
-                "sample_id": {"$in": affected_ids},
-                "genotype_call": {"$regex": CARRIER},
+        if case_obj:  # When looking for matching causatives for a case
+            affected_ids = self._find_affected(case_obj)
+            if len(affected_ids) == 0:
+                return []
+            filters["case_id"] = case_obj["_id"]
+            filters["samples"] = {
+                "$elemMatch": {
+                    "sample_id": {"$in": affected_ids},
+                    "genotype_call": {"$regex": CARRIER},
+                }
             }
-        }
-
+        else:  # This condition happens when returning variants to Causatives page
+            filters["institute"] = institute_obj["_id"]
         if limit_genes:
             filters["genes.hgnc_id"] = {"$in": limit_genes}
 
@@ -558,7 +560,10 @@ class VariantHandler(VariantLoader):
                 positional_variant_ids.add(generate_md5_key(other_var_simple + [variant_type]))
 
             causatives += [
-                var for var in self.match_affected_gt(case_obj, positional_variant_ids, limit_genes)
+                var
+                for var in self.match_affected_gt(
+                    case_obj, institute_obj, positional_variant_ids, limit_genes
+                )
             ]
 
         return causatives
