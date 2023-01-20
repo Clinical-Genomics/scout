@@ -269,7 +269,7 @@ def test_case_variant_check_causatives(
     other_variant["_id"] = "other_variant"
     adapter.variant_collection.insert_one(other_variant)
 
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     # WHEN the original case has a causative variant flagged,
     link = "junk/{}".format(variant_obj["_id"])
@@ -291,7 +291,7 @@ def test_case_variant_check_causatives(
         other_causatives = adapter.check_causatives(
             case_obj=other_case, institute_obj=institute_obj
         )
-        assert sum(1 for i in other_causatives) == 1
+        assert sum(1 for _ in other_causatives) == 1
 
 
 def test_case_variant_check_causatives_carrier(
