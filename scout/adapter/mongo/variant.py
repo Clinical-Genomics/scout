@@ -16,7 +16,9 @@ from scout.utils.md5 import generate_md5_key
 from .variant_loader import VariantLoader
 
 LOG = logging.getLogger(__name__)
+
 MATCHQ = "$match"
+CARRIER = r"[12]"  # same as re.compile()"1|2")
 
 
 class VariantHandler(VariantLoader):
@@ -491,15 +493,11 @@ class VariantHandler(VariantLoader):
         if len(affected_ids) == 0:
             return []
 
-        has_allele = re.compile(
-            "1|2"
-        )  # a non wild-type allele is called at least once in this sample
-
         filters["case_id"] = case_obj["_id"]
         filters["samples"] = {
             "$elemMatch": {
                 "sample_id": {"$in": affected_ids},
-                "genotype_call": {"$regex": has_allele},
+                "genotype_call": {"$regex": CARRIER},
             }
         }
 
@@ -959,11 +957,6 @@ class VariantHandler(VariantLoader):
         Returns:
             result(iterable(Variant))
         """
-        LOG.info("Retrieving variants for subject : {0}".format(sample_name))
-        has_allele = re.compile(
-            "1|2"
-        )  # a non wild-type allele is called at least once in this sample
-
         query = {
             "$and": [
                 {"_id": variant_id},
@@ -972,7 +965,7 @@ class VariantHandler(VariantLoader):
                     "samples": {
                         "$elemMatch": {
                             "display_name": sample_name,
-                            "genotype_call": {"$regex": has_allele},
+                            "genotype_call": {"$regex": CARRIER},
                         }
                     }
                 },
