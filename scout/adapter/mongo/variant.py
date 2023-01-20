@@ -493,7 +493,7 @@ class VariantHandler(VariantLoader):
         filters["samples"] = {
             "$elemMatch": {
                 "sample_id": {"$in": affected_ids},
-                "genotype_call": {"$regex": "1"},
+                "genotype_call": {"$regex": CARRIER},
             }
         }
 
