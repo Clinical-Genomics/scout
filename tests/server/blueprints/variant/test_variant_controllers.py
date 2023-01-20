@@ -262,6 +262,10 @@ def test_case_matching_causatives(
     other_case["_id"] = "other_case"
     other_case["internal_id"] = "other_case"
     other_case["display_name"] = "other_case"
+    # GIVEN that the other case contains the variant in one affected individual
+    for ind in other_case["individuals"]:
+        ind["phenotype"] = 2  # affected
+
     adapter.case_collection.insert_one(other_case)
 
     # GIVEN that the other case shares a variant with the original case,
