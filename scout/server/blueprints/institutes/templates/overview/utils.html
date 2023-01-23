@@ -152,10 +152,19 @@
                 </div>
                 <!-- End of loqusdb settings -->
                 <!-- Alamut settings -->
-                <div class="col-4">
-                  {{ form.alamut_key.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Optional Alamut Visual Plus API key to be used when opening links to Alamut") }}
-                  <a class="ms-3" href="https://extranet.interactive-biosoftware.com/Alamut_Visual_Plus_API_2.0.0.html" target="_blank" rel="noopener">?</a>
-                  {{ form.alamut_key(class='form-control', value=institute.alamut_key if institute.alamut_key) }}
+                <div class="col-6">
+                  <fieldset><legend>Alamut Plus settings<a class="ms-2 text-decoration-none" href="https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html" target="_blank" rel="noopener">*</a></legend>
+                    <div class="row">
+                      <div class="col">
+                        {{ form.alamut_key.label(class="control-label") }}
+                        {{ form.alamut_key(class='form-control', value=institute.alamut_key if institute.alamut_key) }}
+                      </div>
+                      <div class="col">
+                        {{ form.alamut_institution.label(class="control-label") }}
+                        {{ form.alamut_institution(class='form-control', value=institute.alamut_institution if institute.alamut_institution) }}
+                      </div>
+                    </div>
+                  </fieldset>
                 </div>
                 <!-- End of Alamut settings -->
               {% endif %}
