@@ -709,6 +709,7 @@ def alamut_link(
     return url_template.format(
         search_verb=search_verb,
         alamut_key_arg=alamut_key_arg,
+        alamut_inst_arg=alamut_inst_arg,
         this=variant_obj,
         build_str=build_str,
     )
