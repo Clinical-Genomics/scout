@@ -18,7 +18,9 @@ def test_alamut_link(app, institute_obj, variant_obj):
 
     # GIVEN an institute with settings for Alamut Visual Plus
     alamut_api_key = "test_alamut_key"
+    alamut_api_institute = "test_institute"
     institute_obj["alamut_key"] = alamut_api_key
+    institute_obj["alamut_institution"] = alamut_api_institute
 
     # GIVEN that genome build 38 is provided
     build = 38
@@ -35,8 +37,9 @@ def test_alamut_link(app, institute_obj, variant_obj):
         link_to_alamut = alamut_link(institute_obj, variant_obj, 38)
         # THEN the link should contain genome build info
         assert "GRCh38" in link_to_alamut
-        # As well as Alamut Visual Plus API key
+        # As well as Alamut Visual Plus API key and institution
         assert alamut_api_key in link_to_alamut
+        assert alamut_api_institute in link_to_alamut
 
 
 def test_add_gene_links():

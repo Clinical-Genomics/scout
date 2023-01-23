@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Display dismissed variants comments on general case report
 - Modify ACMG pathogenicity impact (most commonly PVS1, PS3) based on strength of evidence with lab director's professional judgement
 - REViewer button on STR variant page
+- Alamut institution parameter in institute settings for Alamut Visual Plus software
 - Support for nf-core/rnafusion reports
 ### Changed
 - Display chrY for sex unknown
