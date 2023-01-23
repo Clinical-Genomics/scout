@@ -50,6 +50,7 @@ class InstituteHandler(object):
         cohorts=None,
         loqusdb_ids=[],
         alamut_key=None,
+        alamut_institution=None,
         check_show_all_vars=None,
     ):
         """Update the information for an institute
@@ -71,6 +72,7 @@ class InstituteHandler(object):
             cohorts(list(str)): patient cohorts
             loqusdb_ids(list(str)): list of ids of loqusdb instances Scout is connected to
             alamut_key(str): optional, Alamut Plus API key -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
+            alamut_institution: optional, Alamut Plus API Institute ID -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
 
         Returns:
             updated_institute(dict)
@@ -138,10 +140,13 @@ class InstituteHandler(object):
                 existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
             updates["$set"]["phenotype_groups"] = existing_groups
 
-        if alamut_key is not None:
-            updates["$set"]["alamut_key"] = (
-                alamut_key if alamut_key != "" else None
-            )  # allows to reset Alamut key to None
+        for key, value in {
+            "alamut_key": alamut_key,
+            "alamut_institution": alamut_institution,
+        }.items():
+            if value is None:
+                continue
+            updates["$set"][key] = value if value else None
 
         updates["$set"]["check_show_all_vars"] = check_show_all_vars is not None
 
