@@ -696,7 +696,7 @@ def alamut_link(
         return False
 
     url_template = (
-        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}?request={this[chromosome]}{build_str}:"
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[chromosome]}{build_str}:"
         "{this[position]}{this[reference]}>{this[alternative]}"
     )
     alamut_key = institute_obj.get("alamut_key")
