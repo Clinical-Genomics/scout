@@ -696,13 +696,15 @@ def alamut_link(
         return False
 
     url_template = (
-        "http://localhost:10000/{search_verb}?{alamut_key_arg}request={this[chromosome]}{build_str}:"
+        "http://localhost:10000/{search_verb}{alamut_key_arg}{alamut_inst_arg}?request={this[chromosome]}{build_str}:"
         "{this[position]}{this[reference]}>{this[alternative]}"
     )
     alamut_key = institute_obj.get("alamut_key")
+    alamut_institution = institute_obj.get("alamut_institution")
     # Alamut Visual Plus API has a different search verb
     search_verb = "search" if alamut_key else "show"
-    alamut_key_arg = f"apikey={alamut_key}&" if alamut_key else ""
+    alamut_key_arg = f"?apikey={alamut_key}&" if alamut_key else ""
+    alamut_inst_arg = f"?institution={alamut_institution}" if alamut_institution else ""
 
     return url_template.format(
         search_verb=search_verb,
