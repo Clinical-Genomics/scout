@@ -76,6 +76,8 @@ case = dict(
     rerun_requested=bool,  # default=False
     reference_info=str,  # Path to the pipeline reference files versions report file
     research_requested=bool,  # default=False
+    RNAfusion_inspector=str,  # Path to the RNA fusion inspector file
+    RNAfusion_report=str,  # Path to the RNA fusion report file
     smn_tsv=str,  # path to an SMN TSV file
     status=str,  # default='inactive', choices=STATUS
     suspects=list,  # List of variants referred by there _id
