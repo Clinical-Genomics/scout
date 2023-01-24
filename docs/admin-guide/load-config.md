@@ -24,8 +24,8 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **delivery_report** _String_: Path to HTML delivery report.
 - **family(*)**  _String_ Unique ID of the case.
 - **family_name**  _String_ Optional name of the case.
-- **gene_fusion_report** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
-- **gene_fusion_report_research** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
+- **gene_fusion_report** _String_ Path to a static gene fusion report produced by [Arriba][arriba] containing only clinical fusions (a subset of all detected fusions).
+- **gene_fusion_report_research** _String_ Path to a static gene fusion report produced by [Arriba][arriba] containing all detected fusions.
 - **gene_panels** _List of strings_ List of gene panels. Specifies what panels the case has been run with.
 - **human_genome_build** _String_ Version of genome version used, 37 or 38. Defaults to 37.
 - **lims_id** _String_ Case ID in Lims
