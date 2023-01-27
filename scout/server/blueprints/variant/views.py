@@ -5,6 +5,7 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
+from scout.server.blueprints.variant.controllers import check_reset_variant_classification
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
 from scout.server.blueprints.variant.controllers import variant as variant_controller
@@ -262,6 +263,7 @@ def variant_update(institute_id, case_name, variant_id):
 @templated("variant/acmg.html")
 def evaluation(evaluation_id):
     """Show or delete an ACMG evaluation."""
+
     evaluation_obj = store.get_evaluation(evaluation_id)
     if evaluation_obj is None:
         flash("Evaluation was not found in database", "warning")
@@ -275,6 +277,10 @@ def evaluation(evaluation_id):
             variant_id=evaluation_obj["variant_specific"],
         )
         store.delete_evaluation(evaluation_obj)
+
+        if check_reset_variant_classification(store, evaluation_obj, link):
+            flash("Cleared ACMG classification.", "info")
+
         return redirect(link)
     return dict(
         evaluation=evaluation_obj,

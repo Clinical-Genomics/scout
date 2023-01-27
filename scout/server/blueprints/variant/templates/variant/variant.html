@@ -378,47 +378,6 @@
   </div> <!--  end of card div -->
 {% endmacro %}
 
-{% macro acmg_form(selected=None) %}
-  <label class="mt-3">ACMG classification</label>
-  <form action="{{ url_for('variant.variant_update', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" method="POST">
-    <div class="d-flex justify-content-between">
-      {% for option in ACMG_OPTIONS %}
-        <button class="btn btn-{{ option.color if (option.code == selected or not selected) else 'outline-secondary' }} form-control {{ 'me-1' if not loop.last }}" name="acmg_classification" value="{{ option.code }}" title="{{ option.label }}">
-          {{ option.short }}
-        </button>
-      {% endfor %}
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro acmg_classification_item(data) %}
-  {% set current_variant = (data.variant_specific == variant._id) %}
-  <li class="list-group-item {{ 'list-group-item-info' if current_variant }}">
-    <div class="d-flex">
-      <span>
-        <a href="{{ url_for('variant.evaluation', evaluation_id=data._id) }}">
-          {{ data.classification.label }}
-        </a>
-        <span class="badge bg-info">{{ data.classification.short }}</span>
-      </span>
-      <span>
-        {% if not current_variant %}
-          <small>{{ data.case.display_name }}</small>
-        {% endif %}
-      </span>
-    </div>
-    <small class="text-muted">
-      <form action="{{ url_for('variant.evaluation', evaluation_id=data._id) }}" method="POST">
-      {{ data.user_name }} on {{ data.created_at.date() }}
-      {% if current_variant %}
-        <button class="btn btn-xs btn-link">Delete</button>
-      {% endif %}
-      </form>
-    </small>
-  </li>
-{% endmacro %}
-
-
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
