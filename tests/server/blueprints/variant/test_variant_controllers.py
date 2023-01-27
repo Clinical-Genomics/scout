@@ -1,13 +1,15 @@
 import copy
+import datetime
 import logging
 
 import responses
-from flask import current_app, url_for
+from flask import url_for
 from flask_login import current_user
 
 from scout.constants import IGV_TRACKS
 from scout.server.app import create_app
 from scout.server.blueprints.variant.controllers import (
+    check_reset_variant_classification,
     get_igv_tracks,
     has_rna_tracks,
     observations,
@@ -15,9 +17,57 @@ from scout.server.blueprints.variant.controllers import (
     variant,
     variant_rank_scores,
 )
+from scout.server.blueprints.variant.utils import evaluation
 from scout.server.extensions import cloud_tracks, loqusdb, store
 
 LOG = logging.getLogger(__name__)
+
+
+def test_check_reset_variant_classification(app, case_obj, variant_obj):
+    """Test the check_reset_variant_classification controller
+    Assume we are in the situation when it will trigger to clear classifications,
+    and make sure it does clear the classification."""
+
+    # GIVEN an app with a current user
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # GIVEN a variant classified according to ACMG
+        assert store.variant_collection.find_one_and_update(
+            {"_id": variant_obj["_id"]},
+            {"$set": {"acmg_classification": 1}},
+        )
+
+        # WHEN retrieving the variant again,
+        current_variant = store.variant(variant_obj["_id"])
+        # THEN the classification was acutally set
+        assert current_variant.get("acmg_classification") is not None
+
+        # GIVEN that there are no separate evaluations stored for the variant
+        assert len(list(store.get_evaluations_case_specific(variant_obj["document_id"]))) == 0
+
+        # GIVEN an evaluation object for this classification that is not stored
+        deleted_evaluation = dict(
+            variant_specific=variant_obj["document_id"],
+            variant_id=variant_obj["variant_id"],
+            institute_id=case_obj["owner"],
+            case_id=case_obj["case_id"],
+            classification="LP",
+            criteria=[],
+            user_id=current_user.email,
+            user_name=current_user.name,
+            created_at=datetime.datetime.now(),
+        )
+        deleted_evaluation_obj = evaluation(store, deleted_evaluation)
+
+        # WHEN checking if variant evaluations have been removed,
+        # THEN it returns true
+        assert check_reset_variant_classification(store, deleted_evaluation_obj, "link")
+
+        # WHEN retrieving the variant again,
+        current_variant = store.variant(variant_obj["_id"])
+        # THEN the classification has now been cleared
+        assert current_variant.get("acmg_classification") is None
 
 
 def test_variant_rank_scores(case_obj, variant_obj):
