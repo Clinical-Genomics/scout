@@ -5,6 +5,7 @@ from flask_login import current_user
 from markupsafe import Markup
 
 from scout.constants import ACMG_CRITERIA, ACMG_MAP
+from scout.server.blueprints.variant.controllers import check_reset_variant_classification
 from scout.server.blueprints.variant.controllers import evaluation as evaluation_controller
 from scout.server.blueprints.variant.controllers import observations, str_variant_reviewer
 from scout.server.blueprints.variant.controllers import variant as variant_controller
@@ -277,29 +278,7 @@ def evaluation(evaluation_id):
         )
         store.delete_evaluation(evaluation_obj)
 
-        # check if this was the last acmg evaluation left on the variant
-        if len(list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))) == 0:
-            # If there is still a classification we want to remove the classification
-            variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
-            acmg_classification = variant_obj.get("acmg_classification")
-            if isinstance(acmg_classification, int):
-
-                institute_obj, case_obj = institute_and_case(
-                    store,
-                    evaluation_obj["institute"]["_id"],
-                    evaluation_obj["case"]["display_name"],
-                )
-                user_obj = store.user(current_user.email)
-
-                new_acmg = None
-                store.submit_evaluation(
-                    variant_obj=variant_obj,
-                    user_obj=user_obj,
-                    institute_obj=institute_obj,
-                    case_obj=case_obj,
-                    link=link,
-                    classification=new_acmg,
-                )
+        if check_reset_variant_classification(store, evaluation_obj, link):
             flash("Cleared ACMG classification.", "info")
 
         return redirect(link)
