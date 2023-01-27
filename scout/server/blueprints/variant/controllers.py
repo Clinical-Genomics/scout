@@ -633,6 +633,45 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     )
 
 
+def check_reset_variant_classification(store, evaluation_obj, link):
+    """Check if this was the last ACMG evaluation left on the variant.
+    If there is still a classification we want to remove the classification.
+
+    Args:
+            stores(cout.adapter.MongoAdapter)
+            evaluation_obj(dict): ACMG evaluation object
+            link(str): link for event
+
+    Returns: reset(bool) - True if classification reset was attempted
+
+    """
+
+    if len(list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))) == 0:
+
+        variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
+        acmg_classification = variant_obj.get("acmg_classification")
+        if isinstance(acmg_classification, int):
+            institute_obj, case_obj = institute_and_case(
+                store,
+                evaluation_obj["institute"]["_id"],
+                evaluation_obj["case"]["display_name"],
+            )
+            user_obj = store.user(current_user.email)
+
+            new_acmg = None
+            store.submit_evaluation(
+                variant_obj=variant_obj,
+                user_obj=user_obj,
+                institute_obj=institute_obj,
+                case_obj=case_obj,
+                link=link,
+                classification=new_acmg,
+            )
+            return True
+
+    return False
+
+
 def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
     """Calculate an ACMG classification based on a list of criteria.
 
