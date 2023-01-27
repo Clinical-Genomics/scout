@@ -2,8 +2,7 @@
 from urllib.parse import urlencode
 
 import pymongo
-from flask import current_app, url_for
-from flask_login import current_user
+from flask import url_for
 
 from scout.server.extensions import store
 
