@@ -29,6 +29,7 @@ pip-log.txt
 
 # Mac OSX
 .DS_Store
+.icloud
 
 # Unit test / coverage reports
 .coverage
