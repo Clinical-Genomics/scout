@@ -228,7 +228,7 @@
               <label class="col-form-label">Version</label>
             </div>
             <div class="form-group col-sm-3 text-center">
-              <input class="form-control" name="version" type="number" min="{{panel.version}}" value="{{ panel.version + 1 }}">
+              <input class="form-control" name="version" type="number" step="0.01" min="{{panel.version}}" value="{{ panel.version + 1 }}">
             </div>
             <div class="form-group col-sm-6 text-center">
               <button type="submit" class="btn btn-warning form-control" name="cancel_pending" value="cancel_pending">Cancel pending actions</button>

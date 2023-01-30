@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Thaw Flask-Babel and fix according to v3 standard. Thank you @TkTech!
 - Show matching causatives on somatic structural variant page
 - Visibility of gene names and functional annotations on Causatives/Verified pages
+- Panel version can be manually set to floating point numbers, when modified
 
 ## [4.62.1]
 ### Fixed
