@@ -1,11 +1,4 @@
-import datetime
-import logging
 from copy import deepcopy
-
-import pymongo
-import pytest
-
-from scout.constants import VERBS_MAP
 
 
 def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj):
@@ -38,6 +31,47 @@ def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, canc
 
     # THEN it should return a set with the other variant tier info
     assert matching_tiered == {"1A": {"label": "danger", "links": {"link"}}}
+
+
+def test_matching_manual_rank(
+    adapter, institute_obj, cancer_case_obj, user_obj, cancer_variant_obj
+):
+    """Test retrieving matching manual ranked variants from other cases"""
+
+    # GIVEN a database containing a variant in another case
+    other_var = deepcopy(cancer_variant_obj)
+    other_var["_id"] = "another_id"
+    other_var["case"] = cancer_case_obj["_id"]
+    other_var["manual_rank"] = 10
+    other_var["owner"] = institute_obj["_id"]
+    adapter.variant_collection.insert_one(other_var)
+
+    manual_rank = 10
+
+    # GIVEN that the other variant is ranked
+    adapter.update_manual_rank(
+        institute=institute_obj,
+        case=cancer_case_obj,
+        user=user_obj,
+        link="link",
+        variant=other_var,
+        manual_rank=manual_rank,
+    )
+
+    # WHEN retrieving other manually ranked variants matching the query variant
+    matching_ranked = adapter.get_matching_manual_ranked_variants(
+        query_variant=cancer_variant_obj, user_institutes=[{"_id": "cust000"}]
+    )
+
+    # THEN it should return a set with the other variant tier info
+    assert matching_ranked == {
+        10: {
+            "description": "Established risk allele - strong evidence for a small risk increase",
+            "label_class": "default",
+            "label": "RF",
+            "links": {"link"},
+        }
+    }
 
 
 def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
