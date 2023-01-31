@@ -64,7 +64,14 @@ def test_matching_manual_rank(
     )
 
     # THEN it should return a set with the other variant tier info
-    assert matching_ranked == {10: {"label_class": "default", "label": "RF", "links": {"link"}}}
+    assert matching_ranked == {
+        10: {
+            "description": "Established risk allele - strong evidence for a small risk increase",
+            "label_class": "default",
+            "label": "RF",
+            "links": {"link"},
+        }
+    }
 
 
 def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
