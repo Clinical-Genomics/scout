@@ -2,7 +2,7 @@
 
 {% from "variants/components.html" import external_scripts, external_stylesheets, gene_cell, frequency_cell_general, observed_cell_general %}
 {% from "variants/utils.html" import cancer_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
-{% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, dismissals_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge, other_tiered_variants %}
+{% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, other_tiered_variants, research_assessments_badge %}
 
 {% block title %}
   {{ variant_type|capitalize }} somatic variants
@@ -100,6 +100,7 @@
             <td>
               {{ evaluations_badge(variant) }}
               {{ dismissals_badge(variant) }}
+              {{ matching_manual_rank(variant) }}
               {{ research_assessments_badge(variant) }}
               {{ clinical_assessments_badge(variant) }}
               {{ group_assessments_badge(variant) }}
