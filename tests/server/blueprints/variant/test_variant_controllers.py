@@ -297,10 +297,13 @@ def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdbu
     assert data[loqus_id]["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
 
 
-def test_case_variant_check_causatives(app, real_variant_database):
+def test_case_matching_causatives(app, real_variant_database):
+    """Testing the case_matching_causatives function, that returns variants for a case that
+    were found causatives in other cases from the same institutet.
+    - given that the variant is found in an affected individual of the case
+    """
+    # GIVEN a populated database
     adapter = real_variant_database
-
-    # GIVEN a populated database with variants
     case_obj = adapter.case_collection.find_one()
     assert case_obj
     institute_obj = adapter.institute_collection.find_one()
@@ -315,7 +318,10 @@ def test_case_variant_check_causatives(app, real_variant_database):
     other_case["_id"] = "other_case"
     other_case["internal_id"] = "other_case"
     other_case["display_name"] = "other_case"
-    # insert this case into database
+    # GIVEN that the other case contains the variant in one affected individual
+    for ind in other_case["individuals"]:
+        ind["phenotype"] = 2  # affected
+
     adapter.case_collection.insert_one(other_case)
 
     # GIVEN that the other case shares a variant with the original case,
@@ -324,8 +330,7 @@ def test_case_variant_check_causatives(app, real_variant_database):
     other_variant["_id"] = "other_variant"
     adapter.variant_collection.insert_one(other_variant)
 
-    LOG.debug("other variant: {}".format(other_variant))
-    assert sum(1 for i in adapter.event_collection.find()) == 0
+    assert sum(1 for _ in adapter.event_collection.find()) == 0
 
     # WHEN the original case has a causative variant flagged,
     link = "junk/{}".format(variant_obj["_id"])
@@ -341,22 +346,21 @@ def test_case_variant_check_causatives(app, real_variant_database):
     event_obj = adapter.event_collection.find_one()
     assert event_obj["link"] == link
 
-    # THEN an app will find the matching causative
+    # THEN an function will find the matching causative
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        other_causatives = adapter.check_causatives(
-            case_obj=other_case, institute_obj=institute_obj
+        other_causatives = adapter.case_matching_causatives(
+            case_obj=other_case,
         )
-        LOG.debug("other causatives: {}".format(other_causatives))
-        assert sum(1 for i in other_causatives) > 0
+        assert sum(1 for _ in other_causatives) == 1
 
 
-def test_case_variant_check_causatives_carrier(app, real_variant_database):
-    # GIVEN a case with a causative variant flagged,
+def test_case_matching_causatives_carrier(app, real_variant_database):
+    """Testing the case_matching_causatives function, which should NOT return matching causatives
+    when the the case has not affected individuals with the variant"""
 
+    # GIVEN a populated database
     adapter = real_variant_database
-
-    # GIVEN a populated database with variants
     case_obj = adapter.case_collection.find_one()
     assert case_obj
     institute_obj = adapter.institute_collection.find_one()
@@ -371,10 +375,11 @@ def test_case_variant_check_causatives_carrier(app, real_variant_database):
     other_case["_id"] = "other_case"
     other_case["internal_id"] = "other_case"
     other_case["display_name"] = "other_case"
-    # GIVEN another case with the same variant for an unaffected individual,
-    other_case["individuals"][0]["phenotype"] = 1
-    other_case["individuals"][1]["phenotype"] = 1
-    other_case["individuals"][2]["phenotype"] = 1
+
+    # GIVEN that the another case has the variant in an unaffected individual
+    for ind in other_case["individuals"]:
+        ind["phenotype"] = 1  # unaffected
+
     # insert this case into database
     adapter.case_collection.insert_one(other_case)
 
@@ -383,9 +388,6 @@ def test_case_variant_check_causatives_carrier(app, real_variant_database):
     other_variant["case_id"] = "other_case"
     other_variant["_id"] = "other_variant"
     adapter.variant_collection.insert_one(other_variant)
-
-    LOG.debug("other variant: {}".format(other_variant))
-    assert sum(1 for i in adapter.event_collection.find()) == 0
 
     # WHEN the original case has a causative variant flagged,
     link = "junk/{}".format(variant_obj["_id"])
@@ -397,18 +399,13 @@ def test_case_variant_check_causatives_carrier(app, real_variant_database):
         variant=variant_obj,
     )
 
-    # THEN an event object should have been created linking the variant
-    event_obj = adapter.event_collection.find_one()
-    assert event_obj["link"] == link
-
-    # THEN an app will find the matching causative
+    # THEN the function will NOT return the matching causative from the first case
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        other_causatives = adapter.check_causatives(
-            case_obj=other_case, institute_obj=institute_obj
+        other_causatives = adapter.case_matching_causatives(
+            case_obj=other_case,
         )
-        LOG.debug("other causatives: {}".format(other_causatives))
-        assert sum(1 for i in other_causatives) == 0
+        assert sum(1 for _ in other_causatives) == 0
 
 
 def test_variant_controller_with_compounds(app, institute_obj, case_obj):
