@@ -56,7 +56,7 @@
     <span class="popovers badge bg-dark" data-bs-toggle="popover" data-bs-html="true"
         data-bs-content="
           {% for manual_rank, manual_rank_info in variant.matching_ranked.items() %}
-            <span>{{manual_rank_info.label}} ({{manual_rank_info.links|length}}x)</span>
+            <div>{{manual_rank_info.label}} - {{manual_rank_info.description}} ({{manual_rank_info.links|length}}x)</div>
           {% endfor %}
         "
        data-original-title="Previously ranked as">M</span>

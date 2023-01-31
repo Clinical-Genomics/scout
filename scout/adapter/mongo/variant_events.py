@@ -287,6 +287,7 @@ class VariantEventHandler(object):
                     "label_class": MANUAL_RANK_OPTIONS.get(rank_id, {}).get(
                         "label_class", "secondary"
                     ),
+                    "description": MANUAL_RANK_OPTIONS.get(rank_id, {}).get("description", "NOS"),
                     "label": MANUAL_RANK_OPTIONS.get(rank_id, {}).get("label", "NOS"),
                 }
         return ranked
