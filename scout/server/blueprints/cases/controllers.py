@@ -338,7 +338,8 @@ def case(store, institute_obj, case_obj):
         "case": case_obj,
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [
-            var for var in store.check_causatives(case_obj=case_obj, limit_genes=limit_genes)
+            var
+            for var in store.case_matching_causatives(case_obj=case_obj, limit_genes=limit_genes)
         ],
         "managed_variants": [
             var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)

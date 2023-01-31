@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Deprecate legacy scout_load() method API call.
 - Message shown when variant tag is updated for a variant
 - When all ACMG classifications are deleted from a variant, the current variant classification status is also reset.
+- Refactored the functions that collect causative variants
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
 - Freeze Flask-Babel below v3.0 due to issue with a locale decorator
@@ -28,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show matching causatives on somatic structural variant page
 - Visibility of gene names and functional annotations on Causatives/Verified pages
 - Panel version can be manually set to floating point numbers, when modified
+- Causatives page showing also non-causative variants matching causatives in other cases
 
 ## [4.62.1]
 ### Fixed
