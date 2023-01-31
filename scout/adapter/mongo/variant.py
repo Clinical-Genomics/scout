@@ -503,7 +503,7 @@ class VariantHandler(VariantLoader):
         return self.variant_collection.find(filters)
 
     def institute_causatives(self, institute_obj, limit_genes=None):
-        """Return all causative variants for an institute - eventually within the provided list of genes
+        """Return all causative variants for an institute - conditionally within the provided list of genes
 
         Args:
             institute_obj (dict): an Institute object
