@@ -1,6 +1,6 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% from "utils.html" import comments_table %}
-{% from "variants/indicators.html" import pin_indicator, causative_badge, comments_badge, dismissals_badge, evaluations_badge, research_assessments_badge, clinical_assessments_badge, group_assessments_badge %}
+{% from "variants/indicators.html" import pin_indicator, causative_badge, clinical_assessments_badge, comments_badge, dismissals_badge, evaluations_badge, group_assessments_badge, matching_manual_rank, research_assessments_badge %}
 
 {% macro filter_script_main(cytobands) %}
   <script type="text/javascript">
@@ -829,6 +829,7 @@
   {{ clinical_assessments_badge(variant) }}
   {{ group_assessments_badge(variant) }}
   {{ dismissals_badge(variant) }}
+  {{ matching_manual_rank(variant) }}
 
   {{ comments_badge(institute, case, variant) }}
   {{ causative_badge(variant, case) }}
