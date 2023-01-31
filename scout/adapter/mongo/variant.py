@@ -538,7 +538,7 @@ class VariantHandler(VariantLoader):
 
         return self.variant_collection.find(filters)
 
-    def case_matching_causatives(self, case_obj=None, limit_genes=None):
+    def case_matching_causatives(self, case_obj, limit_genes=None):
         """Returns the variants of a case that were marked as causatives in other cases of the same institute.
            Checks that the individuals of the case that are carriers of the variant are affected
 
