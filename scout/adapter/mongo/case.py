@@ -455,7 +455,9 @@ class CaseHandler(object):
                 {"individuals.splice_junctions_bed": EXISTS_NOT_NULL},
                 {"individuals.rna_coverage_bigwig": EXISTS_NOT_NULL},
                 {"RNAfusion_report": EXISTS_NOT_NULL},
+                {"RNAfusion_report_research": EXISTS_NOT_NULL},
                 {"RNAfusion_inspector": EXISTS_NOT_NULL},
+                {"RNAfusion_inspector_research": EXISTS_NOT_NULL},
             ],
         }
         return [case["_id"] for case in self.case_collection.find(query)]
@@ -948,7 +950,9 @@ class CaseHandler(object):
             - rerun_requested: Is set to False since that is probably what happened
             - research_requested: Boolean, if research variants where requested for this case
             - RNAfusion_inspector: path to the RNA fusion inspector report
+            - RNAfusion_inspector_research: path to the research RNA fusion inspector report
             - RNAfusion_report: path to the RNA fusion report
+            - RNAfusion_report_research: path to the research RNA fusion report
             - smn_tsv: path to static SMN TSV file
             - status: case status
             - sv_rank_model_version: If there is a new sv rank model
@@ -1012,7 +1016,9 @@ class CaseHandler(object):
                 "research_requested": case_obj.get("research_requested", False),
                 "reference_info": case_obj.get("reference_info"),
                 "RNAfusion_inspector": case_obj.get("RNAfusion_inspector"),
+                "RNAfusion_inspector_research": case_obj.get("RNAfusion_inspector_research"),
                 "RNAfusion_report": case_obj.get("RNAfusion_report"),
+                "RNAfusion_report_research": case_obj.get("RNAfusion_report_research"),
                 "smn_tsv": case_obj.get("smn_tsv"),
                 "status": case_obj.get("status"),
                 "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
@@ -1049,7 +1055,9 @@ class CaseHandler(object):
             "rank_model_version",
             "reference_info",
             "RNAfusion_inspector",
+            "RNAfusion_inspector_research",
             "RNAfusion_report",
+            "RNAfusion_report_research",
             "smn_tsv",
             "sv_rank_model_version",
         ]:

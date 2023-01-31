@@ -20,7 +20,17 @@ CUSTOM_CASE_REPORTS = {
         "format": "HTML",
         "pdf_export": False,
     },
+    "RNAfusion_inspector_research": {
+        "key_name": "RNAfusion_inspector_research",
+        "format": "HTML",
+        "pdf_export": False,
+    },
     "RNAfusion_report": {"key_name": "RNAfusion_report", "format": "HTML", "pdf_export": False},
+    "RNAfusion_report_research": {
+        "key_name": "RNAfusion_report_research",
+        "format": "HTML",
+        "pdf_export": False,
+    },
 }
 
 CASE_REPORT_CASE_FEATURES = [

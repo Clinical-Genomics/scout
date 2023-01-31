@@ -39,8 +39,10 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **phenotype_terms** _List of strings_ List of phenotype terms.
 - **rank model version** _String_ Which rank model that was used when scoring the variants.
 - **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
-- **RNAfusion_inspector** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report.
-- **RNAfusion_report** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report].
+- **RNAfusion_inspector** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report containing only clinical fusions (a subset of all detected fusions).
+- **RNAfusion_inspector_research** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report containing all detected fusions.
+- **RNAfusion_report** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report] containing only clinical fusions (a subset of all detected fusions).
+- **RNAfusion_report_research** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report] containing all detected fusions.
 - **samples** _List_ List of samples included in the case:
     - **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
     - **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel, unknown, external}.

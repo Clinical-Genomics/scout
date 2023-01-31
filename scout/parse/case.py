@@ -30,7 +30,9 @@ def parse_case_data(**kwargs):
         ped(iterable(str)): A ped formatted family file
         peddy_ped(str): Path to a peddy ped
         RNAfusion_inspector: Path to the RNA fusion inspector report
+        RNAfusion_inspector_research: Path to the research RNA fusion inspector report
         RNAfusion_report: Path to the RNA fusion report
+        RNAfusion_report_research: Path to the research RNA fusion report
         smn_tsv(str): Path to an SMN tsv file
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
