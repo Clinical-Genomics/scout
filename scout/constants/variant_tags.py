@@ -386,6 +386,24 @@ MANUAL_RANK_OPTIONS = OrderedDict(
             },
         ),
         (
+            13,
+            {
+                "label": "PLP",
+                "name": "Pathogenic Low Penetrance",
+                "description": "Pathogenic allele with low or reduced penetrance - robust evidence for an intermediate risk increase",
+                "label_class": "warning",
+            },
+        ),
+        (
+            14,
+            {
+                "label": "LPLP",
+                "name": "Likely Pathogenic Low Penetrance",
+                "description": "Likely pathogenic allele with low or reduced penetrance - some evidence for an intermediate risk increase",
+                "label_class": "warning",
+            },
+        ),
+        (
             10,
             {
                 "label": "RF",
