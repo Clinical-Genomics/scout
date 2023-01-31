@@ -53,10 +53,10 @@
 
 {% macro matching_manual_rank(variant) %}
   {% if variant.matching_ranked %}
-    <span class="popovers badge bg-dark" data-bs-toggle="popover" data-bs-html="true" title=""
+    <span class="popovers badge bg-dark" data-bs-toggle="popover" data-bs-html="true"
         data-bs-content="
           {% for manual_rank, manual_rank_info in variant.matching_ranked.items() %}
-            <span class='badge bg-{{manual_rank_info.label_class}}'>{{manual_rank_info.label}} ({{manual_rank_info.links|length}}x)</span>
+            <span>{{manual_rank_info.label}} ({{manual_rank_info.links|length}}x)</span>
           {% endfor %}
         "
        data-original-title="Previously ranked as">M</span>
