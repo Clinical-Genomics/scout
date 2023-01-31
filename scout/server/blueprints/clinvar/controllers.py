@@ -27,7 +27,7 @@ def _get_var_tx_hgvs(case_obj, variant_obj):
         list of tuples. example: [("NM_002340.6:c.1840C>T", "NM_002340.6:c.1840C>T (validated)" ), ("NM_001145436.2:c.1840C>T", "NM_001145436.2:c.1840C>T"), .. ]
     """
     build = str(case_obj.get("genome_build", "37"))
-    tx_hgvs_list = [(None, "Do not specify")]
+    tx_hgvs_list = [("", "Do not specify")]
     for gene in variant_obj.get("genes", []):
         for tx in gene.get("transcripts", []):
             if all([tx.get("refseq_id"), tx.get("coding_sequence_name")]):
@@ -210,7 +210,8 @@ def _parse_tx_hgvs(clinvar_var, form):
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
     tx_hgvs = form.get("tx_hgvs")
-    if not tx_hgvs or tx_hgvs == "Do not specify":
+    if not tx_hgvs:
+        LOG.error("HERE BITCHES")
         return
     clinvar_var["ref_seq"] = tx_hgvs.split(":")[0]
     clinvar_var["hgvs"] = tx_hgvs.split(":")[1]
