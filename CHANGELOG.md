@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Modify ACMG pathogenicity impact (most commonly PVS1, PS3) based on strength of evidence with lab director's professional judgement
 - REViewer button on STR variant page
 - Alamut institution parameter in institute settings for Alamut Visual Plus software
+- Added Manual Ranks Risk Factor, Likely Risk Factor and Uncertain Risk Factor
+- Display matching manual ranks from previous cases the user has access to on VariantS and Variant pages
 ### Changed
 - Display chrY for sex unknown
 - Deprecate legacy scout_load() method API call.
