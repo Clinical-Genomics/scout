@@ -152,7 +152,6 @@ def omim(omim_id):
 
 
 def ensembl(ensembl_id, build=37):
-
     link = "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
     if build == 38:
         link = "http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
@@ -264,7 +263,6 @@ def vega(vega_id):
 
 
 def ucsc(ucsc_id):
-
     link = (
         "http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene"
         "&hgg_gene={}"
@@ -402,7 +400,6 @@ def mutalyzer(refseq_id, hgvs):
 
 
 def iarctp53(hgnc_symbol):
-
     if hgnc_symbol != "TP53":
         return None
 
@@ -433,6 +430,7 @@ def get_variant_links(institute_obj, variant_obj, build=None):
         thousandg_link=thousandg_link(variant_obj, build),
         exac_link=exac_link(variant_obj),
         gnomad_link=gnomad_link(variant_obj, build),
+        gnomad_sv_link=gnomad_sv_link(variant_obj, build),
         swegen_link=swegen_link(variant_obj),
         cosmic_links=cosmic_links(variant_obj),
         beacon_link=beacon_link(variant_obj, build),
@@ -518,7 +516,7 @@ def decipher_link(variant_obj, build=37):
 def exac_link(variant_obj):
     """Compose link to ExAC website for a variant position."""
     url_template = (
-        "http://exac.broadinstitute.org/variant/"
+        "https://exac.broadinstitute.org/variant/"
         "{this[chromosome]}-{this[position]}-{this[reference]}"
         "-{this[alternative]}"
     )
@@ -528,12 +526,38 @@ def exac_link(variant_obj):
 def gnomad_link(variant_obj, build=37):
     """Compose link to gnomAD website for a variant."""
     url_template = (
-        "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+        "https://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
         "{this[position]}-{this[reference]}-{this[alternative]}"
     ).format(this=variant_obj)
 
     if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
         url_template += "?dataset=gnomad_r3"
+
+    return url_template
+
+
+def gnomad_sv_link(variant_obj, build=37):
+    """Compose link to gnomAD website for a structural variant.
+
+    GnomAD SVs are not yet public for hg38 or MT as 2023-02-01.
+
+    Since we do not track the GnomAD variant ID we link to the region view instead.
+    For balanced variants, we pick the region for the start position (the var is available in both).
+    """
+
+    if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
+        return "https://gnomad.broadinstitute.org/"
+
+    url_template = (
+        "https://gnomad.broadinstitute.org/region/{this[chromosome]}-{this[position]}"
+    ).format(this=variant_obj)
+
+    if variant_obj["chromosome"] == variant_obj.get("end_chrom"):
+        url_template += f"-{variant_obj['end']}"
+    else:
+        url_template += f"-{variant_obj['position']}"
+
+    url_template += "?dataset=gnomad_sv_r2_1"
 
     return url_template
 

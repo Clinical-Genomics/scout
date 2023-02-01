@@ -59,7 +59,6 @@ def test_add_variants_unauthorized_user(app):
     assert "beacon" not in case_obj
 
     with app.test_client() as client:
-
         # GIVEN that the user is logged in
         client.get(url_for("auto_login"))
 
@@ -91,7 +90,6 @@ def test_add_variants_wrong_dataset(app, user_obj, case_obj):
     )
 
     with app.test_client() as client:
-
         # GIVEN that the user is logged in
         client.get(url_for("auto_login"))
 
@@ -127,7 +125,6 @@ def test_add_variants(app, user_obj, case_obj):
     )
 
     with app.test_client() as client:
-
         # GIVEN that the user is logged in
         client.get(url_for("auto_login"))
 
@@ -163,7 +160,6 @@ def test_remove_variants(app, user_obj, institute_obj, case_obj):
     )
 
     with app.test_client() as client:
-
         # GIVEN that the user is logged in
         client.get(url_for("auto_login"))
 

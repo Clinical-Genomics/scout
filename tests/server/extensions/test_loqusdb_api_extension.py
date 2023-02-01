@@ -131,6 +131,7 @@ def test_loqusdb_api_cases(loqus_api_app, monkeypatch):
     """Test fetching info on number of cases from loqusdb API"""
     nr_snvs = 15
     nr_svs = 12
+
     # GIVEN a mocked loqus API
     def mockapi(*args):
         return {

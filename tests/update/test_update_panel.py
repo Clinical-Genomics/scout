@@ -115,6 +115,5 @@ def test_update_panel_version_multiple(adapter, case_obj, testpanel_obj):
     assert updated_panel_obj["version"] == new_panel_version
 
     for case_obj in adapter.case_collection.find():
-
         for panel in case_obj["panels"]:
             assert panel["version"] == new_panel_version

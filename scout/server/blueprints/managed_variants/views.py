@@ -54,7 +54,6 @@ def upload_managed_variants():
 
 @managed_variants_bp.route("/managed_variant/<variant_id>/modify", methods=["POST"])
 def modify_managed_variant(variant_id):
-
     edit_form = ManagedVariantModifyForm(request.form)
 
     if not controllers.modify_managed_variant(store, variant_id, edit_form):

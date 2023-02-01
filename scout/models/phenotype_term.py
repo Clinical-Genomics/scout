@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 # Hpo terms represents data from the hpo web
 class HpoTerm(dict):
     """Represents a hpo term
