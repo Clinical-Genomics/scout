@@ -58,7 +58,6 @@ def test_assign(adapter, institute_obj, case_obj, user_obj):
 
 
 def test_unassign(adapter, institute_obj, case_obj, user_obj):
-
     case_obj["status"] = "active"
 
     # GIVEN an adapter to a database with one case

@@ -405,12 +405,10 @@ class VariantHandler(VariantLoader):
         causatives = []
 
         if case_id:
-
             case_obj = self.case_collection.find_one({"_id": case_id})
             causatives = [causative for causative in case_obj.get("causatives", [])]
 
         elif institute_id:
-
             query = self.case_collection.aggregate(
                 [
                     {
@@ -521,7 +519,6 @@ class VariantHandler(VariantLoader):
         )
         causative_ids = set()
         for case_event in causative_events:
-
             case_obj = self.case(case_event.get("case"))
             if case_obj is None:
                 continue

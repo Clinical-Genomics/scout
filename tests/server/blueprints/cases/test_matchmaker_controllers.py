@@ -131,7 +131,6 @@ def test_matchmaker_add_sv(app, user_obj, case_obj, sv_variant_obj, mocker):
 
     # GIVEN an app containing MatchMaker connection params
     with app.test_client() as client:
-
         # GIVEN a SV variant with genes
         sv_variant_obj["samples"] = [
             {"sample_id": "ADM1059A2", "display_name": "NA12882", "genotype_call": "0/1"}

@@ -64,7 +64,6 @@ def load_transcripts(adapter, transcripts_lines=None, build="37", ensembl_genes=
         transcripts_dict.values(), label="Building transcripts", length=nr_transcripts
     ) as bar:
         for tx_data in bar:
-
             #################### Get the correct refseq identifier ####################
             # We need to decide one refseq identifier for each transcript, if there are any to
             # choose from. The algorithm is as follows:

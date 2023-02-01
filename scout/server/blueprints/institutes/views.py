@@ -98,7 +98,6 @@ def causatives(institute_id):
 @blueprint.route("/<institute_id>/filters", methods=["GET"])
 @templated("overview/filters.html")
 def filters(institute_id):
-
     form = request.form
 
     institute_obj = institute_and_case(store, institute_id)
@@ -110,7 +109,6 @@ def filters(institute_id):
 
 @blueprint.route("/<institute_id>/lock_filter/<filter_id>", methods=["POST"])
 def lock_filter(institute_id, filter_id):
-
     filter_lock = request.form.get("filter_lock", "False")
     LOG.debug(
         "Attempting to toggle lock %s for %s with status %s",

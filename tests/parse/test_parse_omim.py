@@ -35,7 +35,6 @@ def test_parse_genemap2_phenotype_entry_single():
 
 
 def test_parse_genemap(genemap_lines):
-
     for res in parse_genemap2(genemap_lines):
         assert res["Chromosome"] == "chr1"
         assert res["mim_number"] == 615291

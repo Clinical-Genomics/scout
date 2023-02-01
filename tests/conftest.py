@@ -419,7 +419,6 @@ def cancer_case_obj(request, cancer_parsed_case):
 
 @pytest.fixture(scope="function")
 def case_obj(request, parsed_case):
-
     case = parsed_case
     case["_id"] = parsed_case["case_id"]
     case["owner"] = parsed_case["owner"]
