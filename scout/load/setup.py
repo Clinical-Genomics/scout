@@ -13,7 +13,7 @@ from scout.build import build_institute
 
 # Case files
 # Gene panel
-from scout.demo import cancer_load_path, load_path, panel_path
+from scout.demo import cancer_load_path, load_path, panel_path, rnafusion_load_path
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
@@ -214,7 +214,7 @@ def load_demo_cases(adapter):
     Args:
         adapter(scout.adapter.MongoAdapter)
     """
-    for path in [load_path, cancer_load_path]:
+    for path in [load_path, cancer_load_path, rnafusion_load_path]:
         case_handle = get_file_handle(path)
         case_data = yaml.load(case_handle, Loader=yaml.SafeLoader)
         config_data = parse_case_data(config=case_data)
