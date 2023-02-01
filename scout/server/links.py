@@ -549,7 +549,7 @@ def gnomad_sv_link(variant_obj, build=37):
         return "http://gnomad.broadinstitute.org/"
 
     url_template = (
-        "http://gnomad.broadinstitute.org/region/{this[chromosome]}-{this[position]}"
+        "https://gnomad.broadinstitute.org/region/{this[chromosome]}-{this[position]}"
     ).format(this=variant_obj)
 
     if variant_obj["chromosome"] == variant_obj.get("end_chrom"):
