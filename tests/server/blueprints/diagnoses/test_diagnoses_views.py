@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import url_for
 
-from scout.server.blueprints.diagnoses.views import api_diagnoses
 from scout.server.extensions import store
 
 
@@ -13,7 +12,6 @@ def test_omim_diagnosis(app, test_omim_term):
 
     # GIVEN an initialized app
     with app.test_client() as client:
-
         # WHEN accessing the page of one OMIM diagnosis
         resp = client.get(url_for("diagnoses.omim_diagnosis", omim_nr=test_omim_term["disease_nr"]))
 

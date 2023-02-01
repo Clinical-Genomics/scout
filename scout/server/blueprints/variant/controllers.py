@@ -419,7 +419,6 @@ def variant_rank_scores(store, case_obj, variant_obj):
     if all(
         [rank_model_version, rm_link_prefix, rm_file_extension]
     ):  # Try to retrieve rank model param ranges to display on variant page
-
         rank_model = store.rank_model_from_url(
             rm_link_prefix, rank_model_version, rm_file_extension
         )
@@ -647,7 +646,6 @@ def check_reset_variant_classification(store, evaluation_obj, link):
     """
 
     if len(list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))) == 0:
-
         variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
         acmg_classification = variant_obj.get("acmg_classification")
         if isinstance(acmg_classification, int):

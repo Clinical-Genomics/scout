@@ -104,7 +104,6 @@ def test_igv_not_authorized(app, user_obj, case_obj, variant_obj):
 
     # GIVEN an initialized app
     with app.test_client() as client:
-
         # GIVEN that the user is logged in but not authorized to see the page
         client.get(url_for("auto_login_not_authorized"))
 
@@ -127,7 +126,6 @@ def test_igv_authorized(app, user_obj, case_obj, variant_obj):
 
     # GIVEN an initialized app
     with app.test_client() as client:
-
         # GIVEN that the user is logged in
         client.get(url_for("auto_login"))
 

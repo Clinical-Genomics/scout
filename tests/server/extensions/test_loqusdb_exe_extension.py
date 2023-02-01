@@ -159,6 +159,7 @@ def test_loqusdb_exe_cases(loqus_exe_app, monkeypatch):
 
 def test_loqusdb_exe_cases_ValueError(loqus_exe_app, monkeypatch):
     """Test the case count function in loqus extension"""
+
     # GIVEN a return value from loqusdb which is not an int
     def mockcommand(*args):
         return "nonsense"
@@ -172,6 +173,7 @@ def test_loqusdb_exe_cases_ValueError(loqus_exe_app, monkeypatch):
 
 def test_loqusdb_exe_case_count_CalledProcessError(loqus_exe_app, monkeypatch):
     """Test the case count function in loqus extension that raises an exception"""
+
     # GIVEN replacing subprocess.check_output to raise CalledProcessError
     def mockcommand(*args):
         raise subprocess.CalledProcessError(123, "case_count")
