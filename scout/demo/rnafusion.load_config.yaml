@@ -3,7 +3,7 @@
 owner: cust000
 
 family: 'solidfawn'
-family_name: 'rnafusion_test'
+family_name: 'rnafusion_case'
 samples:
   - analysis_type: wts
     sample_id: 888-88
