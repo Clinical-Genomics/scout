@@ -24,8 +24,8 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **delivery_report** _String_: Path to HTML delivery report.
 - **family(*)**  _String_ Unique ID of the case.
 - **family_name**  _String_ Optional name of the case.
-- **gene_fusion_report** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from default clinical data.
-- **gene_fusion_report_research** _String_ Path to a static file containing a gene fusion report produced by [Arriba][arriba]. Generated from research data.
+- **gene_fusion_report** _String_ Path to a static gene fusion report produced by [Arriba][arriba] containing only clinical fusions (a subset of all detected fusions).
+- **gene_fusion_report_research** _String_ Path to a static gene fusion report produced by [Arriba][arriba] containing all detected fusions.
 - **gene_panels** _List of strings_ List of gene panels. Specifies what panels the case has been run with.
 - **human_genome_build** _String_ Version of genome version used, 37 or 38. Defaults to 37.
 - **lims_id** _String_ Case ID in Lims
@@ -39,6 +39,10 @@ Below are available configuration parameters for a Scout case. Names marked with
 - **phenotype_terms** _List of strings_ List of phenotype terms.
 - **rank model version** _String_ Which rank model that was used when scoring the variants.
 - **rank_score_threshold** _Float_ Only include variants with a rank score above this threshold.
+- **RNAfusion_inspector** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report containing only clinical fusions (a subset of all detected fusions).
+- **RNAfusion_inspector_research** _String_ Path to HTML [nf-core/rnafusion inspector][rnafusion-inspector] report containing all detected fusions.
+- **RNAfusion_report** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report] containing only clinical fusions (a subset of all detected fusions).
+- **RNAfusion_report_research** _String_ Path to HTML [nf-core/rnafusion report][rnafusion-report] containing all detected fusions.
 - **samples** _List_ List of samples included in the case:
     - **alignment_path** _String_ Path to BAM/CRAM file to view alignments.
     - **analysis_type** _String_ Specifies the analysis type for the sample. Options: {wgs, wes, panel, unknown, external}.
@@ -126,6 +130,8 @@ vcf_snv: scout/demo/643594.clinical.vcf.gz
 [arriba]: https://arriba.readthedocs.io/en/latest/
 [multiqc]: https://github.com/ewels/multiqc
 [rna-multiqc]: https://nf-co.re/rnafusion/output#multiqc
+[rnafusion-inspector]: https://nf-co.re/rnafusion/output#fusioninspector
+[rnafusion-report]: https://nf-co.re/rnafusion/output#fusion-report
 [peddy]: https://github.com/brentp/peddy
 [rhocall]: https://github.com/dnil/rhocall
 [srs]: https://github.com/Clinical-Genomics/Scout-REViewer-service

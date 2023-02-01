@@ -1,0 +1,22 @@
+---
+
+owner: cust000
+
+family: 'solidfawn'
+family_name: 'rnafusion_case'
+samples:
+  - analysis_type: wts
+    sample_id: 888-88
+    tumor_type: unknown
+    sample_name: 888-88
+    phenotype: affected
+    sex: unknown
+
+gene_fusion_report: scout/demo/draw-fusions-example.pdf
+RNAfusion_report_research: scout/demo/rnafusion_report_example.html
+RNAfusion_inspector_research: scout/demo/rnafusion_inspector_example.html
+
+# meta data
+analysis_date: 2022-11-02 14:00:46
+human_genome_build: 38
+track: cancer
