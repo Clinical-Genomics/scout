@@ -557,7 +557,7 @@ def gnomad_sv_link(variant_obj, build=37):
     else:
         url_template += f"-{variant_obj['position']}"
 
-    url_template += "?dataset = gnomad_sv_r2_1"
+    url_template += "?dataset=gnomad_sv_r2_1"
 
     return url_template
 
