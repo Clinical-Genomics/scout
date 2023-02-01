@@ -1,4 +1,4 @@
-ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "panel-umi", "external")
+ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "panel-umi", "external", "wts")
 
 # keys are used in the load report cli, while key_name is saved in case database documents
 CUSTOM_CASE_REPORTS = {
@@ -15,6 +15,22 @@ CUSTOM_CASE_REPORTS = {
         "pdf_export": False,
     },
     "reference_info": {"key_name": "reference_info", "format": "YAML", "pdf_export": True},
+    "RNAfusion_inspector": {
+        "key_name": "RNAfusion_inspector",
+        "format": "HTML",
+        "pdf_export": False,
+    },
+    "RNAfusion_inspector_research": {
+        "key_name": "RNAfusion_inspector_research",
+        "format": "HTML",
+        "pdf_export": False,
+    },
+    "RNAfusion_report": {"key_name": "RNAfusion_report", "format": "HTML", "pdf_export": False},
+    "RNAfusion_report_research": {
+        "key_name": "RNAfusion_report_research",
+        "format": "HTML",
+        "pdf_export": False,
+    },
 }
 
 CASE_REPORT_CASE_FEATURES = [
