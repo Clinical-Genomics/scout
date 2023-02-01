@@ -546,7 +546,7 @@ def gnomad_sv_link(variant_obj, build=37):
     """
 
     if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
-        return "http://gnomad.broadinstitute.org/"
+        return "https://gnomad.broadinstitute.org/"
 
     url_template = (
         "https://gnomad.broadinstitute.org/region/{this[chromosome]}-{this[position]}"
