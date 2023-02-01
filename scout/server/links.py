@@ -527,7 +527,7 @@ def decipher_link(variant_obj, build=37):
 def exac_link(variant_obj):
     """Compose link to ExAC website for a variant position."""
     url_template = (
-        "http://exac.broadinstitute.org/variant/"
+        "https://exac.broadinstitute.org/variant/"
         "{this[chromosome]}-{this[position]}-{this[reference]}"
         "-{this[alternative]}"
     )
@@ -537,7 +537,7 @@ def exac_link(variant_obj):
 def gnomad_link(variant_obj, build=37):
     """Compose link to gnomAD website for a variant."""
     url_template = (
-        "http://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
+        "https://gnomad.broadinstitute.org/variant/{this[chromosome]}-"
         "{this[position]}-{this[reference]}-{this[alternative]}"
     ).format(this=variant_obj)
 

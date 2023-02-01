@@ -121,7 +121,7 @@
           <tr>
             <td>
               {% if link %}
-                <a href="{{ link }}" target="_blank">{{ freq_name }}</a>
+                <a href="{{ link }}" target="_blank" rel="noopener" referrerpolicy="no-referrer">{{ freq_name }}</a>
               {% else %}
                 {{ freq_name }}
               {% endif %}
