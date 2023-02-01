@@ -553,9 +553,9 @@ def gnomad_sv_link(variant_obj, build=37):
     ).format(this=variant_obj)
 
     if variant_obj["chromosome"] == variant_obj.get("end_chrom"):
-        url_template += "-{variant_obj[end]}"
+        url_template += f"-{variant_obj[end]}"
     else:
-        url_template += "-{variant_obj[position]}"
+        url_template += f"-{variant_obj[position]}"
 
     url_template += "?dataset = gnomad_sv_r2_1"
 
