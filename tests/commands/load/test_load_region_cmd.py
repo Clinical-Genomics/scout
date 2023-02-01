@@ -18,7 +18,6 @@ def test_load_region(mock_app, case_obj):
     with pytest.warns(
         UserWarning
     ):  # The command will raise a UserWarning: no intervals found for b'scout/demo/643594.clinical.SV.vcf.gz' at 2:114647537-114720173
-
         # test load region using case_id + hgnc_id:
         result = runner.invoke(
             cli, ["load", "region", "--case-id", case_obj["_id"], "--hgnc-id", 170]

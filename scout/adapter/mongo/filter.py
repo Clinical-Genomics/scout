@@ -68,7 +68,7 @@ class FilterHandler(object):
             institute_obj.get("display_name") + "-" + case_obj.get("display_name")
         )
 
-        for (element, value) in filter_obj.lists():
+        for element, value in filter_obj.lists():
             if value == [""]:
                 continue
             if element in ["save_filter", "filters", "csrf_token"]:

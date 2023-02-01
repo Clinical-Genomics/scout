@@ -44,7 +44,6 @@ def test_parse_genotypes(variants):
     case["individuals"] = [individuals[ind_id] for ind_id in individuals]
     ## WHEN parsing the variants genotypes
     for variant in variants:
-
         ## THEN assert genotypes are parsed correct
 
         genotypes = parse_genotypes(variant, case["individuals"], ind_positions)
