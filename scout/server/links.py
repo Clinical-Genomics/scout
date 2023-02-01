@@ -67,6 +67,7 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["iarctp53_link"] = iarctp53(hgnc_symbol)
     gene_obj["stripy_link"] = stripy_gene(hgnc_symbol)
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
+    gene_obj["gnomad_sv_link"] = gnomad_sv_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
 
 
@@ -97,6 +98,16 @@ def gnomad_str_gene(hgnc_symbol):
 
     if hgnc_symbol in SHALLOW_REFERENCE_STR_LOCI:
         return "https://gnomad.broadinstitute.org/short-tandem-repeats?dataset=gnomad_r3"
+
+    return link.format(hgnc_symbol)
+
+
+def gnomad_sv_gene(hgnc_symbol):
+    """Creates a gnomad link for a SV"""
+    link = "https://gnomad.broadinstitute.org/gene/{}?dataset=gnomad_sv_r2_1"
+
+    if not hgnc_symbol:
+        return None
 
     return link.format(hgnc_symbol)
 
