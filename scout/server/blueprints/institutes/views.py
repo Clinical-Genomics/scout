@@ -5,7 +5,6 @@ import logging
 from bson import ObjectId
 from flask import (
     Blueprint,
-    Response,
     current_app,
     flash,
     jsonify,
@@ -16,7 +15,6 @@ from flask import (
 )
 from flask_login import current_user
 from pymongo import DESCENDING
-from werkzeug.datastructures import Headers
 
 from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS, VERBS_ICONS_MAP, VERBS_MAP
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols

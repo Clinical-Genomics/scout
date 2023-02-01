@@ -7,7 +7,7 @@ from click import progressbar
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
 from scout.parse.hpo_mappings import parse_hpo_diseases, parse_hpo_to_genes
-from scout.parse.hpo_terms import build_hpo_tree, parse_hpo_obo
+from scout.parse.hpo_terms import build_hpo_tree
 from scout.parse.omim import get_mim_phenotypes
 from scout.utils.scout_requests import fetch_hpo_terms, fetch_hpo_to_genes_to_disease
 

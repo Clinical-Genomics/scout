@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Message shown when variant tag is updated for a variant
 - When all ACMG classifications are deleted from a variant, the current variant classification status is also reset.
 - Refactored the functions that collect causative variants
+- Removed `scripts/generate_test_data.py`
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
 - Freeze Flask-Babel below v3.0 due to issue with a locale decorator
