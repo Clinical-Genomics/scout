@@ -7,7 +7,6 @@ from scout.commands import cli
 
 # Coherence check for cli
 def test_base_cmd():
-
     # Create a test CLI runner
     runner = CliRunner()
     assert runner

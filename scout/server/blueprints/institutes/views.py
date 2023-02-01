@@ -5,7 +5,6 @@ import logging
 from bson import ObjectId
 from flask import (
     Blueprint,
-    Response,
     current_app,
     flash,
     jsonify,
@@ -16,7 +15,6 @@ from flask import (
 )
 from flask_login import current_user
 from pymongo import DESCENDING
-from werkzeug.datastructures import Headers
 
 from scout.constants import ACMG_COMPLETE_MAP, ACMG_MAP, CALLERS, VERBS_ICONS_MAP, VERBS_MAP
 from scout.server.blueprints.variants.controllers import update_form_hgnc_symbols
@@ -98,7 +96,6 @@ def causatives(institute_id):
 @blueprint.route("/<institute_id>/filters", methods=["GET"])
 @templated("overview/filters.html")
 def filters(institute_id):
-
     form = request.form
 
     institute_obj = institute_and_case(store, institute_id)
@@ -110,7 +107,6 @@ def filters(institute_id):
 
 @blueprint.route("/<institute_id>/lock_filter/<filter_id>", methods=["POST"])
 def lock_filter(institute_id, filter_id):
-
     filter_lock = request.form.get("filter_lock", "False")
     LOG.debug(
         "Attempting to toggle lock %s for %s with status %s",

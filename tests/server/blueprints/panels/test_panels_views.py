@@ -5,7 +5,6 @@ from scout.server.extensions import store
 
 
 def test_panel_api_json(client, real_panel_database):
-
     # GIVEN a panel in the database
     panel_obj = real_panel_database.gene_panels()[0]
     panel_name = panel_obj["panel_name"]

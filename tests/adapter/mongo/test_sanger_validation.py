@@ -129,7 +129,6 @@ def test_get_sanger_unevaluated(
 
     # Order Sanger for both variants
     for variant in test_variants:
-
         # Assert tha variant has NO Sanger ordered
         assert variant.get("sanger_ordered") is None
 

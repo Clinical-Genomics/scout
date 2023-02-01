@@ -288,7 +288,10 @@ def frequencies(variant_obj):
 
     if variant_obj["category"] == "sv":
         freqs = {
-            "gnomad_frequency": {"display_name": "GnomAD", "link": None},
+            "gnomad_frequency": {
+                "display_name": "GnomAD",
+                "link": variant_obj.get("gnomad_sv_link"),
+            },
             "clingen_cgh_benign": {
                 "display_name": "ClinGen CGH (benign)",
                 "link": None,

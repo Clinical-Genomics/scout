@@ -17,6 +17,7 @@ from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
+
 # As the class constructor is called twice, this messes with the
 # aliases, removing the set value the second time called. It seems
 # to work by adding the aliased name as a attribute...

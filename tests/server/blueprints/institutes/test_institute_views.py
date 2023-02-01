@@ -434,7 +434,6 @@ def test_institute_settings(app, user_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
-
         client.get(url_for("auto_login"))
 
         # WHEN accessing the cases page (GET method)
@@ -737,7 +736,6 @@ def test_causatives(app, user_obj, institute_obj, case_obj):
 
     # Call scout causatives view and check if the above causatives are displayed
     with app.test_client() as client:
-
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200

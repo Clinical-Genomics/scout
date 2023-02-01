@@ -4,7 +4,6 @@ from scout.server.blueprints.phenotypes import controllers
 
 
 def test_hpo_terms(real_adapter, hpo_term):
-
     adapter = real_adapter
 
     ## GIVEN a adapter with one hpo term

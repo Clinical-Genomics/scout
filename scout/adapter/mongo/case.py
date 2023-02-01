@@ -855,7 +855,6 @@ class CaseHandler(object):
         ]
 
         try:
-
             for vcf_file in files:
                 # Check if file exists
                 if not case_obj["vcf_files"].get(vcf_file["file_name"]):
@@ -1228,7 +1227,6 @@ class CaseHandler(object):
 
         n_status_updated = 0
         for old_var in old_eval_variants:
-
             # search for the same variant in newly uploaded vars for this case
             display_name = old_var["display_name"]
 

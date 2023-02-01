@@ -19,7 +19,6 @@ def test_phenotypes(app, institute_obj):
 
 
 def test_phenotypes_api(app, real_adapter, hpo_term):
-
     adapter = real_adapter
     # GIVEN a database with an HPO term
     adapter.load_hpo_term(hpo_term)
@@ -33,7 +32,6 @@ def test_phenotypes_api(app, real_adapter, hpo_term):
 
 
 def test_phenotypes_api(app, real_adapter, hpo_term):
-
     adapter = real_adapter
     # GIVEN a database with an HPO term
     adapter.load_hpo_term(hpo_term)

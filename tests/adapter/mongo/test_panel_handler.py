@@ -58,7 +58,6 @@ def test_get_non_existing_panel(adapter, testpanel_obj):
 
 
 def test_get_panel_multiple_versions(adapter, testpanel_obj):
-
     ## GIVEN an adapter with multiple versions of same gene panel
     testpanel_obj["_id"] = 1
     adapter.panel_collection.insert_one(testpanel_obj)
@@ -95,7 +94,6 @@ def test_reset_pending(adapter, testpanel_obj, gene_obj):
 
 
 def test_add_pending(adapter, testpanel_obj, gene_obj):
-
     adapter.panel_collection.insert_one(testpanel_obj)
     adapter.hgnc_collection.insert_one(gene_obj)
     ## GIVEN a adapter with one gene panel and a gene
@@ -300,7 +298,6 @@ def test_apply_pending_add_two_genes(adapter, testpanel_obj):
 
 
 def test_apply_pending_edit_gene(adapter, testpanel_obj):
-
     ## GIVEN an adapter with a gene panel
     adapter.panel_collection.insert_one(testpanel_obj)
     panel_obj = adapter.panel_collection.find_one()
