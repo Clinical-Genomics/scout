@@ -59,6 +59,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Validate any ClinVar submission regardless of its status
 - Empty Phenopackets import crashes
 - Stop Spinner on Phenopacket JSON download
+- Pass a complete HGVS description to the preClinVar microservice (ClinVar API submission)
 ### Changed
 - Updated ClinVar submission instructions
 
