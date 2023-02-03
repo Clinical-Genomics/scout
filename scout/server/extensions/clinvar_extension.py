@@ -17,7 +17,7 @@ class ClinVarApi:
 
     def __init__(self):
         self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
-        self.validate_service = "/".join([PRECLINVAR_URL, "validate"])
+        self.validate_service = "/".join([PRECLINVAR_URL, "dry-run"])
         self.submit_service = CLINVAR_API_URL
 
     def set_header(self, api_key):
@@ -56,7 +56,7 @@ class ClinVarApi:
             return None, ex
 
     def validate_json(self, subm_data, api_key):
-        """Sends a POST request to the API (validate endpoint) and tries to validate a json submission object.
+        """Sends a POST request to the API proxy (dry-run endpoint) which tries to validate a json submission object.
         Requires a valid ClinVar API key (obtained from scout config file in order to be able to forward the request)
 
         Args:
