@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Panel version can be manually set to floating point numbers, when modified
 - Causatives page showing also non-causative variants matching causatives in other cases
 - ClinVar form submission for variants with no selected transcript and HGVS
+- Validating and submitting ClinVar objects not containing both Variant and Casedata info
 
 ## [4.62.1]
 ### Fixed
