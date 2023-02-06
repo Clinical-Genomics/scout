@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
-## [unreleased]
+## [4.63]
 ### Added
 - Display data sharing info for ClinVar, Matchmaker Exchange and Beacon in a dedicated column on Cases page
 - Test for `commands.download.omim.print_omim`
@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Panel version can be manually set to floating point numbers, when modified
 - Causatives page showing also non-causative variants matching causatives in other cases
 - ClinVar form submission for variants with no selected transcript and HGVS
+- Validating and submitting ClinVar objects not containing both Variant and Casedata info
 
 ## [4.62.1]
 ### Fixed
