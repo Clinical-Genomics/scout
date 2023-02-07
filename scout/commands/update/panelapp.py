@@ -21,7 +21,7 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def panelapp_green(institute):
     """
-    Update the automatically generated omim gene panel in the database.
+    Update the automatically generated PanelApp Green Genes panel in the database.
     """
     LOG.info("Updating/Creating the PanelApp green gene panel")
 
