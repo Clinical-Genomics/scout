@@ -178,7 +178,6 @@ def load_panelapp_green_panel(adapter, institute):
 
     Args:
         adapter(scout.adapter.MongoAdapter)
-        panel_id(str): The panel app panel id
         institute(str): _id of an institute
 
     """
