@@ -147,9 +147,9 @@
 
 
 {% macro score_cell(variant) %}
-  {% if variant.rank_score %}
+  {% if variant.rank_score is defined %}
     {% if variant.rank_score <= 4 %}
-      {% set label_class = 'default' %}
+      {% set label_class = 'secondary' %}
     {% elif variant.rank_score == 5 %}
       {% set label_class = 'info' %}
     {% elif variant.rank_score == 6 %}
@@ -159,8 +159,9 @@
     {% elif variant.rank_score > 8 %}
       {% set label_class = 'danger' %}
     {% endif %}
+    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">{{ variant.rank_score }}</div>
   {% endif %}
-  <div class="badge bg-{{ label_class }}">{{ variant.rank_score }}</div>
+
   {% for filter in variant.filters %}
     <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ filter.description }}" class="badge bg-{{ filter.label_class }}">{{ filter.label }}</div>
   {% endfor %}
