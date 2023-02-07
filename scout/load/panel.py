@@ -16,6 +16,7 @@ from scout.utils.scout_requests import fetch_mim_files, fetch_resource
 
 LOG = logging.getLogger(__name__)
 PANELAPP_BASE_URL = "https://panelapp.genomicsengland.co.uk/WebServices/{0}/"
+PANEL_NAME = "PANELAPP-GREEN"
 
 
 def load_panel(panel_path, adapter, **kwargs):
@@ -185,7 +186,6 @@ def load_panelapp_green_panel(adapter, institute):
     panel_ids = _panelapp_panel_ids()
 
     # check and set panel version
-    PANEL_NAME = "PANELAPP-GREEN"
     old_panel = adapter.gene_panel(panel_id=PANEL_NAME)
     green_panel = {
         "panel_name": PANEL_NAME,
