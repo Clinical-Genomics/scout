@@ -211,10 +211,7 @@ def load_panelapp_green_panel(adapter, institute):
         )
         return
 
-    try:
-        adapter.load_panel(parsed_panel=green_panel, replace=True)
-    except Exception as err:
-        raise err
+    adapter.load_panel(parsed_panel=green_panel, replace=True)
 
 
 def load_omim_panel(adapter, genemap2, mim2genes, api_key, institute):

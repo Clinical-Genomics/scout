@@ -2,9 +2,6 @@ import logging
 
 import click
 
-from scout.update.panel import update_panel
-from scout.utils.date import get_date
-
 from .case import case as case_command
 from .compounds import compounds as compound_command
 from .disease import diseases as disease_command
