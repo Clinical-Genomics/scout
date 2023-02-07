@@ -205,6 +205,13 @@ def load_panelapp_green_panel(adapter, institute):
 
     green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
 
+    # Do not update panel is new version contains less genes
+    if old_panel and len(old_panel.get("genes", [])) > len(green_panel["genes"]):
+        LOG.error(
+            f"This new version of PANELAPP-GREEN contains less genes (n={len(green_panel['genes'])}) than the previous one (n={len(old_panel['genes'])}), aborting."
+        )
+        return
+
     try:
         adapter.load_panel(parsed_panel=green_panel, replace=True)
     except Exception as err:
