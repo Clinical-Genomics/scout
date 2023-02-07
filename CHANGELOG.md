@@ -4,6 +4,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Matching manual ranked variants are now shown also on the somatic variant page
 
 ## [4.63]
 ### Added
