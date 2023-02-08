@@ -145,7 +145,6 @@ def genes(build, downloads_folder, api_key):
 
     # Load genes and transcripts info
     for genome_build in builds:
-
         LOG.warning("Dropping all gene information")
         adapter.drop_genes(genome_build)
         LOG.warning("Dropping all transcript information")

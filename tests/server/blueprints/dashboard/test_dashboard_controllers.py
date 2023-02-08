@@ -15,7 +15,6 @@ def test_institute_select_choices(user_obj, app):
 
     # GIVEN an app with a logged user
     with app.test_client() as client:
-
         resp = client.get(url_for("auto_login"))
 
         # WHEN returning the institute institute select choices

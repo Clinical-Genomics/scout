@@ -32,7 +32,6 @@ def _get_var_tx_hgvs(case_obj, variant_obj):
         for tx in gene.get("transcripts", []):
             if all([tx.get("refseq_id"), tx.get("coding_sequence_name")]):
                 for refseq in tx.get("refseq_identifiers"):
-
                     refseq_version = fetch_refseq_version(refseq)  # adds version to a refseq ID
                     hgvs_simple = ":".join([refseq_version, tx["coding_sequence_name"]])
 
@@ -354,9 +353,9 @@ def json_api_submission(submission_id):
     """
     variant_data = store.clinvar_objs(submission_id, "variant_data")
     obs_data = store.clinvar_objs(submission_id, "case_data")
-    if not variant_data or not obs_data:
-        flash("Submission must contain both Variant and CaseData info", "warning")
-        return
+
+    if None in [variant_data, obs_data]:
+        return (400, "Submission must contain both Variant and CaseData info")
 
     # Retrieve eventual assertion criteria for the submission
     extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
@@ -378,7 +377,6 @@ def json_api_submission(submission_id):
     ) as variant_file, NamedTemporaryFile(
         mode="a+", prefix="CaseData", suffix=".csv"
     ) as casedata_file:
-
         # Write temp Variant CSV file
         _, variants_header, variants_lines = clinvar_submission_file(
             submission_id, "variant_data", "SUB000"

@@ -86,7 +86,6 @@ def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
         inheritance_text = ",".join(splitted_info[i:])
         for term in MIM_INHERITANCE_TERMS:
             if term in inheritance_text:
-
                 inheritance.add(TERMS_MAPPER[term])
 
         parsed_phenotypes.append(

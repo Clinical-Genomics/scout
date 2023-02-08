@@ -45,7 +45,6 @@ def test_parse_conservations(cyvcf2_variant):
 
 
 def test_parse_conservation_csq(transcript_info):
-
     ## GIVEN a trascript with multiple conservation annotations
     keys = ["gerp", "phast", "phylop"]
     csq_entry = """0&4.6|0.8|2.4,0&4.6|0.8|2.4"""

@@ -461,7 +461,6 @@ def test_build_clinsig_always(real_variant_database):
 
     # Make sure that variants are filtered as they should:
     for var in filtered_variants:
-
         gnomad_filter = False
         anno_filter = False
         clisig_filter = False

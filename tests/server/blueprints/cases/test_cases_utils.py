@@ -7,7 +7,6 @@ from scout.constants import SAMPLE_SOURCE
 def test_update_individuals_table(app, case_obj, institute_obj):
     # GIVEN an initialized app
     with app.test_client() as client:
-
         # WHEN collecting the individuals_table jinja macro
         macro = get_template_attribute("cases/individuals_table.html", "individuals_table")
 

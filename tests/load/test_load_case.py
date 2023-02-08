@@ -1,5 +1,4 @@
 def test_load_case(case_obj, adapter):
-
     ## GIVEN a database with no cases
     assert adapter.case_collection.find_one() is None
 
@@ -11,7 +10,6 @@ def test_load_case(case_obj, adapter):
 
 
 def test_load_case_rank_model_version(case_obj, adapter):
-
     ## GIVEN a database with no cases
     assert adapter.case_collection.find_one() is None
 

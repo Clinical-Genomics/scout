@@ -90,6 +90,10 @@ def build_case(case_data, adapter):
         coverage_qc_report = str, # path to file with coverage and qc report
         gene_fusion_report = str, # path to the gene fusions report
         gene_fusion_report_research = str, # path to the research gene fusions report
+        RNAfusion_inspector = str, # path to the RNA fusion inspector report
+        RNAfusion_inspector_research = str, # path to the research RNA fusion inspector report
+        RNAfusion_report = str, # path to the RNA fusion report
+        RNAfusion_report_research = str, # path to the research RNA fusion report
 
         vcf_files = dict, # A dictionary with vcf files
 

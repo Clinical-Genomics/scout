@@ -470,7 +470,6 @@ def test_fetch_refseq_version_timeout(mocker, empty_mock_app):
     )
 
     with empty_mock_app.test_request_context():
-
         # WHEN fetching complete refseq version for accession that has version
         refseq_version = scout_requests.fetch_refseq_version(REFSEQ_ACC)
 

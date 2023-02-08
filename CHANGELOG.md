@@ -4,8 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [unreleased]
+### Added
+- Create/Update a gene panel contaning all PanelApp green genes (`scout update panelapp-green -i <cust_id>`)
+### Fixed
+- Matching manual ranked variants are now shown also on the somatic variant page
+- VarSome links to hg19/GRCh37
+
+## [4.63]
 ### Added
 - Display data sharing info for ClinVar, Matchmaker Exchange and Beacon in a dedicated column on Cases page
 - Test for `commands.download.omim.print_omim`
@@ -15,12 +21,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Alamut institution parameter in institute settings for Alamut Visual Plus software
 - Added Manual Ranks Risk Factor, Likely Risk Factor and Uncertain Risk Factor
 - Display matching manual ranks from previous cases the user has access to on VariantS and Variant pages
+- Link to gnomAD gene SVs v2.1 for SV variants with gnomAD frequency
+- Support for nf-core/rnafusion reports
 ### Changed
 - Display chrY for sex unknown
 - Deprecate legacy scout_load() method API call.
 - Message shown when variant tag is updated for a variant
 - When all ACMG classifications are deleted from a variant, the current variant classification status is also reset.
 - Refactored the functions that collect causative variants
+- Removed `scripts/generate_test_data.py`
 ### Fixed
 - Default IGV tracks (genes, ClinVar, ClinVar CNVs) showing even if user unselects them all
 - Freeze Flask-Babel below v3.0 due to issue with a locale decorator
@@ -30,6 +39,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Panel version can be manually set to floating point numbers, when modified
 - Causatives page showing also non-causative variants matching causatives in other cases
 - ClinVar form submission for variants with no selected transcript and HGVS
+- Validating and submitting ClinVar objects not containing both Variant and Casedata info
 
 ## [4.62.1]
 ### Fixed

@@ -17,6 +17,7 @@ from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
 
+
 # As the class constructor is called twice, this messes with the
 # aliases, removing the set value the second time called. It seems
 # to work by adding the aliased name as a attribute...
@@ -315,6 +316,10 @@ class ScoutLoadConfig(BaseModel):
     rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
     reference_info: Optional[str] = None
+    RNAfusion_inspector: Optional[str] = None
+    RNAfusion_inspector_research: Optional[str] = None
+    RNAfusion_report: Optional[str] = None
+    RNAfusion_report_research: Optional[str] = None
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
     synopsis: Union[List[str], str] = None

@@ -83,7 +83,6 @@ class VariantLoader(object):
         requests = []
 
         for index, var_obj in enumerate(variants):
-
             operation = pymongo.UpdateOne(
                 {"_id": var_obj["_id"]}, {"$set": {"variant_rank": index + 1}}
             )
