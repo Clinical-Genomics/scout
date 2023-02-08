@@ -174,13 +174,13 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
             raise err
 
 
-def load_panelapp_green_panel(adapter, institute):
+def load_panelapp_green_panel(adapter, institute, force):
     """Load/Update the panel containing all Panelapp Green genes
 
     Args:
         adapter(scout.adapter.MongoAdapter)
         institute(str): _id of an institute
-
+        force(bool): force update panel even if ut has fewer genes than previous version
     """
     LOG.info("Fetching all panel app panels")
     panel_ids = _panelapp_panel_ids()
@@ -204,12 +204,13 @@ def load_panelapp_green_panel(adapter, institute):
 
     green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
 
-    # Do not update panel is new version contains less genes
+    # Do not update panel if new version contains less genes and force flag is False
     if old_panel and len(old_panel.get("genes", [])) > len(green_panel["genes"]):
         LOG.error(
             f"This new version of PANELAPP-GREEN contains less genes (n={len(green_panel['genes'])}) than the previous one (n={len(old_panel['genes'])}), aborting."
         )
-        return
+        if force is False:
+            return
 
     adapter.load_panel(parsed_panel=green_panel, replace=True)
 

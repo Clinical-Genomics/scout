@@ -69,8 +69,20 @@ def test_update_panelapp_green(mock_app):
     assert green_panel
     assert green_panel["genes"]
 
-    # WHEN command is repeated
+    # GIVEN that the old saved panel contains one extra gene
+    extra_gene = {"hgnc_id": 7227, "symbol": "MRAS"}
+    store.panel_collection.find_one_and_update(
+        {"panel_name": PANEL_NAME}, {"$push": {"genes": extra_gene}}
+    )
+
+    # WHEN panel is updated without the force flag
     runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000"])
+
+    # THEN PanelApp Green panel should NOT be updated
+    assert store.gene_panel(panel_id=PANEL_NAME)["version"] == green_panel["version"]
+
+    # WHEN updating the panel with the force flag
+    runner.invoke(cli, ["update", "panelapp-green", "-i", "cust000", "-f"])
 
     # THEN PanelApp Green panel should be updated
     assert store.gene_panel(panel_id=PANEL_NAME)["version"] > green_panel["version"]

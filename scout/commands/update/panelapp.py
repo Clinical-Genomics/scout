@@ -18,8 +18,14 @@ LOG = logging.getLogger(__name__)
     default="cust002",
     show_default=True,
 )
+@click.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    help="Force update even if updated panel contains less genes",
+)
 @with_appcontext
-def panelapp_green(institute):
+def panelapp_green(institute, force):
     """
     Update the automatically generated PanelApp Green Genes panel in the database.
     """
@@ -33,7 +39,7 @@ def panelapp_green(institute):
         raise click.Abort()
 
     try:
-        load_panelapp_green_panel(adapter=store, institute=institute)
+        load_panelapp_green_panel(adapter=store, institute=institute, force=force)
     except Exception as err:
         LOG.error(err)
         raise click.Abort()
