@@ -23,7 +23,7 @@ def panelapp_green(institute):
     """
     Update the automatically generated PanelApp Green Genes panel in the database.
     """
-    LOG.info("Updating/Creating the PanelApp green gene panel")
+    LOG.info("Updating/creating the PanelApp Green gene panel")
 
     institute_obj = store.institute(institute)
     if not institute_obj:
