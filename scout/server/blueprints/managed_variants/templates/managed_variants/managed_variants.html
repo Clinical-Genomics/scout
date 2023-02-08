@@ -318,7 +318,7 @@
   }
 
   // populates a given select element with a given list of options
-  function populateSelect(selectElem, optionsList, defaultValue){
+  function populateSelect(selectElem, optionsList){
     for (opt of optionsList){
       selectElem.add(new Option(opt[0], opt[1]));
     }
