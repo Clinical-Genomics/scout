@@ -367,11 +367,11 @@ def smart(smart_domain):
     return link.format(smart_domain)
 
 
-def varsome(build, refseq_id, protein_sequence_name):
+def varsome(build: int, refseq_id: str, protein_sequence_name: str):
     """Return a string corresponding to a link to varsome page
 
     Args:
-        build(str): chromosome build
+        build(int): chromosome build
         refseq_id(str): transcript refseq id
         protein_sequence_name(str): transcript sequence name
 
@@ -380,8 +380,8 @@ def varsome(build, refseq_id, protein_sequence_name):
     if not all([refseq_id, protein_sequence_name]):
         return None
 
-    if build == "37":
-        build = "19"
+    if build == 37:
+        build = 19
 
     link = "https://varsome.com/variant/hg{}/{}:{}"
 
