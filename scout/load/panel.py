@@ -192,10 +192,9 @@ def load_panelapp_green_panel(adapter, institute, force):
         "panel_name": PANEL_NAME,
         "display_name": "PanelApp Green Genes",
         "institute": institute,
-        "version": float(math.floor(old_panel["version"]) + 1),
+        "version": float(math.floor(old_panel["version"]) + 1) if old_panel else 1.0,
         "date": datetime.now(),
     }
-
     genes = set()  # avoid duplicate genes from different panels
     # Loop over all PanelApp panels
     for _ in panel_ids:
