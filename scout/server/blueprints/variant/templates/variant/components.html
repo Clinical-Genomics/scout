@@ -190,7 +190,7 @@
       <div class="card-body mt-1 ms-3 mb-1" style="padding: 0;">
         Matching manually ranked variants:&nbsp;
         {% for manual_rank, manual_rank_info in matching_manual_ranked.items() %}
-          <a style="padding: 0;" class="btn btn-{{manual_rank_info.label_class}} btn-xs" data-bs-toggle="collapse" href="#collapse_mr{{manual_rank}}" role="button" aria-expanded="false" aria-controls="collapseExample">
+          <a style="padding: 0;" class="btn btn-{{manual_rank_info.label_class}} btn-small" data-bs-toggle="collapse" href="#collapse_mr{{manual_rank}}" role="button" aria-expanded="false" aria-controls="collapseExample">
             {{manual_rank_info.label}} ({{manual_rank_info.links|length}}x)
           </a>
           <div class="collapse" id="collapse_mr{{manual_rank}}">
