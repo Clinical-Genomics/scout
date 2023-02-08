@@ -237,33 +237,33 @@
     {{ filters_form.csrf_token }}
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(filters_form.category, class="selectpicker", data_style="btn-secondary")}}
+        {{ filters_form.category(class="selectpicker", data_style="btn-secondary")}}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.sub_category, class="selectpicker", data_style="btn-secondary")}}
+        {{ filters_form.sub_category(class="selectpicker", data_style="btn-secondary")}}
       </div>
       <div class="col-4">
-        {{ wtf.form_field(filters_form.description) }}
+        {{ filters_form.description() }}
       </div>
     </div>
     <div class="row">
       <div class="col-2">
-        {{ wtf.form_field(filters_form.build, onchange="setChromosomes()") }}
+        {{ filters_form.build(onchange="setChromosomes()") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.chromosome, onchange="setCytobands();set_coords_fields()") }}
+        {{ filters_form.chromosome(onchange="setCytobands();set_coords_fields()") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.position, type="number", disabled=True) }}
+        {{ filters_form.position(type="number", disabled=True) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.end, type="number", disabled=True) }}
+        {{ filters_form.end(type="number", disabled=True) }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.cytoband_start, onchange="setElemCoordinate('cytoband_start', 'position')") }}
+        {{ filters_form.cytoband_start(onchange="setElemCoordinate('cytoband_start', 'position')") }}
       </div>
       <div class="col-2">
-        {{ wtf.form_field(filters_form.cytoband_end, onchange="setElemCoordinate('cytoband_end', 'end')") }}
+        {{ filters_form.cytoband_end(onchange="setElemCoordinate('cytoband_end', 'end')") }}
       </div>
     </div>
     <div class="row justify-content-center mt-3">
