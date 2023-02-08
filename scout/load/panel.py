@@ -5,6 +5,8 @@ functions to load panels into the database
 """
 
 import logging
+import math
+from datetime import datetime
 
 from click import Abort
 from flask.cli import current_app
@@ -14,6 +16,8 @@ from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import fetch_mim_files, fetch_resource
 
 LOG = logging.getLogger(__name__)
+PANELAPP_BASE_URL = "https://panelapp.genomicsengland.co.uk/WebServices/{0}/"
+PANEL_NAME = "PANELAPP-GREEN"
 
 
 def load_panel(panel_path, adapter, **kwargs):
@@ -106,6 +110,41 @@ def load_panel(panel_path, adapter, **kwargs):
         raise err
 
 
+def _panelapp_panel_ids():
+    """Fetch all PanelApp panel IDs"""
+    json_lines = fetch_resource(PANELAPP_BASE_URL.format("list_panels"), json=True)
+    return [panel_info["Panel_Id"] for panel_info in json_lines.get("result", [])]
+
+
+def _parse_panelapp_panel(adapter, panel_id, institute, confidence):
+    """fetch and parse lines from a PanelApp panel, given its ID
+
+    Args:
+        adapter(scout.adapter.MongoAdapter)
+        panel_id(str): The panel app panel id
+        confidence(str enum green|amber|red): traffic light-style PanelApp level of confidence
+
+    Returns:
+        parsed_panel(dict). Example:
+            {'version': 3.3, 'date': datetime.datetime(2023, 1, 31, 16, 43, 37, 521719), 'display_name': 'Diabetes - neonatal onset - [GREEN]', 'institute': 'cust000', 'panel_type': 'clinical', 'genes': [list of genes], 'panel_id': '55a9041e22c1fc6711b0c6c0'}
+
+    """
+    hgnc_map = adapter.ensembl_to_hgnc_mapping()
+    json_lines = fetch_resource(PANELAPP_BASE_URL.format("get_panel") + panel_id, json=True)
+    parsed_panel = parse_panel_app_panel(
+        panel_info=json_lines["result"],
+        hgnc_map=hgnc_map,
+        institute=institute,
+        confidence=confidence,
+    )
+    if confidence != "green":
+        parsed_panel["panel_id"] = "_".join([panel_id, confidence])
+    else:  # This way the old green panels will be overwritten, instead of creating 2 sets of green panels, old and new
+        parsed_panel["panel_id"] = panel_id
+
+    return parsed_panel
+
+
 def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence="green"):
     """Load PanelApp panels into scout database
 
@@ -114,32 +153,17 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
     Args:
         adapter(scout.adapter.MongoAdapter)
         panel_id(str): The panel app panel id
+        institute(str): _id of an institute
         confidence(str enum green|amber|red): traffic light-style PanelApp level of confidence
     """
-    base_url = "https://panelapp.genomicsengland.co.uk/WebServices/{0}/"
-
-    hgnc_map = adapter.ensembl_to_hgnc_mapping()
-
     panel_ids = [panel_id]
 
     if not panel_id:
         LOG.info("Fetching all panel app panels")
-        json_lines = fetch_resource(base_url.format("list_panels"), json=True)
+        panel_ids = _panelapp_panel_ids()
 
-        panel_ids = [panel_info["Panel_Id"] for panel_info in json_lines["result"]]
-
-    for _panel_id in panel_ids:
-        json_lines = fetch_resource(base_url.format("get_panel") + _panel_id, json=True)
-        parsed_panel = parse_panel_app_panel(
-            panel_info=json_lines["result"],
-            hgnc_map=hgnc_map,
-            institute=institute,
-            confidence=confidence,
-        )
-        if confidence != "green":
-            parsed_panel["panel_id"] = "_".join([_panel_id, confidence])
-        else:  # This way the old green panels will be overwritten, instead of creating 2 sets of green panels, old and new
-            parsed_panel["panel_id"] = _panel_id
+    for _ in panel_ids:
+        parsed_panel = _parse_panelapp_panel(adapter, _, institute, confidence)
 
         if len(parsed_panel["genes"]) == 0:
             LOG.warning("Panel %s is missing genes. Skipping.", parsed_panel["display_name"])
@@ -149,6 +173,47 @@ def load_panelapp_panel(adapter, panel_id=None, institute="cust000", confidence=
             adapter.load_panel(parsed_panel=parsed_panel, replace=True)
         except Exception as err:
             raise err
+
+
+def load_panelapp_green_panel(adapter, institute, force):
+    """Load/Update the panel containing all Panelapp Green genes
+
+    Args:
+        adapter(scout.adapter.MongoAdapter)
+        institute(str): _id of an institute
+        force(bool): force update panel even if it has fewer genes than previous version
+    """
+    LOG.info("Fetching all panel app panels")
+    panel_ids = _panelapp_panel_ids()
+
+    # check and set panel version
+    old_panel = adapter.gene_panel(panel_id=PANEL_NAME)
+    green_panel = {
+        "panel_name": PANEL_NAME,
+        "display_name": "PanelApp Green Genes",
+        "institute": institute,
+        "version": float(math.floor(old_panel["version"]) + 1) if old_panel else 1.0,
+        "date": datetime.now(),
+    }
+    genes = set()  # avoid duplicate genes from different panels
+    # Loop over all PanelApp panels
+    for _ in panel_ids:
+        # And collect their green genes
+        parsed_panel = _parse_panelapp_panel(adapter, _, institute, "green")
+        genes.update({(gene["hgnc_id"], gene["hgnc_symbol"]) for gene in parsed_panel.get("genes")})
+
+    green_panel["genes"] = [{"hgnc_id": tup[0], "hgnc_symbol": tup[1]} for tup in genes]
+
+    # Do not update panel if new version contains less genes and force flag is False
+    if old_panel and len(old_panel.get("genes", [])) > len(green_panel["genes"]):
+        LOG.warning(
+            f"This new version of PANELAPP-GREEN contains less genes (n={len(green_panel['genes'])}) than the previous one (n={len(old_panel['genes'])})"
+        )
+        if force is False:
+            LOG.error("Aborting. Please use the force flag -f to update the panel anyway")
+            return
+
+    adapter.load_panel(parsed_panel=green_panel, replace=True)
 
 
 def load_omim_panel(adapter, genemap2, mim2genes, api_key, institute):

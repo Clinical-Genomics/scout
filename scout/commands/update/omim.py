@@ -38,7 +38,7 @@ LOG = logging.getLogger(__name__)
 @with_appcontext
 def omim(api_key, institute, genemap2, mim2genes, force):
     """
-    Update the automate generated omim gene panel in the database.
+    Update the automatically generated omim gene panel in the database.
     """
     LOG.info("Running scout update omim")
     adapter = store
