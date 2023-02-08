@@ -380,6 +380,9 @@ def varsome(build, refseq_id, protein_sequence_name):
     if not all([refseq_id, protein_sequence_name]):
         return None
 
+    if build == "37":
+        build = "19"
+
     link = "https://varsome.com/variant/hg{}/{}:{}"
 
     return link.format(build, refseq_id, protein_sequence_name)
