@@ -5,6 +5,7 @@ functions to load panels into the database
 """
 
 import logging
+import math
 from datetime import datetime
 
 from click import Abort
@@ -191,7 +192,7 @@ def load_panelapp_green_panel(adapter, institute, force):
         "panel_name": PANEL_NAME,
         "display_name": "PanelApp Green Genes",
         "institute": institute,
-        "version": old_panel["version"] + 0.1 if old_panel else 1,
+        "version": float(math.floor(old_panel["version"]) + 1),
         "date": datetime.now(),
     }
 
