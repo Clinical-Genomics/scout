@@ -318,7 +318,7 @@
   }
 
   // populates a given select element with a given list of options
-  function populateSelect(selectElem, optionsList){
+  function populateSelect(selectElem, optionsList, defaultValue){
     for (opt of optionsList){
       selectElem.add(new Option(opt[0], opt[1]));
     }
@@ -353,6 +353,11 @@
       chrom_options.push([chrom, chrom])
     })
     populateSelect(chromSelect, chrom_options); // populate chromosome select with chromosome options
+    // Remember user query settings
+    selectedChrom = "{{filters_form.chromosome.data|safe}}";
+    if(selectedChrom){
+      chromSelect.value = selectedChrom;
+    }
     setCytobands(); // Reset cytobands select elements
   }
 
