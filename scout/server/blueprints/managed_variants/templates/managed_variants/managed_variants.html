@@ -284,6 +284,7 @@
 
   $(document).ready(function(){
     setChromosomes();
+    set_coords_fields();
     populateSubTypeSelect('add_variant');
     {% for variant in managed_variants %}
       populateSubTypeSelect('modify_variant_{{variant.variant_id|safe}}');
@@ -355,7 +356,7 @@
     populateSelect(chromSelect, chrom_options); // populate chromosome select with chromosome options
     // Remember user query settings
     selectedChrom = "{{filters_form.chromosome.data|safe}}";
-    if(selectedChrom){
+    if(selectedChrom !== ""){
       chromSelect.value = selectedChrom;
     }
     setCytobands(); // Reset cytobands select elements
@@ -364,7 +365,7 @@
   function set_coords_fields(){
     //Make chromosome coordinates editable if a valid chromsome is selected
     selectedChrom = chromSelect.value;
-    if (selectedChrom !== 'undefined' && selectedChrom !== "All" ){
+    if (selectedChrom && selectedChrom !== "All" ){
       start_coord_field.disabled = false;
       end_coord_field.disabled = false;
     }
@@ -372,7 +373,8 @@
       start_coord_field.disabled = true;
       end_coord_field.disabled = true;
     }
-
+    start_coord_field.value={{filters_form.position.data|safe}};
+    end_coord_field.value={{filters_form.end.data|safe}};
   }
 
   // Set cytobands select options according to selected chrom
@@ -405,6 +407,16 @@
       });
       populateSelect(cytoStart, cytoStartOptions)
       populateSelect(cytoEnd, cytoStopOptions)
+      // Remember user query settings
+      selectedCytoStart =  "{{filters_form.cytoband_start.data|safe}}";
+      if (selectedCytoStart){
+        cytoStart.value=selectedCytoStart;
+      }
+      selectedCytoEnd =  "{{filters_form.cytoband_end.data|safe}}";
+      if (selectedCytoEnd){
+          cytoEnd.value=selectedCytoEnd;
+      }
+
     }
     // Reset start and stop positions in filter form
     document.forms["filters_form"].elements["position"].value=""
