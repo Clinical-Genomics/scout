@@ -7,10 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Create/Update a gene panel contaning all PanelApp green genes (`scout update panelapp-green -i <cust_id>`)
+### Changed
+- Open local observation matching cases in new windows
 ### Fixed
 - Matching manual ranked variants are now shown also on the somatic variant page
 - VarSome links to hg19/GRCh37
 - Managed variants filter settings lost when navigating to additional pages
+
 
 ## [4.63]
 ### Added

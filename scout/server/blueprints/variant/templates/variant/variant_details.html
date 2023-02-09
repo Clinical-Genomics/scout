@@ -170,9 +170,9 @@
                   {% if obs.cases %}
                     {% for data in obs.cases %}
                       {% if data.variant and data.variant.category == "snv"%}
-                        <a class="badge rounded-pill bg-light text-dark" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                        <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                       {% elif data.variant and data.variant.category == "sv"%}
-                        <a class="badge rounded-pill bg-light text-dark" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
+                        <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.sv_variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
                       {% else %}
                         <span class="ml-3 badge rounded-pill bg-light text-dark">{{ data.case.display_name }}</span>
                       {% endif %}
