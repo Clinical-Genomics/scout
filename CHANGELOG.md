@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Matching manual ranked variants are now shown also on the somatic variant page
 - VarSome links to hg19/GRCh37
+### Changed
+- Open local observation matching cases in new windows
 
 ## [4.63]
 ### Added
