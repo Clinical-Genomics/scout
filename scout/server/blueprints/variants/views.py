@@ -48,7 +48,7 @@ def variants(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     variant_type = Markup.escape(
-        request.args.get("variant_type") or request.form.get("variant_type", "clinical")
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
@@ -244,7 +244,7 @@ def sv_variants(institute_id, case_name):
 
     page = int(Markup.escape(request.form.get("page", "1")))
     variant_type = Markup.escape(
-        request.args.get("variant_type") or request.form.get("variant_type", "clinical")
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
     category = "sv"
     # Define case and institute objects
@@ -321,7 +321,7 @@ def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
     variant_type = Markup.escape(
-        request.args.get("variant_type") or request.form.get("variant_type", "clinical")
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
@@ -434,7 +434,7 @@ def cancer_sv_variants(institute_id, case_name):
 
     page = int(Markup.escape(request.form.get("page", "1")))
     variant_type = Markup.escape(
-        request.args.get("variant_type") or request.form.get("variant_type", "clinical")
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
     category = "cancer_sv"
     # Define case and institute objects
