@@ -26,7 +26,7 @@ def test_beacon_link_37(variant_obj):
     # THEN the Beacon link should reflect the variant build
     expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=build)
     link = beacon_link(variant_obj, build)
-    assert expected_link == expected_link
+    assert expected_link == link
 
 
 def test_beacon_link_38(variant_obj):
@@ -38,7 +38,7 @@ def test_beacon_link_38(variant_obj):
     # THEN the Beacon link should reflect the variant build
     expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=build)
     link = beacon_link(variant_obj, build)
-    assert expected_link == expected_link
+    assert expected_link == link
 
 
 def test_alamut_link(app, institute_obj, variant_obj):
