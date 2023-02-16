@@ -73,6 +73,7 @@ def variants(institute_id, case_name):
     else:
         form = FiltersForm(request.args)
         # set form variant data type the first time around
+        form.variant_type.data = variant_type
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
 
