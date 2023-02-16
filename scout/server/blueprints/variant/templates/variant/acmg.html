@@ -50,7 +50,7 @@
 
       <div class="d-flex flex-row justify-content-between mt-3">
         {% for category, criteria_group in CRITERIA.items() %}
-          <div class="flex-column w-30 {{ 'me-3' if not loop.last }}">
+          <div class="flex-column {{ 'me-3' if not loop.last }}">
             <h4>Evidence of {{ category }}</h4>
             {% for evidence, criteria in criteria_group.items() %}
               <ul class="list-group mt-3">
