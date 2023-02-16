@@ -4,6 +4,9 @@ from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1
 
 SHALLOW_REFERENCE_STR_LOCI = ["ARX", "HOXA13"]
+BEACON_LINK_TEMPLATE = "https://beacon-network.org/#/search?pos={this[position]}&"
+"chrom={this[chromosome]}&allele={this[alternative]}&"
+"ref={this[reference]}&rs={build}"
 
 
 def add_gene_links(gene_obj, build=37):
@@ -600,21 +603,12 @@ def cosmic_links(variant_obj):
     return cosmic_links
 
 
-def beacon_link(variant_obj, build=None):
+def beacon_link(variant_obj, build="37"):
     """Compose link to Beacon Network."""
-    build = build or 37
-    url_template = (
-        "https://beacon-network.org/#/search?pos={this[position]}&"
-        "chrom={this[chromosome]}&allele={this[alternative]}&"
-        "ref={this[reference]}&rs=GRCh37"
-    )
-    # beacon does not support build 38 at the moment
-    # if build == '38':
-    #     url_template = ("https://beacon-network.org/#/search?pos={this[position]}&"
-    #                     "chrom={this[chromosome]}&allele={this[alternative]}&"
-    #                     "ref={this[reference]}&rs=GRCh38")
+    build = "GRCh37" if "37" in str(build) else "GRCh38"
+    url_template = BEACON_LINK_TEMPLATE
 
-    return url_template.format(this=variant_obj)
+    return url_template.format(this=variant_obj, build=build)
 
 
 def snp_links(variant_obj):

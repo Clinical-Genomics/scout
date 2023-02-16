@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Matching manual ranked variants are now shown also on the somatic variant page
 - VarSome links to hg19/GRCh37
 - Managed variants filter settings lost when navigating to additional pages
+- Beacon links support variants in genome build 38
 
 
 ## [4.63]

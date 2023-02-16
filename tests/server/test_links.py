@@ -3,14 +3,42 @@
 from flask import url_for
 
 from scout.server.links import (
+    BEACON_LINK_TEMPLATE,
     add_gene_links,
     alamut_link,
+    beacon_link,
     cbioportal,
     ckb_gene,
     mutalyzer,
     mycancergenome,
     snp_links,
 )
+
+BUILD_37 = "37"
+BUILD_38 = "38"
+
+
+def test_beacon_link_37(variant_obj):
+    """Test building a beacon link for a variant in build 37"""
+    # GIVEN a variant in genome build 37
+    build = BUILD_37
+
+    # THEN the Beacon link should reflect the variant build
+    expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=build)
+    link = beacon_link(variant_obj, build)
+    assert expected_link == expected_link
+
+
+def test_beacon_link_38(variant_obj):
+    """Test building a beacon link for a variant in build 38"""
+
+    # GIVEN a variant in genome build 38
+    build = BUILD_38
+
+    # THEN the Beacon link should reflect the variant build
+    expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=build)
+    link = beacon_link(variant_obj, build)
+    assert expected_link == expected_link
 
 
 def test_alamut_link(app, institute_obj, variant_obj):
