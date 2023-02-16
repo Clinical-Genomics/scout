@@ -55,8 +55,6 @@ def variants(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
-    flash(request.form.__dict__)
-
     user_obj = store.user(current_user.email)
     if request.method == "POST":
         if "dismiss_submit" in request.form:  # dismiss a list of variants
