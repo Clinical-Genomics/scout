@@ -47,6 +47,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Null variant",
                             "description": "Null variant (nonsense, frameshift, canonical +/- 2 bp splice sites, initiation codon, single or multiexon deletion) in a gene where LOF is a known mechanism of disease.",
+                            "documentation": 'Moee <a href="https://pubmed.ncbi.nlm.nih.gov/30192042/" target="_blank">Tayoun et al</a> and <a href="http://autopvs1.genetics.bgi.com/" target="_blank">AutoPVS1</a>.',
                         },
                     )
                 ]
@@ -103,6 +104,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Not in matched controls",
                             "description": "Absent from controls (or at extremely low frequency if recessive), in ethnically matched population",
+                            "documentation": 'See e.g. <a href="https://pubmed.ncbi.nlm.nih.gov/31479589/" target="_blank">Harrison et al Curr Prot Hum Genet 2019</a>.',
                         },
                     ),
                     (
