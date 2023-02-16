@@ -106,7 +106,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Not in matched controls",
                             "description": "Absent from controls (or at extremely low frequency if recessive), in ethnically matched population",
-                            "documentation": 'Apply only if variant is expected to be detected in large population datasets - see e.g. <a href="https://pubmed.ncbi.nlm.nih.gov/31479589/" target="_blank">Harrison et al Curr Prot Hum Genet 2019</a>.',
+                            "documentation": 'Apply only if variant is expected to be detected in large population datasets - see e.g. <a href="https://pubmed.ncbi.nlm.nih.gov/31479589/" target="_blank">Harrison et al 2019</a>.',
                         },
                     ),
                     (
