@@ -609,6 +609,8 @@ def beacon_link(variant_obj: dict, build: int):
     """Compose link to Beacon Network."""
     url_template = BEACON_LINK_TEMPLATE
 
+    build = "GRCh38" if build == 38 else "GRCh37"
+
     return url_template.format(this=variant_obj, build=build)
 
 
