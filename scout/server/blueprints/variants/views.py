@@ -47,7 +47,9 @@ def variants(institute_id, case_name):
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
-    variant_type = request.args.get("variant_type", "clinical")
+    variant_type = Markup.escape(
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
+    )
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
@@ -241,7 +243,9 @@ def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
-    variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
+    variant_type = Markup.escape(
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
+    )
     category = "sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
@@ -316,7 +320,9 @@ def sv_variants(institute_id, case_name):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
-    variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
+    variant_type = Markup.escape(
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
+    )
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
@@ -427,7 +433,9 @@ def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
-    variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
+    variant_type = Markup.escape(
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
+    )
     category = "cancer_sv"
     # Define case and institute objects
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
