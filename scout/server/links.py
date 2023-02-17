@@ -603,9 +603,9 @@ def cosmic_links(variant_obj):
     return cosmic_links
 
 
-def beacon_link(variant_obj, build="37"):
+def beacon_link(variant_obj: dict, build: int):
     """Compose link to Beacon Network."""
-    build = "GRCh37" if "37" in str(build) else "GRCh38"
+    build = "GRCh37" if 37 else "GRCh38"
     url_template = BEACON_LINK_TEMPLATE
 
     return url_template.format(this=variant_obj, build=build)
