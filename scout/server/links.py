@@ -4,9 +4,11 @@ from scout.constants import SPIDEX_HUMAN
 from scout.utils.convert import amino_acid_residue_change_3_to_1
 
 SHALLOW_REFERENCE_STR_LOCI = ["ARX", "HOXA13"]
-BEACON_LINK_TEMPLATE = "https://beacon-network.org/#/search?pos={this[position]}&"
-"chrom={this[chromosome]}&allele={this[alternative]}&"
-"ref={this[reference]}&rs={build}"
+BEACON_LINK_TEMPLATE = (
+    "https://beacon-network.org/#/search?pos={this[position]}&"
+    "chrom={this[chromosome]}&allele={this[alternative]}&"
+    "ref={this[reference]}&rs={build}"
+)
 
 
 def add_gene_links(gene_obj, build=37):
