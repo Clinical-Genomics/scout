@@ -15,7 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - VarSome links to hg19/GRCh37
 - Managed variants filter settings lost when navigating to additional pages
 - Collect the right variant category after submitting filter form from research variantS page
-
+- Beacon links support variants in genome build 38
 
 ## [4.63]
 ### Added
