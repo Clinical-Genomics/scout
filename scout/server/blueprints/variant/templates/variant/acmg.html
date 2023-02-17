@@ -48,15 +48,14 @@
         </div>
       </div>
 
-      <div class="d-flex justify-content-between mt-3 ">
+      <div class="d-flex flex-row justify-content-between mt-3">
         {% for category, criteria_group in CRITERIA.items() %}
-          <div class="flex-1 {{ 'me-3' if not loop.last }}">
+          <div class="flex-column {{ 'me-3' if not loop.last }}">
             <h4>Evidence of {{ category }}</h4>
             {% for evidence, criteria in criteria_group.items() %}
               <ul class="list-group mt-3">
                 <li class="list-group-item">{{ evidence }}</li>
                 {% for criterion_code, criterion in criteria.items() %}
-
                   {% if evaluation and evaluation.criteria.get(criterion_code).comment %}
                     {% set comment = evaluation.criteria.get(criterion_code).comment %}
                   {% endif %}
@@ -66,7 +65,6 @@
                   {% if evaluation and evaluation.criteria.get(criterion_code).modifier %}
                     {% set modifier = evaluation.criteria.get(criterion_code).modifier %}
                   {% endif %}
-
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between">
                       <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ criterion.description }}">
@@ -79,6 +77,7 @@
                       </div>
                     </div>
                     <div id="comment-{{ criterion_code }}" class="{{ 'collapse' if not (comment or link or modifier) }} mt-2">
+                      {% if criterion.documentation %}<div class="row"><span class="me-1 fw-light text-wrap">{{ criterion.documentation | safe}}</span></div>{% endif %}
                       <div class="row">
                         <select {{ 'disabled' if evaluation }} id="modifier-{{ criterion_code }}" name="modifier-{{ criterion_code }}" class="form-control form-select">
                           <option value="" {% if not modifier %}selected{% endif %}>Strength modifier...</option>
