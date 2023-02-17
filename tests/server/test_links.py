@@ -17,6 +17,9 @@ from scout.server.links import (
 BUILD_37 = 37
 BUILD_38 = 38
 
+ = "GRCh37"
+BEACON_BUILD_38 = "GRCh38"
+
 
 def test_beacon_link_37(variant_obj):
     """Test building a beacon link for a variant in build 37"""
@@ -24,7 +27,7 @@ def test_beacon_link_37(variant_obj):
     build = BUILD_37
 
     # THEN the Beacon link should reflect the variant build
-    expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=build)
+    expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=BEACON_BUILD_37)
     link = beacon_link(variant_obj, build)
     assert expected_link == link
 
@@ -36,7 +39,7 @@ def test_beacon_link_38(variant_obj):
     build = BUILD_38
 
     # THEN the Beacon link should reflect the variant build
-    expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=build)
+    expected_link = BEACON_LINK_TEMPLATE.format(this=variant_obj, build=BEACON_BUILD_38)
     link = beacon_link(variant_obj, build)
     assert expected_link == link
 
