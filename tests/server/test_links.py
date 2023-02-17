@@ -17,7 +17,7 @@ from scout.server.links import (
 BUILD_37 = 37
 BUILD_38 = 38
 
- = "GRCh37"
+BEACON_BUILD_37 = "GRCh37"
 BEACON_BUILD_38 = "GRCh38"
 
 
