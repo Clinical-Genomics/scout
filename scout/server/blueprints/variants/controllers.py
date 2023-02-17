@@ -899,6 +899,20 @@ def download_str_variants(case_obj, variant_objs):
     )
 
 
+def update_panels(store, case_obj):
+    """Refresh case gene panels with info on if a panel was removed.
+
+
+    Returns:
+
+    """
+
+    for panel_info in case_obj.get("panels", []):
+        panel_name = panel_info["panel_name"]
+        latest_panel = store.gene_panel(panel_name)
+        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
+
+
 def download_variants(store, case_obj, variant_objs):
     """Download filtered variants for a case to an excel file
 

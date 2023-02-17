@@ -129,6 +129,9 @@ def variants(institute_id, case_name):
     data = controllers.variants(
         store, institute_obj, case_obj, variants_query, result_size, page, query_form=form.data
     )
+
+    controllers.update_panels(store, case_obj)
+
     expand_search = request.method == "POST" and request.form.get("expand_search") in [
         "True",
         "",
