@@ -47,6 +47,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Null variant",
                             "description": "Null variant (nonsense, frameshift, canonical +/- 2 bp splice sites, initiation codon, single or multiexon deletion) in a gene where LOF is a known mechanism of disease.",
+                            "documentation": 'Strength can be modified based on <a href="https://pubmed.ncbi.nlm.nih.gov/30192042/" target="_blank">Tayoun et al</a> and <a href="http://autopvs1.genetics.bgi.com/" target="_blank">AutoPVS1</a>.',
                         },
                     )
                 ]
@@ -82,6 +83,8 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "In >=4 unrelated patients, not controls",
                             "description": "The prevalence of the variant in affected individuals is significantly increased compared with the prevalence in controls; 4 or more unrelated patients",
+                            "documentation": '<a href="https://www.acgs.uk.com/media/11631/uk-practice-guidelines-for-variant-classification-v4-01-2020.pdf" target="_blank">ACGS (Ellard et al 2020)</a> suggest <a href="https://www.medcalc.org/calc/odds_ratio.php" target="_blank">Odds ratio calculator</a>, '
+                            "and application with strength modification for fewer unrelated affected individuals or gnomAD controls.",
                         },
                     ),
                 ]
@@ -103,6 +106,7 @@ ACMG_CRITERIA["pathogenicity"] = OrderedDict(
                         {
                             "short": "Not in matched controls",
                             "description": "Absent from controls (or at extremely low frequency if recessive), in ethnically matched population",
+                            "documentation": 'Apply only if variant is expected to be detected in large population datasets - see e.g. <a href="https://pubmed.ncbi.nlm.nih.gov/31479589/" target="_blank">Harrison et al 2019</a>.',
                         },
                     ),
                     (

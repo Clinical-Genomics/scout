@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Create/Update a gene panel contaning all PanelApp green genes (`scout update panelapp-green -i <cust_id>`)
+- Links for ACMG pathogenicity impact modification on the ACMG classification page
 ### Changed
 - Open local observation matching cases in new windows
 ### Fixed
