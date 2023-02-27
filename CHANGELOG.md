@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Always show each case category on caseS page, even if 0 cases in total or after current query
+
 ## [4.64]
 ### Added
 - Create/Update a gene panel containing all PanelApp green genes (`scout update panelapp-green -i <cust_id>`)
