@@ -10,8 +10,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
 - Improved sorting of ClinVar submissions
-### Fixed
-- After submitting to ClinVar the submission status is marked as `submitted`
 
 ## [4.64]
 ### Added
