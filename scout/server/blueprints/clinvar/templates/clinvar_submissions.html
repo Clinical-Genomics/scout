@@ -112,7 +112,7 @@
 
                 <li class="breadcrumb-item"><button type="submit" name="update_submission" value="submitted" class="btn btn-success btn-xs">Mark as submitted</button></li>
 
-                {% if config.CLINVAR_API_KEY and subm_obj.status != 'submitted'%}
+                {% if config.CLINVAR_API_KEY %}
                   <li class="breadcrumb-item"><a href="{{ url_for('clinvar.clinvar_validate', submission=subm_obj._id) }}" class="btn btn-info btn-xs">Validate submission</a></li>
                 {% endif %}
               {% endif %}
