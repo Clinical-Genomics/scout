@@ -236,10 +236,11 @@ class ClinVarHandler(object):
         Returns:
             submissions(list): a list of clinvar submission objects
         """
-        LOG.info("Retrieving all clinvar submissions for institute '%s'", institute_id)
         # get first all submission objects
         query = dict(institute_id=institute_id)
-        results = list(self.clinvar_submission_collection.find(query))
+        results = list(
+            self.clinvar_submission_collection.find(query).sort("updated_at", pymongo.DESCENDING)
+        )
 
         submissions = []
         # Loop over all ClinVar submissions for an institute
