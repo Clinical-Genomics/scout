@@ -69,15 +69,15 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Order Sanger sequencing</h5>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true"></span>
             </button>
           </div>
           <div class="modal-body">
             {{ sanger_form(institute, case, variant, current_user) }}
           </div>
           <div class="modal-footer">
-            <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Send sanger order request</button>
           </div>
         </div>
@@ -95,14 +95,15 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button class="close" data-bs-dismiss="modal">&times;</button>
             <h4 class="modal-title">Cancel Sanger sequencing</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></span>
+            </button>
           </div>
           <div class="modal-body">
             {{ sanger_form(institute, case, variant, current_user) }}
           </div>
           <div class="modal-footer">
-            <button class="btn btn-default" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Send sanger cancellation request</button>
           </div>
         </div>
