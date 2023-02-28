@@ -5,8 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Option to mark a ClinVar submission as submitted
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
+- Improved sorting of ClinVar submissions
 
 ## [4.64]
 ### Added
