@@ -5,8 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
+### Fixed
+- Fixed Sanger order / Cancel order modal close buttons
+
 
 ## [4.64]
 ### Added
