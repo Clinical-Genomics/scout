@@ -323,7 +323,7 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
     """
     update_status = request_obj.form.get("update_submission")
 
-    if update_status in ["open", "closed"]:  # open or close a submission
+    if update_status in ["open", "closed", "submitted"]:  # open or close a submission
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
     if update_status == "register_id":  # register an official clinvar submission ID
         store.update_clinvar_id(
