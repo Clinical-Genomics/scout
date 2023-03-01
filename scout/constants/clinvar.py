@@ -142,6 +142,14 @@ CLINVAR_SV_TYPES = [
     "Complex",
 ]
 
+SCOUT_CLINVAR_SV_TYPES_MAP = {
+    "ins": "Insertion",
+    "del": "Deletion",
+    "dup": "Duplication",
+    "inv": "Inversion",
+    "bnd": "Complex",
+}
+
 AFFECTED_STATUS = ["yes", "no", "unknown", NOT_PROVIDED, "not applicable"]
 
 ALLELE_OF_ORIGIN = [

@@ -13,7 +13,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show comment badges in related comments tables on general report
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
+- Pre-populate SV type select in ClinVar submission form, when possible
 - Fixed a couple of creations where now was called twice, so updated_at and created_at could differ
+### Fixed
+- Fixed Sanger order / Cancel order modal close buttons
+- Visibility of SV type in ClinVar submission form
 
 ## [4.64]
 ### Added

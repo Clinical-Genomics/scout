@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 from flask import current_app, flash
 
 from scout.constants.acmg import ACMG_MAP
-from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER
+from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, SCOUT_CLINVAR_SV_TYPES_MAP
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
 from scout.server.extensions import clinvar_api, store
@@ -110,6 +110,10 @@ def _get_sv_var_form(variant_obj, case_obj):
     var_form.end_chromosome.data = variant_obj.get("end_chrom")
     var_form.breakpoint1.data = variant_obj.get("position")
     var_form.breakpoint2.data = variant_obj.get("end")
+
+    # try to preselect variant type from variant subcategory
+    if variant_obj["sub_category"] in SCOUT_CLINVAR_SV_TYPES_MAP:
+        var_form.var_type.data = SCOUT_CLINVAR_SV_TYPES_MAP[variant_obj["sub_category"]]
 
     return var_form
 
