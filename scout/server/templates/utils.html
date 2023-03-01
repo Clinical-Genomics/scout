@@ -33,6 +33,35 @@
   </table>
 {% endmacro %}
 
+
+{% macro variant_related_comments_table(variant, case) %}
+      <table id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <td colspan=2><strong>Variant-related comments</strong></td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comment in variant.comments %}
+            <tr>
+              <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}
+                {% if comment.level == 'global' %}
+                  <span class='badge bg-info'>GLOBAL</span>
+                {% endif %}
+                {% if comment.created_at < case.updated_at %}
+                  <span class='badge bg-warning'>OLD</span>
+                {% endif %}
+                {% if comment.created_at < comment.updated_at %}
+                  <span class='badge bg-secondary'>edited</span>
+                {% endif %}
+              </td>
+              <td class="text-break"><strong>{{ comment.content }}</strong></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+{% endmacro %}
+
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}
 <div class="card">
   {% set comments = comments|list %}

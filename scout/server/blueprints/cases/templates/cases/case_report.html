@@ -1,5 +1,5 @@
 {% from "cases/utils.html" import variant_transcripts %}
-{% from "utils.html" import comments_table %}
+{% from "utils.html" import comments_table, variant_related_comments_table %}
 
 {% extends "report_base.html" %}
 
@@ -713,28 +713,9 @@
           {% endif %}
         </tbody>
       </table>
+
       {% if variant.comments | count_cursor > 0  %}
-        <table id="panel-table" class="table table-sm" style="background-color: transparent">
-          <thead>
-            <tr>
-              <td><strong>Variant-related comments</strong></td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <table id="panel-table" class="table table-sm" style="background-color: transparent">
-                {% for comment in variant.comments %}
-                  <tr>
-                    <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-                    <td class="text-break"><strong>{{ comment.content }}</strong></td>
-                  </tr>
-                {% endfor %}
-                </table>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        {{ variant_related_comments_table(variant, case) }}
       {% endif %}
     </div>
   </div>
@@ -1113,21 +1094,7 @@
     </table>
     {% if variant.comments | count_cursor > 0  %}
       <br>
-      <table id="panel-table" class="table table-sm" style="background-color: transparent">
-        <thead>
-          <tr>
-            <td colspan=3><strong>Variant-related comments</strong></td>
-          </tr>
-        </thead>
-        <tbody>
-          {% for comment in variant.comments %}
-            <tr>
-              <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-              <td class="text-break"><strong>{{ comment.content }}</strong></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {{ variant_related_comments_table(variant, case) }}
     {% endif %}
   </div>
 </div>
@@ -1274,24 +1241,9 @@
       </tbody>
     </table>
 
-
     {% if variant.comments | count_cursor > 0  %}
       <br>
-      <table id="panel-table" class="table table-sm" style="background-color: transparent">
-        <thead>
-          <tr>
-            <td colspan=3><strong>Variant-related comments</strong></td>
-          </tr>
-        </thead>
-        <tbody>
-          {% for comment in variant.comments %}
-            <tr>
-              <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}</td>
-              <td class="text-break"><strong>{{ comment.content }}</strong></td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      {{ variant_related_comments(variant, case)  }}
     {% endif %}
   </div>
 </div>

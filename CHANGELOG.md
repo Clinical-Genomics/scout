@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
 - Improved sorting of ClinVar submissions
+- Show comment badges in related comments tables on general report
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
 
