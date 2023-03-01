@@ -46,7 +46,7 @@
             <tr>
               <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}
                 {% if comment.level == 'global' %}
-                  <span class='badge bg-info'>GLOBAL</span>
+                  <span class='badge bg-info text-white'>GLOBAL</span>
                 {% endif %}
                 {% if comment.created_at < case.updated_at %}
                   <span class='badge bg-warning'>OLD</span>
