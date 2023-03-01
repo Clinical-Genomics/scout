@@ -43,6 +43,7 @@ class Institute(dict):
         frequency_cutoff=None,
     ):
         super(Institute, self).__init__()
+        current_time = datetime.now()
         self["internal_id"] = internal_id
         self["_id"] = internal_id
         self["display_name"] = display_name
@@ -51,7 +52,7 @@ class Institute(dict):
         self["collaborators"] = collaborators
         self["phenotype_groups"] = phenotype_groups
         self["cohorts"] = cohorts
-        self["created_at"] = created_at or datetime.now()
-        self["updated_at"] = updated_at or datetime.now()
+        self["created_at"] = created_at or current_time
+        self["updated_at"] = updated_at or current_time
         self["coverage_cutoff"] = coverage_cutoff or 10
         self["frequency_cutoff"] = frequency_cutoff or 0.01

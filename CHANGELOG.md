@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show comment badges in related comments tables on general report
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
+- Fixed a couple of creations where now was called twice, so updated_at and created_at could differ
 
 ## [4.64]
 ### Added
