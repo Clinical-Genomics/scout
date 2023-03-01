@@ -14,13 +14,13 @@
       	    <strong> {{ comment.user_name }} </strong>
       	    on {{ comment.created_at.date() }}
       	    {% if comment.level == 'global' %}
-                    <span class='badge bg-info'>GLOBAL</span>
+                    <span class='badge bg-info text-white'>GLOBAL</span>
             {% endif %}
             {% if comment.created_at < case.updated_at %}
-              <span class='badge bg-warning'>OLD</span>
+              <span class='badge bg-warning text-black'>OLD</span>
             {% endif %}
       	    {% if comment.created_at < comment.updated_at %}
-              <span class='badge bg-secondary'>edited</span>
+              <span class='badge bg-secondary text-white'>edited</span>
             {% endif %}
       	  </small>
       	</td>
@@ -49,7 +49,7 @@
                   <span class='badge bg-info text-white'>GLOBAL</span>
                 {% endif %}
                 {% if comment.created_at < case.updated_at %}
-                  <span class='badge bg-warning text-black'>OLD</span>
+                  <span class='badge bg-warning text-white'>OLD</span>
                 {% endif %}
                 {% if comment.created_at < comment.updated_at %}
                   <span class='badge bg-secondary text-white'>edited</span>
