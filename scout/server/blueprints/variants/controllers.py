@@ -82,6 +82,8 @@ def variants(
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
+    update_case_panels(store, case_obj)
+
     variants = []
     for variant_obj in variant_res:
         overlapping_svs = list(store.overlapping(variant_obj))
@@ -119,6 +121,8 @@ def variants(
 
         if case_obj.get("group"):
             variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
+
+        update_variant_case_panels(store, case_obj, variant_obj)
 
         variants.append(
             parse_variant(
@@ -899,18 +903,42 @@ def download_str_variants(case_obj, variant_objs):
     )
 
 
-def update_panels(store, case_obj):
+def update_case_panels(store, case_obj):
     """Refresh case gene panels with info on if a panel was removed.
 
+    Also return these more populated panels for optional storage on the variant_obj.
+
+    store(adapter.MongoAdapter)
+    case_obj(dict)
 
     Returns:
-
+        list(panel_info)
     """
 
     for panel_info in case_obj.get("panels", []):
         panel_name = panel_info["panel_name"]
         latest_panel = store.gene_panel(panel_name)
         panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
+
+    return case_obj.get("panels", [])
+
+
+def update_variant_case_panels(store, case_obj, variant_obj):
+    """Populate case gene panels with info on e.g. if a panel was removed on variant_obj.
+    Variant objects only have a list of matching panel names.
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+        variant_obj(dict)
+    """
+
+    variant_panel_names = variant_obj.get("panels", [])
+    case_panel_objs = [
+        panel for panel in case_obj.get("panels", []) if panel["panel_name"] in variant_panel_names
+    ]
+
+    variant_obj["case_panels"] = case_panel_objs
 
 
 def download_variants(store, case_obj, variant_objs):
@@ -1163,7 +1191,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     """Fetch data related to cancer variants for a case.
 
     For each variant, if one or more gene panels are selected, assign the gene present
-    in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
+    in the panel as the second representative gene. If no gene panel is selected don't assign such a gene.
     """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

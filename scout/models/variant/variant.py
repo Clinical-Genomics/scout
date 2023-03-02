@@ -52,7 +52,7 @@ variant = dict(
     # Gene ids:
     hgnc_ids=list,  # list of hgnc ids (int)
     hgnc_symbols=list,  # list of hgnc symbols (str)
-    panels=list,  # list of panel names that the variant ovelapps
+    panels=list,  # list of panel names that the variant overlaps
     # Frequencies:
     thousand_genomes_frequency=float,
     thousand_genomes_frequency_left=float,

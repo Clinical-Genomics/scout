@@ -97,20 +97,20 @@
         {% endif %}
       </a>
 
-      {% set panel_count = 0 %}
-      {% for panel in variant.panels %}
+      {% set ns = namespace(panel_count = 0) %}
+      {% for panel in variant.case_panels %}
         {% if not panel.removed %}
-          {% set panel_count = panel_count + 1 %}
+          {% set ns.panel_count = ns.panel_count + 1 %}
         {% endif %}
       {% endfor %}
-      {% if panel_count > 0%}
+      {% if ns.panel_count > 0%}
           <a
             class="badge bg-secondary text-white"
             data-bs-toggle="popover"
             data-bs-html="true"
             data-bs-trigger="hover click"
             title="Overlapping gene panels"
-            data-bs-content="{{variant.panels|rejectattr('removed')|join('<br>')|safe}}"
+            data-bs-content="{{variant.case_panels|rejectattr('removed')|join('<br>')|safe}}"
             >{{panel_count}}
           </a>
       {% endif %}
@@ -141,10 +141,8 @@
       {% endfor %}
 
       {% set ns = namespace(panel_count = 0) %}
-      {% for panel in variant.panels %}
-        {% if panel.removed %}
-          {% set ns.panel_count = 42 %}
-        {% else %}
+      {% for panel in variant.case_panels %}
+        {% if not panel.removed %}
           {% set ns.panel_count = ns.panel_count + 1 %}
         {% endif %}
       {% endfor %}
@@ -154,7 +152,7 @@
             data-bs-toggle="popover"
             data-bs-html="true"
             data-bs-trigger="hover click"
-            data-bs-content="{{variant.panels|rejectattr('removed')|join('<br>')|safe}}"
+            data-bs-content="{{variant.case_panels|rejectattr('removed')|join('<br>')|safe}}"
             title="Overlapping gene panels">{{ns.panel_count}}
           </a>
       {% endif %}
