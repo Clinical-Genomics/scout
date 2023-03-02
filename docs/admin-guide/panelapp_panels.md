@@ -38,3 +38,13 @@ https://panelapp.genomicsengland.co.uk/api/v1/panels/234/?format=api
 Please note that since the gene panel functionality in Scout is only supporting loading of genes, all eventual **`regions` or `strs` present in the PanelApp json document will not be saved in the created panel**.
 
 PanelApp panels in Scout can be **updated any time by running the same command used for creating them**.  When panels are already present in Scout, running the command will update panels that are not up-to-date with PanelApp and just overwrite those that already present with the newest version.
+
+
+# PanelApp green genes panel
+
+As an admin, it is possible to create/update a gene panel **containing green genes from all available PanelApp panels**. You can create this panel for an institute by using the following syntax:
+
+`scout update panelapp-green -i <custID> --force`
+
+The feature will connect to PanelApp and retrieve all green genes available in any panel in that moment.
+Note that the `--force` is required to force create a new version of the gene panel in the eventuality that the number of green genes found on the PanelApp server is lower than the number of genes contained in the old panel.
