@@ -152,7 +152,9 @@
             data-bs-toggle="popover"
             data-bs-html="true"
             data-bs-trigger="hover click"
-            data-bs-content="{{variant.case_panels|rejectattr('removed')|join('<br>')|safe}}"
+            data-bs-content="{% for panel in variant.case_panels|rejectattr('removed') %}
+              {{ panel.panel_name|safe }}<br>
+              {% endfor %}"
             title="Overlapping gene panels">{{ns.panel_count}}
           </a>
       {% endif %}
