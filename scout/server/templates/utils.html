@@ -14,13 +14,13 @@
       	    <strong> {{ comment.user_name }} </strong>
       	    on {{ comment.created_at.date() }}
       	    {% if comment.level == 'global' %}
-                    <span class='badge bg-info'>GLOBAL</span>
+                    <span class='badge bg-info text-white'>GLOBAL</span>
             {% endif %}
             {% if comment.created_at < case.updated_at %}
-              <span class='badge bg-warning'>OLD</span>
+              <span class='badge bg-warning text-black'>OLD</span>
             {% endif %}
       	    {% if comment.created_at < comment.updated_at %}
-              <span class='badge bg-secondary'>edited</span>
+              <span class='badge bg-secondary text-white'>edited</span>
             {% endif %}
       	  </small>
       	</td>
@@ -31,6 +31,35 @@
       {% endfor %}
     </tbody>
   </table>
+{% endmacro %}
+
+
+{% macro variant_related_comments_table(variant, case) %}
+      <table role="presentation" id="panel-table" class="table table-sm" style="background-color: transparent">
+        <thead>
+          <tr>
+            <td colspan=2><strong>Variant-related comments</strong></td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for comment in variant.comments %}
+            <tr>
+              <td style="width:50%;">{{comment.created_at.strftime('%Y-%m-%d')}} {{comment.user_name}}
+                {% if comment.level == 'global' %}
+                  <span class='badge bg-info text-white'>GLOBAL</span>
+                {% endif %}
+                {% if comment.created_at < case.updated_at %}
+                  <span class='badge bg-warning text-white'>OLD</span>
+                {% endif %}
+                {% if comment.created_at < comment.updated_at %}
+                  <span class='badge bg-secondary text-white'>edited</span>
+                {% endif %}
+              </td>
+              <td class="text-break"><strong>{{ comment.content }}</strong></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 {% endmacro %}
 
 {% macro comments_panel(institute, case, current_user, comments, variant_id=None) %}

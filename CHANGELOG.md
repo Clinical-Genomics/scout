@@ -7,13 +7,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Option to mark a ClinVar submission as submitted
+- Docs on how to create/update the PanelApp green genes as a system admin
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
 - Improved sorting of ClinVar submissions
 - Pre-populate SV type select in ClinVar submission form, when possible
+- Show comment badges in related comments tables on general report
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
 - Visibility of SV type in ClinVar submission form
+- Fixed a couple of creations where now was called twice, so updated_at and created_at could differ
+
 
 ## [4.64]
 ### Added

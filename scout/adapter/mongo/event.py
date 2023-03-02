@@ -109,6 +109,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             event(dict): The inserted event
         """
         variant = variant or {}
+        current_time = datetime.now()
         event = dict(
             institute=institute["_id"],
             case=case["_id"],
@@ -122,8 +123,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             variant_id=variant.get("variant_id"),
             content=content,
             panel=panel,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
+            created_at=current_time,
+            updated_at=current_time,
         )
         if individuals:
             event["individuals"] = individuals
@@ -509,6 +510,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             },
         )
         # create an event to register that user has updated a comment
+        current_time = datetime.now()
         event = dict(
             institute=updated_comment["institute"],
             case=updated_comment["case"],
@@ -522,8 +524,8 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             variant_id=updated_comment.get("variant_id", None),
             content=None,
             panel=None,
-            created_at=datetime.now(),
-            updated_at=datetime.now(),
+            created_at=current_time,
+            updated_at=current_time,
         )
         self.event_collection.insert_one(event)
         return updated_comment
