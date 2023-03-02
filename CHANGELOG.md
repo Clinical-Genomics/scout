@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved sorting of ClinVar submissions
 - Pre-populate SV type select in ClinVar submission form, when possible
 - Show comment badges in related comments tables on general report
+- Dismiss bar on variantS pages is thinner and can now be closed. Reload to open.
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
 - Visibility of SV type in ClinVar submission form

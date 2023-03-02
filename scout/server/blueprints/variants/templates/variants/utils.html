@@ -87,8 +87,9 @@
 {% endmacro %}
 
 {% macro dismiss_variants_block(dismiss_variant_options, institute, case) %}
-<div class="row d-flex align-items-center mb-2 ms-1">
-  <div class="col-2 ">Dismiss selected variants:</div>
+  <div class="fixed-bottom bg-light border collapse show" id="dismiss_bar">
+  <div class="row d-flex align-items-center my-1 mx-1 mb-1 ms-1">
+  <div class="col-2 "><button type="button" class="btn-close" data-bs-toggle="collapse" aria-expanded="true" data-bs-target="#dismiss_bar" aria-controls="dismiss_bar"></button> Dismiss selected variants:</div>
   <div class="col-4 align-items-start">
     <select multiple="multiple" name="dismiss_choices" id="dismiss_choices" class="selectpicker" data-style="btn-secondary" data-width="100%" onchange="enableDismiss();">
       {% for value, data in dismiss_variant_options.items() %}
@@ -100,9 +101,11 @@
     <button type="submit" disabled name="dismiss_submit" id="dismiss_submit" class="btn btn-sm btn-primary form-control">Dismiss variants</button>
   </div>
   <div class="offset-2 col-2">
-      <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark pull-right me-3">Reset all dismissed variants for this case</a>
+      <a role="button" href='{{ url_for("variants.reset_dismissed", institute_id=institute._id, case_name=case.display_name )}}' class="btn btn-warning text-dark pull-right me-3">Reset all dismissed</a>
   </div>
 </div>
+  </div>
+  </div>
 {% endmacro %}
 
 {% macro compounds_table(institute, case, compounds) %}

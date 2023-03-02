@@ -112,11 +112,7 @@
        </table>
      </div><!-- end of <div class="card mt-3">-->
     </div> <!-- end of class="container-float"> -->
-    <div class="fixed-bottom bg-light border">
-      <div class="pt-2 mx-4">
-        {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
-      </div>
-    </div>
+    {{ dismiss_variants_block(dismiss_variant_options, institute, case) }}
   </form> <!--end of form containing filters and variants' table elements -->
   <div class="container-fluid" style="padding-bottom: 100px">
     {{ pagination_footer(more_variants, page) }}
