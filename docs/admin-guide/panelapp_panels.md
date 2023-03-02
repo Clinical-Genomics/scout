@@ -44,7 +44,7 @@ PanelApp panels in Scout can be **updated any time by running the same command u
 
 As an admin, it is possible to create/update a gene panel **containing green genes from all available PanelApp panels**. You can create this panel for an institute by using the following syntax:
 
-`scout update panelapp-green -i <custID> --force`
+`scout update panelapp-green -i <institute> --force`
 
 The feature will connect to PanelApp and retrieve all green genes available in any panel in that moment.
 Note that the `--force` is required to force create a new version of the gene panel in the eventuality that the number of green genes found on the PanelApp server is lower than the number of genes contained in the old panel.
