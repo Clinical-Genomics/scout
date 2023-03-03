@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Option to mark a ClinVar submission as submitted
 - Docs on how to create/update the PanelApp green genes as a system admin
+- `individual_id`-parameter to both Gens links
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
 - Improved sorting of ClinVar submissions
@@ -17,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed Sanger order / Cancel order modal close buttons
 - Visibility of SV type in ClinVar submission form
 - Fixed a couple of creations where now was called twice, so updated_at and created_at could differ
+- Changed `sample_id` to the correct `individual_id` in the `gt_call`-model
 
 
 ## [4.64]
