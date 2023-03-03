@@ -158,9 +158,11 @@ def update_variant_case_panels(store, case_obj, variant_obj):
         variant_obj(dict)
     """
 
-    variant_panel_names = variant_obj.get("panels", [])
+    variant_panel_names = variant_obj.get("panels") or []
     case_panel_objs = [
-        panel for panel in case_obj.get("panels", []) if panel["panel_name"] in variant_panel_names
+        panel
+        for panel in (case_obj.get("panels") or [])
+        if panel["panel_name"] in variant_panel_names
     ]
 
     variant_obj["case_panels"] = case_panel_objs
