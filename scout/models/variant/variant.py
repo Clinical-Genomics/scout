@@ -98,7 +98,7 @@ compound = dict(
 clinsig = dict(value=int, accession=str, revstat=str)
 
 gt_call = dict(
-    individual_id=str,
+    sample_id=str,
     display_name=str,
     genotype_call=str,
     allele_depths=list,  # int

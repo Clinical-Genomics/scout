@@ -18,7 +18,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed Sanger order / Cancel order modal close buttons
 - Visibility of SV type in ClinVar submission form
 - Fixed a couple of creations where now was called twice, so updated_at and created_at could differ
-- Changed `sample_id` to the correct `individual_id` in the `gt_call`-model
 
 
 ## [4.64]
