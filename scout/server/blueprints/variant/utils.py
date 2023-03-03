@@ -25,6 +25,7 @@ def add_panel_specific_gene_info(panel_info):
     manual_penetrance = False
     mosaicism = False
     manual_inheritance = set()
+    comment = ""
 
     # We need to loop since there can be information from multiple panels
     for gene_info in panel_info:
@@ -41,6 +42,9 @@ def add_panel_specific_gene_info(panel_info):
         if gene_info.get("mosaicism"):
             mosaicism = True
 
+        if gene_info.get("comment"):
+            comment += gene_info.get("comment") or ""
+
         manual_inheritance.update(gene_info.get("inheritance_models", []))
 
     panel_specific["disease_associated_transcripts"] = list(disease_associated)
@@ -48,6 +52,7 @@ def add_panel_specific_gene_info(panel_info):
     panel_specific["manual_penetrance"] = manual_penetrance
     panel_specific["mosaicism"] = mosaicism
     panel_specific["manual_inheritance"] = list(manual_inheritance)
+    panel_specific["comment"] = comment
 
     return panel_specific
 

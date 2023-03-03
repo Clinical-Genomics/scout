@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-
 from datetime import datetime as datetime
 
-from scout.exceptions import IntegrityError
 from scout.constants import VALID_MODELS
+from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
@@ -69,6 +68,9 @@ def build_gene(gene_info, adapter):
 
     if gene_info.get("transcripts"):
         gene_obj["disease_associated_transcripts"] = gene_info["transcripts"]
+
+    if gene_info.get("comment"):
+        gene_obj["comment"] = gene_info["comment"]
 
     if gene_info.get("reduced_penetrance"):
         gene_obj["reduced_penetrance"] = True
