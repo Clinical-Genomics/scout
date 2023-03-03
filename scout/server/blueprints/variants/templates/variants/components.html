@@ -110,7 +110,9 @@
             data-bs-html="true"
             data-bs-trigger="hover click"
             title="Overlapping gene panels"
-            data-bs-content="{{variant.case_panels|rejectattr('removed')|join('<br>')|safe}}"
+            data-bs-content="{% for panel in variant.case_panels|sort(attribute='panel_name',case_sensitive=False)|rejectattr('removed') %}
+              {{ panel.panel_name|safe }}<br>
+              {% endfor %}"
             >{{panel_count}}
           </a>
       {% endif %}
@@ -152,7 +154,7 @@
             data-bs-toggle="popover"
             data-bs-html="true"
             data-bs-trigger="hover click"
-            data-bs-content="{% for panel in variant.case_panels|rejectattr('removed') %}
+            data-bs-content="{% for panel in variant.case_panels|sort(attribute='panel_name',case_sensitive=False)|rejectattr('removed') %}
               {{ panel.panel_name|safe }}<br>
               {% endfor %}"
             title="Overlapping gene panels">{{ns.panel_count}}

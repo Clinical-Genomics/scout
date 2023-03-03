@@ -27,6 +27,7 @@ from scout.server.blueprints.variant.utils import (
     clinsig_human,
     predictions,
     update_representative_gene,
+    update_variant_case_panels,
 )
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import (
@@ -37,6 +38,7 @@ from scout.server.utils import (
 )
 
 from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
+from .utils import update_case_panels
 
 LOG = logging.getLogger(__name__)
 
@@ -901,44 +903,6 @@ def download_str_variants(case_obj, variant_objs):
         mimetype="text/csv",
         headers=headers,
     )
-
-
-def update_case_panels(store, case_obj):
-    """Refresh case gene panels with info on if a panel was removed.
-
-    Also return these more populated panels for optional storage on the variant_obj.
-
-    store(adapter.MongoAdapter)
-    case_obj(dict)
-
-    Returns:
-        list(panel_info)
-    """
-
-    for panel_info in case_obj.get("panels", []):
-        panel_name = panel_info["panel_name"]
-        latest_panel = store.gene_panel(panel_name)
-        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
-
-    return case_obj.get("panels", [])
-
-
-def update_variant_case_panels(store, case_obj, variant_obj):
-    """Populate case gene panels with info on e.g. if a panel was removed on variant_obj.
-    Variant objects only have a list of matching panel names.
-
-    Args:
-        store(adapter.MongoAdapter)
-        case_obj(dict)
-        variant_obj(dict)
-    """
-
-    variant_panel_names = variant_obj.get("panels", [])
-    case_panel_objs = [
-        panel for panel in case_obj.get("panels", []) if panel["panel_name"] in variant_panel_names
-    ]
-
-    variant_obj["case_panels"] = case_panel_objs
 
 
 def download_variants(store, case_obj, variant_objs):
