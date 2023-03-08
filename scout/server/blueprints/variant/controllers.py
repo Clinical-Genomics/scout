@@ -252,6 +252,7 @@ def variant(
 
     # Update some case panels info from db and populate it on variant to avoid showing removed panels
     update_case_panels(store, case_obj)
+    # The hierarchical call order is relevant: cases are used to populate variants
     update_variant_case_panels(store, case_obj, variant_obj)
 
     # Add information about bam files and create a region vcf

@@ -5,6 +5,8 @@ def update_case_panels(store, case_obj):
     """Refresh case gene panels with info on if a panel was removed.
 
     Also return these more populated panels for optional storage on the variant_obj.
+    If you do not use the returned variants, but rely on the update, please remember
+    to call this function before updating the variants.
 
     store(adapter.MongoAdapter)
     case_obj(dict)

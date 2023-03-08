@@ -97,13 +97,8 @@
         {% endif %}
       </a>
 
-      {% set ns = namespace(panel_count = 0) %}
-      {% for panel in variant.case_panels %}
-        {% if not panel.removed %}
-          {% set ns.panel_count = ns.panel_count + 1 %}
-        {% endif %}
-      {% endfor %}
-      {% if ns.panel_count > 0%}
+      {% set panel_count = variant.case_panels|rejectattr('removed')|list|length %}
+      {% if panel_count > 0%}
           <a
             class="badge bg-secondary text-white"
             data-bs-toggle="popover"
@@ -142,13 +137,9 @@
         </a>
       {% endfor %}
 
-      {% set ns = namespace(panel_count = 0) %}
-      {% for panel in variant.case_panels %}
-        {% if not panel.removed %}
-          {% set ns.panel_count = ns.panel_count + 1 %}
-        {% endif %}
-      {% endfor %}
-      {% if ns.panel_count > 0 %}
+
+      {% set panel_count = variant.case_panels|rejectattr('removed')|list|count %}
+      {% if panel_count > 0 %}
           <a
             class="badge bg-secondary text-white"
             data-bs-toggle="popover"
@@ -157,7 +148,7 @@
             data-bs-content="{% for panel in variant.case_panels|sort(attribute='panel_name',case_sensitive=False)|rejectattr('removed') %}
               {{ panel.panel_name|safe }}<br>
               {% endfor %}"
-            title="Overlapping gene panels">{{ns.panel_count}}
+            title="Overlapping gene panels">{{panel_count}}
           </a>
       {% endif %}
     {% endif %}

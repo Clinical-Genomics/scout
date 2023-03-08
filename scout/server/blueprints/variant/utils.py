@@ -152,9 +152,12 @@ def update_variant_case_panels(store, case_obj, variant_obj):
     """Populate variant with case gene panels with info on e.g. if a panel was removed on variant_obj.
     Variant objects panels are only a list of matching panel names.
 
+    The case_obj should be up to date first. Call update_case_panels() as needed in context:
+    to save some resources we do not call it here for each variant.
+
     Args:
         store(adapter.MongoAdapter)
-        case_obj(dict)
+        case_obj(dict):     case_obj with updated panels - update_case_panels() first
         variant_obj(dict)
     """
 
