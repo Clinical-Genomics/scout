@@ -20,7 +20,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visibility of SV type in ClinVar submission form
 - Fixed a couple of creations where now was called twice, so updated_at and created_at could differ
 - Deprecated Ubuntu version 18.04 in one GitHub action
-
+- Panels that have been removed (hidden) should not be visible in views where overlapping gene panels for genes are shown
 
 ## [4.64]
 ### Added
