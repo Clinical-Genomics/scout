@@ -8,10 +8,10 @@ on:
 jobs:
  build-n-publish:
   name: Build and publish Python distribution to PyPI
-  runs-on: ubuntu-18.04
+  runs-on: ubuntu-latest
   steps:
    - name: Check out git repository
-     uses: actions/checkout@v2
+     uses: actions/checkout@v3
 
    - name: Set up Python 3.7
      uses: actions/setup-python@v2
@@ -45,7 +45,7 @@ jobs:
    steps:
 
     - name: Check out git repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Publish main image (Dockerfile) to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
@@ -69,7 +69,7 @@ jobs:
    runs-on: ubuntu-latest
    steps:
     - name: Checkout repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Setup environment for docs deployment
       uses: actions/setup-python@v2
       with:
