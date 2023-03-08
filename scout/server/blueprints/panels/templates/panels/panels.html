@@ -157,10 +157,10 @@
             <th></th>
           </tr>
         </thead>
+        <tbody>
       {% for panel in panels|sort(attribute="display_name",case_sensitive=False) %}
         <!--create table for each panel-->
-        <tbody>
-          <tr {% if panel.hidden %} class="hidableRow" style="visibility:collapse;" {% endif %}>
+          <tr {% if panel.hidden %} class="hidableRow collapse" {% endif %}>
             <td>
               <a href="{{ url_for('panels.panel', panel_id=panel._id) }}">{{ panel.display_name }}</a>
               {% if panel.hidden %}
@@ -182,9 +182,10 @@
             </td>
           </tr>
           {{ modify_panel(panel._id, panel) }}
-        </tbody>
+
         {{ remove_gene_panel_modal(institute, panel) }}
-      {% endfor %}
+        {% endfor %}
+        </tbody>
       </table>
     </div>
   </div>
@@ -268,18 +269,6 @@
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script type="text/javascript">
 
-function toggleRow(hideCheck) {
-  var els = document.getElementsByClassName("hidableRow");
-  for(var i=0;i<els.length;i++){
-    if(hideCheck.checked){
-      els[i].style.visibility = 'collapse';
-    }
-    else{
-      els[i].style.visibility = 'visible';
-    }
-  }
-}
-
 $('.history_btn').on('click', function(){
     var bid = $(this)[0].id;
     var sel = '#paneldiv_' + bid;
@@ -302,6 +291,20 @@ $('.modify_btn').on('click', function(){
     }
 });
 
+function toggleRow(hideCheck) {
+  var els = document.getElementsByClassName("hidableRow");
+  for(var i=0;i<els.length;i++){
+    collapse = bootstrap.Collapse.getOrCreateInstance(els[i])
+    if(hideCheck.checked){
+      collapse.hide();
+    }
+    else{
+      collapse.show();
+    }
+  }
+}
+
+
 $(function(){
       function getNameTerms(query, process) {
         $.get("{{ url_for('genes.api_genes') }}", {query: query}, function(data) {
@@ -314,6 +317,8 @@ $(function(){
         source: getNameTerms,
         minLength: 3,
       });
+
+
   });
 
 </script>

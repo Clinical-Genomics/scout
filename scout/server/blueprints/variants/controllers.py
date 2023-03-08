@@ -27,6 +27,7 @@ from scout.server.blueprints.variant.utils import (
     clinsig_human,
     predictions,
     update_representative_gene,
+    update_variant_case_panels,
 )
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import (
@@ -37,6 +38,7 @@ from scout.server.utils import (
 )
 
 from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
+from .utils import update_case_panels
 
 LOG = logging.getLogger(__name__)
 
@@ -82,6 +84,8 @@ def variants(
 
     case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
 
+    update_case_panels(store, case_obj)
+
     variants = []
     for variant_obj in variant_res:
         overlapping_svs = list(store.overlapping(variant_obj))
@@ -119,6 +123,8 @@ def variants(
 
         if case_obj.get("group"):
             variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
+
+        update_variant_case_panels(store, case_obj, variant_obj)
 
         variants.append(
             parse_variant(
@@ -1149,7 +1155,7 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     """Fetch data related to cancer variants for a case.
 
     For each variant, if one or more gene panels are selected, assign the gene present
-    in the panel as the second representative gene. If no gene panel is selected dont assign such a gene.
+    in the panel as the second representative gene. If no gene panel is selected don't assign such a gene.
     """
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
