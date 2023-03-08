@@ -14,11 +14,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved sorting of ClinVar submissions
 - Pre-populate SV type select in ClinVar submission form, when possible
 - Show comment badges in related comments tables on general report
+- Updated version of several GitHub actions
 - Dismiss bar on variantS pages is thinner and can now be closed. Reload to open.
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
 - Visibility of SV type in ClinVar submission form
 - Fixed a couple of creations where now was called twice, so updated_at and created_at could differ
+- Deprecated Ubuntu version 18.04 in one GitHub action
 
 
 ## [4.64]
