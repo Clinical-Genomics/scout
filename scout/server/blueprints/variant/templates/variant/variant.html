@@ -344,8 +344,8 @@
       <ul class="list-group">
         <div class="list-group-item">
           <strong>Gene panels:</strong><br>
-          {% for panel_id in variant.panels|sort(case_sensitive=False) %}
-            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+          {% for panel in variant.case_panels|sort(attribute='panel_name', case_sensitive=False)|rejectattr('removed') %}
+            <a href="{{ url_for('panels.panel', panel_id=panel.panel_id) }}">{{ panel.panel_name}}</a>&nbsp;&nbsp;
           {% endfor %}
         </div>
       </ul>

@@ -153,6 +153,29 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
         transcript["change_str"] = transcript_str(transcript, hgnc_symbol)
 
 
+def update_variant_case_panels(store, case_obj, variant_obj):
+    """Populate variant with case gene panels with info on e.g. if a panel was removed on variant_obj.
+    Variant objects panels are only a list of matching panel names.
+
+    The case_obj should be up to date first. Call update_case_panels() as needed in context:
+    to save some resources we do not call it here for each variant.
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict):     case_obj with updated panels - update_case_panels() first
+        variant_obj(dict)
+    """
+
+    variant_panel_names = variant_obj.get("panels") or []
+    case_panel_objs = [
+        panel
+        for panel in (case_obj.get("panels") or [])
+        if panel["panel_name"] in variant_panel_names
+    ]
+
+    variant_obj["case_panels"] = case_panel_objs
+
+
 def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
     """Adds information to variant genes from hgnc genes and selected gene panels.
 

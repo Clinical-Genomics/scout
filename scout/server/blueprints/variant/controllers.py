@@ -20,7 +20,11 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     VERBS_MAP,
 )
-from scout.server.blueprints.variant.utils import update_representative_gene
+from scout.server.blueprints.variant.utils import (
+    update_representative_gene,
+    update_variant_case_panels,
+)
+from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.extensions import cloud_tracks, gens
 from scout.server.links import get_variant_links
 from scout.server.utils import (
@@ -245,6 +249,11 @@ def variant(
     # add default panels extra gene information
     panels = default_panels(store, case_obj)
     add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
+
+    # Update some case panels info from db and populate it on variant to avoid showing removed panels
+    update_case_panels(store, case_obj)
+    # The hierarchical call order is relevant: cases are used to populate variants
+    update_variant_case_panels(store, case_obj, variant_obj)
 
     # Add information about bam files and create a region vcf
     if add_case:
