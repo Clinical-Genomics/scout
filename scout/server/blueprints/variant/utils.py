@@ -43,7 +43,10 @@ def add_panel_specific_gene_info(panel_info):
             mosaicism = True
 
         if gene_info.get("comment"):
-            comment += gene_info.get("comment") or ""
+            if comment == "":
+                comment = gene_info.get("comment") or ""
+            elif gene_info.get("comment"):
+                comment += " - {}".format(gene_info.get("comment"))
 
         manual_inheritance.update(gene_info.get("inheritance_models", []))
 
