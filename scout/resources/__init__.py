@@ -1,8 +1,6 @@
-import importlib_resources
+from scout.constants import BASE_PATH
 
 ###### Paths ######
-
-BASE_PATH = importlib_resources.files("scout")
 
 # Cytoband path
 cytobands_37_path = str(BASE_PATH / "resources/cytoBand_hg19.txt.gz")
