@@ -15,7 +15,7 @@ cancer_load_path = BASE_PATH / "demo/cancer.load_config.yaml"
 rnafusion_load_path = BASE_PATH / "demo/rnafusion.load_config.yaml"
 delivery_report_path = BASE_PATH / "demo/delivery_report.html"
 cnv_report_path = BASE_PATH / "demo/cancer_cnv_report.pdf"
-coverage_qc_report_path = BASE_PATH / "demo/cancer_coverage_qc_report.html"
+coverage_qc_report_path = str(BASE_PATH / "demo/cancer_coverage_qc_report.html")
 gene_fusion_report_path = BASE_PATH / "demo/draw-fusions-example.pdf"
 
 # Variant paths
