@@ -4,8 +4,6 @@ import importlib_resources
 
 file_manager = ExitStack()
 
-file_manager.enter_context(importlib_resources.as_file(EXONS_37))
-
 ###### Files ######
 # Panel files
 panel_file = importlib_resources.files("scout") / "demo/panel_1.txt"
