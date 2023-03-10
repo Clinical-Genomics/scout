@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import re
 
-import importlib_resources
 from intervaltree import Interval, IntervalTree
 
 from scout.parse.cytoband import parse_cytoband
@@ -91,7 +90,6 @@ from .variants_export import (
     VERIFIED_VARIANTS_HEADER,
 )
 
-BASE_PATH = importlib_resources.files("scout")
 cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
 cytobands_38_handle = get_file_handle(cytoband_files.get("38"))
 

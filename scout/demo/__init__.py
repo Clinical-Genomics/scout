@@ -1,4 +1,6 @@
-from scout.constants import BASE_PATH
+import importlib_resources
+
+BASE_PATH = importlib_resources.files("scout")
 
 ###### Paths ######
 # Panel paths
