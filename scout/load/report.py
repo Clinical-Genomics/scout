@@ -22,6 +22,6 @@ def update_case_report(case_id, report_path, report_key):
     case_obj = store.case(case_id=case_id)
     if case_obj is None:
         raise DataNotFoundError(f"No case with _id {case_id} found")
-    report_key = CUSTOM_CASE_REPORTS[report_key]["key_name"]
+    report_key = CUSTOM_CASE_REPORTS[str(report_key)]["key_name"]
     case_obj[report_key] = report_path
     return store.replace_case(case_obj)
