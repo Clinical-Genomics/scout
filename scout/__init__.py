@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
-from pkg_resources import get_distribution
+from importlib.metadata import version
 
-__version__ = get_distribution("scout-browser").version
+__version__ = version("scout-browser")
