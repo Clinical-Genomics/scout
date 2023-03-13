@@ -166,7 +166,9 @@ def test_panel_export_case_hits(client, real_panel_database):
 
     # WHEN downloading the case variants hits report
     form_data = {"case_name": " - ".join([case_obj["owner"], case_obj["display_name"]])}
-    resp = client.post(url_for("panels.panel_export", panel_id=panel_obj["_id"]), data=form_data)
+    resp = client.post(
+        url_for("panels.panel_export_pdf", panel_id=panel_obj["_id"]), data=form_data
+    )
 
     # THEN the response should be successful
     assert resp.status_code == 200

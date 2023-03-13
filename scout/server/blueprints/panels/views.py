@@ -17,6 +17,7 @@ from flask import (
 )
 from flask_login import current_user
 
+from scout.constants import DATE_DAY_FORMATTER
 from scout.export.panel import export_gene_panels
 from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
@@ -281,7 +282,7 @@ def panel_export_pdf(panel_id):
     """Export panel to PDF file"""
     panel_obj = store.panel(panel_id)
     data = controllers.panel_data(store, panel_obj)
-    data["report_created_at"] = datetime.datetime.now().strftime(controllers.DATETIME_FORMATTER)
+    data["report_created_at"] = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     html_report = render_template("panels/panel_pdf_simple.html", **data)
 
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
@@ -317,7 +318,7 @@ def panel_export_case_hits(panel_id):
         )
         return redirect(request.referrer)
     data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
-    now = datetime.datetime.now().strftime(controllers.DATETIME_FORMATTER)
+    now = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     data["report_created_at"] = now
     html_report = render_template("panels/panel_pdf_case_hits.html", **data)
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
@@ -327,7 +328,7 @@ def panel_export_case_hits(panel_id):
             str(data["panel"]["version"]),
             institute_id,
             case_name,
-            datetime.datetime.now().strftime(controllers.DATETIME_FORMATTER),
+            datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
             "scout.pdf",
         ]
     )
