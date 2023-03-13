@@ -1,6 +1,6 @@
 from importlib_resources import files
 
-BASE_PATH = "scout.reources"
+BASE_PATH = "scout.resources"
 
 ###### Paths ######
 
