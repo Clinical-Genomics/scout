@@ -13,6 +13,7 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 INHERITANCE_MODELS = ["ar", "ad", "mt", "xr", "xd", "x", "y"]
+DATETIME_FORMATTER = "%Y-%m-%d"
 
 
 def shall_display_panel(panel_obj, user):
@@ -305,7 +306,26 @@ def new_panel(
     return panel_id
 
 
-def panel_export(store, panel_obj):
+def downloaded_panel_name(panel_obj, format) -> str:
+    """Return a string describing the gene panel to be downloaded
+
+    Args:
+        panel_obj(dict): n
+        format(str): pdf or csv
+    Returns:
+        a string containing the string describing the panel
+    """
+    return "_".join(
+        [
+            panel_obj["panel_name"],
+            str(panel_obj["version"]),
+            dt.datetime.now().strftime(DATETIME_FORMATTER),
+            f"scout.{format}",
+        ]
+    )
+
+
+def panel_data(store, panel_obj):
     """Preprocess a panel of genes."""
     panel_obj["institute"] = store.institute(panel_obj["institute"])
     full_name = "{}({})".format(panel_obj["display_name"], panel_obj["version"])

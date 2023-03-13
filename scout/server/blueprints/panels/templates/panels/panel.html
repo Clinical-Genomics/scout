@@ -105,7 +105,8 @@
       {% endif %}
       <li class="list-group-item">
         <div class="d-flex justify-content-between">
-          <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
+          <a href="{{ url_for('panels.panel_export_pdf', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
+          <a href="{{ url_for('panels.panel_export_csv', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to BED (GRCh37)</a>
           <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits">
             Case specific STR and SMN extent PDF
           </button>
