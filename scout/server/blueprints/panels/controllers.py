@@ -313,7 +313,7 @@ def downloaded_panel_name(panel_obj, format) -> str:
         panel_obj(dict): scout.models.panel.gene_panel
         format(str): "pdf" or "txt"
     Returns:
-        a string containing the string describing the panel
+        a string describing the panel
     """
     return "_".join(
         [
