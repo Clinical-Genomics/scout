@@ -317,7 +317,7 @@ def panel_export_case_hits(panel_id):
         )
         return redirect(request.referrer)
     data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
-    now = datetime.datetime.now().strftime(DATETIME_FORMATTER)
+    now = datetime.datetime.now().strftime(controllers.DATETIME_FORMATTER)
     data["report_created_at"] = now
     html_report = render_template("panels/panel_pdf_case_hits.html", **data)
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
