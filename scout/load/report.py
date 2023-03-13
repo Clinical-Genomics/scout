@@ -2,7 +2,7 @@
 import logging
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.exceptions import DataNotFoundError, IntegrityError
+from scout.exceptions import DataNotFoundError
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)

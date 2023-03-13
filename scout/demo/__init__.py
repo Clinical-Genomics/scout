@@ -1,62 +1,34 @@
-import pkg_resources
+from importlib_resources import files
 
-###### Files ######
-# Gene panel:
-panel_file = "demo/panel_1.txt"
-panelapp_file = "demo/panelapp_test_panel.json"
+BASE_PATH = "scout.demo"
 
-madeline_file = "demo/madeline.xml"
+###### Paths ######
+# Panel paths
+panel_path = str(files(BASE_PATH).joinpath("panel_1.txt"))
+panelapp_panel_path = str(files(BASE_PATH).joinpath("panelapp_test_panel.json"))
 
-# Case info
-ped_file = "demo/643594.ped"
-load_file = "demo/643594.config.yaml"
-cancer_load_file = "demo/cancer.load_config.yaml"
-rnafusion_load_file = "demo/rnafusion.load_config.yaml"
+# Case paths
+ped_path = str(files(BASE_PATH).joinpath("643594.ped"))
+madeline_path = str(files(BASE_PATH).joinpath("madeline.xml"))
+load_path = str(files(BASE_PATH).joinpath("643594.config.yaml"))
+cancer_load_path = str(files(BASE_PATH).joinpath("cancer.load_config.yaml"))
+rnafusion_load_path = str(files(BASE_PATH).joinpath("rnafusion.load_config.yaml"))
+delivery_report_path = str(files(BASE_PATH).joinpath("delivery_report.html"))
+cnv_report_path = str(files(BASE_PATH).joinpath("cancer_cnv_report.pdf"))
+coverage_qc_report_path = str(files(BASE_PATH).joinpath("cancer_coverage_qc_report.html"))
+gene_fusion_report_path = str(files(BASE_PATH).joinpath("draw-fusions-example.pdf"))
 
-clinical_snv_file = "demo/643594.clinical.vcf.gz"
-research_snv_file = "demo/643594.research.vcf.gz"
-customannotation_snv_file = "demo/customannotations_one.vcf.gz"
-vep_97_annotated_snv_file = "demo/vep97_annotated_clnsig_conservation_revel.vcf"
-vep_104_annotated_snv_file = "demo/vep104_annotated.vcf"
-manta_annotated_sv_cancer_file = "demo/manta_vep_94_annotated_sv_cancer_file.vcf.gz"
-cancer_snv_file = "demo/cancer_test.vcf.gz"
-
-ped_path = pkg_resources.resource_filename("scout", ped_file)
-clinical_sv_file = "demo/643594.clinical.SV.vcf.gz"
-research_sv_file = "demo/643594.research.SV.vcf.gz"
-empty_sv_file = "demo/empty.clinical.SV.vcf.gz"
-
-clinical_str_file = "demo/643594.clinical.str.stranger.vcf.gz"
-
-panel_path = pkg_resources.resource_filename("scout", panel_file)
-panelapp_panel_path = pkg_resources.resource_filename("scout", panelapp_file)
-madeline_path = pkg_resources.resource_filename("scout", madeline_file)
-load_path = pkg_resources.resource_filename("scout", load_file)
-cancer_load_path = pkg_resources.resource_filename("scout", cancer_load_file)
-rnafusion_load_path = pkg_resources.resource_filename("scout", rnafusion_load_file)
-
-clinical_snv_path = pkg_resources.resource_filename("scout", clinical_snv_file)
-clinical_sv_path = pkg_resources.resource_filename("scout", clinical_sv_file)
-clinical_str_path = pkg_resources.resource_filename("scout", clinical_str_file)
-
-customannotation_snv_path = pkg_resources.resource_filename("scout", customannotation_snv_file)
-vep_97_annotated_path = pkg_resources.resource_filename("scout", vep_97_annotated_snv_file)
-vep_104_annotated_path = pkg_resources.resource_filename("scout", vep_104_annotated_snv_file)
-
-research_snv_path = pkg_resources.resource_filename("scout", research_snv_file)
-research_sv_path = pkg_resources.resource_filename("scout", research_sv_file)
-
-cancer_snv_path = pkg_resources.resource_filename("scout", cancer_snv_file)
-cancer_sv_path = pkg_resources.resource_filename("scout", manta_annotated_sv_cancer_file)
-
-empty_sv_clinical_path = pkg_resources.resource_filename("scout", empty_sv_file)
-
-delivery_report_file = "demo/delivery_report.html"
-delivery_report_path = pkg_resources.resource_filename("scout", delivery_report_file)
-
-cnv_report_file = "demo/cancer_cnv_report.pdf"
-cnv_report_path = pkg_resources.resource_filename("scout", cnv_report_file)
-coverage_qc_report_file = "demo/cancer_coverage_qc_report.html"
-coverage_qc_report_path = pkg_resources.resource_filename("scout", coverage_qc_report_file)
-gene_fusion_report_file = "demo/draw-fusions-example.pdf"
-gene_fusion_report_path = pkg_resources.resource_filename("scout", gene_fusion_report_file)
+# Variant paths
+clinical_snv_path = str(files(BASE_PATH).joinpath("643594.clinical.vcf.gz"))
+clinical_sv_path = str(files(BASE_PATH).joinpath("643594.clinical.SV.vcf.gz"))
+clinical_str_path = str(files(BASE_PATH).joinpath("643594.clinical.str.stranger.vcf.gz"))
+customannotation_snv_path = str(files(BASE_PATH).joinpath("customannotations_one.vcf.gz"))
+vep_97_annotated_path = str(
+    files(BASE_PATH).joinpath("vep97_annotated_clnsig_conservation_revel.vcf")
+)
+vep_104_annotated_path = str(files(BASE_PATH).joinpath("vep104_annotated.vcf"))
+research_snv_path = str(files(BASE_PATH).joinpath("643594.research.vcf.gz"))
+research_sv_path = str(files(BASE_PATH).joinpath("643594.research.SV.vcf.gz"))
+cancer_snv_path = str(files(BASE_PATH).joinpath("cancer_test.vcf.gz"))
+cancer_sv_path = str(files(BASE_PATH).joinpath("manta_vep_94_annotated_sv_cancer_file.vcf.gz"))
+empty_sv_clinical_path = str(files(BASE_PATH).joinpath("empty.clinical.SV.vcf.gz"))
