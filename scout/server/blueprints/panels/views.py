@@ -253,11 +253,11 @@ def panel_restore(panel_id):
     return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
 
 
-@panels_bp.route("/panels/export-panel-csv/<panel_id>", methods=["GET"])
-def panel_export_csv(panel_id):
-    """Export a gene panel in BED format"""
+@panels_bp.route("/panels/export-panel-txt/<panel_id>", methods=["GET"])
+def panel_export_txt(panel_id):
+    """Download a gene panel in txt format"""
     panel_obj = store.panel(panel_id)
-    file_name = controllers.downloaded_panel_name(panel_obj=panel_obj, format="csv")
+    file_name = controllers.downloaded_panel_name(panel_obj=panel_obj, format="txt")
 
     lines = export_gene_panels(
         adapter=store,
@@ -271,7 +271,7 @@ def panel_export_csv(panel_id):
 
     return Response(
         generate(),
-        mimetype="text/csv",
+        mimetype="text/txt",
         headers={"Content-Disposition": f"attachment;filename={file_name}"},
     )
 
