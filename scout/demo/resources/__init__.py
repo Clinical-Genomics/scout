@@ -1,5 +1,7 @@
 from importlib_resources import files
 
+from scout.demo import madeline_path
+
 BASE_PATH = "scout.demo.resources"
 
 ###### Paths ######
