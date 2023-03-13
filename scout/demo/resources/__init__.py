@@ -1,34 +1,31 @@
-import importlib_resources
+from importlib_resources import files
 
-BASE_PATH = importlib_resources.files("scout")
+BASE_PATH = "scout.demo.resources"
 
 ###### Paths ######
 
 # Gene paths
-reduced_resources_path = str(BASE_PATH / "demo/resources")
-hgnc_reduced_path = str(BASE_PATH / "demo/resources/hgnc_reduced_set.txt")
+reduced_resources_path = str(files(BASE_PATH))
+hgnc_reduced_path = str(files(BASE_PATH).joinpath("hgnc_reduced_set.txt"))
 exac_reduced_path = str(
-    BASE_PATH / "demo/resources/forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt"
+    files(BASE_PATH).joinpath("forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt")
 )
-transcripts37_reduced_path = str(BASE_PATH / "demo/resources/ensembl_transcripts_37_reduced.txt")
-transcripts38_reduced_path = str(BASE_PATH / "demo/resources/ensembl_transcripts_38_reduced.txt")
-genes37_reduced_path = str(BASE_PATH / "demo/resources/ensembl_genes_37_reduced.txt")
-genes38_reduced_path = str(BASE_PATH / "demo/resources/ensembl_genes_38_reduced.txt")
-exons37_reduced_path = str(BASE_PATH / "demo/resources/ensembl_exons_37_reduced.txt")
-exons38_reduced_path = str(BASE_PATH / "demo/resources/ensembl_exons_38_reduced.txt")
+transcripts37_reduced_path = str(files(BASE_PATH).joinpath("ensembl_transcripts_37_reduced.txt"))
+transcripts38_reduced_path = str(files(BASE_PATH).joinpath("ensembl_transcripts_38_reduced.txt"))
+genes37_reduced_path = str(files(BASE_PATH).joinpath("ensembl_genes_37_reduced.txt"))
+genes38_reduced_path = str(files(BASE_PATH).joinpath("ensembl_genes_38_reduced.txt"))
+exons37_reduced_path = str(files(BASE_PATH).joinpath("ensembl_exons_37_reduced.txt"))
+exons38_reduced_path = str(files(BASE_PATH).joinpath("ensembl_exons_38_reduced.txt"))
 
 # OMIM paths
-mim2gene_reduced_path = str(BASE_PATH / "demo/resources/mim2gene_reduced.txt")
-genemap2_reduced_path = str(BASE_PATH / "demo/resources/genemap2_reduced.txt")
+mim2gene_reduced_path = str(files(BASE_PATH).joinpath("mim2gene_reduced.txt"))
+genemap2_reduced_path = str(files(BASE_PATH).joinpath("genemap2_reduced.txt"))
 
 # HPO paths
-hpoterms_reduced_path = str(BASE_PATH / "demo/resources/reduced.hpo.obo")
-genes_to_phenotype_reduced_path = str(BASE_PATH / "demo/resources/genes_to_phenotype_reduced.txt")
-phenotype_to_genes_reduced_path = str(BASE_PATH / "demo/resources/phenotype_to_genes_reduced.txt")
-hpo_terms_def_path = str(BASE_PATH / "demo/resources/hpo_terms.csv")
-
-# Additional paths
-madeline_path = str(BASE_PATH / "demo/madeline.xml")
+hpoterms_reduced_path = str(files(BASE_PATH).joinpath("reduced.hpo.obo"))
+genes_to_phenotype_reduced_path = str(files(BASE_PATH).joinpath("genes_to_phenotype_reduced.txt"))
+phenotype_to_genes_reduced_path = str(files(BASE_PATH).joinpath("phenotype_to_genes_reduced.txt"))
+hpo_terms_def_path = str(files(BASE_PATH).joinpath("hpo_terms.csv"))
 
 demo_files = {
     "exac_path": exac_reduced_path,

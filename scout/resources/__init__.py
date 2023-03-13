@@ -1,12 +1,12 @@
-import importlib_resources
+from importlib_resources import files
 
-BASE_PATH = importlib_resources.files("scout")
+BASE_PATH = "scout.reources"
 
 ###### Paths ######
 
 # Cytoband path
-cytobands_37_path = str(BASE_PATH / "resources/cytoBand_hg19.txt.gz")
-cytobands_38_path = str(BASE_PATH / "resources/cytoBand_hg38.txt.gz")
+cytobands_37_path = str(files(BASE_PATH).joinpath("cytoBand_hg19.txt.gz"))
+cytobands_38_path = str(files(BASE_PATH).joinpath("cytoBand_hg38.txt.gz"))
 
 cytoband_files = {
     "37": cytobands_37_path,
