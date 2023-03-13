@@ -6,7 +6,6 @@ import logging
 from flask import (
     Blueprint,
     Response,
-    current_app,
     escape,
     flash,
     redirect,
