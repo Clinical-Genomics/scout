@@ -31,6 +31,6 @@ def panels(institute):
                 str(panel_obj["version"]),
                 len(panel_obj["genes"]),
                 panel_obj.get("hidden", False),
-                str(panel_obj["date"].strftime("%Y-%m-%d")),
+                str(panel_obj["date"].strftime(DATE_DAY_FORMATTER)),
             )
         )

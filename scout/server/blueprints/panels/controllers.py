@@ -6,6 +6,7 @@ from flask import flash, redirect
 from flask_login import current_user
 
 from scout.build.panel import build_panel
+from scout.constants import DATE_DAY_FORMATTER
 from scout.parse.panel import parse_genes
 from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
@@ -13,7 +14,6 @@ from scout.server.extensions import store
 LOG = logging.getLogger(__name__)
 
 INHERITANCE_MODELS = ["ar", "ad", "mt", "xr", "xd", "x", "y"]
-DATETIME_FORMATTER = "%Y-%m-%d"
 
 
 def shall_display_panel(panel_obj, user):
@@ -319,7 +319,7 @@ def downloaded_panel_name(panel_obj, format) -> str:
         [
             panel_obj["panel_name"],
             str(panel_obj["version"]),
-            dt.datetime.now().strftime(DATETIME_FORMATTER),
+            dt.datetime.now().strftime(DATE_DAY_FORMATTER),
             f"scout.{format}",
         ]
     )
