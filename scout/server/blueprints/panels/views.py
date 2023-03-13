@@ -277,7 +277,7 @@ def panel_export_txt(panel_id):
     )
 
 
-@panels_bp.route("/panels/export-panel-pdf/<panel_id>", methods=["GET", "POST"])
+@panels_bp.route("/panels/export-panel-pdf/<panel_id>", methods=["GET"])
 def panel_export_pdf(panel_id):
     """Export panel to PDF file"""
     panel_obj = store.panel(panel_id)
@@ -305,7 +305,7 @@ def panel_export_case_hits(panel_id):
         institute_id, case_name = request.form.get("case_name").strip().split(" - ")
     except ValueError:
         flash(
-            "Could not parse case name, plase use format: 'cust000 - 643594' or use typing suggestions",
+            "Could not parse case name, please use format: 'cust000 - 643594' or use typing suggestions",
             "warning",
         )
         return redirect(request.referrer)

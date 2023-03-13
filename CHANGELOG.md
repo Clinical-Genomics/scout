@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show comment badges in related comments tables on general report
 - Updated version of several GitHub actions
 - Migrate from deprecated `pkg_resources` lib to `importlib_resources`
+- Removed duplicated test
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
 - Visibility of SV type in ClinVar submission form
