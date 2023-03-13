@@ -307,11 +307,11 @@ def new_panel(
 
 
 def downloaded_panel_name(panel_obj, format) -> str:
-    """Return a string describing the gene panel to be downloaded
+    """Return a string with the file name to be downloaded
 
     Args:
-        panel_obj(dict): n
-        format(str): pdf or csv
+        panel_obj(dict): scout.models.panel.gene_panel
+        format(str): "pdf" or "csv"
     Returns:
         a string containing the string describing the panel
     """
