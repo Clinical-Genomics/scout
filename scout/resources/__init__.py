@@ -1,16 +1,12 @@
-import pkg_resources
+from importlib_resources import files
 
-###### Files ######
-
-# Cytoband
-cytoband_hg19_file = "resources/cytoBand_hg19.txt.gz"
-cytoband_hg38_file = "resources/cytoBand_hg38.txt.gz"
+BASE_PATH = "scout.resources"
 
 ###### Paths ######
 
 # Cytoband path
-cytobands_37_path = pkg_resources.resource_filename("scout", cytoband_hg19_file)
-cytobands_38_path = pkg_resources.resource_filename("scout", cytoband_hg38_file)
+cytobands_37_path = str(files(BASE_PATH).joinpath("cytoBand_hg19.txt.gz"))
+cytobands_38_path = str(files(BASE_PATH).joinpath("cytoBand_hg38.txt.gz"))
 
 cytoband_files = {
     "37": cytobands_37_path,
