@@ -127,7 +127,7 @@ def test_delete_panel(app, real_panel_database):
         assert panel_obj.get("hidden")
 
 
-def test_panels(app, institute_obj):
+def test_panels(app):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
