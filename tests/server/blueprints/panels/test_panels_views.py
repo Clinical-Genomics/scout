@@ -127,7 +127,7 @@ def test_delete_panel(app, real_panel_database):
         assert panel_obj.get("hidden")
 
 
-def test_panels(app, institute_obj):
+def test_panels(app):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -155,7 +155,7 @@ def test_panel_export(client, real_panel_database):
     assert resp.status_code == 200
 
 
-def test_panel_export_case_hits(client, real_panel_database):
+def test_panel_export_case_hits(app, real_panel_database):
     """Test function used for exporting all genes with variant hits for a case"""
 
     # GIVEN a case and a gene panel in the database
@@ -163,14 +163,19 @@ def test_panel_export_case_hits(client, real_panel_database):
     panel_obj = adapter.panel_collection.find_one()
     case_obj = adapter.case_collection.find_one()
 
-    # WHEN downloading the case variants hits report
-    form_data = {"case_name": " - ".join([case_obj["owner"], case_obj["display_name"]])}
-    resp = client.post(url_for("panels.panel_export", panel_id=panel_obj["_id"]), data=form_data)
+    # GIVEN an initialized app and a valid user
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
 
-    # THEN the response should be successful
-    assert resp.status_code == 200
-    # And should download a PDF file
-    assert resp.mimetype == "application/pdf"
+        # WHEN downloading the case variants hits report
+        form_data = {"case_name": " - ".join([case_obj["owner"], case_obj["display_name"]])}
+        resp = client.post(
+            url_for("panels.panel_export_case_hits", panel_id=panel_obj["_id"]), data=form_data
+        )
+        # THEN the response should be successful
+        assert resp.status_code == 200
+        # And should download a PDF file
+        assert resp.mimetype == "application/pdf"
 
 
 def test_gene_edit(client, real_panel_database):
