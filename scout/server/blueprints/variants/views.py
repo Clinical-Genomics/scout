@@ -3,7 +3,7 @@ import io
 import logging
 
 import pymongo
-from flask import Blueprint, flash, redirect, request, url_for
+from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
 
@@ -126,6 +126,8 @@ def variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
+    show_dismiss_block = controllers.get_show_dismiss_block()
+
     data = controllers.variants(
         store, institute_obj, case_obj, variants_query, result_size, page, query_form=form.data
     )
@@ -147,6 +149,7 @@ def variants(institute_id, case_name):
         cytobands=cytobands,
         page=page,
         expand_search=expand_search,
+        show_dismiss_block=show_dismiss_block,
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -553,3 +556,10 @@ def upload_panel(institute_id, case_name):
         url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
         code=307,
     )
+
+
+@variants_bp.route("/variants/toggle_show_dismiss_block", methods=["GET"])
+def toggle_show_dismiss_block():
+    """Endpoint to toggle the show dismiss block session variable."""
+    session["show_dismiss_block"] = not session.get("show_dismiss_block")
+    return f"Toggled to {session['show_dismiss_block']}"
