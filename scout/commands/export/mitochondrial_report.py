@@ -6,7 +6,7 @@ import click
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
-from scout.constants import MT_EXPORT_HEADER
+from scout.constants import DATE_DAY_FORMATTER, MT_EXPORT_HEADER
 from scout.export.variant import export_mt_variants
 from scout.server.extensions import store
 
@@ -52,7 +52,7 @@ def mt_report(case_id, test, outpath=None):
         LOG.warning("There are no MT variants associated to case {} in database!".format(case_id))
         raise click.Abort()
 
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
 
     # set up outfolder
     if not outpath:

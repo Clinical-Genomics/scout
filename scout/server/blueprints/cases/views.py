@@ -23,7 +23,7 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CUSTOM_CASE_REPORTS
+from scout.constants import CUSTOM_CASE_REPORTS, DATE_DAY_FORMATTER
 from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
@@ -249,7 +249,7 @@ def pdf_case_report(institute_id, case_name):
     file_name = "_".join(
         [
             case_obj["display_name"],
-            datetime.datetime.now().strftime("%Y-%m-%d"),
+            datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
             "scout_report.pdf",
         ]
     )
@@ -276,7 +276,7 @@ def mt_report(institute_id, case_name):
 
         shutil.rmtree(temp_excel_dir)
 
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
+        today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
         return send_file(
             data,
             mimetype="application/zip",
@@ -377,7 +377,7 @@ def phenotype_export(institute_id, case_name):
     file_name = "_".join(
         [
             case_obj["display_name"],
-            datetime.datetime.now().strftime("%Y-%m-%d"),
+            datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
             "scout_phenopacket.json",
         ]
     )
@@ -735,7 +735,7 @@ def custom_report(institute_id, case_name, report_type):
                 file_name = "_".join(
                     [
                         case_obj["display_name"],
-                        datetime.datetime.now().strftime("%Y-%m-%d"),
+                        datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
                         ".".join([report_type, "pdf"]),
                     ]
                 )
@@ -927,7 +927,7 @@ def download_hpo_genes(institute_id, case_name, category):
     file_name = "_".join(
         [
             case_obj["display_name"],
-            datetime.datetime.now().strftime("%Y-%m-%d"),
+            datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
             category,
             "dynamic_phenotypes.pdf",
         ]
