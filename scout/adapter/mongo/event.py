@@ -4,6 +4,8 @@ from datetime import datetime
 import pymongo
 from bson import ObjectId
 
+from scout.constants import DATE_DAY_FORMATTER
+
 from .case_events import CaseEventHandler
 from .variant_events import VariantEventHandler
 
@@ -34,7 +36,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         }  # Return only events created by given user
         add_fields = {
             "$addFields": {
-                "yearMonthDay": {"$dateToString": {"format": "%Y-%m-%d", "date": "$updated_at"}},
+                "yearMonthDay": {
+                    "$dateToString": {"format": DATE_DAY_FORMATTER, "date": "$updated_at"}
+                },
             }
         }  # Create an additional field: yearMonthDay to group and display events better later
         group = {
