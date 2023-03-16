@@ -283,7 +283,7 @@ def sv_variants(institute_id, case_name):
     controllers.populate_chrom_choices(form, case_obj)
 
     genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
-    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+    cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
