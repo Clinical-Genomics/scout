@@ -305,20 +305,20 @@ def sv_variants(institute_id, case_name):
         "",
     ]
     return dict(
-        institute=institute_obj,
         case=case_obj,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        variant_type=variant_type,
-        form=form,
-        filters=available_filters,
         cytobands=cytobands,
-        severe_so_terms=SEVERE_SO_TERMS,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=expand_search,
+        filters=available_filters,
+        form=form,
+        institute=institute_obj,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        expand_search=expand_search,
         result_size=result_size,
+        severe_so_terms=SEVERE_SO_TERMS,
         show_dismiss_block=show_dismiss_block,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
         **data,
     )
 
@@ -454,7 +454,7 @@ def cancer_sv_variants(institute_id, case_name):
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
-    if request.form.getlist("dismiss"):  # dismiss a list of variants
+    if "dismiss_submit" in request.form:  # dismiss a list of variants
         controllers.dismiss_variant_list(
             store,
             institute_obj,
@@ -500,24 +500,24 @@ def cancer_sv_variants(institute_id, case_name):
         "",
     ]
     return dict(
-        institute=institute_obj,
         case=case_obj,
+        cancer_tier_options=CANCER_TIER_OPTIONS,
+        cytobands=cytobands,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        variant_type=variant_type,
-        form=form,
-        filters=available_filters,
-        severe_so_terms=SEVERE_SO_TERMS,
-        cancer_tier_options=CANCER_TIER_OPTIONS,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        cytobands=cytobands,
-        page=page,
         expand_search=expand_search,
+        filters=available_filters,
+        form=form,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        page=page,
         result_size=result_size,
+        severe_so_terms=SEVERE_SO_TERMS,
         show_dismiss_block=show_dismiss_block,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
         **data,
     )
 
