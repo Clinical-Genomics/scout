@@ -17,7 +17,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show comment badges in related comments tables on general report
 - Updated version of several GitHub actions
 - Migrate from deprecated `pkg_resources` lib to `importlib_resources`
-- Dismiss bar on variantS pages is thinner and can now be closed. Reload to open.
+- Dismiss bar on variantS pages is thinner.
+- Dismiss bar on variantS pages can be toggled open or closed for the duration of a login session.
 ### Fixed
 - Fixed Sanger order / Cancel order modal close buttons
 - Visibility of SV type in ClinVar submission form
