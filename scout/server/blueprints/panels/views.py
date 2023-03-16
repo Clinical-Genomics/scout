@@ -327,7 +327,7 @@ def panel_export_case_hits(panel_id):
             str(data["panel"]["version"]),
             institute_id,
             case_name,
-            datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
+            now,
             "scout.pdf",
         ]
     )
