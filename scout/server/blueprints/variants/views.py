@@ -46,7 +46,6 @@ def variants(institute_id, case_name):
     page = int(Markup.escape(request.form.get("page", "1")))
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
@@ -162,11 +161,11 @@ def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
+    category = "str"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
     variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
 
-    category = "str"
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     user_obj = store.user(current_user.email)
@@ -250,12 +249,11 @@ def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
+    category = "sv"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
-    category = "sv"
-    # Define case and institute objects
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
@@ -273,7 +271,6 @@ def sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
     # populate filters dropdown
@@ -285,9 +282,10 @@ def sv_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
     cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
 
-    form = controllers.update_form_hgnc_symbols(store, case_obj, form)
+    controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
@@ -330,10 +328,10 @@ def sv_variants(institute_id, case_name):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     user_obj = store.user(current_user.email)
@@ -446,12 +444,11 @@ def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
+    category = "cancer_sv"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
-    category = "cancer_sv"
-    # Define case and institute objects
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
