@@ -6,6 +6,7 @@ from flask import flash, redirect
 from flask_login import current_user
 
 from scout.build.panel import build_panel
+from scout.constants import DATE_DAY_FORMATTER
 from scout.parse.panel import parse_genes
 from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
@@ -305,7 +306,26 @@ def new_panel(
     return panel_id
 
 
-def panel_export(store, panel_obj):
+def downloaded_panel_name(panel_obj, format) -> str:
+    """Return a string with the file name to be downloaded
+
+    Args:
+        panel_obj(dict): scout.models.panel.gene_panel
+        format(str): "pdf" or "txt"
+    Returns:
+        a string describing the panel
+    """
+    return "_".join(
+        [
+            panel_obj["panel_name"],
+            str(panel_obj["version"]),
+            dt.datetime.now().strftime(DATE_DAY_FORMATTER),
+            f"scout.{format}",
+        ]
+    )
+
+
+def panel_data(store, panel_obj):
     """Preprocess a panel of genes."""
     panel_obj["institute"] = store.institute(panel_obj["institute"])
     full_name = "{}({})".format(panel_obj["display_name"], panel_obj["version"])

@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to mark a ClinVar submission as submitted
 - Docs on how to create/update the PanelApp green genes as a system admin
 - `individual_id`-parameter to both Gens links
+- Download a gene panel in CSV format from gene panel page
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
 - Improved sorting of ClinVar submissions

@@ -16,6 +16,8 @@ from flask import (
 )
 from flask_login import current_user
 
+from scout.constants import DATE_DAY_FORMATTER
+from scout.export.panel import export_gene_panels
 from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
 from scout.server.utils import (
@@ -32,7 +34,6 @@ from . import controllers
 from .forms import PanelGeneForm
 
 LOG = logging.getLogger(__name__)
-DATETIME_FORMATTER = "%Y-%m-%d"
 panels_bp = Blueprint("panels", __name__, template_folder="templates")
 
 
@@ -252,23 +253,39 @@ def panel_restore(panel_id):
     return redirect(url_for("panels.panels", panel_id=panel_obj["_id"]))
 
 
-@panels_bp.route("/panels/export-panel/<panel_id>", methods=["GET", "POST"])
-def panel_export(panel_id):
+@panels_bp.route("/panels/export-panel-txt/<panel_id>", methods=["GET"])
+def panel_export_txt(panel_id):
+    """Download a gene panel in txt format"""
+    panel_obj = store.panel(panel_id)
+    file_name = controllers.downloaded_panel_name(panel_obj=panel_obj, format="txt")
+
+    lines = export_gene_panels(
+        adapter=store,
+        panels=[panel_obj["panel_name"]],
+        version=panel_obj["version"],
+    )
+
+    def generate():
+        for row in lines:
+            yield f"{row}\n"
+
+    return Response(
+        generate(),
+        mimetype="text/txt",
+        headers={"Content-Disposition": f"attachment;filename={file_name}"},
+    )
+
+
+@panels_bp.route("/panels/export-panel-pdf/<panel_id>", methods=["GET"])
+def panel_export_pdf(panel_id):
     """Export panel to PDF file"""
     panel_obj = store.panel(panel_id)
-    data = controllers.panel_export(store, panel_obj)
-    data["report_created_at"] = datetime.datetime.now().strftime(DATETIME_FORMATTER)
+    data = controllers.panel_data(store, panel_obj)
+    data["report_created_at"] = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     html_report = render_template("panels/panel_pdf_simple.html", **data)
 
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
-    file_name = "_".join(
-        [
-            data["panel"]["panel_name"],
-            str(data["panel"]["version"]),
-            datetime.datetime.now().strftime(DATETIME_FORMATTER),
-            "scout.pdf",
-        ]
-    )
+    file_name = controllers.downloaded_panel_name(panel_obj=panel_obj, format="pdf")
     return send_file(
         bytes_file,
         download_name=file_name,
@@ -287,7 +304,7 @@ def panel_export_case_hits(panel_id):
         institute_id, case_name = request.form.get("case_name").strip().split(" - ")
     except ValueError:
         flash(
-            "Could not parse case name, plase use format: 'cust000 - 643594' or use typing suggestions",
+            "Could not parse case name, please use format: 'cust000 - 643594' or use typing suggestions",
             "warning",
         )
         return redirect(request.referrer)
@@ -300,7 +317,7 @@ def panel_export_case_hits(panel_id):
         )
         return redirect(request.referrer)
     data = controllers.panel_export_case_hits(panel_id, institute_obj, case_obj)
-    now = datetime.datetime.now().strftime(DATETIME_FORMATTER)
+    now = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     data["report_created_at"] = now
     html_report = render_template("panels/panel_pdf_case_hits.html", **data)
     bytes_file = html_to_pdf_file(html_report, "portrait", 300)
@@ -310,7 +327,7 @@ def panel_export_case_hits(panel_id):
             str(data["panel"]["version"]),
             institute_id,
             case_name,
-            datetime.datetime.now().strftime(DATETIME_FORMATTER),
+            now,
             "scout.pdf",
         ]
     )

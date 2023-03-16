@@ -21,6 +21,7 @@ from scout.constants import (
     CASE_REPORT_CASE_IND_FEATURES,
     CASE_REPORT_VARIANT_TYPES,
     CUSTOM_CASE_REPORTS,
+    DATE_DAY_FORMATTER,
     MITODEL_HEADER,
     MT_COV_STATS_HEADER,
     MT_EXPORT_HEADER,
@@ -616,7 +617,7 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         written_files(int): the number of files written to temp_excel_dir
 
     """
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     samples = case_obj.get("individuals")
     file_header = MT_EXPORT_HEADER
     coverage_stats = None
