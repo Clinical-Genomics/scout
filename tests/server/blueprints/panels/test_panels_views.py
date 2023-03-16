@@ -143,16 +143,30 @@ def test_panels(app):
         assert resp.status_code == 200
 
 
-# This test is slow since pdf rendering is slow
-def test_panel_export(client, real_panel_database):
+def test_gene_panel_export_txt(client, real_panel_database):
+    """Test the endpoint that exports gene panels in TXT format"""
+
     adapter = real_panel_database
     # GIVEN a panel in the database
     panel_obj = adapter.panel_collection.find_one()
-    assert True
-    # WHEN accessing the panel view
-    resp = client.get(url_for("panels.panel_export", panel_id=panel_obj["_id"]))
-    # THEN it should display the panel with all the genes
+    # WHEN using the panels.panel_export_txt endpoint
+    resp = client.get(url_for("panels.panel_export_txt", panel_id=panel_obj["_id"]))
+    # THEN it should download the panel in the right format
     assert resp.status_code == 200
+    assert resp.mimetype == "text/txt"
+
+
+def test_panel_export_pdf(client, real_panel_database):
+    """Test the endpoint that exports gene panels in PDF format"""
+
+    adapter = real_panel_database
+    # GIVEN a panel in the database
+    panel_obj = adapter.panel_collection.find_one()
+    # WHEN using the panels.panel_export_pdf endpoint
+    resp = client.get(url_for("panels.panel_export_pdf", panel_id=panel_obj["_id"]))
+    # THEN it should download the panel in PDF format
+    assert resp.status_code == 200
+    assert resp.mimetype == "application/pdf"
 
 
 def test_panel_export_case_hits(app, real_panel_database):

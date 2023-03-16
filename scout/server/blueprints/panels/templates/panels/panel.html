@@ -105,7 +105,8 @@
       {% endif %}
       <li class="list-group-item">
         <div class="d-flex justify-content-between">
-          <a href="{{ url_for('panels.panel_export', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
+          <a href="{{ url_for('panels.panel_export_pdf', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to PDF</a>
+          <a data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="Download this panel in a format ready to be imported in Scout as a new gene panel." href="{{ url_for('panels.panel_export_txt', panel_id=panel._id) }}" class="btn btn-secondary btn-sm" download>Export to TXT</a>
           <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#exportCasePanelHits">
             Case specific STR and SMN extent PDF
           </button>
