@@ -3,7 +3,7 @@ import io
 import logging
 
 import pymongo
-from flask import Blueprint, flash, redirect, request, url_for
+from flask import Blueprint, flash, redirect, request, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
 
@@ -46,7 +46,6 @@ def variants(institute_id, case_name):
     page = int(Markup.escape(request.form.get("page", "1")))
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
@@ -147,6 +146,7 @@ def variants(institute_id, case_name):
         cytobands=cytobands,
         page=page,
         expand_search=expand_search,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -159,11 +159,11 @@ def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
+    category = "str"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
     variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
 
-    category = "str"
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     user_obj = store.user(current_user.email)
@@ -233,6 +233,7 @@ def str_variants(institute_id, case_name):
         filters=available_filters,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
@@ -244,12 +245,11 @@ def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
+    category = "sv"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
-    category = "sv"
-    # Define case and institute objects
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
@@ -267,7 +267,6 @@ def sv_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-
     form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
 
     # populate filters dropdown
@@ -279,9 +278,10 @@ def sv_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    cytobands = store.cytoband_by_chrom(genome_build)
 
-    form = controllers.update_form_hgnc_symbols(store, case_obj, form)
+    controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
 
@@ -299,19 +299,20 @@ def sv_variants(institute_id, case_name):
         "",
     ]
     return dict(
-        institute=institute_obj,
         case=case_obj,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        variant_type=variant_type,
-        form=form,
-        filters=available_filters,
         cytobands=cytobands,
-        severe_so_terms=SEVERE_SO_TERMS,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=expand_search,
+        filters=available_filters,
+        form=form,
+        institute=institute_obj,
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        expand_search=expand_search,
         result_size=result_size,
+        severe_so_terms=SEVERE_SO_TERMS,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
         **data,
     )
 
@@ -321,10 +322,10 @@ def sv_variants(institute_id, case_name):
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
     category = "cancer"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     user_obj = store.user(current_user.email)
@@ -422,6 +423,7 @@ def cancer_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=expand_search,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -434,18 +436,17 @@ def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
 
     page = int(Markup.escape(request.form.get("page", "1")))
+    category = "cancer_sv"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
-    category = "cancer_sv"
-    # Define case and institute objects
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
         case_obj["hpo_clinical_filter"] = True
 
-    if request.form.getlist("dismiss"):  # dismiss a list of variants
+    if "dismiss_submit" in request.form:  # dismiss a list of variants
         controllers.dismiss_variant_list(
             store,
             institute_obj,
@@ -489,23 +490,24 @@ def cancer_sv_variants(institute_id, case_name):
         "",
     ]
     return dict(
-        institute=institute_obj,
         case=case_obj,
+        cancer_tier_options=CANCER_TIER_OPTIONS,
+        cytobands=cytobands,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        variant_type=variant_type,
-        form=form,
-        filters=available_filters,
-        severe_so_terms=SEVERE_SO_TERMS,
-        cancer_tier_options=CANCER_TIER_OPTIONS,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        cytobands=cytobands,
-        page=page,
         expand_search=expand_search,
+        filters=available_filters,
+        form=form,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        page=page,
         result_size=result_size,
+        severe_so_terms=SEVERE_SO_TERMS,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
         **data,
     )
 
@@ -553,3 +555,10 @@ def upload_panel(institute_id, case_name):
         url_for(".variants", institute_id=institute_id, case_name=case_name, **form.data),
         code=307,
     )
+
+
+@variants_bp.route("/variants/toggle_show_dismiss_block", methods=["GET"])
+def toggle_show_dismiss_block():
+    """Endpoint to toggle the show dismiss block session variable."""
+    session["show_dismiss_block"] = not session.get("show_dismiss_block")
+    return f"Toggled to {session['show_dismiss_block']}"
