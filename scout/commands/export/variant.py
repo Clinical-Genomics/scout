@@ -7,7 +7,7 @@ import click
 from flask.cli import with_appcontext
 from xlsxwriter import Workbook
 
-from scout.constants import CALLERS
+from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
 from scout.export.variant import export_variants, export_verified_variants
 from scout.server.extensions import store
@@ -60,7 +60,7 @@ def verified(collaborator, test, outpath=None):
 
     document_lines = export_verified_variants(verified_vars, unique_callers)
 
-    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
     document_name = ".".join(["verified_variants", collaborator, today]) + ".xlsx"
 
     # If this was a test and lines are created return success
