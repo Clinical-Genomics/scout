@@ -151,9 +151,9 @@
           </thead>
           <tbody>
             {% for gene in variant.genes %}
-              {% if gene.comment %}
-                <tr><td>{{ gene.hgnc_symbol }}</td><td>{{ gene.comment }}</td></tr>
-              {% endif %}
+              {% for comment in gene.comment %}
+                <tr><td>{{ gene.hgnc_symbol }}</td><td>{{ comment }}</td></tr>
+              {% endfor %}
             {% endfor %}
           </tbody>
         </table>

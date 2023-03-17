@@ -7,7 +7,7 @@ LOG = logging.getLogger(__name__)
 
 
 def add_panel_specific_gene_info(panel_info):
-    """Adds manualy curated information from a gene panel to a gene
+    """Adds manually curated information from a gene panel to a gene
 
     The panel info is a list of dictionaries since there can be multiple infos about a panel.
 
@@ -25,7 +25,7 @@ def add_panel_specific_gene_info(panel_info):
     manual_penetrance = False
     mosaicism = False
     manual_inheritance = set()
-    comment = ""
+    comment = list()
 
     # We need to loop since there can be information from multiple panels
     for gene_info in panel_info:
@@ -43,10 +43,9 @@ def add_panel_specific_gene_info(panel_info):
             mosaicism = True
 
         if gene_info.get("comment"):
-            if comment == "":
-                comment = gene_info.get("comment") or ""
-            elif gene_info.get("comment"):
-                comment += " - {}".format(gene_info.get("comment"))
+            panel_gene_comment = gene_info.get("comment")
+            if panel_gene_comment:
+                comment.append(panel_gene_comment)
 
         manual_inheritance.update(gene_info.get("inheritance_models", []))
 
