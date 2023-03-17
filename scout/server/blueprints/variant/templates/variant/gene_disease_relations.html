@@ -109,6 +109,7 @@
           </tr>
         </thead>
         <tbody>
+          {% set ns = namespace(comments_exist=false) %}
           {% for gene in variant.genes %}
             <tr>
               <td>{{ gene.hgnc_symbol }}</td>
@@ -137,9 +138,26 @@
                 {% endif %}
               </td>
             </tr>
+            {% if gene.comment %}
+              {% set ns.comments_exist = true %}
+            {% endif %}
           {% endfor %}
         </tbody>
       </table>
+      {% if ns.comments_exist %}
+        <table class="table table-bordered table-sm" aria-label="Gene comments in case gene panels">
+          <thead class="thead table-light">
+            <th>Gene</th><th>Panel comments</th>
+          </thead>
+          <tbody>
+            {% for gene in variant.genes %}
+              {% for comment in gene.comment %}
+                <tr><td>{{ gene.hgnc_symbol }}</td><td>{{ comment }}</td></tr>
+              {% endfor %}
+            {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
     </div>
   </div>
 {% endmacro %}

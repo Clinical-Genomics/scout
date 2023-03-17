@@ -9,6 +9,8 @@ panel_gene = dict(
     mosaicism=bool,
     database_entry_version=str,
     inheritance_models=list,
+    custom_inheritance_models=list,
+    comment=str,  # panel context gene comment
 )
 
 
