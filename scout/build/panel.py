@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-
 from datetime import datetime as datetime
 
-from scout.exceptions import IntegrityError
 from scout.constants import VALID_MODELS
+from scout.exceptions import IntegrityError
 
 LOG = logging.getLogger(__name__)
 
@@ -26,6 +25,7 @@ def build_gene(gene_info, adapter):
             reduced_penetrance = bool,
             mosaicism = bool,
             database_entry_version = str,
+            comment = str, # panel level gene comment str
 
             ar = bool,
             ad = bool,
@@ -70,14 +70,13 @@ def build_gene(gene_info, adapter):
     if gene_info.get("transcripts"):
         gene_obj["disease_associated_transcripts"] = gene_info["transcripts"]
 
-    if gene_info.get("reduced_penetrance"):
-        gene_obj["reduced_penetrance"] = True
+    for gene_member_variable_str in ["comment", "database_entry_version"]:
+        if gene_info.get(gene_member_variable_str):
+            gene_obj[gene_member_variable_str] = gene_info[gene_member_variable_str]
 
-    if gene_info.get("mosaicism"):
-        gene_obj["mosaicism"] = True
-
-    if gene_info.get("database_entry_version"):
-        gene_obj["database_entry_version"] = gene_info["database_entry_version"]
+    for gene_member_variable_bool in ["reduced_penetrance", "mosaicism"]:
+        if gene_info.get(gene_member_variable_bool):
+            gene_obj[gene_member_variable_bool] = True
 
     if gene_info.get("inheritance_models"):
         gene_obj["inheritance_models"] = []

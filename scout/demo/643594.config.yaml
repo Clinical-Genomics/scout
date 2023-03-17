@@ -123,7 +123,7 @@ delivery_report: scout/demo/delivery_report.html
 gene_fusion_report: scout/demo/draw-fusions-example.pdf
 
 default_gene_panels: [panel1]
-gene_panels: [panel1]
+gene_panels: [panel1, test2]
 
 # meta data
 rank_model_version: '1.20'
