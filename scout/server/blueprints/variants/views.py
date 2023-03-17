@@ -125,8 +125,6 @@ def variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    show_dismiss_block = controllers.get_show_dismiss_block()
-
     data = controllers.variants(
         store, institute_obj, case_obj, variants_query, result_size, page, query_form=form.data
     )
@@ -148,7 +146,7 @@ def variants(institute_id, case_name):
         cytobands=cytobands,
         page=page,
         expand_search=expand_search,
-        show_dismiss_block=show_dismiss_block,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -216,8 +214,6 @@ def str_variants(institute_id, case_name):
 
     result_size = store.count_variants(case_obj["_id"], query, None, category)
 
-    show_dismiss_block = controllers.get_show_dismiss_block()
-
     if request.form.get("export"):
         return controllers.download_str_variants(case_obj, variants_query)
 
@@ -237,7 +233,7 @@ def str_variants(institute_id, case_name):
         filters=available_filters,
         expand_search=str(request.method == "POST"),
         result_size=result_size,
-        show_dismiss_block=show_dismiss_block,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
     )
@@ -295,8 +291,6 @@ def sv_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    show_dismiss_block = controllers.get_show_dismiss_block()
-
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
@@ -316,7 +310,7 @@ def sv_variants(institute_id, case_name):
         page=page,
         result_size=result_size,
         severe_so_terms=SEVERE_SO_TERMS,
-        show_dismiss_block=show_dismiss_block,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
         **data,
@@ -407,8 +401,6 @@ def cancer_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    show_dismiss_block = controllers.get_show_dismiss_block()
-
     data = controllers.cancer_variants(
         store,
         institute_id,
@@ -431,7 +423,7 @@ def cancer_variants(institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=expand_search,
-        show_dismiss_block=show_dismiss_block,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         **data,
@@ -490,8 +482,6 @@ def cancer_sv_variants(institute_id, case_name):
     if request.form.get("export"):
         return controllers.download_variants(store, case_obj, variants_query)
 
-    show_dismiss_block = controllers.get_show_dismiss_block()
-
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
@@ -515,7 +505,7 @@ def cancer_sv_variants(institute_id, case_name):
         page=page,
         result_size=result_size,
         severe_so_terms=SEVERE_SO_TERMS,
-        show_dismiss_block=show_dismiss_block,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
         **data,
