@@ -3,7 +3,7 @@ import re
 from datetime import date
 
 import bson
-from flask import Response, flash, url_for
+from flask import Response, flash, session, url_for
 from flask_login import current_user
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
@@ -1760,3 +1760,17 @@ def dismiss_variant_list(store, institute_obj, case_obj, link_page, variants_lis
         store.update_dismiss_variant(
             institute_obj, case_obj, user_obj, link, variant_obj, dismiss_reasons
         )
+
+
+def get_show_dismiss_block():
+    """Return the contents of this user session show dismiss block setting.
+    The first time around it may be undefined / None, and in that case we set it to True
+    to default to showing the dismiss bar.
+    """
+
+    show_dismiss_block = session.get("show_dismiss_block")
+    if show_dismiss_block is None:
+        show_dismiss_block = True
+        session["show_dismiss_block"] = show_dismiss_block
+
+    return show_dismiss_block
