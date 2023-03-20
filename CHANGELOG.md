@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Docs on how to create/update the PanelApp green genes as a system admin
 - `individual_id`-parameter to both Gens links
 - Download a gene panel in TXT format from gene panel page
-- Panel gene comments: genes in panels can have comments that describe the gene in a panel context
+- Panel gene comments on variant page: genes in panels can have comments that describe the gene in a panel context
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
 - Improved sorting of ClinVar submissions
