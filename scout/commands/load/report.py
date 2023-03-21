@@ -19,7 +19,7 @@ LOG = logging.getLogger(__name__)
 def delivery_report(case_id, report_path, update):
     """Add delivery report to an existing case."""
     try:
-        update_case_report(case_id, report_path, "delivery_report")
+        update_case_report(case_id, report_path, "delivery")
         LOG.info("saved report to case!")
     except Exception as err:
         LOG.error(err)

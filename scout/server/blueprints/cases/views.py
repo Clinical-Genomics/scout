@@ -706,7 +706,6 @@ def custom_report(institute_id, case_name, report_type):
 
     report_path = None
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
     date_str = request.args.get("date")  # Provided only when downloading old delivery reports
     if date_str is None:
         report_path = case_obj.get(report_type)
@@ -725,7 +724,8 @@ def custom_report(institute_id, case_name, report_type):
         try:
             with open(os.path.abspath(report_path), "r") as html_file:
                 source_code = html_file.read()
-                if CUSTOM_CASE_REPORTS[report_type]["format"] == "YAML":
+
+                if filename.endswith(".yaml") or filename.endswith(".yml"):
                     source_code = "<html><code><pre>" + source_code + "</pre></code></html>"
 
                 bytes_file = html_to_pdf_file(source_code, "landscape", 300)
