@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Visibility of `Gene(s)` badges on SV VariantS page
+
 ## [4.65]
 ### Added
 - Option to mark a ClinVar submission as submitted
