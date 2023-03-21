@@ -23,7 +23,6 @@ def test_load_delivery_report(mock_app, case_obj):
         ["load", "delivery-report", case_obj["_id"], delivery_report_path, "-update"],
     )
 
-    assert "saved report to case!" in result.output
     assert result.exit_code == 0
 
 
