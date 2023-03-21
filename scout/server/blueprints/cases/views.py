@@ -23,7 +23,7 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import CUSTOM_CASE_REPORTS, DATE_DAY_FORMATTER
+from scout.constants import DATE_DAY_FORMATTER
 from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
