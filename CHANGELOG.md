@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
+- Visibility of `Gene(s)` badges on SV VariantS page
 - Hide dismiss bar on SV page not working well
 
 ## [4.65]
