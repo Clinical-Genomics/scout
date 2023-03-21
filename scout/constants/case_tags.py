@@ -2,7 +2,7 @@ ANALYSIS_TYPES = ("wgs", "wes", "mixed", "unknown", "panel", "panel-umi", "exter
 
 # keys are used in the load report cli, while key_name is saved in case database documents
 CUSTOM_CASE_REPORTS = {
-    "delivery": {"key_name": "delivery_report", "format": "HTML", "pdf_export": True},
+    "delivery_report": {"key_name": "delivery_report", "format": "HTML", "pdf_export": True},
     "cnv": {"key_name": "cnv_report", "format": "PDF", "pdf_export": False},
     "cov_qc": {"key_name": "coverage_qc_report", "format": "HTML", "pdf_export": True},
     "exe_ver": {"key_name": "pipeline_version", "format": "YAML", "pdf_export": True},

@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Visibility of `Gene(s)` badges on SV VariantS page
+- Delivery report PDF download
 
 ## [4.65]
 ### Added
