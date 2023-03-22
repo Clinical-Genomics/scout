@@ -7,14 +7,14 @@ import requests
 from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 
-from scout.constants import CUSTOM_CASE_REPORTS
+from scout.constants import CUSTOM_CASE_REPORT_KEY_NAMES
 from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
 from scout.server.extensions import store
 
 TEST_TOKEN = "test_token"
 
 
-@pytest.mark.parametrize("report_types", list(CUSTOM_CASE_REPORTS.keys()))
+@pytest.mark.parametrize("report_types", list(CUSTOM_CASE_REPORT_KEY_NAMES.keys()))
 def test_custom_report(app, institute_obj, case_obj, report_types):
     """Test the function that serves custom report data with all types of report in CUSTOM_CASE_REPORTS"""
 
