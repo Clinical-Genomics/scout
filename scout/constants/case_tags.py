@@ -33,6 +33,13 @@ CUSTOM_CASE_REPORTS = {
     },
 }
 
+CUSTOM_CASE_REPORT_KEY_NAMES = dict(
+    [
+        (CUSTOM_CASE_REPORTS[key_value]["key_name"], key_value)
+        for key_value in CUSTOM_CASE_REPORTS.keys()
+    ]
+)
+
 CASE_REPORT_CASE_FEATURES = [
     "display_name",
     "created_at",

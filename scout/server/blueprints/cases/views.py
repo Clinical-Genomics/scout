@@ -23,7 +23,7 @@ from flask import (
 )
 from flask_login import current_user
 
-from scout.constants import DATE_DAY_FORMATTER
+from scout.constants import CUSTOM_CASE_REPORT_KEY_NAMES, CUSTOM_CASE_REPORTS, DATE_DAY_FORMATTER
 from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
@@ -725,7 +725,10 @@ def custom_report(institute_id, case_name, report_type):
             with open(os.path.abspath(report_path), "r") as html_file:
                 source_code = html_file.read()
 
-                if filename.endswith(".yaml") or filename.endswith(".yml"):
+                if (
+                    CUSTOM_CASE_REPORTS[CUSTOM_CASE_REPORT_KEY_NAMES[report_type]]["format"]
+                    == "YAML"
+                ):
                     source_code = "<html><code><pre>" + source_code + "</pre></code></html>"
 
                 bytes_file = html_to_pdf_file(source_code, "landscape", 300)
