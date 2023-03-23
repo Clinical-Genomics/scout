@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-import tempfile
 
-import pytest
-import requests
 from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 
