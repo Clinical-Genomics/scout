@@ -121,6 +121,8 @@ peddy_sex: scout/demo/643594.sex_check.csv
 
 delivery_report: scout/demo/delivery_report.html
 gene_fusion_report: scout/demo/draw-fusions-example.pdf
+exe_ver: scout/demo/exe_ver.yaml
+reference_info: scout/demo/reference_info.yaml
 
 default_gene_panels: [panel1]
 gene_panels: [panel1]
