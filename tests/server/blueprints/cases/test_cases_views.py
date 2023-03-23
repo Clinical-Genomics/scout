@@ -34,9 +34,8 @@ def test_custom_report(app, institute_obj, case_obj, tmp_path):
             report_format = report_specs["format"]
             pdf_export = report_specs["pdf_export"]
 
-            # GIVEN report if type value["format"]
+            # GIVEN a case that contains a report of a certain type=report_type
             tf = _create_temp_file(report_type, report_format)
-            # GIVEN that the case contains that report
             if not case_obj.get(report_type):
                 store.case_collection.update_one(
                     {"_id": case_obj["_id"]}, {"$set": {report_type: str(tf)}}
