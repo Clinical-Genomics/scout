@@ -34,6 +34,17 @@ def build_phenotype(phenotype_id, adapter):
     return phenotype
 
 
+def _populate_pipeline_info(case_obj, case_data):
+    """Populates the fields named pipeline_version and reference_info
+
+    Args:
+        case_obj(dict): scout.models.Case
+        case_data (dict): A dictionary with the relevant case information
+    """
+    if case_data.get("exe_ver"):
+        case_obj["pipeline_version"] = case_data["exe_ver"]
+
+
 def build_case(case_data, adapter):
     """Build a case object that is to be inserted to the database
 
@@ -264,6 +275,8 @@ def build_case(case_data, adapter):
 
     case_obj["vcf_files"] = case_data.get("vcf_files", {})
     case_obj["delivery_report"] = case_data.get("delivery_report")
+
+    _populate_pipeline_info(case_obj, case_data)
 
     case_obj["has_svvariants"] = False
     if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research"):
