@@ -35,7 +35,7 @@ def build_phenotype(phenotype_id, adapter):
 
 
 def _populate_pipeline_info(case_obj, case_data):
-    """Populates the fields named pipeline_version and reference_info
+    """Populates the field named pipeline_version
 
     Args:
         case_obj(dict): scout.models.Case
