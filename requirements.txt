@@ -23,6 +23,7 @@ cryptography<3.4
 defusedxml
 svglib
 cairosvg
+importlib_metadata
 importlib_resources
 
 # webapp login

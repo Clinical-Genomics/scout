@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hide dismiss bar on SV page not working well
 - Delivery report PDF download
 - Saving Pipeline version file when loading a case
+- Explicitly import importlib
 
 ## [4.65]
 ### Added
