@@ -54,7 +54,6 @@ case = dict(
     diagnosis_phenotypes=list,  # List of dictionaries with OMIM disease data
     display_name=str,  # required. This is the case name that will be shown in scout.
     dynamic_gene_list=list,  # List of genes
-    exe_ver=str,  # Path to the pipeline executable versions report file
     gene_fusion_report=str,  # Path to the gene fusions report file
     gene_fusion_report_research=str,  # Path to the gene fusions research report file
     genome_build=str,  # This should be 37 or 38
@@ -71,6 +70,7 @@ case = dict(
     panels=list,  # list of dictionaries with panel information.
     phenotype_groups=list,  # List of dictionaries with phenotype information
     phenotype_terms=list,  # List of dictionaries with phenotype information
+    pipeline_version=str,  # Path to the pipeline executable versions report file
     rank_model_version=str,
     rank_score_threshold=int,  # default=8
     rerun_requested=bool,  # default=False

@@ -5,12 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- Visibility of `Gene(s)` badges on SV VariantS page
+- Hide dismiss bar on SV page not working well
+- Delivery report PDF download
+- Saving Pipeline version file when loading a case
+- Backport compatible import of importlib metadata for old python versions (<3.8)
+
+## [4.65]
 ### Added
 - Option to mark a ClinVar submission as submitted
 - Docs on how to create/update the PanelApp green genes as a system admin
 - `individual_id`-parameter to both Gens links
-- Download a gene panel in CSV format from gene panel page
-- Panel gene comments: genes in panels can have comments that describe the gene in a panel context
+- Download a gene panel in TXT format from gene panel page
+- Panel gene comments on variant page: genes in panels can have comments that describe the gene in a panel context
 ### Changed
 - Always show each case category on caseS page, even if 0 cases in total or after current query
 - Improved sorting of ClinVar submissions
