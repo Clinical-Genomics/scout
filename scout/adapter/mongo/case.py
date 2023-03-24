@@ -941,7 +941,6 @@ class CaseHandler(object):
             - collaborators: If new collaborators these will be added to the old ones
             - coverage_qc_report: path to the static coverage and qc report file
             - delivery_report: path to the static delivery report file
-            - exe_ver: path to the pipeline executable version report file
             - gene_fusion_report: path to the gene fusions report
             - gene_fusion_report_research: path to the research gene fusions report
             - genome_build: If there is a new genome build
@@ -953,6 +952,7 @@ class CaseHandler(object):
             - mme_submission: If case was submitted to MatchMaker Exchange
             - multiqc: If there's an updated multiqc report location
             - panels: The new gene panels are added
+            - pipeline_version: path to the pipeline executable version report file
             - rank_model_version: If there is a new rank model
             - reference_info: path to the pipeline reference version report file
             - rerun_requested: Is set to False since that is probably what happened
@@ -1006,7 +1006,7 @@ class CaseHandler(object):
                 "cnv_report": case_obj.get("cnv_report"),
                 "coverage_qc_report": case_obj.get("coverage_qc_report"),
                 "delivery_report": case_obj.get("delivery_report"),
-                "exe_ver": case_obj.get("exe_ver"),
+                "pipeline_version": case_obj.get("pipeline_version"),
                 "gene_fusion_report": case_obj.get("gene_fusion_report"),
                 "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
                 "genome_build": case_obj.get("genome_build", "37"),
@@ -1053,7 +1053,7 @@ class CaseHandler(object):
         for key in [
             "custom_images",
             "cnv_report",
-            "exe_ver",
+            "pipeline_version",
             "coverage_qc_report",
             "gene_fusion_report",
             "gene_fusion_report_research",

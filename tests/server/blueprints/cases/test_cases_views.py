@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-import tempfile
 
-import pytest
-import requests
 from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 
@@ -14,46 +11,60 @@ from scout.server.extensions import store
 TEST_TOKEN = "test_token"
 
 
-@pytest.mark.parametrize("report_types", list(CUSTOM_CASE_REPORTS.keys()))
-def test_custom_report(app, institute_obj, case_obj, report_types):
+def test_custom_report(app, institute_obj, case_obj, tmp_path):
     """Test the function that serves custom report data with all types of report in CUSTOM_CASE_REPORTS"""
 
-    with tempfile.NamedTemporaryFile(suffix=".html") as tf:
-        # GIVEN that the case contains the given report (for convenience load also cancer case report types in RD demo case)
-        case_obj[report_types] = tf.name
-        store.replace_case(case_obj)
+    def _create_temp_file(report_name, format):
+        tmp_name = ".".join(
+            [report_name, format.lower()]
+        )  # examples : multiqc_rna.html, pipeline_version.yaml
+        tmp_file = tmp_path / tmp_name
+        tmp_file.touch()
+        tmp_file.write_text("content")
+        return tmp_file
 
-        # GIVEN an initialized app and a valid user and institute
-        with app.test_client() as client:
-            # GIVEN that the user could be logged in
-            client.get(url_for("auto_login"))
+    # GIVEN a user logged in an initilalized app
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+        for _, report_specs in CUSTOM_CASE_REPORTS.items():
+            report_type = report_specs["key_name"]
+            report_format = report_specs["format"]
+            pdf_export = report_specs["pdf_export"]
 
-            # WHEN displaying an HTML report:
-            resp = client.get(
-                url_for(
-                    "cases.custom_report",
-                    institute_id=institute_obj["internal_id"],
-                    case_name=case_obj["display_name"],
-                    report_type=report_types,
+            # GIVEN a case that contains a report of a certain type=report_type
+            tf = _create_temp_file(report_type, report_format)
+            if not case_obj.get(report_type):
+                store.case_collection.update_one(
+                    {"_id": case_obj["_id"]}, {"$set": {report_type: str(tf)}}
                 )
-            )
-            # THEN a successful response should be returned
-            assert resp.status_code == 200
-            assert resp.mimetype == "text/html"
-
-            # WHEN displaying a PDF report:
-            resp = client.get(
-                url_for(
-                    "cases.custom_report",
-                    institute_id=institute_obj["internal_id"],
-                    case_name=case_obj["display_name"],
-                    report_type=report_types,
-                    report_format="pdf",
+            # WHEN displaying the report in an HTML page
+            if report_format == "HTML":
+                resp = client.get(
+                    url_for(
+                        "cases.custom_report",
+                        institute_id=institute_obj["internal_id"],
+                        case_name=case_obj["display_name"],
+                        report_type=report_type,
+                    )
                 )
-            )
-            # THEN a successful response should be returned
-            assert resp.status_code == 200
-            assert resp.mimetype == "application/pdf"
+                # THEN a successful response should be returned
+                assert resp.status_code == 200
+                assert resp.mimetype == "text/html"
+
+            # WHEN report has the option to be exported in PDF format
+            if pdf_export:
+                resp = client.get(
+                    url_for(
+                        "cases.custom_report",
+                        institute_id=institute_obj["internal_id"],
+                        case_name=case_obj["display_name"],
+                        report_type=report_type,
+                        report_format="pdf",
+                    )
+                )
+                # THEN the export should work
+                assert resp.status_code == 200
+                assert resp.mimetype == "application/pdf"
 
 
 def test_add_individual_phenotype(app, institute_obj):

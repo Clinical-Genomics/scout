@@ -183,10 +183,12 @@
       {{ update_stash_filter_button_status(current_user, filters) }}
     }
 
-    $(document).ready(function(){
-      if(document.getElementById('compound_follow_filter').checked || document.getElementById('compound_rank_score').value) {
-        $('#hidecompounds').collapse('show');
-      }
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
+
+    $("#filters").change(function () {
+      {{ update_stash_filter_button_status(current_user, filters) }}
     });
 
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
@@ -204,12 +206,10 @@
       return new bootstrap.Tooltip(tooltipTriggerEl)
     })
 
-    $('select[multiple]').selectpicker({
-      width: '100%'
-    });
-
-    $("#filters").change(function () {
-      {{ update_stash_filter_button_status(current_user, filters) }}
+    $(document).ready(function(){
+      if(document.getElementById('compound_follow_filter').checked || document.getElementById('compound_rank_score').value) {
+        $('#hidecompounds').collapse('show');
+      }
     });
 
     document.getElementById('symbol_file').onchange = function() {
