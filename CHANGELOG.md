@@ -5,11 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- A summary table of pinned variants on the cancer case general report
 ### Fixed
 - Visibility of `Gene(s)` badges on SV VariantS page
 - Hide dismiss bar on SV page not working well
 - Delivery report PDF download
 - Saving Pipeline version file when loading a case
+
 
 ## [4.65]
 ### Added

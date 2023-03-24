@@ -341,7 +341,9 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if variants.suspects_detailed %}
-      {{ variant_table(variants.suspects_detailed) }}
+      {% if cancer %}
+        {{ somatic_variant_table(variants.suspects_detailed) }}
+      {% endif %}
       {% for pinned in variants.suspects_detailed|sort(attribute='variant_rank') %}
         {% if pinned['_id'] not in printed_vars %}
           {% do printed_vars.append(pinned['_id']) %}
@@ -1313,12 +1315,11 @@
 
 {% macro somatic_variant_table(variants) %}
   <div class="card" style="border-width: 5px; display: block;">
-    <div class="card-header">
+    <div class="card-body">
       <div class="row d-flex align-items-center">
        <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent">
         <thead>
           <tr class="table-secondary">
-            <th>Sample</th>
             <th>Gene Symbol</th>
             <th>Transcript</th>
             <th>HGVS c.</th>
@@ -1327,11 +1328,37 @@
             <th>ACMG</th>
           </tr>
         </thead>
-
-
+        <tbody>
+        {% for acmg in ["P","LP", "VUS", "LB", "B", ] %}
+          {% for variant in variants|selectattr("acmg_classification.short", "equalto", acmg)|sort(attribute='first_rep_gene.hgnc_symbol') %}
+            {{ variant_table_line(variant) }}
+          {% endfor %}
+        {% endfor %}
+        {% for variant in variants|selectattr("acmg_classification.short", "undefined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
+            {{ variant_table_line(variant) }}
+          {% endfor %}
+        </tbody>
+       </table>
       </div>
     </div>
   </div>
+{% endmacro %}
 
-
+{% macro variant_table_line(variant) %}
+<tr>
+  <td>{{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }}</td>
+  <td>{{ variant.first_rep_gene.canonical_transcript }}</td>
+  <td>
+    {{ (variant.first_rep_gene.hgvs_identifier or '')|truncate(20, True) }}
+  </td>
+  <td>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode|truncate(30, True) }}</td>
+  <td>{% for sample in variant.samples %}{% if sample.is_affected %} {{ (sample.allele_depths[1]/sample.read_depth*100)|round(1) }}{% endif %} {% endfor %}</td>
+  <td>
+    {% if variant.acmg_classification %}
+      <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
+    {% else %}
+      -
+    {% endif %}
+  </td>
+</tr>
 {% endmacro %}
