@@ -334,6 +334,8 @@ def case(store, institute_obj, case_obj):
     # Limit secondary findings according to institute settings
     limit_genes = store.safe_genes_filter(institute_obj["_id"])
 
+    limit_genes_default_panels = _genes_on_default_panels(case_obj["default_genes"], limit_genes)
+
     data = {
         "institute": institute_obj,
         "case": case_obj,
@@ -342,8 +344,20 @@ def case(store, institute_obj, case_obj):
             var
             for var in store.case_matching_causatives(case_obj=case_obj, limit_genes=limit_genes)
         ],
+        "default_other_causatives": [
+            var
+            for var in store.case_matching_causatives(
+                case_obj=case_obj, limit_genes=limit_genes_default_panels
+            )
+        ],
         "managed_variants": [
             var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
+        ],
+        "default_managed_variants": [
+            var
+            for var in store.check_managed(
+                case_obj=case_obj, limit_genes=limit_genes_default_panels
+            )
         ],
         "comments": store.events(institute_obj, case=case_obj, comments=True),
         "hpo_groups": pheno_groups,
@@ -367,6 +381,17 @@ def case(store, institute_obj, case_obj):
     }
 
     return data
+
+
+def _genes_on_default_panels(default_genes: list, limit_genes: list):
+    """Take two lists of genes, the default ones for the case and the limit list for the institute
+    and instersect them. If the limit gene list is empty this becomes the default genes set."""
+    default_genes_set = set(default_genes)
+    if not limit_genes:
+        return default_genes
+    limit_genes_set = set(limit_genes)
+
+    return list(default_genes_set.intersection(limit_genes_set))
 
 
 def _populate_assessments(variants_list):
