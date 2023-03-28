@@ -1350,16 +1350,18 @@
 
 {% macro variant_table_line(variant) %}
 <tr>
-  <td>{{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }}</td>
+  <td>{{ variant.first_rep_gene.hgnc_symbol or variant.first_rep_gene.hgnc_id }} {% if variant.sub_category != "snv" %}{{ variant.sub_category|upper }}{% endif %}</td>
   <td>{{ variant.first_rep_gene.canonical_transcript }}</td>
   <td>
-    {{ (variant.first_rep_gene.hgvs_identifier or '')|truncate(20, True) }}
+    {{ (variant.first_rep_gene.hgvs_identifier or variant.display_name)|truncate(20, True) }}
   </td>
   <td>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode|truncate(30, True) }}</td>
   <td>{% for sample in variant.samples %}{% if sample.is_affected %} {{ (sample.allele_depths[1]/sample.read_depth*100)|round(1) }}{% endif %} {% endfor %}</td>
   <td>
     {% if variant.acmg_classification %}
       <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
+    {% elif variant.manual_rank %}
+      <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
     {% else %}
       -
     {% endif %}
@@ -1370,7 +1372,7 @@
 
 {% macro alt_variant_line(variant) %}
 <tr>
-  <td>{{ variant.sub_category }} chr {{ variant.chromosome }}</td>
+  <td>chr {{ variant.chromosome }} {{ variant.sub_category|upper }}</td>
   <td>pos {{ variant.position }}</td>
   <td>
     {% if variant.category in ['cancer_sv', 'sv'] %}
