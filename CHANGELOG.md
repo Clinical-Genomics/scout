@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.65.1]
 ### Fixed
 - Visibility of `Gene(s)` badges on SV VariantS page
 - Hide dismiss bar on SV page not working well
