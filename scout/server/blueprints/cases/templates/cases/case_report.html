@@ -1331,13 +1331,16 @@
         </thead>
         <tbody>
         {% for acmg in ["P","LP", "VUS", "LB", "B", ] %}
-          {% for variant in variants|selectattr("acmg_classification.short", "equalto", acmg)|sort(attribute='first_rep_gene.hgnc_symbol') %}
+          {% for variant in variants|selectattr("acmg_classification.short", "equalto", acmg)|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol')%}
             {{ variant_table_line(variant) }}
           {% endfor %}
         {% endfor %}
-        {% for variant in variants|selectattr("acmg_classification.short", "undefined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
-            {{ variant_table_line(variant) }}
-          {% endfor %}
+        {% for variant in variants|selectattr("acmg_classification.short", "undefined")|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
+          {{ variant_table_line(variant) }}
+        {% endfor %}
+        {% for variant in variants|selectattr("first_rep_gene.hgnc_symbol", "undefined") %}
+          {{ alt_variant_line(variant) }}
+        {% endfor %}
         </tbody>
        </table>
       </div>
@@ -1357,6 +1360,38 @@
   <td>
     {% if variant.acmg_classification %}
       <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
+    {% else %}
+      -
+    {% endif %}
+  </td>
+</tr>
+{% endmacro %}
+
+
+{% macro alt_variant_line(variant) %}
+<tr>
+  <td>{{ variant.sub_category }} chr {{ variant.chromosome }}</td>
+  <td>pos {{ variant.position }}</td>
+  <td>
+    {% if variant.category in ['cancer_sv', 'sv'] %}
+      chr {{ variant.end_chrom }}
+    {% else %}
+      {{ variant.reference }}
+    {% endif %}
+  </td>
+  <td>{% if variant.category in ['cancer_sv', 'sv'] %}
+    end {{ variant.end }}
+  {% else %}
+    {{ variant.alternative }}
+  {% endif %}
+  </td>
+
+  <td>{% for sample in variant.samples %}{% if sample.is_affected %} {{ (sample.allele_depths[1]/sample.read_depth*100)|round(1) }}{% endif %} {% endfor %}</td>
+  <td>
+    {% if variant.acmg_classification %}
+      <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
+    {% elif variant.manual_rank %}
+      <span class="badge badge-pill badge-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
     {% else %}
       -
     {% endif %}
