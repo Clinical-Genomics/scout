@@ -7,13 +7,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - A summary table of pinned variants on the cancer case general report
+
+
+## [4.65.1]
 ### Fixed
 - Visibility of `Gene(s)` badges on SV VariantS page
 - Hide dismiss bar on SV page not working well
 - Delivery report PDF download
 - Saving Pipeline version file when loading a case
 - Backport compatible import of importlib metadata for old python versions (<3.8)
-
 
 ## [4.65]
 ### Added
