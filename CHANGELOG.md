@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - New openable matching causatives and managed variants lists for default gene panels only for convenience
+
+## [4.65.1]
 ### Fixed
 - Visibility of `Gene(s)` badges on SV VariantS page
 - Hide dismiss bar on SV page not working well
