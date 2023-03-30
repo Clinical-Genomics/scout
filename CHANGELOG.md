@@ -4,10 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-
 ## [unreleased]
 ### Added
+- A summary table of pinned variants on the cancer case general report
 - New openable matching causatives and managed variants lists for default gene panels only for convenience
+
 
 ## [4.65.2]
 ### Fixed
