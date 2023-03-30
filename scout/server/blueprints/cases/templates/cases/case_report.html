@@ -1243,7 +1243,7 @@
 
     {% if variant.comments | count_cursor > 0  %}
       <br>
-      {{ variant_related_comments(variant, case)  }}
+      {{ variant_related_comments_table(variant, case)  }}
     {% endif %}
   </div>
 </div>
