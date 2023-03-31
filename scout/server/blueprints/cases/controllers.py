@@ -9,11 +9,12 @@ from base64 import b64encode
 import query_phenomizer
 import requests
 from bson.objectid import ObjectId
-from flask import current_app, flash, redirect, request, url_for
+from flask import current_app, flash, redirect, url_for
 from flask_login import current_user
 from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
+from scout.adapter import MongoAdapter
 from scout.constants import (
     CALLERS,
     CANCER_PHENOTYPE_MAP,
@@ -213,46 +214,10 @@ def case(store, institute_obj, case_obj):
             partial_causatives.append(causative_obj)
     _populate_assessments(partial_causatives)
 
-    # Set of all unique genes in the default gene panels
-    distinct_genes = set()
-    case_obj["panel_names"] = []
-    case_obj["outdated_panels"] = {}
+    case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
-    for panel_info in case_obj.get("panels", []):
-        if not panel_info.get("display_name"):
-            panel_info["display_name"] = panel_info["panel_name"]
-        if not panel_info.get("is_default"):
-            continue
-        panel_name = panel_info["panel_name"]
-        panel_version = panel_info.get("version")
-        panel_obj = store.gene_panel(panel_name, version=panel_version)
-        latest_panel = store.gene_panel(panel_name)
-        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
-        if not panel_obj:
-            panel_obj = latest_panel
-            if not panel_obj:
-                flash(f"Case default panel '{panel_name}' could not be found.", "warning")
-                continue
-            flash(
-                f"Case default panel '{panel_name}' version {panel_version} could not be found, using latest existing version",
-                "warning",
-            )
-
-        # Check if case-specific panel is up-to-date with latest version of the panel
-        if panel_obj["version"] < latest_panel["version"]:
-            extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
-            if extra_genes or missing_genes:
-                case_obj["outdated_panels"][panel_name] = {
-                    "missing_genes": missing_genes,
-                    "extra_genes": extra_genes,
-                }
-
-        distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
-        full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
-        case_obj["panel_names"].append(full_name)
-
+    # Sort panels alphabetically on display name
     case_obj["panels"] = sorted(case_obj.get("panels", []), key=lambda d: d["display_name"])
-    case_obj["default_genes"] = list(distinct_genes)
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups", []), case_obj.get("phenotype_terms", [])
@@ -334,7 +299,9 @@ def case(store, institute_obj, case_obj):
     # Limit secondary findings according to institute settings
     limit_genes = store.safe_genes_filter(institute_obj["_id"])
 
-    limit_genes_default_panels = _genes_on_default_panels(case_obj["default_genes"], limit_genes)
+    limit_genes_default_panels = _limit_genes_on_default_panels(
+        case_obj["default_genes"], limit_genes
+    )
 
     data = {
         "institute": institute_obj,
@@ -383,15 +350,76 @@ def case(store, institute_obj, case_obj):
     return data
 
 
-def _genes_on_default_panels(default_genes: list, limit_genes: list):
+def _limit_genes_on_default_panels(default_genes: list, limit_genes: list) -> list:
     """Take two lists of genes, the default ones for the case and the limit list for the institute
-    and instersect them. If the limit gene list is empty this becomes the default genes set."""
+    and instersect them. If the limit gene list is empty this becomes the default genes set.
+
+    Args:
+        default_genes: list(str)
+        limit_genes: list(str)
+    Returns: list(str)
+    """
     default_genes_set = set(default_genes)
     if not limit_genes:
         return default_genes
     limit_genes_set = set(limit_genes)
 
     return list(default_genes_set.intersection(limit_genes_set))
+
+
+def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
+    """Get unique genes on case default panels.
+
+    Also check if the default panels are up to date, and update case_obj with
+    information about any out-dated panels, plus full panel names for coverage.
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+    Returns:
+        distinct_genes(list(str)): hgnc id for unique genes.
+    """
+
+    # Set of all unique genes in the default gene panels
+    distinct_genes = set()
+    case_obj["panel_names"] = []
+    case_obj["outdated_panels"] = {}
+
+    for panel_info in case_obj.get("panels", []):
+        if not panel_info.get("display_name"):
+            panel_info["display_name"] = panel_info["panel_name"]
+        if not panel_info.get("is_default"):
+            continue
+        panel_name = panel_info["panel_name"]
+        panel_version = panel_info.get("version")
+        panel_obj = store.gene_panel(panel_name, version=panel_version)
+        latest_panel = store.gene_panel(panel_name)
+        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
+        if not panel_obj:
+            panel_obj = latest_panel
+            if not panel_obj:
+                flash(f"Case default panel '{panel_name}' could not be found.", "warning")
+                continue
+            flash(
+                f"Case default panel '{panel_name}' version {panel_version} could not be found, using latest existing version",
+                "warning",
+            )
+
+        distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
+
+        # Check if case-specific panel is up-to-date with latest version of the panel
+        if panel_obj["version"] < latest_panel["version"]:
+            extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
+            if extra_genes or missing_genes:
+                case_obj["outdated_panels"][panel_name] = {
+                    "missing_genes": missing_genes,
+                    "extra_genes": extra_genes,
+                }
+
+        full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
+        case_obj["panel_names"].append(full_name)
+
+    return list(distinct_genes)
 
 
 def _populate_assessments(variants_list):
