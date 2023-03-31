@@ -95,7 +95,6 @@ def phenomodel(institute_id, model_id):
 
     pheno_form = PhenoModelForm(request.form)
     subpanel_form = PhenoSubPanelForm(request.form)
-    hide_subpanel = True
 
     if request.method == "POST":
         # update an existing phenotype model
