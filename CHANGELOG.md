@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Moved Phenomodels code it its own blueprint
+- Moved Phenomodels code under a dedicated blueprint
 ### Added
 - A summary table of pinned variants on the cancer case general report
 
