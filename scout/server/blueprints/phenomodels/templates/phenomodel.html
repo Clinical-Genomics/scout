@@ -25,7 +25,7 @@
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}">Advanced phenotype models </a>
+    <a class="nav-link" href="{{ url_for('phenomodels.advanced_phenotypes', institute_id=institute._id) }}">Advanced phenotype models </a>
   </li>
   <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">{{phenomodel.name}}</span>
@@ -99,12 +99,12 @@
       </label>
     </div>
     <!-- HPO checkbox add -->
-    <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
+    <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
       {{ term_title("hpo") }}
       {{ hpo_checkbox_macro() }}
     </form>
     <!-- OMIM checkbox add-->
-    <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
+    <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
       {{ term_title("omim") }}
       {{ omim_checkbox_macro() }}
     </form>
@@ -188,7 +188,7 @@
                   <tr>
                     <td>
                       <div>
-                        <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                        <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
                           {% if term_obj.children %}
                             <a href="#" onclick="toggleDiv('{{subpanel_id}}#{{term_id}}')">{{term_obj.custom_name or term_obj.description}}</a> ({{term_id}})
                           {% else %}
@@ -214,7 +214,7 @@
               </table>
             {% endif %}
           </div><!-- End of are displaying subpanel checkboxes-->
-          <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+          <form action="{{ url_for('phenomodels.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
             <div class="d-flex justify-content-between">
               <text class="text-muted mb-1 ms-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
               <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}" {{ "disabled" if disable }}><em class="fa fa-times"></em> Remove panel</button>
@@ -241,7 +241,7 @@
 {% endblock %}
 
 {% macro model_preview() %}
-<form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
+<form action="{{ url_for('phenomodels.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
 <div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
