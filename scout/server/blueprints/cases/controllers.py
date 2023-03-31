@@ -352,7 +352,12 @@ def case(store, institute_obj, case_obj):
 
 def _limit_genes_on_default_panels(default_genes: list, limit_genes: list) -> list:
     """Take two lists of genes, the default ones for the case and the limit list for the institute
-    and instersect them. If the limit gene list is empty this becomes the default genes set.
+    and instersect them.
+
+    An empty set is interpreted permissively downstream. Hence we need a special rule if either input list
+    is empty, but the other populated.
+    If the limit gene list is empty this becomes the default genes set.
+    If the default genes list is empty, this becomes the limit_genes set.
 
     Args:
         default_genes: list(str)
@@ -362,6 +367,9 @@ def _limit_genes_on_default_panels(default_genes: list, limit_genes: list) -> li
     default_genes_set = set(default_genes)
     if not limit_genes:
         return default_genes
+    if not default_genes:
+        return limit_genes
+
     limit_genes_set = set(limit_genes)
 
     return list(default_genes_set.intersection(limit_genes_set))
