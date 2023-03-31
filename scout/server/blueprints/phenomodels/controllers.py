@@ -3,6 +3,7 @@ import logging
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
+from flask import flash
 
 from scout.server.extensions import store
 from scout.utils.md5 import generate_md5_key
