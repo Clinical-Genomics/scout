@@ -136,8 +136,6 @@ def _update_subpanel(subpanel_obj, supb_changes):
 
             all_terms[child] = term_obj
 
-            custom_name = None
-            term_title = None
             if child not in checkboxes:
                 continue
             node.custom_name = checkboxes[child].get("custom_name")
