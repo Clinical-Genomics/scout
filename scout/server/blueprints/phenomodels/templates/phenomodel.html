@@ -199,6 +199,7 @@
                         </form>
                       </div>
                       <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
+                        <ul>
                         {% for item in term_obj.children recursive %}
                           <li class="tree">
                             <label>{{item.description}} ({{item.name}})</label>
@@ -207,6 +208,7 @@
                             {%- endif %}
                           </li>
                         {%- endfor %}
+                        </ul>
                       </div>
                     </td>
                   </tr>
@@ -270,6 +272,7 @@
                 {% endif %}
               </div>
               <div style="margin-left: 35px; display: none;" id="{{term_obj.name}}#children">
+                <ul>
                 {% for item in term_obj.children recursive %}
                   <li class="tree">
                     <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
@@ -278,6 +281,7 @@
                     {%- endif %}
                   </li>
                 {%- endfor %}
+                </ul>
               </div>
               <br>
               {% endfor %}
