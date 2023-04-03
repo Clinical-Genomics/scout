@@ -92,18 +92,19 @@ def checkbox_edit(institute_id, model_id):
     return redirect(url_for(".phenomodel", institute_id=institute_id, model_id=model_id))
 
 
-@phenomodels_bp.route("/<institute_id>/phenomodel/<model_id>", methods=["GET", "POST"])
+@phenomodels_bp.route("/<institute_id>/phenomodel-edit/<model_id>", methods=["POST"])
+def phenomodel_edit(institute_id, model_id):
+    """Edit a phenomodel or a subpanel"""
+    institute_obj = institute_and_case(store, institute_id)
+    controllers.update_phenomodel(model_id, request.form)
+    return redirect(request.referrer)
+
+
+@phenomodels_bp.route("/<institute_id>/phenomodel/<model_id>", methods=["GET"])
 @templated("phenomodel.html")
 def phenomodel(institute_id, model_id):
     """View/Edit an advanced phenotype model"""
     institute_obj = institute_and_case(store, institute_id)
-
-    pheno_form = PhenoModelForm(request.form)
-    subpanel_form = PhenoSubPanelForm(request.form)
-
-    if request.method == "POST":
-        # update an existing phenotype model
-        controllers.update_phenomodel(model_id, request.form)
 
     phenomodel_obj = store.phenomodel(model_id)
     if phenomodel_obj is None:
@@ -113,6 +114,8 @@ def phenomodel(institute_id, model_id):
         )
         return redirect(request.referrer)
 
+    pheno_form = PhenoModelForm()
+    subpanel_form = PhenoSubPanelForm()
     pheno_form.model_name.data = phenomodel_obj["name"]
     pheno_form.model_desc.data = phenomodel_obj["description"]
 

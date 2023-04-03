@@ -14,6 +14,7 @@ TEST_SUBPANEL = dict(
 
 PHENOMODELS_REDIRECT_URL = "scout.server.blueprints.institutes.views.redirect"
 PHENOMODEL_URL = "phenomodels.phenomodel"
+PHENOMODEL_EDIT_URL = "phenomodels.phenomodel_edit"
 PHENOMODELS_CHECKBOX_EDIT_URL = "phenomodels.checkbox_edit"
 TEST_MODEL_NAME = "Test model"
 TEST_MODEL_DESC = "Test model description"
@@ -158,7 +159,7 @@ def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
         assert unlocked_model["admins"] == []
 
 
-def test_phenomodel_post_rename_model(app, user_obj, institute_obj):
+def test_phenomodel_rename_model(app, user_obj, institute_obj):
     """Test the phenomodel endpoing, POST request for updating model info"""
 
     # GIVEN an institute with a phenotype model
@@ -177,7 +178,7 @@ def test_phenomodel_post_rename_model(app, user_obj, institute_obj):
         )
         client.post(
             url_for(
-                PHENOMODEL_URL,
+                PHENOMODEL_EDIT_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -188,7 +189,7 @@ def test_phenomodel_post_rename_model(app, user_obj, institute_obj):
     assert updated_model["name"] == "New model"
 
 
-def test_phenomodel_post_add_delete_subpanel(app, user_obj, institute_obj):
+def test_phenomodel_add_delete_subpanel(app, user_obj, institute_obj):
     """Test the phenomodel endpoint, by sending requests for adding and deleting a subpanel"""
     # GIVEN an institute with a phenotype model having no subpanels
     store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
@@ -209,7 +210,7 @@ def test_phenomodel_post_add_delete_subpanel(app, user_obj, institute_obj):
         # WHEN the user creates subpanel in phenotype model via POST request
         client.post(
             url_for(
-                PHENOMODEL_URL,
+                PHENOMODEL_EDIT_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -225,7 +226,7 @@ def test_phenomodel_post_add_delete_subpanel(app, user_obj, institute_obj):
         form_data = dict(subpanel_delete=subpanel_id)
         client.post(
             url_for(
-                PHENOMODEL_URL,
+                PHENOMODEL_EDIT_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),

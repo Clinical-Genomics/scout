@@ -37,7 +37,7 @@
 {% macro phenomodel_page() %}
 <div class="card mt-3">
   <div style="padding: 0;" class="card-body mt-3 ms-3 me-3">
-    <form action="#" method="POST">
+    <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
         <input type="hidden" name="model_id" value="{{phenomodel._id}}">
       <div class="row">
         <div class="col-4">
@@ -66,7 +66,7 @@
   </div>
   <div class="panel-collapse collapse mt-3" id="new_subpanel">
     <div class="mb-3">
-      <form action="#" id="new_subpanel_form" method="POST">
+      <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" id="new_subpanel_form" method="POST">
         {{ subpanel_form.csrf_token }}
         <div class="row ms-3 me-3 mt-3">
           <div class="col-5">
@@ -216,7 +216,7 @@
               </table>
             {% endif %}
           </div><!-- End of are displaying subpanel checkboxes-->
-          <form action="{{ url_for('phenomodels.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+          <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
             <div class="d-flex justify-content-between">
               <text class="text-muted mb-1 ms-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
               <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}" {{ "disabled" if disable }}><em class="fa fa-times"></em> Remove panel</button>
@@ -243,7 +243,7 @@
 {% endblock %}
 
 {% macro model_preview() %}
-<form action="{{ url_for('phenomodels.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
+<form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
 <div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
