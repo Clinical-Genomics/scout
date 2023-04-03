@@ -13,14 +13,14 @@ TEST_SUBPANEL = dict(
 )
 
 
-def test_advanced_phenotypes_POST(app, user_obj, institute_obj):
+def test_advanced_phenotypes_post(app, user_obj, institute_obj):
     """Test the view showing the available phenotype models for an institute, after sending POST request with new phenotype model data"""
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         form_data = dict(model_name="A test model", model_desc="Test model description")
 
@@ -51,12 +51,12 @@ def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
     # GIVEN a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         form_data = {"model_id": model_obj["_id"]}
 
         # WHEN the user removes the model via the remove_phenomodel endpoint
-        resp = client.post(
+        client.post(
             url_for("phenomodels.remove_phenomodel", institute_id=institute_obj["internal_id"]),
             data=form_data,
         )
@@ -64,7 +64,7 @@ def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
         assert store.phenomodel_collection.find_one() is None
 
 
-def test_phenomodel_GET(app, user_obj, institute_obj):
+def test_phenomodel_get(app, user_obj, institute_obj):
     """test the phenomodel page endpoint, GET request"""
 
     # GIVEN an institute with a phenotype model
@@ -75,7 +75,7 @@ def test_phenomodel_GET(app, user_obj, institute_obj):
     # GIVEN a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
         # THEN the phenomodel endpoint should shown phenotype model info
         resp = client.get(
             url_for(
@@ -162,13 +162,13 @@ def test_phenomodel_POST_rename_model(app, user_obj, institute_obj):
     # GIVEN a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # WHEN the user updates model info using a POST request
         form_data = dict(
             update_model="update", model_name="New model", model_desc="New description"
         )
-        resp = client.post(
+        client.post(
             url_for(
                 "phenomodels.phenomodel",
                 institute_id=institute_obj["internal_id"],
@@ -192,7 +192,7 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
     # GIVEN a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         form_data = dict(
             title="Phenotype subpanel title",
@@ -216,7 +216,7 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
 
         # WHEN the user sends a POST request to remove the subpanel
         form_data = dict(subpanel_delete=subpanel_id)
-        resp = client.post(
+        client.post(
             url_for(
                 "phenomodels.phenomodel",
                 institute_id=institute_obj["internal_id"],
@@ -247,7 +247,7 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # WHEN the user creates an OMIM checkbox using the endpoint
         form_data = dict(
@@ -258,7 +258,7 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
             omim_custom_name="Alternative OMIM name",
             add_omim="",
         )
-        resp = client.post(
+        client.post(
             url_for(
                 "phenomodels.checkbox_edit",
                 institute_id=institute_obj["internal_id"],
@@ -292,7 +292,7 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # WHEN the user creates an HPO checkbox using the endpoint
         form_data = dict(
@@ -304,7 +304,7 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
             add_hpo="",
             includeChildren="on",
         )
-        resp = client.post(
+        client.post(
             url_for(
                 "phenomodels.checkbox_edit",
                 institute_id=institute_obj["internal_id"],
@@ -342,11 +342,11 @@ def test_phenomodel_POST_remove_subpanel_checkbox(app, user_obj, institute_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # WHEN the user removes the checkbox using the endpoint, POST request
         form_data = dict(checkgroup_remove="#".join(["HP:000001", "subpanel_x"]))
-        resp = client.post(
+        client.post(
             url_for(
                 "phenomodels.checkbox_edit",
                 institute_id=institute_obj["internal_id"],

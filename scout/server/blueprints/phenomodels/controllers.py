@@ -134,7 +134,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
             node = None
             try:
                 node = Node(child, parent=root, description=term_obj["description"])
-            except Exception as ex:
+            except Exception:
                 flash(f"Term {child} could not be find in database")
                 continue
             all_terms[child] = term_obj

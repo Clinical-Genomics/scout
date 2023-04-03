@@ -76,7 +76,7 @@ def remove_phenomodel():
     model_id = request.form.get("model_id")
     model_obj = store.phenomodel_collection.find_one_and_delete({"_id": ObjectId(model_id)})
     if model_obj is None:
-        flash(f"An error occurred while deleting phenotype model", "warning")
+        flash("An error occurred while deleting phenotype model", "warning")
     return redirect(request.referrer)
 
 
