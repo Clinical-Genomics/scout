@@ -14,11 +14,12 @@ TEST_SUBPANEL = dict(
 
 PHENOMODELS_REDIRECT_URL = "scout.server.blueprints.institutes.views.redirect"
 PHENOMODEL_URL = "phenomodels.phenomodel"
+PHENOMODELS_CHECKBOX_EDIT_URL = "phenomodels.checkbox_edit"
 TEST_MODEL_NAME = "Test model"
 TEST_MODEL_DESC = "Test model description"
 
 
-def test_advanced_phenotypes_post(app, user_obj, institute_obj):
+def test_create_phenomodel(app, user_obj, institute_obj):
     """Test the view showing the available phenotype models for an institute, after sending POST request with new phenotype model data"""
 
     # GIVEN an initialized app
@@ -27,19 +28,20 @@ def test_advanced_phenotypes_post(app, user_obj, institute_obj):
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
 
-        form_data = dict(model_name="A test model", model_desc=TEST_MODEL_DESC)
+        form_data = dict(model_name=TEST_MODEL_NAME, model_desc=TEST_MODEL_DESC)
 
         # WHEN user creates a new phenotype model using the phenomodel page
         resp = client.post(
             url_for(
-                "phenomodels.advanced_phenotypes",
+                "phenomodels.create_phenomodel",
                 institute_id=institute_obj["internal_id"],
             ),
             data=form_data,
         )
-        assert resp.status_code == 200
-        # THEN the new model should be visible in the page
-        assert form_data["model_name"] in str(resp.data)
+        # THEN page should redirect
+        assert resp.status_code == 302
+        # AND a phenomodel should have been created
+        assert store.phenomodel_collection.find_one()
 
 
 def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
@@ -265,7 +267,7 @@ def test_phenomodel_post_add_omim_checkbox_to_subpanel(app, user_obj, institute_
         )
         client.post(
             url_for(
-                "phenomodels.checkbox_edit",
+                PHENOMODELS_CHECKBOX_EDIT_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -311,7 +313,7 @@ def test_phenomodel_post_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
         )
         client.post(
             url_for(
-                "phenomodels.checkbox_edit",
+                PHENOMODELS_CHECKBOX_EDIT_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -353,7 +355,7 @@ def test_phenomodel_post_remove_subpanel_checkbox(app, user_obj, institute_obj):
         form_data = dict(checkgroup_remove="#".join(["HP:000001", "subpanel_x"]))
         client.post(
             url_for(
-                "phenomodels.checkbox_edit",
+                PHENOMODELS_CHECKBOX_EDIT_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),

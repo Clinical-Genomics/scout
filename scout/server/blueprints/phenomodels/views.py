@@ -17,7 +17,7 @@ phenomodels_bp = Blueprint(
 )
 
 
-@phenomodels_bp.route("/<institute_id>/advanced_phenotypes", methods=["GET", "POST"])
+@phenomodels_bp.route("/<institute_id>/advanced_phenotypes", methods=["GET"])
 @templated("phenomodels.html")
 def advanced_phenotypes(institute_id):
     """Show institute-level advanced phenotypes"""
@@ -33,12 +33,7 @@ def advanced_phenotypes(institute_id):
                 continue
             collaborators.add((user["email"], user["name"], inst_id))
 
-    if request.form.get("create_model"):  # creating a new phenomodel
-        store.create_phenomodel(
-            institute_id, request.form.get("model_name"), request.form.get("model_desc")
-        )
-
-    pheno_form = PhenoModelForm(request.form or None)
+    pheno_form = PhenoModelForm()
     phenomodels = list(store.phenomodels(institute_id=institute_id))
 
     data = {
@@ -48,6 +43,16 @@ def advanced_phenotypes(institute_id):
         "phenomodels": phenomodels,
     }
     return data
+
+
+@phenomodels_bp.route("/<institute_id>/create_phenomodel", methods=["POST"])
+def create_phenomodel(institute_id):
+    """Create a new phenomodel"""
+    institute_obj = institute_and_case(store, institute_id)
+    store.create_phenomodel(
+        institute_id, request.form.get("model_name"), request.form.get("model_desc")
+    )
+    return redirect(request.referrer)
 
 
 @phenomodels_bp.route("/advanced_phenotypes/lock", methods=["POST"])
