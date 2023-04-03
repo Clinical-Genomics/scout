@@ -138,12 +138,10 @@ def _update_subpanel(subpanel_obj, supb_changes):
 
             custom_name = None
             term_title = None
-            if not child in checkboxes:
+            if child not in checkboxes:
                 continue
-            custom_name = checkboxes[child].get("custom_name")
-            node.custom_name = custom_name
-            term_title = checkboxes[child].get("term_title")
-            node.term_title = term_title
+            node.custom_name = checkboxes[child].get("custom_name")
+            node.term_title = checkboxes[child].get("term_title")
 
         # Rearrange tree nodes according the HPO ontology
         root = store.organize_tree(all_terms, root)
