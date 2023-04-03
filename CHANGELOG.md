@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Moved Phenomodels code under a dedicated blueprint
 ### Added
 - A summary table of pinned variants on the cancer case general report
+- New openable matching causatives and managed variants lists for default gene panels only for convenience
 
 
 ## [4.65.2]
