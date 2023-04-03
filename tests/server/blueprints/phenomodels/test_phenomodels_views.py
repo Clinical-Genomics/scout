@@ -12,6 +12,11 @@ TEST_SUBPANEL = dict(
     updated=datetime.datetime.now(),
 )
 
+PHENOMODELS_REDIRECT_URL = "scout.server.blueprints.institutes.views.redirect"
+PHENOMODEL_URL = "phenomodels.phenomodel"
+TEST_MODEL_NAME = "Test model"
+TEST_MODEL_DESC = "Test model description"
+
 
 def test_advanced_phenotypes_post(app, user_obj, institute_obj):
     """Test the view showing the available phenotype models for an institute, after sending POST request with new phenotype model data"""
@@ -22,7 +27,7 @@ def test_advanced_phenotypes_post(app, user_obj, institute_obj):
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
 
-        form_data = dict(model_name="A test model", model_desc="Test model description")
+        form_data = dict(model_name="A test model", model_desc=TEST_MODEL_DESC)
 
         # WHEN user creates a new phenotype model using the phenomodel page
         resp = client.post(
@@ -40,10 +45,10 @@ def test_advanced_phenotypes_post(app, user_obj, institute_obj):
 def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
     """Testing the endpoint to remove an existing phenotype model for an institute"""
 
-    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
+    mocker.patch(PHENOMODELS_REDIRECT_URL, return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model_obj = store.phenomodel_collection.find_one()
     assert model_obj
 
@@ -68,7 +73,7 @@ def test_phenomodel_get(app, user_obj, institute_obj):
     """test the phenomodel page endpoint, GET request"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model_obj = store.phenomodel_collection.find_one()
 
     # GIVEN an initialized app
@@ -79,21 +84,21 @@ def test_phenomodel_get(app, user_obj, institute_obj):
         # THEN the phenomodel endpoint should shown phenotype model info
         resp = client.get(
             url_for(
-                "phenomodels.phenomodel",
+                PHENOMODEL_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             )
         )
-        assert "Test model" in str(resp.data)
+        assert TEST_MODEL_NAME in str(resp.data)
 
 
 def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to lock a phenomodel and make it editable only by admins"""
 
-    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
+    mocker.patch(PHENOMODELS_REDIRECT_URL, return_value=mock_redirect)
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model = store.phenomodel_collection.find_one()
     assert "admins" not in model
 
@@ -120,10 +125,10 @@ def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
 def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
     """Test the endpoint to unlock a phenomodel and make it editable only by all users"""
 
-    mocker.patch("scout.server.blueprints.institutes.views.redirect", return_value=mock_redirect)
+    mocker.patch(PHENOMODELS_REDIRECT_URL, return_value=mock_redirect)
 
     # GIVEN an institute with phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model = store.phenomodel_collection.find_one()
 
     # GIVEN an initialized app
@@ -151,7 +156,7 @@ def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
         assert unlocked_model["admins"] == []
 
 
-def test_phenomodel_POST_rename_model(app, user_obj, institute_obj):
+def test_phenomodel_post_rename_model(app, user_obj, institute_obj):
     """Test the phenomodel endpoing, POST request for updating model info"""
 
     # GIVEN an institute with a phenotype model
@@ -170,7 +175,7 @@ def test_phenomodel_POST_rename_model(app, user_obj, institute_obj):
         )
         client.post(
             url_for(
-                "phenomodels.phenomodel",
+                PHENOMODEL_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -181,10 +186,10 @@ def test_phenomodel_POST_rename_model(app, user_obj, institute_obj):
     assert updated_model["name"] == "New model"
 
 
-def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
+def test_phenomodel_post_add_delete_subpanel(app, user_obj, institute_obj):
     """Test the phenomodel endpoint, by sending requests for adding and deleting a subpanel"""
     # GIVEN an institute with a phenotype model having no subpanels
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model_obj = store.phenomodel_collection.find_one()
     assert model_obj["subpanels"] == {}
 
@@ -200,9 +205,9 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
             add_subpanel="Save phenotype subpanel",
         )
         # WHEN the user creates subpanel in phenotype model via POST request
-        resp = client.post(
+        client.post(
             url_for(
-                "phenomodels.phenomodel",
+                PHENOMODEL_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -218,7 +223,7 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         form_data = dict(subpanel_delete=subpanel_id)
         client.post(
             url_for(
-                "phenomodels.phenomodel",
+                PHENOMODEL_URL,
                 institute_id=institute_obj["internal_id"],
                 model_id=model_obj["_id"],
             ),
@@ -229,11 +234,11 @@ def test_phenomodel_POST_add_delete_subpanel(app, user_obj, institute_obj):
         assert updated_model["subpanels"] == {}
 
 
-def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_obj, omim_checkbox):
+def test_phenomodel_post_add_omim_checkbox_to_subpanel(app, user_obj, institute_obj, omim_checkbox):
     """Test adding an OMIM checkbox to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model_obj = store.phenomodel_collection.find_one()
     # containing a subpanel
     model_obj["subpanels"] = {"subpanel_x": TEST_SUBPANEL}
@@ -276,11 +281,11 @@ def test_phenomodel_POST_add_omim_checkbox_to_subpanel(app, user_obj, institute_
         assert checkbox["custom_name"] == form_data["omim_custom_name"]
 
 
-def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_obj, hpo_checkboxes):
+def test_phenomodel_post_add_hpo_checkbox_to_subpanel(app, user_obj, institute_obj, hpo_checkboxes):
     """Test adding an HPO checkbox with its children to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model_obj = store.phenomodel_collection.find_one()
     # containing a subpanel
     model_obj["subpanels"] = {"subpanel_x": TEST_SUBPANEL}
@@ -328,11 +333,11 @@ def test_phenomodel_POST_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
         assert checkbox["children"] == [nested_hpo_term]
 
 
-def test_phenomodel_POST_remove_subpanel_checkbox(app, user_obj, institute_obj):
+def test_phenomodel_post_remove_subpanel_checkbox(app, user_obj, institute_obj):
     """Test removing a single checkbox from a phenotype model subpanel"""
 
     # GIVEN an institute with a phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], "Test model", "Model description")
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
     model_obj = store.phenomodel_collection.find_one()
     # containing a subpanel with a checkbox
     TEST_SUBPANEL["checkboxes"] = {"HP:000001": {"name": "HP:000001"}}
