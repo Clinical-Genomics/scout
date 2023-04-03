@@ -48,7 +48,7 @@ def advanced_phenotypes(institute_id):
 @phenomodels_bp.route("/<institute_id>/create_phenomodel", methods=["POST"])
 def create_phenomodel(institute_id):
     """Create a new phenomodel"""
-    institute_obj = institute_and_case(store, institute_id)
+    institute_and_case(store, institute_id)
     store.create_phenomodel(
         institute_id, request.form.get("model_name"), request.form.get("model_desc")
     )
@@ -95,7 +95,7 @@ def checkbox_edit(institute_id, model_id):
 @phenomodels_bp.route("/<institute_id>/phenomodel-edit/<model_id>", methods=["POST"])
 def phenomodel_edit(institute_id, model_id):
     """Edit a phenomodel or a subpanel"""
-    institute_obj = institute_and_case(store, institute_id)
+    institute_and_case(store, institute_id)
     controllers.update_phenomodel(model_id, request.form)
     return redirect(request.referrer)
 
