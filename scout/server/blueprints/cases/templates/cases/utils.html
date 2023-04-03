@@ -563,13 +563,12 @@
   </div>
 {% endmacro %}
 
-{% macro matching_causatives(other_causatives, institute, case) %}
-  <div class="card panel-default" >
+{% macro matching_causatives(other_causatives, institute, case, default=False) %}
     <div data-bs-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
-      that have been marked as causative in another case for this insitute">
-      <strong><a data-bs-toggle="collapse" href="#matchingCausatives" class="text-body">Matching causatives from other cases ({{other_causatives|length}})</a></strong>
+      that have been marked as causative in another case for this insitute. {% if default %}Variants in default panels for the case only.{% endif %}">
+      <strong><a data-bs-toggle="collapse" href="#matchingCausatives{% if default %}Default{% endif %}" class="text-body">Matching causatives {% if default %}in case default panels{% endif %}({{other_causatives|length}})</a></strong>
     </div>
-    <ul class="list-group collapse" id="matchingCausatives">
+    <ul class="list-group collapse" id="matchingCausatives{% if default %}Default{% endif %}">
       {% for variant in other_causatives %}
         <li class="list-group-item">
           {{ pretty_link_variant(variant, case)}}
@@ -578,25 +577,22 @@
         <li class="list-group-item">No matching causative variants.</li>
       {% endfor %}
     </ul>
-  </div>
 {% endmacro %}
 
-{% macro matching_managed_variants(managed_variants, institute, case) %}
-  <div class="card panel-default">
+{% macro matching_managed_variants(managed_variants, institute, case, default=False) %}
     <div data-bs-toggle='tooltip' class="panel-heading" title="Any variants in this case
-      that have been marked as managed">
-      <strong><a data-bs-toggle="collapse" class="text-body" href="#matchingManaged">Managed variants ({{managed_variants|length}})</a></strong>
+      that have been marked as managed. {% if default %}Variants in default panels for the case only.{% endif %}">
+      <strong><a data-bs-toggle="collapse" class="text-body" href="#matchingManaged{% if default %}Default{% endif %}">Managed variants {% if default %}in case default panels{% endif %}({{managed_variants|length}})</a></strong>
     </div>
     <ul class="list-group">
       {% for variant in managed_variants %}
-        <li class="list-group-item collapse" id="matchingManaged">
+        <li class="list-group-item collapse" id="matchingManaged{% if default %}Default{% endif %}">
            {{ pretty_link_variant(variant, case)}}
         </li>
       {% else %}
         <li class="list-group-item">No managed variants.</li>
       {% endfor %}
     </ul>
-  </div>
 {% endmacro %}
 
 
