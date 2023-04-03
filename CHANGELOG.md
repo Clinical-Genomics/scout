@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - A summary table of pinned variants on the cancer case general report
+### Fixed
+- Integrity check for Font Awesome 6 lib
 
 
 ## [4.65.2]
