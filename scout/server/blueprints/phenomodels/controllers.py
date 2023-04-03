@@ -125,11 +125,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
             if child.startswith("OMIM"):
                 new_checkboxes[child] = checkboxes[child]
                 continue
-            custom_name = None
-            term_title = None
-            if child in checkboxes:
-                custom_name = checkboxes[child].get("custom_name")
-                term_title = checkboxes[child].get("term_title")
+
             term_obj = store.hpo_term(child)  # else it's an HPO term, and might have nested term:
             node = None
             try:
@@ -137,11 +133,17 @@ def _update_subpanel(subpanel_obj, supb_changes):
             except Exception:
                 flash(f"Term {child} could not be find in database")
                 continue
+
             all_terms[child] = term_obj
-            if custom_name:
-                node.custom_name = custom_name
-            if term_title:
-                node.term_title = term_title
+
+            custom_name = None
+            term_title = None
+            if not child in checkboxes:
+                continue
+            custom_name = checkboxes[child].get("custom_name")
+            node.custom_name = custom_name
+            term_title = checkboxes[child].get("term_title")
+            node.term_title = term_title
 
         # Rearrange tree nodes according the HPO ontology
         root = store.organize_tree(all_terms, root)
