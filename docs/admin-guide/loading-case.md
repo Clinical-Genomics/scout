@@ -191,4 +191,4 @@ scout load case --help
 
 for more instructions
 
-[nfcore-rnafusion]: https://nf-co.re/rnafusion/1.0.1
+[nfcore-rnafusion]: https://nf-co.re/rnafusion
