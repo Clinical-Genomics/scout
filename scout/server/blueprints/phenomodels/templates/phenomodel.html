@@ -8,7 +8,7 @@
 {% block css %}
 {{ super() }}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css" integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw=="/>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous"/>
 <style>
 .tree {
   list-style-type: none;
@@ -25,7 +25,7 @@
     <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">{{ institute.display_name }}</a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}">Advanced phenotype models </a>
+    <a class="nav-link" href="{{ url_for('phenomodels.advanced_phenotypes', institute_id=institute._id) }}">Advanced phenotype models </a>
   </li>
   <li class="nav-item active d-flex align-items-center">
     <span class="navbar-text">{{phenomodel.name}}</span>
@@ -37,7 +37,7 @@
 {% macro phenomodel_page() %}
 <div class="card mt-3">
   <div style="padding: 0;" class="card-body mt-3 ms-3 me-3">
-    <form action="#" method="POST">
+    <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
         <input type="hidden" name="model_id" value="{{phenomodel._id}}">
       <div class="row">
         <div class="col-4">
@@ -66,7 +66,7 @@
   </div>
   <div class="panel-collapse collapse mt-3" id="new_subpanel">
     <div class="mb-3">
-      <form action="#" id="new_subpanel_form" method="POST">
+      <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" id="new_subpanel_form" method="POST">
         {{ subpanel_form.csrf_token }}
         <div class="row ms-3 me-3 mt-3">
           <div class="col-5">
@@ -99,12 +99,12 @@
       </label>
     </div>
     <!-- HPO checkbox add -->
-    <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
+    <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
       {{ term_title("hpo") }}
       {{ hpo_checkbox_macro() }}
     </form>
     <!-- OMIM checkbox add-->
-    <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
+    <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
       {{ term_title("omim") }}
       {{ omim_checkbox_macro() }}
     </form>
@@ -188,7 +188,7 @@
                   <tr>
                     <td>
                       <div>
-                        <form action="{{ url_for('overview.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+                        <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
                           {% if term_obj.children %}
                             <a href="#" onclick="toggleDiv('{{subpanel_id}}#{{term_id}}')">{{term_obj.custom_name or term_obj.description}}</a> ({{term_id}})
                           {% else %}
@@ -199,6 +199,7 @@
                         </form>
                       </div>
                       <div style="margin-left: 35px; display: none;" id="{{subpanel_id}}#{{term_id}}">
+                        <ul>
                         {% for item in term_obj.children recursive %}
                           <li class="tree">
                             <label>{{item.description}} ({{item.name}})</label>
@@ -207,6 +208,7 @@
                             {%- endif %}
                           </li>
                         {%- endfor %}
+                        </ul>
                       </div>
                     </td>
                   </tr>
@@ -214,7 +216,7 @@
               </table>
             {% endif %}
           </div><!-- End of are displaying subpanel checkboxes-->
-          <form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
+          <form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST">
             <div class="d-flex justify-content-between">
               <text class="text-muted mb-1 ms-1" style="font-size:14px;">Updated: {{subpanel.updated.strftime('%Y-%m-%d %H:%M:%S')}}</text>
               <button type="submit" class="button btn btn-danger btn-sm" name="subpanel_delete" value="{{subpanel_id}}" {{ "disabled" if disable }}><em class="fa fa-times"></em> Remove panel</button>
@@ -241,7 +243,7 @@
 {% endblock %}
 
 {% macro model_preview() %}
-<form action="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
+<form action="{{ url_for('phenomodels.phenomodel_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="saveModel">
 <div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
@@ -270,6 +272,7 @@
                 {% endif %}
               </div>
               <div style="margin-left: 35px; display: none;" id="{{term_obj.name}}#children">
+                <ul>
                 {% for item in term_obj.children recursive %}
                   <li class="tree">
                     <input type="checkbox" name="cheked_terms" value="{{subpanel_id}}.{{term_id}}.{{item.name}}"> <label>{{ item.description }} ({{item.name}})</label>
@@ -278,6 +281,7 @@
                     {%- endif %}
                   </li>
                 {%- endfor %}
+                </ul>
               </div>
               <br>
               {% endfor %}
