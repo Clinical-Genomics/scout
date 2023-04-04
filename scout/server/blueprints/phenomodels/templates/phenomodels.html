@@ -47,7 +47,7 @@
 
 {% macro lock_model() %}
   {% for model in phenomodels %}
-    <form action="{{ url_for('overview.lock_phenomodel') }}" method="POST">
+    <form action="{{ url_for('phenomodels.lock_phenomodel') }}" method="POST">
       <input id="model_id" type="hidden" value="{{model._id}}" name="model_id">
       <div class="modal fade" id="lockModal-{{model._id}}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -78,7 +78,7 @@
 
 {% macro confirm_delete() %}
   {% for model in phenomodels %}
-    <form action="{{ url_for('overview.remove_phenomodel') }}" method="POST">
+    <form action="{{ url_for('phenomodels.remove_phenomodel') }}" method="POST">
       <input id="model_id" type="hidden" value="{{model._id}}" name="model_id">
       <div class="modal fade" id="deleteModal-{{model._id}}" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -101,7 +101,7 @@
   <div class="card mt-3">
     <div class="card-body" style="padding-top:2px;">
       <h5 class="card-title">Create new phenotype model</h5>
-      <form action="{{ url_for('overview.advanced_phenotypes', institute_id=institute._id) }}" method="POST">
+      <form action="{{ url_for('phenomodels.create_phenomodel', institute_id=institute._id) }}" method="POST">
         <div class="row">
           <div class="col-4">
             {{ pheno_form.model_name(class="form-control", placeholder="Name") }}
@@ -121,7 +121,7 @@
 {% macro phenomodel_list() %}
   <div class="card mt-3">
     <div class="card-body" style="overflow-y: auto; height: 700px;">
-      <table class="table table-sm" cellspacing="0">
+      <table class="table table-sm" style="border-collapse: collapse; border-spacing: 0;">
         <thead class="thead bg-light">
           <tr>
             <th>Name</th>
@@ -138,7 +138,7 @@
           {% for model in phenomodels %}
             <tr>
               <td>
-                <a href="{{ url_for('overview.phenomodel', institute_id=institute._id, model_id=model._id) }}">{{model.name}}</a>
+                <a href="{{ url_for('phenomodels.phenomodel', institute_id=institute._id, model_id=model._id) }}">{{model.name}}</a>
               </td>
               <td>{{model.description}}</td>
               <td>{{model.subpanels|length if model.subpanels else '0'}}</td>
