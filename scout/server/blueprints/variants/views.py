@@ -129,10 +129,6 @@ def variants(institute_id, case_name):
         store, institute_obj, case_obj, variants_query, result_size, page, query_form=form.data
     )
 
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -145,7 +141,6 @@ def variants(institute_id, case_name):
         genetic_models_palette=GENETIC_MODELS_PALETTE,
         cytobands=cytobands,
         page=page,
-        expand_search=expand_search,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -231,7 +226,6 @@ def str_variants(institute_id, case_name):
         form=form,
         page=page,
         filters=available_filters,
-        expand_search=str(request.method == "POST"),
         result_size=result_size,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -294,15 +288,11 @@ def sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
+
     return dict(
         case=case_obj,
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        expand_search=expand_search,
         filters=available_filters,
         form=form,
         institute=institute_obj,
@@ -356,12 +346,7 @@ def cancer_variants(institute_id, case_name):
                     flash(f"Content of field '{field}' does not have a valid format", "warning")
             # And do not submit the form
             return redirect(
-                url_for(
-                    ".cancer_variants",
-                    institute_id=institute_id,
-                    case_name=case_name,
-                    expand_search=True,
-                )
+                url_for(".cancer_variants", institute_id=institute_id, case_name=case_name)
             )
         page = int(Markup.escape(request.form.get("page", "1")))
 
@@ -410,10 +395,7 @@ def cancer_variants(institute_id, case_name):
         form,
         page=page,
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
+
     return dict(
         variant_type=variant_type,
         cytobands=cytobands,
@@ -422,7 +404,6 @@ def cancer_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        expand_search=expand_search,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -485,10 +466,7 @@ def cancer_sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
+
     return dict(
         case=case_obj,
         cancer_tier_options=CANCER_TIER_OPTIONS,
@@ -497,7 +475,6 @@ def cancer_sv_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        expand_search=expand_search,
         filters=available_filters,
         form=form,
         institute=institute_obj,
