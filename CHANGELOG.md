@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Moved Phenomodels code under a dedicated blueprint
+- Updated the instructions to load custom case report under admin guide
 - Keep variants filter window collapsed except when user expands it to filter
 ### Added
 - A summary table of pinned variants on the cancer case general report
