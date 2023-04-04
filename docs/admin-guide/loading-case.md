@@ -72,17 +72,23 @@ A number of case-associated reports (supported formats: HTML, PDF, Excel) can be
 While case General report and mtDNA report (the latter only available for non-cancer cases) are generated the moment a user clicks on their link, other types of reports are pre-existing documents that can be associated with the case immediately when it is loaded in Scout (by adding them to the case load config file) or later, using the command line.
 
 Available types or case reports:
-- **delivery**: Delivery Report (HTML)
 - **cnv**: Copy Number Variants Report (PDF), available only for cancer cases
 - **cov_qc**: Coverage QC Report (HTML), available only for cancer cases
+- **delivery**: Delivery Report (HTML)
 - **exe_ver**: Pipeline detailed software versions (YAML)
-- **reference_info**: Pipeline detailed reference file versions (YAML)
-- **multiqc**: [MultiQC](https://multiqc.info/) Report (HTML)
-- **multiqc_rna**: MultiQC RNA report (HTML)
 - **gene_fusion**: A report (PDF) showing gene fusions from RNA-Seq data, analysis limited to the clinical gene list
 - **gene_fusion_research**: A report (PDF) showing gene fusions from RNA-Seq data, performed on all genes
+- **multiqc**: [MultiQC](https://multiqc.info/) Report (HTML)
+- **multiqc_rna**: MultiQC RNA report (HTML)
+- **reference_info**: Pipeline detailed reference file versions (YAML)
+- **RNAfusion_inspector**: [nf-core rnafusion][nfcore-rnafusion] RNA Fusion Inspector file (HTML)
+- **RNAfusion_inspector_research**: [nf-core rnafusion][nfcore-rnafusion] research RNA Fusion Inspector file (HTML)
+- **RNAfusion_report**: [nf-core rnafusion][nfcore-rnafusion] RNA fusion report file (HTML)
+- **RNAfusion_report_research**: [nf-core rnafusion][nfcore-rnafusion] research RNA fusion report file (HTML)
 
-All these reports reflect the items present in [this dictionary](https://github.com/Clinical-Genomics/scout/blob/a494edd64090fd4f613c72308ff5623442792af1/scout/constants/case_tags.py#L4)
+
+All these reports reflect the items present in [this dictionary](https://github.com/Clinical-Genomics/scout/blob/b0cfc8795392ed7e1b223eeaa5ad5590fc6e8892/scout/constants/case_tags.py#L4)
+
 
 Use the following command to load/update a report for a pre-existing case:
 
@@ -94,9 +100,8 @@ Usage: scout load report [OPTIONS] CASE_ID REPORT_PATH
   Load a report document for a case.
 
 Options:
-  -t, --report-type [delivery|cnv|cov_qc|exe_ver|multiqc|multiqc_rna|gene_fusion|gene_fusion_research|reference_info]
+  -t, --report-type [delivery|cnv|cov_qc|exe_ver|multiqc|multiqc_rna|gene_fusion|gene_fusion_research|reference_info|RNAfusion_inspector|RNAfusion_inspector_research|RNAfusion_report|RNAfusion_report_research]
                                   Type of report  [required]
-
 ```
 
 #### Adding custom images to a case
@@ -185,3 +190,5 @@ scout load case --help
 ```
 
 for more instructions
+
+[nfcore-rnafusion]: https://nf-co.re/rnafusion/1.0.1
