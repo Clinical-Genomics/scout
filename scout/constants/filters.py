@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .so_terms import SEVERE_SO_TERMS
+from .so_terms import SEVERE_SO_TERMS, SEVERE_SO_TERMS_SV
 
 CLINICAL_FILTER_BASE = {
     "variant_type": "clinical",
@@ -12,7 +12,8 @@ CLINICAL_FILTER_BASE = {
 CLINICAL_FILTER_BASE_SV = {
     "variant_type": "clinical",
     "region_annotations": ["exonic", "splicing"],
-    "functional_annotations": SEVERE_SO_TERMS,
+    "functional_annotations": SEVERE_SO_TERMS_SV,
+    "local_obs": 30,
     "clingen_ngi": 10,
     "swegen": 10,
 }
