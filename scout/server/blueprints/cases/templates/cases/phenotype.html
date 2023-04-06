@@ -64,7 +64,7 @@
         <div class="col-11">
           {% if diagnosis.disease_id and diagnosis.description %}
             <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
-              {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
+              {{ diagnosis.disease_nr }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
             {% if diagnosis.disease_id in omim_terms %}
               <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', omim_nr=omim_terms[diagnosis.disease_id].disease_nr)}}">
