@@ -665,6 +665,22 @@ def test_build_swegen_sv(adapter):
     ]
 
 
+def test_build_local_obs_sv(adapter):
+    case_id = "cust000"
+    count = 5
+    query = {"local_obs": count}
+
+    mongo_query = adapter.build_query(case_id, query=query)
+    assert mongo_query["$and"] == [
+        {
+            "$or": [
+                {"local_obs_old": {"$exists": False}},
+                {"local_obs_old": {"$lt": query["local_obs"] + 1}},
+            ]
+        }
+    ]
+
+
 def test_build_decipher(adapter):
     case_id = "cust000"
     count = 1
