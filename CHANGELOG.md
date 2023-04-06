@@ -6,9 +6,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Display number of OMIM terms available and their last update on Diagnoses page
+
+## [4.66]
+### Changed
+- Moved Phenomodels code under a dedicated blueprint
+- Updated the instructions to load custom case report under admin guide
+### Added
 - A summary table of pinned variants on the cancer case general report
 - New openable matching causatives and managed variants lists for default gene panels only for convenience
-
+### Fixed
+- Gens structural variant page link individual id typo
 
 ## [4.65.2]
 ### Fixed
@@ -145,7 +153,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A couple of additional README badges for GitHub stats
 - Upload and display of pipeline reference info and executable version yaml files as custom reports
 - Testing CLI on hasta in PR template
-- Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
 - Instructions on how to call dibs on scout-stage server in pull request template
 - Deprecated CLI commands `scout load <delivery_report, gene_fusion_report, coverage_qc_report, cnv_report>` to replace them with command `scout load report -t <report type>`

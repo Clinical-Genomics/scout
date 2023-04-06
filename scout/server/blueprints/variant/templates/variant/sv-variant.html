@@ -231,7 +231,7 @@
           <span class="d-inline">Copy number profile</span>
           <span class="d-inline ms-3">
             {% for sample in variant.samples %}
-              <a class="btn btn-secondary" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}&case_id={{case._id}}&individiual_id={{sample.sample_id}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
+              <a class="btn btn-secondary" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}&case_id={{case._id}}&individual_id={{sample.sample_id}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
             {% endfor %}
           </span>
         </li>
