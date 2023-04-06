@@ -18,7 +18,6 @@ def test_view_diseases(mock_app):
 
     # insert one in database
     omim_term = {
-        "_id": "OMIM:193040",
         "disease_id": "OMIM:193040",
         "description": "Cholestasis progressive canalicular",
         "source": "OMIM",

@@ -23,5 +23,5 @@ def diseases():
     else:
         click.echo("Disease")
         for disease_obj in adapter.disease_terms():
-            click.echo("{0}".format(disease_obj["_id"]))
+            click.echo("{0}".format(disease_obj["disease_id"]))
         LOG.info("{0} diseases found".format(nr_diseases))
