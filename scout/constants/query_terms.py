@@ -32,6 +32,7 @@ PRIMARY_CRITERIA = ["clinsig"]
 SECONDARY_CRITERIA = [
     "gnomad_frequency",
     "local_obs",
+    "local_obs_freq",
     "clingen_ngi",
     "swegen",
     "spidex_human",

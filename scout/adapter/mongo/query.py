@@ -590,12 +590,12 @@ class QueryHandler(object):
                 )
 
             if criterion == "local_obs_freq":
-                local_obs = query.get("local_obs_freq")
+                local_obs_freq = query.get("local_obs_freq")
                 mongo_secondary_query.append(
                     {
                         "$or": [
                             {"local_obs_old_freq": None},
-                            {"local_obs_old_freq": {"$lt": local_obs + 1}},
+                            {"local_obs_old_freq": {"$lt": local_obs_freq}},
                         ]
                     }
                 )
