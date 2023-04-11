@@ -146,7 +146,7 @@ def user_cases(store, login_user):
 
     match_query = {
         "$match": {
-            "collaborators": {"$in": [login_user.institutes]},
+            "collaborators": {"$in": login_user.institutes},
         }
     }  # Return only cases available for the user
     group = {
