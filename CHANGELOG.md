@@ -6,9 +6,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Prepare to filter local SV frequency
 - Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
 - Speed up instituteS page loadiding by refactoring cases/institutes query
+- Clinical Filter for SVs includes `splice_polypyrimidine_tract_variant` as a severe consequence
+- Clinical Filter for SVs includes local variant frequency freeze ("old") for filtering, starting at 30 counts
 
 ## [4.66]
 ### Changed
