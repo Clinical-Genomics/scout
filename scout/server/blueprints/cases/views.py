@@ -53,9 +53,8 @@ cases_bp = Blueprint(
 @templated("cases/index.html")
 def index():
     """Display a list of all user institutes."""
-    institute_cases = user_cases(store, current_user)
     institutes_count = []
-    for item in institute_cases:
+    for item in user_cases(store, current_user):
         institute_obj = store.institute(item["_id"]["institute"])
         if not institute_obj:
             continue
