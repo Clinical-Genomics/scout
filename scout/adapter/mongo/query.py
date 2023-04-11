@@ -298,7 +298,7 @@ class QueryHandler(object):
         # there is only 'clinsig' criterion among the primary terms right now
         primary_terms = False
 
-        # gnomad_frequency, local_obs, clingen_ngi, swegen, spidex_human, cadd_score, genetic_models, mvl_tag, clinvar_tag, cosmic_tag
+        # gnomad_frequency, local_obs, local_obs_freq, clingen_ngi, swegen, spidex_human, cadd_score, genetic_models, mvl_tag, clinvar_tag, cosmic_tag
         # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, control_frequency, tumor_frequency
         secondary_terms = False
 
@@ -585,6 +585,17 @@ class QueryHandler(object):
                         "$or": [
                             {"local_obs_old": None},
                             {"local_obs_old": {"$lt": local_obs + 1}},
+                        ]
+                    }
+                )
+
+            if criterion == "local_obs_freq":
+                local_obs_freq = query.get("local_obs_freq")
+                mongo_secondary_query.append(
+                    {
+                        "$or": [
+                            {"local_obs_old_freq": None},
+                            {"local_obs_old_freq": {"$lt": local_obs_freq}},
                         ]
                     }
                 )
