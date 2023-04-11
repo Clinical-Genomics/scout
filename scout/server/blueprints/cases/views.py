@@ -30,6 +30,7 @@ from scout.server.utils import (
     institute_and_case,
     jsonconverter,
     templated,
+    user_cases,
     user_institutes,
     zip_dir_to_obj,
 )
@@ -52,12 +53,13 @@ cases_bp = Blueprint(
 @templated("cases/index.html")
 def index():
     """Display a list of all user institutes."""
-    institute_objs = user_institutes(store, current_user)
-    institutes_count = (
-        (institute_obj, sum(1 for i in store.cases(collaborator=institute_obj["_id"])))
-        for institute_obj in institute_objs
-        if institute_obj
-    )
+    institutes_count = []
+    for item in user_cases(store, current_user):
+        institute_obj = store.institute(item["_id"]["institute"])
+        if not institute_obj:
+            continue
+        institutes_count.append((institute_obj, item["count"]))
+
     return dict(institutes=institutes_count)
 
 
