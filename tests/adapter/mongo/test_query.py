@@ -666,11 +666,18 @@ def test_build_swegen_sv(adapter):
 
 
 def test_build_local_obs_sv(adapter):
+    """Test building query. Given query parameters from interface, check that
+    a correct db query is made. This tests local observation counts for SVs.
+    """
+
+    # GIVEN query parameters for local observations
     case_id = "cust000"
     count = 5
     query = {"local_obs": count}
-
+    # WHEN asking adapter to build a db query
     mongo_query = adapter.build_query(case_id, query=query)
+
+    # THEN the expected query part for local observations is returned
     assert mongo_query["$and"] == [
         {
             "$or": [
@@ -682,11 +689,19 @@ def test_build_local_obs_sv(adapter):
 
 
 def test_build_local_obs_freq(adapter):
+    """Test building query. Given query parameters from interface, check that
+    a correct db query is made. This tests local observations frequency.
+    """
+
+    # GIVEN query parameters for local observations
     case_id = "cust000"
     count = 5
     query = {"local_obs_freq": count}
 
+    # WHEN asking adapter to build a db query
     mongo_query = adapter.build_query(case_id, query=query)
+
+    # THEN the expected query part for local observations is returned
     assert mongo_query["$and"] == [
         {
             "$or": [
