@@ -133,6 +133,35 @@ def institute_and_case(store, institute_id, case_name=None):
     return institute_obj
 
 
+def user_cases(store, login_user):
+    """Returns all institutes with case count for a logged user
+
+    Args:
+        store(scout.adapter.mongo.base.MongoAdapter)
+        login_user(werkzeug.local.LocalProxy)
+
+    Returns:
+        pymongo.Cursor
+    """
+
+    match_query = {
+        "$match": {
+            "collaborators": {"$in": [login_user.institutes]},
+        }
+    }  # Return only cases available for the user
+    group = {
+        "$group": {
+            "_id": {
+                "institute": "$owner",
+            },
+            "count": {"$sum": 1},
+        }
+    }  # Group cases by institute
+
+    pipeline = [match_query, group]
+    return store.case_collection.aggregate(pipeline)
+
+
 def user_institutes(store, login_user):
     """Preprocess institute objects."""
     if login_user.is_admin:
