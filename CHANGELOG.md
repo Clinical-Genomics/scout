@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Display number of OMIM terms available and their last update on Diagnoses page
+### Changed
+- Speed up instituteS page loadiding by refactoring cases/institutes query
 
 ## [4.66]
 ### Changed
