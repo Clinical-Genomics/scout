@@ -9,15 +9,12 @@ missing variants that should have been found. Recognising that `splice_polypyrim
 an SV specific SO severity list, that contains this term, into the clinical filter.
 
 ### Other features
-- Flask2 has been released very recently, and the codebase was updated to support the new version
-- Saved filters can now be locked, preventing accidental deletion. This will be useful also for e.g. cancer and other pre-prescribed triage schemes.
-- Saved filters can now be marked audited, leaving a line in the case event audit log, as well as on the general report. The analyst can so mark what
-filters were applied and tried on the cases, communicating e.g. that both a stringent and less stringent quality filter has been tried,
-  or say both AD_denovo, homozygous recessive and compound recessive variants were indeed checked.
-- Several features have been added to cancer filters and the cancer variantS view has been refurbished and harmonized between Lund and Solna. Expect more similar
-efforts in the next few releases!
 
 Scout version 4.67 contains additional new features. This is the complete list of changes introduced from the previous one:
 
 ## [4.67] CHANGELOG
-
+### Added
+- Prepare to filter local SV frequency
+### Changed
+- Clinical Filter for SVs includes `splice_polypyrimidine_tract_variant` as a severe consequence
+- Clinical Filter for SVs includes local variant frequency freeze ("old") for filtering, starting at 30 counts
