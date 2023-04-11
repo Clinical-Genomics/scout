@@ -157,10 +157,11 @@ def user_cases(store, login_user):
             "count": {"$sum": 1},
         }
     }  # Group cases by institute
+    sort = {"$sort": {"_id.institute": 1}}  # Sort by inst _id ascending
     if login_user.is_admin:
-        pipeline = [group]
+        pipeline = [group, sort]
     else:
-        pipeline = [match_query, group]
+        pipeline = [match_query, group, sort]
     return store.case_collection.aggregate(pipeline)
 
 
