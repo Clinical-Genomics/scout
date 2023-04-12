@@ -144,6 +144,7 @@ def variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        expand_search=request.method == "POST" and page == 1,
         **data,
     )
 
@@ -229,6 +230,7 @@ def str_variants(institute_id, case_name):
         result_size=result_size,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        expand_search=request.method == "POST" and page == 1,
         **data,
     )
 
@@ -303,6 +305,7 @@ def sv_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
+        expand_search=request.method == "POST" and page == 1,
         **data,
     )
 
@@ -407,6 +410,7 @@ def cancer_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        expand_search=request.method == "POST" and page == 1,
         **data,
     )
 
@@ -485,6 +489,7 @@ def cancer_sv_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
+        expand_search=request.method == "POST" and page == 1,
         **data,
     )
 

@@ -45,7 +45,7 @@
          <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
        </div>
        <!--Expand filters form if filters were used in a previous POST request-->
-       <div class="card-body panel-collapse collapse" id="collapseFilters">
+       <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters">
          {{ snv_filters(form, institute, case) }}
        </div>
        {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
