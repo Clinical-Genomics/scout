@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pymongo
 from bson import ObjectId
+from flask import flash
 
 from scout.constants import DATE_DAY_FORMATTER
 
@@ -513,6 +514,9 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
                 }
             },
         )
+        if not updated_comment:
+            flash("Comment could not be edited because it is no longer available.", "warning")
+            return
         # create an event to register that user has updated a comment
         current_time = datetime.now()
         event = dict(
