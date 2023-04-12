@@ -31,12 +31,10 @@
     var the_form = document.forms['filters_form'];
 
     document.getElementById('hide_dismissed').onchange = function() {
-      document.getElementById('expand_search').value = "False";
       the_form.submit();
     };
 
     document.getElementById('show_unaffected').onchange = function() {
-      document.getElementById('expand_search').value = "False";
       the_form.submit();
     };
 
@@ -59,7 +57,6 @@
 
 {% macro filter_form_footer(form, result_size, total_variants, more_variants, page, nvars, institute) %}
 <div class="card-footer text-center">
-  <input type="hidden" id="expand_search" name="expand_search">
   <div class="row">
     <div class="col-4">
       <div class="form-check d-flex justify-content-start">
