@@ -43,7 +43,7 @@ def reset_dismissed(institute_id, case_name):
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form.getlist("page"))
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -154,7 +154,7 @@ def variants(institute_id, case_name):
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
 
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form.getlist("page"))
     category = "str"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
@@ -230,7 +230,7 @@ def str_variants(institute_id, case_name):
         result_size=result_size,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        expand_search=request.method == "POST" and page == 1,
+        expand_search=request.method == "POST",
         **data,
     )
 
@@ -240,7 +240,7 @@ def str_variants(institute_id, case_name):
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
 
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form.getlist("page"))
     category = "sv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -320,6 +320,7 @@ def cancer_variants(institute_id, case_name):
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+    page = controllers.get_variants_page(request.form.getlist("page"))
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
@@ -351,10 +352,7 @@ def cancer_variants(institute_id, case_name):
             return redirect(
                 url_for(".cancer_variants", institute_id=institute_id, case_name=case_name)
             )
-        page = int(Markup.escape(request.form.get("page", "1")))
-
     else:
-        page = int(Markup.escape(request.args.get("page", "1")))
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
@@ -420,7 +418,7 @@ def cancer_variants(institute_id, case_name):
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
 
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form.getlist("page"))
     category = "cancer_sv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(

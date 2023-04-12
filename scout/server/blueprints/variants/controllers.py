@@ -5,6 +5,7 @@ from datetime import date
 import bson
 from flask import Response, flash, session, url_for
 from flask_login import current_user
+from markupsafe import Markup
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, MultiDict
 
@@ -41,6 +42,14 @@ from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
 from .utils import update_case_panels
 
 LOG = logging.getLogger(__name__)
+
+
+def get_variants_page(pages=list) -> int:
+    """Get current variants page from request data"""
+    if pages:
+        return int(Markup.escape(pages[0]))
+    else:
+        return 1
 
 
 def populate_force_show_unaffected_vars(institute_obj, form):
