@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Speed up instituteS page loadiding by refactoring cases/institutes query
 - Clinical Filter for SVs includes `splice_polypyrimidine_tract_variant` as a severe consequence
 - Clinical Filter for SVs includes local variant frequency freeze ("old") for filtering, starting at 30 counts
+### Fixed
+- Warning instead of crashed page when attempting to retrieve a non-existent Phenopacket
 
 ## [4.66]
 ### Changed
