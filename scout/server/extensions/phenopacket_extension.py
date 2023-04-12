@@ -107,7 +107,10 @@ class PhenopacketAPI:
             LOG.warning(json_response["message"])
             return
 
-        json_content = json_response.get("content")[0]
+        json_content = json_response.get("content")
+        if not json_content:
+            return None
+        json_content = json_content[0]
 
         selected_json = {}
         valid_phenopacket_fields = [
