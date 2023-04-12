@@ -5,8 +5,9 @@ from datetime import date
 import bson
 from flask import Response, flash, session, url_for
 from flask_login import current_user
+from markupsafe import Markup
 from pymongo.errors import DocumentTooLarge
-from werkzeug.datastructures import Headers, MultiDict
+from werkzeug.datastructures import Headers, ImmutableMultiDict, MultiDict
 
 from scout.constants import (
     ACMG_COMPLETE_MAP,
@@ -41,6 +42,21 @@ from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
 from .utils import update_case_panels
 
 LOG = logging.getLogger(__name__)
+
+
+def get_variants_page(form=ImmutableMultiDict) -> int:
+    """Get current variants page from request data"""
+    pages = form.getlist("page")
+    if pages:
+        return int(Markup.escape(pages[0]))
+    else:
+        return 1
+
+
+def get_expand_search(form=ImmutableMultiDict) -> bool:
+    """Checks whether to expand filters window or not"""
+    pages = form.getlist("page")
+    return pages == ["1"]
 
 
 def populate_force_show_unaffected_vars(institute_obj, form):
