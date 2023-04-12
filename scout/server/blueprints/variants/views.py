@@ -43,7 +43,7 @@ def reset_dismissed(institute_id, case_name):
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form)
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -129,23 +129,19 @@ def variants(institute_id, case_name):
         store, institute_obj, case_obj, variants_query, result_size, page, query_form=form.data
     )
 
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
     return dict(
-        institute=institute_obj,
-        case=case_obj,
-        form=form,
-        filters=available_filters,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
-        severe_so_terms=SEVERE_SO_TERMS,
-        genetic_models_palette=GENETIC_MODELS_PALETTE,
+        case=case_obj,
         cytobands=cytobands,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=controllers.get_expand_search(request.form),
+        filters=available_filters,
+        form=form,
+        genetic_models_palette=GENETIC_MODELS_PALETTE,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
-        expand_search=expand_search,
+        severe_so_terms=SEVERE_SO_TERMS,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
@@ -157,8 +153,7 @@ def variants(institute_id, case_name):
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
-
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form)
     category = "str"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
@@ -222,19 +217,19 @@ def str_variants(institute_id, case_name):
     )
 
     return dict(
-        institute=institute_obj,
         case=case_obj,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        variant_type=variant_type,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
         cytobands=cytobands,
-        form=form,
-        page=page,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
-        expand_search=str(request.method == "POST"),
+        form=form,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        page=page,
         result_size=result_size,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
         **data,
     )
 
@@ -243,8 +238,7 @@ def str_variants(institute_id, case_name):
 @templated("variants/sv-variants.html")
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
-
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form)
     category = "sv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -294,15 +288,12 @@ def sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
+
     return dict(
         case=case_obj,
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        expand_search=expand_search,
+        expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
         form=form,
         institute=institute_obj,
@@ -321,6 +312,9 @@ def sv_variants(institute_id, case_name):
 @templated("variants/cancer-variants.html")
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
+
+    page = controllers.get_variants_page(request.form)
+
     category = "cancer"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -356,17 +350,9 @@ def cancer_variants(institute_id, case_name):
                     flash(f"Content of field '{field}' does not have a valid format", "warning")
             # And do not submit the form
             return redirect(
-                url_for(
-                    ".cancer_variants",
-                    institute_id=institute_id,
-                    case_name=case_name,
-                    expand_search=True,
-                )
+                url_for(".cancer_variants", institute_id=institute_id, case_name=case_name)
             )
-        page = int(Markup.escape(request.form.get("page", "1")))
-
     else:
-        page = int(Markup.escape(request.args.get("page", "1")))
         form = CancerFiltersForm(request.args)
         # set chromosome to all chromosomes
         form.chrom.data = request.args.get("chrom", "")
@@ -410,22 +396,19 @@ def cancer_variants(institute_id, case_name):
         form,
         page=page,
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
+
     return dict(
-        variant_type=variant_type,
         cytobands=cytobands,
-        filters=available_filters,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        expand_search=expand_search,
-        show_dismiss_block=controllers.get_show_dismiss_block(),
+        expand_search=controllers.get_expand_search(request.form),
+        filters=available_filters,
         result_size=result_size,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
         **data,
     )
 
@@ -435,7 +418,7 @@ def cancer_variants(institute_id, case_name):
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
 
-    page = int(Markup.escape(request.form.get("page", "1")))
+    page = controllers.get_variants_page(request.form)
     category = "cancer_sv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -485,10 +468,7 @@ def cancer_sv_variants(institute_id, case_name):
     data = controllers.sv_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
     )
-    expand_search = request.method == "POST" and request.form.get("expand_search") in [
-        "True",
-        "",
-    ]
+
     return dict(
         case=case_obj,
         cancer_tier_options=CANCER_TIER_OPTIONS,
@@ -497,7 +477,7 @@ def cancer_sv_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        expand_search=expand_search,
+        expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
         form=form,
         institute=institute_obj,
