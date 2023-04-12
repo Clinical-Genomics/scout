@@ -130,21 +130,21 @@ def variants(institute_id, case_name):
     )
 
     return dict(
-        institute=institute_obj,
-        case=case_obj,
-        form=form,
-        filters=available_filters,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
         cancer_tier_options=CANCER_TIER_OPTIONS,
-        severe_so_terms=SEVERE_SO_TERMS,
-        genetic_models_palette=GENETIC_MODELS_PALETTE,
+        case=case_obj,
         cytobands=cytobands,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=controllers.get_expand_search(request.form),
+        filters=available_filters,
+        form=form,
+        genetic_models_palette=GENETIC_MODELS_PALETTE,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
+        severe_so_terms=SEVERE_SO_TERMS,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        expand_search=controllers.get_expand_search(request.form),
         **data,
     )
 
@@ -217,19 +217,19 @@ def str_variants(institute_id, case_name):
     )
 
     return dict(
-        institute=institute_obj,
         case=case_obj,
-        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
-        variant_type=variant_type,
-        manual_rank_options=MANUAL_RANK_OPTIONS,
         cytobands=cytobands,
-        form=form,
-        page=page,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
+        form=form,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        page=page,
         result_size=result_size,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        expand_search=controllers.get_expand_search(request.form),
+        variant_type=variant_type,
         **data,
     )
 
@@ -293,6 +293,7 @@ def sv_variants(institute_id, case_name):
         case=case_obj,
         cytobands=cytobands,
         dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
         form=form,
         institute=institute_obj,
@@ -303,7 +304,6 @@ def sv_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
-        expand_search=controllers.get_expand_search(request.form),
         **data,
     )
 
@@ -398,17 +398,17 @@ def cancer_variants(institute_id, case_name):
     )
 
     return dict(
-        variant_type=variant_type,
         cytobands=cytobands,
-        filters=available_filters,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
-        show_dismiss_block=controllers.get_show_dismiss_block(),
-        result_size=result_size,
-        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         expand_search=controllers.get_expand_search(request.form),
+        filters=available_filters,
+        result_size=result_size,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
         **data,
     )
 
@@ -477,6 +477,7 @@ def cancer_sv_variants(institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
+        expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
         form=form,
         institute=institute_obj,
@@ -487,7 +488,6 @@ def cancer_sv_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
-        expand_search=controllers.get_expand_search(request.form),
         **data,
     )
 
