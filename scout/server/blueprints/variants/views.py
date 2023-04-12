@@ -43,7 +43,8 @@ def reset_dismissed(institute_id, case_name):
 @templated("variants/variants.html")
 def variants(institute_id, case_name):
     """Display a list of SNV variants."""
-    page = controllers.get_variants_page(request.form.getlist("page"))
+    pages = request.form.getlist("page")
+    page = controllers.get_variants_page(pages)
     category = "snv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -144,7 +145,7 @@ def variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        expand_search=request.method == "POST" and page == 1,
+        expand_search=controllers.get_expand_search(pages),
         **data,
     )
 
@@ -153,8 +154,8 @@ def variants(institute_id, case_name):
 @templated("variants/str-variants.html")
 def str_variants(institute_id, case_name):
     """Display a list of STR variants."""
-
-    page = controllers.get_variants_page(request.form.getlist("page"))
+    pages = request.form.getlist("page")
+    page = controllers.get_variants_page(pages)
     category = "str"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
@@ -230,7 +231,7 @@ def str_variants(institute_id, case_name):
         result_size=result_size,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        expand_search=request.method == "POST",
+        expand_search=controllers.get_expand_search(pages),
         **data,
     )
 
@@ -239,8 +240,8 @@ def str_variants(institute_id, case_name):
 @templated("variants/sv-variants.html")
 def sv_variants(institute_id, case_name):
     """Display a list of structural variants."""
-
-    page = controllers.get_variants_page(request.form.getlist("page"))
+    pages = request.form.getlist("page")
+    page = controllers.get_variants_page(pages)
     category = "sv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -305,7 +306,7 @@ def sv_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
-        expand_search=request.method == "POST" and page == 1,
+        expand_search=controllers.get_expand_search(pages),
         **data,
     )
 
@@ -314,13 +315,15 @@ def sv_variants(institute_id, case_name):
 @templated("variants/cancer-variants.html")
 def cancer_variants(institute_id, case_name):
     """Show cancer variants overview."""
+    pages = request.form.getlist("page")
+    page = controllers.get_variants_page(pages)
+
     category = "cancer"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
-    page = controllers.get_variants_page(request.form.getlist("page"))
 
     user_obj = store.user(current_user.email)
     if request.method == "POST":
@@ -408,7 +411,7 @@ def cancer_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         result_size=result_size,
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
-        expand_search=request.method == "POST" and page == 1,
+        expand_search=controllers.get_expand_search(pages),
         **data,
     )
 
@@ -417,8 +420,8 @@ def cancer_variants(institute_id, case_name):
 @templated("variants/cancer-sv-variants.html")
 def cancer_sv_variants(institute_id, case_name):
     """Display a list of cancer structural variants."""
-
-    page = controllers.get_variants_page(request.form.getlist("page"))
+    pages = request.form.getlist("page")
+    page = controllers.get_variants_page(pages)
     category = "cancer_sv"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_type = Markup.escape(
@@ -487,7 +490,7 @@ def cancer_sv_variants(institute_id, case_name):
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,
-        expand_search=request.method == "POST" and page == 1,
+        expand_search=controllers.get_expand_search(pages),
         **data,
     )
 

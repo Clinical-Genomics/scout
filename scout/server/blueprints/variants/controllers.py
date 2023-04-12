@@ -52,6 +52,11 @@ def get_variants_page(pages=list) -> int:
         return 1
 
 
+def get_expand_search(pages=list) -> bool:
+    """Checks whether to expand filters window or not"""
+    return pages == ["1"]
+
+
 def populate_force_show_unaffected_vars(institute_obj, form):
     """Whenever a user institute contains the key/value check_show_all_vars=True,
     then all variants (and not only those occurring in affected individuals) should be shown
