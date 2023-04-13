@@ -576,7 +576,7 @@ class CaseHandler(object):
         """
 
         pipeline = []
-\        if institute_id:
+        if institute_id:å
             pipeline.append({"$match": {"collaborators": institute_id}})
         pipeline.append({"$count": "nr_cases"})
         result = {"nr_cases": res["nr_cases"] for res in self.case_collection.aggregate(pipeline)}
