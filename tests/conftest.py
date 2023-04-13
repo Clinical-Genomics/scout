@@ -422,6 +422,7 @@ def case_obj(request, parsed_case):
     case = parsed_case
     case["_id"] = parsed_case["case_id"]
     case["owner"] = parsed_case["owner"]
+    case["collaborators"] = [parsed_case["owner"]]
     case["created_at"] = parsed_case["analysis_date"]
     case["dynamic_gene_list"] = []
     case["has_svvariants"] = True

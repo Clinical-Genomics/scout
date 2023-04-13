@@ -576,12 +576,13 @@ class CaseHandler(object):
         """
 
         pipeline = []
-
+        print("try nr cases")
         if institute_id:
             pipeline.append({"$match": {"collaborators": institute_id}})
         pipeline.append({"$count": "nr_cases"})
-        result = self.case_collection.aggregate(pipeline)
+        result = {"nr_cases": res["nr_cases"] for res in self.case_collection.aggregate(pipeline)}
         try:
+            print("result {}".format(result))
             nr_cases = int(result["nr_cases"])
         except (ValueError, TypeError):
             return None
