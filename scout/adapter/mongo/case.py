@@ -574,12 +574,17 @@ class CaseHandler(object):
         Returns:
             nr_cases(int)
         """
-        query = {}
+
+        pipeline = []
 
         if institute_id:
-            query["collaborators"] = institute_id
-
-        nr_cases = sum(1 for i in self.case_collection.find(query))
+            pipeline.append({"$match": {"collaborators": institute_id}})
+        pipeline.append({"$count": "nr_cases"})
+        result = self.case_collection.aggregate(pipeline)
+        try:
+            nr_cases = int(result["nr_cases"])
+        except (ValueError, TypeError):
+            return None
 
         return nr_cases
 

@@ -123,8 +123,8 @@ INDEXES = {
         IndexModel([("synopsis", TEXT)], default_language="english", name="synopsis_text"),
         IndexModel([("causatives", ASCENDING)], name="causatives"),
         IndexModel(
-            [("collaborators", ASCENDING), ("updated_at", ASCENDING)],
-            name="collaborators_updated_at",
+            [("collaborators", ASCENDING), ("status", ASCENDING), ("updated_at", ASCENDING)],
+            name="collaborators_status_updated_at",
         ),
     ],
 }
