@@ -42,7 +42,7 @@
         <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">Filters</a></strong>
       </div>
       <!--Expand filters form if filters were used in a previous POST request or the previous POST request form was not validated-->
-      <div class="card-body panel-collapse collapse {{ 'show' if request.args.get('expand_search') == "True" or expand_search is sameas true }}" id="collapseFilters" >
+      <div class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}" id="collapseFilters" >
          {{ cancer_filters(form, institute, case) }}
       </div>
         {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
