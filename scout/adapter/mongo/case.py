@@ -564,29 +564,6 @@ class CaseHandler(object):
             )
         ]
 
-    def nr_cases(self, institute_id=None):
-        """Return the number of cases
-
-
-        Args:
-            institute_id(str): Institute id
-
-        Returns:
-            nr_cases(int)
-        """
-
-        pipeline = []
-        if institute_id:
-            pipeline.append({"$match": {"collaborators": institute_id}})
-        pipeline.append({"$count": "nr_cases"})
-        result = {"nr_cases": res["nr_cases"] for res in self.case_collection.aggregate(pipeline)}
-        try:
-            nr_cases = int(result["nr_cases"])
-        except (ValueError, TypeError):
-            return None
-
-        return nr_cases
-
     def nr_cases_by_status(self, institute_id=None):
         """For an institute, retrieves number of cases in each case status category
         Args:

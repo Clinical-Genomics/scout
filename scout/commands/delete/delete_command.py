@@ -22,7 +22,7 @@ DELETE_VARIANTS_HEADER = [
     "Total variants",
     "Removed variants",
 ]
-CASE_STATUS = ["solved", "archived", "migrated", "active", "inactive", "prioritized"]
+CASE_STATUS = ["solved", "archived", "active", "inactive", "ignored", "prioritized"]
 VARIANT_CATEGORIES = ["snv", "sv", "cancer", "cancer_sv", "str"]
 
 
