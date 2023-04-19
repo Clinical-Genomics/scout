@@ -209,6 +209,29 @@ def fetch_hpo_to_genes_to_disease():
     return fetch_resource(url)
 
 
+def fetch_hpo_disease_annotation():
+    """Fetch the latest version of the map from phenotypes to genes
+
+    Returns:
+        res(list(str)): A list with the lines formatted this way:
+
+        #description: "HPO annotations for rare diseases [8120: OMIM; 47: DECIPHER; 4264 ORPHANET]"
+        #version: 2023-04-05
+        #tracker: https://github.com/obophenotype/human-phenotype-ontology/issues
+        #hpo-version: http://purl.obolibrary.org/obo/hp/releases/2023-04-05/hp.json
+        database_id     disease_name    qualifier       hpo_id  reference       evidence        onset   frequency       sex     modifier        aspect  biocuration
+        OMIM:619340     Developmental and epileptic encephalopathy 96           HP:0011097      PMID:31675180   PCS             1/2                     P       HPO:probinson[2021-06-21]
+        OMIM:619340     Developmental and epileptic encephalopathy 96           HP:0002187      PMID:31675180   PCS             1/1                     P       HPO:probinson[2021-06-21]
+        ...
+        OMIM:609153     Pseudohyperkalemia, familial, 2, due to red cell leak           HP:0002378      PMID:2766660    PCS                                     P       HPO:lccarmody[2018-10-03]
+        OMIM:609153     Pseudohyperkalemia, familial, 2, due to red cell leak           HP:0003324      PMID:2766660    PCS                                     P       HPO:lccarmody[2018-10-03]
+        OMIM:609153     Pseudohyperkalemia, familial, 2, due to red cell leak           HP:0002153      PMID:2766660    PCS                                     P       HPO:lccarmody[2018-10-03];HPO:lccarmody[2018-10-03]
+        ...
+    """
+    url = HPO_URL.format("phenotype.hpoa")
+    return fetch_resource(url)
+
+
 def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False):
     """
     Fetch the necessary HPO files from http://compbio.charite.de

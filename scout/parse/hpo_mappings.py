@@ -46,6 +46,10 @@ def parse_hpo_diseases(hpo_lines):
     for index, line in enumerate(hpo_lines):
         # First line is a header
         if index == 0:
+            if line.startswith("#"):
+                # old style files, keep going.
+            else:
+                # we will need to get disease from mim2gene.
             continue
         # Skip empty lines
         if not len(line) > 3:

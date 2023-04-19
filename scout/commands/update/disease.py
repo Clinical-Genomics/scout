@@ -20,7 +20,7 @@ from scout.load.hpo import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
-    fetch_hpo_terms,
+    fetch_hpo_disease_annotation,
     fetch_hpo_to_genes_to_disease,
     fetch_mim_files,
 )
@@ -35,7 +35,7 @@ def _check_resources(resources):
         resources(dict): resource names as keys and resource file lines as values
     """
     for resname, lines in resources.items():
-        if not lines or lines[0].startswith("#") is False:
+        if not lines:
             LOG.error(f"Resource file '{resname}' doesn't contain valid data.")
             raise click.Abort()
 
@@ -94,7 +94,7 @@ def diseases(downloads_folder, api_key):
             mim_files = fetch_mim_files(api_key, genemap2=True)
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_gene_lines"] = fetch_hpo_to_genes_to_disease()
-
+            resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
         except Exception as err:
             LOG.warning(err)
             raise click.Abort()
