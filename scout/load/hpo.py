@@ -55,7 +55,13 @@ def load_hpo(
     )
 
 
-def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=None):
+def load_hpo_terms(
+    adapter,
+    hpo_lines=None,
+    hpo_gene_lines=None,
+    hpo_phenotype_annotation_lines=None,
+    alias_genes=None,
+):
     """Load the hpo terms into the database
 
     Parse the hpo lines, build the objects and add them to the database
@@ -83,7 +89,6 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     if not alias_genes:
         alias_genes = adapter.genes_by_alias()
 
-    LOG.info("Adding gene information to hpo terms ...")
     for hpo_to_symbol in parse_hpo_to_genes(hpo_gene_lines):
         hgnc_symbol = hpo_to_symbol["hgnc_symbol"]
         hpo_id = hpo_to_symbol["hpo_id"]
@@ -107,7 +112,6 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
 
     start_time = datetime.now()
 
-    LOG.info("Loading the hpo terms...")
     nr_terms = len(hpo_terms)
     hpo_bulk = []
     with progressbar(hpo_terms.values(), label="Loading hpo terms", length=nr_terms) as bar:
@@ -125,7 +129,9 @@ def load_hpo_terms(adapter, hpo_lines=None, hpo_gene_lines=None, alias_genes=Non
     LOG.info("Time to load terms: {0}".format(datetime.now() - start_time))
 
 
-def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=None):
+def load_disease_terms(
+    adapter, genemap_lines, genes=None, hpo_disease_lines=None, hpo_annotation_lines=None
+):
     """Load the omim phenotypes into the database
 
     Parse the phenotypes from genemap2.txt and find the associated hpo terms
@@ -136,7 +142,7 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
         genemap_lines(iterable(str))
         genes(dict): Dictionary with all genes found in database
         hpo_disease_lines(iterable(str))
-
+        hpo_annotation_lines(iterable(str))
     """
     # Get a map with hgnc symbols to hgnc ids from scout
     if not genes:
@@ -152,7 +158,6 @@ def load_disease_terms(adapter, genemap_lines, genes=None, hpo_disease_lines=Non
     start_time = datetime.now()
     nr_diseases = None
 
-    LOG.info("Loading the hpo disease...")
     for nr_diseases, disease_number in enumerate(disease_terms):
         disease_info = disease_terms[disease_number]
         disease_id = "OMIM:{0}".format(disease_number)

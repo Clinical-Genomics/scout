@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, Iterable
 
 LOG = logging.getLogger(__name__)
 
@@ -46,10 +47,6 @@ def parse_hpo_diseases(hpo_lines):
     for index, line in enumerate(hpo_lines):
         # First line is a header
         if index == 0:
-            if line.startswith("#"):
-                # old style files, keep going.
-            else:
-                # we will need to get disease from mim2gene.
             continue
         # Skip empty lines
         if not len(line) > 3:
@@ -115,3 +112,26 @@ def parse_hpo_disease(hpo_line):
             hpo_info["hpo_term"] = hpo_line[0]
 
     return hpo_info
+
+
+def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, str]:
+    """Parse HPO annotation files.
+
+    Returns only HPO info that can be merged with a fundamental OMIM or other existing disease annotation.
+
+    Args:
+        hpo_annotation_lines: Iterable[str]
+
+        Lines from a phenotype.hpoa file from HPO.org of the format:
+
+        #description: "HPO annotations for rare diseases [8120: OMIM; 47: DECIPHER; 4264 ORPHANET]"
+        #version: 2023-04-05
+        #tracker: https://github.com/obophenotype/human-phenotype-ontology/issues
+        #hpo-version: http://purl.obolibrary.org/obo/hp/releases/2023-04-05/hp.json
+        database_id	disease_name	qualifier	hpo_id	reference	evidence	onset	frequency	sex	modifier	aspect	biocuration
+        OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0011097	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
+        OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0002187	PMID:31675180	PCS		1/1			P	HPO:probinson[2021-06-21]
+        OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0001518	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
+    Returns:
+
+    """
