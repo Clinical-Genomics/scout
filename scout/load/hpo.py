@@ -6,10 +6,14 @@ from click import progressbar
 
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
-from scout.parse.hpo_mappings import parse_hpo_diseases, parse_hpo_to_genes
+from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_diseases, parse_hpo_to_genes
 from scout.parse.hpo_terms import build_hpo_tree
 from scout.parse.omim import get_mim_phenotypes
-from scout.utils.scout_requests import fetch_hpo_terms, fetch_hpo_to_genes_to_disease
+from scout.utils.scout_requests import (
+    fetch_hpo_disease_annotation,
+    fetch_hpo_terms,
+    fetch_hpo_to_genes_to_disease,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -152,7 +156,7 @@ def load_disease_terms(
 
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
 
-    if not hpo_annoation_lines:
+    if not hpo_annotation_lines:
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
