@@ -114,10 +114,11 @@ def parse_hpo_disease(hpo_line):
     return hpo_info
 
 
-def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, str]:
+def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]:
     """Parse HPO annotation files.
 
-    Returns only HPO info that can be merged with a fundamental OMIM or other existing disease annotation.
+    Returns only HPO info that can then be merged with a fundamental OMIM or other existing disease annotation,
+    and onto which phenotype-to-gene mappings can be filled in.
 
     Args:
         hpo_annotation_lines: Iterable[str]
@@ -135,3 +136,54 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, str]
     Returns:
 
     """
+    diseases = {}
+    for index, line in enumerate(hpo_annotation_lines):
+        # First line is a header
+        if index == 0:
+            continue
+        disease = parse_hpo_annotation_line(line)
+        if not disease:
+            continue
+
+        disease_id = disease["disease_id"]
+        if disease_id not in diseases:
+            diseases[disease_id] = {
+                "disease_nr": disease["disease_nr"],
+                "source": disease["source"],
+                "description": disease["description"],
+                "frequency": disease["frequency"],
+                "hgnc_symbols": set(),
+                "hpo_terms": set(),
+            }
+
+        if disease["hpo_term"]:
+            diseases[disease_id]["hpo_terms"].add(disease["hpo_term"])
+
+    return diseases
+
+
+def parse_hpo_annotation_line(hpo_annotation_line: str) -> Dict[str, Any]:
+    """Parse HPO annotation file line"""
+
+    hpo_annotation_line = hpo_annotation_line.rstrip().split("\t")
+    hpo_info = {}
+
+    # phenotype.hpoa::database_id
+    hpo_info["disease_id"] = hpo_annotation_line[0]
+    disease = hpo_info["disease_id"].split(":")
+    hpo_info["source"] = disease[0]
+    # we only support OMIM diseases for now - HPOA also has ORPHA and DECIPHER
+    if hpo_info["source"] != "OMIM":
+        continue
+    hpo_info["disease_nr"] = int(disease[1])
+
+    hpo_info["description"] = hpo_annotation_line[1]
+
+    qualifier = hpo_annotation_line[2]
+    if qualifier == "NOT":
+        continue
+
+    hpo_info["hpo_term"] = hpo_annotation_line[3]
+    hpo_info["frequency"] = hpo_annotation_line[7]
+
+    hpo_info["hgnc_symbol"] = None
