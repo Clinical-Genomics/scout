@@ -232,7 +232,9 @@ def fetch_hpo_disease_annotation():
     return fetch_resource(url)
 
 
-def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False):
+def fetch_hpo_files(
+    genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False, hpo_annotation=False
+):
     """
     Fetch the necessary HPO files from http://compbio.charite.de
 
@@ -254,6 +256,8 @@ def fetch_hpo_files(genes_to_phenotype=False, phenotype_to_genes=False, hpo_term
         hpo_files["phenotype_to_genes"] = fetch_hpo_to_genes_to_disease()
     if hpo_terms is True:
         hpo_files["hpo_terms"] = fetch_hpo_terms()
+    if hpo_annotation is True:
+        hpo_files["hpo_annotation"] = fetch_hpo_disease_annotation()
 
     return hpo_files
 
