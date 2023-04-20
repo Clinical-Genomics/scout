@@ -149,7 +149,12 @@ def load_disease_terms(
         genes = adapter.genes_by_alias()
 
     # Fetch the disease terms from omim
+
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
+
+    if not hpo_annoation_lines:
+        hpo_annotation_lines = fetch_hpo_disease_annotation()
+    disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
     if not hpo_disease_lines:
         hpo_disease_lines = fetch_hpo_to_genes_to_disease()
@@ -162,10 +167,12 @@ def load_disease_terms(
         disease_info = disease_terms[disease_number]
         disease_id = "OMIM:{0}".format(disease_number)
 
+        if disease_id in disease_annotations:
+            disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
+
         if disease_id in hpo_diseases:
-            hpo_terms = hpo_diseases[disease_id]["hpo_terms"]
-            if hpo_terms:
-                disease_info["hpo_terms"] = hpo_terms
+            disease_info["hpo_terms"].update(hpo_diseases[disease_id]["hpo_terms"])
+
         disease_obj = build_disease_term(disease_info, genes)
 
         adapter.load_disease_term(disease_obj)
