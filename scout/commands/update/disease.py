@@ -109,7 +109,7 @@ def diseases(downloads_folder, api_key):
         adapter=adapter,
         genemap_lines=resources["genemap_lines"],
         hpo_disease_lines=resources["hpo_gene_lines"],
-        hpo_annotation_lines=resources["hpo_annoa"],
+        hpo_annotation_lines=resources["hpo_annotation_lines"],
     )
 
     LOG.info("Successfully loaded all disease terms")

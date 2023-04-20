@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Iterable
+from typing import Any, Dict, Iterable
 
 LOG = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ def parse_hpo_diseases(hpo_lines):
             diseases(dict): A dictionary with mim numbers as keys
     """
     diseases = {}
-    LOG.info("Parsing hpo diseases...")
+    LOG.info("Parsing HPO phenotype to genes...")
     for index, line in enumerate(hpo_lines):
         # First line is a header
         if index == 0:
@@ -59,6 +59,7 @@ def parse_hpo_diseases(hpo_lines):
         disease_nr = disease_info.get("disease_nr")
         hgnc_symbol = disease_info.get("hgnc_symbol")
         hpo_term = disease_info.get("hpo_term")
+
         source = disease_info.get("source")
         disease_id = "{0}:{1}".format(source, disease_nr)
 
@@ -79,7 +80,7 @@ def parse_hpo_diseases(hpo_lines):
     return diseases
 
 
-def parse_hpo_disease(hpo_line):
+def parse_hpo_disease(hpo_line: str) -> Dict[str, Any]:
     """Parse hpo disease line
 
         Args:
@@ -164,6 +165,7 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]
 
 def parse_hpo_annotation_line(hpo_annotation_line: str) -> Dict[str, Any]:
     """Parse HPO annotation file line"""
+    LOG.info("Parsing HPO phenotype annotations...")
 
     hpo_annotation_line = hpo_annotation_line.rstrip().split("\t")
     hpo_info = {}
@@ -183,7 +185,7 @@ def parse_hpo_annotation_line(hpo_annotation_line: str) -> Dict[str, Any]:
     if qualifier == "NOT":
         continue
 
-    hpo_info["hpo_term"] = hpo_annotation_line[3]
+    hpo_info["hpo_terms"] = hpo_annotation_line[3]
     hpo_info["frequency"] = hpo_annotation_line[7]
 
     hpo_info["hgnc_symbol"] = None
