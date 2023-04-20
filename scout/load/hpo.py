@@ -6,7 +6,7 @@ from click import progressbar
 
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
-from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_diseases, parse_hpo_to_genes
+from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.hpo_terms import build_hpo_tree
 from scout.parse.omim import get_mim_phenotypes
 from scout.utils.scout_requests import (
@@ -162,7 +162,14 @@ def load_disease_terms(
 
     if not hpo_disease_lines:
         hpo_disease_lines = fetch_hpo_to_genes_to_disease()
-    hpo_diseases = parse_hpo_diseases(hpo_disease_lines)
+    hpo_term_to_symbol = {}
+    for hpo_to_symbol in parse_hpo_to_genes(hpo_disease_lines):
+        hpo_id = hpo_to_symbol["hpo_id"]
+
+        if hpo_id not in hpo_term_to_symbol:
+            hpo_term_to_symbol[hpo_id] = set([hpo_to_symbol["hgnc_symbol"]])
+        else:
+            hpo_term_to_symbol[hpo_id].update(hpo_to_symbol["hgnc_symbol"])
 
     start_time = datetime.now()
     nr_diseases = None
@@ -174,8 +181,11 @@ def load_disease_terms(
         if disease_id in disease_annotations:
             disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
 
-        if disease_id in hpo_diseases:
-            disease_info["hpo_terms"].update(hpo_diseases[disease_id]["hpo_terms"])
+        if disease_info["hpo_terms"]:
+            for hpo_term in disease_info["hpo_terms"]:
+                if hpo_term in hpo_term_to_symbol:
+                    if disease_info["hgnc_symbols"]:
+                        disease_info["hgnc_symbols"].update(hpo_term_to_symbol[hpo_term])
 
         disease_obj = build_disease_term(disease_info, genes)
 
