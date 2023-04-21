@@ -177,6 +177,10 @@ def setup_scout(
     if resource_files.get("hpo_disease_path"):
         hpo_disease_handle = get_file_handle(resource_files["hpo_disease_path"])
 
+    hpo_annotation_handle = None
+    if resource_files.get("hpo_phenotype_annotation_path"):
+        hpo_disease_handle = get_file_handle(resource_files["hpo_disease_path"])
+
     load_hpo(
         adapter=adapter,
         disease_lines=genemap_lines,

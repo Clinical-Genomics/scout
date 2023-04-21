@@ -92,6 +92,14 @@ def abort_if_false(ctx, param, value):
         "phenotype_to_genes.txt"
     ),
 )
+@click.option(
+    "--hpo-phenotype-annotation",
+    type=click.Path(exists=True),
+    help=(
+        "Path to file with map from HPO disease (OMIM) to phenotype term with annotation. This is the file called "
+        "phenotype.hpoa"
+    ),
+)
 @with_appcontext
 @click.pass_context
 def database(
@@ -111,6 +119,7 @@ def database(
     hpogenes,
     hpoterms,
     hpo_to_genes,
+    hpo_phenotype_annotation,
     files,
 ):
     """Setup a scout database."""
@@ -140,6 +149,7 @@ def database(
         "hpogenes_path": hpogenes,
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
+        "hpo_phenotype_annotation_path": hpo_phenotype_annotation,
     }
     LOG.info("Setting up database %s", context.obj["mongodb"])
     if files:
@@ -166,6 +176,8 @@ def database(
                 resource_files["hpoterms_path"] = str(path.resolve())
             if path.stem == "phenotype_to_genes":
                 resource_files["hpo_to_genes_path"] = str(path.resolve())
+            if path.stem == "phenotype":
+                resource_files["hpo_phenotype_annotation_path"] = str(path.resolve())
 
     setup_scout(
         adapter=adapter,

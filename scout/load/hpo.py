@@ -23,6 +23,7 @@ def load_hpo(
     disease_lines=None,
     hpo_lines=None,
     hpo_gene_lines=None,
+    hpo_annotation_lines=None,
 ):
     """Load the hpo terms and hpo diseases into database
 
@@ -45,10 +46,13 @@ def load_hpo(
     if not hpo_gene_lines:
         hpo_gene_lines = fetch_hpo_to_genes_to_disease()
 
+    if not hpo_annotation_lines:
+        hpo_annotation_lines = fetch_hpo_disease_annotation()
+
     load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
 
     if not disease_lines:
-        LOG.warning("No omim information, skipping to load disease terms")
+        LOG.warning("No OMIM (genemap2) information, skipping load disease terms")
         return
 
     load_disease_terms(
@@ -56,6 +60,7 @@ def load_hpo(
         genemap_lines=disease_lines,
         genes=alias_genes,
         hpo_disease_lines=hpo_gene_lines,
+        hpo_annotation_lines=hpo_annotation_lines,
     )
 
 
