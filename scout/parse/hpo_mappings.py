@@ -70,7 +70,7 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]
                 "hpo_terms": set(),
             }
 
-        if disease["hpo_term"]:
+        if "hpo_term" in disease and disease["hpo_term"]:
             diseases[disease_id]["hpo_terms"].add(disease["hpo_term"])
 
     return diseases
@@ -78,7 +78,6 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]
 
 def parse_hpo_annotation_line(hpo_annotation_line: str) -> Dict[str, Any]:
     """Parse HPO annotation file line"""
-    LOG.info("Parsing HPO phenotype annotations...")
 
     hpo_annotation_line = hpo_annotation_line.rstrip().split("\t")
     hpo_info = {}

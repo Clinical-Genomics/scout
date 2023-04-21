@@ -179,9 +179,11 @@ def load_disease_terms(
         disease_id = "OMIM:{0}".format(disease_number)
 
         if disease_id in disease_annotations:
-            disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
+            if "hpo_terms" in disease_info:
+                disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
+            else:
+                disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
 
-        if disease_info["hpo_terms"]:
             for hpo_term in disease_info["hpo_terms"]:
                 if hpo_term in hpo_term_to_symbol:
                     if disease_info["hgnc_symbols"]:
