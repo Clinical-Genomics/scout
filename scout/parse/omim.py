@@ -299,7 +299,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
         hgnc_genes(dict): A dictionary with hgnc_symbol as keys
 
     """
-    LOG.info("Get the mim genes")
+    LOG.info("Get the MIM genes")
 
     genes = {}
     hgnc_genes = {}
