@@ -63,7 +63,6 @@ def load_hpo_terms(
     adapter,
     hpo_lines=None,
     hpo_gene_lines=None,
-    hpo_phenotype_annotation_lines=None,
     alias_genes=None,
 ):
     """Load the hpo terms into the database

@@ -34,13 +34,8 @@ LOG = logging.getLogger(__name__)
         "phenotype_to_genes.txt"
     ),
 )
-@click.option(
-    "--hpo-phenotype-annotation",
-    type=click.Path(exists=True),
-    help=("Path to file with HPO term annotations. This is the file called " "phenotype.hpoa"),
-)
 @with_appcontext
-def hpo(hpoterms, hpo_to_genes, hpo_phenotype_annotation):
+def hpo(hpoterms, hpo_to_genes):
     """
     Update the HPO terms in the database. Fetch the latest release and update terms.
     """
@@ -54,12 +49,9 @@ def hpo(hpoterms, hpo_to_genes, hpo_phenotype_annotation):
         hpoterms = get_file_handle(hpoterms)
     if hpo_to_genes:
         hpo_to_genes = get_file_handle(hpo_to_genes)
-    if hpo_phenotype_annotation:
-        hpo_phenotype_annotation = get_file_handle(hpo_phenotype_annotation)
 
     load_hpo_terms(
         adapter,
         hpo_lines=hpoterms,
         hpo_gene_lines=hpo_to_genes,
-        hpo_phenotype_annotation_lines=hpo_phenotype_annotation,
     )
