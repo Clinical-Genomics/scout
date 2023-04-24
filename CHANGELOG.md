@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Page crashing when a user tries to edit a comment that was removed
 - Warning instead of crashed page when attempting to retrieve a non-existent Phenopacket
+- Fixed StJude ProteinPaint gene link (URL change)
 
 
 ## [4.66]
