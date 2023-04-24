@@ -9,12 +9,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Prepare to filter local SV frequency
 - Display number of OMIM terms available and their last update on Diagnoses page
 ### Changed
-- Speed up instituteS page loadiding by refactoring cases/institutes query
+- Speed up instituteS page loading by refactoring cases/institutes query
 - Clinical Filter for SVs includes `splice_polypyrimidine_tract_variant` as a severe consequence
 - Clinical Filter for SVs includes local variant frequency freeze ("old") for filtering, starting at 30 counts
+- Speed up caseS page loading by adding status to index and refactoring totals count
 ### Fixed
 - Page crashing when a user tries to edit a comment that was removed
 - Warning instead of crashed page when attempting to retrieve a non-existent Phenopacket
+- Fixed StJude ProteinPaint gene link (URL change)
 
 
 ## [4.66]
