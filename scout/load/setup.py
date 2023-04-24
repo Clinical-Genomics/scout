@@ -173,19 +173,16 @@ def setup_scout(
     if resource_files.get("hpo_to_genes_path"):
         hpo_to_genes_handle = get_file_handle(resource_files["hpo_to_genes_path"])
 
-    hpo_disease_handle = None
-    if resource_files.get("hpo_disease_path"):
-        hpo_disease_handle = get_file_handle(resource_files["hpo_disease_path"])
-
     hpo_annotation_handle = None
     if resource_files.get("hpo_phenotype_annotation_path"):
-        hpo_disease_handle = get_file_handle(resource_files["hpo_disease_path"])
+        hpo_annotation_handle = get_file_handle(resource_files["hpo_phenotype_annotation_path"])
 
     load_hpo(
         adapter=adapter,
         disease_lines=genemap_lines,
         hpo_lines=hpo_terms_handle,
         hpo_gene_lines=hpo_to_genes_handle,
+        hpo_annotation_lines=hpo_annotation_handle,
     )
 
     # If demo we load a gene panel and some case information
