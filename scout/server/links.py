@@ -248,7 +248,7 @@ def entrez(entrez_id):
 
 
 def ppaint(hgnc_symbol):
-    link = "https://pecan.stjude.cloud/proteinpaint/{}"
+    link = "https://pecan.stjude.cloud/variants/protein-paint?gene={}"
 
     if not hgnc_symbol:
         return None

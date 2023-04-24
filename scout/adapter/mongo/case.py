@@ -564,25 +564,6 @@ class CaseHandler(object):
             )
         ]
 
-    def nr_cases(self, institute_id=None):
-        """Return the number of cases
-
-
-        Args:
-            institute_id(str): Institute id
-
-        Returns:
-            nr_cases(int)
-        """
-        query = {}
-
-        if institute_id:
-            query["collaborators"] = institute_id
-
-        nr_cases = sum(1 for i in self.case_collection.find(query))
-
-        return nr_cases
-
     def nr_cases_by_status(self, institute_id=None):
         """For an institute, retrieves number of cases in each case status category
         Args:
