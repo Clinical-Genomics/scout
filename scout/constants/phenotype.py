@@ -28,5 +28,5 @@ COHORT_TAGS = ["endo", "mito", "ketogenic diet", "pedhep", "other"]
 UPDATE_DISEASES_RESOURCES = {
     "genemap_lines": ["genemap2.txt", "genemap2_reduced.txt"],
     "hpo_gene_lines": ["phenotype_to_genes.txt", "phenotype_to_genes_reduced.txt"],
-    "hpo_annotation_lines": ["phenotype.hpoa", "phenotype_reduced.hpoa"],
+    "hpo_annotation_lines": ["phenotype.hpoa", "reduced.phenotype.hpoa"],
 }
