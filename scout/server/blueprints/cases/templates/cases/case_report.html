@@ -1090,9 +1090,9 @@
         </thead>
         <tbody>
           <td>
-            {% if variant.hgnc_symbols|length() <= 100 %}
+            {% if variant.hgnc_symbols|length() <= 10 %}
               {{ variant.hgnc_symbols|sort|join(" ") }}
-            {% if genes_in_panels %}
+            {% elif genes_in_panels %}
               Genes matching one or more case gene panel: {{ variant.hgnc_symbols|list_intersect(genes_in_panels)|sort|join(" ") }}
             {% endif %}
           </td>
