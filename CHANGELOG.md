@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clinical Filter for SVs includes `splice_polypyrimidine_tract_variant` as a severe consequence
 - Clinical Filter for SVs includes local variant frequency freeze ("old") for filtering, starting at 30 counts
 - Speed up caseS page loading by adding status to index and refactoring totals count
+- HPO file parsing is updated to reflect that HPO have changed a few downloadable file formats with their 230405 release.
 ### Fixed
 - Page crashing when a user tries to edit a comment that was removed
 - Warning instead of crashed page when attempting to retrieve a non-existent Phenopacket

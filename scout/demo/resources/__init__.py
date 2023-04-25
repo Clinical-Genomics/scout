@@ -25,6 +25,7 @@ genemap2_reduced_path = str(files(BASE_PATH).joinpath("genemap2_reduced.txt"))
 
 # HPO paths
 hpoterms_reduced_path = str(files(BASE_PATH).joinpath("reduced.hpo.obo"))
+hpo_phenotype_annotation_reduced_path = str(files(BASE_PATH).joinpath("reduced.phenotype.hpoa"))
 genes_to_phenotype_reduced_path = str(files(BASE_PATH).joinpath("genes_to_phenotype_reduced.txt"))
 phenotype_to_genes_reduced_path = str(files(BASE_PATH).joinpath("phenotype_to_genes_reduced.txt"))
 hpo_terms_def_path = str(files(BASE_PATH).joinpath("hpo_terms.csv"))
@@ -38,6 +39,7 @@ demo_files = {
     "hgnc_path": hgnc_reduced_path,
     "hpo_to_genes_path": phenotype_to_genes_reduced_path,
     "hpogenes_path": genes_to_phenotype_reduced_path,
+    "hpo_phenotype_annotation_path": hpo_phenotype_annotation_reduced_path,
     "hpoterms_path": hpoterms_reduced_path,
     "madeline_path": madeline_path,
     "transcripts37_path": transcripts37_reduced_path,
