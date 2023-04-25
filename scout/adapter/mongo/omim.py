@@ -145,12 +145,9 @@ class DiagnosisHandler(object):
         Args:
             disease_obj(dict)
         """
-        LOG.debug("Loading disease term %s into database", disease_obj["_id"])
         try:
             self.disease_term_collection.insert_one(disease_obj)
         except DuplicateKeyError as err:
             raise IntegrityError(
                 "Disease term %s already exists in database".format(disease_obj["_id"])
             )
-
-        LOG.debug("Disease term saved")

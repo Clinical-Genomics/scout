@@ -45,6 +45,7 @@ from scout.demo.resources import (
     genes37_reduced_path,
     genes_to_phenotype_reduced_path,
     hgnc_reduced_path,
+    hpo_phenotype_annotation_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
     phenotype_to_genes_reduced_path,
@@ -318,6 +319,19 @@ def hpo_terms_file(request):
 def hpo_disease_handle(request, phenotype_to_genes_file):
     """Get a file handle to a phenotypes_to_genes mapping file"""
     handle = get_file_handle(phenotype_to_genes_file)
+    return handle
+
+
+@pytest.fixture
+def hpo_phenotype_annotation_file(request):
+    """Get a file handle to a phenotype.hpoa file."""
+    return hpo_phenotype_annotation_reduced_path
+
+
+@pytest.fixture
+def hpo_phenotype_annotation_handle(request, hpo_phenotype_annotation_file):
+    """Get a file handle to a phenotype.hpoa file."""
+    handle = get_file_handle(hpo_phenotype_annotation_file)
     return handle
 
 
