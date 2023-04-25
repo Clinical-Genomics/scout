@@ -1092,8 +1092,8 @@
           <td>
             {% if variant.hgnc_symbols|length() <= 100 %}
               {{ variant.hgnc_symbols|sort|join(" ") }}
-            {% elif genes_in_panels %}
-              {{ variant.hgnc_symbols|list_intersect(genes_in_panels)|sort|join(" ") }}
+            {% if genes_in_panels %}
+              Genes matching one or more case gene panel: {{ variant.hgnc_symbols|list_intersect(genes_in_panels)|sort|join(" ") }}
             {% endif %}
           </td>
         </tbody>
