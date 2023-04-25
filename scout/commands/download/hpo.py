@@ -16,26 +16,31 @@ def print_hpo(out_dir, hpo_info):
         out_dir(Path)
         hpo_info(dict)
     """
-    hpo_file_name = "hpo.obo"
-    hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Download HPO terms to %s", hpo_file_path)
-    with hpo_file_path.open("w", encoding="utf-8") as outfile:
-        for line in hpo_info["hpo_terms"]:
-            outfile.write(line + "\n")
+    HPO_FILES = [
+        {"desc": "HPO Ontology", "file_name": "hpo.obo", "info_key": "hpo_terms"},
+        {
+            "desc": "HPO genes to phenotype",
+            "file_name": "genes_to_phenotype.txt",
+            "info_key": "genes_to_phenotype",
+        },
+        {
+            "desc": "HPO phenotype to genes",
+            "file_name": "phenotype_to_genes.txt",
+            "info_key": "phenotype_to_genes",
+        },
+        {
+            "desc": "HPO disease annotation",
+            "file_name": "phenotype.hpoa",
+            "info_key": "hpo_annotation",
+        },
+    ]
 
-    hpo_file_name = "genes_to_phenotype.txt"
-    hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Download HPO genes to %s", hpo_file_path)
-    with hpo_file_path.open("w", encoding="utf-8") as outfile:
-        for line in hpo_info["genes_to_phenotype"]:
-            outfile.write(line + "\n")
-
-    hpo_file_name = "phenotype_to_genes.txt"
-    hpo_file_path = out_dir / hpo_file_name
-    LOG.info("Download HPO to genes to diagnosis data to %s", hpo_file_path)
-    with hpo_file_path.open("w", encoding="utf-8") as outfile:
-        for line in hpo_info["phenotype_to_genes"]:
-            outfile.write(line + "\n")
+    for hpo_file in HPO_FILES:
+        hpo_file_path = out_dir / hpo_file["file_name"]
+        LOG.info("Download HPO file %s to %s", hpo_file["desc"], hpo_file_path)
+        with hpo_file_path.open("w", encoding="utf-8") as outfile:
+            for line in hpo_info[hpo_file["info_key"]]:
+                outfile.write(line + "\n")
 
 
 @click.command("hpo", help="Download hpo files")
@@ -49,7 +54,12 @@ def hpo(out_dir, terms, genes, disease):
     If terms or genes or disease is used print this to terminal
     """
 
-    kwargs = {"genes_to_phenotype": True, "phenotype_to_genes": True, "hpo_terms": True}
+    kwargs = {
+        "genes_to_phenotype": True,
+        "phenotype_to_genes": True,
+        "hpo_terms": True,
+        "hpo_annotation": True,
+    }
     if terms or genes or disease:
         kwargs = {
             "genes_to_phenotype": genes,
