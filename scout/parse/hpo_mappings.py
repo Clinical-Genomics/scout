@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, Optional
 
 LOG = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]
     return diseases
 
 
-def parse_hpo_annotation_line(hpo_annotation_line: str) -> Dict[str, Any]:
+def parse_hpo_annotation_line(hpo_annotation_line: str) -> Optional[Dict[str, Any]]:
     """Parse HPO annotation file line"""
 
     hpo_annotation_line = hpo_annotation_line.rstrip().split("\t")
