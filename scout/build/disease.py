@@ -40,8 +40,6 @@ def build_disease_term(disease_info, alias_genes={}):
 
     disease_id = "{0}:{1}".format("OMIM", disease_nr)
 
-    LOG.debug("Building disease term %s", disease_id)
-
     try:
         description = disease_info["description"]
     except KeyError:
