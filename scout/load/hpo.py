@@ -213,7 +213,7 @@ def _parse_disease_term_info(
     hpo_term_to_symbol: Dict[Any, set],
 ) -> Dict:
     """
-    Startign from the OMIM disease terms (genemap2), update with HPO terms from
+    Starting from the OMIM disease terms (genemap2), update with HPO terms from
     HPO annotations, aadd in any missing diseases from hpo_anontations,
     and
     Args:
