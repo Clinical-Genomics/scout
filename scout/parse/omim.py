@@ -1,8 +1,7 @@
 """Code for parsing OMIM formatted files"""
 import logging
 import re
-
-import click
+from typing import Any, Dict, Iterable
 
 MIMNR_PATTERN = re.compile("[0-9]{6,6}")
 ENTRY_PATTERN = re.compile("\([1,2,3,4]\)")
@@ -344,7 +343,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
     return hgnc_genes
 
 
-def get_mim_phenotypes(genemap_lines):
+def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[int, Any]:
     """Get a dictionary with phenotypes
 
     Use the mim numbers for phenotypes as keys and phenotype information as

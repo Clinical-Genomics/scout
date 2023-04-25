@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from pprint import pprint as pp
+from typing import Any, Dict, Iterable
 
 from click import progressbar
 
@@ -137,6 +137,22 @@ def load_hpo_terms(
     LOG.info("Time to load terms: {0}".format(datetime.now() - start_time))
 
 
+def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
+    """
+    Parse out a mapping between HPO term id and hgnc symbol from
+    the HPO phenotype to genes file.
+    """
+    hpo_term_to_symbol = {}
+    for hpo_to_symbol in parse_hpo_to_genes(hpo_disease_lines):
+        hpo_id = hpo_to_symbol["hpo_id"]
+
+        if hpo_id not in hpo_term_to_symbol:
+            hpo_term_to_symbol[hpo_id] = set([hpo_to_symbol["hgnc_symbol"]])
+        else:
+            hpo_term_to_symbol[hpo_id].update(hpo_to_symbol["hgnc_symbol"])
+    return hpo_term_to_symbol
+
+
 def load_disease_terms(
     adapter, genemap_lines, genes=None, hpo_disease_lines=None, hpo_annotation_lines=None
 ):
@@ -152,50 +168,71 @@ def load_disease_terms(
         hpo_disease_lines(iterable(str))
         hpo_annotation_lines(iterable(str))
     """
+    start_time = datetime.now()
+
     # Get a map with hgnc symbols to hgnc ids from scout
     if not genes:
         genes = adapter.genes_by_alias()
 
     # Fetch the disease terms from omim
-
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
+
+    if not hpo_disease_lines:
+        hpo_disease_lines = fetch_hpo_to_genes_to_disease()
 
     if not hpo_annotation_lines:
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
-    if not hpo_disease_lines:
-        hpo_disease_lines = fetch_hpo_to_genes_to_disease()
-    hpo_term_to_symbol = {}
-    for hpo_to_symbol in parse_hpo_to_genes(hpo_disease_lines):
-        hpo_id = hpo_to_symbol["hpo_id"]
+    nr_diseases = len(disease_terms)
+    with progressbar(
+        disease_terms.keys(), label="Loading disease terms", length=nr_diseases
+    ) as bar:
+        for disease_number in bar:
+            disease_info = disease_terms[disease_number]
 
-        if hpo_id not in hpo_term_to_symbol:
-            hpo_term_to_symbol[hpo_id] = set([hpo_to_symbol["hgnc_symbol"]])
-        else:
-            hpo_term_to_symbol[hpo_id].update(hpo_to_symbol["hgnc_symbol"])
+            _parse_disease_term_info(
+                disease_info,
+                disease_annotations,
+                disease_id="OMIM:{0}".format(disease_number),
+                hpo_term_to_symbol=_get_hpo_term_to_symbol(hpo_disease_lines),
+            )
 
-    start_time = datetime.now()
-    nr_diseases = None
+            disease_obj = build_disease_term(disease_info, genes)
 
-    for nr_diseases, disease_number in enumerate(disease_terms):
-        disease_info = disease_terms[disease_number]
-        disease_id = "OMIM:{0}".format(disease_number)
-
-        if disease_id in disease_annotations:
-            if "hpo_terms" in disease_info:
-                disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
-            else:
-                disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
-
-            for hpo_term in disease_info["hpo_terms"]:
-                if hpo_term in hpo_term_to_symbol:
-                    if disease_info["hgnc_symbols"]:
-                        disease_info["hgnc_symbols"].update(hpo_term_to_symbol[hpo_term])
-
-        disease_obj = build_disease_term(disease_info, genes)
-
-        adapter.load_disease_term(disease_obj)
+            adapter.load_disease_term(disease_obj)
 
     LOG.info("Loading done. Nr of diseases loaded {0}".format(nr_diseases))
     LOG.info("Time to load diseases: {0}".format(datetime.now() - start_time))
+
+
+def _parse_disease_term_info(
+    disease_info: Dict,
+    disease_annotations: Dict[str, Any],
+    disease_id: str,
+    hpo_term_to_symbol: Dict[Any, set],
+) -> Dict:
+    """
+    Startign from the OMIM disease terms (genemap2), update with HPO terms from
+    HPO annotations, aadd in any missing diseases from hpo_anontations,
+    and
+    Args:
+        disease_annotations(dict(dict)): indexed by disease_id, from phenotype.hpoa
+        disease_terms(dict(dict)): indexed by HPO term number, from genemap2.txt
+        disease_number: current disease number
+        hpo_term_to_symbol(dict(set)):  dict, keyed on HPO term, with sets of gene symbols, from phenotype_to_genes.txt
+
+    Modifies:
+        disease_info(dict)
+    """
+
+    if disease_id in disease_annotations:
+        if "hpo_terms" in disease_info:
+            disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
+        else:
+            disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
+
+        for hpo_term in disease_info["hpo_terms"]:
+            if hpo_term in hpo_term_to_symbol:
+                if disease_info["hgnc_symbols"]:
+                    disease_info["hgnc_symbols"].update(hpo_term_to_symbol[hpo_term])
