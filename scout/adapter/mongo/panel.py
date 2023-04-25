@@ -333,7 +333,7 @@ class PanelHandler:
         panel_ids: list = None,
         panel_names: list = None,
         gene_format: str = "symbol",
-    ) -> set:
+    ) -> list:
         """Return all genes in a given format from a list of gene panels."""
         genes = []
         if panel_ids:
