@@ -12,9 +12,6 @@ and a biomart dump from ensembl with
 The hgnc file will determine which genes that are added and most of the meta information.
 The ensembl gene file will add coordinates and the exac file will add pLi scores.
 
-Created by Måns Magnusson on 2015-01-14.
-Copyright (c) 2015 __MoonsoInc__. All rights reserved.
-
 """
 import logging
 import os
