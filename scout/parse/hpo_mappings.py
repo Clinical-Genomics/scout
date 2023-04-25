@@ -35,19 +35,17 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]
     and onto which phenotype-to-gene mappings can be filled in.
 
     Args:
-        hpo_annotation_lines: Iterable[str]
+        hpo_annotation_lines:
+            Lines from a phenotype.hpoa file from HPO.org of the format:
 
-        Lines from a phenotype.hpoa file from HPO.org of the format:
-
-        #description: "HPO annotations for rare diseases [8120: OMIM; 47: DECIPHER; 4264 ORPHANET]"
-        #version: 2023-04-05
-        #tracker: https://github.com/obophenotype/human-phenotype-ontology/issues
-        #hpo-version: http://purl.obolibrary.org/obo/hp/releases/2023-04-05/hp.json
-        database_id	disease_name	qualifier	hpo_id	reference	evidence	onset	frequency	sex	modifier	aspect	biocuration
-        OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0011097	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
-        OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0002187	PMID:31675180	PCS		1/1			P	HPO:probinson[2021-06-21]
-        OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0001518	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
-    Returns:
+            #description: "HPO annotations for rare diseases [8120: OMIM; 47: DECIPHER; 4264 ORPHANET]"
+            #version: 2023-04-05
+            #tracker: https://github.com/obophenotype/human-phenotype-ontology/issues
+            #hpo-version: http://purl.obolibrary.org/obo/hp/releases/2023-04-05/hp.json
+            database_id	disease_name	qualifier	hpo_id	reference	evidence	onset	frequency	sex	modifier	aspect	biocuration
+            OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0011097	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
+            OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0002187	PMID:31675180	PCS		1/1			P	HPO:probinson[2021-06-21]
+            OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0001518	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
 
     """
     diseases = {}

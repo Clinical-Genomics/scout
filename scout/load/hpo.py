@@ -233,7 +233,7 @@ def _parse_disease_term_info(
             disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
 
         for hpo_term in disease_info["hpo_terms"]:
-            if not hpo_term in hpo_term_to_symbol:
+            if hpo_term not in hpo_term_to_symbol:
                 continue
 
             if disease_info["hgnc_symbols"]:

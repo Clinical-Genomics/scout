@@ -70,9 +70,11 @@ def build_disease_term(disease_info, alias_genes={}):
                 for hgnc_id in alias_genes[hgnc_symbol]["ids"]:
                     hgnc_ids.add(hgnc_id)
         else:
-            LOG.debug("Gene symbol %s could not be found in database", hgnc_symbol)
             hgnc_symbols_not_found.add(hgnc_symbol)
 
+    LOG.debug(
+        "The following gene symbols could not be found in database: %s", hgnc_symbols_not_found
+    )
     disease_obj["genes"] = list(hgnc_ids)
 
     if "hpo_terms" in disease_info:
