@@ -233,5 +233,10 @@ def _parse_disease_term_info(
             disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
 
         for hpo_term in disease_info["hpo_terms"]:
-            if disease_info["hgnc_symbols"] and hpo_term in hpo_term_to_symbol:
+            if not hpo_term in hpo_term_to_symbol:
+                continue
+
+            if disease_info["hgnc_symbols"]:
                 disease_info["hgnc_symbols"].update(hpo_term_to_symbol[hpo_term])
+            else:
+                disease_info["hgnc_symbols"] = hpo_term_to_symbol[hpo_term]
