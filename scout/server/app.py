@@ -91,7 +91,9 @@ def create_app(config_file=None, config=None):
                 "report.report",
                 "report.json_chrom_coverage",
             ]
-            public_endpoint = getattr(app.view_functions[request.endpoint], "is_public", False)
+            public_endpoint = getattr(
+                app.view_functions[request.endpoint], "is_public", False
+            )
             relevant_endpoint = not (static_endpoint or public_endpoint)
             # if endpoint requires auth, check if user is authenticated
             if relevant_endpoint and not current_user.is_authenticated:
@@ -244,6 +246,11 @@ def register_filters(app):
         cursor_copy = pymongo_cursor.clone()
         return len(list(cursor_copy))
 
+    @app.template_filter()
+    def list_intersect(list1, list2) -> list:
+        """Returns the elements that are common in 2 lists"""
+        return list(set(list1) & set(list2))
+
 
 def register_tests(app):
     @app.template_test("existing")
@@ -288,7 +295,8 @@ def configure_email_logging(app):
     mail_handler.setLevel(logging.ERROR)
     mail_handler.setFormatter(
         logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s: %(message)s " "[in %(pathname)s:%(lineno)d]"
+            "%(asctime)s - %(name)s - %(levelname)s: %(message)s "
+            "[in %(pathname)s:%(lineno)d]"
         )
     )
     app.logger.addHandler(mail_handler)

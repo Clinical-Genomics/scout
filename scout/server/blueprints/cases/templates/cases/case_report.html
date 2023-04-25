@@ -1090,7 +1090,13 @@
         </thead>
         <tbody>
           <td>
-            {{variant.hgnc_symbols|sort|join(" ")}}
+            {% if variant.hgnc_symbols|length() <= 100 %}
+              {{ variant.hgnc_symbols|sort|join(" ") }}
+            print them all
+            {% elif genes_in_panels %}
+              list_intersect
+              {{ variant.hgnc_symbols|list_intersect(genes_in_panels)|sort|join(" ") }}
+            {% endif %}
           </td>
         </tbody>
       {% endif %}

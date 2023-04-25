@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page crashing when a user tries to edit a comment that was removed
 - Warning instead of crashed page when attempting to retrieve a non-existent Phenopacket
 - Fixed StJude ProteinPaint gene link (URL change)
+- Huge list of genes in case report for megabases-long structural variants.
 
 
 ## [4.66]
