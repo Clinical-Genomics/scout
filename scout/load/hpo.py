@@ -179,6 +179,7 @@ def load_disease_terms(
 
     if not hpo_disease_lines:
         hpo_disease_lines = fetch_hpo_to_genes_to_disease()
+    hpo_term_to_symbol = _get_hpo_term_to_symbol(hpo_disease_lines)
 
     if not hpo_annotation_lines:
         hpo_annotation_lines = fetch_hpo_disease_annotation()
@@ -195,7 +196,7 @@ def load_disease_terms(
                 disease_info,
                 disease_annotations,
                 disease_id="OMIM:{0}".format(disease_number),
-                hpo_term_to_symbol=_get_hpo_term_to_symbol(hpo_disease_lines),
+                hpo_term_to_symbol=hpo_term_to_symbol,
             )
 
             disease_obj = build_disease_term(disease_info, genes)
