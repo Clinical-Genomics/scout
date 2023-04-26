@@ -41,11 +41,20 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.parse.matchmaker import (
+    genomic_features,
+    hpo_terms,
+    omim_terms,
+    parse_matches,
+)
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
-from scout.server.utils import case_has_alignments, case_has_mt_alignments, institute_and_case
+from scout.server.utils import (
+    case_has_alignments,
+    case_has_mt_alignments,
+    institute_and_case,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -74,7 +83,9 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
     password = current_app.config["PHENOMIZER_PASSWORD"]
     try:
         results = query_phenomizer.query(username, password, *hpo_ids)
-        diseases = [result for result in results if result["p_value"] <= p_value_treshold]
+        diseases = [
+            result for result in results if result["p_value"] <= p_value_treshold
+        ]
         return diseases
     except RuntimeError:
         flash("Could not establish a conection to Phenomizer", "danger")
@@ -93,7 +104,9 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     """
     request_data = {}
     # extract sample ids from case_obj and add them to the post request object:
-    request_data["sample_id"] = [ind["individual_id"] for ind in case_obj["individuals"]]
+    request_data["sample_id"] = [
+        ind["individual_id"] for ind in case_obj["individuals"]
+    ]
 
     # extract default panel names and default genes from case_obj and add them to the post request object
     distinct_genes = set()
@@ -101,12 +114,16 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     for panel_info in case_obj.get("panels", []):
         if panel_info.get("is_default") is False:
             continue
-        panel_obj = store.gene_panel(panel_info["panel_name"], version=panel_info.get("version"))
+        panel_obj = store.gene_panel(
+            panel_info["panel_name"], version=panel_info.get("version")
+        )
         distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
         full_name = "{} ({})".format(panel_obj["display_name"], panel_obj["version"])
         panel_names.append(full_name)
     panel_names = " ,".join(panel_names)
-    request_data["gene_ids"] = ",".join([str(gene_id) for gene_id in list(distinct_genes)])
+    request_data["gene_ids"] = ",".join(
+        [str(gene_id) for gene_id in list(distinct_genes)]
+    )
     request_data["panel_name"] = panel_names
     request_data["request_sent"] = datetime.datetime.now()
 
@@ -180,7 +197,9 @@ def case(store, institute_obj, case_obj):
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
         case_obj["individual_ids"].append(individual["individual_id"])
 
-    case_obj["assignees"] = [store.user(user_email) for user_email in case_obj.get("assignees", [])]
+    case_obj["assignees"] = [
+        store.user(user_email) for user_email in case_obj.get("assignees", [])
+    ]
 
     # Provide basic info on alignment files availability for this case
     case_has_alignments(case_obj)
@@ -192,11 +211,13 @@ def case(store, institute_obj, case_obj):
 
     # Fetch the variant objects for suspects and causatives
     suspects = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
+        store.variant(variant_id) or variant_id
+        for variant_id in case_obj.get("suspects", [])
     ]
     _populate_assessments(suspects)
     causatives = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("causatives", [])
+        store.variant(variant_id) or variant_id
+        for variant_id in case_obj.get("causatives", [])
     ]
     _populate_assessments(causatives)
 
@@ -219,7 +240,9 @@ def case(store, institute_obj, case_obj):
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
     # Sort panels alphabetically on display name
-    case_obj["panels"] = sorted(case_obj.get("panels", []), key=lambda d: d["display_name"])
+    case_obj["panels"] = sorted(
+        case_obj.get("panels", []), key=lambda d: d["display_name"]
+    )
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups", []), case_obj.get("phenotype_terms", [])
@@ -253,7 +276,8 @@ def case(store, institute_obj, case_obj):
         if collab_id != case_obj["owner"] and store.institute(collab_id):
             o_collaborators.append(store.institute(collab_id))
     case_obj["o_collaborators"] = [
-        (collab_obj["_id"], collab_obj["display_name"]) for collab_obj in o_collaborators
+        (collab_obj["_id"], collab_obj["display_name"])
+        for collab_obj in o_collaborators
     ]
 
     collab_ids = None
@@ -311,7 +335,9 @@ def case(store, institute_obj, case_obj):
         "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [
             var
-            for var in store.case_matching_causatives(case_obj=case_obj, limit_genes=limit_genes)
+            for var in store.case_matching_causatives(
+                case_obj=case_obj, limit_genes=limit_genes
+            )
         ],
         "default_other_causatives": [
             var
@@ -320,7 +346,8 @@ def case(store, institute_obj, case_obj):
             )
         ],
         "managed_variants": [
-            var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
+            var
+            for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
         ],
         "default_managed_variants": [
             var
@@ -404,11 +431,15 @@ def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
         panel_version = panel_info.get("version")
         panel_obj = store.gene_panel(panel_name, version=panel_version)
         latest_panel = store.gene_panel(panel_name)
-        panel_info["removed"] = False if latest_panel is None else latest_panel.get("hidden", False)
+        panel_info["removed"] = (
+            False if latest_panel is None else latest_panel.get("hidden", False)
+        )
         if not panel_obj:
             panel_obj = latest_panel
             if not panel_obj:
-                flash(f"Case default panel '{panel_name}' could not be found.", "warning")
+                flash(
+                    f"Case default panel '{panel_name}' could not be found.", "warning"
+                )
                 continue
             flash(
                 f"Case default panel '{panel_name}' version {panel_version} could not be found, using latest existing version",
@@ -419,7 +450,9 @@ def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
 
         # Check if case-specific panel is up-to-date with latest version of the panel
         if panel_obj["version"] < latest_panel["version"]:
-            extra_genes, missing_genes = check_outdated_gene_panel(panel_obj, latest_panel)
+            extra_genes, missing_genes = check_outdated_gene_panel(
+                panel_obj, latest_panel
+            )
             if extra_genes or missing_genes:
                 case_obj["outdated_panels"][panel_name] = {
                     "missing_genes": missing_genes,
@@ -471,9 +504,13 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
         for gene in latest_panel["genes"]
     ]
     # Extract the genes unique to case panel
-    extra_genes = [gene["symbol"] for gene in case_panel_genes if gene not in latest_panel_genes]
+    extra_genes = [
+        gene["symbol"] for gene in case_panel_genes if gene not in latest_panel_genes
+    ]
     # Extract the genes unique to latest panel
-    missing_genes = [gene["symbol"] for gene in latest_panel_genes if gene not in case_panel_genes]
+    missing_genes = [
+        gene["symbol"] for gene in latest_panel_genes if gene not in case_panel_genes
+    ]
     return extra_genes, missing_genes
 
 
@@ -497,7 +534,9 @@ def case_report_variants(store, case_obj, institute_obj, data):
                 continue
             if var_type == "partial_causatives":  # Collect associated phenotypes
                 variant_obj["phenotypes"] = [
-                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
+                    value
+                    for key, value in case_obj["partial_causatives"].items()
+                    if key == var_id
                 ][0]
             evaluated_variants[vt].append(variant_obj)
 
@@ -608,7 +647,11 @@ def case_report_content(store, institute_id, case_name):
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
         data["genes_in_panels"] = store.panels_to_genes(
-            panel_ids=[panel["panel_id"] for panel in case_obj.get("panels", [])],
+            panel_ids=[
+                panel["panel_id"]
+                for panel in case_obj.get("panels", [])
+                if panel.is_default is True
+            ],
             gene_format="symbol",
         )
 
@@ -655,7 +698,9 @@ def mt_coverage_stats(individuals, ref_chrom="14"):
     data["chrom"] = str(ref_chrom)  # convert to string if an int is provided
     # Send POST request with data to chanjo endpoint
     resp = requests.post(cov_calc_url, json=data)
-    ref_cov_data = json.loads(resp.text)  # mean coverage over the transcripts of ref chrom
+    ref_cov_data = json.loads(
+        resp.text
+    )  # mean coverage over the transcripts of ref chrom
 
     for ind in ind_ids:
         if not (mt_cov_data.get(ind) and ref_cov_data.get(ind)):
@@ -694,7 +739,9 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
 
     query = {"chrom": "MT"}
     mt_variants = list(
-        store.variants(case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position")
+        store.variants(
+            case_id=case_obj["_id"], query=query, nr_of_variants=-1, sort_key="position"
+        )
     )
 
     written_files = 0
@@ -704,7 +751,9 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
         sample_lines = export_mt_variants(variants=mt_variants, sample_id=sample_id)
 
         # set up document name
-        document_name = ".".join([case_obj["display_name"], display_name, today]) + ".xlsx"
+        document_name = (
+            ".".join([case_obj["display_name"], display_name, today]) + ".xlsx"
+        )
         workbook = Workbook(os.path.join(temp_excel_dir, document_name))
         Report_Sheet = workbook.add_worksheet()
 
@@ -715,7 +764,9 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
             Report_Sheet.write(row, col, field)
 
         # Write variant lines, after header (start at line 1)
-        for row, line in enumerate(sample_lines, 1):  # each line becomes a row in the document
+        for row, line in enumerate(
+            sample_lines, 1
+        ):  # each line becomes a row in the document
             for col, field in enumerate(line):  # each field in line becomes a cell
                 Report_Sheet.write(row, col, field)
 
@@ -727,7 +778,9 @@ def mt_excel_files(store, case_obj, temp_excel_dir):
                 Report_Sheet.write(row + 3, col, field)
 
             # Write sample MT vs autosome coverage stats to excel sheet
-            for col, item in enumerate(["mt_coverage", "autosome_cov", "mt_copy_number"]):
+            for col, item in enumerate(
+                ["mt_coverage", "autosome_cov", "mt_copy_number"]
+            ):
                 Report_Sheet.write(row + 4, col, coverage_stats[sample_id].get(item))
 
         mitodel = sample.get("mitodel")
@@ -756,7 +809,9 @@ def update_synopsis(store, institute_obj, case_obj, user_obj, new_synopsis):
             institute_id=institute_obj["_id"],
             case_name=case_obj["display_name"],
         )
-        store.update_synopsis(institute_obj, case_obj, user_obj, link, content=new_synopsis)
+        store.update_synopsis(
+            institute_obj, case_obj, user_obj, link, content=new_synopsis
+        )
 
 
 def _update_case(store, case_obj, user_obj, institute_obj, verb):
@@ -843,12 +898,16 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
         build = "38"
     else:
         build = "37"
-    dynamic_gene_list = [gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", [])]
+    dynamic_gene_list = [
+        gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", [])
+    ]
 
     hpo_genes = {}
 
     clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
-    unique_genes = hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols)
+    unique_genes = hpo_genes_from_dynamic_gene_list(
+        case_obj, is_clinical, clinical_symbols
+    )
 
     by_phenotype = True  # display genes by phenotype
     hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
@@ -916,7 +975,8 @@ def hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols):
     """
 
     gene_list = [
-        gene.get("hgnc_symbol") or str(gene["hgnc_id"]) for gene in case_obj["dynamic_gene_list"]
+        gene.get("hgnc_symbol") or str(gene["hgnc_id"])
+        for gene in case_obj["dynamic_gene_list"]
     ]
 
     unique_genes = set(gene_list)
@@ -969,12 +1029,16 @@ def update_default_panels(store, current_user, institute_id, case_name, panel_id
     store.update_default_panels(institute_obj, case_obj, user_obj, link, panel_objs)
 
 
-def update_clinical_filter_hpo(store, current_user, institute_id, case_name, hpo_clinical_filter):
+def update_clinical_filter_hpo(
+    store, current_user, institute_id, case_name, hpo_clinical_filter
+):
     """Update HPO clinical filter use for a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     user_obj = store.user(current_user.email)
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
-    store.update_clinical_filter_hpo(institute_obj, case_obj, user_obj, link, hpo_clinical_filter)
+    store.update_clinical_filter_hpo(
+        institute_obj, case_obj, user_obj, link, hpo_clinical_filter
+    )
 
 
 def add_case_group(store, current_user, institute_id, case_name, group=None):
@@ -1153,7 +1217,9 @@ def matchmaker_add(request, institute_id, case_name):
             "id": ".".join(
                 [case_obj["_id"], individual.get("individual_id")]
             ),  # This is a required field form MME
-            "label": ".".join([case_obj["display_name"], individual.get("display_name")]),
+            "label": ".".join(
+                [case_obj["display_name"], individual.get("display_name")]
+            ),
             "features": features,
             "disorders": disorders,
         }
@@ -1186,11 +1252,15 @@ def matchmaker_add(request, institute_id, case_name):
                 "warning",
             )
             continue
-        flash(f"Patient {individual.get('display_name')} saved to MatchMaker", "success")
+        flash(
+            f"Patient {individual.get('display_name')} saved to MatchMaker", "success"
+        )
         n_updated += 1
 
     if n_updated > 0:
-        store.case_mme_update(case_obj=case_obj, user_obj=user_obj, mme_subm_obj=submitted_info)
+        store.case_mme_update(
+            case_obj=case_obj, user_obj=user_obj, mme_subm_obj=submitted_info
+        )
 
     return n_updated
 
@@ -1288,7 +1358,9 @@ def matchmaker_match(request, target, institute_id, case_name):
     ok_responses = 0
     for patient in query_patients:
         json_resp = None
-        if target == "internal":  # Interal match against other patients on the MME server
+        if (
+            target == "internal"
+        ):  # Interal match against other patients on the MME server
             json_resp = matchmaker.match_internal(patient)
             if json_resp.get("status_code") != 200:
                 flash(
