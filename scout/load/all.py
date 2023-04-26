@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from scout.constants import FILE_TYPE_MAP
 from scout.exceptions.config import ConfigError
 
 LOG = logging.getLogger(__name__)
@@ -53,85 +54,32 @@ def load_region(adapter, case_id, hgnc_id=None, chrom=None, start=None, end=None
         start = gene_caption["start"]
         end = gene_caption["end"]
 
-    LOG.info(
-        "Load clinical SNV variants for case: {0} region: chr {1}, start"
-        " {2}, end {3}".format(case_obj["_id"], chrom, start, end)
-    )
+    case_file_types = []
 
-    adapter.load_variants(
-        case_obj=case_obj,
-        variant_type="clinical",
-        category="snv",
-        chrom=chrom,
-        start=start,
-        end=end,
-    )
-
-    # loading germline variants
-    vcf_sv_file = case_obj["vcf_files"].get("vcf_sv")
-    if vcf_sv_file:
-        LOG.info(
-            "Load clinical SV variants for case: {0} region: chr {1}, "
-            "start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
-        )
-        adapter.load_variants(
-            case_obj=case_obj,
-            variant_type="clinical",
-            category="sv",
-            chrom=chrom,
-            start=start,
-            end=end,
-        )
-
-    # if there are somatic (cancer) variants:
-    vcf_cancer_sv_file = case_obj["vcf_files"].get("vcf_cancer_sv")
-    if vcf_cancer_sv_file:
-        LOG.info(
-            "Load clinical cancer SV variants for case: {0} region: chr {1}, "
-            "start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
-        )
-        adapter.load_variants(
-            case_obj=case_obj,
-            variant_type="clinical",
-            category="cancer_sv",
-            chrom=chrom,
-            start=start,
-            end=end,
-        )
-
-    vcf_str_file = case_obj["vcf_files"].get("vcf_str")
-    if vcf_str_file:
-        LOG.info("Load all clinical STR variants for case: {0}.")
-        adapter.load_variants(case_obj=case_obj, variant_type="clinical", category="str")
-
-    if case_obj["is_research"]:
-        LOG.info(
-            "Load research SNV variants for case: {0} region: chr {1}, "
-            "start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
-        )
-        adapter.load_variants(
-            case_obj=case_obj,
-            variant_type="research",
-            category="snv",
-            chrom=chrom,
-            start=start,
-            end=end,
-        )
-
-        vcf_sv_research = case_obj["vcf_files"].get("vcf_sv_research")
-        if vcf_sv_research:
-            LOG.info(
-                "Load research SV variants for case: {0} region: chr {1},"
-                " start {2}, end {3}".format(case_obj["_id"], chrom, start, end)
+    for file_type in FILE_TYPE_MAP:
+        if case_obj.get("vcf_files", {}).get(file_type):
+            case_file_types.append(
+                FILE_TYPE_MAP[file_type]["category"], FILE_TYPE_MAP[file_type]["variant_type"]
             )
-            adapter.load_variants(
-                case_obj=case_obj,
-                variant_type="research",
-                category="sv",
-                chrom=chrom,
-                start=start,
-                end=end,
+
+    for variant_type, category in case_file_types:
+        if variant_type == "research" and not case_obj["is_research"]:
+            continue
+
+        LOG.info(
+            "Load {} {} variants for case: {} region: chr {}, start {}, end {}".format(
+                category, variant_type.upper(), case_obj["_id"], chrom, start, end
             )
+        )
+        adapter.load_variants(
+            case_obj=case_obj,
+            variant_type=category,
+            category=category,
+            chrom=chrom,
+            start=start,
+            end=end,
+        )
+
     # Update case variants count
     adapter.case_variants_count(case_obj["_id"], case_obj["owner"], force_update_case=True)
 
