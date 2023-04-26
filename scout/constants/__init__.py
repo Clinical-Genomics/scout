@@ -167,6 +167,7 @@ CALLERS = {
         {"id": "dellycnv", "name": "DellyCNV"},
         {"id": "tiddit", "name": "TIDDIT"},
     ],
+    "mei": [{"id": "retroseq", "name": "RetroSeq"}],
     "sv": [
         {"id": "gatk", "name": "GATK"},
         {"id": "cnvnator", "name": "CNVnator"},

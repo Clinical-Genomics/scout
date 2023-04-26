@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Prepare to filter local SV frequency
+- RD Mobile Element Insertion variants view
 ### Changed
 - Speed up instituteS page loading by refactoring cases/institutes query
 - Clinical Filter for SVs includes `splice_polypyrimidine_tract_variant` as a severe consequence
