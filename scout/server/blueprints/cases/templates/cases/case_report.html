@@ -1093,7 +1093,7 @@
             {% if variant.hgnc_symbols|length() <= 10 %}
               {{ variant.hgnc_symbols|sort|join(" ") }}
             {% elif genes_in_panels %}
-              Genes matching one or more case default gene panel: {{ variant.hgnc_symbols|list_intersect(genes_in_panels)|sort|join(" ") }}
+              Genes matching one or more case default gene panels: {{ variant.hgnc_symbols|list_intersect(genes_in_panels)|sort|join(" ") }}
             {% endif %}
           </td>
         </tbody>
