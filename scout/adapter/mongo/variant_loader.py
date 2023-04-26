@@ -618,29 +618,14 @@ class VariantLoader(object):
         nr_inserted = 0
 
         variant_file = None
-        if variant_type == "clinical":
-            if category == "snv":
-                variant_file = case_obj["vcf_files"].get("vcf_snv")
-            elif category == "sv":
-                variant_file = case_obj["vcf_files"].get("vcf_sv")
-            elif category == "str":
-                LOG.debug("Attempt to load STR VCF.")
-                variant_file = case_obj["vcf_files"].get("vcf_str")
-            elif category == "cancer":
-                # Currently this implies a paired tumor normal
-                variant_file = case_obj["vcf_files"].get("vcf_cancer")
-            elif category == "cancer_sv":
-                # ditto for paired tumor normal
-                variant_file = case_obj["vcf_files"].get("vcf_cancer_sv")
-        elif variant_type == "research":
-            if category == "snv":
-                variant_file = case_obj["vcf_files"].get("vcf_snv_research")
-            elif category == "sv":
-                variant_file = case_obj["vcf_files"].get("vcf_sv_research")
-            elif category == "cancer":
-                variant_file = case_obj["vcf_files"].get("vcf_cancer_research")
-            elif category == "cancer_sv":
-                variant_file = case_obj["vcf_files"].get("vcf_cancer_sv_research")
+        for vcf_file_key in FILE_TYPE_MAP.keys():
+            if FILE_TYPE_MAP[vcf_file_key]["variant_type"] != variant_type:
+                continue
+            if FILE_TYPE_MAP[vcf_file_key]["category"] != category:
+                continue
+
+            LOG.debug("Attempt to load %s %s VCF.", variant_type, category.upper())
+            variant_file = case_obj["vcf_files"].get(vcf_file_key)
 
         if not variant_file:
             raise SyntaxError("Vcf file does not seem to exist")

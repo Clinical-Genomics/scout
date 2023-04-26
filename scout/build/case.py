@@ -286,6 +286,10 @@ def build_case(case_data, adapter):
     if case_obj["vcf_files"].get("vcf_str"):
         case_obj["has_strvariants"] = True
 
+    case_obj["has_meivariants"] = False
+    if case_obj["vcf_files"].get("vcf_mei"):
+        case_obj["has_meivariants"] = True
+
     case_obj["is_migrated"] = False
 
     # What experiment is used, alternatives are rare (rare disease) or cancer
