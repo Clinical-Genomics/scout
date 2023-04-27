@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed StJude ProteinPaint gene link (URL change)
 - Freeze of werkzeug library to version<2.3 to avoid problems resulting from the consequential upgrade of the Flask lib
 - Huge list of genes in case report for megabases-long structural variants.
+- Fix displaying institutes without associated cases on institutes page
 
 
 ## [4.66]
