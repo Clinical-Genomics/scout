@@ -1,5 +1,5 @@
 # Everything needed in production
-werkzeug<2.2.3
+werkzeug<2.3
 Flask>=2.0
 Flask-Bootstrap
 Flask-CORS
