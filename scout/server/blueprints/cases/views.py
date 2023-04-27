@@ -53,14 +53,21 @@ cases_bp = Blueprint(
 @templated("cases/index.html")
 def index():
     """Display a list of all user institutes."""
-    institutes_count = []
-    for item in user_cases(store, current_user):
-        institute_obj = store.institute(item["_id"]["institute"])
-        if not institute_obj:
-            continue
-        institutes_count.append((institute_obj, item["count"]))
 
-    return dict(institutes=institutes_count)
+    institutes_cases_count = []
+
+    institute_ids_nr_cases: dict[str, int] = {
+        item["_id"]["institute"]: item["count"] for item in user_cases(store, current_user)
+    }  # Don't include institutes without cases
+
+    for institute_obj in sorted(user_institutes(store, current_user), key=lambda d: d["_id"]):
+        institute_id = institute_obj["_id"]
+        if institute_id not in institute_ids_nr_cases:  # Institute doesn't have any case
+            institutes_cases_count.append((institute_obj, 0))
+        else:
+            institutes_cases_count.append((institute_obj, institute_ids_nr_cases[institute_id]))
+
+    return dict(institutes=institutes_cases_count)
 
 
 @cases_bp.route("/<institute_id>/<case_name>")
