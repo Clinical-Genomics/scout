@@ -58,7 +58,7 @@ def index():
 
     institute_ids_nr_cases: dict[str, int] = {
         item["_id"]["institute"]: item["count"] for item in user_cases(store, current_user)
-    }  # Don'tt include institutes without cases
+    }  # Don't include institutes without cases
 
     for institute_obj in user_institutes(store, current_user):
         institute_id = institute_obj["_id"]
