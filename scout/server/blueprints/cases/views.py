@@ -60,7 +60,7 @@ def index():
         item["_id"]["institute"]: item["count"] for item in user_cases(store, current_user)
     }  # Don't include institutes without cases
 
-    for institute_obj in user_institutes(store, current_user):
+    for institute_obj in sorted(user_institutes(store, current_user), key=lambda d: d["_id"]):
         institute_id = institute_obj["_id"]
         if institute_id not in institute_ids_nr_cases:  # Institute doesn't have any case
             institutes_cases_count.append((institute_obj, 0))
