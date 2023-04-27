@@ -244,6 +244,11 @@ def register_filters(app):
         cursor_copy = pymongo_cursor.clone()
         return len(list(cursor_copy))
 
+    @app.template_filter()
+    def list_intersect(list1, list2) -> list:
+        """Returns the elements that are common in 2 lists"""
+        return list(set(list1) & set(list2))
+
 
 def register_tests(app):
     @app.template_test("existing")
