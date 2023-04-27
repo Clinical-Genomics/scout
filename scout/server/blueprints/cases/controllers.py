@@ -116,7 +116,9 @@ def coverage_report_contents(base_url, institute_obj, case_obj):
     # Collect the coverage report HTML string
     try:
         resp = requests.post(
-            base_url + "reports/report", timeout=COVERAGE_REPORT_TIMEOUT, data=request_data
+            base_url + "reports/report",
+            timeout=COVERAGE_REPORT_TIMEOUT,
+            data=request_data,
         )
     except requests.Timeout:
         html_body_content = "<span><b>Coverage report unavailable</b></span>"
@@ -605,6 +607,14 @@ def case_report_content(store, institute_id, case_name):
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
+        data["genes_in_panels"] = store.panels_to_genes(
+            panel_ids=[
+                panel["panel_id"]
+                for panel in case_obj.get("panels", [])
+                if panel.is_default is True
+            ],
+            gene_format="symbol",
+        )
 
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
     data["audits"] = store.case_events_by_verb(
@@ -985,7 +995,10 @@ def add_case_group(store, current_user, institute_id, case_name, group=None):
     try:
         institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     except Exception:
-        flash(f"Could not find a case named {case_name} for institute {institute_id}", "warning")
+        flash(
+            f"Could not find a case named {case_name} for institute {institute_id}",
+            "warning",
+        )
         return
 
     link = url_for("cases.case", institute_id=institute_id, case_name=case_name)
@@ -1156,7 +1169,11 @@ def matchmaker_add(request, institute_id, case_name):
 
         if candidate_vars:
             g_features = genomic_features(
-                store, case_obj, individual.get("display_name"), candidate_vars, genes_only
+                store,
+                case_obj,
+                individual.get("display_name"),
+                candidate_vars,
+                genes_only,
             )
             patient["genomicFeatures"] = g_features
         resp = matchmaker.patient_submit(patient)
