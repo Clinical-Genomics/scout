@@ -328,7 +328,24 @@ class PanelHandler:
 
         return gene_dict
 
-    def panel_to_genes(self, panel_id=None, panel_name=None, gene_format="symbol"):
+    def panels_to_genes(
+        self,
+        panel_ids: list = None,
+        panel_names: list = None,
+        gene_format: str = "symbol",
+    ) -> list:
+        """Return all genes in a given format from a list of gene panels."""
+        genes = []
+        if panel_ids:
+            for id in panel_ids:
+                genes += self.panel_to_genes(panel_id=id, gene_format=gene_format)
+        elif panel_names:
+            for name in panel_names:
+                genes += self.panel_to_genes(panel_name=name, gene_format=gene_format)
+
+        return list(set(genes))
+
+    def panel_to_genes(self, panel_id=None, panel_name=None, gene_format="symbol") -> list:
         """Return all hgnc_ids for a given gene panel
 
         Args:
