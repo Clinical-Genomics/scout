@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.67]
 ### Added
 - Prepare to filter local SV frequency
 - Display number of OMIM terms available and their last update on Diagnoses page
