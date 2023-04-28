@@ -611,7 +611,7 @@ def case_report_content(store, institute_id, case_name):
             panel_ids=[
                 panel["panel_id"]
                 for panel in case_obj.get("panels", [])
-                if panel.is_default is True
+                if panel.get("is_default", False) is True
             ],
             gene_format="symbol",
         )
