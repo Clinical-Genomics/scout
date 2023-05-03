@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Updated igv.js to 2.15.5 (IGV bugfix)
+- Updated igv.js to 2.15.4
 
 ## [4.67]
 ### Added
