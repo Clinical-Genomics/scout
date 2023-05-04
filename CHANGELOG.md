@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Updated igv.js to 2.15.6
+
 ## [4.67]
 ### Added
 - Prepare to filter local SV frequency
