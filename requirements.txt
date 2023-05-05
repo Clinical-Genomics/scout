@@ -22,6 +22,8 @@ click
 cryptography<3.4
 defusedxml
 svglib
+# pkgconfig for cairo
+pkgconfig
 cairosvg
 importlib_resources
 
