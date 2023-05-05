@@ -26,7 +26,7 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install pkg-config libcairo2-dev && \
+     apt-get -y install pkg-config libcairo2-dev python3-dev && \
      apt-get -y install -y --no-install-recommends wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
     apt-get -y install cairosvg && \
      apt-get clean && \
