@@ -9,7 +9,10 @@ WORKDIR /app
 
 # Install Scout dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip
+# No wheel for indirect pycairo dependency so need build env for it to install
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get -y install --no-install-recommends gcc libcairo2-dev pkg-config python3-dev
 RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
 
@@ -26,9 +29,7 @@ LABEL about.license="MIT License (MIT)"
 # Install base dependencies
 RUN apt-get update && \
      apt-get -y upgrade && \
-     apt-get -y install pkg-config libcairo2-dev python3-dev && \
      apt-get -y install -y --no-install-recommends wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
-    apt-get -y install cairosvg && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
 

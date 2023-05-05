@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - Updated igv.js to 2.15.6
+### Fixed
+- Docker stage build pycairo.
 
 ## [4.67]
 ### Added
