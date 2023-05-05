@@ -9,7 +9,9 @@ WORKDIR /app
 
 # Install Scout dependencies
 COPY requirements.txt .
-RUN apt-get -y install libcairo2-dev pkg-config python3-dev
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get -y install libcairo2-dev pkg-config python3-dev
 RUN pip install --no-cache-dir -r requirements.txt gunicorn
 
 
