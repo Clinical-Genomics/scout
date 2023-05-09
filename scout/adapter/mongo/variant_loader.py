@@ -628,7 +628,9 @@ class VariantLoader(object):
             variant_file = case_obj["vcf_files"].get(vcf_file_key)
 
         if not variant_file:
-            raise SyntaxError("Vcf file does not seem to exist")
+            raise SyntaxError(
+                "VCF file {} {} does not seem to exist".format(category, variant_type)
+            )
 
         # Check if there are any variants in file
         try:
