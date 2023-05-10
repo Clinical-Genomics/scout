@@ -8,7 +8,10 @@ from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
 from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
-from scout.server.blueprints.variant.utils import predictions, update_representative_gene
+from scout.server.blueprints.variant.utils import (
+    predictions,
+    update_representative_gene,
+)
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
@@ -65,28 +68,6 @@ def get_timeline_data(limit):
     return timeline_results
 
 
-def verified_vars(institute_id):
-    """Create content to be displayed on institute verified page
-
-    Args:
-        institute_id(str): institute["_id"] value
-
-    Returns:
-        verified(list): list of variant objects (True positive or False Positive)
-    """
-    verified = []
-    for variant_obj in store.verified(institute_id=institute_id):
-        variant_genes = variant_obj.get("genes", [])
-        if variant_obj["category"] in ["snv", "cancer"]:
-            update_representative_gene(
-                variant_obj, variant_genes
-            )  # required to display cDNA and protein change
-        variant_obj.update(predictions(variant_genes))
-        verified.append(variant_obj)
-
-    return verified
-
-
 def verified_stats(institute_id, verified_vars):
     """Create content to be displayed on institute verified page, stats chart
 
@@ -108,6 +89,29 @@ def verified_stats(institute_id, verified_vars):
 
     n_validations_ordered = len(list(store.validations_ordered(institute_id)))
     return true_pos, false_pos, n_validations_ordered - (true_pos + false_pos)
+
+
+def decorate_institute_variant(variant_obj: dict) -> dict:
+    """Fetch data relative to causative/verified variants to be displayed in the institute pages."""
+
+    case_obj = store.case(variant_obj["case_id"])
+    if not case_obj:
+        return
+    variant_genes = variant_obj.get("genes", [])
+    if variant_obj["category"] in ["snv", "cancer"]:
+        update_representative_gene(
+            variant_obj, variant_genes
+        )  # required to display cDNA and protein change
+    variant_obj.update(predictions(variant_genes))
+    variant_obj["case_obj"] = {
+        "display_name": case_obj["display_name"],
+        "individuals": case_obj["individuals"],
+        "status": case_obj.get("status"),
+        "partial_causatives": case_obj.get("partial_causatives", []),
+        "rank_model_version": case_obj.get("rank_model_version"),
+        "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
+    }
+    return variant_obj
 
 
 def causatives(institute_obj, request):
@@ -132,25 +136,32 @@ def causatives(institute_obj, request):
 
     causatives = []
 
-    for variant_obj in store.institute_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
-        variant_genes = variant_obj.get("genes", [])
-        if variant_obj["category"] in ["snv", "cancer"]:
-            update_representative_gene(
-                variant_obj, variant_genes
-            )  # required to display cDNA and protein change
-        variant_obj.update(predictions(variant_genes))
-        case_obj = store.case(variant_obj["case_id"])
-        if not case_obj:
-            continue
-        variant_obj["case_obj"] = {
-            "display_name": case_obj["display_name"],
-            "individuals": case_obj["individuals"],
-            "status": case_obj.get("status"),
-            "partial_causatives": case_obj.get("partial_causatives", []),
-        }
-        causatives.append(variant_obj)
+    for variant_obj in store.institute_causatives(
+        institute_obj=institute_obj, limit_genes=hgnc_id
+    ):
+        decorated_variant = decorate_institute_variant(variant_obj)
+        if decorated_variant:
+            causatives.append(variant_obj)
 
     return causatives
+
+
+def verified_vars(institute_id):
+    """Create content to be displayed on institute verified page
+
+    Args:
+        institute_id(str): institute["_id"] value
+
+    Returns:
+        verified(list): list of variant objects (True positive or False Positive)
+    """
+    verified = []
+    for variant_obj in store.verified(institute_id=institute_id):
+        decorated_variant = decorate_institute_variant(variant_obj)
+        if decorated_variant:
+            verified.append(variant_obj)
+
+    return verified
 
 
 def institutes():
@@ -224,7 +235,10 @@ def populate_beacon_form(institute_obj):
             ):  # If dataset doesn't already exist, add the option to create it
                 continue
             dset_options.append(
-                (institute_build, f"{institute_obj['_id']} public dataset - Genome build {build}")
+                (
+                    institute_build,
+                    f"{institute_obj['_id']} public dataset - Genome build {build}",
+                )
             )
 
         beacon_form.beacon_dataset.choices = dset_options
@@ -251,7 +265,9 @@ def populate_institute_form(form, institute_obj):
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
     # collect all available default HPO terms and populate the pheno_groups form select with these values
-    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
+    default_phenotypes = [
+        choice[0].split(" ")[0] for choice in form.pheno_groups.choices
+    ]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
             if not key in default_phenotypes:
@@ -302,7 +318,9 @@ def update_institute_settings(store, institute_obj, form):
 
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
-        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
+        group_abbreviations.append(
+            pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")]
+        )
 
     if form.get("hpo_term") and form.get("pheno_abbrev"):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
@@ -398,10 +416,17 @@ def cases(store, request, institute_id):
     name_query = None
     if request.args.get("search_term"):
         name_query = "".join(
-            [request.args.get("search_type"), re.escape(request.args["search_term"].strip())]
+            [
+                request.args.get("search_type"),
+                re.escape(request.args["search_term"].strip()),
+            ]
         )
     data["name_query"] = name_query
-    limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
+    limit = (
+        int(request.args.get("search_limit"))
+        if request.args.get("search_limit")
+        else 100
+    )
     data["form"] = populate_case_filter_form(request.args)
 
     prioritized_cases = store.prioritized_cases(institute_id=institute_id)
@@ -418,7 +443,9 @@ def cases(store, request, institute_id):
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
-    data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
+    data["sanger_unevaluated"] = get_sanger_unevaluated(
+        store, institute_id, current_user.email
+    )
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
@@ -426,7 +453,9 @@ def cases(store, request, institute_id):
     # local function to add info to case obj
     def populate_case_obj(case_obj):
         analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        LOG.debug("Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types))
+        LOG.debug(
+            "Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types)
+        )
         if len(analysis_types) > 1:
             LOG.debug("Set analysis types to {'mixed'}")
             analysis_types = set(["mixed"])
