@@ -47,6 +47,9 @@ variant = dict(
     str_swegen_mean=float,
     str_swegen_std=float,
     custom_images=list,  # list of custom image dictionaries
+    # MEI variant
+    mei_name=str,
+    mei_polarity=str,
     # mitochondrial variants
     mitomap_associated_diseases=str,
     # Gene ids:

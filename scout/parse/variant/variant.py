@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from scout.constants import CHR_PATTERN
 from scout.exceptions import VcfError
@@ -179,7 +180,10 @@ def parse_variant(
     parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
 
     ################# Add MEI info ##################
-    parsed_variant["meiinfo"] = parse_mei_info(variant.INFO.get("MEIINFO"))
+    mei_info = parse_mei_info(variant.INFO.get("MEIINFO"))
+    if mei_info:
+        parsed_variant["mei_name"] = mei_info["name"]
+        parsed_variant["mei_polarity"] = mei_info["polarity"]
 
     ################# Add somatic info ##################
     parsed_variant["somatic_score"] = call_safe(int, variant.INFO.get("SOMATICSCORE"))
