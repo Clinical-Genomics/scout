@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Updated igv.js to 2.15.6
 ### Fixed
 - Docker stage build pycairo.
+- Restore SNV and SV rank models versions on Causatives and Verified pages
 - Saving `REVEL_RANKSCORE` value in a field named `revel` in variants database documents
 
 ## [4.67]

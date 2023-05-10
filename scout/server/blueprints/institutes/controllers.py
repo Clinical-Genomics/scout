@@ -2,6 +2,7 @@
 import datetime
 import logging
 import re
+from typing import Optional
 
 from flask import current_app, flash, url_for
 from flask_login import current_user
@@ -65,28 +66,6 @@ def get_timeline_data(limit):
     return timeline_results
 
 
-def verified_vars(institute_id):
-    """Create content to be displayed on institute verified page
-
-    Args:
-        institute_id(str): institute["_id"] value
-
-    Returns:
-        verified(list): list of variant objects (True positive or False Positive)
-    """
-    verified = []
-    for variant_obj in store.verified(institute_id=institute_id):
-        variant_genes = variant_obj.get("genes", [])
-        if variant_obj["category"] in ["snv", "cancer"]:
-            update_representative_gene(
-                variant_obj, variant_genes
-            )  # required to display cDNA and protein change
-        variant_obj.update(predictions(variant_genes))
-        verified.append(variant_obj)
-
-    return verified
-
-
 def verified_stats(institute_id, verified_vars):
     """Create content to be displayed on institute verified page, stats chart
 
@@ -108,6 +87,29 @@ def verified_stats(institute_id, verified_vars):
 
     n_validations_ordered = len(list(store.validations_ordered(institute_id)))
     return true_pos, false_pos, n_validations_ordered - (true_pos + false_pos)
+
+
+def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
+    """Fetch data relative to causative/verified variants to be displayed in the institute pages."""
+
+    case_obj = store.case(variant_obj["case_id"])
+    if not case_obj:
+        return
+    variant_genes = variant_obj.get("genes", [])
+    if variant_obj["category"] in ["snv", "cancer"]:
+        update_representative_gene(
+            variant_obj, variant_genes
+        )  # required to display cDNA and protein change
+    variant_obj.update(predictions(variant_genes))
+    variant_obj["case_obj"] = {
+        "display_name": case_obj["display_name"],
+        "individuals": case_obj["individuals"],
+        "status": case_obj.get("status"),
+        "partial_causatives": case_obj.get("partial_causatives", []),
+        "rank_model_version": case_obj.get("rank_model_version"),
+        "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
+    }
+    return variant_obj
 
 
 def causatives(institute_obj, request):
@@ -133,24 +135,29 @@ def causatives(institute_obj, request):
     causatives = []
 
     for variant_obj in store.institute_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
-        variant_genes = variant_obj.get("genes", [])
-        if variant_obj["category"] in ["snv", "cancer"]:
-            update_representative_gene(
-                variant_obj, variant_genes
-            )  # required to display cDNA and protein change
-        variant_obj.update(predictions(variant_genes))
-        case_obj = store.case(variant_obj["case_id"])
-        if not case_obj:
-            continue
-        variant_obj["case_obj"] = {
-            "display_name": case_obj["display_name"],
-            "individuals": case_obj["individuals"],
-            "status": case_obj.get("status"),
-            "partial_causatives": case_obj.get("partial_causatives", []),
-        }
-        causatives.append(variant_obj)
+        decorated_variant = decorate_institute_variant(variant_obj)
+        if decorated_variant:
+            causatives.append(variant_obj)
 
     return causatives
+
+
+def verified_vars(institute_id):
+    """Create content to be displayed on institute verified page
+
+    Args:
+        institute_id(str): institute["_id"] value
+
+    Returns:
+        verified(list): list of variant objects (True positive or False Positive)
+    """
+    verified = []
+    for variant_obj in store.verified(institute_id=institute_id):
+        decorated_variant = decorate_institute_variant(variant_obj)
+        if decorated_variant:
+            verified.append(variant_obj)
+
+    return verified
 
 
 def institutes():
@@ -224,7 +231,10 @@ def populate_beacon_form(institute_obj):
             ):  # If dataset doesn't already exist, add the option to create it
                 continue
             dset_options.append(
-                (institute_build, f"{institute_obj['_id']} public dataset - Genome build {build}")
+                (
+                    institute_build,
+                    f"{institute_obj['_id']} public dataset - Genome build {build}",
+                )
             )
 
         beacon_form.beacon_dataset.choices = dset_options
@@ -398,7 +408,10 @@ def cases(store, request, institute_id):
     name_query = None
     if request.args.get("search_term"):
         name_query = "".join(
-            [request.args.get("search_type"), re.escape(request.args["search_term"].strip())]
+            [
+                request.args.get("search_type"),
+                re.escape(request.args["search_term"].strip()),
+            ]
         )
     data["name_query"] = name_query
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
