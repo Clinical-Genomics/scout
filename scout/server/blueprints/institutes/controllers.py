@@ -91,7 +91,7 @@ def verified_stats(institute_id, verified_vars):
     return true_pos, false_pos, n_validations_ordered - (true_pos + false_pos)
 
 
-def decorate_institute_variant(variant_obj: dict) -> dict:
+def decorate_institute_variant(variant_obj: dict) -> Optional[dict]:
     """Fetch data relative to causative/verified variants to be displayed in the institute pages."""
 
     case_obj = store.case(variant_obj["case_id"])
