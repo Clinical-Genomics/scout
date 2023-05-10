@@ -2,16 +2,14 @@
 import datetime
 import logging
 import re
+from typing import Optional
 
 from flask import current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 
 from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
-from scout.server.blueprints.variant.utils import (
-    predictions,
-    update_representative_gene,
-)
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
