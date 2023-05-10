@@ -178,6 +178,9 @@ def parse_variant(
     parsed_variant["str_swegen_mean"] = call_safe(float, variant.INFO.get("SweGenMean"))
     parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
 
+    ################# Add MEI info ##################
+    parsed_variant["meiinfo"] = parse_mei_info(variant.INFO.get("MEIINFO"))
+
     ################# Add somatic info ##################
     parsed_variant["somatic_score"] = call_safe(int, variant.INFO.get("SOMATICSCORE"))
 
@@ -285,6 +288,30 @@ def get_variant_alternative(variant, category):
         return variant.ALT[0]
     elif not variant.ALT and category == "str":
         return "."
+
+
+def parse_mei_info(mei_info: str) -> Optional[dict]:
+    """Parse variants MEIINFO field into a mei info dict
+
+    <ID=MEINFO,Number=4,Type=String,Description="Mobile element info of the form NAME,START,END,POLARITY">
+
+    Returns:
+        mei info dict with keys name, start, end, polariry.
+    """
+
+    if not mei_info:
+        return
+
+    mei = mei_info.split(",")
+    if len(mei) != 4:
+        return
+
+    return {
+        "name": mei[0],
+        "start": mei[1],
+        "end": mei[2],
+        "polarity": mei[3],
+    }
 
 
 def get_filters(variant):
