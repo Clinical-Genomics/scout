@@ -136,9 +136,7 @@ def causatives(institute_obj, request):
 
     causatives = []
 
-    for variant_obj in store.institute_causatives(
-        institute_obj=institute_obj, limit_genes=hgnc_id
-    ):
+    for variant_obj in store.institute_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
         decorated_variant = decorate_institute_variant(variant_obj)
         if decorated_variant:
             causatives.append(variant_obj)
@@ -265,9 +263,7 @@ def populate_institute_form(form, institute_obj):
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
 
     # collect all available default HPO terms and populate the pheno_groups form select with these values
-    default_phenotypes = [
-        choice[0].split(" ")[0] for choice in form.pheno_groups.choices
-    ]
+    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
             if not key in default_phenotypes:
@@ -318,9 +314,7 @@ def update_institute_settings(store, institute_obj, form):
 
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
-        group_abbreviations.append(
-            pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")]
-        )
+        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
 
     if form.get("hpo_term") and form.get("pheno_abbrev"):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
@@ -422,11 +416,7 @@ def cases(store, request, institute_id):
             ]
         )
     data["name_query"] = name_query
-    limit = (
-        int(request.args.get("search_limit"))
-        if request.args.get("search_limit")
-        else 100
-    )
+    limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
     data["form"] = populate_case_filter_form(request.args)
 
     prioritized_cases = store.prioritized_cases(institute_id=institute_id)
@@ -443,9 +433,7 @@ def cases(store, request, institute_id):
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
-    data["sanger_unevaluated"] = get_sanger_unevaluated(
-        store, institute_id, current_user.email
-    )
+    data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0
@@ -453,9 +441,7 @@ def cases(store, request, institute_id):
     # local function to add info to case obj
     def populate_case_obj(case_obj):
         analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        LOG.debug(
-            "Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types)
-        )
+        LOG.debug("Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types))
         if len(analysis_types) > 1:
             LOG.debug("Set analysis types to {'mixed'}")
             analysis_types = set(["mixed"])
