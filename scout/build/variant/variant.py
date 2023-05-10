@@ -105,6 +105,7 @@ def build_variant(
         # Predicted deleteriousness:
         cadd_score = float,
         revel_score = float,
+        revel = float
         clnsig = list, # list of <clinsig>
         spidex = float,
 
@@ -243,6 +244,7 @@ def build_variant(
     ##### Add the severity predictors #####
     variant_obj["cadd_score"] = variant.get("cadd_score")
     variant_obj["revel_score"] = variant.get("revel_score")
+    variant_obj["revel"] = variant.get("revel")
     variant_obj["spidex"] = variant.get("spidex")
 
     add_rank_score(variant_obj, variant)
