@@ -42,7 +42,7 @@ def test_parse_transcripts():
             assert transcript["gerp"] == "-10.3"
             assert transcript["phast"] == "0.000000"
             assert transcript["phylop"] == "-0.327000"
-            assert transcript["revel"] == 0.54096
+            assert transcript["revel_rankscore"] == 0.54096
 
 
 def test_parse_functional_annotation(vep_csq_header, vep_csq):
