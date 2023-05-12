@@ -23,3 +23,9 @@ CLINICAL_FILTER_BASE_CANCER = {
     "region_annotations": ["exonic", "splicing"],
     "functional_annotations": SEVERE_SO_TERMS,
 }
+
+CLINICAL_FILTER_BASE_MEI = {
+    "variant_type": "clinical",
+    "region_annotations": ["exonic", "splicing"],
+    "functional_annotations": SEVERE_SO_TERMS_SV,
+}
