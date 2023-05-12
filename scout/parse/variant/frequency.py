@@ -140,7 +140,7 @@ def parse_sv_frequency(variant, info_key):
     occurances(int)
     """
     value = variant.INFO.get(info_key, 0)
-    if "AF" in info_key:
+    if "AF" in info_key or "FRQ" in info_key:
         value = float(value)
     else:
         value = int(value)
