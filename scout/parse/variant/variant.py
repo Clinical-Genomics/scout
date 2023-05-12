@@ -180,7 +180,7 @@ def parse_variant(
     parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
 
     ################# Add MEI info ##################
-    mei_info = parse_mei_info(variant.INFO.get("MEIINFO"))
+    mei_info = parse_mei_info(variant.INFO.get("MEINFO"))
     if mei_info:
         parsed_variant["mei_name"] = mei_info["name"]
         parsed_variant["mei_polarity"] = mei_info["polarity"]
@@ -295,7 +295,7 @@ def get_variant_alternative(variant, category):
 
 
 def parse_mei_info(mei_info: str) -> Optional[dict]:
-    """Parse variants MEIINFO field into a mei info dict
+    """Parse variants MEINFO field into a mei info dict
 
     <ID=MEINFO,Number=4,Type=String,Description="Mobile element info of the form NAME,START,END,POLARITY">
 
