@@ -20,7 +20,7 @@ from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
 from . import controllers
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
+from .forms import CancerFiltersForm, FiltersForm, MeiFiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint(
@@ -336,7 +336,22 @@ def mei_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-    form = controllers.populate_sv_filters_form(store, institute_obj, case_obj, category, request)
+
+    user_obj = store.user(current_user.email)
+    if request.method == "POST":
+        form = controllers.populate_filters_form(
+            store, institute_obj, case_obj, user_obj, category, request.form
+        )
+    else:
+        form = MeiFiltersForm(request.args)
+
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
+
+        # set form variant data type the first time around
+        form.variant_type.data = variant_type
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_obj["_id"], category))
@@ -446,7 +461,7 @@ def cancer_variants(institute_id, case_name):
     ]
 
     # Populate chromosome select choices
-    controllers.populate_chrom_choices(form, case_obj)
+    controllers.__chrom_choices(form, case_obj)
 
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
     genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
