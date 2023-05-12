@@ -239,8 +239,8 @@
           <a href="https://sites.google.com/site/revelgenomics/about" target="_blank" data-bs-toggle="tooltip"
             title="An ensemble score based on 13 individual scores for predicting the pathogenicity of missense variants. Scores range from 0 to 1. The larger the score the more likely the SNP has damaging effect">REVEL score</a>
           <span class="float-end">
-          {% if variant.revel_score  %}
-             {{ variant.revel_score }}
+          {% if variant.revel  %}
+             {{ variant.revel }}
           {% else %}
              {{ "-" }}
           {% endif %}
@@ -250,8 +250,8 @@
           <a href="http://database.liulab.science/dbNSFP" target="_blank" data-bs-toggle="tooltip"
              title="REVEL scores were ranked among all REVEL scores in dbNSFP. The REVEL rank score is the ratio of the rank of the score over the total number of REVEL scores in dbNSFP">REVEL rank score</a>
           <span class="float-end">
-          {% if variant.revel  %}
-             {{ variant.revel }}
+          {% if variant.revel_score  %}
+             {{ variant.revel_score }}
           {% else %}
              {{ "-" }}
           {% endif %}
