@@ -41,7 +41,7 @@ def parse_transcripts(raw_transcripts):
         transcript["sift_prediction"] = get_sift_prediction(entry)
 
         if entry.get("REVEL_RANKSCORE"):
-            transcript["revel_rankscorel"] = float(entry.get("REVEL_RANKSCORE"))
+            transcript["revel_rankscore"] = float(entry.get("REVEL_RANKSCORE"))
 
         if entry.get("REVEL_SCORE"):
             transcript["revel_score"] = float(entry.get("REVEL_SCORE"))
