@@ -104,8 +104,8 @@ def build_variant(
 
         # Predicted deleteriousness:
         cadd_score = float,
-        revel_score = float,
-        revel = float
+        revel_score = float, REVEL rankscore
+        revel = float, REVEL score
         clnsig = list, # list of <clinsig>
         spidex = float,
 
