@@ -362,6 +362,9 @@ def mei_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
+    # populate available panel choices
+    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
+
     genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
