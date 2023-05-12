@@ -1,3 +1,8 @@
+from typing import Dict
+
+import cyvcf2
+
+
 def parse_frequencies(variant, transcripts):
     """Add the frequencies to a variant
 
@@ -61,7 +66,7 @@ def parse_frequency(variant, info_key):
     return frequency
 
 
-def parse_sv_frequencies(variant):
+def parse_sv_frequencies(variant: cyvcf2.Variant) -> Dict:
     """Parsing of some custom sv frequencies
 
     These are very specific at the moment, this will hopefully get better over time when the
@@ -104,6 +109,28 @@ def parse_sv_frequencies(variant):
     update_sv_frequency_from_vcf(sv_frequencies, variant, cg_keys, "clingen_mip")
 
     return sv_frequencies
+
+
+def parse_mei_frequencies(variant: cyvcf2.Variant) -> Dict:
+    """Parsing of some custom mei frequencies."""
+
+    swegen_alu_keys = ["swegen_alu_FRQ", "swegen_alu_OCC"]
+    swegen_herv_keys = ["swegen_herv_FRQ", "swegen_herv_OCC"]
+    swegen_l1_keys = ["swegen_l1_FRQ", "swegen_l1_OCC"]
+    swegen_sva_keys = ["swegen_sva_FRQ", "swegen_sva_OCC"]
+
+    mei_frequencies = {}
+
+    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_alu_keys, "swegen_alu")
+    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_herv_keys, "swegen_herv")
+    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_l1_keys, "swegen_l1")
+    update_sv_frequency_from_vcf(mei_frequencies, variant, swegen_sva_keys, "swegen_sva")
+
+    if any(mei_frequencies.values()):
+        max_mei_frequency = max(mei_frequencies.values())
+        mei_frequencies["swegen_mei_max"] = max_mei_frequency
+
+    return mei_frequencies
 
 
 def parse_sv_frequency(variant, info_key):

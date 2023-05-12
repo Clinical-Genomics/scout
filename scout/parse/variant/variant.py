@@ -12,7 +12,7 @@ from .compound import parse_compounds
 from .conservation import parse_conservations
 from .coordinates import parse_coordinates
 from .deleteriousness import parse_cadd
-from .frequency import parse_frequencies, parse_sv_frequencies
+from .frequency import parse_frequencies, parse_mei_frequencies, parse_sv_frequencies
 from .gene import parse_genes
 from .genotype import parse_genotypes
 from .ids import parse_ids
@@ -252,6 +252,11 @@ def parse_variant(
     sv_frequencies = parse_sv_frequencies(variant)
     for key in sv_frequencies:
         parsed_variant["frequencies"][key] = sv_frequencies[key]
+
+    ###################### Add MEI specific annotations #####################
+    mei_frequencies = parse_mei_frequencies(variant)
+    for key in mei_frequencies:
+        parsed_variant["frequencies"][key] = mei_frequencies[key]
 
     ###################### Add Cancer specific annotations ######################
     # MSK_MVL indicates if variants are in the MSK managed variant list
