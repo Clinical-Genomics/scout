@@ -233,7 +233,7 @@ def parse_variant(
         )  # This is actually the value of REVEL_rankscore
 
         parsed_variant["revel"] = parsed_transcripts[0].get(
-            "revel_score"
+            "revel_raw_score"
         )  # This is actually the value of REVEL_score
 
     ###################### Add conservation ######################
