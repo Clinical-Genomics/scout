@@ -171,6 +171,7 @@ class MeiFiltersForm(VariantFiltersForm):
 
     mei_name = StringField("Element")
     clinical_filter = SubmitField(label="Clinical filter")
+    swegen_freq = BetterDecimalField("SweGen(Max) AF", places=2, validators=[validators.Optional()])
 
     # polymorphic constant base for clinical filter
     clinical_filter_base = CLINICAL_FILTER_BASE_MEI

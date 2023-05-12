@@ -298,7 +298,7 @@ class QueryHandler(object):
         # there is only 'clinsig' criterion among the primary terms right now
         primary_terms = False
 
-        # gnomad_frequency, local_obs, local_obs_freq, clingen_ngi, swegen, spidex_human, cadd_score, genetic_models, mvl_tag, clinvar_tag, cosmic_tag
+        # gnomad_frequency, local_obs, local_obs_freq, clingen_ngi, swegen, swegen_freq, spidex_human, cadd_score, genetic_models, mvl_tag, clinvar_tag, cosmic_tag
         # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, control_frequency, tumor_frequency
         secondary_terms = False
 
@@ -599,6 +599,22 @@ class QueryHandler(object):
                         ]
                     }
                 )
+
+            if criterion == "swegen_freq":
+                swegen = query.get("swegen_freq")
+                if swegen == "-1":
+                    # -1 means to exclude all variants that exists in swegen
+                    mongo_query["swegen_mei_max"] = {"$exists": False}
+                else:
+                    # Replace comma with dot
+                    mongo_secondary_query.append(
+                        {
+                            "$or": [
+                                {"swegen_mei_max": {"$lt": float(swegen)}},
+                                {"swegen_mei_max": {"$exists": False}},
+                            ]
+                        }
+                    )
 
             if criterion in ["clingen_ngi", "swegen"]:
                 mongo_secondary_query.append(
