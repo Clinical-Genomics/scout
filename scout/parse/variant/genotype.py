@@ -98,7 +98,7 @@ def parse_genotype(variant, ind, pos):
     (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
 
     # MEI specific
-    (spanning_ref, clip5_alt, clip3_alt) = get_mei_reads(
+    (spanning_mei_ref, clip5_alt, clip3_alt) = get_mei_reads(
         variant, pos
     )  # allowing mei SP to override STR ADSP for spanning
 
@@ -127,6 +127,7 @@ def parse_genotype(variant, ind, pos):
         spanning_ref,
         flanking_ref,
         inrepeat_ref,
+        spanning_mei_ref,
     )
     gt_call["ref_depth"] = ref_depth
     gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
@@ -137,7 +138,7 @@ def parse_genotype(variant, ind, pos):
 
 
 def get_mei_reads(variant, pos):
-    """Get split reads"""
+    """Get MEI caller read details from FORMAT tags"""
     spanning_ref = None
     clip5_alt = None
     clip3_alt = None
@@ -295,6 +296,7 @@ def get_ref_depth(
     spanning_ref,
     flanking_ref,
     inrepeat_ref,
+    spanning_mei_ref,
 ):
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
@@ -314,6 +316,9 @@ def get_ref_depth(
                 ref_depth += flanking_ref
             if inrepeat_ref:
                 ref_depth += inrepeat_ref
+
+        if spanning_mei_ref:
+            ref_depth += spanning_mei_ref
     return ref_depth
 
 
