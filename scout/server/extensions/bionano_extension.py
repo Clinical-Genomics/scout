@@ -46,6 +46,7 @@ class BioNanoAccessAPI:
             self.bionano_token = json_content["token"]
 
     def _get_projects(self):
+        projects = []
         query = f"{self.url}/Bnx/api/2.0/getProjects"
 
         cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
@@ -53,15 +54,70 @@ class BioNanoAccessAPI:
         LOG.info("List projects on BioNano Access")
         json_response = get_request_json(query)
 
-        json_content = json_response.get("content")
+        json_content = json_response.get("content", cookies=cookies)
         if not json_content:
             return None
         LOG.info("Response was %s", json_content)
         json_content = json_content[0]
 
-    def load_report(self, institute, sample):
-        _get_projects()
+        projects = json_content
 
-        _get_samples()
+        return projects
 
-        _get_fshd_report(project_uid, sample_uid)
+    def _get_samples(self, project_uid):
+        samples = []
+        query = f"{self.url}/Bnx/api/2.0/getSamples?projectuid={project_uid}"
+
+        cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
+
+        LOG.info("List samples on BioNano Access")
+        json_response = get_request_json(query)
+
+        json_content = json_response.get("content", cookies=cookies)
+        if not json_content:
+            return None
+        LOG.info("Response was %s", json_content)
+        json_content = json_content[0]
+
+        samples = json_content
+
+        return samples
+
+    def _get_fshd_report(self, project_uid, sample_uid):
+        report = {}
+
+        query = (
+            f"{self.url}/Bnx/api/2.0/getFSHDReport?projectuid={project_uid}&sampleuid={sample_uid}"
+        )
+
+        cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
+
+        LOG.info("List samples on BioNano Access")
+        json_response = get_request_json(query)
+
+        json_content = json_response.get("content", cookies=cookies)
+        if not json_content:
+            return None
+        LOG.info("Response was %s", json_content)
+        json_content = json_content[0]
+
+        report = json_content
+
+        return report
+
+    def get_FSHD_report(self, institute, sample):
+        projects = _get_projects()
+        for project in projects:
+            if institute in project.get("name"):
+                project_uid = project.get("projectuid")
+                continue
+
+        samples = _get_samples(project_uid)
+        for sample in samples:
+            if sample in sample.get("samplename"):
+                sample_uid = sample.get("sampleuid")
+                continue
+
+        report = _get_fshd_report(project_uid, sample_uid)
+
+        return report
