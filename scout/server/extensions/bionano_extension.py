@@ -3,8 +3,6 @@
 
     https://bionano.com/wp-content/uploads/2023/01/30462-Bionano-Access-API-Guide-1.pdf
 """
-import datetime
-import json
 import logging
 
 from scout.utils.scout_requests import get_request_json
@@ -83,7 +81,7 @@ class BioNanoAccessAPI:
 
         return samples
 
-    def _get_fshd_report(self, project_uid, sample_uid):
+    def _get_FSHD_report(self, project_uid, sample_uid):
         report = {}
 
         query = (
@@ -106,18 +104,18 @@ class BioNanoAccessAPI:
         return report
 
     def get_FSHD_report(self, institute, sample):
-        projects = _get_projects()
+        projects = self._get_projects()
         for project in projects:
             if institute in project.get("name"):
                 project_uid = project.get("projectuid")
                 continue
 
-        samples = _get_samples(project_uid)
+        samples = self._get_samples(project_uid)
         for sample in samples:
             if sample in sample.get("samplename"):
                 sample_uid = sample.get("sampleuid")
                 continue
 
-        report = _get_fshd_report(project_uid, sample_uid)
+        report = self._get_FSHD_report(project_uid, sample_uid)
 
         return report
