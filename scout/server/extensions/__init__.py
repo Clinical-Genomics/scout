@@ -9,6 +9,7 @@ from scout.adapter import MongoAdapter
 from scout.utils.cloud_resources import AlignTrackHandler
 
 from .beacon_extension import Beacon
+from .bionano_extension import BioNanoAccessAPI
 from .clinvar_extension import ClinVarApi
 from .gens_extension import GensViewer
 from .ldap_extension import LdapManager
@@ -33,3 +34,4 @@ rerunner = RerunnerService()
 matchmaker = MatchMaker()
 beacon = Beacon()
 cloud_tracks = AlignTrackHandler()
+bionano_access = BioNanoAccessAPI()
