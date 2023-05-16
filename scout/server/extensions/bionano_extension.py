@@ -3,6 +3,7 @@
 
     https://bionano.com/wp-content/uploads/2023/01/30462-Bionano-Access-API-Guide-1.pdf
 """
+import json
 import logging
 
 from scout.utils.scout_requests import get_request_json
@@ -27,7 +28,7 @@ class BioNanoAccessAPI:
         _get_token(self)
 
     def _get_token(self):
-        query = f"{self.url}/administration/api/1.4/login?user={self.bionano_username}&password={self.bionano_password}"
+        query = f"{self.url}/administration/api/1.4/login?username={self.bionano_username}&password={self.bionano_password}"
 
         LOG.info("Authenticating for BioNano Access")
         json_response = get_request_json(query)
@@ -36,12 +37,12 @@ class BioNanoAccessAPI:
         if not json_content:
             return None
         LOG.info("Response was %s", json_content)
-        json_content = json_content[0]
+        json_output = json_content.get("output")
 
         if "user" in json_content:
-            self.bionano_user_dict = json_content["user"]
+            self.bionano_user_dict = json_output.get("user")
         if "token" in json_content:
-            self.bionano_token = json_content["token"]
+            self.bionano_token = json_output.get("token")
 
     def _get_projects(self):
         projects = []
@@ -50,15 +51,14 @@ class BioNanoAccessAPI:
         cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
 
         LOG.info("List projects on BioNano Access")
-        json_response = get_request_json(query)
+        json_response = get_request_json(query, cookies=cookies)
 
-        json_content = json_response.get("content", cookies=cookies)
+        json_content = json_response.get("content")
         if not json_content:
             return None
         LOG.info("Response was %s", json_content)
-        json_content = json_content[0]
 
-        projects = json_content
+        projects = json_content.get("output")
 
         return projects
 
@@ -69,15 +69,14 @@ class BioNanoAccessAPI:
         cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
 
         LOG.info("List samples on BioNano Access")
-        json_response = get_request_json(query)
+        json_response = get_request_json(query, cookies=cookies)
 
-        json_content = json_response.get("content", cookies=cookies)
+        json_content = json_response.get("content")
         if not json_content:
             return None
         LOG.info("Response was %s", json_content)
-        json_content = json_content[0]
 
-        samples = json_content
+        samples = json_content.get("output")
 
         return samples
 
@@ -97,9 +96,8 @@ class BioNanoAccessAPI:
         if not json_content:
             return None
         LOG.info("Response was %s", json_content)
-        json_content = json_content[0]
 
-        report = json_content
+        report = json_content.get("content")
 
         return report
 
