@@ -25,7 +25,8 @@ class BioNanoAccessAPI:
         self.url = app.config.get("BIONANO_ACCESS")
         self.bionano_username = app.config.get("BIONANO_USERNAME")
         self.bionano_password = app.config.get("BIONANO_PASSWORD")
-        _get_token(self)
+
+        self._get_token()
 
     def _get_token(self):
         query = f"{self.url}/administration/api/1.4/login?username={self.bionano_username}&password={self.bionano_password}"
