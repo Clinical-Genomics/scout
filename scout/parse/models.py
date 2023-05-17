@@ -187,6 +187,7 @@ class VcfFiles(BaseModel):
     vcf_snv: Optional[str] = None
     vcf_snv_research: Optional[str] = None
     vcf_mei: Optional[str] = None
+    vcf_mei_research: Optional[str] = None
     vcf_str: Optional[str] = None
     vcf_sv: Optional[str] = None
     vcf_sv_research: Optional[str] = None
