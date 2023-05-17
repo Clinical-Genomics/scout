@@ -120,6 +120,16 @@ def research(case_id, institute, force):
                 rank_treshold=default_threshold,
             )
 
+        if case_obj["vcf_files"].get("vcf_mei_research"):
+            files = True
+            upload_research_variants(
+                adapter=adapter,
+                case_obj=case_obj,
+                variant_type="research",
+                category="mei",
+                rank_treshold=default_threshold,
+            )
+
         if not files:
             LOG.warning("No research files found for case %s", case_id)
             continue
