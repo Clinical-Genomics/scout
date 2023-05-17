@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Updated igv.js to 2.15.6
 ### Fixed
+- Freeze CyVCF2 temporarily until a new manylinux wheel build is available
 - Docker stage build pycairo.
 - Restore SNV and SV rank models versions on Causatives and Verified pages
 - Saving `REVEL_RANKSCORE` value in a field named `revel` in variants database documents
