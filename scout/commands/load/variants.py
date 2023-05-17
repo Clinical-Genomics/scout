@@ -1,5 +1,4 @@
 import logging
-from pprint import pprint as pp
 
 import click
 from flask.cli import with_appcontext

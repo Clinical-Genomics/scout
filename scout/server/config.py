@@ -123,6 +123,10 @@ RERUN_MONITOR = True
 # PHENOMIZER_USERNAME = "test_user"
 # PHENOMIZER_PASSWORD = "test_password"
 
+BIONANO_ACCESS = "https://bionano-access.scilifelab.se"
+BIONANO_USERNAME = "danielnilsson"
+BIONANO_PASSWORD = "aeropark.cohesive.possibly"
+
 # Parameters for Phenopacket-api backend
 PHENOPACKET_API_URL = "https://phenopacket-stage.scilifelab.se"
 
