@@ -263,7 +263,7 @@ def test_mei_variants(app, institute_obj, case_obj):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # WHEN accessing the str-variants page
+        # WHEN accessing the mei-variants page
         resp = client.get(
             url_for(
                 "variants.mei_variants",

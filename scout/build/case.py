@@ -286,7 +286,7 @@ def build_case(case_data, adapter):
     if case_obj["vcf_files"].get("vcf_str"):
         case_obj["has_strvariants"] = True
 
-    case_obj["has_meivariants"] = False
+    case_obj["has_meivariants"] = bool(case_obj["vcf_files"].get("vcf_mei"))
     if case_obj["vcf_files"].get("vcf_mei"):
         case_obj["has_meivariants"] = True
 

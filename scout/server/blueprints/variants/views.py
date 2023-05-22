@@ -312,7 +312,7 @@ def sv_variants(institute_id, case_name):
 @variants_bp.route("/<institute_id>/<case_name>/mei/variants", methods=["GET", "POST"])
 @templated("variants/mei-variants.html")
 def mei_variants(institute_id, case_name):
-    """Display a list of structural variants."""
+    """Display a list of mobile element insertion (MEI) variants."""
     page = controllers.get_variants_page(request.form)
     category = "mei"
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

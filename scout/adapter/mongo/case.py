@@ -917,7 +917,7 @@ class CaseHandler(object):
             - gene_fusion_report: path to the gene fusions report
             - gene_fusion_report_research: path to the research gene fusions report
             - genome_build: If there is a new genome build
-            - has_meivariants: If there are new strvariants
+            - has_meivariants: If there are new mei variants
             - has_strvariants: If there are new strvariants
             - has_svvariants: If there are new svvariants
             - individuals: There could be new individuals
