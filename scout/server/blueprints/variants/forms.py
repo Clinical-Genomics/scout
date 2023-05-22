@@ -167,7 +167,7 @@ class CancerFiltersForm(VariantFiltersForm):
 
 
 class MeiFiltersForm(VariantFiltersForm):
-    """docstring for StrFiltersForm"""
+    """FiltersForm for Mobile Element Insertion variants"""
 
     mei_name = StringField("Element")
     clinical_filter = SubmitField(label="Clinical filter")
@@ -178,7 +178,7 @@ class MeiFiltersForm(VariantFiltersForm):
 
 
 class StrFiltersForm(VariantFiltersForm):
-    """docstring for StrFiltersForm"""
+    """FiltersForm for Short Tandem Repeat variants. So far only VariantFiltersForm"""
 
 
 class SvFiltersForm(VariantFiltersForm):

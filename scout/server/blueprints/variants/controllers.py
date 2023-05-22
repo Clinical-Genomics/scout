@@ -228,7 +228,7 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 def mei_variants(
     store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
 ):
-    """Pre-process list of SV variants."""
+    """Pre-process list of MEI variants."""
     skip_count = per_page * max(page - 1, 0)
 
     more_variants = variant_count > (skip_count + per_page)
