@@ -31,7 +31,7 @@ flask_login
 flask-ldapconn
 
 # Parsing
-cyvcf2<0.30.20
+cyvcf2
 configobj
 ped_parser
 pydantic
