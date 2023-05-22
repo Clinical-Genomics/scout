@@ -564,19 +564,15 @@ class QueryHandler(object):
 
             if criterion == "gnomad_frequency":
                 gnomad = query.get("gnomad_frequency")
-                if gnomad == "-1":
-                    # -1 means to exclude all variants that exists in gnomad
-                    mongo_query["gnomad_frequency"] = {"$exists": False}
-                else:
-                    # Replace comma with dot
-                    mongo_secondary_query.append(
-                        {
-                            "$or": [
-                                {"gnomad_frequency": {"$lt": float(gnomad)}},
-                                {"gnomad_frequency": {"$exists": False}},
-                            ]
-                        }
-                    )
+                # Replace comma with dot
+                mongo_secondary_query.append(
+                    {
+                        "$or": [
+                            {"gnomad_frequency": {"$lt": float(gnomad)}},
+                            {"gnomad_frequency": {"$exists": False}},
+                        ]
+                    }
+                )
 
             if criterion == "local_obs":
                 local_obs = query.get("local_obs")
@@ -602,19 +598,15 @@ class QueryHandler(object):
 
             if criterion == "swegen_freq":
                 swegen = query.get("swegen_freq")
-                if swegen == "-1":
-                    # -1 means to exclude all variants that exists in swegen
-                    mongo_query["swegen_mei_max"] = {"$exists": False}
-                else:
-                    # Replace comma with dot
-                    mongo_secondary_query.append(
-                        {
-                            "$or": [
-                                {"swegen_mei_max": {"$lt": float(swegen)}},
-                                {"swegen_mei_max": {"$exists": False}},
-                            ]
-                        }
-                    )
+                # Replace comma with dot
+                mongo_secondary_query.append(
+                    {
+                        "$or": [
+                            {"swegen_mei_max": {"$lt": float(swegen)}},
+                            {"swegen_mei_max": {"$exists": False}},
+                        ]
+                    }
+                )
 
             if criterion in ["clingen_ngi", "swegen"]:
                 mongo_secondary_query.append(
