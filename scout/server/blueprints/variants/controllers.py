@@ -1,14 +1,17 @@
 import logging
 import re
 from datetime import date
+from typing import Any, Dict, Iterable
 
 import bson
 from flask import Response, flash, session, url_for
 from flask_login import current_user
 from markupsafe import Markup
+from pymongo.cursor import CursorType
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, ImmutableMultiDict, MultiDict
 
+from scout.adapter import MongoAdapter
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
@@ -226,8 +229,14 @@ def sv_variants(store, institute_obj, case_obj, variants_query, variant_count, p
 
 
 def mei_variants(
-    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
-):
+    store: MongoAdapter,
+    institute_obj: Dict,
+    case_obj: Dict,
+    variants_query: CursorType,
+    variant_count: int,
+    page: int = 1,
+    per_page: int = 50,
+) -> Dict[str, Any]:
     """Pre-process list of MEI variants."""
     skip_count = per_page * max(page - 1, 0)
 

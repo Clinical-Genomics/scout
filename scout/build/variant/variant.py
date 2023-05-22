@@ -425,11 +425,8 @@ def add_frequencies(variant_obj, frequencies):
     variant_obj["swegen"] = frequencies.get("swegen")
 
     # add the mei frqs:
-    variant_obj["swegen_alu"] = frequencies.get("swegen_alu")
-    variant_obj["swegen_herv"] = frequencies.get("swegen_herv")
-    variant_obj["swegen_l1"] = frequencies.get("swegen_l1")
-    variant_obj["swegen_sva"] = frequencies.get("swegen_sva")
-    variant_obj["swegen_mei_max"] = frequencies.get("swegen_mei_max")
+    for mei_freq in ["swegen_alu", "swegen_herv", "swegen_l1", "swegen_sva", "swegen_mei_max"]:
+        variant_obj[mei_freq] = frequencies.get(mei_freq)
 
     # Decipher is never a frequency, it will ony give 1 if variant exists in decipher
     # Check if decipher exists
