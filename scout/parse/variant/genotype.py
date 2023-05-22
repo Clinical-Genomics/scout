@@ -18,6 +18,10 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
+from typing import Dict, Tuple
+
+import cyvcf2
+
 GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 
 
@@ -137,8 +141,11 @@ def parse_genotype(variant, ind, pos):
     return gt_call
 
 
-def get_mei_reads(variant, pos):
-    """Get MEI caller read details from FORMAT tags"""
+def get_mei_reads(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ...]:
+    """Get MEI caller read details from FORMAT tags.
+    Returns:
+        tuple(int, int, int) spanning_ref, clip5p_alt, clip3p_alt
+    """
     spanning_ref = None
     clip5_alt = None
     clip3_alt = None
