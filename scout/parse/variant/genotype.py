@@ -18,6 +18,10 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
+from typing import Dict, Tuple
+
+import cyvcf2
+
 GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
 
 
@@ -61,6 +65,12 @@ def parse_genotype(variant, ind, pos):
     ##FORMAT=<ID=ADIR,Number=1,Type=String,Description="Number of in-repeat reads consistent with the allele">
     ##FORMAT=<ID=ADSP,Number=1,Type=String,Description="Number of spanning reads consistent with the allele">
 
+    MEI specific format fields
+    ##FORMAT=<ID=CLIP3,Number=1,Type=Float,Description="Number of soft clipped reads downstream of the breakpoint">
+    ##FORMAT=<ID=CLIP5,Number=1,Type=Float,Description="Number of soft clipped reads upstream of the breakpoint">
+    ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
+    ##FORMAT=<ID=SP,Number=1,Type=Float,Description="Number of correctly mapped read pairs spanning breakpoint, useful for estimation of size of insertion">
+
     Args:
         variant(cyvcf2.Variant)
         ind_id(dict): A dictionary with individual information
@@ -91,17 +101,37 @@ def parse_genotype(variant, ind, pos):
     (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
     (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
 
+    # MEI specific
+    (spanning_mei_ref, clip5_alt, clip3_alt) = get_mei_reads(
+        variant, pos
+    )  # allowing mei SP to override STR ADSP for spanning
+
     # SV specific
     (paired_end_ref, paired_end_alt) = get_paired_ends(variant, pos)
     (split_read_ref, split_read_alt) = get_split_reads(variant, pos)
 
     alt_depth = get_alt_depth(
-        variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt
+        variant,
+        pos,
+        paired_end_alt,
+        split_read_alt,
+        spanning_alt,
+        flanking_alt,
+        inrepeat_alt,
+        clip5_alt,
+        clip3_alt,
     )
     gt_call["alt_depth"] = alt_depth
 
     ref_depth = get_ref_depth(
-        variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref
+        variant,
+        pos,
+        paired_end_ref,
+        split_read_ref,
+        spanning_ref,
+        flanking_ref,
+        inrepeat_ref,
+        spanning_mei_ref,
     )
     gt_call["ref_depth"] = ref_depth
     gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
@@ -109,6 +139,47 @@ def parse_genotype(variant, ind, pos):
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
 
     return gt_call
+
+
+def get_mei_reads(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ...]:
+    """Get MEI caller read details from FORMAT tags.
+    Returns:
+        tuple(int, int, int) spanning_ref, clip5p_alt, clip3p_alt
+    """
+    spanning_ref = None
+    clip5_alt = None
+    clip3_alt = None
+
+    # Number of (reference) variant spanning reads
+    if "SP" in variant.FORMAT:
+        try:
+            values = variant.format("SP")[pos]
+            ref_value = int(values[0])
+            if ref_value >= 0:
+                spanning_ref = ref_value
+        except ValueError as _ignore_error:
+            pass
+
+    # Number of split reads upstream (supporting alt)
+    if "CLIP5" in variant.FORMAT:
+        try:
+            values = variant.format("CLIP5")[pos]
+            alt_value = int(values[0])
+            if alt_value >= 0:
+                clip5_alt = alt_value
+        except ValueError as _ignore_error:
+            pass
+
+    if "CLIP3" in variant.FORMAT:
+        try:
+            values = variant.format("CLIP3")[pos]
+            alt_value = int(values[0])
+            if alt_value >= 0:
+                clip3_alt = alt_value
+        except ValueError as _ignore_error:
+            pass
+
+    return (spanning_ref, clip5_alt, clip3_alt)
 
 
 def get_paired_ends(variant, pos):
@@ -225,7 +296,14 @@ def get_read_depth(variant, pos, alt_depth, ref_depth):
 
 
 def get_ref_depth(
-    variant, pos, paired_end_ref, split_read_ref, spanning_ref, flanking_ref, inrepeat_ref
+    variant,
+    pos,
+    paired_end_ref,
+    split_read_ref,
+    spanning_ref,
+    flanking_ref,
+    inrepeat_ref,
+    spanning_mei_ref,
 ):
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
@@ -245,11 +323,22 @@ def get_ref_depth(
                 ref_depth += flanking_ref
             if inrepeat_ref:
                 ref_depth += inrepeat_ref
+
+        if spanning_mei_ref:
+            ref_depth += spanning_mei_ref
     return ref_depth
 
 
 def get_alt_depth(
-    variant, pos, paired_end_alt, split_read_alt, spanning_alt, flanking_alt, inrepeat_alt
+    variant,
+    pos,
+    paired_end_alt,
+    split_read_alt,
+    spanning_alt,
+    flanking_alt,
+    inrepeat_alt,
+    clip5_alt,
+    clip3_alt,
 ):
     """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
@@ -263,6 +352,13 @@ def get_alt_depth(
                 alt_depth += paired_end_alt
             if split_read_alt:
                 alt_depth += split_read_alt
+
+        if any([clip5_alt, clip3_alt]):
+            alt_depth = 0
+            if clip5_alt:
+                alt_depth += clip5_alt
+            if clip3_alt:
+                alt_depth += clip3_alt
 
         if any([spanning_alt, flanking_alt, inrepeat_alt]):
             alt_depth = 0

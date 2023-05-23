@@ -7,6 +7,7 @@ import click
 from flask.cli import with_appcontext
 
 from scout.adapter import MongoAdapter
+from scout.constants import FILE_TYPE_MAP
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -90,35 +91,20 @@ def research(case_id, institute, force):
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
             continue
-        if case_obj["vcf_files"].get("vcf_snv_research"):
-            files = True
-            upload_research_variants(
-                adapter=adapter,
-                case_obj=case_obj,
-                variant_type="research",
-                category="snv",
-                rank_treshold=default_threshold,
-            )
 
-        if case_obj["vcf_files"].get("vcf_sv_research"):
-            files = True
-            upload_research_variants(
-                adapter=adapter,
-                case_obj=case_obj,
-                variant_type="research",
-                category="sv",
-                rank_treshold=default_threshold,
-            )
+        for file_type in FILE_TYPE_MAP:
+            if FILE_TYPE_MAP[file_type]["variant_type"] != "research":
+                continue
 
-        if case_obj["vcf_files"].get("vcf_cancer_research"):
-            files = True
-            upload_research_variants(
-                adapter=adapter,
-                case_obj=case_obj,
-                variant_type="research",
-                category="cancer",
-                rank_treshold=default_threshold,
-            )
+            if case_obj["vcf_files"].get(file_type):
+                files = True
+                upload_research_variants(
+                    adapter=adapter,
+                    case_obj=case_obj,
+                    variant_type="research",
+                    category=FILE_TYPE_MAP[file_type]["category"],
+                    rank_treshold=default_threshold,
+                )
 
         if not files:
             LOG.warning("No research files found for case %s", case_id)

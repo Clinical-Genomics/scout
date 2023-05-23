@@ -1,5 +1,4 @@
 import logging
-from pprint import pprint as pp
 
 import click
 from flask.cli import with_appcontext
@@ -20,6 +19,8 @@ LOG = logging.getLogger(__name__)
     is_flag=True,
     help="Upload research cancer structural variants",
 )
+@click.option("--mei", is_flag=True, help="Upload clinical MEI variants")
+@click.option("--mei-research", is_flag=True, help="Upload research MEI variants")
 @click.option("--sv", is_flag=True, help="Upload clinical structural variants")
 @click.option("--sv-research", is_flag=True, help="Upload research structural variants")
 @click.option("--snv", is_flag=True, help="Upload clinical SNV variants")
@@ -50,6 +51,8 @@ def variants(
     cancer_sv,
     cancer_research,
     cancer_sv_research,
+    mei,
+    mei_research,
     sv,
     sv_research,
     snv,
@@ -96,6 +99,8 @@ def variants(
             "variant_type": "research",
             "upload": cancer_sv_research,
         },
+        {"category": "mei", "variant_type": "clinical", "upload": mei},
+        {"category": "mei", "variant_type": "research", "upload": mei_research},
         {"category": "sv", "variant_type": "clinical", "upload": sv},
         {"category": "sv", "variant_type": "research", "upload": sv_research},
         {"category": "snv", "variant_type": "clinical", "upload": snv},

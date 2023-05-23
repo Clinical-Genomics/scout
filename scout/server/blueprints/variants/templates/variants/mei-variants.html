@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
-{% from "variants/utils.html" import sv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
+{% from "variants/utils.html" import mei_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
 {% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell %}
 
 {% block title %}
-  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - SV variants
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Mobile Element Insertion variants
 {% endblock %}
 
 {% block css %}
@@ -27,7 +27,7 @@
     </a>
   </li>
   <li class="nav-item active d-flex align-items-center">
-    <span class="navbar-text">{{ form.variant_type.data|capitalize }}  Structural variants</span>
+    <span class="navbar-text">{{ form.variant_type.data|capitalize }}  Mobile Element Insertion variants</span>
   </li>
 {% endblock %}
 
@@ -37,33 +37,32 @@
 {% endblock %}
 
 {% block content_main %}
- <form method="POST" id="filters_form" action="{{url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name)}}"
+ <form method="POST" id="filters_form" action="{{url_for('variants.mei_variants', institute_id=institute._id, case_name=case.display_name)}}"
 onsubmit="return validateForm()">
   <div class="container-float">
     {{ pagination_hidden_div(page) }}
       <div class="card panel-default" id="accordion">
         <div class="card-header">
-          <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
+          <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">MeiFilters</a></strong>
         </div>
         <!--Expand filters form if filters were used in a previous POST request-->
         <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
-          <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
+          <div class="card-body">{{ mei_filters(form, institute, case) }}</div>
         </div>
         {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
       </div>
 
       <div class="card mt-3">
-        <table id="variantsTable" class="table table-hover table-bordered" aria-label="SV variants table">
+        <table id="variantsTable" class="table table-hover table-bordered" aria-label="MEI variants table">
           <thead class="table-light thead">
             <tr>
               <th style="width:3%"></th>
               <th>Rank</th>
               <th>Score</th>
               <th>Type</th>
+              <th>Element</th>
               <th>Chr</th>
               <th>Start loc</th>
-              <th>Stop loc</th>
-              <th>Length</th>
               <th>Frequency</th>
               <th>Gene(s)</th>
               <th>Region</th>
@@ -103,10 +102,9 @@ onsubmit="return validateForm()">
     </td>
     <td class="text-end">{{ variant.rank_score|int }}</td>
     <td>{{ variant.sub_category|upper }}</td>
+    <td>{{ variant.mei_name }}</td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
-    <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td class="text-end">{{ '-' if variant.length == 100000000000 else variant.length }}</td>
     <td>
       {{ frequency_cell_general(variant) }}
     </td>
