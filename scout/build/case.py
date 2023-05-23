@@ -278,17 +278,13 @@ def build_case(case_data, adapter):
 
     _populate_pipeline_info(case_obj, case_data)
 
-    case_obj["has_svvariants"] = False
-    if case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research"):
-        case_obj["has_svvariants"] = True
+    case_obj["has_svvariants"] = bool(
+        case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research")
+    )
 
-    case_obj["has_strvariants"] = False
-    if case_obj["vcf_files"].get("vcf_str"):
-        case_obj["has_strvariants"] = True
+    case_obj["has_strvariants"] = bool(case_obj["vcf_files"].get("vcf_str"))
 
     case_obj["has_meivariants"] = bool(case_obj["vcf_files"].get("vcf_mei"))
-    if case_obj["vcf_files"].get("vcf_mei"):
-        case_obj["has_meivariants"] = True
 
     case_obj["is_migrated"] = False
 

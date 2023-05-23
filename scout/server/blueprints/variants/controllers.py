@@ -1,7 +1,7 @@
 import logging
 import re
 from datetime import date
-from typing import Any, Dict, Iterable
+from typing import Any, Dict
 
 import bson
 from flask import Response, flash, session, url_for

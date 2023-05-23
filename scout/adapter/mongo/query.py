@@ -564,7 +564,6 @@ class QueryHandler(object):
 
             if criterion == "gnomad_frequency":
                 gnomad = query.get("gnomad_frequency")
-                # Replace comma with dot
                 mongo_secondary_query.append(
                     {
                         "$or": [
@@ -598,7 +597,6 @@ class QueryHandler(object):
 
             if criterion == "swegen_freq":
                 swegen = query.get("swegen_freq")
-                # Replace comma with dot
                 mongo_secondary_query.append(
                     {
                         "$or": [
