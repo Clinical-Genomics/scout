@@ -21,6 +21,7 @@ from wtforms.widgets import TextInput
 from scout.constants import (
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
+    CLINICAL_FILTER_BASE_MEI,
     CLINICAL_FILTER_BASE_SV,
     CLINSIG_MAP,
     FEATURE_TYPES,
@@ -165,8 +166,19 @@ class CancerFiltersForm(VariantFiltersForm):
     clinical_filter_base = CLINICAL_FILTER_BASE_CANCER
 
 
+class MeiFiltersForm(VariantFiltersForm):
+    """FiltersForm for Mobile Element Insertion variants"""
+
+    mei_name = StringField("Element")
+    clinical_filter = SubmitField(label="Clinical filter")
+    swegen_freq = BetterDecimalField("SweGen(Max) AF", places=2, validators=[validators.Optional()])
+
+    # polymorphic constant base for clinical filter
+    clinical_filter_base = CLINICAL_FILTER_BASE_MEI
+
+
 class StrFiltersForm(VariantFiltersForm):
-    """docstring for StrFiltersForm"""
+    """FiltersForm for Short Tandem Repeat variants. So far only VariantFiltersForm"""
 
 
 class SvFiltersForm(VariantFiltersForm):
@@ -197,4 +209,5 @@ FILTERSFORMCLASS = {
     "sv": SvFiltersForm,
     "cancer_sv": CancerSvFiltersForm,
     "cancer": CancerFiltersForm,
+    "mei": MeiFiltersForm,
 }

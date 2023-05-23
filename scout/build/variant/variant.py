@@ -125,6 +125,10 @@ def build_variant(
         str_swegen_mean = float, STR norm pop mean
         str_swegen_std = float, STR norm pop stdev
 
+        # MEI specific information
+        mei_name = str, Mobile element name from retroseq MEINFO tag
+        mei_polarity = str, Mobile element polarity from retroseq MEINFO tag
+
         # Callers
         gatk = str, # choices=VARIANT_CALL, default='Not Used'
         samtools = str, # choices=VARIANT_CALL, default='Not Used'
@@ -192,6 +196,10 @@ def build_variant(
     variant_obj["str_status"] = variant.get("str_status")
     variant_obj["str_swegen_mean"] = call_safe(float, variant.get("str_swegen_mean"))
     variant_obj["str_swegen_std"] = call_safe(float, variant.get("str_swegen_std"))
+
+    ## MEI variant specific
+    variant_obj["mei_name"] = variant.get("mei_name")
+    variant_obj["mei_polarity"] = variant.get("mei_polarity")
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
@@ -415,6 +423,10 @@ def add_frequencies(variant_obj, frequencies):
     variant_obj["clingen_mip"] = frequencies.get("clingen_mip")
     variant_obj["clingen_ngi"] = frequencies.get("clingen_ngi")
     variant_obj["swegen"] = frequencies.get("swegen")
+
+    # add the mei frqs:
+    for mei_freq in ["swegen_alu", "swegen_herv", "swegen_l1", "swegen_sva", "swegen_mei_max"]:
+        variant_obj[mei_freq] = frequencies.get(mei_freq)
 
     # Decipher is never a frequency, it will ony give 1 if variant exists in decipher
     # Check if decipher exists

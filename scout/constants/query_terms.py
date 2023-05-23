@@ -35,6 +35,7 @@ SECONDARY_CRITERIA = [
     "local_obs_freq",
     "clingen_ngi",
     "swegen",
+    "swegen_freq",
     "spidex_human",
     "cadd_score",
     "genetic_models",

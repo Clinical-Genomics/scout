@@ -20,7 +20,7 @@ individual = dict(
     upd_regions_bed=str,  # Path to bed file
     upd_sites_bed=str,  # Path to bed file
     vcf2cytosure=str,  # Path to CGH file
-    analysis_type=str,  # choices=ANALYSIS_TYPES
+    analysis_type=str,  # choices: ANALYSIS_TYPES
     confirmed_sex=bool,  # True or False. None if no check has been done
     confirmed_parent=bool,
     is_sma=bool,  # True / False if SMA status determined - None if not done.
@@ -43,7 +43,7 @@ individual = dict(
 case = dict(
     analysis_date=datetime,
     assignees=list,  # list of str _id of a user (email)
-    case_id=str,  # required=True, unique. This is a string with the id for the family
+    case_id=str,  # required: True, unique. This is a string with the id for the family
     causatives=list,  # List of variants referred by there _id
     cnv_report=str,  # CNV report is a path to pdf file
     collaborators=list,  # List of institute_ids that are allowed to view the case
@@ -58,11 +58,12 @@ case = dict(
     gene_fusion_report_research=str,  # Path to the gene fusions research report file
     genome_build=str,  # This should be 37 or 38
     group=list,  # a list of group ids for cases conceptually grouped together with this
-    has_strvariants=bool,  # default=False
-    has_svvariants=bool,  # default=False
+    has_meivariants=bool,  # default: False
+    has_strvariants=bool,  # default: False
+    has_svvariants=bool,  # default: False
     individuals=list,  # list of dictionaries with individuals
-    is_migrated=bool,  # default=False
-    is_research=bool,  # default=False
+    is_migrated=bool,  # default: False
+    is_research=bool,  # default: False
     madeline_info=str,  # madeline info is a full xml file
     multiqc=str,  # path to multiqc report
     multiqc_rna=str,  # path to multiqc RNA report
@@ -72,16 +73,16 @@ case = dict(
     phenotype_terms=list,  # List of dictionaries with phenotype information
     pipeline_version=str,  # Path to the pipeline executable versions report file
     rank_model_version=str,
-    rank_score_threshold=int,  # default=8
-    rerun_requested=bool,  # default=False
+    rank_score_threshold=int,  # default: 8
+    rerun_requested=bool,  # default: False
     reference_info=str,  # Path to the pipeline reference files versions report file
-    research_requested=bool,  # default=False
+    research_requested=bool,  # default: False
     RNAfusion_inspector=str,  # Path to the RNA fusion inspector file
     RNAfusion_inspector_research=str,  # Path to the research RNA fusion inspector file
     RNAfusion_report=str,  # Path to the RNA fusion report file
     RNAfusion_report_research=str,  # Path to the research RNA fusion report file
     smn_tsv=str,  # path to an SMN TSV file
-    status=str,  # default='inactive', choices=STATUS
+    status=str,  # default: 'inactive', choices: STATUS
     suspects=list,  # List of variants referred by there _id
     sv_rank_model_version=str,
     synopsis=str,  # The synopsis is a text blob

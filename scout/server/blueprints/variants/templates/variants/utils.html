@@ -204,6 +204,9 @@
   {% elif type == "sv" %}
     {{ form.svtype.label(class="control-label") }}
     {{ form.svtype(class="form-control selectpicker", data_style="btn-secondary") }}
+  {% elif type == "mei" %}
+    {{ form.mei_name.label(class="control-label") }}
+    {{ form.mei_name(class="form-control", data_style="btn-secondary") }}
   {% endif %}
   </div>
   <div class="col-2">
@@ -345,6 +348,108 @@
     </div>
   </div>
 {% endmacro %}
+
+
+{% macro mei_filters(form, institute, case, filters)%}
+<input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
+  {{ variants_common_filters(form, "mei") }}
+  <div class="row mb-2">
+    <div class="col-3">
+      {{ form.hgnc_symbols.label(class="control-label") }}
+      {{ form.hgnc_symbols(class="form-control") }}
+    </div>
+    <div class="col-1 align-self-end">
+      <div class="d-flex btn-group">
+        <a class="btn btn-secondary text-white" href="{{ url_for('variants.mei_variants', institute_id=institute._id,
+          case_name=case.display_name, variant_type=form.variant_type.data,
+          gene_panels=['hpo']) }}">HPO gene list</a>
+      </div>
+    </div>
+    <div class="col-2">
+      {{ form.clinsig.label(class="control-label") }}
+      {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
+    </div>
+  </div>
+  <div class="row mb-2">
+    <div class="col-4">
+      <div class ="row">
+        <div class="col-4">
+          {{ form.swegen_freq.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Display variants with less than this fraction of cases in SweGen.") }}
+          {{ form.swegen_freq(class="form-control") }}
+         </div>
+        <div class="col-4">
+          {{ form.local_obs.label(class="control-label") }}
+          {{ form.local_obs(class="form-control") }}
+        </div>
+        <div class="col-4">
+          {{ form.chrom.label(class="control-label") }}
+          {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
+        </div>
+      </div>
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.end) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_start) }}
+    </div>
+    <div class="col-2">
+      {{ wtf.form_field(form.cytoband_end) }}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2">
+      <a class="btn btn-secondary btn-sm form-control" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
+        String coordinates
+      </a>
+    </div>
+    <div class="col-4">
+      <div id="stringcoords" class="collapse row">
+        <div class="col-4">{{ form.chrom_pos.label(class="control-label") }}</div>
+        <div class="col-8">{{ form.chrom_pos(class="form-control") }}</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div id="hidecompounds" class="collapse row">
+        <div class="col-4">{{ form.compound_rank_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Shade compounds at this score or below as if dismissed") }}</div>
+        <div class="col-3">{{ form.compound_rank_score(class="form-control", placeholder="example: 10", onchange="this.form.submit()") }}</div>
+        <div class="col-5"><div class="form-check">{{ form.compound_follow_filter(class="form-check-input", type="checkbox", onchange="this.form.submit()") }}{{ form.compound_follow_filter.label(class="form-check-label ms-1", data_bs_toggle="tooltip", data_bs_placement="top", title="Shade compounds as if dismissed by essentially the same filter as the main variant. CADD, CLINSIG, Frequency, function, position, region, SPIDEX, and variant type shade and hide, but chromosome, gene panel, and inheritance model do not. Checkbox ClinVar hits is not considered. Checkbox Always show CLNSIG disables ClinVar shading for the compound. Not loaded compounds cannot be evaluated and instead become shaded.") }}</div></div>
+      </div>
+    </div>
+    <div class="col-2">
+      <a class="btn btn-secondary btn-sm form-control" data-bs-toggle="collapse" href="#hidecompounds" aria-expanded="false" aria-controls="hidecompounds">
+        Hide compounds
+      </a>
+    </div>
+  </div>
+  <div class="row justify-content-between" style="margin-top:20px;">
+      <div class="col-4">
+        {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
+      </div>
+      <div class="col-4">
+         {{ form.clinical_filter(class="btn btn-secondary form-control", onclick="resetPage()") }}
+      </div>
+      <div class="col-4">
+        {{ form.export(class="btn btn-warning form-control") }}
+      </div>
+  </div>
+  <div class="row justify-content-between" style="margin-top:20px;">
+    <div class="col-6 text-start">
+      <a href="{{ url_for('variants.mei_variants', institute_id=institute._id, case_name=case.display_name,
+        variant_type=form.variant_type.data) }}"
+        class="btn btn-secondary" style="color: #ffffff !important;">
+        Reset&nbsp;filters
+      </a>
+    </div>
+    <div class="col-6">
+      {{ stash_filter_buttons(form, institute, case) }}
+    </div>
+  </div>
+{% endmacro %}
+
 
 {% macro str_filters(form, institute, case, filters) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">

@@ -833,6 +833,7 @@ class CaseHandler(object):
                 "category": "cancer_sv",
             },
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
+            {"file_name": "vcf_mei", "variant_type": "clinical", "category": "mei"},
         ]
 
         try:
@@ -916,6 +917,7 @@ class CaseHandler(object):
             - gene_fusion_report: path to the gene fusions report
             - gene_fusion_report_research: path to the research gene fusions report
             - genome_build: If there is a new genome build
+            - has_meivariants: If there are new mei variants
             - has_strvariants: If there are new strvariants
             - has_svvariants: If there are new svvariants
             - individuals: There could be new individuals
@@ -982,6 +984,7 @@ class CaseHandler(object):
                 "gene_fusion_report": case_obj.get("gene_fusion_report"),
                 "gene_fusion_report_research": case_obj.get("gene_fusion_report_research"),
                 "genome_build": case_obj.get("genome_build", "37"),
+                "has_meivariants": case_obj.get("has_meivariants"),
                 "has_strvariants": case_obj.get("has_strvariants"),
                 "has_svvariants": case_obj.get("has_svvariants"),
                 "individuals": case_obj["individuals"],

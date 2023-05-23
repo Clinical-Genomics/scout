@@ -12,7 +12,7 @@ variant = dict(
     # the clinical variants have limited annotation fields.
     variant_type=str,  # required, choices=('research', 'clinical'))
     category=str,  # choices=('sv', 'snv', 'str')
-    sub_category=str,  # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd', 'str')
+    sub_category=str,  # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd', 'str', 'mei')
     mate_id=str,  # For SVs this identifies the other end
     case_id=str,  # case_id is a string like owner_caseid
     chromosome=str,  # required
@@ -47,6 +47,9 @@ variant = dict(
     str_swegen_mean=float,
     str_swegen_std=float,
     custom_images=list,  # list of custom image dictionaries
+    # MEI variant
+    mei_name=str,
+    mei_polarity=str,
     # mitochondrial variants
     mitomap_associated_diseases=str,
     # Gene ids:
