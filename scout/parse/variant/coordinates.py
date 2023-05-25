@@ -170,13 +170,20 @@ def parse_coordinates(variant, category, build="37"):
             end_chrom=end_chrom,
             svlen=variant.INFO.get("SVLEN"),
         )
+    elif category == "mei":
+        sub_category = "mei"
+        end = int(variant.end)
+        length = alt_len
+        if ref_len != alt_len:
+            sub_category = "mei"
+            length = abs(ref_len - alt_len)
     else:
         sub_category = "snv"
         end = int(variant.end)
         length = alt_len
         if ref_len != alt_len:
             sub_category = "indel"
-            abs(ref_len - alt_len)
+            length = abs(ref_len - alt_len)
 
     coordinates = {
         "chrom": chrom,

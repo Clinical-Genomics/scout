@@ -10,4 +10,6 @@ FILE_TYPE_MAP = {
     "vcf_sv": {"category": "sv", "variant_type": "clinical"},
     "vcf_sv_research": {"category": "sv", "variant_type": "research"},
     "vcf_str": {"category": "str", "variant_type": "clinical"},
+    "vcf_mei": {"category": "mei", "variant_type": "clinical"},
+    "vcf_mei_research": {"category": "mei", "variant_type": "research"},
 }

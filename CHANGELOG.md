@@ -4,9 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [unreleased]
 ### Added
 - BioNano Access server API - check projects, samples and fetch FSHD reports
+
+
+## [4.68]
+### Added
+- Rare Disease Mobile Element Insertion variants view
 ### Changed
 - Updated igv.js to 2.15.6
 ### Fixed

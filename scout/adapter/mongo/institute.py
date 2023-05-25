@@ -162,11 +162,8 @@ class InstituteHandler(object):
 
         return updated_institute
 
-    def institute(self, institute_id):
+    def institute(self, institute_id: str):
         """Featch a single institute from the backend
-
-        Args:
-            institute_id(str)
 
         Returns:
             Institute object

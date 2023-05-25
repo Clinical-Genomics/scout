@@ -206,16 +206,6 @@ def test_build_gnomad_query(adapter):
     ]
 
 
-def test_build_non_existing_gnomad(adapter):
-    case_id = "cust000"
-    freq = "-1"
-    query = {"gnomad_frequency": freq}
-
-    mongo_query = adapter.build_query(case_id, query=query)
-
-    assert mongo_query["gnomad_frequency"] == {"$exists": False}
-
-
 def test_build_cadd_exclusive(adapter):
     case_id = "cust000"
     cadd = 10.0

@@ -344,6 +344,29 @@ def frequencies(variant_obj):
                 "link": None,
             },
         }
+    elif variant_obj["category"] == "mei":
+        freqs = {
+            "swegen_alu": {
+                "display_name": "SweGen ALU",
+                "link": None,
+            },
+            "swegen_herv": {
+                "display_name": "SweGen HERV",
+                "link": None,
+            },
+            "swegen_l1": {
+                "display_name": "SweGen L1",
+                "link": None,
+            },
+            "swegen_sva": {
+                "display_name": "SweGen SVA",
+                "link": None,
+            },
+            "swegen_mei_max": {
+                "display_name": "SweGen MEI(max)",
+                "link": None,
+            },
+        }
     else:
         freqs = {
             "gnomad_frequency": {
@@ -375,7 +398,6 @@ def frequencies(variant_obj):
                 "link": variant_obj.get("gnomad_link"),
             },
         }
-
     frequency_list = []
     for freq_key in freqs:
         display_name = freqs[freq_key]["display_name"]

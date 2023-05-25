@@ -33,6 +33,14 @@ def test_load_variants(mock_app, case_obj):
     result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--sv-research", "--force"])
     assert result.exit_code == 0
 
+    # Test CLI by uploading MEI variants for a case
+    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--mei"])
+    assert result.exit_code == 0
+
+    # Test CLI by uploading MEI research variants for a case
+    result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--mei-research", "--force"])
+    assert result.exit_code == 0
+
     # Test CLI by uploading str clinical variants for a case
     result = runner.invoke(cli, ["load", "variants", case_obj["_id"], "--str-clinical"])
     assert result.exit_code == 0
