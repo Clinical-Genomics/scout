@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## unreleased
+### Fixed
+- Crash when attempting to export phenotype from a case that had never had phenotypes
+
 ## [4.68]
 ### Added
 - Rare Disease Mobile Element Insertion variants view
