@@ -6,7 +6,7 @@ from flask import Blueprint, flash, redirect, render_template, request, send_fil
 
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, CLNSIG_TERMS
 from scout.server.extensions import store
-from scout.server.utils import institute_and_case, templated
+from scout.server.utils import institute_and_case
 
 from . import controllers
 

@@ -86,7 +86,7 @@
           </form>
         </div>
         <div class="row">
-          <table>
+          <table role="none">
             <tr>
               <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
               <td style="width: 10%"><label for="clinvar_id">Submission ID</label></td>
@@ -108,7 +108,7 @@
         <div> <!--variant data div -->
           <h4>Variant data:</h4>
           {% if subm_obj.variant_data and subm_obj.variant_data | length > 0 %}
-          <table class="table table-striped">
+          <table role="none" class="table table-striped">
             <thead>
               <tr>
                 <th></th>
@@ -184,7 +184,7 @@
             <h4>Observation data:</h4>
             <input type="hidden" name="oldSampleName" id="oldSampleName" value="">
             <input type="hidden" name="newSampleName" id="newSampleName" value="">
-            <table class="table table-striped">
+            <table role="none" class="table table-striped">
               <thead>
                 <tr>
                   <th></th>
