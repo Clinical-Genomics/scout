@@ -96,7 +96,7 @@
                       {% endif %}
                     {% endwith %}
 
-                    <table role="presentation" style="width:100%; table-layout: auto; border-collapse: collapse;">
+                    <table style="width:100%; table-layout: auto; border-collapse: collapse;">
                     {% set ns = namespace(label='', validated=false) %}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <tr>
