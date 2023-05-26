@@ -43,9 +43,7 @@ def clinvar_add_variant(institute_id, case_name):
 def clinvar_save(institute_id, case_name):
     """Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission"""
     variant_data = controllers.parse_variant_form_fields(request.form)  # dictionary
-    casedata_list = controllers.parse_casedata_form_fields(
-        request.form
-    )  # a list of dictionaries
+    casedata_list = controllers.parse_casedata_form_fields(request.form)  # a list of dictionaries
 
     # retrieve or create an open ClinVar submission:
     subm = store.get_open_clinvar_submission(institute_id)
@@ -56,9 +54,7 @@ def clinvar_save(institute_id, case_name):
             "An open ClinVar submission was updated correctly with submitted data",
             "success",
         )
-    return redirect(
-        url_for("cases.case", institute_id=institute_id, case_name=case_name)
-    )
+    return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
 @clinvar_bp.route("/<institute_id>/clinvar_submissions", methods=["GET"])
@@ -130,9 +126,7 @@ def clinvar_update_submission(institute_id, submission):
 def clinvar_download_csv(submission, csv_type, clinvar_id):
     """Download a csv (Variant file or CaseData file) for a clinVar submission"""
 
-    clinvar_file_data = controllers.clinvar_submission_file(
-        submission, csv_type, clinvar_id
-    )
+    clinvar_file_data = controllers.clinvar_submission_file(submission, csv_type, clinvar_id)
 
     if clinvar_file_data is None:
         return redirect(request.referrer)
