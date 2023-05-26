@@ -347,17 +347,19 @@
 {% macro causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) %}
   {% set already_displayed_variant_ids = [] %}
   <div class="card mt-3">
-    <div data-bs-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
-      <div class="d-flex justify-content-between">
-        <h6><span class="fa fa-medkit ms-3 mt-2"></span>
-        {% if case.track == 'cancer' %}
-          Clinically significant
-        {% else %}
-          Causative variants ({{causatives|length + partial_causatives|length}})
-        {% endif %}
+     <div data-bs-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
+      <div class="d-flex justify-content-around align-items-center">
+        <h6><span class="fa fa-medkit mt-2"></span>
+          {% if case.track == 'cancer' %}
+            Clinically significant
+          {% else %}
+            Causative variants ({{causatives|length + partial_causatives|length}})
+          {% endif %}
         </h6>
         {% if not case.causatives|length and not case.partial_causatives|length %}
-          <span class="text-muted me-3 mt-2">No causative variants</span>
+        <span class="text-muted mt-2">
+          <h6>No causative variants</h6>
+        </span>
         {% endif %}
       </div>
     </div>
@@ -506,11 +508,13 @@
 
 {% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
   <div class="card mt-3">
-    <div class="d-flex justify-content-between" data-bs-toggle='tooltip' title="Displays all variants that has been pinned for this case">
-      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
+    <div class="d-flex justify-content-around align-items-center" data-bs-toggle='tooltip' title="Displays all variants that has been pinned for this case">
+      <h6><span class="fa fa-map-pin mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
       </h6>
       {% if not suspects|length %}
-        <span class="text-muted me-3 mt-2">No pinned variants</span>
+        <span class="text-muted mt-2">
+          <h6>No pinned variants</h6>
+        </span>
       {% endif %}
     </div>
     <div style="max-height:300px; overflow-y: scroll;">
