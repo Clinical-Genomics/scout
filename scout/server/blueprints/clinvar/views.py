@@ -22,13 +22,12 @@ clinvar_bp = Blueprint(
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/add_variant", methods=["POST"])
-@templated("clinvar/multistep_add_variant.html")
 def clinvar_add_variant(institute_id, case_name):
     """Create a ClinVar submission document in database for one or more variants from a case."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = {"institute": institute_obj, "case": case_obj, "clinsig_terms": CLNSIG_TERMS}
     controllers.set_clinvar_form(request.form.get("var_id"), data)
-    return data
+    return render_template("multistep_add_variant.html", **data)
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
@@ -50,7 +49,6 @@ def clinvar_save(institute_id, case_name):
 
 
 @clinvar_bp.route("/<institute_id>/clinvar_submissions", methods=["GET"])
-@templated("clinvar/clinvar_submissions.html")
 def clinvar_submissions(institute_id):
     """Handle clinVar submission objects and files"""
 
@@ -62,7 +60,7 @@ def clinvar_submissions(institute_id):
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
     }
-    return data
+    return render_template("clinvar_submissions.html", **data)
 
 
 @clinvar_bp.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
