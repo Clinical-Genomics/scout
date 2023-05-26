@@ -27,7 +27,7 @@ def clinvar_add_variant(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = {"institute": institute_obj, "case": case_obj, "clinsig_terms": CLNSIG_TERMS}
     controllers.set_clinvar_form(request.form.get("var_id"), data)
-    return render_template("multistep_add_variant.html", **data)
+    return render_template("clinvar/multistep_add_variant.html", **data)
 
 
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
@@ -60,7 +60,7 @@ def clinvar_submissions(institute_id):
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
     }
-    return render_template("clinvar_submissions.html", **data)
+    return render_template("clinvar/clinvar_submissions.html", **data)
 
 
 @clinvar_bp.route("/<submission>/<case>/rename/<old_name>", methods=["POST"])
