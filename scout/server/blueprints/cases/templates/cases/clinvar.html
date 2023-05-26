@@ -1,13 +1,13 @@
 {% from "cases/utils.html" import pretty_variant %}
 {% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
 
-{{ clinvar_howto_modal() }}
-
 {% macro clinvar_vars(institute, case, suspects) %}
+  {{ clinvar_howto_modal() }}
+
   <div class="card panel-default">
     <div>
       <div class="d-flex justify-content-between">
-        <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }}) <a data-target="#howto" href="#" data-toggle="modal">?</a>
+        <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants submitted to ClinVar ({{ case.clinvar_variants.items()|length }}) <a data-bs-target="#howto" href="#" data-bs-toggle="modal">?</a>
         </h6>
       </div>
     </div>

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "overview/institute_sidebar.html" import institute_actionbar %}
-{% from clinvar_howto.html impprt clinvar_howto_modal %}
+{% from "clinvar/clinvar_howto.html" import clinvar_howto_modal %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }}
