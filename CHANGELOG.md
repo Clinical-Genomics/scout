@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## unreleased
 ### Fixed
 - Crash when attempting to export phenotype from a case that had never had phenotypes
+- Aesthetic fix to Causative Variants panel on Case page for case without causatives
 
 ## [4.68]
 ### Added
