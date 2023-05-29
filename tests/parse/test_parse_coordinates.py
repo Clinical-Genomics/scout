@@ -56,14 +56,14 @@ def test_parse_coordinate_snv_build_38(mock_variant):
 def test_parse_coordinates_indel(mock_variant):
     """Test to parse the coordinates for an indel"""
     mock_variant.ALT = "ACCC"
-    mock_variant.end = 80003
+    mock_variant.end = 80000
     variant = mock_variant
 
     coordinates = parse_coordinates(variant, "snv")
     assert coordinates["position"] == variant.POS
     assert coordinates["end"] == variant.end
     assert coordinates["sub_category"] == "indel"
-    assert coordinates["length"] == len(variant.ALT[0])
+    assert coordinates["length"] == abs(len(variant.ALT[0]) - len(variant.REF))
 
 
 def test_parse_coordinates_translocation(mock_variant):

@@ -14,12 +14,13 @@ from scout.constants import (
     GENETIC_MODELS_PALETTE,
     MANUAL_RANK_OPTIONS,
     SEVERE_SO_TERMS,
+    SEVERE_SO_TERMS_SV,
 )
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
 from . import controllers
-from .forms import CancerFiltersForm, FiltersForm, StrFiltersForm, SvFiltersForm
+from .forms import CancerFiltersForm, FiltersForm, MeiFiltersForm, StrFiltersForm, SvFiltersForm
 
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint(
@@ -300,7 +301,99 @@ def sv_variants(institute_id, case_name):
         manual_rank_options=MANUAL_RANK_OPTIONS,
         page=page,
         result_size=result_size,
-        severe_so_terms=SEVERE_SO_TERMS,
+        severe_so_terms=SEVERE_SO_TERMS_SV,
+        show_dismiss_block=controllers.get_show_dismiss_block(),
+        total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
+        variant_type=variant_type,
+        **data,
+    )
+
+
+@variants_bp.route("/<institute_id>/<case_name>/mei/variants", methods=["GET", "POST"])
+@templated("variants/mei-variants.html")
+def mei_variants(institute_id, case_name):
+    """Display a list of mobile element insertion (MEI) variants."""
+    page = controllers.get_variants_page(request.form)
+    category = "mei"
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    variant_type = Markup.escape(
+        request.args.get("variant_type", request.form.get("variant_type", "clinical"))
+    )
+    variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
+
+    if request.form.get("hpo_clinical_filter"):
+        case_obj["hpo_clinical_filter"] = True
+
+    if "dismiss_submit" in request.form:  # dismiss a list of variants
+        controllers.dismiss_variant_list(
+            store,
+            institute_obj,
+            case_obj,
+            "variant.sv_variant",
+            request.form.getlist("dismiss"),
+            request.form.getlist("dismiss_choices"),
+        )
+
+    # update status of case if visited for the first time
+    controllers.activate_case(store, institute_obj, case_obj, current_user)
+
+    user_obj = store.user(current_user.email)
+    if request.method == "POST":
+        form = controllers.populate_filters_form(
+            store, institute_obj, case_obj, user_obj, category, request.form
+        )
+    else:
+        form = MeiFiltersForm(request.args)
+
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = controllers.case_default_panels(case_obj)
+
+        # set form variant data type the first time around
+        form.variant_type.data = variant_type
+        # set chromosome to all chromosomes
+        form.chrom.data = request.args.get("chrom", "")
+
+    # populate filters dropdown
+    available_filters = list(store.filters(institute_obj["_id"], category))
+    form.filters.choices = [
+        (filter.get("_id"), filter.get("display_name")) for filter in available_filters
+    ]
+
+    # Populate chromosome select choices
+    controllers.populate_chrom_choices(form, case_obj)
+
+    # populate available panel choices
+    form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
+
+    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    cytobands = store.cytoband_by_chrom(genome_build)
+
+    controllers.update_form_hgnc_symbols(store, case_obj, form)
+
+    variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
+
+    result_size = store.count_variants(case_obj["_id"], form.data, None, category)
+
+    # if variants should be exported
+    if request.form.get("export"):
+        return controllers.download_variants(store, case_obj, variants_query)
+
+    data = controllers.mei_variants(
+        store, institute_obj, case_obj, variants_query, result_size, page
+    )
+
+    return dict(
+        case=case_obj,
+        cytobands=cytobands,
+        dismiss_variant_options=DISMISS_VARIANT_OPTIONS,
+        expand_search=controllers.get_expand_search(request.form),
+        filters=available_filters,
+        form=form,
+        institute=institute_obj,
+        manual_rank_options=MANUAL_RANK_OPTIONS,
+        page=page,
+        result_size=result_size,
+        severe_so_terms=SEVERE_SO_TERMS_SV,
         show_dismiss_block=controllers.get_show_dismiss_block(),
         total_variants=variants_stats.get(variant_type, {}).get(category, "NA"),
         variant_type=variant_type,

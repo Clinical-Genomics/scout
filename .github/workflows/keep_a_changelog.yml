@@ -12,4 +12,4 @@ jobs:
     - uses: dangoslen/changelog-enforcer@v3
       with:
         changeLogPath: 'CHANGELOG.md'
-        skipLabel: 'Skip-Changelog'
+        skipLabels: 'Skip-Changelog'
