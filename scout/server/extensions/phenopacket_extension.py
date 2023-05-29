@@ -43,6 +43,9 @@ class PhenopacketAPI:
 
         phenotype_terms = case.get("phenotype_terms")
 
+        if not phenotype_terms:
+            return None
+
         p_individual = None
         p_features = []
 

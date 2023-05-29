@@ -247,6 +247,9 @@
         {% if case.vcf_files.vcf_sv %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
         {% endif %}
+        {% if case.vcf_files.vcf_mei %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.mei_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical Mobile Element Insertion variants</a>
+        {% endif %}
         {% if case.vcf_files.vcf_str %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.str_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical STR variants</a>
         {% endif %}
@@ -272,6 +275,9 @@
         {% endif %}
         {% if case.vcf_files.vcf_sv_research %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.sv_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research {% if case.track=="cancer" %}germline {% endif %}structural variants</a>
+        {% endif %}
+        {% if case.vcf_files.vcf_mei_research %}
+           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.mei_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research Mobile Element Insertion variants</a>
         {% endif %}
         {% if case.vcf_files.vcf_cancer_research %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='research') }}">Research somatic SNV and INDELs</a>

@@ -1,4 +1,7 @@
 import logging
+from typing import Any, Dict, Optional
+
+from cyvcf2 import Variant
 
 from scout.constants import CHR_PATTERN
 from scout.exceptions import VcfError
@@ -11,7 +14,7 @@ from .compound import parse_compounds
 from .conservation import parse_conservations
 from .coordinates import parse_coordinates
 from .deleteriousness import parse_cadd
-from .frequency import parse_frequencies, parse_sv_frequencies
+from .frequency import parse_frequencies, parse_mei_frequencies, parse_sv_frequencies
 from .gene import parse_genes
 from .genotype import parse_genotypes
 from .ids import parse_ids
@@ -23,7 +26,7 @@ LOG = logging.getLogger(__name__)
 
 
 def parse_variant(
-    variant,
+    variant: Variant,
     case,
     variant_type="clinical",
     rank_results_header=None,
@@ -140,43 +143,17 @@ def parse_variant(
     parsed_variant["azlength"] = call_safe(int, variant.INFO.get("AZLENGTH"))
     parsed_variant["azqual"] = call_safe(float, variant.INFO.get("AZQUAL"))
 
-    ################ Add STR info if present ################
+    # STR variant info
+    set_str_info(variant, parsed_variant)
 
-    # repeat id generally corresponds to gene symbol
-    parsed_variant["str_repid"] = call_safe(str, variant.INFO.get("REPID"))
-
-    # repeat unit - used e g in PanelApp naming of STRs
-    parsed_variant["str_ru"] = call_safe(str, variant.INFO.get("RU"))
-
-    # repeat unit - used e g in PanelApp naming of STRs
-    parsed_variant["str_display_ru"] = call_safe(str, variant.INFO.get("DisplayRU"))
-
-    # repeat ref - reference copy number
-    parsed_variant["str_ref"] = call_safe(int, variant.INFO.get("REF"))
-
-    # repeat len - number of repeats found in case
-    parsed_variant["str_len"] = call_safe(int, variant.INFO.get("RL"))
-
-    # str status - this indicates the severity of the expansion level
-    parsed_variant["str_status"] = call_safe(str, variant.INFO.get("STR_STATUS"))
-
-    # str normal max - max number of repeats to call an STR variant normal
-    parsed_variant["str_normal_max"] = call_safe(int, variant.INFO.get("STR_NORMAL_MAX"))
-
-    # str pathological min - min number of repeats to call an STR variant pathologic
-    parsed_variant["str_pathologic_min"] = call_safe(int, variant.INFO.get("STR_PATHOLOGIC_MIN"))
-
-    # str disease - disease name annotation
-    parsed_variant["str_disease"] = call_safe(str, variant.INFO.get("Disease"))
-
-    # str disease inheritance mode string annotation
-    parsed_variant["str_inheritance_mode"] = call_safe(str, variant.INFO.get("InheritanceMode"))
-
-    # str source dict with display string, source type and entry id
-    set_source(parsed_variant, variant)
+    # STR source dict with display string, source type and entry id
+    set_str_source(parsed_variant, variant)
 
     parsed_variant["str_swegen_mean"] = call_safe(float, variant.INFO.get("SweGenMean"))
     parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
+
+    # Add MEI info
+    get_mei_info(variant, parsed_variant)
 
     ################# Add somatic info ##################
     parsed_variant["somatic_score"] = call_safe(int, variant.INFO.get("SOMATICSCORE"))
@@ -214,14 +191,6 @@ def parse_variant(
         float, variant.INFO.get("clinical_genomics_loqusFrq")
     )
     set_local_archive_info(parsed_variant, local_archive_info)
-    if local_archive_info and "Date" in local_archive_info:
-        parsed_variant["local_obs_old_date"] = local_archive_info.get("Date")
-
-    if local_archive_info and "NrCases" in local_archive_info:
-        parsed_variant["local_obs_old_nr_cases"] = local_archive_info.get("NrCases")
-
-    if local_archive_info and "Description" in local_archive_info:
-        parsed_variant["local_obs_old_desc"] = local_archive_info.get("Description")
 
     ###################### Add severity predictions ######################
     parsed_variant["cadd_score"] = parse_cadd(variant, parsed_transcripts)
@@ -245,6 +214,11 @@ def parse_variant(
     sv_frequencies = parse_sv_frequencies(variant)
     for key in sv_frequencies:
         parsed_variant["frequencies"][key] = sv_frequencies[key]
+
+    ###################### Add MEI specific annotations #####################
+    mei_frequencies = parse_mei_frequencies(variant)
+    for key in mei_frequencies:
+        parsed_variant["frequencies"][key] = mei_frequencies[key]
 
     ###################### Add Cancer specific annotations ######################
     # MSK_MVL indicates if variants are in the MSK managed variant list
@@ -285,6 +259,40 @@ def get_variant_alternative(variant, category):
         return variant.ALT[0]
     elif not variant.ALT and category == "str":
         return "."
+
+
+def get_mei_info(variant: Variant, parsed_variant: Dict[str, Any]):
+    """
+    ################# Add MEI info ##################
+    """
+    mei_info = parse_mei_info(variant.INFO.get("MEINFO"))
+    if mei_info:
+        parsed_variant["mei_name"] = mei_info["name"]
+        parsed_variant["mei_polarity"] = mei_info["polarity"]
+
+
+def parse_mei_info(mei_info: str) -> Optional[dict]:
+    """Parse variants MEINFO field into a mei info dict
+
+    <ID=MEINFO,Number=4,Type=String,Description="Mobile element info of the form NAME,START,END,POLARITY">
+
+    Returns:
+        mei info dict with keys name, start, end, polariry.
+    """
+
+    if not mei_info:
+        return
+
+    mei = mei_info.split(",")
+    if len(mei) != 4:
+        return
+
+    return {
+        "name": mei[0],
+        "start": mei[1],
+        "end": mei[2],
+        "polarity": mei[3],
+    }
 
 
 def get_filters(variant):
@@ -348,12 +356,43 @@ def set_dbsnp_id(parsed_variant, variant_id):
         parsed_variant["dbsnp_id"] = variant_id
 
 
-def set_source(parsed_variant, variant):
-    """Set source in parsed_variant
-    Args:
-        parsed_variant(dict)
-        variant(cyvcf2.Variant)
+def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     """
+    ################ Add STR info if present ################
+    """
+    # repeat id generally corresponds to gene symbol
+    parsed_variant["str_repid"] = call_safe(str, variant.INFO.get("REPID"))
+
+    # repeat unit - used e g in PanelApp naming of STRs
+    parsed_variant["str_ru"] = call_safe(str, variant.INFO.get("RU"))
+
+    # repeat unit - used e g in PanelApp naming of STRs
+    parsed_variant["str_display_ru"] = call_safe(str, variant.INFO.get("DisplayRU"))
+
+    # repeat ref - reference copy number
+    parsed_variant["str_ref"] = call_safe(int, variant.INFO.get("REF"))
+
+    # repeat len - number of repeats found in case
+    parsed_variant["str_len"] = call_safe(int, variant.INFO.get("RL"))
+
+    # str status - this indicates the severity of the expansion level
+    parsed_variant["str_status"] = call_safe(str, variant.INFO.get("STR_STATUS"))
+
+    # str normal max - max number of repeats to call an STR variant normal
+    parsed_variant["str_normal_max"] = call_safe(int, variant.INFO.get("STR_NORMAL_MAX"))
+
+    # str pathological min - min number of repeats to call an STR variant pathologic
+    parsed_variant["str_pathologic_min"] = call_safe(int, variant.INFO.get("STR_PATHOLOGIC_MIN"))
+
+    # str disease - disease name annotation
+    parsed_variant["str_disease"] = call_safe(str, variant.INFO.get("Disease"))
+
+    # str disease inheritance mode string annotation
+    parsed_variant["str_inheritance_mode"] = call_safe(str, variant.INFO.get("InheritanceMode"))
+
+
+def set_str_source(parsed_variant: Dict[str, Any], variant: Variant):
+    """Set source in parsed_variant"""
     str_source_display = variant.INFO.get("SourceDisplay")
     str_source_type = variant.INFO.get("Source")
     str_source_id = variant.INFO.get("SourceId")

@@ -31,6 +31,11 @@ LOG = logging.getLogger(__name__)
     help="path to clinical cancer SV VCF file to be loaded",
 )
 @click.option(
+    "--vcf-mei",
+    type=click.Path(exists=True),
+    help="path to clinical MEI VCF file to be loaded",
+)
+@click.option(
     "--vcf-str",
     type=click.Path(exists=True),
     help="path to clinical STR VCF file to be loaded",
@@ -70,6 +75,7 @@ def case(
     vcf_sv,
     vcf_cancer,
     vcf_cancer_sv,
+    vcf_mei,
     vcf_str,
     owner,
     ped,
@@ -107,6 +113,7 @@ def case(
             vcf_str=vcf_str,
             vcf_cancer=vcf_cancer,
             vcf_cancer_sv=vcf_cancer_sv,
+            vcf_mei=vcf_mei,
             peddy_ped=peddy_ped,
             peddy_sex=peddy_sex,
             peddy_check=peddy_check,

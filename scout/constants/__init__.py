@@ -38,7 +38,12 @@ from .clinvar import (
 )
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .file_types import FILE_TYPE_MAP
-from .filters import CLINICAL_FILTER_BASE, CLINICAL_FILTER_BASE_CANCER, CLINICAL_FILTER_BASE_SV
+from .filters import (
+    CLINICAL_FILTER_BASE,
+    CLINICAL_FILTER_BASE_CANCER,
+    CLINICAL_FILTER_BASE_MEI,
+    CLINICAL_FILTER_BASE_SV,
+)
 from .gene_tags import (
     GENE_PANELS_INHERITANCE_MODELS,
     INCOMPLETE_PENETRANCE_MAP,
@@ -60,7 +65,7 @@ from .phenotype import (
     UPDATE_DISEASES_RESOURCES,
 )
 from .query_terms import FUNDAMENTAL_CRITERIA, PRIMARY_CRITERIA, SECONDARY_CRITERIA
-from .so_terms import SEVERE_SO_TERMS, SO_TERM_KEYS, SO_TERMS
+from .so_terms import SEVERE_SO_TERMS, SEVERE_SO_TERMS_SV, SO_TERM_KEYS, SO_TERMS
 from .variant_tags import (
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
@@ -172,6 +177,7 @@ CALLERS = {
         {"id": "dellycnv", "name": "DellyCNV"},
         {"id": "tiddit", "name": "TIDDIT"},
     ],
+    "mei": [{"id": "retroseq", "name": "RetroSeq"}],
     "sv": [
         {"id": "gatk", "name": "GATK"},
         {"id": "cnvnator", "name": "CNVnator"},
