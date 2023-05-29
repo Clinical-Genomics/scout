@@ -1,1 +1,1 @@
-from .views import blueprint as clinvar_bp
+from .views import clinvar_bp
