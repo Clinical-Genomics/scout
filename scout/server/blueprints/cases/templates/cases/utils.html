@@ -348,8 +348,8 @@
   {% set already_displayed_variant_ids = [] %}
   <div class="card mt-3">
      <div data-bs-toggle='tooltip' title="Displays all variants that have been marked causative for this case">
-      <div class="d-flex justify-content-around align-items-center">
-        <h6><span class="fa fa-medkit mt-2"></span>
+      <div class="d-flex align-items-between align-items-center">
+        <h6><span class="fa fa-medkit ms-3 mt-2"></span>
           {% if case.track == 'cancer' %}
             Clinically significant
           {% else %}
@@ -398,7 +398,7 @@
           <div class="list-group-item list-group-item-action">
             {% if variant._id %}
               {% do already_displayed_variant_ids.append(variant._id) %}
-              <div class="row align-items-between align-items-center">
+              <div class="d-flex align-items-between align-items-center">
                 <div class="col">
                   <i class="fa fa-check-circle-o"></i>
                   {% if variant.category == "snv" %}
@@ -508,8 +508,8 @@
 
 {% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
   <div class="card mt-3">
-    <div class="d-flex justify-content-around align-items-center" data-bs-toggle='tooltip' title="Displays all variants that has been pinned for this case">
-      <h6><span class="fa fa-map-pin mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
+    <div class="d-flex align-items-between align-items-center" data-bs-toggle='tooltip' title="Displays all variants that has been pinned for this case">
+      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Pinned variants ({{suspects|length}})
       </h6>
       {% if not suspects|length %}
         <span class="text-muted mt-2">
