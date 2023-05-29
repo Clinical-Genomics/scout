@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## unreleased
+## [unreleased]
+### Added
+- ClinVar submission howto available also on Case page
 ### Fixed
 - Crash when attempting to export phenotype from a case that had never had phenotypes
 - Aesthetic fix to Causative and Pinned Variants on Case page
+- Structural inconsistency for ClinVar Blueprint templates
 
 ## [4.68]
 ### Added

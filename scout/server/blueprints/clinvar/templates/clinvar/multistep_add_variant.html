@@ -34,8 +34,9 @@
               </ul>
               <!-- fieldsets -->
               <fieldset>
+                <legend>ClinVar variant submission form</legend>
                 <p class="text-dark">
-                The form present on this page mirrors the fields on the Clinvar submission spreadsheets.<br>
+                The form present on this page mirrors the fields on the ClinVar submission spreadsheets.<br>
                 After collecting the required fields, this variant gets saved in an open ClinVar submission object.<br>
                 </p>
                 <a href="{{url_for('cases.case',institute_id=institute._id, case_name=case.display_name)}}" class="previous action-button-previous" style="text-decoration: none;">Back to Case</a>
@@ -43,6 +44,9 @@
               </fieldset>
 
               <fieldset>
+                <legend>Assertion criteria <span class="text-danger" data-bs-toggle='tooltip' title="The new ClinVar spreadsheet templates (versions L1.7 and 4.3) no longer include the following columns: Assertion method and Assertion method citation.
+                  New files for assertion criteria will be uploaded on your landing page in the ClinVar Submission Portal, independent of a submission. For this reason Scout will collect this information but will not export it as columns in the submission Variant file."><strong>?</strong></span></legend>
+
                 <!-- hidden fields -->
                 {{ variant_data.var_form.csrf_token }}
                 <!-- Variant data form -->
@@ -60,8 +64,6 @@
                   {{ variant_data.var_form.stop() }}
                 {% endif %}
                 <!-- end hidden fields -->
-                <h2 class="fs-title">Assertion Criteria <span class="text-danger" data-bs-toggle='tooltip' title="The new ClinVar spreadsheet templates (versions L1.7 and 4.3) no longer include the following columns: Assertion method and Assertion method citation.
-                  New files for assertion criteria will be uploaded on your landing page in the ClinVar Submission Portal, independent of a submission. For this reason Scout will collect this information but will not export it as columns in the submission Variant file."><strong>?</strong></span></h2>
                 <h3 class="fs-subtitle"></h3>
                   {{variant_data.var_form.last_evaluated.label(class="fw-bold text-dark")}}
                   {{variant_data.var_form.last_evaluated(class="bg-white")}}
@@ -74,7 +76,7 @@
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
               <fieldset>
-                  <h2 class="fs-title">Variant Details</h2>
+                  <legend>Variant Details</legend>
                   {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
                   {{variant_data.var_form.gene_symbol(class="bg-white")}}
                   <br>
@@ -96,7 +98,9 @@
                       {% endif %}
                     {% endwith %}
 
-                    <table role="presentation" style="width:100%; table-layout: auto; border-collapse: collapse;">
+                    <table style="width:100%; table-layout: auto; border-collapse: collapse;">
+                      <caption></caption>
+                      <tr><th></th></tr>
                     {% set ns = namespace(label='', validated=false) %}
                     {% for item_row in variant_data.var_form.tx_hgvs | batch(3) %}
                       <tr>
@@ -183,7 +187,7 @@
               </fieldset>
 
               <fieldset>
-                <h2 class="fs-title">Inheritance model</h2>
+                <legend>Inheritance model</legend>
                 <h3 class="fs-subtitle">The mode of inheritance specific to the variant-disease pair, not generally for the disease</h3>
                 {{variant_data.var_form.inheritance_mode.label(class="fw-bold, text-dark")}}
                 {{variant_data.var_form.inheritance_mode(class="form-control, btn-secondary")}}
@@ -193,7 +197,7 @@
               </fieldset>
 
               <fieldset>
-                <h2 class="fs-title">Clinical Significance</h2>
+                <legend>Clinical Significance</legend>
                 <h3 class="fs-subtitle">The interpretation, or clinical significance, of the variant for the submitted condition</h3>
 
                 <div class="row">
@@ -218,7 +222,7 @@
               </fieldset>
 
               <fieldset>
-                <h2 class="fs-title">Associated Conditions</h2>
+                <legend>Associated Conditions</legend>
                 <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a>"</h3>
 
                 <div class="row">
@@ -276,7 +280,7 @@
               </fieldset>
 
               <fieldset>
-                <h2 class="fs-title">Observation Data</h2>
+                <legend>Observation Data</legend>
                 <h3 class="fs-subtitle">Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.</h3>
 
                 <ul class="list-group">
