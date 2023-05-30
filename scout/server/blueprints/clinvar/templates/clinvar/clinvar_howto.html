@@ -13,9 +13,17 @@
             <h5>Automatic submission</h4>
             Once the requirements above are fulfilled you could submit manually using files uploaded to the ClinVar submission portal. See the heading below. You can avoid this extra file handling step by submitting directly via API instead. Submission by API requires a <strong>service account key</strong> for the submitting organization and an API key associated with it.
             Follow the instructions provided on the <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API pages</a> to obtain a valid key for the service account.<br>
-            Once you are satisfied with the content of your submission in Scout, you can submit your variants using the ClinVar API. To use this functionality you'll need to click on the <strong>Submit to ClinVar</strong> button:<br><br>
+            Once you are satisfied with the content of your submission in Scout, you can submit your variants using the ClinVar API. If you obtained a submission ID from ClinVar (format: "SUB999999") and you want to use it for the submission, you can save it using the "Update ID manually" button:<br><br>
 
-            <img width="264" alt="image" src="https://user-images.githubusercontent.com/28093618/208666318-0efac91e-c5d2-42a0-9ceb-d7fc68c6d920.png"><br><br>
+              <img width="875" alt="image" src="https://github.com/Clinical-Genomics/scout/assets/28093618/8289aae8-eb95-4f77-8abc-44c748f8406c"><br><br>
+
+            Alternatively you can <strong>leave the Submission ID blank, so it will be retrieved directly from the ClinVar API once a successful submission has been processed.</strong>.
+
+            To send the submission object to ClinVar using the API click on the <strong>Submit to ClinVar</strong> button:<br><br>
+
+              <img width="264" alt="image" src="https://user-images.githubusercontent.com/28093618/208666318-0efac91e-c5d2-42a0-9ceb-d7fc68c6d920.png"><br><br>
+
+            If the submission object is processed without errors then it will be marked as "submitted" in Scout, otherwise eventual validation errors should be displayed on top of the page.<br><br>
 
             <h5>Manual submission</h5>
             Once you have registered to the ClinVar portal as a submitter for a given Organization, you can start a new manual submission by using the "<strong>Upload new file submission</strong>" button from the <a href="https://submit.ncbi.nlm.nih.gov/clinvar/" target="_blank" rel="noopener">submission page</a>.<br>
