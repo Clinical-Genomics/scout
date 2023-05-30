@@ -34,7 +34,7 @@ jobs:
         bdist_wheel
 
    - name: Publish distribution 📦 to PyPI
-     uses: pypa/gh-action-pypi-publish@master
+     uses: pypa/gh-action-pypi-publish@release/v1
      with:
        user: __token__
        password: ${{ secrets.pypi_password }}
@@ -48,7 +48,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Publish main image (Dockerfile) to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v5
       with:
         name: clinicalgenomics/scout
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -56,7 +56,7 @@ jobs:
         tags: "latest,${{ github.event.release.tag_name }}"
 
     - name: Publish server image (Dockerfile-server) to Registry
-      uses: elgohr/Publish-Docker-Github-Action@master
+      uses: elgohr/Publish-Docker-Github-Action@v5
       with:
         name: clinicalgenomics/scout-server
         username: ${{ secrets.DOCKER_USERNAME }}
