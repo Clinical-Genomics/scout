@@ -396,33 +396,6 @@ def json_api_submission(submission_id):
         return clinvar_api.convert_to_json(variant_file.name, casedata_file.name, extra_params)
 
 
-def validate_submission(submission_id):
-    """Validate a submission object and documents using the ClinVar API
-
-    Args:
-        submission_id(str): the database id of a clinvar submission
-
-    Returns:
-        str/None: A submission ID (i.e. SUB2192122) or None if submission was not validated
-    """
-    # Convert submission objects to json:
-    code, conversion_res = json_api_submission(submission_id)
-
-    if code != 200:  # Connection or conversion object errors
-        flash(str(conversion_res), "warning")
-        return
-
-    code, valid_res = clinvar_api.validate_json(
-        subm_data=conversion_res, api_key=current_app.config.get("CLINVAR_API_KEY")
-    )
-
-    if code != 201:  # Connection or conversion object errors
-        flash(str(valid_res.__dict__), "warning")
-        return
-
-    return valid_res.json().get("id")
-
-
 def send_api_submission(institute_id, submission_id, key):
     """Convert and validate ClinVar submission data to json.
        If json submission is validated, submit it using the ClinVar API
@@ -439,13 +412,17 @@ def send_api_submission(institute_id, submission_id, key):
         flash(str(conversion_res), "warning")
         return
 
-    # Send submission with the same name (SUBxyz) that was assigned by ClinVar
-    conversion_res["submissionName"] = store.get_clinvar_id(submission_id)
-
     code, submit_res = clinvar_api.submit_json(conversion_res, key)
 
-    if code in [200, 201, 204]:  # 204 is returned only for dry runs - used for testing
-        flash("Submission saved successfully", "success")
+    if code in [200, 201]:
+        clinvar_id = submit_res.json().get("id")
+        flash("Submission saved successfully with ID: {clinvar_id}", "success")
+        # Update submission ID with the ID returned from ClinVar
+        store.update_clinvar_id(
+            clinvar_id=clinvar_id,
+            submission_id=submission_id,
+        )
+        # Update submission as submitted
         store.update_clinvar_submission_status(
             institute_id=institute_id, submission_id=submission_id, status="submitted"
         )
