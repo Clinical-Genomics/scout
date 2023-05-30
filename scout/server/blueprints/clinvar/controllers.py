@@ -412,11 +412,21 @@ def send_api_submission(institute_id, submission_id, key):
         flash(str(conversion_res), "warning")
         return
 
+    clinvar_id = store.get_clinvar_id(
+        submission_id
+    )  # This is the official ID associated with this submission in Clinvar ((ex: SUB999999)
+
+    if clinvar_id:  # Check if submission object has already an associated ClinVar ID
+        conversion_res["submissionName"] = clinvar_id
+
     code, submit_res = clinvar_api.submit_json(conversion_res, key)
 
     if code in [200, 201]:
-        clinvar_id = submit_res.json().get("id")
-        flash("Submission saved successfully with ID: {clinvar_id}", "success")
+        clinvar_id = (
+            submit_res.json().get("id") if submit_res.json().get("id") != clinvar_id else clinvar_id
+        )
+        flash(f"Submission saved successfully with ID: {clinvar_id}", "success")
+
         # Update ClinVar submission ID with the ID returned from ClinVar
         store.update_clinvar_id(
             clinvar_id=clinvar_id,
