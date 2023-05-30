@@ -9,9 +9,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submission howto available also on Case page
 ### Fixed
 - Crash when attempting to export phenotype from a case that had never had phenotypes
-### Changed
 - Aesthetic fix to Causative and Pinned Variants on Case page
 - Structural inconsistency for ClinVar Blueprint templates
+### Changed
 - Removed ClinVar API validation buttons in favour of direct API submission
 
 ## [4.68]
