@@ -12,8 +12,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Aesthetic fix to Causative and Pinned Variants on Case page
 - Structural inconsistency for ClinVar Blueprint templates
 - Updated igv.js to 2.15.8 to fix track default color bug
-### Changed
+- Fixed release versions for actions.
 - Removed ClinVar API validation buttons in favour of direct API submission
+
 
 ## [4.68]
 ### Added
