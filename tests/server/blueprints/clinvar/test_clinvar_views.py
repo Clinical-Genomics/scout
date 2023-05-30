@@ -1,5 +1,4 @@
 import responses
-from bson.objectid import ObjectId
 from flask import url_for
 
 from scout.constants.clinvar import CLINVAR_API_URL, PRECLINVAR_URL

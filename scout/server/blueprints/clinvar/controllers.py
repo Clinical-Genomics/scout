@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from tempfile import NamedTemporaryFile
 
-from flask import current_app, flash
+from flask import flash
 
 from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, SCOUT_CLINVAR_SV_TYPES_MAP
