@@ -11,7 +11,7 @@ from werkzeug.serving import run_simple
 LOG = logging.getLogger(__name__)
 
 
-@click.command()
+@click.command(deprecated=True)
 @click.option("-h", "--host", default="localhost", help="Where to serve")
 @click.option("-p", "--port", default=5000, help="Which port to listen on")
 @click.option("-d", "--debug", is_flag=True, help="Run server in debug mode")
@@ -32,9 +32,6 @@ def serve(host, port, debug, livereload, test):
         sys.exit("No database connection available")
 
     if livereload:
-        LOG.warning(
-            "The serve command with livereload is deprecated in Scout v4 and may no longer work in v5. Please consider using a wrapping wsgi server like gunicorn instead."
-        )
         server = Server(current_app.wsgi_app)
         server.serve(host=host, port=port, debug=debug)
     else:
