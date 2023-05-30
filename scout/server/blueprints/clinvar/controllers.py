@@ -417,12 +417,12 @@ def send_api_submission(institute_id, submission_id, key):
     if code in [200, 201]:
         clinvar_id = submit_res.json().get("id")
         flash("Submission saved successfully with ID: {clinvar_id}", "success")
-        # Update submission ID with the ID returned from ClinVar
+        # Update ClinVar submission ID with the ID returned from ClinVar
         store.update_clinvar_id(
             clinvar_id=clinvar_id,
             submission_id=submission_id,
         )
-        # Update submission as submitted
+        # Update submission status as submitted
         store.update_clinvar_submission_status(
             institute_id=institute_id, submission_id=submission_id, status="submitted"
         )

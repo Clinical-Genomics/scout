@@ -149,7 +149,7 @@ def test_delete_clinvar_object(app, institute_obj, case_obj, clinvar_form):
 
 
 def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
-    """Test the endpoint resposible for updating a ClinVar submission"""
+    """Test the endpoint responsible for updating a ClinVar submission"""
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -313,54 +313,3 @@ def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
         # AND the submission object in database should be marked as submitted
         updated_submission = store.clinvar_submission_collection.find_one()
         assert updated_submission["status"] == "submitted"
-
-
-@responses.activate
-def test_clinvar_validate(app, institute_obj, case_obj, clinvar_form):
-    """Test the endpoint that validates a ClinVar submission using the ClinVar API"""
-
-    # GIVEN an initialized app
-    with app.test_client() as client:
-        # WITH a logged user
-        client.get(url_for("auto_login"))
-
-        # GIVEN that institute has one ClinVar submission
-        client.post(
-            url_for(
-                SAVE_ENDPOINT,
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            ),
-            data=clinvar_form,
-        )
-        subm_obj = store.clinvar_submission_collection.find_one()
-        # That contains both variant and casedata info:
-        assert subm_obj["variant_data"]
-        assert subm_obj["case_data"]
-
-        # But is missing a clinvar submission ID:
-        assert subm_obj.get("clinvar_subm_id") is None
-
-        # WHEN the submission is validated using the proxy service to the ClinVar API
-        # GIVEN a mocked proxy service - csv_2_json
-        responses.add(
-            responses.POST,
-            API_CSV_2_JSON_URL,
-            json={"clinvarSubmission": "test"},
-            status=200,
-        )
-        # GIVEN a mocked proxy service - validate
-        responses.add(
-            responses.POST,
-            API_VALIDATE_ENDPOINT,
-            json={"id": "SUB1234567"},
-            status=201,
-        )
-
-        # Then the validation should result in a redirect to submissions page (code 302)
-        resp = client.get(url_for(VALIDATE_ENDPOINT, submission=subm_obj["_id"], save_id="y"))
-        assert resp.status_code == 302
-
-        # AND the submission object in database should be updated with a ClinVar ID
-        updated_submission = store.clinvar_submission_collection.find_one()
-        assert updated_submission["clinvar_subm_id"]
