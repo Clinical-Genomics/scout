@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fixed release versions for actions.
 - Freeze tornado below 6.3.0 for compatibility with livereload 2.6.3
 ### Changed
+- FontAwesome integrity check fail (updated resource)
 - Removed ClinVar API validation buttons in favour of direct API submission
 
 
