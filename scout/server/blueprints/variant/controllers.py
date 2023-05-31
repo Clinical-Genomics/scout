@@ -326,7 +326,7 @@ def variant(
     update_representative_gene(variant_obj, variant_genes)
 
     # Add display information about callers
-    variant_obj["callers"] = callers(variant_obj, category=variant_category)
+    variant_obj["callers"] = callers(variant_obj)
 
     # Convert affection status to strings for the template
     is_affected(variant_obj, case_obj)

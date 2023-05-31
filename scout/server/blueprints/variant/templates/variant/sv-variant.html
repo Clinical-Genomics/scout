@@ -181,6 +181,12 @@
           Category
           <span class="badge rounded-pill bg-secondary float-end">{{ variant.sub_category|upper }}</span>
         </li>
+        {% if variant.category == "cancer_sv" and variant.somatic_score %}
+        <li class="list-group-item">
+          Somatic score
+          <span class="badge rounded-pill bg-secondary float-end">{{ variant.somatic_score }}</span>
+        </li>
+        {% endif %}
 
         <div class="list-group-item">
           <strong>Gene panels:</strong><br>
