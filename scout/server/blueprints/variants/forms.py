@@ -201,6 +201,7 @@ class CancerSvFiltersForm(SvFiltersForm):
 
     depth = IntegerField("Depth >", validators=[validators.Optional()])
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
+    somatic_score = IntegerField("Somatic score", validators=[validators.Optional()])
 
 
 FILTERSFORMCLASS = {
