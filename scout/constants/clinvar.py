@@ -1,4 +1,4 @@
-CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/apitest/v1/submissions/"
+CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
 PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
 
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
