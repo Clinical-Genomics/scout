@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import os.path
 import sys
 
 import click
@@ -12,7 +11,7 @@ from werkzeug.serving import run_simple
 LOG = logging.getLogger(__name__)
 
 
-@click.command()
+@click.command(deprecated=True)
 @click.option("-h", "--host", default="localhost", help="Where to serve")
 @click.option("-p", "--port", default=5000, help="Which port to listen on")
 @click.option("-d", "--debug", is_flag=True, help="Run server in debug mode")
