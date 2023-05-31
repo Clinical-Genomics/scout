@@ -28,6 +28,7 @@ from scout.constants import (
 )
 from scout.constants.variants_export import CANCER_EXPORT_HEADER, EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
+    callers,
     clinsig_human,
     predictions,
     update_representative_gene,
@@ -892,6 +893,9 @@ def parse_variant(
     variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
 
     update_representative_gene(variant_obj, variant_genes)
+
+    # Add display information about callers
+    variant_obj["callers"] = callers(variant_obj)
 
     # annotate filters
     variant_obj["filters"] = [
