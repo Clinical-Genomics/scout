@@ -50,10 +50,6 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # RERUNNER_TIMEOUT = 10
 # RERUNNER_API_KEY = "I am the Keymaster of Gozer"
 
-# ClinVar API key - used for validating (not submitting) ClinVar submissions for all institutes
-# Obtain a key by following these instructions: https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
-# CLINVAR_API_KEY = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ab"
-
 # Matchmaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
 # MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
