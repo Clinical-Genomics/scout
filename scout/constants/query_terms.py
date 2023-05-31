@@ -47,6 +47,7 @@ SECONDARY_CRITERIA = [
     "decipher",
     "depth",
     "alt_count",
+    "somatic_score",
     "control_frequency",
     "mvl_tag",
     "clinvar_tag",

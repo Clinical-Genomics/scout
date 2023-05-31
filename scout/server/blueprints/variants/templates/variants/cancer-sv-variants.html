@@ -60,14 +60,14 @@
           <th>Index</th>
           <th>Type</th>
           <th>Chr</th>
-          <th>Start loc</th>
-          <th>Stop loc</th>
+          <th>Start</th>
+          <th>End</th>
           <th>Length</th>
           <th>Frequency</th>
           <th>Gene(s)</th>
           <th>Region</th>
           <th>Function</th>
-          <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support">Tumor</th>
+          <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support. [Somatic score if available from caller].">Tumor</th>
           <th data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support">Normal</th>
         </tr>
       </thead>
@@ -121,7 +121,7 @@
     <td>
       {{ variant_funct_anno_cell(variant) }}
     </td>
-    <td>{{ allele_cell(variant.tumor or {}) }}</td>
+    <td>{{ allele_cell(variant.tumor or {}) }}{% if variant.somatic_score %}<small class="text-muted">[{{ variant.somatic_score }}]</small>{% endif %}</td>
     <td>{{ allele_cell(variant.normal or {}) }}</td>
   </tr>
 {% endmacro %}

@@ -788,9 +788,13 @@
           {{ form.size_shorter(class="form-check-input",type="checkbox") }}
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-1">
         {{ form.gnomad_frequency.label(class="control-label") }}
         {{ form.gnomad_frequency(class="form-control") }}
+      </div>
+      <div class="col-1">
+        {{ form.somatic_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Somatic score from SV caller") }}
+        {{ form.somatic_score(class="form-control") }}
       </div>
       <div class="col-1">
         {{ form.depth.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Tumor read depth") }}
