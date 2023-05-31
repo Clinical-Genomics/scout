@@ -102,7 +102,9 @@
     <td>
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td>{{ variant.sub_category|upper }}</td>
+    <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
+      {{ variant.sub_category|upper }}</span>
+    </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
     <td>{{ variant.position }}</td>
     <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>

@@ -610,16 +610,16 @@ def clinsig_human(variant_obj):
         yield clinsig_obj
 
 
-def callers(variant_obj, category="snv"):
+def callers(variant_obj):
     """Return info about callers.
 
     Args:
         variant_obj(scout.models.Variant)
-        category(str)
 
     Returns:
         calls(list(str)): A list of the callers that identified the variant
     """
+    category = variant_obj.get("category", "snv")
     calls = set()
     for caller in CALLERS[category]:
         if variant_obj.get(caller["id"]):
