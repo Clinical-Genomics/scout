@@ -793,7 +793,7 @@
         {{ form.gnomad_frequency(class="form-control") }}
       </div>
       <div class="col-1">
-        {{ form.somatic_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Somatic score from SV caller") }}
+        {{ form.somatic_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Somatic score from SV caller. Filter away variants called with a score lower or equal to this value.") }}
         {{ form.somatic_score(class="form-control") }}
       </div>
       <div class="col-1">
