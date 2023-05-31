@@ -17,7 +17,6 @@ class ClinVarApi:
 
     def __init__(self):
         self.convert_service = "/".join([PRECLINVAR_URL, "csv_2_json"])
-        self.validate_service = "/".join([PRECLINVAR_URL, "validate"])
         self.submit_service = CLINVAR_API_URL
 
     def set_header(self, api_key):
@@ -52,35 +51,6 @@ class ClinVarApi:
         try:
             resp = requests.post(self.convert_service, params=extra_params, files=files)
             return resp.status_code, resp.json()
-        except Exception as ex:
-            return None, ex
-
-    def validate_json(self, subm_data, api_key):
-        """Sends a POST request to the API (validate endpoint) and tries to validate a json submission object.
-        Requires a valid ClinVar API key (obtained from scout config file in order to be able to forward the request)
-
-        Args:
-            subm_data(dict): the json-like ClinVar submission object to be validated
-            api_key: A ClinVar submission API key (https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/)
-
-        Returns:
-            tuple: example -> 400, "{Validation errors}"
-                           -> 201, {"id": "SUB12387166"} # Success is 201 - Created - According to the ClinVar API
-        """
-        try:
-            tmp = NamedTemporaryFile(prefix="submission", suffix=".json")
-
-            # write data to file
-            with open(tmp.name, "w") as f:
-                json.dump(subm_data, f)
-
-            with open(tmp.name) as f:  # read from file
-                json_file = {"json_file": open(f.name, "rb")}
-                resp = requests.post(
-                    self.validate_service, data={"api_key": api_key}, files=json_file
-                )
-                return resp.status_code, resp
-
         except Exception as ex:
             return None, ex
 
