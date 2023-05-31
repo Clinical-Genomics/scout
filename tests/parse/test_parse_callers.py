@@ -146,7 +146,7 @@ def test_parse_callers(one_vep104_annotated_variant):
     assert callers["gatk"] == None
 
 
-@pytest.mark.parametrize("category", ["snv", "sv", "cancer"])
+@pytest.mark.parametrize("category", ["snv", "sv", "cancer", "cancer_sv"])
 def test_parse_callers_all(cyvcf2_variant, category):
     # GIVEN all callers called a cancer variant
     variant = cyvcf2_variant

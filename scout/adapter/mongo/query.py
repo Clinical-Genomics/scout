@@ -299,7 +299,7 @@ class QueryHandler(object):
         primary_terms = False
 
         # gnomad_frequency, local_obs, local_obs_freq, clingen_ngi, swegen, swegen_freq, spidex_human, cadd_score, genetic_models, mvl_tag, clinvar_tag, cosmic_tag
-        # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, control_frequency, tumor_frequency
+        # functional_annotations, region_annotations, size, svtype, decipher, depth, alt_count, somatic_score, control_frequency, tumor_frequency
         secondary_terms = False
 
         # check if any of the primary criteria was specified in the query
@@ -716,6 +716,16 @@ class QueryHandler(object):
 
             if criterion == "alt_count":
                 mongo_secondary_query.append({"tumor.alt_depth": {"$gt": query.get("alt_count")}})
+
+            if criterion == "somatic_score":
+                mongo_secondary_query.append(
+                    {
+                        "$or": [
+                            {"somatic_score": {"$gt": query.get("somatic_score")}},
+                            {"somatic_score": {"$exists": False}},
+                        ]
+                    }
+                )
 
             if criterion == "control_frequency":
                 mongo_secondary_query.append(
