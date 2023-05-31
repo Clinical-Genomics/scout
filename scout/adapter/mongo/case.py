@@ -141,6 +141,53 @@ class CaseHandler(object):
         case_ids = [case["_id"] for case in cases_with_gene_doc]
         query["_id"] = {"$in": case_ids}
 
+    def _fill_in_case_name_query(self, query, query_term):
+        query["$or"] = [
+            {"display_name": {"$regex": query_term}},
+            {"individuals.display_name": {"$regex": query_term}},
+            {"_id": {"$regex": query_term}},
+        ]
+
+    def _fill_in_case_phenotype_query(self, query, query_term):
+        if query_term != "":
+            # User might have provided multiple query terms
+            query["phenotype_terms.phenotype_id"] = {
+                "$in": list(query_term.replace(" ", "").split(","))
+            }
+            return
+
+        # query for cases with no HPO terms
+        query["$or"] = [
+            {"phenotype_terms": {"$size": 0}},
+            {"phenotype_terms": {"$exists": False}},
+        ]
+
+    def _fill_in_diagnosis_query(self, query, query_term):
+        if query_term != "":
+            # User might have provided multiple query terms
+            omim_terms = list(query_term.replace(" ", "").split(","))
+            query["$or"] = [
+                {
+                    "diagnosis_phenotypes.disease_id": {"$in": omim_terms}
+                },  # OMIM phenotypes are assigned as a list of dictionaries
+                {
+                    "diagnosis_phenotypes": {"$in": omim_terms}
+                },  # old way of saving OMIM terms --> list of ids [616538,611277]
+            ]
+            return
+
+        # query for cases with no HPO terms
+        query["$or"] = [
+            {"diagnosis_phenotypes": {"$size": 0}},
+            {"diagnosis_phenotypes": {"$exists": False}},
+        ]
+
+    def _fill_in_synopsis_query(self, query, query_term):
+        if query_term != "":
+            query["$text"] = {"$search": query_term}
+        else:
+            query["synopsis"] = ""
+
     def _populate_name_query(self, query, name_query, owner=None, collaborator=None):
         """Parses and adds query parameters provided by users in cases search filter.
 
@@ -155,48 +202,16 @@ class CaseHandler(object):
         query_term = name_query[name_query.index(":") + 1 :].strip()
 
         if query_field == "case" and query_term != "":
-            query["$or"] = [
-                {"display_name": {"$regex": query_term}},
-                {"individuals.display_name": {"$regex": query_term}},
-                {"_id": {"$regex": query_term}},
-            ]
+            self._fill_in_case_name_query(query, query_term)
 
         if query_field == "exact_pheno":
-            if query_term != "":
-                # User might have provided multiple query terms
-                query["phenotype_terms.phenotype_id"] = {
-                    "$in": [term for term in query_term.replace(" ", "").split(",")]
-                }
-            else:  # query for cases with no HPO terms
-                query["$or"] = [
-                    {"phenotype_terms": {"$size": 0}},
-                    {"phenotype_terms": {"$exists": False}},
-                ]
+            self._fill_in_case_phenotype_query(query, query_term)
 
         if query_field == "exact_dia":
-            if query_term != "":
-                # User might have provided multiple query terms
-                omim_terms = [term for term in query_term.replace(" ", "").split(",")]
-                query["$or"] = [
-                    {
-                        "diagnosis_phenotypes.disease_id": {"$in": omim_terms}
-                    },  # OMIM phenotypes are assigned as a list of dictionaries
-                    {
-                        "diagnosis_phenotypes": {"$in": omim_terms}
-                    },  # old way of saving OMIM terms --> list of ids [616538,611277]
-                ]
-
-            else:  # query for cases with no HPO terms
-                query["$or"] = [
-                    {"diagnosis_phenotypes": {"$size": 0}},
-                    {"diagnosis_phenotypes": {"$exists": False}},
-                ]
+            self._fill_in_diagnosis_query(query, query_term)
 
         if query_field == "synopsis":
-            if query_term != "":
-                query["$text"] = {"$search": query_term}
-            else:
-                query["synopsis"] = ""
+            self._fill_in_synopsis_query(query, query_term)
 
         if query_field == "panel":
             query["panels"] = {"$elemMatch": {"panel_name": query_term, "is_default": True}}
@@ -218,12 +233,12 @@ class CaseHandler(object):
         if query_field == "cohort":
             query["cohorts"] = query_term
 
-        if query_term != "" and (query_field == "similar_case" or query_field == "similar_pheno"):
+        if query_term != "" and query_field in ["similar_case", "similar_pheno"]:
             order = self._set_similar_phenotype_query(
                 query, query_field, query_term, owner or collaborator
             )
 
-        if query_term != "" and (query_field == "pinned" or query_field == "causative"):
+        if query_term != "" and query_field in ["pinned", "causative"]:
             self._set_genes_of_interest_query(query, query_field, query_term)
 
         if query_field == "user":
@@ -1075,13 +1090,11 @@ class CaseHandler(object):
 
         case_obj["updated_at"] = datetime.datetime.now()
 
-        updated_case = self.case_collection.find_one_and_replace(
+        return self.case_collection.find_one_and_replace(
             {"_id": case_obj["_id"]},
             case_obj,
             return_document=pymongo.ReturnDocument.AFTER,
         )
-
-        return updated_case
 
     def update_caseid(self, case_obj, family_id):
         """Update case id for a case across the database.
@@ -1203,6 +1216,13 @@ class CaseHandler(object):
             "is_commented": [],
         }
 
+        update_action_map = {
+            "manual_rank": self.update_manual_rank,
+            "dismiss_variant": self.update_dismiss_variant,
+            "mosaic_tags": self.update_mosaic_tags,
+            "cancer_tier": self.update_cancer_tier,
+        }
+
         LOG.debug(
             "Updating action status for {} variants in case:{}".format(
                 len(old_eval_variants), case_obj["_id"]
@@ -1227,106 +1247,77 @@ class CaseHandler(object):
             for action in list(
                 updated_variants.keys()
             ):  # manual_rank, dismiss_variant, mosaic_tags
+                # collect only the latest associated event:
                 if (
-                    old_var.get(action) is not None or action == "is_commented"
+                    old_var.get(action) is None and action != "is_commented"
                 ):  # tag new variant accordingly
-                    # collect only the latest associated event:
-                    verb = action
-                    if action == "acmg_classification":
-                        verb = "acmg"
-                    elif action == "is_commented":
-                        verb = "comment"
+                    continue
+                verb = action
+                if action == "acmg_classification":
+                    verb = "acmg"
+                elif action == "is_commented":
+                    verb = "comment"
 
-                    old_event = self.event_collection.find_one(
-                        {
-                            "case": case_obj["_id"],
-                            "verb": verb,
-                            "variant_id": old_var["variant_id"],
-                            "category": "variant",
-                        },
-                        sort=[("updated_at", pymongo.DESCENDING)],
+                old_event = self.event_collection.find_one(
+                    {
+                        "case": case_obj["_id"],
+                        "verb": verb,
+                        "variant_id": old_var["variant_id"],
+                        "category": "variant",
+                    },
+                    sort=[("updated_at", pymongo.DESCENDING)],
+                )
+
+                if old_event is None:
+                    continue
+
+                user_obj = self.user(old_event["user_id"])
+                if user_obj is None:
+                    continue
+
+                updated_variant = None
+
+                if action == "is_commented":
+                    updated_comments = self.comments_reupload(
+                        old_var, new_var, institute_obj, case_obj
                     )
-
-                    if old_event is None:
-                        continue
-
-                    user_obj = self.user(old_event["user_id"])
-                    if user_obj is None:
-                        continue
-
-                    # create a link to the new variant for the events
-                    link = "/{0}/{1}/{2}".format(
-                        new_var["institute"], case_obj["display_name"], new_var["_id"]
-                    )
-
-                    updated_variant = None
-
-                    if action == "manual_rank":
-                        updated_variant = self.update_manual_rank(
-                            institute=institute_obj,
-                            case=case_obj,
-                            user=user_obj,
-                            link=link,
-                            variant=new_var,
-                            manual_rank=old_var.get(action),
-                        )
-
-                    if action == "dismiss_variant":
-                        updated_variant = self.update_dismiss_variant(
-                            institute=institute_obj,
-                            case=case_obj,
-                            user=user_obj,
-                            link=link,
-                            variant=new_var,
-                            dismiss_variant=old_var.get(action),
-                        )
-
-                    if action == "mosaic_tags":
-                        updated_variant = self.update_mosaic_tags(
-                            institute=institute_obj,
-                            case=case_obj,
-                            user=user_obj,
-                            link=link,
-                            variant=new_var,
-                            mosaic_tags=old_var.get(action),
-                        )
-
-                    if action == "cancer_tier":
-                        updated_variant = self.update_cancer_tier(
-                            institute=institute_obj,
-                            case=case_obj,
-                            user=user_obj,
-                            link=link,
-                            variant=new_var,
-                            cancer_tier=old_var.get(action),
-                        )
-
-                    if action == "acmg_classification":
-                        str_classif = ACMG_MAP.get(old_var.get("acmg_classification"))
-                        updated_variant = self.update_acmg(
-                            institute_obj=institute_obj,
-                            case_obj=case_obj,
-                            user_obj=user_obj,
-                            link=link,
-                            variant_obj=new_var,
-                            acmg_str=str_classif,
-                        )
-
-                    if action == "is_commented":
-                        updated_comments = self.comments_reupload(
-                            old_var, new_var, institute_obj, case_obj
-                        )
-                        if updated_comments > 0:
-                            LOG.info(
-                                "Created {} new comments for variant {} after reupload".format(
-                                    updated_comments, display_name
-                                )
+                    if updated_comments > 0:
+                        LOG.info(
+                            "Created {} new comments for variant {} after reupload".format(
+                                updated_comments, display_name
                             )
-                            updated_variant = new_var
+                        )
+                        updated_variant = new_var
 
-                    if updated_variant is not None:
-                        n_status_updated += 1
-                        updated_variants[action].append(updated_variant["_id"])
+                # create a link to the new variant for the events
+                link = "/{0}/{1}/{2}".format(
+                    new_var["institute"], case_obj["display_name"], new_var["_id"]
+                )
+
+                if action == "acmg_classification":
+                    str_classif = ACMG_MAP.get(old_var.get("acmg_classification"))
+                    updated_variant = self.update_acmg(
+                        institute_obj=institute_obj,
+                        case_obj=case_obj,
+                        user_obj=user_obj,
+                        link=link,
+                        variant_obj=new_var,
+                        acmg_str=str_classif,
+                    )
+
+                if action in update_action_map.keys():
+                    updated_variant = update_action_map[action](
+                        institute_obj,
+                        case_obj,
+                        user_obj,
+                        link,
+                        new_var,
+                        old_var.get(action),
+                    )
+
+                if updated_variant is not None:
+                    n_status_updated += 1
+                    updated_variants[action].append(updated_variant["_id"])
 
         LOG.info("Variant actions updated {} times".format(n_status_updated))
         return updated_variants
