@@ -1009,7 +1009,7 @@ class CaseHandler(object):
                 "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
                 "track": case_obj.get("track", "rare"),
                 "updated_at": updated_at,
-                "variants_stats": case_obj.get("variants_stats")
+                "variants_stats": case_obj.get("variants_stats"),
                 "vcf_files": case_obj.get("vcf_files"),
             },
         }
