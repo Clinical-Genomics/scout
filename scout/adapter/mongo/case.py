@@ -891,8 +891,10 @@ class CaseHandler(object):
             if case_obj["status"] in ["active", "archived"]:
                 case_obj["status"] = "inactive"
 
+            case_obj["variants_stats"] = self.case_variants_count(
+                case_id=case_obj["_id"], institute_id=institute_obj["_id"], force_update_case=True
+            )
             self.update_case(case_obj)
-
             # update Sanger status for the new inserted variants
             self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
 
@@ -955,7 +957,7 @@ class CaseHandler(object):
             - sv_rank_model_version: If there is a new sv rank model
             - track: "rare" or "cancer"
             - updated_at: When the case was updated in the database
-            - variants_stats: number of variants by type
+            - variants_stats: dict. Number of variants by type
             - vcf_files: paths to the new files
 
             Args:
@@ -1022,6 +1024,7 @@ class CaseHandler(object):
                 "sv_rank_model_version": case_obj.get("sv_rank_model_version"),
                 "track": case_obj.get("track", "rare"),
                 "updated_at": updated_at,
+                "variants_stats": case_obj.get("variants_stats"),
                 "vcf_files": case_obj.get("vcf_files"),
             },
         }
