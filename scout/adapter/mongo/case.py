@@ -876,7 +876,7 @@ class CaseHandler(object):
             if case_obj["status"] in ["active", "archived"]:
                 case_obj["status"] = "inactive"
 
-            self.case_variants_count(
+            case_obj["variants_stats"] = self.case_variants_count(
                 case_id=case_obj["_id"], institute_id=institute_obj["_id"], force_update_case=True
             )
             self.update_case(case_obj)
