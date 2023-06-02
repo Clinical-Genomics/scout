@@ -96,7 +96,7 @@
                   <div class="col-3 mt-2">
                     <button type="button" class="btn btn-secondary mt-3" onclick="validate_pheno()">Add custom phenotype group</button>
                   </div>
-                  <div class="col-4">
+                  <div class="col-3">
                     {{ form.pheno_groups.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Phenotype groups are used to quickly assign a certain phenotype to a case, on the case page.") }}
                     <select multiple="multiple" name="pheno_groups" class="selectpicker" data-style="btn-secondary">
                       {% for choice in form.pheno_groups.choices or [] %}
