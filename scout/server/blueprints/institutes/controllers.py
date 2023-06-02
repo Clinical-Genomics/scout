@@ -606,7 +606,7 @@ def update_variant_genes(store, variant_obj, genome_build):
 
     hgvs_c = []
     hgvs_p = []
-    gene_symbols = list()
+    gene_symbols = []
     canonical_transcripts = []
     functional_annotations = []
     region_annotations = []
