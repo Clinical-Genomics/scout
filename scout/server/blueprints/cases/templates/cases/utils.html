@@ -304,7 +304,7 @@
 {% macro pretty_link_variant(variant, case) %}
 {# Returns human readable links to the corresponding variant page #}
 
-  {% if variant.category in ("str", "snv", "cancer") %}
+  {% if variant.category in ("mei", "str", "snv", "cancer") %}
     {% if variant.category == "cancer" %}
     <a href="{{ url_for('variant.cancer_variant',
                    institute_id=variant.institute,
