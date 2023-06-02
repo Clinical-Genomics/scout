@@ -109,10 +109,8 @@
             </div>
             <!-- End of phenotype groups settings -->
 
-            <br>
-
             <!-- Cohorts settings-->
-            <div class="row mt-3 d-flex align-items-center">
+            <div class="row mt-5 d-flex align-items-center">
               <fieldset>
                 <legend>Cohorts</legend>
                 <div class="row">
@@ -131,10 +129,8 @@
             </div>
             <!-- End of cohorts settings -->
 
-            <br>
-
             <!-- Variants and panels searching -->
-            <div class="row mt-3 d-flex align-items-center">
+            <div class="row mt-5 d-flex align-items-center">
             <fieldset>
               <legend>Variants and gene panels searching</legend>
               <div class="row">
@@ -178,9 +174,8 @@
 
 
             {% if "admin" in current_user.roles %}
-              <br>
               <!-- LoqusDB settings -->
-              <div class="row mt-3 d-flex align-items-center">
+              <div class="row mt-5 d-flex align-items-center">
                 <fieldset>
                   <legend>LoqusDB</legend>
                   <div class="row">
@@ -198,10 +193,8 @@
               </div>
               <!-- End of loqusdb settings -->
 
-              <br>
-
               <!-- Alamut settings -->
-              <div class="row mt-3 d-flex align-items-center">
+              <div class="row mt-5 d-flex align-items-center">
                 <fieldset><legend>Alamut Plus<a class="ms-2 text-decoration-none" href="https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html" target="_blank" rel="noopener">*</a></legend>
                   <div class="row">
                     <div class="col">
@@ -219,7 +212,7 @@
 
             {% endif %} <!-- end of if "admin" in current_user.roles -->
 
-            <div class="row mt-3 mb-3">
+            <div class="row mt-5 mb-3">
               <div class="col-4 offset-4 d-flex justify-content-center mt-3">
                   {{ form.submit_btn(class="btn-primary btn") }}
               </div>
