@@ -50,7 +50,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Huge list of genes in case report for megabases-long structural variants.
 - Fix displaying institutes without associated cases on institutes page
 - Fix default panel selection on SVs in cancer case report
-
+- Pin links to MEI variants should end up on MEI not SV variant view
+- Load also matching MEI variants on forced region load
+- Allow excluding MEI from case variant deletion
 
 ## [4.66]
 ### Changed
