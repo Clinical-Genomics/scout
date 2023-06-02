@@ -2,7 +2,7 @@
 import datetime
 import logging
 import re
-from typing import Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from flask import current_app, flash, url_for
 from flask_login import current_user
@@ -636,23 +636,8 @@ def update_variant_genes(store, variant_obj, genome_build):
         hgvs_p.append(hgvs_protein)
 
     variant_obj["hgvs"] = hgvs_str(gene_symbols, canonical_transcripts, hgvs_p, hgvs_c)
-    if len(functional_annotations) == 1:
-        variant_obj["functional_annotations"] = functional_annotations
-    else:
-        variant_obj["functional_annotations"] = ""
-        for gene_symbol, functional_annotation in zip(gene_symbols, functional_annotations):
-            if variant_obj["functional_annotations"] != "":
-                variant_obj["functional_annotations"] += ", "
-            variant_obj["functional_annotations"] += gene_symbol + ":" + functional_annotation
-
-    if len(region_annotations) == 1:
-        variant_obj["region_annotations"] = region_annotations
-    else:
-        variant_obj["region_annotations"] = ""
-        for gene_symbol, region_annotation in zip(gene_symbols, region_annotations):
-            if variant_obj["region_annotations"] != "":
-                variant_obj["region_annotations"] += ", "
-            variant_obj["region_annotations"] += gene_symbol + ":" + region_annotation
+    variant_obj["region_annotations"] = get_annotations(gene_symbols, region_annotations)
+    variant_obj["functional_annotations"] = get_annotations(gene_symbols, functional_annotations)
 
 
 def get_genome_build(variant_case_obj):
@@ -679,14 +664,17 @@ def get_hgvs(gene_obj: Dict) -> Tuple[str, str, str]:
     return (canonical_transcript, hgvs_nucleotide, hgvs_protein)
 
 
-def get_annotations(gene_obj):
-    """Get annotations for variant from the db transcript level
-    Args:
-        gene_obj:
-
-    Returns:
-
+def get_annotations(gene_symbols: List, gene_annotations: List) -> List:
+    """Get annotations for variant from the db transcript level from each gene
+    and make a final string. Only add gene symbols if there is more than one gene for the variant.
     """
+    if len(gene_annotations) == 1:
+        return gene_annotations
+
+    variant_annotations = []
+    for gene_symbol, gene_annotation in zip(gene_symbols, gene_annotations):
+        variant_annotations.add(gene_symbol + ":" + gene_annotation)
+    return variant_annotations
 
 
 def hgvs_str(gene_symbols, canonical_transcripts, hgvs_ps, hgvs_cs):
