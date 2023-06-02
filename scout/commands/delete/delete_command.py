@@ -23,7 +23,7 @@ DELETE_VARIANTS_HEADER = [
     "Removed variants",
 ]
 CASE_STATUS = ["solved", "archived", "active", "inactive", "ignored", "prioritized"]
-VARIANT_CATEGORIES = ["snv", "sv", "cancer", "cancer_sv", "str"]
+VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 
 
 @click.command("variants", short_help="Delete variants for one or more cases")
