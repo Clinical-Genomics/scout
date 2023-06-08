@@ -4,6 +4,8 @@ import datetime
 from flask import get_template_attribute, url_for
 
 from scout.constants import CUSTOM_CASE_REPORTS
+from scout.server.blueprints.cases.controllers import case as case_controller
+from scout.server.extensions import store
 
 
 def test_report_transcripts_macro(app, institute_obj, case_obj, variant_gene_updated_info):
@@ -132,3 +134,23 @@ def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
         # It should show the expected items:
         assert "Cnv Report" in html
         assert "Coverage Qc Report" in html
+
+
+def test_sidebar_assign(app, institute_obj, case_obj, user_obj):
+    """Test the case sidebar macro items for a cancer case"""
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # GIVEN that the user is assigned to the case
+        case_obj["assignees"] = [user_obj["_id"]]
+        processed_case = case_controller(store, institute_obj, case_obj)
+
+        # WHEN the assign macro is called
+        macro = get_template_attribute("cases/collapsible_actionbar.html", "assign")
+        html = macro(institute=processed_case["institute"], case=processed_case["case"])
+
+        # The user should be listed as assigned to the case
+        assert user_obj["name"] in html
