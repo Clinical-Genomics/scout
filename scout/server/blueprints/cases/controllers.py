@@ -180,7 +180,9 @@ def case(store, institute_obj, case_obj):
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
         case_obj["individual_ids"].append(individual["individual_id"])
 
-    case_obj["assignees"] = [store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])]
+    case_obj["assignees"] = [
+        store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])
+    ]
 
     # Provide basic info on alignment files availability for this case
     case_has_alignments(case_obj)
