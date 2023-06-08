@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - FontAwesome integrity check fail (updated resource)
 - Removed ClinVar API validation buttons in favour of direct API submission
 - Improved layout of Institute settings page
+- ClinVar API key and allowed submitters are set in the Institute settings page
 
 
 ## [4.68]
