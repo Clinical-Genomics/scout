@@ -5,13 +5,14 @@ from wtforms import (
     DecimalField,
     Field,
     IntegerField,
+    PasswordField,
     SelectField,
     SelectMultipleField,
     StringField,
     SubmitField,
     validators,
 )
-from wtforms.widgets import TextInput
+from wtforms.widgets import PasswordInput, TextInput
 
 from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS
 
@@ -94,6 +95,12 @@ class InstituteForm(FlaskForm):
     alamut_institution = StringField("Alamut Institution ID", validators=[validators.Optional()])
 
     check_show_all_vars = BooleanField("Preselect 'Show also variants only present in unaffected'")
+
+    clinvar_key = StringField("Password", widget=PasswordInput(hide_value=False))
+
+    clinvar_emails = NonValidatingSelectMultipleField(
+        "ClinVar submitters", validators=[validators.Optional()]
+    )
 
     submit_btn = SubmitField("Save settings")
 

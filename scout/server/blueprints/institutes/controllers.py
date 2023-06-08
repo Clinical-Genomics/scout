@@ -297,6 +297,7 @@ def update_institute_settings(store, institute_obj, form):
 
     """
     sanger_recipients = []
+    clinvar_submitters = []
     sharing_institutes = []
     phenotype_groups = []
     gene_panels = {}
@@ -306,6 +307,9 @@ def update_institute_settings(store, institute_obj, form):
 
     for email in form.getlist("sanger_emails"):
         sanger_recipients.append(email.strip())
+
+    for email in form.getlist("clinvar_emails"):
+        clinvar_submitters.append(email.strip())
 
     for inst in form.getlist("institutes"):
         sharing_institutes.append(inst)
@@ -354,6 +358,8 @@ def update_institute_settings(store, institute_obj, form):
         alamut_key=form.get("alamut_key"),
         alamut_institution=form.get("alamut_institution"),
         check_show_all_vars=form.get("check_show_all_vars"),
+        clinvar_key=form.get("clinvar_key"),
+        clinvar_submitters=clinvar_submitters,
     )
     return updated_institute
 

@@ -210,6 +210,26 @@
               </div>
               <!-- End of Alamut settings -->
 
+              <!-- ClinVar API settings -->
+              <div class="row mt-5 d-flex align-items-center">
+                <fieldset><legend>ClinVar API submissions<a class="ms-2 text-decoration-none" href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">*</a></legend>
+                  <div class="row">
+                    <div class="col-6">
+                      {{ form.clinvar_key.label(class="control-label") }}
+                      {{ form.clinvar_key(class='form-control', value=institute.clinvar_key if institute.clinvar_key) }}
+                    </div>
+                    <div class="col-6">
+                      {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Email addresses to send variant verification email to. Only accepts current Scout user emails: exceptions to this can be made by a db admin. Please ask for support!")}}
+                      <select class="select2" id="clinvar_tags" name="clinvar_emails" multiple="true" style="width:100%;">
+                        {% for email in institute.clinvar_submitters %}
+                          <option value="{{ email }}" selected>{{ email }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+              <!-- End of ClinVar API settings -->
             {% endif %} <!-- end of if "admin" in current_user.roles -->
 
             <div class="row mt-5 mb-3">
