@@ -137,7 +137,7 @@ def test_sidebar_cnv_report(app, institute_obj, cancer_case_obj, user_obj):
 
 
 def test_sidebar_assign(app, institute_obj, case_obj, user_obj):
-    """Test the case sidebar macro items for a cancer case"""
+    """Test the case sidebar macro items for a case"""
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
