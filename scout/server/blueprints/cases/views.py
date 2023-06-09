@@ -558,7 +558,7 @@ def assign(institute_id, case_name, user_id=None, inactivate=False):
     if user_id:
         user_obj = store.user(user_id=user_id)
     else:
-        user_obj = store.user(current_user.email)
+        user_obj = store.user(email=current_user.email)
     if request.form.get("action") == "DELETE":
         store.unassign(institute_obj, case_obj, user_obj, link, inactivate)
     else:
