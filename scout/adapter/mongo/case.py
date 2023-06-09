@@ -247,7 +247,7 @@ class CaseHandler(object):
                 "$and": [{"name": {"$regex": term, "$options": "i"}} for term in query_terms]
             }
             users = self.user_collection.find(user_query)
-            query["assignees"] = {"$in": [user["email"] for user in users]}
+            query["assignees"] = {"$in": [user["_id"] for user in users]}
 
         return order
 
@@ -314,7 +314,7 @@ class CaseHandler(object):
             yield_query(bool): If true, only return mongo query dict for use in
                                 compound querying.
             within_days(int): timespan (in days) for latest event on case
-            assignee(str): email of an assignee
+            assignee(str): id of an assignee
             verification_pending(bool): If search should be restricted to cases with verification_pending
             has_clinvar_submission(bool): If search should be limited to cases with a ClinVar submission
 
