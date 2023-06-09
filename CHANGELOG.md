@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Freeze tornado below 6.3.0 for compatibility with livereload 2.6.3
 - Force update variants count on case re-upload
 - IGV locus search not working - add genome reference id
+- Fixed the name of the assigned user when the internal user ID is different from the user email address
 - Gene variants gene function, region and full hgvs
 ### Changed
 - FontAwesome integrity check fail (updated resource)
