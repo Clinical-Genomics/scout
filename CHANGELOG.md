@@ -18,8 +18,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Freeze tornado below 6.3.0 for compatibility with livereload 2.6.3
 - Force update variants count on case re-upload
 - IGV locus search not working - add genome reference id
+- Pin links to MEI variants should end up on MEI not SV variant view
+- Load also matching MEI variants on forced region load
+- Allow excluding MEI from case variant deletion
 - Fixed the name of the assigned user when the internal user ID is different from the user email address
-- Gene variants gene function, region and full hgvs
+- Gene variantS should display gene function, region and full hgvs
 ### Changed
 - FontAwesome integrity check fail (updated resource)
 - Removed ClinVar API validation buttons in favour of direct API submission
@@ -53,9 +56,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Huge list of genes in case report for megabases-long structural variants.
 - Fix displaying institutes without associated cases on institutes page
 - Fix default panel selection on SVs in cancer case report
-- Pin links to MEI variants should end up on MEI not SV variant view
-- Load also matching MEI variants on forced region load
-- Allow excluding MEI from case variant deletion
 
 ## [4.66]
 ### Changed
