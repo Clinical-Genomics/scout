@@ -2,7 +2,7 @@
 import datetime
 import logging
 import re
-from typing import Optional
+from typing import Dict, List, Optional, Tuple
 
 from flask import current_app, flash, url_for
 from flask_login import current_user
@@ -612,7 +612,10 @@ def update_variant_genes(store, variant_obj, genome_build):
 
     hgvs_c = []
     hgvs_p = []
-    gene_symbols = set()
+    gene_symbols = []
+    canonical_transcripts = []
+    functional_annotations = []
+    region_annotations = []
 
     for gene_obj in variant_obj.get("genes", []):
         hgnc_id = gene_obj.get("hgnc_id")
@@ -625,15 +628,22 @@ def update_variant_genes(store, variant_obj, genome_build):
         gene_obj["hgnc_symbol"] = gene_caption["hgnc_symbol"]
         gene_obj["description"] = gene_caption["description"]
 
-        gene_symbols.add(gene_obj["hgnc_symbol"])
+        gene_symbols.append(gene_obj["hgnc_symbol"])
+
+        # ensure annotations are populated
+        functional_annotations.append(gene_obj.get("functional_annotation"))
+        region_annotations.append(gene_obj.get("region_annotation"))
 
         # gather HGVS info from gene transcripts
-        (hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
+        (canonical_transcript, hgvs_nucleotide, hgvs_protein) = get_hgvs(gene_obj)
+
+        canonical_transcripts.append(canonical_transcript)
         hgvs_c.append(hgvs_nucleotide)
         hgvs_p.append(hgvs_protein)
 
-    if len(gene_symbols) == 1:
-        variant_obj["hgvs"] = hgvs_str(list(gene_symbols), hgvs_p, hgvs_c)
+    variant_obj["hgvs"] = hgvs_str(gene_symbols, canonical_transcripts, hgvs_p, hgvs_c)
+    variant_obj["region_annotations"] = get_annotations(gene_symbols, region_annotations)
+    variant_obj["functional_annotations"] = get_annotations(gene_symbols, functional_annotations)
 
 
 def get_genome_build(variant_case_obj):
@@ -644,28 +654,49 @@ def get_genome_build(variant_case_obj):
     return "37"
 
 
-def get_hgvs(gene_obj):
-    """Analyse gene object
+def get_hgvs(gene_obj: Dict) -> Tuple[str, str, str]:
+    """Analyse gene object for hgvs info
     Return:
-       (hgvs_nucleotide, hgvs_protein)"""
+       (canonical_transcript, hgvs_nucleotide, hgvs_protein)"""
     hgvs_nucleotide = "-"
     hgvs_protein = ""
 
     transcripts_list = gene_obj.get("transcripts")
     for transcript_obj in transcripts_list:
         if transcript_obj.get("is_canonical") is True:
+            canonical_transcript = transcript_obj.get("transcript_id")
             hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
             hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
-    return (hgvs_nucleotide, hgvs_protein)
+    return (canonical_transcript, hgvs_nucleotide, hgvs_protein)
 
 
-def hgvs_str(gene_symbols, hgvs_p, hgvs_c):
-    """ """
-    if hgvs_p[0] != "None":
-        return hgvs_p[0]
-    if hgvs_c[0] != "None":
-        return hgvs_c[0]
-    return "-"
+def get_annotations(gene_symbols: List, gene_annotations: List) -> List:
+    """Get annotations for variant from the db transcript level from each gene
+    and make a final string. Only add gene symbols if there is more than one gene for the variant.
+    """
+    if len(gene_annotations) == 1:
+        return gene_annotations
+
+    variant_annotations = set()
+    for gene_symbol, gene_annotation in zip(gene_symbols, gene_annotations):
+        variant_annotations.add(gene_symbol + ":" + gene_annotation)
+    return sorted(list(variant_annotations))
+
+
+def hgvs_str(gene_symbols, canonical_transcripts, hgvs_ps, hgvs_cs):
+    """Produce HGVS string from canonical transcripts, gene symbols, dna and protein changes."""
+    hgvs = "-"
+    for transcript, gene, hgvs_c, hgvs_p in zip(
+        canonical_transcripts, gene_symbols, hgvs_cs, hgvs_ps
+    ):
+        hgvs = f"{transcript} ({gene})"
+
+        if hgvs_c != "None":
+            hgvs += " " + hgvs_c
+        if hgvs_p != "None":
+            hgvs += " " + hgvs_p
+
+    return hgvs
 
 
 def lock_filter(store, user_obj, filter_id):
