@@ -674,7 +674,7 @@ def get_annotations(gene_symbols: List, gene_annotations: List) -> List:
     variant_annotations = set()
     for gene_symbol, gene_annotation in zip(gene_symbols, gene_annotations):
         variant_annotations.add(gene_symbol + ":" + gene_annotation)
-    return list(variant_annotations)
+    return sorted(list(variant_annotations))
 
 
 def hgvs_str(gene_symbols, canonical_transcripts, hgvs_ps, hgvs_cs):
