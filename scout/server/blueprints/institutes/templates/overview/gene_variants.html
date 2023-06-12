@@ -68,7 +68,7 @@
                 <div>{{ annotation }}</div>
               {% endfor %}
             </td>
-            <td> {{ (variant.hgvs or '')|url_decode  }}</td>
+            <td class="align-middle"> {{ (variant.hgvs or '')|url_decode  }}</td>
           </tr>
         {% endfor %}
         {% if form.hgnc_symbols.data == [] %}
