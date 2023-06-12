@@ -213,7 +213,7 @@ def register_filters(app):
             return 0
         if number < min_number:
             # make human readable and sane
-            return "< {}".format(min_number)
+            return "<&nbsp;{}".format(min_number)
 
         # round all other numbers
         return round(number, ndigits)
