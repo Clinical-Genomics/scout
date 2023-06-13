@@ -222,7 +222,7 @@
                       {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Scout users who should be able to submit for you institute using this key. Only accepts current Scout user emails.")}}
                       <select class="selectpicker" id="clinvar_tags" name="clinvar_emails" style="width:100%;" multiple="true">
                         {% for user in form.clinvar_emails.choices %}
-                          <option value="{{ user[1] }}" {% if institute.clinvar_submitters and user[1] in institute.clinvar_submitters %} selected {% endif %}>{{  user[0] }}</option>
+                          <option value="{{ user[1] }}" {% if institute.clinvar_submitters and user[1] in institute.clinvar_submitters %} selected {% endif %}>{{ user[0] }}</option>
                         {% endfor %}
                       </select>
                     </div>
