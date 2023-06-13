@@ -220,9 +220,9 @@
                     </div>
                     <div class="col-6">
                       {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Email addresses to send variant verification email to. Only accepts current Scout user emails: exceptions to this can be made by a db admin. Please ask for support!")}}
-                      <select class="select2" id="clinvar_tags" name="clinvar_emails" multiple="true" style="width:100%;">
-                        {% for email in institute.clinvar_submitters %}
-                          <option value="{{ email }}" selected>{{ email }}</option>
+                      <select class="selectpicker" id="clinvar_tags" name="clinvar_emails" style="width:100%;" multiple="true">
+                        {% for user in form.clinvar_emails.choices %}
+                          <option value="{{ user[1] }}" {% if institute.clinvar_submitters and user[1] in institute.clinvar_submitters %} selected {% endif %}>{{  user[0] }}</option>
                         {% endfor %}
                       </select>
                     </div>

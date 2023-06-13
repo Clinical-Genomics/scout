@@ -281,6 +281,11 @@ def populate_institute_form(form, institute_obj):
     form.gene_panels.choices = sorted(panel_set, key=lambda tup: tup[1])
     form.gene_panels_matching.choices = sorted(panel_set, key=lambda tup: tup[1])
 
+    institute_user: List[Tuple] = [
+        (user["name"], user["email"]) for user in store.users(institute=institute_obj["_id"])
+    ]
+    form.clinvar_emails.choices = institute_user
+
     return default_phenotypes
 
 
