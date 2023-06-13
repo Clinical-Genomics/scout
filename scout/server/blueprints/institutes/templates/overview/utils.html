@@ -219,17 +219,10 @@
                       {{ form.clinvar_key(class='form-control', value=institute.clinvar_key if institute.clinvar_key) }}
                     </div>
                     <div class="col-6">
-<<<<<<< HEAD
-                      {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Email addresses to send variant verification email to. Only accepts current Scout user emails: exceptions to this can be made by a db admin. Please ask for support!")}}
+                      {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Scout users who should be able to submit for you institute using this key. Only accepts current Scout user emails.")}}
                       <select class="selectpicker" id="clinvar_tags" name="clinvar_emails" style="width:100%;" multiple="true">
                         {% for user in form.clinvar_emails.choices %}
                           <option value="{{ user[1] }}" {% if institute.clinvar_submitters and user[1] in institute.clinvar_submitters %} selected {% endif %}>{{  user[0] }}</option>
-=======
-                      {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Scout users who should be able to submit for you institute using this key. Only accepts current Scout user emails.")}}
-                      <select class="select2" id="clinvar_tags" name="clinvar_emails" multiple="true" style="width:100%;">
-                        {% for email in institute.clinvar_submitters %}
-                          <option value="{{ email }}" selected>{{ email }}</option>
->>>>>>> f1db7d70e92f72a4ec907c7ff39c3df64bffb572
                         {% endfor %}
                       </select>
                     </div>
