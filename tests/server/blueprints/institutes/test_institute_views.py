@@ -103,6 +103,8 @@ def test_institute_settings(app, user_obj, institute_obj):
             ],
             "gene_panels": [test_panel["panel_name"]],
             "alamut_key": "test_alamut_key",
+            "clinvar_key": "test_clinvar_key",
+            "clinvar_emails": ["john@doe.com"],
         }
 
         # via POST request
@@ -125,6 +127,8 @@ def test_institute_settings(app, user_obj, institute_obj):
             test_panel["panel_name"]: test_panel["display_name"]
         }
         assert updated_institute["alamut_key"] == form_data["alamut_key"]
+        assert updated_institute["clinvar_key"] == form_data["clinvar_key"]
+        assert updated_institute["clinvar_submitters"] == form_data["clinvar_emails"]
 
 
 def test_cases(app, institute_obj):

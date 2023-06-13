@@ -103,6 +103,13 @@
       placeholder: "Add Sanger email",
     });
 
+    $('#clinvar_tags').select2({
+      tags: true,
+      theme: 'bootstrap-5',
+      tokenSeparators: [','],
+      placeholder: "Add email of a submitter",
+    });
+
     // Set Loqus ID in loqus_id field if exists, otherwise set to 'default'
     {% if institute.loqusdb_id %}
         loqus = "{{ institute.loqusdb_id|string }}"

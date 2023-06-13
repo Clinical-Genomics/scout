@@ -52,17 +52,19 @@ class InstituteHandler(object):
         alamut_key=None,
         alamut_institution=None,
         check_show_all_vars=None,
+        clinvar_key=None,
+        clinvar_submitters=None,
     ):
         """Update the information for an institute
 
         Args:
             internal_id(str): The internal institute id
-            sanger_recipient(str): Email adress to add for sanger order
+            sanger_recipient(str): Email address to add for sanger order
             sanger_recipients(list): A list of sanger recipients email addresses
             coverage_cutoff(int): Update coverage cutoff
             frequency_cutoff(float): New frequency cutoff
             display_name(str): New display name
-            remove_sanger(str): Email adress for sanger user to be removed
+            remove_sanger(str): Email address for sanger user to be removed
             phenotype_groups(iterable(str)): New phenotype groups
             gene_panels(dict): a dictionary of panels with key=panel_name and value=display_name
             gene_panels_matching(dict): panels to limit search of matching variants (managed, causatives) to. Dict with key=panel_name and value=display_name
@@ -73,11 +75,14 @@ class InstituteHandler(object):
             loqusdb_ids(list(str)): list of ids of loqusdb instances Scout is connected to
             alamut_key(str): optional, Alamut Plus API key -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
             alamut_institution: optional, Alamut Plus API Institute ID -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
+            clinvar_key: optional, ClinVar API key -> https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
+            clinvar_submitters(list): users allowed to submit variants to ClinVar
 
         Returns:
             updated_institute(dict)
 
         """
+
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
@@ -117,6 +122,7 @@ class InstituteHandler(object):
             "gene_panels_matching": gene_panels_matching,
             "loqusdb_id": loqusdb_ids,
             "sanger_recipients": sanger_recipients,
+            "clinvar_submitters": clinvar_submitters,
         }
         for key, value in GENERAL_SETTINGS.items():
             if value not in [None, ""]:
@@ -143,6 +149,7 @@ class InstituteHandler(object):
         for key, value in {
             "alamut_key": alamut_key,
             "alamut_institution": alamut_institution,
+            "clinvar_key": clinvar_key,
         }.items():
             if value is None:
                 continue
