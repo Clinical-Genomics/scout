@@ -42,8 +42,8 @@
           <th scope="col">Gene</th>
           <th scope="col">Pop Freq</th>
           <th scope="col">CADD</th>
-          <th scope="col">Gene annotation</th>
-          <th scope="col">Func. annotation</th>
+          <th scope="col">Region</th>
+          <th scope="col">Function</th>
           <th scope="col">HGVS</th>
         </tr>
 </thead>
@@ -68,7 +68,7 @@
                 <div>{{ annotation }}</div>
               {% endfor %}
             </td>
-            <td> {{ (variant.hgvs or '')|url_decode  }}</td>
+            <td class="align-middle"> {{ (variant.hgvs or '')|url_decode  }}</td>
           </tr>
         {% endfor %}
         {% if form.hgnc_symbols.data == [] %}
@@ -112,7 +112,7 @@
       {{ (variant.polyphen_predictions or ['-'])|join(',') }}
     </div>
     ">
-    {{ variant.cadd_score }}
+    {% if variant.cadd_score %}{{ variant.cadd_score|round(1) }}{% else %}-{% endif %}
   </div>
 {% endmacro %}
 

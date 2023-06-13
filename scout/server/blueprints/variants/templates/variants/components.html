@@ -202,7 +202,7 @@
 {% endmacro %}
 
 {% macro frequency_cell_general(variant) %}
-  <div data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
+  <div class="d-flex justify-content-between" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
     <div class='text-start'>
       {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
         <div>
@@ -274,6 +274,7 @@
   {% if variant.category != "cancer" %}
     {{ observed_cell_general(variant) }}
   {% endif %}
+  <div>
   {% if variant.category == "mei" %}
     {{ variant.swegen_mei_max|human_decimal if variant.swegen_mei_max else '~' }}
   {% elif variant.chromosome != "MT" %}
@@ -281,6 +282,7 @@
   {% else %}
     {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency else '~' }}
   {% endif %}
+  </div>
   </div>
 {% endmacro %}
 
