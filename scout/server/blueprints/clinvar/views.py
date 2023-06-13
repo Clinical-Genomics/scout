@@ -3,6 +3,7 @@ import logging
 from tempfile import NamedTemporaryFile
 
 from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
+from flask_login import current_user
 
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, CLNSIG_TERMS
 from scout.server.extensions import store
@@ -59,6 +60,8 @@ def clinvar_submissions(institute_id):
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
+        "show_submit": institute_obj.get("clinvar_key")
+        and current_user.email in institute_obj.get("clinvar_submitters", []),
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 
