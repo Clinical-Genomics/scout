@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import compounds_table, svs_table, snv_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status, mark_heteroplasmic_mt %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell  %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, gene_cell, observed_cell_general  %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ form.variant_type.data|capitalize }} variants
@@ -54,12 +54,13 @@
        <table class="table table-hover table-bordered" style="table-layout: fixed">
          <thead class="thead table-light">
             <tr>
-              <th style="width:3%"></th>
+              <th style="width:2%"></th>
               <th style="width:12%" title="Rank position">Rank</th>
               <th style="width:4%" title="Rank score">Score</th>
               <th style="width:4%" title="Chromosome">Chr.</th>
               <th style="width:8%" title="HGNC symbols">Gene</th>
-              <th style="width:9%" title="Poulation frequency">Pop Freq</th>
+              <th style="width:4%" title="Pop Freq">Pop Freq</th>
+              <th style="width:6%" title="Observed database matches">Observed</th>
               <th style="width:5%" title="CADD score">CADD</th>
               <th style="width:8%" title="Gene region annotation">Gene annotation</th>
               <th style="width:17%" title="Functional annotation">Func. annotation</th>
@@ -86,7 +87,8 @@
                   {% endif %}
 		            </td>
                 <td>{{ gene_cell(variant) }}</td>
-                <td class="text-end">{{ frequency_cell_general(variant) }}</td>
+                <td class="text-start">{{ frequency_cell_general(variant) }}</td>
+                <td class="text-start">{{ observed_cell_general(variant) }}</td>
                 <td class="text-end">{{ cell_cadd(variant) }}</td>
                 <td>
                   {% for annotation in variant.region_annotations %}
