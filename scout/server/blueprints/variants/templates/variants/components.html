@@ -204,6 +204,17 @@
 {% macro frequency_cell_general(variant) %}
   <div class="d-flex justify-content-between" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-html="true" title="
     <div class='text-start'>
+      {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
+        <div>
+          <strong>gnomAD(MT) hom</strong>: {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency }}
+        </div>
+      {% endif %}
+      {% if 'gnomad_mt_heteroplasmic_frequency' in variant %}
+        <div>
+          <strong>gnomAD(MT) het</strong>: {{ variant.gnomad_mt_heteroplasmic_frequency|human_decimal if variant.gnomad_mt_heteroplasmic_frequency }}
+        </div>
+      {% endif %}
+
       {% if 'swegen_alu' in variant %}
         <div>
           <strong>SweGen ALU</strong>: {{ variant.swegen_alu|human_decimal if variant.swegen_alu }}
@@ -222,6 +233,18 @@
       {% if 'swegen_sva' in variant %}
         <div>
           <strong>SweGen SVA</strong>: {{ variant.swegen_sva|human_decimal if variant.swegen_sva }}
+        </div>
+      {% endif %}
+      {% if 'gnomad_frequency' in variant %}
+        <div>
+          <strong>gnomAD</strong>: {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency }}
+        </div>
+        <div>
+          <strong>gnomAD (max)</strong>: {{ variant.max_gnomad_frequency|human_decimal if variant.max_gnomad_frequency }}
+        </div>
+      {% else %}
+        <div>
+          <strong>gnomAD</strong>: -
         </div>
       {% endif %}
       {% if 'thousand_genomes_frequency' in variant %}
@@ -248,30 +271,16 @@
       {% endif %}
     </div>
   ">
-  {% if variant.category != "cancer" %}
-    {{ observed_cell_general(variant) }}
-  {% endif %}
   <div>
   {% if variant.category == "mei" %}
     {{ variant.swegen_mei_max|human_decimal if variant.swegen_mei_max else '~' }}
+  {% elif variant.chromosome != "MT" %}
+    {{ variant.gnomad_frequency|human_decimal if variant.gnomad_frequency else '~' }}
   {% else %}
-    {{ gnomad_freq_badge(variant) }}
+    {{ variant.gnomad_mt_homoplasmic_frequency|human_decimal if variant.gnomad_mt_homoplasmic_frequency else '~' }}
   {% endif %}
   </div>
   </div>
-{% endmacro %}
-
-{% macro gnomad_freq_badge(variant) %}
-  {% if 'gnomad_mt_homoplasmic_frequency' in variant %}
-    <span class="badge bg-secondary">gnomAD(MT) hom freq:{{variant.gnomad_mt_homoplasmic_frequency}}</span>
-  {% endif %}
-  {% if 'gnomad_mt_heteroplasmic_frequency' in variant %}
-    <span class="badge bg-secondary">gnomAD(MT) het freq:{{variant.gnomad_mt_heteroplasmic_frequency}}</span>
-  {% endif %}
-  {% if 'gnomad_frequency' in variant %}
-    <span class="badge bg-secondary">gnomAD:{{variant.gnomad_frequency|human_decimal}}</span>
-    <span class="badge bg-secondary">gnomAD (max>:{{variant.max_gnomad_frequency|human_decimal}}</span>
-  {% endif %}
 {% endmacro %}
 
 {% macro external_stylesheets() %}
