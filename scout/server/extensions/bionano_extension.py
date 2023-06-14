@@ -49,8 +49,13 @@ class BioNanoAccessAPI:
         projects = []
         query = f"{self.url}/Bnx/api/2.0/getProjects"
 
-        cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
-
+        cookies = {
+            "token": self.bionano_token,
+            "email": self.bionano_user_dict["email"],
+            "fullname": self.bionano_user_dict["full_name"],
+            "userpk": self.bionano_user_dict["userpk"],
+            "userrole": self.bionano_user_dict["role"],
+        }
         LOG.info("List projects on BioNano Access")
         json_response = get_request_json(query, cookies=cookies)
 
