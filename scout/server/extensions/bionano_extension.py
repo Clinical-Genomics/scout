@@ -45,10 +45,7 @@ class BioNanoAccessAPI:
         if "token" in json_content:
             self.bionano_token = json_output.get("token")
 
-    def _get_projects(self):
-        projects = []
-        query = f"{self.url}/Bnx/api/2.0/getProjects"
-
+    def _get_auth_cookies(self):
         cookies = {
             "token": self.bionano_token,
             "email": self.bionano_user_dict["email"],
@@ -56,8 +53,14 @@ class BioNanoAccessAPI:
             "userpk": self.bionano_user_dict["userpk"],
             "userrole": self.bionano_user_dict["role"],
         }
+        return cookies
+
+    def _get_projects(self):
+        projects = []
+        query = f"{self.url}/Bnx/api/2.0/getProjects"
+
         LOG.info("List projects on BioNano Access")
-        json_response = get_request_json(query, cookies=cookies)
+        json_response = get_request_json(query, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
         if not json_content:
@@ -72,10 +75,8 @@ class BioNanoAccessAPI:
         samples = []
         query = f"{self.url}/Bnx/api/2.0/getSamples?projectuid={project_uid}"
 
-        cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
-
         LOG.info("List samples on BioNano Access")
-        json_response = get_request_json(query, cookies=cookies)
+        json_response = get_request_json(query, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
         if not json_content:
@@ -98,7 +99,7 @@ class BioNanoAccessAPI:
         LOG.info("List samples on BioNano Access")
         json_response = get_request_json(query)
 
-        json_content = json_response.get("content", cookies=cookies)
+        json_content = json_response.get("content", cookies=self._get_auth_cookies())
         if not json_content:
             return None
         LOG.info("Response was %s", json_content)
