@@ -271,9 +271,6 @@
       {% endif %}
     </div>
   ">
-  {% if variant.category != "cancer" %}
-    {{ observed_cell_general(variant) }}
-  {% endif %}
   <div>
   {% if variant.category == "mei" %}
     {{ variant.swegen_mei_max|human_decimal if variant.swegen_mei_max else '~' }}
