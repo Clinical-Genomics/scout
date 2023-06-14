@@ -210,6 +210,26 @@
               </div>
               <!-- End of Alamut settings -->
 
+              <!-- ClinVar API settings -->
+              <div class="row mt-5 d-flex align-items-center">
+                <fieldset><legend>ClinVar API submissions<a class="ms-2 text-decoration-none" href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">*</a></legend>
+                  <div class="row">
+                    <div class="col-6">
+                      {{ form.clinvar_key.label(class="control-label") }}
+                      {{ form.clinvar_key(class='form-control', value=institute.clinvar_key if institute.clinvar_key) }}
+                    </div>
+                    <div class="col-6">
+                      {{form.clinvar_emails.label(class="control-label",data_bs_toggle="tooltip", data_bs_placement="top", title="Scout users who should be able to submit for you institute using this key. Only accepts current Scout user emails.")}}
+                      <select class="selectpicker" id="clinvar_tags" name="clinvar_emails" style="width:100%;" multiple="true">
+                        {% for user in form.clinvar_emails.choices %}
+                          <option value="{{ user[1] }}" {% if institute.clinvar_submitters and user[1] in institute.clinvar_submitters %} selected {% endif %}>{{ user[0] }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+              <!-- End of ClinVar API settings -->
             {% endif %} <!-- end of if "admin" in current_user.roles -->
 
             <div class="row mt-5 mb-3">
