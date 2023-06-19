@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer gnomAD values in Variants page
 ### Fixed
 - CaseS page uniform column widths
+- Include ClinVar variants into a scrollable div element on Case page
 
 ## [4.69]
 ### Added
