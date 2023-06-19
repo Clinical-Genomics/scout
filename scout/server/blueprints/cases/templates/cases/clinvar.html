@@ -13,6 +13,7 @@
     </div>
     <div class="card">
       {% if suspects %}
+       <div style="max-height:300px; overflow-y: scroll;">
         <ul class="list-group">
         {% for variant in suspects %}
           {% if variant._id and variant.category != 'str' %}
@@ -31,6 +32,7 @@
           {% endif %}
         {% endfor %}
         </ul>
+       </div> <!-- End of scrollable style div -->
       {% endif %}
       {% if case.clinvar_variants %}
         <div class="d-flex justify-content-center">
