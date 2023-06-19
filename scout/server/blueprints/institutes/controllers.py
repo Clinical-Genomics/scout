@@ -663,6 +663,7 @@ def get_hgvs(gene_obj: Dict) -> Tuple[str, str, str]:
     """Analyse gene object for hgvs info
     Return:
        (canonical_transcript, hgvs_nucleotide, hgvs_protein)"""
+    canonical_transcript = ""
     hgvs_nucleotide = "-"
     hgvs_protein = ""
 
@@ -672,6 +673,7 @@ def get_hgvs(gene_obj: Dict) -> Tuple[str, str, str]:
             canonical_transcript = transcript_obj.get("transcript_id")
             hgvs_nucleotide = str(transcript_obj.get("coding_sequence_name"))
             hgvs_protein = str(transcript_obj.get("protein_sequence_name"))
+            break
     return (canonical_transcript, hgvs_nucleotide, hgvs_protein)
 
 
