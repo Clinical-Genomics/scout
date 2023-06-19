@@ -415,23 +415,21 @@ def phenotype_import(institute_id, case_name):
         flash("Please provide a phenotype file (json or hash format)", "warning")
         return redirect("#".join([case_url, "phenotypes_panel"]))
 
-    if phenopacket_file:
-        phenopacket = phenopacketapi.file_import(phenopacket_file)
+    try:
+        if phenopacket_file:
+            phenopacket = phenopacketapi.file_import(phenopacket_file)
 
-    phenopacket_hash = request.form.get("phenopacket_hash")
+        if phenopacket_hash:
+            phenopacket = phenopacketapi.get_hash(phenopacket_hash)
 
-    if phenopacket_hash:
-        phenopacket = phenopacketapi.get_hash(phenopacket_hash)
-
-    if phenopacket is None:
-        flash("An error occurred while retrieving Phenopacket info", "warning")
-
-    else:
         phenopacketapi.add_phenopacket_to_case(
             store, institute_obj, case_obj, user_obj, case_url, phenopacket
         )
+        return redirect("#".join([case_url, "phenotypes_panel"]))
 
-    return redirect("#".join([case_url, "phenotypes_panel"]))
+    except Exception as ex:
+        flash(f"An error occurred while retrieving Phenopacket info: {ex}", "warning")
+        return redirect(case_url)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes/actions", methods=["POST"])
