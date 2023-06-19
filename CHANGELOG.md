@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clearer gnomAD values in Variants page
 ### Fixed
 - CaseS page uniform column widths
+- Catch and display any error while importing Phenopacket info
 
 ## [4.69]
 ### Added
