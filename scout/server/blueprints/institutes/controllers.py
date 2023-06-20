@@ -578,7 +578,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
 
 
 def export_gene_variants(
-    store: MongoAdapter, pymongo_cursor: Cursor, variant_count: int
+    institute: str, store: MongoAdapter, pymongo_cursor: Cursor, variant_count: int
 ) -> Response:
     """Export 500 gene variants for an institute resulting from a customer query"""
 
@@ -637,7 +637,7 @@ def export_gene_variants(
     headers.add(
         "Content-Disposition",
         "attachment",
-        filename="appo.csv",
+        filename=f"{institute}_gene_variants.csv",
     )
     # return a csv with the exported variants
     return Response(

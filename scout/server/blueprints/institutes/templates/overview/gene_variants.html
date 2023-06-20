@@ -206,5 +206,10 @@
         });
     })
 
+    document.querySelector("#filters_form").addEventListener("submit", function(e){
+      // Avoid page spinner being stuck on download gene variants
+      $(window).unbind('beforeunload');
+    })
+
   </script>
 {% endblock %}

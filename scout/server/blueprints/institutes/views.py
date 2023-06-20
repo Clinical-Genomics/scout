@@ -165,7 +165,10 @@ def gene_variants(institute_id):
 
         if request.form.get("filter_export_variants"):
             return controllers.export_gene_variants(
-                store=store, pymongo_cursor=results, variant_count=result_size
+                institute=institute_id,
+                store=store,
+                pymongo_cursor=results,
+                variant_count=result_size,
             )
 
         data = controllers.gene_variants(
