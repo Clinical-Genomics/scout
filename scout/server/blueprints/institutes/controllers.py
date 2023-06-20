@@ -627,11 +627,9 @@ def export_gene_variants(
         variant_line.append(
             str(round(variant.get("cadd_score"), 1)) if variant.get("cadd_score") else "-"
         )  # CADD score
-        variant_line.append(", ".join(variant.get("region_annotation", [])))  # Region
-        variant_line.append(", ".join(variant.get("functional_annotation", [])))  # Function
+        variant_line.append(", ".join(variant.get("region_annotations", [])))  # Region
+        variant_line.append(", ".join(variant.get("functional_annotations", [])))  # Function
         variant_line.append(variant.get("hgvs", "-"))  # HGVS
-
-        LOG.warning(variant_line)
 
         export_lines.append(",".join(variant_line))
 
