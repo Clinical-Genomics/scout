@@ -4,7 +4,7 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 
-SNPS_INDELS_ENDPOINT = "overview.gene_variants"
+OVERVIEW_GENE_VARIANTS_ENDPOINT = "overview.gene_variants"
 
 
 def test_gene_variants(app, user_obj, institute_obj):
