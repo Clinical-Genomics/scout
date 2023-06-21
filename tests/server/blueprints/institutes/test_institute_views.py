@@ -467,7 +467,7 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         }
 
         resp = client.post(
-            url_for(SNPS_INDELS_ENDPOINT, institute_id=institute_obj["internal_id"]),
+            url_for(OVERVIEW_GENE_VARIANTS_ENDPOINT, institute_id=institute_obj["internal_id"]),
             data=filter_query,
         )
         # THEN it should return a page
