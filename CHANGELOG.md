@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include ClinVar variants into a scrollable div element on Case page
 - `canonical_transcript` variable not initialized in get_hgvs function (server.blueprints.institutes.controllers.py)
 - Catch and display any error while importing Phenopacket info
+- Modified Docker files to use python:3.8-slim-bullseye to prevent gunicorn workers booting error
 
 ## [4.69]
 ### Added
