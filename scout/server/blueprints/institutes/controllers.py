@@ -612,7 +612,7 @@ def export_gene_variants(
         variant_genes = [
             gene.get("hgnc_symbol", gene.get("hgnc_id")) for gene in variant.get("genes", [])
         ]
-        variant_line.append(", ".join(variant_genes))  # Genes
+        variant_line.append("| ".join(variant_genes))  # Genes
 
         gnomad_freq = []
         if "gnomad_mt_homoplasmic_frequency" in variant:
@@ -622,13 +622,13 @@ def export_gene_variants(
         if "gnomad_frequency" in variant:
             gnomad_freq.append(f"gnomAD:{variant.get('gnomad_frequency')}")
             gnomad_freq.append(f"gnomAD (max):{variant.get('max_gnomad_frequency')}")
-        variant_line.append(", ".join(gnomad_freq) if gnomad_freq else "-")  # GnomAD Frequency
+        variant_line.append("| ".join(gnomad_freq) if gnomad_freq else "-")  # GnomAD Frequency
 
         variant_line.append(
             str(round(variant.get("cadd_score"), 1)) if variant.get("cadd_score") else "-"
         )  # CADD score
-        variant_line.append(", ".join(variant.get("region_annotations", [])))  # Region
-        variant_line.append(", ".join(variant.get("functional_annotations", [])))  # Function
+        variant_line.append("| ".join(variant.get("region_annotations", [])))  # Region
+        variant_line.append("| ".join(variant.get("functional_annotations", [])))  # Function
         variant_line.append(variant.get("hgvs", "-"))  # HGVS
 
         export_lines.append(",".join(variant_line))
