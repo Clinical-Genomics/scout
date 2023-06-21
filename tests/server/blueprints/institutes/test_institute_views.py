@@ -26,7 +26,7 @@ def test_gene_variants(app, user_obj, institute_obj):
         # WHEN form is submitted by POST request
         resp = client.post(
             url_for(
-                SNPS_INDELS_ENDPOINT,
+                OVERVIEW_GENE_VARIANTS_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
             ),
             data=form_data,
