@@ -4,6 +4,8 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 
+SNPS_INDELS_ENDPOINT = "overview.gene_variants"
+
 
 def test_gene_variants(app, user_obj, institute_obj):
     """Test the page that returns all SNPs and INDELs given a gene provided by user"""
@@ -24,7 +26,7 @@ def test_gene_variants(app, user_obj, institute_obj):
         # WHEN form is submitted by POST request
         resp = client.post(
             url_for(
-                "overview.gene_variants",
+                SNPS_INDELS_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
             ),
             data=form_data,
@@ -56,7 +58,7 @@ def test_gene_variants_export(app, user_obj, institute_obj):
         # WHEN form is submitted by POST request
         resp = client.post(
             url_for(
-                "overview.gene_variants",
+                SNPS_INDELS_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
             ),
             data=form_data,
@@ -465,7 +467,7 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         }
 
         resp = client.post(
-            url_for("overview.gene_variants", institute_id=institute_obj["internal_id"]),
+            url_for(SNPS_INDELS_ENDPOINT, institute_id=institute_obj["internal_id"]),
             data=filter_query,
         )
         # THEN it should return a page
