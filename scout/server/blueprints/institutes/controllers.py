@@ -627,6 +627,7 @@ def export_gene_variants(
             )
         if "gnomad_frequency" in variant:
             gnomad_freq.append(f"gnomAD:{str(round(variant.get('gnomad_frequency'),4))}")
+        if "max_gnomad_frequency" in variant:
             gnomad_freq.append(f"gnomAD (max):{str(round(variant.get('max_gnomad_frequency'),4))}")
         variant_line.append(" | ".join(gnomad_freq) if gnomad_freq else "-")  # GnomAD Frequency
 
