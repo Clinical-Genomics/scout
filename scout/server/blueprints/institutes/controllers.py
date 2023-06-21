@@ -619,15 +619,15 @@ def export_gene_variants(
         gnomad_freq = []
         if "gnomad_mt_homoplasmic_frequency" in variant:
             gnomad_freq.append(
-                f"gnomAD(MT) hom:{str(round(variant.get('gnomad_mt_homoplasmic_frequency')))}"
+                f"gnomAD(MT) hom:{str(round(variant.get('gnomad_mt_homoplasmic_frequency'),4))}"
             )
         if "gnomad_mt_heteroplasmic_frequency" in variant:
             gnomad_freq.append(
-                f"gnomAD(MT) het:{str(round(variant.get('gnomad_mt_heteroplasmic_frequency')))}"
+                f"gnomAD(MT) het:{str(round(variant.get('gnomad_mt_heteroplasmic_frequency'),4))}"
             )
         if "gnomad_frequency" in variant:
-            gnomad_freq.append(f"gnomAD:{str(round(variant.get('gnomad_frequency')))}")
-            gnomad_freq.append(f"gnomAD (max):{str(round(variant.get('max_gnomad_frequency')))}")
+            gnomad_freq.append(f"gnomAD:{str(round(variant.get('gnomad_frequency'),4))}")
+            gnomad_freq.append(f"gnomAD (max):{str(round(variant.get('max_gnomad_frequency'),4))}")
         variant_line.append(" | ".join(gnomad_freq) if gnomad_freq else "-")  # GnomAD Frequency
 
         variant_line.append(
