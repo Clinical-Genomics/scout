@@ -11,7 +11,7 @@ from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers
 
 from scout.adapter.mongo.base import MongoAdapter
-from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
+from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, DATE_DAY_FORMATTER, PHENOTYPE_GROUPS
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
@@ -578,7 +578,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
 
 
 def export_gene_variants(
-    store: MongoAdapter, pymongo_cursor: Cursor, variant_count: int
+    store: MongoAdapter, gene_symbol: str, pymongo_cursor: Cursor, variant_count: int
 ) -> Response:
     """Export 500 gene variants for an institute resulting from a customer query"""
 
@@ -640,7 +640,10 @@ def export_gene_variants(
         export_lines.append(",".join(variant_line))
 
     headers = Headers()
-    headers.add("Content-Disposition", "attachment", filename="gene_variants.csv")
+    today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
+    headers.add(
+        "Content-Disposition", "attachment", filename=f"{gene_symbol}_gene_variants_{today}.csv"
+    )
     # return a csv with the exported variants
     return Response(
         generate(",".join(DOCUMENT_HEADER), export_lines),

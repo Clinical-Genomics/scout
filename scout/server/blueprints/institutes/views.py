@@ -166,6 +166,7 @@ def gene_variants(institute_id):
         if request.form.get("filter_export_variants"):
             return controllers.export_gene_variants(
                 store=store,
+                gene_symbol=request.form.get("hgnc_symbols").split(",")[0].strip(),
                 pymongo_cursor=results,
                 variant_count=result_size,
             )
