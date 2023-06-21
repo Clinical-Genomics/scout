@@ -36,6 +36,38 @@ def test_gene_variants(app, user_obj, institute_obj):
         assert "POT1" in str(resp.data)
 
 
+def test_gene_variants_export(app, user_obj, institute_obj):
+    """Test that the SNPs and INDELs page exports data given a gene provided by user"""
+
+    # GIVEN a form filled in by the user
+    form_data = {
+        "hgnc_symbols": "POT1",
+        "variant_type": [],  # This will set variant type to ["clinical"] in the endpoint function
+        "category": "snv",
+        "rank_score": 5,
+        "filter_export_variants": "yes",
+    }
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # WHEN form is submitted by POST request
+        resp = client.post(
+            url_for(
+                "overview.gene_variants",
+                institute_id=institute_obj["internal_id"],
+            ),
+            data=form_data,
+        )
+        # THEN response should be successful
+        assert resp.status_code == 200
+
+        # containing a text file
+        assert resp.mimetype == "text/csv"
+
+
 def test_events_timeline(app, user_obj, institute_obj, case_obj):
     """Test the wiew that returns the last 100 groups of events for a user"""
 
