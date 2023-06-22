@@ -140,12 +140,13 @@ class GeneVariantFiltersForm(FlaskForm):
     hgnc_symbols = TagListField(
         "HGNC Symbols (comma-separated, case sensitive)", validators=[validators.InputRequired()]
     )
-    filter_variants = SubmitField(label="Filter variants")
     rank_score = IntegerField(default=15)
     phenotype_terms = TagListField("HPO terms (comma-separated)")
     phenotype_groups = TagListField("Phenotype groups")
     similar_case = TagListField("Phenotypically similar case")
     cohorts = TagListField("Cohorts")
+    filter_variants = SubmitField(label="Filter variants")
+    filter_export_variants = SubmitField(label="Filter and export variants")
 
 
 class CaseFilterForm(FlaskForm):
