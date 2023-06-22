@@ -4,11 +4,14 @@ import logging
 import re
 from typing import Dict, List, Optional, Tuple
 
-from flask import current_app, flash, url_for
+from flask import Response, current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
+from pymongo.cursor import Cursor
+from werkzeug.datastructures import Headers
 
-from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, PHENOTYPE_GROUPS
+from scout.adapter.mongo.base import MongoAdapter
+from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, DATE_DAY_FORMATTER, PHENOTYPE_GROUPS
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
@@ -572,6 +575,82 @@ def get_sanger_unevaluated(store, institute_id, user_id):
             unevaluated.append(unevaluated_by_case)
 
     return unevaluated
+
+
+def export_gene_variants(
+    store: MongoAdapter, gene_symbol: str, pymongo_cursor: Cursor, variant_count: int
+) -> Response:
+    """Export 500 gene variants for an institute resulting from a customer query"""
+
+    def generate(header, lines):
+        yield header + "\n"
+        for line in lines:
+            yield line + "\n"
+
+    data: dict = gene_variants(
+        store=store, pymongo_cursor=pymongo_cursor, variant_count=variant_count, per_page=500
+    )
+
+    DOCUMENT_HEADER = [
+        "Case Display Name",
+        "Institute",
+        "Position",
+        "Score",
+        "Genes",
+        "GnomAD Frequency",
+        "CADD Score",
+        "Region",
+        "Function",
+        "HGVS",
+    ]
+
+    export_lines = []
+    for variant in data.get("variants", []):
+        variant_line = []
+        variant_line.append(variant.get("case_display_name"))  # Case Display Name
+        variant_line.append(variant.get("institute"))  # Institute
+        variant_line.append(variant.get("display_name"))  # Position
+        variant_line.append(str(variant.get("rank_score", "")))  # Score
+        variant_genes = [
+            gene.get("hgnc_symbol", gene.get("hgnc_id")) for gene in variant.get("genes", [])
+        ]
+        variant_line.append(" | ".join(variant_genes))  # Genes
+
+        gnomad_freq = []
+        if "gnomad_mt_homoplasmic_frequency" in variant:
+            gnomad_freq.append(
+                f"gnomAD(MT) hom:{str(round(variant.get('gnomad_mt_homoplasmic_frequency'),4))}"
+            )
+        if "gnomad_mt_heteroplasmic_frequency" in variant:
+            gnomad_freq.append(
+                f"gnomAD(MT) het:{str(round(variant.get('gnomad_mt_heteroplasmic_frequency'),4))}"
+            )
+        if "gnomad_frequency" in variant:
+            gnomad_freq.append(f"gnomAD:{str(round(variant.get('gnomad_frequency'),4))}")
+        if "max_gnomad_frequency" in variant:
+            gnomad_freq.append(f"gnomAD (max):{str(round(variant.get('max_gnomad_frequency'),4))}")
+        variant_line.append(" | ".join(gnomad_freq) if gnomad_freq else "-")  # GnomAD Frequency
+
+        variant_line.append(
+            str(round(variant.get("cadd_score"), 1)) if variant.get("cadd_score") else "-"
+        )  # CADD score
+        variant_line.append(" | ".join(variant.get("region_annotations", [])))  # Region
+        variant_line.append(" | ".join(variant.get("functional_annotations", [])))  # Function
+        variant_line.append(variant.get("hgvs", "-"))  # HGVS
+
+        export_lines.append(",".join(variant_line))
+
+    headers = Headers()
+    today = datetime.datetime.now().strftime(DATE_DAY_FORMATTER)
+    headers.add(
+        "Content-Disposition", "attachment", filename=f"{gene_symbol}_gene_variants_{today}.csv"
+    )
+    # return a csv with the exported variants
+    return Response(
+        generate(",".join(DOCUMENT_HEADER), export_lines),
+        mimetype="text/csv",
+        headers=headers,
+    )
 
 
 def gene_variants(store, pymongo_cursor, variant_count, page=1, per_page=50):
