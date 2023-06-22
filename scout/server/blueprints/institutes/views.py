@@ -127,6 +127,7 @@ def lock_filter(institute_id, filter_id):
 @templated("overview/gene_variants.html")
 def gene_variants(institute_id):
     """Display a list of SNV variants."""
+
     page = int(request.form.get("page", 1))
     result_size = None
     institute_obj = institute_and_case(store, institute_id)
@@ -159,7 +160,17 @@ def gene_variants(institute_id):
         results = store.variant_collection.find(variants_query).sort(
             [("rank_score", DESCENDING)]
         )  # query results
+
         result_size = store.variant_collection.count_documents(variants_query)
+
+        if request.form.get("filter_export_variants"):
+            return controllers.export_gene_variants(
+                store=store,
+                gene_symbol=request.form.get("hgnc_symbols").split(",")[0].strip(),
+                pymongo_cursor=results,
+                variant_count=result_size,
+            )
+
         data = controllers.gene_variants(
             store, results, result_size, page
         )  # decorated variant results, max 50 in a page
