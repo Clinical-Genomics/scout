@@ -4,6 +4,8 @@ from flask_login import current_user
 
 from scout.server.extensions import store
 
+OVERVIEW_GENE_VARIANTS_ENDPOINT = "overview.gene_variants"
+
 
 def test_gene_variants(app, user_obj, institute_obj):
     """Test the page that returns all SNPs and INDELs given a gene provided by user"""
@@ -24,7 +26,7 @@ def test_gene_variants(app, user_obj, institute_obj):
         # WHEN form is submitted by POST request
         resp = client.post(
             url_for(
-                "overview.gene_variants",
+                OVERVIEW_GENE_VARIANTS_ENDPOINT,
                 institute_id=institute_obj["internal_id"],
             ),
             data=form_data,
@@ -34,6 +36,38 @@ def test_gene_variants(app, user_obj, institute_obj):
 
         # containing the expected results
         assert "POT1" in str(resp.data)
+
+
+def test_gene_variants_export(app, user_obj, institute_obj):
+    """Test that the SNPs and INDELs page exports data given a gene provided by user"""
+
+    # GIVEN a form filled in by the user
+    form_data = {
+        "hgnc_symbols": "POT1",
+        "variant_type": [],  # This will set variant type to ["clinical"] in the endpoint function
+        "category": "snv",
+        "rank_score": 5,
+        "filter_export_variants": "yes",
+    }
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # WHEN form is submitted by POST request
+        resp = client.post(
+            url_for(
+                OVERVIEW_GENE_VARIANTS_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+            ),
+            data=form_data,
+        )
+        # THEN response should be successful
+        assert resp.status_code == 200
+
+        # containing a text file
+        assert resp.mimetype == "text/csv"
 
 
 def test_events_timeline(app, user_obj, institute_obj, case_obj):
@@ -433,7 +467,7 @@ def test_gene_variants_filter(app, institute_obj, case_obj):
         }
 
         resp = client.post(
-            url_for("overview.gene_variants", institute_id=institute_obj["internal_id"]),
+            url_for(OVERVIEW_GENE_VARIANTS_ENDPOINT, institute_id=institute_obj["internal_id"]),
             data=filter_query,
         )
         # THEN it should return a page
