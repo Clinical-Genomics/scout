@@ -1,3 +1,5 @@
+from typing import List
+
 from flask import current_app
 
 from scout.constants import SPIDEX_HUMAN
@@ -38,6 +40,10 @@ def add_gene_links(gene_obj, build=37):
     if not hgnc_symbol:
         hgnc_symbol = gene_obj.get("hgnc_symbol")
 
+    gene_aliases = gene_obj.get("common", {}).get("aliases")
+    if not gene_aliases:
+        gene_aliases = gene_obj.get("aliases", [])
+
     ensembl_37_link = ensembl(ensembl_id, build=37)
     ensembl_38_link = ensembl(ensembl_id, build=38)
     gene_obj["ensembl_37_link"] = ensembl_37_link
@@ -56,6 +62,7 @@ def add_gene_links(gene_obj, build=37):
     # Add links that use entrez_id
     entrez_id = gene_obj.get("common", {}).get("entrez_id")
     gene_obj["entrez_link"] = entrez(entrez_id)
+    gene_obj["pubmed_link"] = pubmed(hgnc_symbol, gene_aliases)
     gene_obj["ckb_link"] = ckb_gene(entrez_id)
     # Add links that use omim id
     gene_obj["omim_link"] = omim(gene_obj.get("omim_id"))
@@ -245,6 +252,17 @@ def entrez(entrez_id):
         return None
 
     return link.format(entrez_id)
+
+
+def pubmed(hgnc_symbol: str, gene_aliases: List[str]) -> str:
+    if not len(gene_aliases):
+        link = "https://pubmed.ncbi.nlm.nih.gov/?term={}"
+        return link.format(hgnc_symbol)
+
+    link = "https://pubmed.ncbi.nlm.nih.gov/?term=" + hgnc_symbol
+    for alias in gene_aliases:
+        link += "+OR+" + alias
+    return link
 
 
 def ppaint(hgnc_symbol):
