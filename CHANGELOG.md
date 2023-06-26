@@ -4,9 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.70]
 ### Added
 - Download a list of Gene Variants (max 500) resulting from SNVs and Indels search
+- Variant PubMed link to search for gene symbol and any aliases
 ### Changed
 - Clearer gnomAD values in Variants page
 ### Fixed
