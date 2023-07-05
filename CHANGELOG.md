@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Variant PubMed link to search for gene symbol and any aliases
 ### Changed
 - Clearer gnomAD values in Variants page
+- Remove function call that tracks users' browser version
 ### Fixed
 - CaseS page uniform column widths
 - Include ClinVar variants into a scrollable div element on Case page
