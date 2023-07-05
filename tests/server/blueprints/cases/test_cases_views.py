@@ -74,7 +74,6 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
 
     # WHEN the rerun is triggered using the reanalysis endpoint
     with app.test_client() as client:
-
         json_string = '[{"sample_id": "NA12882", "sex": 1, "phenotype": 2}]'
         data = {"sample_metadata": json_string}
 
@@ -161,7 +160,6 @@ def test_parse_raw_gene_ids(app):
 def test_update_cancer_case_sample(
     app, user_obj, institute_obj, cancer_case_obj, mocker, mock_redirect
 ):
-
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
@@ -310,7 +308,6 @@ def test_case_sma(app, case_obj, institute_obj):
 
 
 def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_redirect):
-
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -321,7 +318,6 @@ def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_
     assert case_obj["individuals"][0]["tissue_type"] == "blood"
 
     with app.test_client() as client:
-
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
@@ -360,7 +356,6 @@ def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_
 
 
 def test_case_synopsis(app, institute_obj, case_obj, mocker, mock_redirect):
-
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
@@ -699,7 +694,6 @@ def test_mt_report(app, institute_obj, case_obj):
 
 
 def test_status(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
-
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
 
     # GIVEN an initialized app
@@ -749,7 +743,6 @@ def _test_delivery_report(client, institute_obj, case_obj, response_format):
 
 
 def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
-
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
@@ -763,7 +756,6 @@ def test_html_delivery_report(app, institute_obj, case_obj, user_obj):
 
 
 def test_pdf_delivery_report(app, institute_obj, case_obj, user_obj):
-
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:

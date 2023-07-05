@@ -424,7 +424,6 @@ def cancer_case_obj(request, cancer_parsed_case):
 
 @pytest.fixture(scope="function")
 def case_obj(request, parsed_case):
-
     case = parsed_case
     case["_id"] = parsed_case["case_id"]
     case["owner"] = parsed_case["owner"]
@@ -468,7 +467,6 @@ def case_obj(request, parsed_case):
 #############################################################
 @pytest.fixture(scope="function")
 def clinvar_variant(request):
-
     variant = {
         "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77",
         "csv_type": "variant",
@@ -496,7 +494,6 @@ def clinvar_variant(request):
 
 @pytest.fixture(scope="function")
 def clinvar_casedata(request):
-
     casedata = {
         "_id": "internal_id_4c7d5c70d955875504db72ef8e1abe77_NA12882",
         "csv_type": "casedata",

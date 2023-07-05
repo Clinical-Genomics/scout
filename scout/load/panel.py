@@ -122,7 +122,6 @@ def load_panel_app(adapter, panel_id=None, institute="cust000"):
     panel_ids = [panel_id]
 
     if not panel_id:
-
         LOG.info("Fetching all panel app panels")
         json_lines = fetch_resource(base_url.format("list_panels"), json=True)
 

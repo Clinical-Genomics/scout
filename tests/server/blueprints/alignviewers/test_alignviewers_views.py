@@ -26,7 +26,6 @@ def test_igv(app, user_obj, case_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
     with app.test_client() as client:
-
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200

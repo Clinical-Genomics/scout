@@ -9,7 +9,6 @@ from scout.server.extensions import store
 
 
 def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
-
     mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
     # GIVEN a variant without clinVar annotations

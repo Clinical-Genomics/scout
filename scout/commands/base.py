@@ -49,7 +49,6 @@ def get_app(ctx=None):
     cli_config = {}
     # if a .yaml config file was provided use its params to intiate the app
     if options.params.get("config"):
-
         with open(options.params["config"], "r") as in_handle:
             cli_config = yaml.load(in_handle, Loader=yaml.SafeLoader)
 

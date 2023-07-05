@@ -8,10 +8,8 @@ from scout.server.extensions import store
 
 
 def test_acmg(app):
-
     # GIVEN an initialized app
     with app.test_client() as client:
-
         # the acmg endpoint endpoint should return an acmg json file
         resp = client.get("/api/v1/acmg")
         assert resp.status_code == 200
@@ -41,7 +39,6 @@ def test_variant(app, institute_obj, case_obj, variant_obj):
 
 
 def test_cancer_variant(app, cancer_case_obj, cancer_variant_obj):
-
     # GIVEN a cancer case object with a variant saved in database
     assert store.case_collection.insert_one(cancer_case_obj)
     assert store.variant_collection.insert_one(cancer_variant_obj)
@@ -173,7 +170,6 @@ def test_edit_variants_comments(
 def test_variant_update_cancer_tier(
     app, case_obj, variant_obj, institute_obj, mocker, mock_redirect
 ):
-
     mocker.patch("scout.server.blueprints.variant.views.redirect", return_value=mock_redirect)
     # GIVEN an initialized app
     # GIVEN a valid user and institute

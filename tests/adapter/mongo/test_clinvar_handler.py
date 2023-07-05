@@ -57,7 +57,6 @@ def get_test_submission_case(case_obj):
 
 
 def get_new_submission(adapter, institute_obj):
-
     # And a valid institute id
     institute_id = institute_obj["_id"]
     assert institute_id

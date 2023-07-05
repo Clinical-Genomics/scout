@@ -17,7 +17,6 @@ def gene(store, hgnc_id):
     for build in res["builds"]:
         record = store.hgnc_gene(hgnc_id, build=build)
         if record:
-
             record["position"] = "{this[chromosome]}:{this[start]}-{this[end]}".format(this=record)
             res["aliases"] = record["aliases"]
             res["hgnc_id"] = record["hgnc_id"]

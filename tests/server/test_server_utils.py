@@ -46,7 +46,6 @@ def test_find_index_bai():
     # bam_file.bai
     with tempfile.TemporaryDirectory() as tmpdirname:
         with tempfile.NamedTemporaryFile(dir=tmpdirname, suffix=".bai") as idx:
-
             bam_file = idx.name.replace(".bai", ".bam")
             # THEN the find_index function should return the correct index file
             index = find_index(bam_file)
@@ -61,7 +60,6 @@ def test_find_index_bam_bai():
     # bam_file.bam.bai
     with tempfile.TemporaryDirectory() as tmpdirname:
         with tempfile.NamedTemporaryFile(dir=tmpdirname, suffix="bam.bai") as idx:
-
             bam_file = idx.name.replace(".bai", "")
             # THEN the find_index function should return the correct index file
             index = find_index(bam_file)
@@ -75,7 +73,6 @@ def test_find_index_crai():
     # bam_file.crai
     with tempfile.TemporaryDirectory() as tmpdirname:
         with tempfile.NamedTemporaryFile(dir=tmpdirname, suffix=".crai") as idx:
-
             cram_file = idx.name.replace(".crai", ".cram")
             # THEN the find_index function should return the correct index file
             index = find_index(cram_file)
@@ -90,7 +87,6 @@ def test_find_index_cram_crai():
     # bam_file.cram.crai
     with tempfile.TemporaryDirectory() as tmpdirname:
         with tempfile.NamedTemporaryFile(dir=tmpdirname, suffix="cram.crai") as idx:
-
             cram_file = idx.name.replace(".crai", "")
             # THEN the find_index function should return the correct index file
             index = find_index(cram_file)

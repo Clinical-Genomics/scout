@@ -109,7 +109,6 @@ def omim(omim_id):
 
 
 def ensembl(ensembl_id, build=37):
-
     link = "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
     if build == 38:
         link = "http://ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
@@ -214,7 +213,6 @@ def vega(vega_id):
 
 
 def ucsc(ucsc_id):
-
     link = (
         "http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene"
         "&hgg_gene={}"
@@ -335,7 +333,6 @@ def varsome(build, refseq_id, protein_sequence_name):
 
 
 def iarctp53(hgnc_symbol):
-
     if hgnc_symbol != "TP53":
         return None
 

@@ -236,7 +236,6 @@ def test_is_pathogenic_no_annotation(cyvcf2_variant):
 
 
 def test_is_pathogenic_VEP97_conflicting(one_vep97_annotated_variant):
-
     ## WHEN checking if variants should be loaded
     pathogenic = is_pathogenic(one_vep97_annotated_variant)
 

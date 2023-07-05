@@ -490,7 +490,6 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         # and create the same comment for the new variant
         for old_comment in comments_query:
-
             comment_user = self.user(old_comment["user_id"])
             if comment_user is None:
                 continue

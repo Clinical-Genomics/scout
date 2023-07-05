@@ -84,7 +84,6 @@ def test_set_cloud_public_tracks(app):
     build = "37"
 
     with app.test_client() as client:
-
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
 

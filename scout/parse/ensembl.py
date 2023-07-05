@@ -67,7 +67,6 @@ def parse_ensembl_line(line, header):
                 ensembl_info["exon_rank"] = int(value)
 
         if "utr" in word:
-
             if "start" in word:
                 if "5" in word:
                     ensembl_info["utr_5_start"] = int(value)
@@ -161,7 +160,6 @@ def parse_ensembl_genes(lines):
     LOG.info("Parsing ensembl genes from file")
     header = []
     for index, line in enumerate(lines):
-
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
@@ -186,7 +184,6 @@ def parse_ensembl_transcripts(lines):
     header = []
     LOG.info("Parsing ensembl transcripts from file")
     for index, line in enumerate(lines):
-
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
@@ -208,7 +205,6 @@ def parse_ensembl_exons(lines):
     """
     header = []
     for index, line in enumerate(lines):
-
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")

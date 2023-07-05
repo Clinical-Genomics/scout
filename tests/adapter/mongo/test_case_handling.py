@@ -128,7 +128,6 @@ def test_get_research_case(real_adapter, case_obj, institute_obj):
 
 
 def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
-
     adapter = real_adapter
     # GIVEN a real database with no cases
     assert adapter.case_collection.find_one() is None
@@ -418,7 +417,6 @@ def test_update_dynamic_gene_list(gene_database, case_obj):
 
 
 def test_update_dynamic_gene_list_with_bad_dict_entry(gene_database, case_obj):
-
     # GIVEN an populated gene database,
     adapter = gene_database
 
@@ -489,7 +487,6 @@ def test_archive_unarchive_case(adapter, case_obj, institute_obj, user_obj):
 
 
 def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
-
     # GIVEN an empty database (no cases)
     assert sum(1 for i in adapter.cases()) == 0
     adapter.case_collection.insert_one(case_obj)

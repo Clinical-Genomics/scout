@@ -64,7 +64,6 @@ def get_reduced_hpo_terms(hpo_terms):
     nr_kept = 0
 
     for line in hpo_lines:
-
         # When we encounter a new term we yield all lines of the previous term
         if line.startswith("[Term]"):
             nr_terms += 1
@@ -124,7 +123,6 @@ def generate_hgnc(genes):
 
     # Loop over all hgnc gene lines
     for i, line in enumerate(hgnc_gene_lines):
-
         line = line.rstrip()
         # Skip lines that are empty
         if not len(line) > 0:

@@ -15,10 +15,8 @@ from scout.server.blueprints.variant.utils import (
 
 
 def test_modal_causative(app, case_obj, institute_obj, variant_obj):
-
     # GIVEN an initialized app
     with app.test_client() as client:
-
         # WHILE collection a specific jinja macro
         macro = get_template_attribute("variant/utils.html", "modal_causative")
         # and passing to it the required parameters

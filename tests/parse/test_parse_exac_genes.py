@@ -12,7 +12,6 @@ def test_parse_exac_line(exac_handle):
 
 
 def test_parse_exac_genes(exac_handle):
-
     genes = parse_exac_genes(exac_handle)
 
     for gene in genes:

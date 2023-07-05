@@ -46,7 +46,6 @@ def get_objects_from_form(variant_ids, form_fields, object_type):
 
     # Loop over the form fields and collect the data:
     for variant_id in variant_ids:  # loop over the variants
-
         subm_obj = {}  # A new submission object for each
 
         # Don't included casedata for a variant unless specified by user
@@ -134,7 +133,6 @@ def clinvar_submission_header(submission_objs, csv_type):
                 key,
                 value,
             ) in clinvar_obj.items():  # loop over the keys and values of the clinvar objects
-
                 if (
                     not header_key in custom_header and header_key == key
                 ):  # add to custom header if missing and specified in submission object

@@ -170,7 +170,7 @@ def register_filters(app):
         Return:
             str: humanized string of the decimal number
         """
-        min_number = 10 ** -ndigits
+        min_number = 10**-ndigits
         if isinstance(number, str):
             number = None
         if number is None:

@@ -137,7 +137,6 @@ def test_get_ranked_and_comment_two(real_variant_database):
 def test_evaluated_variants(
     case_obj, institute_obj, user_obj, real_populated_database, variant_objs
 ):
-
     adapter = real_populated_database
     case_id = case_obj["_id"]
 

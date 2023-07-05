@@ -7,7 +7,6 @@ from scout.exceptions import IntegrityError
 
 
 def test_add_institute(adapter, institute_obj):
-
     ## GIVEN an adapter without any institutes
     assert sum(1 for i in adapter.institutes()) == 0
 
@@ -31,7 +30,6 @@ def test_add_institute(adapter, institute_obj):
 
 
 def test_add_institute_twice(adapter, institute_obj):
-
     ## GIVEN an adapter without any institutes
     assert sum(1 for i in adapter.institutes()) == 0
 
@@ -46,7 +44,6 @@ def test_add_institute_twice(adapter, institute_obj):
 
 
 def test_fetch_institute(adapter, institute_obj):
-
     ## GIVEN an adapter without any institutes
     assert sum(1 for i in adapter.institutes()) == 0
 
@@ -63,7 +60,6 @@ def test_fetch_institute(adapter, institute_obj):
 
 
 def test_fetch_non_existing_institute(adapter, institute_obj):
-
     ## GIVEN an adapter without any institutes
     assert sum(1 for i in adapter.institutes()) == 0
 

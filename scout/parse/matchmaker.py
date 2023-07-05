@@ -168,7 +168,6 @@ def parse_matches(patient_id, match_objs):
     parsed_matches = []
 
     for match_obj in match_objs:
-
         # convert match date from millisecond to readable date
         milliseconds_date = match_obj["created"]["$date"]
         mdate = datetime.datetime.fromtimestamp(milliseconds_date / 1000.0)
@@ -208,7 +207,6 @@ def parse_matches(patient_id, match_objs):
                 for patient in res["patients"]:
                     LOG.info("Looping in else, patient:{}".format(patient["patient"]["id"]))
                     if patient["patient"]["id"] == patient_id:
-
                         score = patient["score"]
                         match_patient = {
                             "patient_id": m_patient["id"],

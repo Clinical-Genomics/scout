@@ -19,7 +19,6 @@ def test_load_gene_fusion_report_research(mock_app):
 
     # WHEN the update_gene_fusion command is executed provifing a new gene fusion research report
     with tempfile.NamedTemporaryFile(suffix=".pdf") as tf:
-
         research_gene_fusion_report_path = os.path.dirname(tf.name)
         result = runner.invoke(
             cli,
@@ -48,7 +47,6 @@ def test_load_gene_fusion_report_update(mock_app):
 
     # WHEN the update_gene_fusion command is executed provifing a new gene fusion report
     with tempfile.NamedTemporaryFile(suffix=".pdf") as tf:
-
         new_report_path = os.path.dirname(tf.name)
         result = runner.invoke(
             cli, ["load", "gene-fusion-report", case_id, new_report_path, "--update"]

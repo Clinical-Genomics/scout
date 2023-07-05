@@ -5,7 +5,6 @@ from scout.load.report import load_cnv_report, load_coverage_qc_report, load_del
 
 
 def test_load_delivery_report_bad_case_id(adapter):
-
     ## GIVEN no cases in database
     assert adapter.case_collection.find_one() is None
 
@@ -19,7 +18,6 @@ def test_load_delivery_report_bad_case_id(adapter):
 
 
 def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_obj):
-
     adapter.case_collection.insert_one(case_obj)
     ## GIVEN a case exist, with a delivery report
     case_obj = adapter.case_collection.find_one()
@@ -43,7 +41,6 @@ def test_load_delivery_report_using_case_id_without_update_fail(adapter, case_ob
 
 
 def test_load_delivery_report_using_case_id_with_update_success(adapter, case_obj):
-
     adapter.case_collection.insert_one(case_obj)
     ## GIVEN a case exist, with a delivery report
     case_obj = adapter.case_collection.find_one()
@@ -67,7 +64,6 @@ def test_load_delivery_report_using_case_id_with_update_success(adapter, case_ob
 
 
 def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_obj):
-
     adapter.case_collection.insert_one(cancer_case_obj)
     ## GIVEN a case exist, with a delivery report
     cancer_case_obj = adapter.case_collection.find_one()
@@ -91,7 +87,6 @@ def test_load_cnv_report_using_case_id_with_update_success(adapter, cancer_case_
 
 
 def test_load_coverage_qc_report_using_case_id_with_update_success(adapter, cancer_case_obj):
-
     adapter.case_collection.insert_one(cancer_case_obj)
     ## GIVEN a case exist, with a delivery report
     cancer_case_obj = adapter.case_collection.find_one()

@@ -302,7 +302,6 @@ def test_variant_controller_with_compounds(app, institute_obj, case_obj):
 
 
 def test_variant_controller_with_clnsig(app, institute_obj, case_obj):
-
     ## GIVEN a populated database with a variant
     variant_obj = store.variant_collection.find_one({"clnsig": {"$exists": True}})
     assert variant_obj
@@ -336,7 +335,6 @@ def test_variant_controller_with_clnsig(app, institute_obj, case_obj):
 
 
 def test_variant_controller(app, institute_obj, case_obj, variant_obj):
-
     ## GIVEN a populated database with a variant
     category = "snv"
     with app.test_client() as client:

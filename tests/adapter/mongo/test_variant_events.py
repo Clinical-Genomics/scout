@@ -41,7 +41,6 @@ def test_matching_tiered(adapter, institute_obj, cancer_case_obj, user_obj, canc
 
 
 def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -75,7 +74,6 @@ def test_mark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj)
 
 
 def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     ## GIVEN a adapter with a variant that is marked causative
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -113,7 +111,6 @@ def test_unmark_causative(adapter, institute_obj, case_obj, user_obj, variant_ob
 
 
 def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -150,7 +147,6 @@ def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, vari
 
 
 def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -196,7 +192,6 @@ def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, va
 
 
 def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a populated database with variants
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -235,7 +230,6 @@ def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_
 
 
 def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a populated database with a variant that has sanger ordered
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -275,7 +269,6 @@ def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant
 
 
 def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a variant db with at least one variant, and no events
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -313,7 +306,6 @@ def test_dismiss_variant(adapter, institute_obj, case_obj, user_obj, variant_obj
 
 
 def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a variant db with at least one variant, and no events
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
@@ -350,7 +342,6 @@ def test_update_cancer_tier(adapter, institute_obj, case_obj, user_obj, variant_
 
 
 def test_update_manual_rank(adapter, institute_obj, case_obj, user_obj, variant_obj):
-
     # GIVEN a variant db with at least one variant, and no events
     adapter.case_collection.insert_one(case_obj)
     adapter.institute_collection.insert_one(institute_obj)
