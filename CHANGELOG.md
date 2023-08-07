@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
+- Command howto to run the Docker image on Mac computers in `admin-guide/containers/container-deploy.md`
 
 ## [4.70]
 ### Added
