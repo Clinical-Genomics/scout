@@ -195,6 +195,3 @@ def test_append_safe_except():
     # THEN list.append exception is caught in try/except and
     # program execution continues
     assert a_dict == {"a": [2]}
-
-
-
