@@ -31,7 +31,7 @@ from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
     institute_and_case,
-    user_institutes
+    user_institutes,
 )
 
 from .utils import (
