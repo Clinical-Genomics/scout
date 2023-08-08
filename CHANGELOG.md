@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
+- Avoid filling up disk by creating a reduced VCF file for every variant that is visualized
 
 ## [4.70]
 ### Added
