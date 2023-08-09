@@ -116,8 +116,45 @@
 		{% if extras.panel_name %}
 			<p>{{ _('Based on gene panel') }}: <strong>{{ extras.panel_name }}</strong></p>
 		{% endif %}
-      
-	  </div>
+
+      <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th rowspan="2">{{ _('Sample') }}</th>
+            <th rowspan="2">{{ _('Group') }}</th>
+            <th rowspan="2">{{ _('Analyzed at') }}</th>
+            <th rowspan="2">
+              {{ _('Sex') }}
+              {{ _('according to sequence data') }}
+            </th>
+            <th colspan="2" class="center-align">
+              {{ _('Average coverage') }} [x]
+            </th>
+          </tr>
+          <tr>
+            <th class="th-secondary">{{ _('Chromosome') }} X</th>
+            <th class="th-secondary">{{ _('Chromosome') }} Y</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in sex_rows %}
+            <tr>
+              <td>{{ sample.sample }}</td>
+              <td>{{ sample.group }}</td>
+              <td>{{ sample.analysis_date.date() }}</td>
+              <td>{{ _(sample.sex) }}</td>
+              <td class="text-right">{{ sample.x_coverage|round(3) }}</td>
+              <td class="text-right">{{ sample.y_coverage|round(3) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+
+
+    </div>
 
 	{% endblock %}
 
