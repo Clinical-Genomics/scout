@@ -86,13 +86,17 @@ def test_cov_fix():
         "gene_ids": int_gene_ids,
         "show_genes": any([request.args.get("show_genes"), request.form.get("show_genes")]),
     }
-    LOG.warning(extras)
-
+    LOG.warning("After extras")
     samples = Sample.query.filter(Sample.id.in_(sample_ids))
+    LOG.warning("After samples")
     case_name = request.form.get("case_name") or request.args.get("case_name")
+    LOG.warning("After case_name")
     sex_rows = samplesex_rows(sample_ids)
+    LOG.warning("After sex_rows")
     metrics_rows = keymetrics_rows(sample_ids, genes=int_gene_ids)
+    LOG.warning("After metrics_rows")
     tx_rows = transcripts_rows(sample_ids, genes=int_gene_ids, level=level)
+    LOG.warning("After tx_rows")
 
     data = dict(
         sample_ids=sample_ids,
