@@ -38,6 +38,17 @@ from scout.utils.gene import parse_raw_gene_ids, parse_raw_gene_symbols
 
 from . import controllers
 
+# Temp chanjo-report stuff
+from chanjo.store.models import Sample
+from chanjo_report.server.constants import LEVELS
+from chanjo_report.server.blueprints.report.utils import (
+    keymetrics_rows,
+    samplesex_rows,
+    transcripts_rows,
+)
+
+# Temp chanjo-report stuff
+
 LOG = logging.getLogger(__name__)
 
 cases_bp = Blueprint(
@@ -49,7 +60,7 @@ cases_bp = Blueprint(
 )
 
 
-@cases_bp.route("/test_cov_fix")
+@cases_bp.route("/test_cov_fix", methods=["POST", "GET"])
 def test_cov_fix():
     """A temporary function to understand what's slow in coverage report"""
     sample_ids = request.form.getlist("sample_id") or request.args.getlist("sample_id")
@@ -75,7 +86,8 @@ def test_cov_fix():
         "gene_ids": int_gene_ids,
         "show_genes": any([request.args.get("show_genes"), request.form.get("show_genes")]),
     }
-    """
+    LOG.warning(extras)
+
     samples = Sample.query.filter(Sample.id.in_(sample_ids))
     case_name = request.form.get("case_name") or request.args.get("case_name")
     sex_rows = samplesex_rows(sample_ids)
@@ -93,9 +105,7 @@ def test_cov_fix():
         tx_rows=tx_rows,
         gene_id_errors=gene_id_errors,
     )
-    return data
-    """
-    return extras
+    return render_template("cases/chanjo-report.html", **data)
 
 
 @cases_bp.route("/institutes")

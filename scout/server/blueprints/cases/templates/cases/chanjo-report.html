@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>{% block title %}{% endblock %}</title>
+
+	<meta name="description" content="Chanjo Report: coverage report generator">
+	<meta name="author" content="Robin Andeer">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- place 'favicon.ico' + 'apple-touch-icon.png' in the root directory -->
+	<link rel="Shortcut Icon"
+				href="{{ url_for('static', filename='favicon.png') }}"
+				type="image/x-icon">
+
+	{% block css %}
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://bootswatch.com/simplex/bootstrap.min.css">
+
+		<!-- Customizations -->
+		<link rel="stylesheet" type="text/css" href="{{ url_for('report.static', filename='main.css') }}">
+	{% endblock %}
+
+	{% block css_style %}{% endblock %}
+
+	{% block js_top %}
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	{% endblock %}
+</head>
+<body>
+	{% block body %}
+		<nav class="navbar navbar-default">
+			<div class="container">
+					<div class="navbar-header">
+						<span class="navbar-brand">
+							Chanjo Report
+						</span>
+					</div>
+			</div>
+		</nav>
+
+    <div class="container">
+		<div class="panel-group hidden-print" id="filter-accordion">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						<a role="button" data-toggle="collapse" data-parent="#accordion" href="#view-filters">Customize</a>
+					</h4>
+				</div>
+
+				<div id="view-filters" class="panel-collapse collapse">
+					<div class="panel-body">
+						<form method="POST" action="{{ url_for('report.pdf' if pdf else 'report.report') }}">
+              <div class="{% if hidden %}navbar-form{% endif %}">
+                <div class="form-group">
+                  <div class="row" {% if hidden %}hidden{% endif %}>
+                    <div class="col-xs-6">
+                      <label class="control-label">Completeness cutoff</label>
+                      <select class="form-control" name="level">
+                        {% for level, _ in levels.items() %}
+                          <option value="{{ level }}" {% if level == extras.level %} selected {% endif %}>{{ level }}x</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div class="col-xs-6">
+                      <label class="control-label">Gene panel name to <i>display</i></label>
+                      <input class="form-control" name="panel_name" type="text" placeholder="Skeletal dysplasia 3.2" value="{{ extras.panel_name or '' }}">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="row" {% if hidden %}hidden{% endif %}>
+                    <div class="col-xs-7">
+                      <label class="control-label">Included genes</label>
+                      <div><input class="form-control" type="text" name="gene_ids" value="{{ extras.gene_ids|join(', ') }}" placeholder="ADK,GIT"></div>
+                    </div>
+
+                    <div class="col-xs-3">
+                      <label class="control-label">Show genes</label>
+                      <div><input type="checkbox" name="show_genes" {% if extras.show_genes %}checked{% endif %}></div>
+                    </div>
+
+                    <div class="col-xs-2">
+                      <label class="control-label">&nbsp;</label>
+                      <button class="btn btn-default form-control" type="submit">Update</button>
+                    </div>
+                  </div>
+                </div>
+
+                {% for sample_id in sample_ids %}
+                  <input type="text" name="sample_id" value="{{ sample_id }}" hidden>
+                {% endfor %}
+
+                {% if hidden %}
+                  <button class="btn btn-link navbar-btn" type="submit">PDF</button>
+                {% endif %}
+              </div>
+            </form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{% if gene_id_errors %}
+			<span style="background-color:#d9534f;color:white;">Gene list should contain comma-separated HGNC numerical identifiers, not strings. Unsupported gene identifiers: {{gene_id_errors}} were not taken into account.</span>
+		{% endif %}
+
+		<h2>{{ _('Quality report') }}: {{ _('clinical sequencing') }}</h2>
+		{% if extras.panel_name %}
+			<p>{{ _('Based on gene panel') }}: <strong>{{ extras.panel_name }}</strong></p>
+		{% endif %}
+
+      <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th rowspan="2">{{ _('Sample') }}</th>
+            <th rowspan="2">{{ _('Group') }}</th>
+            <th rowspan="2">{{ _('Analyzed at') }}</th>
+            <th rowspan="2">
+              {{ _('Sex') }}
+              {{ _('according to sequence data') }}
+            </th>
+            <th colspan="2" class="center-align">
+              {{ _('Average coverage') }} [x]
+            </th>
+          </tr>
+          <tr>
+            <th class="th-secondary">{{ _('Chromosome') }} X</th>
+            <th class="th-secondary">{{ _('Chromosome') }} Y</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sample in sex_rows %}
+            <tr>
+              <td>{{ sample.sample }}</td>
+              <td>{{ sample.group }}</td>
+              <td>{{ sample.analysis_date.date() }}</td>
+              <td>{{ _(sample.sex) }}</td>
+              <td class="text-right">{{ sample.x_coverage|round(3) }}</td>
+              <td class="text-right">{{ sample.y_coverage|round(3) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+		<h3>{{ _('Generally important metrics') }}</h3>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>{{ _('Sample') }}</th>
+            <th>{{ _('Average coverage') }} [x]</th>
+            {% for level_int, level_key in levels.items() %}
+              <th>{{ _('Completeness') }} {{ level_int }}x [%]</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in metrics_rows %}
+            <tr>
+              <td>{{ data.TranscriptStat.sample.name or data.TranscriptStat.sample.id }}</td>
+              <td class="text-right">{{ data.mean_coverage|round(2) }}</td>
+              {% for level_int, level_key in levels.items() %}
+                <td class="text-right">{{ data|attr(level_key)|round(2) if data|attr(level_key) }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+		<h3>{{ _('Transcript coverage') }} {{ _('at') }}: {{ extras.level }}x</h3>
+
+      <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>{{ _('Sample') }}</th>
+          <th>{{ _('Fully covered transcripts') }} [%]</th>
+          <th>{{ _('Incompletely covered') }} {{ _('transcripts') }}</th>
+          {% if extras.show_genes %}
+            <th>{{ _('Incompletely covered') }} {{ _('genes') }} (max 50)</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for data in transcript_rows %}
+          <tr>
+            <td>{{ data.sample.name or data.sample.id }}</td>
+            <td class="text-right">{{ data.yield|round(3) }}</td>
+            <td class="text-center">
+              {{ data.missed_count }} / <small>{{ data.total }}</small>
+            </td>
+            {% if extras.show_genes %}
+              <td><small>
+                {% for tx_stat in data.missed.limit(50) %}
+                  {{ tx_stat.transcript.gene_name or tx_stat.transcript.gene_id }}
+                {% else %}
+                  -
+                {% endfor %}
+              </small></td>
+            {% endif %}
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="{{ 4 if extras.show_genes else 3 }}">
+              Inga ofullständigt täckta transkript.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+		<h3>{{ _('Explanations') }}</h3>
+
+      <h4>{{ _('General') }}</h4>
+    <p>
+      <a href="http://lomereiter.github.io/sambamba/" title="Sambamba">Sambamba</a>
+      {{ _('is used for coverage analysis based on read alignment.') }}
+      {{ _('Duplicates, reads with mapping quality less than 10 as well as bases with a base quality less than 10 are not included in the analysis.') }}
+      {{ _('Bases that overlap between read pairs are only counted once.') }}
+
+      {{ _('The parts of the genome that has been analyzed') }}
+      {{ _('is composed of all protein coding, exonic intervals defined in') }}
+      <a href="http://www.genenames.org/">HGNC</a>.
+
+      {% if includes_splice_sites %}
+        {{ _('Additionally, the data also includes spicing sites') }}
+        ({{ _('donator and acceptor positions') }},
+        {{ splice_site_interval }}
+        {{ _('bases on either of each exon') }}).
+      {% endif %}
+    </p>
+
+    {% if config.CHANJO_PANEL %}
+      <p>
+        {{ _('Final coverage metrics were calculated for genes from the clinical panels') }}:
+        <code>{{ config.CHANJO_PANEL_NAME }}</code>.
+        {{ _('Note that estimations were made regarding coverage and completeness') }}
+        {{ _('on the level of transcripts') }}.
+      </p>
+    {% endif %}
+
+    <p>
+      <strong>{{ _('Completeness') }}</strong>:
+      {{ _('defined as the ratio of bases') }}
+      {{ _('sequenced deeper than a specified cutoff') }},
+      {{ _('e.g. 10x') }}.
+    </p>
+
+    <p>
+      <strong>{{ _('Transcript coverage') }}</strong>:
+      {{ _('defined as the ratio of transcripts that are fully covered') }},
+      {{ _('i.e. with a completeness of') }} 100% {{ _('at') }} {{ cutoff }}x.
+    </p>
+
+    <p>
+      <strong>{{ _('Gender prediction from data') }}</strong>:
+      {{ _('calculated by comparing relative chromosome coverage') }}
+      (X/Y).
+      {{ _('Some reads randomly map to the Y chromosome') }}.
+      {{ _('Therefore, a less than 10 fold difference is used to infer a "male" sample') }}.
+    </p>
+
+		<hr>
+		<div class="text-center">{{ _('End of report') }}</div>
+	  </div>
+
+	{% endblock %}
+
+	{% block js_btm %}
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	{% endblock %}
+</body>
+</html>
