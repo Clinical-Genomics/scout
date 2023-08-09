@@ -49,6 +49,55 @@ cases_bp = Blueprint(
 )
 
 
+@cases_bp.route("/test_cov_fix")
+def test_cov_fix():
+    """A temporary function to understand what's slow in coverage report"""
+    sample_ids = request.form.getlist("sample_id") or request.args.getlist("sample_id")
+    raw_gene_ids = request.form.get("gene_ids") or request.args.get("gene_ids")
+    gene_ids = []
+    if raw_gene_ids:
+        gene_ids = [gene_id.strip() for gene_id in raw_gene_ids.split(",")]
+
+    int_gene_ids = set()
+    gene_id_errors = set()
+    for gene_id in gene_ids:
+        try:
+            int_gene_ids.add(int(gene_id))
+        except ValueError:
+            gene_id_errors.add(gene_id)
+
+    int_gene_ids = list(int_gene_ids)
+
+    level = int(request.args.get("level") or request.form.get("level") or 10)
+    extras = {
+        "panel_name": (request.args.get("panel_name") or request.form.get("panel_name")),
+        "level": level,
+        "gene_ids": int_gene_ids,
+        "show_genes": any([request.args.get("show_genes"), request.form.get("show_genes")]),
+    }
+    """
+    samples = Sample.query.filter(Sample.id.in_(sample_ids))
+    case_name = request.form.get("case_name") or request.args.get("case_name")
+    sex_rows = samplesex_rows(sample_ids)
+    metrics_rows = keymetrics_rows(sample_ids, genes=int_gene_ids)
+    tx_rows = transcripts_rows(sample_ids, genes=int_gene_ids, level=level)
+
+    data = dict(
+        sample_ids=sample_ids,
+        samples=samples,
+        case_name=case_name,
+        sex_rows=sex_rows,
+        levels=LEVELS,
+        extras=extras,
+        metrics_rows=metrics_rows,
+        tx_rows=tx_rows,
+        gene_id_errors=gene_id_errors,
+    )
+    return data
+    """
+    return extras
+
+
 @cases_bp.route("/institutes")
 @templated("cases/index.html")
 def index():
