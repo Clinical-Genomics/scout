@@ -255,6 +255,9 @@
           {% if gene.entrez_link %}
             <a href="{{ gene.entrez_link }}" class="btn btn-secondary" rel="noopener" referrerpolicy="no-referrer" target="_blank">Entrez</a>
           {% endif %}
+          {% if gene.pubmed_link %}
+            <a href="{{ gene.pubmed_link }}" class="btn btn-secondary" rel="noopener" referrerpolicy="no-referrer" target="_blank">PubMed</a>
+          {% endif %}
           <a href="http://tools.genes.toronto.edu/" class="btn btn-secondary" rel="noopener" referrerpolicy="no-referrer" target="_blank">SPANR</a>
           <a href="{{ gene.reactome_link }}" class="btn btn-secondary" rel="noopener" referrerpolicy="no-referrer" target="_blank">Reactome</a>
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-secondary" rel="noopener" referrerpolicy="no-referrer" target="_blank">Expr. Atlas</a>
