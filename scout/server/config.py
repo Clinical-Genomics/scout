@@ -39,7 +39,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # )
 
 # Chanjo database connection string - used by chanjo report to create coverage reports
-SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
+# SQLALCHEMY_DATABASE_URI = "mysql+pymysql://test_user:test_passwordw@127.0.0.1:3306/chanjo"
 
 # Configure gens service
 # GENS_HOST = "127.0.0.1"
