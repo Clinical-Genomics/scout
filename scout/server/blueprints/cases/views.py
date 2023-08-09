@@ -109,6 +109,7 @@ def test_cov_fix():
         tx_rows=tx_rows,
         gene_id_errors=gene_id_errors,
     )
+    LOG.warning(data)
     return render_template("cases/chanjo-report.html", **data)
 
 
