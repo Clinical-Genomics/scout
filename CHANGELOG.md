@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Name of reference genome build for RNA for compatibility with IGV locus search change
+### Changed
+- Remove function call that tracks users' browser version
+
 ## [4.70]
 ### Added
 - Download a list of Gene Variants (max 500) resulting from SNVs and Indels search
