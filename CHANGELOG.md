@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
+### Changed
+- Remove function call that tracks users' browser version
 
 ## [4.70]
 ### Added
