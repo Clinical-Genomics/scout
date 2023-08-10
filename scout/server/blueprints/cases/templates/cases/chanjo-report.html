@@ -161,15 +161,12 @@
             <th>{{ _('Sample') }}</th>
             <th>{{ _('Average coverage') }} [x]</th>
             {% for level_int, level_key in levels.items() %}
-              <th>{{ _('Completeness') }} {{ level_int }}x [%]</th>
+              <th> {{ level_int }}x [%]</th>
             {% endfor %}
           </tr>
         </thead>
         <tbody>
-          {% for data in metrics_rows %}
-            <tr>
-            </tr>
-          {% endfor %}
+         
         </tbody>
       </table>
       </div>
