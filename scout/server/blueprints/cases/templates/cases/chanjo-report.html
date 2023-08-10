@@ -152,7 +152,46 @@
       </table>
     </div>
 
-      <h3>{{ _('Generally important metrics') }}</h3>
+    <h3>{{ _('Transcript coverage') }} {{ _('at') }}: {{ extras.level }}x</h3>
+
+      <table class="table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>{{ _('Sample') }}</th>
+          <th>{{ _('Fully covered transcripts') }} [%]</th>
+          <th>{{ _('Incompletely covered') }} {{ _('transcripts') }}</th>
+          {% if extras.show_genes %}
+            <th>{{ _('Incompletely covered') }} {{ _('genes') }} (max 50)</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for data in transcript_rows %}
+          <tr>
+            <td>{{ data.sample.name or data.sample.id }}</td>
+            <td class="text-right">{{ data.yield|round(3) }}</td>
+            <td class="text-center">
+              {{ data.missed_count }} / <small>{{ data.total }}</small>
+            </td>
+            {% if extras.show_genes %}
+              <td><small>
+                {% for tx_stat in data.missed.limit(50) %}
+                  {{ tx_stat.transcript.gene_name or tx_stat.transcript.gene_id }}
+                {% else %}
+                  -
+                {% endfor %}
+              </small></td>
+            {% endif %}
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="{{ 4 if extras.show_genes else 3 }}">
+              Inga ofullständigt täckta transkript.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      </table>
 
 
     </div>
