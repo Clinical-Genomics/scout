@@ -50,11 +50,10 @@ def variant_verification(
     user_obj = user_obj or store.user(current_user.email)
 
     data = variant_controller(
-        store,
-        institute_id,
-        case_name,
+        store=store,
+        institute_id=institute_id,
+        case_name=case_name,
         variant_id=variant_id,
-        add_case=True,
         add_other=False,
         get_overlapping=False,
     )

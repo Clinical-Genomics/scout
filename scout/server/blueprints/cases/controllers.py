@@ -536,7 +536,6 @@ def case_report_variants(store, case_obj, institute_obj, data):
                 case_name=case_obj["display_name"],
                 variant_id=None,
                 variant_obj=filtered_var_obj,
-                add_case=False,
                 add_other=False,
                 get_overlapping=False,
                 variant_type=variant_category,
