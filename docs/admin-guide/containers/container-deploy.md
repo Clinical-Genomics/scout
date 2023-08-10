@@ -23,7 +23,7 @@ Where `--tag <name>:<tag>` will name and optional tag the Docker Image.
 
 The container with the docker image contains only the app installation files and its required libraries. In order to work, the container must interact with a MongoDB database. This database could be either launched as another Docker image or could run as a mongod instance on your computer or on a remote server.
 
-	
+
 
 ## Running a Scout web app using a Docker image
 
@@ -35,11 +35,11 @@ docker run --net=host --rm --expose 5000 -p 5000:5000 clinicalgenomics/scout sco
 
 From a Mac machine the same command would be slightly different (the reason is described [here](https://docs.docker.com/desktop/mac/networking/)):
 ```
-docker run --rm --expose 5000 -p 5000:5000 clinicalgenomics/scout scout --host docker.for.mac.localhost -db scout-demo  serve --host 0.0.0.0
+docker run --platform=linux/amd64 --rm --expose 5000 -p 5000:5000 clinicalgenomics/scout scout --host docker.for.mac.localhost -db scout-demo  serve --host 0.0.0.0
 ```
 
 ### Anatomy of Run Command
-The basic structure of the run command is: 
+The basic structure of the run command is:
 ```
 docker run <image> <command>
 ```
@@ -93,7 +93,7 @@ services:
 ```
 
 ### Miscellaneous Tips
-	
+
 * View all installed images together with onfo and names: `docker image -a`
 * View all containers: `docker container ls -a`
 * Stop a running image: `docker stop <container name>`
