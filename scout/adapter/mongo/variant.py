@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 # stdlib modules
 import logging
-import pathlib
 import re
-import tempfile
 
 # Third party modules
 import pymongo
-from cyvcf2 import VCF
 
 # Local modules
 from scout.utils.coordinates import is_par
