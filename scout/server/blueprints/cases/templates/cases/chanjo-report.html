@@ -154,21 +154,29 @@
 
       <h3>{{ _('Generally important metrics') }}</h3>
 
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-        <thead>
-          <tr>
-            <th>{{ _('Sample') }}</th>
-            <th>{{ _('Average coverage') }} [x]</th>
-            {% for level_int, level_key in levels.items() %}
-              <th>{{ _('Completeness') }} {{ level_int }}x [%]</th>
+       <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>{{ _('Sample') }}</th>
+              <th>{{ _('Average coverage') }} [x]</th>
+              {% for level_int, level_key in levels.items() %}
+                <th>{{ _('Completeness') }} {{ level_int }}x [%]</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for data in metrics_rows %}
+              <tr>
+                <td>{{ data.TranscriptStat.sample.name or data.TranscriptStat.sample.id }}</td>
+                <td class="text-right">{{ data.mean_coverage|round(2) }}</td>
+                {% for level_int, level_key in levels.items() %}
+                  <td class="text-right">{{ data|attr(level_key)|round(2) if data|attr(level_key) }}</td>
+                {% endfor %}
+              </tr>
             {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-
-        </tbody>
-      </table>
+          </tbody>
+        </table>
       </div>
 
 
