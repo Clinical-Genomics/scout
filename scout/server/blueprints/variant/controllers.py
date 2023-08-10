@@ -32,7 +32,6 @@ from scout.server.utils import (
     case_has_mt_alignments,
     institute_and_case,
     user_institutes,
-    variant_case,
 )
 
 from .utils import (
@@ -172,10 +171,8 @@ def variant(
     case_name,
     variant_id=None,
     variant_obj=None,
-    add_case=True,
     add_other=True,
     get_overlapping=True,
-    variant_category=None,
     variant_type=None,
     case_obj=None,
     institute_obj=None,
@@ -191,11 +188,9 @@ def variant(
         case_name(str)
         variant_id(str)
         variant_obj(dict)
-        add_case(bool): If info about files case should be added
         add_other(bool): If information about other causatives should be added
         get_overlapping(bool): If overlapping variants should be collected
         variant_type(str): in ["clinical", "research"]
-        variant_category(str): ["snv", "str", "sv", "cancer", "cancer_sv"]
         institute_obj(scout.models.Institute)
         case_obj(scout.models.Case)
 
@@ -254,10 +249,6 @@ def variant(
     update_case_panels(store, case_obj)
     # The hierarchical call order is relevant: cases are used to populate variants
     update_variant_case_panels(store, case_obj, variant_obj)
-
-    # Add information about bam files and create a region vcf
-    if add_case:
-        variant_case(store, case_obj, variant_obj)
 
     # Provide basic info on alignment files availability for this case
     case_has_alignments(case_obj)
