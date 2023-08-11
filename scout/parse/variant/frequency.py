@@ -24,6 +24,8 @@ def parse_frequencies(variant, transcripts):
     exac_keys = ["EXACAF"]
     exac_max_keys = ["ExAC_MAX_AF", "EXAC_MAX_AF"]
 
+    swegen_keys = ["swegen", "swegenAF", "SWEGENAF"]
+
     # Gnomad have both snv and sv frequencies
     gnomad_keys = ["GNOMADAF", "GNOMAD_AF", "gnomad_svAF"]
     gnomad_max_keys = ["GNOMADAF_popmax", "GNOMADAF_POPMAX", "GNOMADAF_MAX"]
@@ -31,6 +33,7 @@ def parse_frequencies(variant, transcripts):
     update_frequency_from_vcf(frequencies, variant, exac_keys, "exac")
     update_frequency_from_vcf(frequencies, variant, exac_max_keys, "exac_max")
     update_frequency_from_vcf(frequencies, variant, gnomad_keys, "gnomad")
+    update_frequency_from_vcf(frequencies, variant, swegen_keys, "swegen")
     update_frequency_from_vcf(frequencies, variant, gnomad_max_keys, "gnomad_max")
     update_frequency_from_vcf(frequencies, variant, thousand_genomes_keys, "thousand_g")
     update_frequency_from_vcf(frequencies, variant, thousand_genomes_max_keys, "thousand_g_max")
@@ -95,7 +98,7 @@ def parse_sv_frequencies(variant: cyvcf2.Variant) -> Dict:
     ]
 
     clingen_ngi_keys = ["clingen_ngi", "clingen_ngiAF", "clingen_ngiOCC"]
-    swegen_keys = ["swegen", "swegenAF"]
+    swegen_keys = ["swegen", "swegenAF", "SWEGENAF"]
     decipher_keys = ["decipherAF", "decipher"]
     cg_keys = ["clinical_genomics_mipAF", "clinical_genomics_mipOCC"]
 

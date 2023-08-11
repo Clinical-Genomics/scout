@@ -179,7 +179,11 @@ def parse_variant(
     parsed_variant["frequencies"] = frequencies
 
     # SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs
-    local_obs_old = variant.INFO.get("Obs") or variant.INFO.get("clinical_genomics_loqusObs")
+    local_obs_old = (
+        variant.INFO.get("Obs")
+        or variant.INFO.get("clinical_genomics_loqusObs")
+        or variant.INFO.get("clin_obs")
+    )
     if local_obs_old:
         parsed_variant["local_obs_old"] = int(local_obs_old)
 
