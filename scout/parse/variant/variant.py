@@ -191,9 +191,8 @@ def parse_variant(
     parsed_variant["local_obs_hom_old"] = call_safe(int, variant.INFO.get("Hom"))
 
     # SVs only
-    parsed_variant["local_obs_old_freq"] = call_safe(
-        float, variant.INFO.get("clinical_genomics_loqusFrq")
-    )
+    local_frq_old = variant.INFO.get("clinical_genomics_loqusFrq") or variant.INFO.get("Frq")
+    parsed_variant["local_obs_old_freq"] = call_safe(float, local_frq_old)
     set_local_archive_info(parsed_variant, local_archive_info)
 
     ###################### Add severity predictions ######################
