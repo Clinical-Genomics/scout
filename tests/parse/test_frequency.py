@@ -44,6 +44,7 @@ def test_parse_frequencies(cyvcf2_variant):
     # GIVEN a variant dict with a differenct frequencies
     variant.INFO["1000GAF"] = "0.01"
     variant.INFO["EXACAF"] = "0.001"
+    variant.INFO["SWEGENAF"] = "0.02"
 
     # WHEN frequencies are parsed
     frequencies = parse_frequencies(variant, [])
@@ -51,6 +52,7 @@ def test_parse_frequencies(cyvcf2_variant):
     # THEN the frequencies should be returned in a dictionary
     assert frequencies["thousand_g"] == float(variant.INFO["1000GAF"])
     assert frequencies["exac"] == float(variant.INFO["EXACAF"])
+    assert frequencies["swegen"] == float(variant.INFO["SWEGENAF"])
 
 
 def test_parse_sv_frequencies_clingen_benign(cyvcf2_variant):

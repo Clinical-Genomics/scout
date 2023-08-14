@@ -178,8 +178,15 @@ def parse_variant(
 
     parsed_variant["frequencies"] = frequencies
 
+    # loqus archive frequencies
+
+    # RD germline, for MIP and Balsamic
     # SNVs contain INFO field Obs, SVs contain clinical_genomics_loqusObs
-    local_obs_old = variant.INFO.get("Obs") or variant.INFO.get("clinical_genomics_loqusObs")
+    local_obs_old = (
+        variant.INFO.get("Obs")
+        or variant.INFO.get("clinical_genomics_loqusObs")
+        or variant.INFO.get("clin_obs")
+    )
     if local_obs_old:
         parsed_variant["local_obs_old"] = int(local_obs_old)
 
@@ -187,10 +194,30 @@ def parse_variant(
     parsed_variant["local_obs_hom_old"] = call_safe(int, variant.INFO.get("Hom"))
 
     # SVs only
-    parsed_variant["local_obs_old_freq"] = call_safe(
-        float, variant.INFO.get("clinical_genomics_loqusFrq")
-    )
+    local_frq_old = variant.INFO.get("clinical_genomics_loqusFrq") or variant.INFO.get("Frq")
+    parsed_variant["local_obs_old_freq"] = call_safe(float, local_frq_old)
     set_local_archive_info(parsed_variant, local_archive_info)
+
+    # Cancer (Balsamic) Germline and Somatic loqus archives
+    parsed_variant["local_obs_cancer_germline_old"] = call_safe(
+        int, variant.INFO.get("Cancer_Germline_Obs")
+    )
+    parsed_variant["local_obs_cancer_germline_hom_old"] = call_safe(
+        int, variant.INFO.get("Cancer_Germline_Hom")
+    )
+    parsed_variant["local_obs_cancer_germline_old_freq"] = call_safe(
+        float, variant.INFO.get("Cancer_Germline_Frq")
+    )
+
+    parsed_variant["local_obs_cancer_somatic_old"] = call_safe(
+        int, variant.INFO.get("Cancer_Somatic_Obs")
+    )
+    parsed_variant["local_obs_cancer_somatic_hom_old"] = call_safe(
+        int, variant.INFO.get("Cancer_Somatic_Hom")
+    )
+    parsed_variant["local_obs_cancer_somatic_old_freq"] = call_safe(
+        float, variant.INFO.get("Cancer_Somatic_Frq")
+    )
 
     ###################### Add severity predictions ######################
     parsed_variant["cadd_score"] = parse_cadd(variant, parsed_transcripts)
