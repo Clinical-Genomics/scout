@@ -15,7 +15,6 @@ from scout.server.utils import (
     document_generated,
     find_index,
     html_to_pdf_file,
-    variant_case,
 )
 
 
@@ -196,29 +195,3 @@ def test_append_safe_except():
     # THEN list.append exception is caught in try/except and
     # program execution continues
     assert a_dict == {"a": [2]}
-
-
-def test_variant_case_no_genes(adapter, case_obj, variant_obj):
-    """Test to preprocess a variant"""
-    # GIVEN a variant wihtout gene info
-    assert variant_obj.get("genes") is None
-    # GIVEN that no region vcf exists
-    assert "region_vcf_file" not in case_obj
-    # WHEN adding info
-    variant_case(adapter, case_obj, variant_obj)
-    # THEN assert no region vcf was added since there where no gene info
-    assert "region_vcf_file" not in case_obj
-
-
-def test_variant_case(adapter, case_obj, variant_obj):
-    """Test to preprocess a variant"""
-    # GIVEN a variant WITH gene info
-    variant_obj["genes"] = [
-        {"hgnc_id": 1},
-        {"hgnc_id": 2, "common": {"chromosome": "1", "start": "10", "end": "100"}},
-    ]
-    # GIVEN a variant without gene info
-    assert case_obj.get("region_vcf_file") is None
-    variant_case(adapter, case_obj, variant_obj)
-    # THEN assert that the region VCF was created
-    assert case_obj.get("region_vcf_file") is not None

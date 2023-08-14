@@ -239,7 +239,7 @@ def set_sample_tracks(display_obj, case_groups, chromosome):
     track_items = "mt_bams" if chromosome == "M" else "bam_files"
     track_index_items = "mt_bais" if track_items == "mt_bams" else "bai_files"
 
-    # Loop over a group of cases and add tracks for every individual of of every case
+    # Loop over a group of cases and add tracks for every individual of every case
     for case in case_groups:
         if None in [
             case.get("sample_names"),

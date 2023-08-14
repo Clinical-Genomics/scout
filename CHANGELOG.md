@@ -5,8 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Added Balsamic keys for SweGen and loqusdb local archive frequecies, SNV and SV
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
+- Howto to run the Docker image on Mac computers in `admin-guide/containers/container-deploy.md`
+- Link to Weasyprint installation howto in README file
+- Avoid filling up disk by creating a reduced VCF file for every variant that is visualized
+### Changed
+- Remove function call that tracks users' browser version
 
 ## [4.70]
 ### Added
