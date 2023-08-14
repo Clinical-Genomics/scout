@@ -101,6 +101,14 @@ def build_variant(
         local_obs_old = int,
         local_obs_hom_old = int,
         local_obs_old_freq = float,
+        # cancer caller (balsamic) loqusdb frequencies
+        local_obs_cancer_germline_old=int, # germline counts
+        local_obs_cancer_germline_hom_old=int, # germline counts for homoz
+        local_obs_cancer_germline_old_freq=float, # germline frequency
+
+        local_obs_cancer_somatic_old=int,# somatic counts
+        local_obs_cancer_somatic_hom_old=int, # somatic counts for homoz
+        local_obs_cancer_somatic_old_freq=float, # somatic frequency
 
         # Predicted deleteriousness:
         cadd_score = float,
