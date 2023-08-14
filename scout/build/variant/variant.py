@@ -249,6 +249,22 @@ def build_variant(
     variant_obj["local_obs_old_desc"] = variant.get("local_obs_old_desc")
     variant_obj["local_obs_old_nr_cases"] = variant.get("local_obs_old_nr_cases")
 
+    # local observations from cancer pipeline
+    variant_obj["local_obs_cancer_germline_old"] = variant.get("local_obs_cancer_germline_old")
+    variant_obj["local_obs_cancer_somatic_old"] = variant.get("local_obs_cancer_somatic_old")
+    variant_obj["local_obs_cancer_germline_hom_old"] = variant.get(
+        "local_obs_cancer_germline_hom_old"
+    )
+    variant_obj["local_obs_cancer_somatic_hom_old"] = variant.get(
+        "local_obs_cancer_somatic_hom_old"
+    )
+    variant_obj["local_obs_cancer_germline_old_freq"] = variant.get(
+        "local_obs_cancer_germline_old_freq"
+    )
+    variant_obj["local_obs_cancer_somatic_old_freq"] = variant.get(
+        "local_obs_cancer_somatic_old_freq"
+    )
+
     ##### Add the severity predictors #####
     variant_obj["cadd_score"] = variant.get("cadd_score")
     variant_obj["revel_score"] = variant.get("revel_score")
