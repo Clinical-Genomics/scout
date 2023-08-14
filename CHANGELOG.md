@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Added Balsamic keys for SweGen and loqusdb local archive frequecies, SNV and SV
 - BioNano Access server API - check projects, samples and fetch FSHD reports
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change

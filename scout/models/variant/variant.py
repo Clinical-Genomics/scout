@@ -70,6 +70,12 @@ variant = dict(
     local_obs_old_desc=str,
     local_obs_old_nr_cases=int,
     local_obs_old_date=str,
+    local_obs_cancer_germline_old=int,
+    local_obs_cancer_germline_hom_old=int,
+    local_obs_cancer_germline_old_freq=float,
+    local_obs_cancer_somatic_old=int,
+    local_obs_cancer_somatic_hom_old=int,
+    local_obs_cancer_somatic_old_freq=float,
     # Predicted deleteriousness:
     cadd_score=float,
     clnsig=list,  # list of <clinsig>

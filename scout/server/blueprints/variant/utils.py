@@ -389,6 +389,7 @@ def frequencies(variant_obj):
                 "display_name": "ExAC(max)",
                 "link": variant_obj.get("exac_link"),
             },
+            "swegen": {"display_name": "SweGen", "link": variant_obj.get("swegen_link")},
             "gnomad_mt_homoplasmic_frequency": {
                 "display_name": "GnomAD MT, homoplasmic",
                 "link": variant_obj.get("gnomad_link"),
