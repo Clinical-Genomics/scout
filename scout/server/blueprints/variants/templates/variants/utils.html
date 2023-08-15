@@ -701,7 +701,7 @@
         <div class="col-1">
           {{ wtf.form_field(form.local_obs) }}
         </div>
-        <div class="col-1">
+        <div class="col-2">
           {{ form.chrom.label(class="control-label") }}
           {{ form.chrom(class="selectpicker", data_actions_box="true", data_style="btn-secondary") }}
         </div>
@@ -803,8 +803,6 @@
         </div>
       </div>
       <div class="col-1">
-        {{ form.gnomad_frequency.label(class="control-label") }}
-        {{ form.gnomad_frequency(class="form-control") }}
       </div>
       <div class="col-1">
         {{ form.somatic_score.label(class="control-label", data_toggle="tooltip", data_placement="top", title="Somatic score from SV caller. Filter away variants called with a score lower or equal to this value.") }}
@@ -821,6 +819,14 @@
     </div>
     <div id="chromosome_search">
       <div class="row" style="margin-top:20px;">
+      <div class="col-1">
+        {{ form.gnomad_frequency.label(class="control-label") }}
+        {{ form.gnomad_frequency(class="form-control") }}
+      </div>
+        <div class="col-1">
+          {{ wtf.form_field(form.local_obs) }}
+        </div>
+
         <div class="col-2">
           {{ form.chrom.label(class="control-label") }}
           {{ form.chrom(class="selectpicker", data_actions_box="true", data_style="btn-secondary") }}
@@ -837,10 +843,21 @@
         <div class="col-2">
           {{ wtf.form_field(form.cytoband_end) }}
         </div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <div class="col-2"></div>
         <div class="col-2">
-          {{ wtf.form_field(form.chrom_pos) }}
+          <a class="btn btn-secondary btn-sm form-control" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
+            String coordinates
+          </a>
+        </div>
+        <div class="col-4">
+        <div id="stringcoords" class="collapse row">
+          <div class="col-4">{{ form.chrom_pos.label(class="control-label") }}</div>
+          <div class="col-8">{{ form.chrom_pos(class="form-control") }}</div>
         </div>
       </div>
+
     </div>
 
     <div id="buttons">
