@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Howto to run the Docker image on Mac computers in `admin-guide/containers/container-deploy.md`
 - Link to Weasyprint installation howto in README file
 - Avoid filling up disk by creating a reduced VCF file for every variant that is visualized
+- Remove legacy incorrectly formatted CODEOWNERS file
 ### Changed
 - Remove function call that tracks users' browser version
 
