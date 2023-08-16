@@ -168,11 +168,14 @@
       <strong>COSMIC</strong>: {{variant.cosmic_ids|count}} obs
       <br>
       {% endif %}
+      {% if variant.clingen_cgh_pathogenic %}
+          <strong>ClinGen CGH Pathogenic</strong>: {{ variant.clingen_cgh_pathogenic }}<br>
+      {%  endif %}
       {% if variant.clinsig_human %}
         <strong>ClinVar</strong>:
           <ul>
           {% for clinsig in variant.clinsig_human %}
-            <li>
+            ≈
               <strong>{{clinsig.human}}</strong>
               {% if clinsig.revstat %}{{ clinsig.revstat }} {% endif %}
               {% if clinsig.accession %}{{ clinsig.accession }}{% else %}no accnr{% endif %}
@@ -180,6 +183,7 @@
           {% endfor %}
           </ul>
       {% endif %}
+
     </div>
   ">
   {% if variant.clinsig_human %}
@@ -193,6 +197,9 @@
   {% if variant.mitomap_associated_diseases %}
     <span class="badge bg-secondary">MITOMAP</span>
     <br>
+  {% endif %}
+  {% if variant.clingen_cgh_pathogenic %}
+    <span class="badge bg-secondary">CGH Pathogenic</span><br>
   {% endif %}
   {% if variant.local_obs_old %}
     <span class="badge bg-secondary">Local</span>
