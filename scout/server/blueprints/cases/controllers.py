@@ -855,7 +855,6 @@ def update_cancer_samples(
 def _all_hpo_gene_list_genes(
     store: MongoAdapter,
     hpo_genes: List,
-    by_phenotype: bool,
     build: str,
     is_clinical: bool,
     clinical_symbols: Set,
@@ -866,8 +865,16 @@ def _all_hpo_gene_list_genes(
 
     Loop over dynamic phenotypes of a case, populating hpo_genes.
     Also return all gene symbols found as a set.
+
+    An empty set returned indicates that genes should not be grouped by phenotype - use a single "Analysed genes" group.
     """
+
     all_hpo_gene_list_genes = set()
+
+    # do not display genes by phenotype if we have no hpo gene list, but a dynamic one
+    if not hpo_gene_list and dynamic_gene_list:
+        return set()
+
     # Loop over the dynamic phenotypes of a case
     for hpo_id in hpo_gene_list or []:
         hpo_term = store.hpo_term(hpo_id)
@@ -884,7 +891,7 @@ def _all_hpo_gene_list_genes(
             if gene_id not in dynamic_gene_list:
                 # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
                 by_phenotype = False  # do not display genes by phenotype
-                continue
+                return set()
             add_symbol = gene_caption.get("hgnc_symbol", f"hgnc:{gene_id}")
             if is_clinical and (add_symbol not in clinical_symbols):
                 continue
@@ -925,15 +932,11 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
     clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
     unique_genes = hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols)
 
-    by_phenotype = True  # display genes by phenotype
     hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
-    if not hpo_gene_list and dynamic_gene_list:
-        by_phenotype = False
 
     all_hpo_gene_list_genes = _all_hpo_gene_list_genes(
         store,
         hpo_genes,
-        by_phenotype,
         build,
         is_clinical,
         clinical_symbols,
@@ -941,22 +944,22 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
         hpo_gene_list,
     )
 
-    if by_phenotype is True:
-        # if some gene was manually added (or is left on dynamic panel for other reasons)
+    if all_hpo_gene_list_genes:
+        # if just some gene ware manually added (or is left on dynamic panel for other reasons)
         non_hpo_genes = unique_genes - all_hpo_gene_list_genes
         if len(non_hpo_genes) > 0:
             hpo_genes["Analysed genes"] = {
                 "description": "Non HPO panel genes",
                 "genes": ", ".join(sorted(non_hpo_genes)),
             }
+        return hpo_genes
 
-    if by_phenotype is False:
-        hpo_genes = {}
-        hpo_genes["Analysed genes"] = {
-            "description": "HPO panel",
-            "genes": ", ".join(sorted(unique_genes)),
-        }
-
+    # otherwise do not display genes by phenotype - one unique gene group only
+    hpo_genes = {}
+    hpo_genes["Analysed genes"] = {
+        "description": "HPO panel",
+        "genes": ", ".join(sorted(unique_genes)),
+    }
     return hpo_genes
 
 
