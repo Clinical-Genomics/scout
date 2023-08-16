@@ -175,7 +175,7 @@
         <strong>ClinVar</strong>:
           <ul>
           {% for clinsig in variant.clinsig_human %}
-            ≈
+            <li>
               <strong>{{clinsig.human}}</strong>
               {% if clinsig.revstat %}{{ clinsig.revstat }} {% endif %}
               {% if clinsig.accession %}{{ clinsig.accession }}{% else %}no accnr{% endif %}
