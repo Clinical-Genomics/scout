@@ -40,50 +40,51 @@
 {% block content_main %}
 <form method="POST" id="filters_form" action="{{url_for('variants.cancer_sv_variants', institute_id=institute._id, case_name=case.display_name)}}" >
   <div class="container-float">
-      {{ pagination_hidden_div(page) }}
-      <div class="card panel-default" id="accordion">
-        <div class="card-header">
-          <strong><a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapseFilters">Somatic Structural Variant Filters</a></strong>
-        </div>
-        <!--Expand filters form if filters were used in a previous POST request-->
-        <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
-          <div class="card-body">{{ cancer_sv_filters(form, institute, case) }}</div>
-        </div>
-        {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
+    {{ pagination_hidden_div(page) }}
+    <div class="card panel-default" id="accordion">
+      <div class="card-header">
+        <strong><a data-bs-toggle="collapse" data-bs-parent="#accordion" href="#collapseFilters">Somatic Structural Variant Filters</a></strong>
       </div>
-  </div>
-  <div class="card mt-3">
-    <table id="variantsTable" class="table table-hover table-bordered" aria-label="Somatic SV variants table">
-      <thead class="thead table-light">
-        <tr>
-          <th style="width:3%"></th>
-          <th style="width:9%">Index</th>
-          <th>Type</th>
-          <th>Chr</th>
-          <th>Start</th>
-          <th>End</th>
-          <th>Length</th>
-          <th>Freq</th>
-          <th>Gene(s)</th>
-          <th>Region</th>
-          <th style="width:12%">Function</th>
-          <th style="width:9%" data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support. [Somatic score if available from caller].">Tumor</th>
-          <th style="width:6%" data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support">Normal</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for variant in variants %}
-          {{ variant_row(variant) }}
-        {% else %}
+      <!--Expand filters form if filters were used in a previous POST request-->
+      <div id="collapseFilters" class="panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
+        <div class="card-body">{{ cancer_sv_filters(form, institute, case) }}</div>
+      </div>
+      {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
+    </div>
+
+    <div class="card mt-3">
+      <table id="variantsTable" class="table table-hover table-bordered" aria-label="Somatic SV variants table">
+        <thead class="thead table-light">
           <tr>
-              <td colspan="10">No matching variants</td>
+            <th style="width:3%"></th>
+            <th style="width:9%">Index</th>
+            <th>Type</th>
+            <th>Chr</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Length</th>
+            <th>Freq</th>
+            <th>Gene(s)</th>
+            <th>Region</th>
+            <th style="width:12%">Function</th>
+            <th style="width:9%" data-bs-toggle="tooltip" data-bs-placement="top" title="Tumor alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support. [Somatic score if available from caller].">Tumor</th>
+            <th style="width:6%" data-bs-toggle="tooltip" data-bs-placement="top" title="Normal alt. AF not computed as it varies with variant type and caller. &#013; Alt. allele support | Ref. allele support">Normal</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for variant in variants %}
+            {{ variant_row(variant) }}
+          {% else %}
+            <tr>
+                <td colspan="10">No matching variants</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
   {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
-  </form>
+</form>
   <div class="container-fluid" style="padding-bottom: 100px">
     {{ pagination_footer(more_variants, page) }}
   </div>
