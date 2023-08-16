@@ -86,6 +86,7 @@ def test_cov_fix():
         "gene_ids": int_gene_ids,
         "show_genes": any([request.args.get("show_genes"), request.form.get("show_genes")]),
     }
+    LOG.warning(int_gene_ids)
     samples = Sample.query.filter(Sample.id.in_(sample_ids))
     case_name = request.form.get("case_name") or request.args.get("case_name")
     sex_rows = samplesex_rows(sample_ids)
@@ -104,7 +105,7 @@ def test_cov_fix():
         tx_rows=tx_rows,
         gene_id_errors=gene_id_errors,
     )
-
+    #  AARS1     ACTL6B     ACY1     ADARB1     AHCY     ALDH5A1     AP3D1     NAE1     ARF1     ASNS     ATP1A3     ALDH7A1     BCS1L
     return render_template("cases/chanjo-report.html", **data)
 
 
