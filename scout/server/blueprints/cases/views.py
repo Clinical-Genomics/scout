@@ -39,13 +39,14 @@ from scout.utils.gene import parse_raw_gene_ids, parse_raw_gene_symbols
 from . import controllers
 
 # Temp chanjo-report stuff
-from chanjo.store.models import Sample
+from chanjo.store.models import Sample, Transcript, TranscriptStat
 from chanjo_report.server.constants import LEVELS
 from chanjo_report.server.blueprints.report.utils import (
-    keymetrics_rows,
     samplesex_rows,
     transcripts_rows,
 )
+from chanjo_report.server.extensions import api
+from sqlalchemy import func
 
 # Temp chanjo-report stuff
 
@@ -58,6 +59,28 @@ cases_bp = Blueprint(
     static_folder="static",
     static_url_path="/cases/static",
 )
+
+
+def keymetrics_rows(samples_ids, genes=None):
+    """Generate key metrics rows."""
+    query = (
+        api.query(
+            TranscriptStat,
+            func.avg(TranscriptStat.mean_coverage).label("mean_coverage"),
+            func.avg(TranscriptStat.completeness_10).label("completeness_10"),
+            func.avg(TranscriptStat.completeness_15).label("completeness_15"),
+            func.avg(TranscriptStat.completeness_20).label("completeness_20"),
+            func.avg(TranscriptStat.completeness_50).label("completeness_50"),
+            func.avg(TranscriptStat.completeness_100).label("completeness_100"),
+        )
+        .with_hint(TranscriptStat, "USE INDEX _sample_transcript_uc")
+        .filter(TranscriptStat.sample_id.in_(samples_ids))
+        .group_by(TranscriptStat.sample_id)
+    )
+
+    if genes:
+        query = query.join(TranscriptStat.transcript).filter(Transcript.gene_id.in_(genes))
+    return query
 
 
 @cases_bp.route("/test_cov_fix", methods=["POST", "GET"])
