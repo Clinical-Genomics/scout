@@ -73,7 +73,7 @@ def keymetrics_rows(samples_ids, genes=None):
             func.avg(TranscriptStat.completeness_50).label("completeness_50"),
             func.avg(TranscriptStat.completeness_100).label("completeness_100"),
         )
-        .with_hint(TranscriptStat, "USE INDEX _sample_transcript_uc")
+        .with_hint(TranscriptStat, "USE INDEX (_sample_transcript_uc)")
         .filter(TranscriptStat.sample_id.in_(samples_ids))
         .group_by(TranscriptStat.sample_id)
     )
