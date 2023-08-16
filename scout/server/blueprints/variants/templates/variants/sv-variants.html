@@ -41,52 +41,52 @@
 onsubmit="return validateForm()">
   <div class="container-float">
     {{ pagination_hidden_div(page) }}
-      <div class="card panel-default" id="accordion">
-        <div class="card-header">
-          <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
-        </div>
-        <!--Expand filters form if filters were used in a previous POST request-->
-        <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
-          <div class="card-body">{{ sv_filters(form, institute, case) }}</div>
-        </div>
-        {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
+    <div class="card panel-default" id="accordion">
+      <div class="card-header">
+        <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">SvFilters</a></strong>
       </div>
-
-      <div class="card mt-3">
-        <table id="variantsTable" class="table table-hover table-bordered" aria-label="SV variants table">
-          <thead class="table-light thead">
-            <tr>
-              <th style="width:3%"></th>
-              <th>Rank</th>
-              <th>Score</th>
-              <th>Type</th>
-              <th>Chr</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Length</th>
-              <th>Frequency</th>
-              <th>Gene(s)</th>
-              <th>Region</th>
-              <th>Function</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for variant in variants %}
-              {{ variant_row(variant) }}
-            {% else %}
-              <tr>
-                  <td colspan="11">No matching variants</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+      <!--Expand filters form if filters were used in a previous POST request-->
+      <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
+        {{ sv_filters(form, institute, case) }}
       </div>
+      {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
     </div>
-    {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
-  </form>
-  <div class="container-fluid" style="padding-bottom: 100px">
-   {{ pagination_footer(more_variants, page) }}
+
+    <div class="card mt-3">
+      <table id="variantsTable" class="table table-hover table-bordered" aria-label="SV variants table">
+        <thead class="table-light thead">
+          <tr>
+            <th style="width:3%"></th>
+            <th>Rank</th>
+            <th>Score</th>
+            <th>Type</th>
+            <th>Chr</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Length</th>
+            <th>Frequency</th>
+            <th>Gene(s)</th>
+            <th>Region</th>
+            <th>Function</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for variant in variants %}
+            {{ variant_row(variant) }}
+          {% else %}
+            <tr>
+                <td colspan="11">No matching variants</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
+  {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
+</form>
+<div class="container-fluid" style="padding-bottom: 100px">
+ {{ pagination_footer(more_variants, page) }}
+</div>
 {% endblock %}
 
 {% macro variant_row(variant) %}
