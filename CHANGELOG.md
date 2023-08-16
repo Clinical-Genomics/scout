@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added Balsamic keys for SweGen and loqusdb local archive frequecies, SNV and SV
 - New filter option for Cancer variantS: local archive RD loqusdb
+- Show annotated observations on SV variantS view, also for cancer somatic SVs
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
 - Howto to run the Docker image on Mac computers in `admin-guide/containers/container-deploy.md`
