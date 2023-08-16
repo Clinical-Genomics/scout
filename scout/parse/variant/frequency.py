@@ -139,11 +139,11 @@ def parse_mei_frequencies(variant: cyvcf2.Variant) -> Dict:
 def parse_sv_frequency(variant, info_key):
     """Parse a SV frequency.
 
-    These has to be treated separately since some of them are not actually frequencies(float) but
-    occurances(int)
+    These have to be treated separately since some of them are not actually frequencies(float) but
+    occurences(int)
     """
     value = variant.INFO.get(info_key, 0)
-    if "AF" in info_key or "FRQ" in info_key:
+    if "AF" in info_key or "FRQ" in info_key or "Frq" in info_key:
         value = float(value)
     else:
         value = int(value)
