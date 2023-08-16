@@ -854,7 +854,7 @@ def update_cancer_samples(
 
 def _all_hpo_gene_list_genes(
     store: MongoAdapter,
-    hpo_genes: List,
+    hpo_genes: Dict,
     build: str,
     is_clinical: bool,
     clinical_symbols: Set,
@@ -876,7 +876,7 @@ def _all_hpo_gene_list_genes(
         return set()
 
     # Loop over the dynamic phenotypes of a case
-    for hpo_id in hpo_gene_list or []:
+    for hpo_id in hpo_gene_list:
         hpo_term = store.hpo_term(hpo_id)
         # Check that HPO term exists in database
         if hpo_term is None:
@@ -890,7 +890,6 @@ def _all_hpo_gene_list_genes(
                 continue
             if gene_id not in dynamic_gene_list:
                 # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
-                by_phenotype = False  # do not display genes by phenotype
                 return set()
             add_symbol = gene_caption.get("hgnc_symbol", f"hgnc:{gene_id}")
             if is_clinical and (add_symbol not in clinical_symbols):
