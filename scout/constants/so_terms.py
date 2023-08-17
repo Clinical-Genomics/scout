@@ -28,7 +28,7 @@ SO_TERMS = {
     "3_prime_UTR_variant": {"rank": 26, "region": "3UTR"},
     "non_coding_transcript_exon_variant": {"rank": 27, "region": "ncRNA_exonic"},
     "non_coding_exon_variant": {"rank": 28, "region": "ncRNA_exonic"},
-    "non_coding_transcript_variant": {"rank": 29, "region": "ncRNA_exonic"},git
+    "non_coding_transcript_variant": {"rank": 29, "region": "ncRNA_exonic"},
     "nc_transcript_variant": {"rank": 30, "region": "ncRNA_exonic"},
     "intron_variant": {"rank": 31, "region": "intronic"},
     "NMD_transcript_variant": {"rank": 32, "region": "ncRNA"},
