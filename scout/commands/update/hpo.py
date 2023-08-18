@@ -42,9 +42,6 @@ def hpo(hpoterms, hpo_to_genes):
     LOG.info("Running Scout update HPO")
     adapter = store
 
-    LOG.info("Dropping HPO terms")
-    adapter.hpo_term_collection.delete_many({})
-
     if hpoterms:
         hpoterms = get_file_handle(hpoterms)
     if hpo_to_genes:
