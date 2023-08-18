@@ -663,6 +663,13 @@ class QueryHandler(object):
 
                 mongo_secondary_query.append({"$or": spidex_query_or_part})
 
+            if criterion == "revel":
+                revel = query["revel"]
+                revel_query = {"revel": {"$gt": float(revel)}}
+                revel_query = {"$or": [revel_query, {"revel": {"$exists": False}}]}
+
+                mongo_secondary_query.append(revel_query)
+
             if criterion == "cadd_score":
                 cadd = query["cadd_score"]
                 cadd_query = {"cadd_score": {"$gt": float(cadd)}}
