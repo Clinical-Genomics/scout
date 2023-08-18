@@ -119,7 +119,7 @@ def load_hpo_terms(
         hpo_term["genes"].add(hgnc_id)
 
     if not hpo_terms:
-        LOG.error("No HPO terms fogund. Aborting update without dropping HPO term collection.")
+        LOG.error("No HPO terms found. Aborting update without dropping HPO term collection.")
         return
 
     LOG.info("Dropping old HPO term collection")
