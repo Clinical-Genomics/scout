@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.option(
     "--hpo-to-genes",
-    type=click.Path(exists=True),y
+    type=click.Path(exists=True),
     help=(
         "Path to file with map from HPO terms to genes. This is the file called "
         "phenotype_to_genes.txt"
