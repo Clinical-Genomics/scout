@@ -28,7 +28,7 @@ LOG = logging.getLogger(__name__)
 )
 @click.option(
     "--hpo-to-genes",
-    type=click.Path(exists=True),
+    type=click.Path(exists=True),y
     help=(
         "Path to file with map from HPO terms to genes. This is the file called "
         "phenotype_to_genes.txt"
@@ -41,9 +41,6 @@ def hpo(hpoterms, hpo_to_genes):
     """
     LOG.info("Running Scout update HPO")
     adapter = store
-
-    LOG.info("Dropping HPO terms")
-    adapter.hpo_term_collection.delete_many({})
 
     if hpoterms:
         hpoterms = get_file_handle(hpoterms)

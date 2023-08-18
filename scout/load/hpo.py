@@ -118,6 +118,12 @@ def load_hpo_terms(
 
         hpo_term["genes"].add(hgnc_id)
 
+    if not hpo_terms:
+        LOG.error("No HPO terms found. Aborting update without dropping HPO term collection.")
+
+    LOG.info("Dropping old HPO term collection")
+    adapter.hpo_term_collection.delete_many({})
+
     start_time = datetime.now()
 
     nr_terms = len(hpo_terms)
