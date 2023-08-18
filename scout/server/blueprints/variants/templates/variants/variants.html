@@ -127,7 +127,9 @@
       <strong>Sift</strong>
       {{ variant.sift_predictions|join(',') }} <br>
       <strong>PolyPhen</strong>
-      {{ (variant.polyphen_predictions or ['-'])|join(',') }}
+      {{ (variant.polyphen_predictions or ['-'])|join(',') }} <br>
+      <strong>REVEL</strong>
+      {{ variant.revel or '-' }}
     </div>
   ">
     {% if variant.cadd_score %}
