@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
+- Drop old HPO term collection only after parsing of new one completes
 
 ## [4.70]
 ### Added
