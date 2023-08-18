@@ -97,6 +97,8 @@ class VariantFiltersForm(FlaskForm):
     genotypes = NonValidatingSelectField(choices=VARIANT_GENOTYPES)
 
     cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
+    revel = BetterDecimalField("REVEL", places=2, validators=[validators.Optional()])
+
     compound_rank_score = IntegerField("Compound rank score")
     compound_follow_filter = BooleanField("Compounds follow filter")
     cadd_inclusive = BooleanField("CADD inclusive")
