@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove legacy incorrectly formatted CODEOWNERS file
 ### Changed
 - Remove function call that tracks users' browser version
+- Include three more splice variant SO terms in clinical filter severe SO terms
 
 ## [4.70]
 ### Added
