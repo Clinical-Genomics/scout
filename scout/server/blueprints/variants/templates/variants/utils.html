@@ -252,7 +252,11 @@
       {{ form.cadd_inclusive.label(class="form-check-label", data_bs_toggle="tooltip", data_bs_placement="top", title="Include empty CADD") }}
       {{ form.cadd_inclusive(class="form-check-input", type="checkbox") }}</div>
     </div>
-    <div class="col-2">
+    <div class="col-1">
+      {{ form.revel.label(class="control-label") }}
+      {{ form.revel(class="form-control") }}
+    </div>
+    <div class="col-1">
       {{ form.spidex_human.label(class="control-label") }}
       {{ form.spidex_human(class="selectpicker", data_style="btn-secondary") }}
     </div>

@@ -38,6 +38,7 @@ SECONDARY_CRITERIA = [
     "swegen_freq",
     "spidex_human",
     "cadd_score",
+    "revel",
     "genetic_models",
     "genotypes",
     "functional_annotations",
