@@ -87,12 +87,12 @@
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis date"></i>
           </a></th>
           <th style="width: 15%;">Link</th>
-          <th style="width: 10%;">Default panel</th>
+          <th style="width: 15%;">Default panel</th>
           <th style="width: 5%;">Sequencing</th>
           <th style="width: 10%;">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge text-body" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
           </a></th>
-          <th style="width: 10%;">Sharing</th>
+          <th style="width: 5%;">Sharing</th>
         </tr>
       </thead>
       <tbody>
