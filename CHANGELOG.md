@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include three more splice variant SO terms in clinical filter severe SO terms
 - Drop old HPO term collection only after parsing of new one completes
 - Move score to own column on Cancer Somatic SNV variantS page
+-
 ## [4.70]
 ### Added
 - Download a list of Gene Variants (max 500) resulting from SNVs and Indels search
