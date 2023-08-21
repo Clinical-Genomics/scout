@@ -87,8 +87,8 @@
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis date"></i>
           </a></th>
           <th style="width: 15%;">Link</th>
-          <th style="width: 5%;">Sequencing</th>
           <th style="width: 10%;">Default panel</th>
+          <th style="width: 5%;">Sequencing</th>
           <th style="width: 10%;">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge text-body" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
           </a></th>
@@ -100,7 +100,7 @@
         {{ case_row(case) }}
       {% else %}
           <tr>
-            <td colspan=7>No cases found with this query.</td>
+            <td colspan=8>No cases found with this query.</td>
           </tr>
       {% endfor %}
       </tbody>
@@ -166,10 +166,10 @@
       {% endif %}
     </td>
     <td>
-      {{ analysis_type(case.analysis_types) }}
+      {{ default_gene_panel(institute, case) }}
     </td>
     <td>
-      {{ default_gene_panel(institute, case) }}
+      {{ analysis_type(case.analysis_types) }}
     </td>
     <td>
       {{ case.display_track }}
