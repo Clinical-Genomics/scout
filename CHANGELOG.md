@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New filter option for Cancer variantS: local archive RD loqusdb
 - Show annotated observations on SV variantS view, also for cancer somatic SVs
 - Revel filter for variantS
+- Show case default panel on caseS page
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
 - Howto to run the Docker image on Mac computers in `admin-guide/containers/container-deploy.md`
