@@ -8,7 +8,7 @@ from glob import glob
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, field_validator, validator, model_validator
 from typing_extensions import Literal
 
 from scout.constants import ANALYSIS_TYPES
@@ -137,19 +137,22 @@ class ScoutIndividual(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
-    @validator("tumor_purity")
-    def cast_tumor_purity_float(cls, value):
+    @field_validator("tumor_purity")
+    @classmethod
+    def cast_tumor_purity_float(cls, value: str) -> float:
         if isinstance(value, str):
             return float(Fraction(value))
         return value
 
-    @validator("capture_kits")
-    def cast_capture_kits_string(cls, value):
+    @field_validator("capture_kits")
+    @classmethod
+    def cast_capture_kits_string(cls, value: str) -> List:
         if isinstance(value, str):
             return [value]
         return value
 
-    @root_validator
+    @model_validator(mode="before")
+    @classmethod
     def update_bam_file(cls, values):
         """Update bam_file to either alignment_path, bam_file or
         bam_path"""
@@ -157,17 +160,16 @@ class ScoutIndividual(BaseModel):
             values.update({"bam_file": values.get("alignment_path")})
             return values
         if values.get("bam_file"):
-            # Dont't touch anything
             return values
         if values.get("bam_path"):
             values.update({"bam_file": values.get("bam_path")})
             return values
         return values
 
-    @root_validator
+    @model_validator(mode="before")
+    @classmethod
     def set_display_name(cls, values):
-        """Set display_name to 1. sample_name
-        2. sample_id"""
+        """Set display_name to 1. sample_name 2. sample_id"""
         if values.get("sample_name"):
             values.update({"display_name": values.get("sample_name")})
             return values
@@ -218,14 +220,13 @@ def remove_none_images(image_list):
     return updated_image_list
 
 
-def read_filestream(image_list):
-    """"""
+def read_filestream(image_list: List[Dict]):
     for image in image_list:
-        path = Path(image.path)
+        path = Path(image["path"])
         with open(path, "rb") as file_handle:
             bytestream = bytes(file_handle.read())
-            image.data = bytestream
-            image.format = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
+            image["data"] = bytestream
+            image["format"] = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
 
 
 class CustomImage(BaseModel):
@@ -238,10 +239,12 @@ class CustomImage(BaseModel):
     case: Dict[str, List[Image]] = []
     str: List[Image] = []
 
-    @root_validator
+    @model_validator(mode="before")
+    @classmethod
     def expand_wildcards(cls, values):
         """Traverse every Image object and exand wildcards."""
         # 1. Travers variant lists and expand wildcards
+        LOG.error("HERE BITCHES")
         variant_list = values["str"]
         values["str"] = update_image_list_on_wildcard(variant_list)
 
@@ -254,7 +257,8 @@ class CustomImage(BaseModel):
         values["case"] = cases_updated
         return values
 
-    @root_validator
+    @model_validator(mode="before")
+    @classmethod
     def remove_invalid_files(cls, values):
         """Traverse every Image object and remove non-image files"""
         # 1. Travers variant lists and
@@ -271,7 +275,8 @@ class CustomImage(BaseModel):
         values["case"] = cases_updated
         return values
 
-    @root_validator
+    @model_validator(mode="before")
+    @classmethod
     def read_binaries(cls, values):
         """Read image binaries for all Image entries to store in db"""
         variant_list = values["str"]
@@ -338,8 +343,9 @@ class ScoutLoadConfig(BaseModel):
         except TypeError as err:
             super().__init__(**data)
 
-    @validator("analysis_date")
-    def analysis_date_to_Datetime(cls, analysis_date):
+    @field_validator("analysis_date", mode="before")
+    @classmethod
+    def analysis_date_to_Datetime(cls, analysis_date) -> datetime.datetime:
         """Check if analysis_date is on datetime format or string convertible to datetime.
         Otherwise return now."""
         if isinstance(analysis_date, datetime.datetime):
@@ -351,7 +357,8 @@ class ScoutLoadConfig(BaseModel):
             LOG.warning("Setting analysis date to todays date")
             return datetime.datetime.now()
 
-    @validator("owner", pre=True, always=True)
+    @field_validator("owner", mode="before")
+    @classmethod
     def mandatory_check_owner(cls, value):
         """`owner` is mandatory in a case configuration. If not
         provided in config file an exception is raised"""
@@ -359,7 +366,8 @@ class ScoutLoadConfig(BaseModel):
             raise ConfigError("A case has to have a owner")
         return value
 
-    @validator("family", pre=True, always=True)
+    @field_validator("family", mode="before")
+    @classmethod
     def mandatory_check_family(cls, value):
         """`family` is mandatory in a case configuration. If not
         provided in config file an exception is raised"""
@@ -367,21 +375,23 @@ class ScoutLoadConfig(BaseModel):
             raise ConfigError("A case has to have a 'family'")
         return value
 
-    @validator("madeline_info")
+    @field_validator("madeline_info")
+    @classmethod
     def check_if_madeline_exists(cls, path):
         """Add the pedigree figure, this is a xml file which is
         dumped in the db"""
-        mad_path = Path(path)
+        madeline_path = Path(path)
         try:
-            if not mad_path.exists():
-                raise ValueError("madeline path not found: {}".format(mad_path))
+            if not madeline_path.exists():
+                raise ValueError("madeline path not found: {}".format(madeline_path))
         except OSError:
             # 2nd time called, catch OSerror and return
             return path
-        with mad_path.open("r") as in_handle:
+        with madeline_path.open("r") as in_handle:
             return in_handle.read()
 
-    @validator("individuals")
+    @field_validator("individuals")
+    @classmethod
     def family_relations_consistent(cls, individuals):
         """Check family relationships. If configured parent exist. If
         individual(s) are configured"""
@@ -401,13 +411,15 @@ class ScoutLoadConfig(BaseModel):
                     raise PedigreeError("mother %s does not exist in family" % mother)
         return individuals
 
-    @validator("synopsis")
-    def cast_synopsis_to_string(cls, my_synopsis):
+    @field_validator("individuals")
+    @classmethod
+    def cast_synopsis_to_string(cls, my_synopsis) -> str:
         if isinstance(my_synopsis, list):
             return ". ".join(my_synopsis)
         return my_synopsis
 
-    @root_validator
+    @model_validator(mode="after")
+    @classmethod
     def update_track_to_cancer(cls, values):
         """Set track to 'cancer' if certain vcf-files are set"""
         vcfs = values.get("vcf_files")
@@ -424,7 +436,8 @@ class ScoutLoadConfig(BaseModel):
             LOG.error("exception in vcf_s! Not set? {}".format(error))
         return values
 
-    @root_validator
+    @model_validator(mode="after")
+    @classmethod
     def set_collaborators(cls, values):
         """Update collaborators to `owner` if not set"""
         if values.get("collaborators") is None:
@@ -432,7 +445,8 @@ class ScoutLoadConfig(BaseModel):
             values.update({"collaborators": [owner]})
         return values
 
-    @root_validator
+    @model_validator(mode="after")
+    @classmethod
     def set_display_name(cls, values):
         """Set toplevel 'display_name', in prioritised order 1. family_name  2. family"""
         if values.get("display_name") is None:
@@ -441,4 +455,4 @@ class ScoutLoadConfig(BaseModel):
 
     class Config:
         validate_assignment = True
-        allow_population_by_field_name = True
+        populate_by_name = True
