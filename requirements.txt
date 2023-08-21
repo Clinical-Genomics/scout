@@ -35,7 +35,7 @@ flask-ldapconn
 cyvcf2
 configobj
 ped_parser
-pydantic<2
+pydantic
 PyYaml>=5.1
 
 # extras
