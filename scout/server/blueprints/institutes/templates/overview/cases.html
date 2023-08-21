@@ -86,11 +86,12 @@
           <th style="width: 15%;">Analysis date <a href="" id="{{group_name}}_analysis_date" onclick="updateArgs('{{group_name}}','sort=analysis_date','{{sort_option}}');" class="badge" style="color:{{'black' if sort_by=='analysis_date' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='analysis_date' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis date"></i>
           </a></th>
-          <th style="width: 20%;">Link</th>
+          <th style="width: 15%;">Link</th>
           <th style="width: 5%;">Sequencing</th>
-          <th style="width: 15%;">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge text-body" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
+          <th style="width: 10%;">Track <a href="" id="{{group_name}}_track" onclick="updateArgs('{{group_name}}','sort=track','{{sort_option}}');" class="badge text-body" style="color:{{'black' if sort_by=='track' else 'grey'}};background-color:white;">
             <i class="fa fa-sort{{'-'+sort_order if sort_by=='track' }}" aria-hidden="true" data-bs-toggle="tooltip" title="Sort by analysis track: Rare Disease, Cancer.."></i>
           </a></th>
+          <th style="width: 10%;">Default panel</th>
           <th style="width: 10%;">Sharing</th>
         </tr>
       </thead>
@@ -170,6 +171,9 @@
     <td>
       {{ case.display_track }}
     </td>
+  <td>
+    {{ default_gene_panel(institute, case) }}
+  </td>
     <td>
       {% if case.clinvar_variants %}
         <span class="badge rounded-pill bg-dark" data-bs-toggle="tooltip" title="ClinVar - info about submitted variants available on Case page or ClinVar submissions page (Institute sidebar)"><em class="fas fa-database"></em></span>
@@ -281,3 +285,11 @@
   })
   </script>
 {% endblock %}
+
+{% macro default_gene_panel(institute, case) %}
+ {% for panel in case.panels if panel.is_default %}
+     <a href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}">
+        {{ panel.panel_name }}
+      </a>
+   {% endfor %}
+{% endmacro %}
