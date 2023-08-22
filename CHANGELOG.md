@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to Weasyprint installation howto in README file
 - Avoid filling up disk by creating a reduced VCF file for every variant that is visualized
 - Remove legacy incorrectly formatted CODEOWNERS file
+- Restrain variant_type requests to variantS views to "clinical" or "research"
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
