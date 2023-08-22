@@ -50,6 +50,9 @@ def variants(institute_id, case_name):
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
+    if variant_type not in ["clinical", "research"]:
+        variant_type = "clinical"
+
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
@@ -159,6 +162,8 @@ def str_variants(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     variant_type = Markup.escape(request.args.get("variant_type", "clinical"))
+    if variant_type not in ["clinical", "research"]:
+        variant_type = "clinical"
 
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
@@ -245,6 +250,8 @@ def sv_variants(institute_id, case_name):
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
+    if variant_type not in ["clinical", "research"]:
+        variant_type = "clinical"
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
@@ -413,6 +420,8 @@ def cancer_variants(institute_id, case_name):
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
+    if variant_type not in ["clinical", "research"]:
+        variant_type = "clinical"
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     user_obj = store.user(current_user.email)
@@ -517,6 +526,8 @@ def cancer_sv_variants(institute_id, case_name):
     variant_type = Markup.escape(
         request.args.get("variant_type", request.form.get("variant_type", "clinical"))
     )
+    if variant_type not in ["clinical", "research"]:
+        variant_type = "clinical"
     variants_stats = store.case_variants_count(case_obj["_id"], institute_id, variant_type, False)
 
     if request.form.get("hpo_clinical_filter"):
