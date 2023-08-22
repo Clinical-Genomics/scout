@@ -87,6 +87,20 @@ class BioNanoAccessAPI:
 
         return samples
 
+    def _get_uids_from_names(self, project_name, sample_name):
+        projects = self._get_projects()
+        for project in projects:
+            if institute in project.get("name"):
+                project_uid = project.get("projectuid")
+                continue
+
+        samples = self._get_samples(project_uid)
+        for sample in samples:
+            if sample in sample.get("samplename"):
+                sample_uid = sample.get("sampleuid")
+                continue
+        return (project_uid, sample_uid)
+
     def _get_FSHD_report(self, project_uid, sample_uid):
         report = {}
 
@@ -108,19 +122,24 @@ class BioNanoAccessAPI:
 
         return report
 
-    def get_FSHD_report(self, institute, sample):
-        projects = self._get_projects()
-        for project in projects:
-            if institute in project.get("name"):
-                project_uid = project.get("projectuid")
-                continue
-
-        samples = self._get_samples(project_uid)
-        for sample in samples:
-            if sample in sample.get("samplename"):
-                sample_uid = sample.get("sampleuid")
-                continue
+    def get_FSHD_report(self, project_name, sample_name):
+        (project_uid, sample_uid) = _get_uids_from_names(project, sample)
 
         report = self._get_FSHD_report(project_uid, sample_uid)
 
         return report
+
+    def parse_FSHD_report(report):
+        detailed_results = report.get("Detailed results")
+
+        fshd_loci = []
+        for result in detailed_results.get("value"):
+            d4z4 = {}
+            d4z4["map_id"] = result["MapID"]["value"]
+            d4z4["chromosome"] = result["Chr"]["value"]
+            d4z4["haplotype"] = result["Haplotype"]["value"]
+            d4z4["count"] = result["Count_repeat"]["value"]
+            d4z4["spanning_coverage"] = result["Repeat_spanning_coverage"]["value"]
+            fshd_loci.append(d4z4)
+
+        return fshd_loci
