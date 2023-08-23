@@ -76,9 +76,9 @@
 {% macro bionano_individuals_table(case, institute, tissues) %}
 <form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
-    <div class="panel-heading">FSHD loci - Individuals</div>
+    <div class="panel-heading" id="fshd_table_heading">FSHD loci - Individuals</div>
     <div class="table-responsive">
-      <table class="table table-sm">
+      <table class="table table-sm" aria-describedby="fshd_table_heading">
         <thead>
           <tr>
             <th data-bs-toggle='tooltip' data-bs-container='body' style="width: 20%"
