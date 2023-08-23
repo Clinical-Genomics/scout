@@ -5,7 +5,7 @@
 """
 import json
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from scout.utils.scout_requests import get_request_json
 
@@ -49,6 +49,12 @@ class BioNanoAccessAPI:
         return json_content
 
     def _get_auth_cookies(self):
+        """Parse and set authentication cookies based on a prepopulated values of token etc.
+        Called after self._get_token, by methods that need cookies for accessing bionano-access.
+
+        Returns:
+
+        """
         cookies = {
             "token": self.bionano_token,
             "email": self.bionano_user_dict["email"],
@@ -59,6 +65,7 @@ class BioNanoAccessAPI:
         return cookies
 
     def _get_projects(self) -> Optional[List[Dict[str, str]]]:
+        """Get a list of projects for the current bionano-access user."""
         projects = []
         query = f"{self.url}/Bnx/api/2.0/getProjects"
 
@@ -75,6 +82,7 @@ class BioNanoAccessAPI:
         return projects
 
     def _get_samples(self, project_uid) -> Optional[List[Dict[str, str]]]:
+        """Get a list of samples for a given project uid."""
         samples = []
         query = f"{self.url}/Bnx/api/2.0/getSamples?projectuid={project_uid}"
 
@@ -91,6 +99,7 @@ class BioNanoAccessAPI:
         return samples
 
     def _get_uids_from_names(self, project_name, sample_name):
+        """Get server UIDs given project name and sample name."""
         projects = self._get_projects()
         for project in projects:
             if project_name in project.get("name"):
@@ -105,6 +114,7 @@ class BioNanoAccessAPI:
         return (project_uid, sample_uid)
 
     def _get_fshd_report(self, project_uid: str, sample_uid: str) -> Optional[List[Dict[str, str]]]:
+        """Get FSHD report if available for the given project and sample."""
         report = {}
 
         query = (
