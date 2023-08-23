@@ -46,7 +46,7 @@
     <div class="card-body">
 
       <div class="row">
-            <div class="col-xs-12 col-md-12">{{ fshd_individuals_table(case, institute, tissue_types) }}</div>
+            <div class="col-xs-12 col-md-12">{{ bionano_individuals_table(case, institute, tissue_types) }}</div>
         </div> <!-- <div class="row" -->
         <div class="row">
           <div class="col-md-4">
@@ -132,6 +132,7 @@
                 {{ ind.tissue_type }}
               </td>
             </tr>
+              {% endfor %}
           {% endfor %}
         </tbody>
       </table>

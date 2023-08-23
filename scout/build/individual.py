@@ -143,6 +143,7 @@ def build_individual(ind):
     ind_obj["smn_27134_cn"] = ind.get("smn_27134_cn", None)
 
     # BioNano FSHD
+    ind_obj["bionano_access"] = ind.get("bionano_access", None)
     ind_obj["fshd_loci"] = ind.get("fshd_loci", None)
 
     return ind_obj

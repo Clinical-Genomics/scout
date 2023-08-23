@@ -180,7 +180,7 @@ def case(store, institute_obj, case_obj):
         individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
         case_obj["individual_ids"].append(individual["individual_id"])
 
-        if individual["bionano_access"] and not individual["fshd_loci"]:
+        if individual.get("bionano_access") and not individual.get("fshd_loci"):
             individual["fshd_loci"] = bionano_access.get_fshd_report(
                 individual["bionano_access"].get("project"),
                 individual["bionano_access"].get("sample"),
