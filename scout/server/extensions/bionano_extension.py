@@ -5,6 +5,7 @@
 """
 import json
 import logging
+from typing import Dict, List
 
 from scout.utils.scout_requests import get_request_json
 
@@ -55,7 +56,7 @@ class BioNanoAccessAPI:
         }
         return cookies
 
-    def _get_projects(self):
+    def _get_projects(self) -> List[Dict[str, str]]:
         projects = []
         query = f"{self.url}/Bnx/api/2.0/getProjects"
 
@@ -101,7 +102,7 @@ class BioNanoAccessAPI:
                 continue
         return (project_uid, sample_uid)
 
-    def _get_FSHD_report(self, project_uid, sample_uid):
+    def _get_FSHD_report(self, project_uid: str, sample_uid: str) -> List[Dict[str, str]]:
         report = {}
 
         query = (
@@ -122,14 +123,11 @@ class BioNanoAccessAPI:
 
         return report
 
-    def get_FSHD_report(self, project_name, sample_name):
-        (project_uid, sample_uid) = _get_uids_from_names(project, sample)
+    def _parse_FSHD_report(report: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        """Parse BioNano FSHD report.
+        Accepts a JSON iterable and returns an iterable with d4z4 loci dicts to display.
+        """
 
-        report = self._get_FSHD_report(project_uid, sample_uid)
-
-        return report
-
-    def parse_FSHD_report(report):
         detailed_results = report.get("Detailed results")
 
         fshd_loci = []
@@ -143,3 +141,16 @@ class BioNanoAccessAPI:
             fshd_loci.append(d4z4)
 
         return fshd_loci
+
+    def get_FSHD_report(self, project_name: str, sample_name: str) -> List[Dict[str, str]]:
+        """
+        Accepts a project name and a sample name, and returns an iterable with d4z4 loci dicts to display.
+        Project and
+        Returns:
+
+        """
+        (project_uid, sample_uid) = self._get_uids_from_names(project_name, sample_name)
+
+        report = self._get_FSHD_report(project_uid, sample_uid)
+
+        return self._parse_FSHD_report(report)
