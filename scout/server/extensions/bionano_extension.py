@@ -72,7 +72,7 @@ class BioNanoAccessAPI:
             return None
         LOG.debug("Response was %s", json_content)
 
-        retiurn json_content
+        return json_content
 
     def _get_projects(self) -> Optional[List[Dict[str, str]]]:
         """Get a list of projects for the current bionano-access user."""
@@ -148,7 +148,9 @@ class BioNanoAccessAPI:
 
         return fshd_loci
 
-    def get_fshd_report(self, project_name: str, sample_name: str) -> Optional[List[Dict[str, str]]]:
+    def get_fshd_report(
+        self, project_name: str, sample_name: str
+    ) -> Optional[List[Dict[str, str]]]:
         """Retrieve FSHD report from a configured bionano access server.
         Accepts a project name and a sample name, and returns an iterable with d4z4 loci dicts to display.
         Returns None if access failed.
