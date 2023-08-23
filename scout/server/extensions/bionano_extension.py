@@ -64,19 +64,24 @@ class BioNanoAccessAPI:
         }
         return cookies
 
+    def _get_json(self, query):
+        json_response = get_request_json(query, cookies=self._get_auth_cookies())
+
+        json_content = json_response.get("content")
+        if not json_content:
+            return None
+        LOG.debug("Response was %s", json_content)
+
+        retiurn json_content
+
     def _get_projects(self) -> Optional[List[Dict[str, str]]]:
         """Get a list of projects for the current bionano-access user."""
         projects = []
         query = f"{self.url}/Bnx/api/2.0/getProjects"
 
         LOG.info("List projects on BioNano Access")
-        json_response = get_request_json(query, cookies=self._get_auth_cookies())
 
-        json_content = json_response.get("content")
-        if not json_content:
-            return None
-        LOG.info("Response was %s", json_content)
-
+        json_content = self._get_json(query)
         projects = json_content.get("output")
 
         return projects
@@ -87,13 +92,8 @@ class BioNanoAccessAPI:
         query = f"{self.url}/Bnx/api/2.0/getSamples?projectuid={project_uid}"
 
         LOG.info("List samples on BioNano Access")
-        json_response = get_request_json(query, cookies=self._get_auth_cookies())
 
-        json_content = json_response.get("content")
-        if not json_content:
-            return None
-        LOG.info("Response was %s", json_content)
-
+        json_content = self._get_json(query)
         samples = json_content.get("output")
 
         return samples
@@ -121,21 +121,13 @@ class BioNanoAccessAPI:
             f"{self.url}/Bnx/api/2.0/getFSHDReport?projectuid={project_uid}&sampleuid={sample_uid}"
         )
 
-        cookies = {"user": self.bionano_user_dict, "token": self.bionano_token}
-
-        LOG.info("List samples on BioNano Access")
-        json_response = get_request_json(query)
-
-        json_content = json_response.get("content", cookies=self._get_auth_cookies())
-        if not json_content:
-            return None
-        LOG.info("Response was %s", json_content)
-
+        LOG.info("Get FSHD report from BioNano Access")
+        json_content = self._get_json(query)
         report = json_content.get("content")
 
         return report
 
-    def _parse_FSHD_report(self, report: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def _parse_fshd_report(self, report: List[Dict[str, str]]) -> Optional[List[Dict[str, str]]]:
         """Parse BioNano FSHD report.
         Accepts a JSON iterable and returns an iterable with d4z4 loci dicts to display.
         """
@@ -156,9 +148,10 @@ class BioNanoAccessAPI:
 
         return fshd_loci
 
-    def get_fshd_report(self, project_name: str, sample_name: str) -> List[Dict[str, str]]:
+    def get_fshd_report(self, project_name: str, sample_name: str) -> Optional[List[Dict[str, str]]]:
         """Retrieve FSHD report from a configured bionano access server.
         Accepts a project name and a sample name, and returns an iterable with d4z4 loci dicts to display.
+        Returns None if access failed.
         """
         (project_uid, sample_uid) = self._get_uids_from_names(project_name, sample_name)
 
