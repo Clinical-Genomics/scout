@@ -29,7 +29,7 @@ class BioNanoAccessAPI:
 
         self._get_token()
 
-    def _get_token(self):
+    def _get_token(self) -> Optional[Dict]:
         query = f"{self.url}/administration/api/1.4/login?username={self.bionano_username}&password={self.bionano_password}"
 
         LOG.info("Authenticating for BioNano Access")
@@ -46,6 +46,8 @@ class BioNanoAccessAPI:
         if "token" in json_content:
             self.bionano_token = json_output.get("token")
 
+        return json_content
+
     def _get_auth_cookies(self):
         cookies = {
             "token": self.bionano_token,
@@ -56,7 +58,7 @@ class BioNanoAccessAPI:
         }
         return cookies
 
-    def _get_projects(self) -> List[Dict[str, str]]:
+    def _get_projects(self) -> Optional[List[Dict[str, str]]]:
         projects = []
         query = f"{self.url}/Bnx/api/2.0/getProjects"
 
@@ -72,7 +74,7 @@ class BioNanoAccessAPI:
 
         return projects
 
-    def _get_samples(self, project_uid):
+    def _get_samples(self, project_uid) -> Optional[List[Dict[str, str]]]:
         samples = []
         query = f"{self.url}/Bnx/api/2.0/getSamples?projectuid={project_uid}"
 
@@ -91,18 +93,18 @@ class BioNanoAccessAPI:
     def _get_uids_from_names(self, project_name, sample_name):
         projects = self._get_projects()
         for project in projects:
-            if institute in project.get("name"):
+            if project_name in project.get("name"):
                 project_uid = project.get("projectuid")
-                continue
+                break
 
         samples = self._get_samples(project_uid)
         for sample in samples:
-            if sample in sample.get("samplename"):
+            if sample_name in sample.get("samplename"):
                 sample_uid = sample.get("sampleuid")
-                continue
+                break
         return (project_uid, sample_uid)
 
-    def _get_FSHD_report(self, project_uid: str, sample_uid: str) -> List[Dict[str, str]]:
+    def _get_fshd_report(self, project_uid: str, sample_uid: str) -> Optional[List[Dict[str, str]]]:
         report = {}
 
         query = (
@@ -123,12 +125,14 @@ class BioNanoAccessAPI:
 
         return report
 
-    def _parse_FSHD_report(report: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    def _parse_FSHD_report(self, report: List[Dict[str, str]]) -> List[Dict[str, str]]:
         """Parse BioNano FSHD report.
         Accepts a JSON iterable and returns an iterable with d4z4 loci dicts to display.
         """
 
         detailed_results = report.get("Detailed results")
+        if not detailed_results:
+            return None
 
         fshd_loci = []
         for result in detailed_results.get("value"):
@@ -142,15 +146,12 @@ class BioNanoAccessAPI:
 
         return fshd_loci
 
-    def get_FSHD_report(self, project_name: str, sample_name: str) -> List[Dict[str, str]]:
-        """
+    def get_fshd_report(self, project_name: str, sample_name: str) -> List[Dict[str, str]]:
+        """Retrieve FSHD report from a configured bionano access server.
         Accepts a project name and a sample name, and returns an iterable with d4z4 loci dicts to display.
-        Project and
-        Returns:
-
         """
         (project_uid, sample_uid) = self._get_uids_from_names(project_name, sample_name)
 
-        report = self._get_FSHD_report(project_uid, sample_uid)
+        report = self._get_fshd_report(project_uid, sample_uid)
 
-        return self._parse_FSHD_report(report)
+        return self._parse_fshd_report(report)
