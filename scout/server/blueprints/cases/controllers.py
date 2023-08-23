@@ -44,7 +44,7 @@ from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
+from scout.server.extensions import RerunnerError, bionano_access, gens, matchmaker, rerunner, store
 from scout.server.utils import case_has_alignments, case_has_mt_alignments, institute_and_case
 
 LOG = logging.getLogger(__name__)
