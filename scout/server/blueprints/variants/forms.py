@@ -105,7 +105,7 @@ class VariantFiltersForm(FlaskForm):
     clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
 
     gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
-    local_obs = IntegerField("Local obs. (archive)")
+    local_obs = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
 
     filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
     filter_display_name = StringField(default="")

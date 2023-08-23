@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show annotated observations on SV variantS view, also for cancer somatic SVs
 - Revel filter for variantS
 - Show case default panel on caseS page
+- CADD filter for Cancer Somatic SNV variantS - show score
 - BioNano Access server API - check projects, samples and fetch FSHD reports
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
@@ -23,7 +24,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
 - Drop old HPO term collection only after parsing of new one completes
-
+- Move score to own column on Cancer Somatic SNV variantS page
+-
 ## [4.70]
 ### Added
 - Download a list of Gene Variants (max 500) resulting from SNVs and Indels search
