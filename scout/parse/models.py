@@ -20,8 +20,13 @@ LOG = logging.getLogger(__name__)
 
 # As the class constructor is called twice, this messes with the
 # aliases, removing the set value the second time called. It seems
-# to work by adding the aliased name as a attribute...
+# to work by adding the aliased name as an attribute...
 #
+class BioNanoAccess(BaseModel):
+    project: Optional[str] = None
+    sample: Optional[str] = None
+
+
 class ChromographImages(BaseModel):
     autozygous: Optional[str] = None
     coverage: Optional[str] = None
@@ -101,6 +106,7 @@ class ScoutIndividual(BaseModel):
     analysis_type: Literal[ANALYSIS_TYPES] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
+    bionano_access: Optional[BioNanoAccess()] = None
     capture_kits: Optional[str] = Field(alias="capture_kit")  #!
     chromograph_images: Optional[ChromographImages] = ChromographImages()
     confirmed_parent: Optional[bool] = None
