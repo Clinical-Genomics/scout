@@ -55,9 +55,11 @@
               <th style="width:2%"></th>
               <th title="Gene">Gene</th>
               <th title="Variant" style="width:12%">HGVS[c/p]</th>
-              <th title="Assessments including variant tier">Assessment</th>
-              <th title="Rank score and quality markers">Quality</th>
-              <th title="Genomic coordinate" style="width:10%">Chr pos</th>
+              <th title="Assessments including variant tier" style="width:8%">Assessment</th>
+              <th title="Quality markers" style="width:6%">Qual</th>
+              <th title="Rank scores" style="width:4%">Rank</th>
+              <th title="CADD scores" style="width:4%">CADD</th>
+              <th title="Genomic coordinate" style="width:8%">Chr pos</th>
               <th title="Population frequency">Pop Freq</th>
               <th title="Observed" style="width:7%">Observed</th>
               <th title="Variant type">Type</th>
@@ -108,7 +110,9 @@
               {{ causative_badge(variant, case) }}
               {{ other_tiered_variants(variant) }}
             </td>
-            <td>{{ score_cell(variant) }}</td>
+            <td>{{ quality_cell(variant) }}</td>
+            <td>{{ rank_cell(variant) }}</td>
+            <td>{{ cadd_cell(variant) }}</td>
             <td>{{ position_cell(variant) }}</td>
             <td class="text-end">{{ frequency_cell_general(variant) }}</td>
             <td>{{ observed_cell_general(variant) }}</td>
@@ -141,8 +145,7 @@
   {% endif %}
 {% endmacro %}
 
-
-{% macro score_cell(variant) %}
+{% macro rank_cell(variant) %}
   {% if variant.rank_score is defined %}
     {% if variant.rank_score <= 4 %}
       {% set label_class = 'secondary' %}
@@ -157,7 +160,24 @@
     {% endif %}
     <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Rank score">{{ variant.rank_score }}</div>
   {% endif %}
+{% endmacro %}
 
+{% macro cadd_cell(variant) %}
+  {% if variant.cadd_score %}
+    {% if variant.cadd_score <= 10 %}
+      {% set label_class = 'secondary' %}
+    {% elif variant.cadd_score <= 20 %}
+      {% set label_class = 'primary' %}
+    {% elif variant.cadd_score <= 25 %}
+      {% set label_class = 'warning' %}
+    {% elif variant.cadd_score > 29 %}
+      {% set label_class = 'danger' %}
+    {% endif %}
+    <div class="badge bg-{{ label_class }}" data-bs-toggle="tooltip" data-bs-placement="top" title="CADD score">{{ variant.cadd_score|round }}</div>
+  {% endif %}
+{% endmacro %}
+
+{% macro quality_cell(variant) %}
   {% for filter in variant.filters %}
     <div data-bs-toggle="tooltip" data-bs-placement="top" title="{{ filter.description }}" class="badge bg-{{ filter.label_class }}">{{ filter.label }}</div>
   {% endfor %}
