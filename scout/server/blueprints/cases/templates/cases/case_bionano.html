@@ -102,41 +102,71 @@
         <tbody>
           {% for ind in case.individuals %}
             {% if "fshd_loci" in ind and ind.fshd_loci is not none %}
-            {% for d4z4 in ind.fshd_loci %}
-            <tr {% if d4z4.chromosome == 4 and d4z4.count < 11 and d4z4.haplotype == "4qA" %}
-                  class="bg-danger"
-                {% elif d4z4.chromosome == 4 and d4z4.count < 11 %}
-                  class="bg-warning"
-                {% endif %}>
-              <td>{{ ind.display_name }}</td>
-              <td style="font-weight: bold;">
-                {% if ind.sex_human in ['female','male'] %}
-                    {% if ind.sex_human == 'female' %}
-                      F
-                    {% elif ind.sex_human == 'male' %}
-                      M
-                    {% else %}
-                      {{ind.sex_human}}
+              {% for d4z4 in ind.fshd_loci %}
+                <tr {% if d4z4.chromosome == 4 and d4z4.count < 11 and d4z4.haplotype == "4qA" %}
+                      class="bg-danger"
+                    {% elif d4z4.chromosome == 4 and d4z4.count < 11 %}
+                      class="bg-warning"
+                    {% endif %}>
+                  {% if loop.index == 1 %}
+                    <td> {{ ind.display_name }}</td>
+                    <td style="font-weight: bold;">
+                    {% if ind.sex_human in ['female','male'] %}
+                      {% if ind.sex_human == 'female' %}
+                        F
+                      {% elif ind.sex_human == 'male' %}
+                        M
+                      {% else %}
+                        {{ind.sex_human}}
+                      {% endif %}
                     {% endif %}
+                    {% if ind.confirmed_sex %}
+                      <i class="fa fa-check"></i>
+                    {% endif %}
+                    </td>
+                    <td>{{ ind.phenotype_human }}</td>
+                  {% else %}
+                    <td></td><td></td><td></td>
                   {% endif %}
-                {% if ind.confirmed_sex %}
-                  <i class="fa fa-check"></i>
-                {% endif %}
-              </td>
-              <td>{{ ind.phenotype_human }}</td>
-              <td>{{ d4z4.chromosome }}</td>
-              <td>{{ d4z4.haplotype }}</td>
-              <td>{{ d4z4.count }}</td>
-              <td>{{ d4z4.spanning_coverage }}</td>
-              <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
-              <td>
-                {{ ind.tissue_type }}
-              </td>
-            </tr>
+                  <td>{{ d4z4.chromosome }}</td>
+                  <td>{{ d4z4.haplotype }}</td>
+                  <td>{{ d4z4.count }}</td>
+                  <td>{{ d4z4.spanning_coverage }}</td>
+                  {% if loop.index == 1 %}<td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+                  <td>
+                    {{ ind.tissue_type }}
+                  </td>
+                  {% else %}
+                    <td></td><td></td>
+                  {% endif %}
+                </tr>
               {% endfor %}
-        {% endif %}
+            {% else %} <!-- Individual in the family without any d4z4 locus data -->
+              <tr class="bg-secondary">
+                <td> {{ ind.display_name }}</td>
+                    <td style="font-weight: bold;">
+                    {% if ind.sex_human in ['female','male'] %}
+                      {% if ind.sex_human == 'female' %}
+                        F
+                      {% elif ind.sex_human == 'male' %}
+                        M
+                      {% else %}
+                        {{ind.sex_human}}
+                      {% endif %}
+                    {% endif %}
+                    {% if ind.confirmed_sex %}
+                      <i class="fa fa-check"></i>
+                    {% endif %}
+                    </td>
+                    <td>{{ ind.phenotype_human }}</td>
+                  <td colspan="4">N/A</td>
+                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+                  <td>
+                    {{ ind.tissue_type }}
+                  </td>
+                </tr>
+            {% endif %}
           {% endfor %}
-
         </tbody>
       </table>
     </div>
