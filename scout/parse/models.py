@@ -106,7 +106,7 @@ class ScoutIndividual(BaseModel):
     analysis_type: Literal[ANALYSIS_TYPES] = None
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
-    bionano_access: Optional[BioNanoAccess()] = None
+    bionano_access: Optional[BioNanoAccess] = None
     capture_kits: Optional[str] = Field(alias="capture_kit")  #!
     chromograph_images: Optional[ChromographImages] = ChromographImages()
     confirmed_parent: Optional[bool] = None

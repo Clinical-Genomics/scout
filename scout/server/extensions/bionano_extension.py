@@ -7,7 +7,8 @@ import json
 import logging
 from typing import Dict, List, Optional
 
-from scout.utils.scout_requests import get_request_json
+from scout.utils.convert import call_safe
+from scout.utils.scout_requests import get_request_json, post_data_request_json
 
 LOG = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class BioNanoAccessAPI:
         self.bionano_username = None
         self.bionano_password = None
         self.bionano_token = None
-        self.bionano_user_dict = None
+        self.bionano_user_dict = {}
 
     def init_app(self, app):
         self.url = app.config.get("BIONANO_ACCESS")
@@ -37,13 +38,14 @@ class BioNanoAccessAPI:
 
         json_content = json_response.get("content")
         if not json_content:
+            LOG.debug("No token JSON returned. Message: %s", json_response.get("message"))
             return None
-        LOG.info("Response was %s", json_content)
+        LOG.debug("Token request response was %s", json_content)
         json_output = json_content.get("output")
 
-        if "user" in json_content:
+        if "user" in json_output:
             self.bionano_user_dict = json_output.get("user")
-        if "token" in json_content:
+        if "token" in json_output:
             self.bionano_token = json_output.get("token")
 
         return json_content
@@ -57,10 +59,10 @@ class BioNanoAccessAPI:
         """
         cookies = {
             "token": self.bionano_token,
-            "email": self.bionano_user_dict["email"],
-            "fullname": self.bionano_user_dict["full_name"],
-            "userpk": self.bionano_user_dict["userpk"],
-            "userrole": self.bionano_user_dict["role"],
+            "email": self.bionano_user_dict.get("email"),
+            "fullname": self.bionano_user_dict.get("full_name"),
+            "userpk": call_safe(str, self.bionano_user_dict.get("userpk")),
+            "userrole": call_safe(str, self.bionano_user_dict.get("role")),
         }
         return cookies
 
@@ -68,7 +70,27 @@ class BioNanoAccessAPI:
         json_response = get_request_json(query, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
+        json_status = json_response.get("status_code")
+        LOG.debug(
+            "Query %s cookies %s status code %s", query, self._get_auth_cookies(), json_status
+        )
         if not json_content:
+            LOG.debug("No response.")
+            return None
+        LOG.debug("Response was %s", json_content)
+
+        return json_content
+
+    def _post_json(self, query, query_data):
+        json_response = post_data_request_json(query, query_data, cookies=self._get_auth_cookies())
+
+        json_content = json_response.get("content")
+        json_status = json_response.get("status_code")
+        LOG.debug(
+            "Query %s cookies %s status code %s", query, self._get_auth_cookies(), json_status
+        )
+        if not json_content:
+            LOG.debug("No response.")
             return None
         LOG.debug("Response was %s", json_content)
 
@@ -81,8 +103,7 @@ class BioNanoAccessAPI:
 
         LOG.info("List projects on BioNano Access")
 
-        json_content = self._get_json(query)
-        projects = json_content.get("output")
+        projects = self._get_json(query)
 
         return projects
 
@@ -93,8 +114,7 @@ class BioNanoAccessAPI:
 
         LOG.info("List samples on BioNano Access")
 
-        json_content = self._get_json(query)
-        samples = json_content.get("output")
+        samples = self._get_json(query)
 
         return samples
 
@@ -113,27 +133,28 @@ class BioNanoAccessAPI:
                 break
         return (project_uid, sample_uid)
 
-    def _get_fshd_report(self, project_uid: str, sample_uid: str) -> Optional[List[Dict[str, str]]]:
+    def _get_fshd_reports(
+        self, project_uid: str, sample_uid: str
+    ) -> Optional[List[Dict[str, str]]]:
         """Get FSHD report if available for the given project and sample."""
         report = {}
 
-        query = (
-            f"{self.url}/Bnx/api/2.0/getFSHDReport?projectuid={project_uid}&sampleuid={sample_uid}"
-        )
+        query = f"{self.url}/Bnx/api/2.0/getFSHDReport"
+        query_data = {"projectuid": project_uid, "sampleuid": sample_uid}
 
         LOG.info("Get FSHD report from BioNano Access")
-        json_content = self._get_json(query)
-        report = json_content.get("content")
+        reports = self._post_json(query, query_data)
 
-        return report
+        return reports
 
-    def _parse_fshd_report(self, report: List[Dict[str, str]]) -> Optional[List[Dict[str, str]]]:
+    def _parse_fshd_report(self, report: Dict[str, str]) -> Optional[List[Dict[str, str]]]:
         """Parse BioNano FSHD report.
         Accepts a JSON iterable and returns an iterable with d4z4 loci dicts to display.
         """
 
         detailed_results = report.get("Detailed results")
         if not detailed_results:
+            LOG.debug("No detailed results found.")
             return None
 
         fshd_loci = []
@@ -144,6 +165,7 @@ class BioNanoAccessAPI:
             d4z4["haplotype"] = result["Haplotype"]["value"]
             d4z4["count"] = result["Count_repeat"]["value"]
             d4z4["spanning_coverage"] = result["Repeat_spanning_coverage"]["value"]
+            LOG.debug("Found a d4z4 locus: %s", d4z4)
             fshd_loci.append(d4z4)
 
         return fshd_loci
@@ -157,6 +179,10 @@ class BioNanoAccessAPI:
         """
         (project_uid, sample_uid) = self._get_uids_from_names(project_name, sample_name)
 
-        report = self._get_fshd_report(project_uid, sample_uid)
-
-        return self._parse_fshd_report(report)
+        reports = self._get_fshd_reports(project_uid, sample_uid)
+        for report in reports:
+            report_sample_uid_dict = report.get("job").get("value").get("sampleuid")
+            report_sample_uid = report_sample_uid_dict.get("value")
+            if report_sample_uid == sample_uid:
+                LOG.debug("Found FSHD result for sample %s", sample_name)
+                return self._parse_fshd_report(report)

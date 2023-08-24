@@ -130,5 +130,5 @@ SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
 
 # BioNano Access Server extension
 BIONANO_ACCESS = "https://bionano-access.scilifelab.se"
-BIONANO_USERNAME = "bionanoadmin"
-BIONANO_PASSWORD = "thepassword"
+BIONANO_USERNAME = "danielnilsson"
+BIONANO_PASSWORD = "bouffanT.lin5crucify"

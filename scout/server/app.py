@@ -36,7 +36,6 @@ try:
 except ImportError:
     from urllib2 import unquote
 
-
 LOG = logging.getLogger(__name__)
 
 try:
@@ -72,6 +71,12 @@ def create_app(config_file=None, config=None):
         app.config["REMEMBER_COOKIE_DURATION"] = session_duration
 
     app.json.sort_keys = False
+
+    if __name__ != "__main__":
+        gunicorn_logger = logging.getLogger("gunicorn.error")
+        app.logger.handlers = gunicorn_logger.handlers
+        app.logger.setLevel(gunicorn_logger.level)
+
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
     configure_extensions(app)
@@ -168,6 +173,10 @@ def configure_extensions(app):
     if app.config.get("PHENOPACKET_API_URL"):
         LOG.info("Enable Phenopacket API")
         extensions.phenopacketapi.init_app(app)
+
+    if app.config.get("BIONANO_ACCESS"):
+        LOG.info("Enable BioNano Access API")
+        extensions.bionano_access.init_app(app)
 
 
 def register_blueprints(app):
