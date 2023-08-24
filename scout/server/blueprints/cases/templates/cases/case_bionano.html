@@ -103,7 +103,11 @@
           {% for ind in case.individuals %}
             {% if "fshd_loci" in ind and ind.fshd_loci is not none %}
             {% for d4z4 in ind.fshd_loci %}
-            <tr>
+            <tr {% if d4z4.chromosome == 4 and d4z4.count < 11 and d4z4.haplotype == "4qA" %}
+                  class="bg-danger"
+                {% elif d4z4.chromosome == 4 and d4z4.count < 11 %}
+                  class="bg-warning"
+                {% endif %}>
               <td>{{ ind.display_name }}</td>
               <td style="font-weight: bold;">
                 {% if ind.sex_human in ['female','male'] %}
