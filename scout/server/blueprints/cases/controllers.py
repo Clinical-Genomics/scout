@@ -181,10 +181,17 @@ def case(store, institute_obj, case_obj):
         case_obj["individual_ids"].append(individual["individual_id"])
 
         if individual.get("bionano_access") and not individual.get("fshd_loci"):
-            individual["fshd_loci"] = bionano_access.get_fshd_report(
+            fshd_loci = bionano_access.get_fshd_report(
                 individual["bionano_access"].get("project"),
                 individual["bionano_access"].get("sample"),
             )
+            if not fshd_loci:
+                flash(
+                    f"Sample FSHD report configured for {individual['bionano_access'].get('project')} - {individual['bionano_access'].get('sample')} but could be retrieved. Check BioNano Access server ({current_app.config.get('BIONANO_ACCESS')}) manually if the error persists.",
+                    "danger",
+                )
+
+            individual["fshd_loci"] = fshd_loci
 
     case_obj["assignees"] = [
         store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])

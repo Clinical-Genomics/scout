@@ -5,7 +5,7 @@
 """
 import json
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from scout.utils.convert import call_safe
 from scout.utils.scout_requests import get_request_json, post_data_request_json
@@ -118,15 +118,23 @@ class BioNanoAccessAPI:
 
         return samples
 
-    def _get_uids_from_names(self, project_name, sample_name):
+    def _get_uids_from_names(self, project_name, sample_name) -> Optional[Tuple[str, str]]:
         """Get server UIDs given project name and sample name."""
         projects = self._get_projects()
+        if not projects:
+            raise ValueError()
+            return None
+
         for project in projects:
             if project_name in project.get("name"):
                 project_uid = project.get("projectuid")
                 break
 
         samples = self._get_samples(project_uid)
+        if not samples:
+            raise ValueError()
+            return
+
         for sample in samples:
             if sample_name in sample.get("samplename"):
                 sample_uid = sample.get("sampleuid")
@@ -175,11 +183,21 @@ class BioNanoAccessAPI:
     ) -> Optional[List[Dict[str, str]]]:
         """Retrieve FSHD report from a configured bionano access server.
         Accepts a project name and a sample name, and returns an iterable with d4z4 loci dicts to display.
+
         Returns None if access failed.
         """
-        (project_uid, sample_uid) = self._get_uids_from_names(project_name, sample_name)
+        try:
+            (project_uid, sample_uid) = self._get_uids_from_names(project_name, sample_name)
+        except ValueError:
+            return None
+
+        if not project_uid:
+            return None
 
         reports = self._get_fshd_reports(project_uid, sample_uid)
+        if not reports:
+            return None
+
         for report in reports:
             report_sample_uid_dict = report.get("job").get("value").get("sampleuid")
             report_sample_uid = report_sample_uid_dict.get("value")
