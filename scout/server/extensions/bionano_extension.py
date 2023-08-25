@@ -123,7 +123,6 @@ class BioNanoAccessAPI:
         projects = self._get_projects()
         if not projects:
             raise ValueError()
-            return None
 
         for project in projects:
             if project_name in project.get("name"):
@@ -133,7 +132,6 @@ class BioNanoAccessAPI:
         samples = self._get_samples(project_uid)
         if not samples:
             raise ValueError()
-            return
 
         for sample in samples:
             if sample_name in sample.get("samplename"):
@@ -145,7 +143,6 @@ class BioNanoAccessAPI:
         self, project_uid: str, sample_uid: str
     ) -> Optional[List[Dict[str, str]]]:
         """Get FSHD report if available for the given project and sample."""
-        report = {}
 
         query = f"{self.url}/Bnx/api/2.0/getFSHDReport"
         query_data = {"projectuid": project_uid, "sampleuid": sample_uid}

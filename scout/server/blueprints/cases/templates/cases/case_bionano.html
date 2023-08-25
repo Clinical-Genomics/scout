@@ -34,19 +34,19 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    {{ smn_case_page() }}
+    {{ fshd_case_page() }}
   </div> <!-- end of div id body-row -->
 </div>
 {% endblock %}
 
-{% macro smn_case_page() %}
+{% macro fshd_case_page() %}
 <div class="container_spaced">
   <div class="card col-md-12">
     <h4 class="mt-3">Case: {{case.display_name}}</h4>
     <div class="card-body">
       <div class="row">
         <div class="col-xs-12 col-md-12">{{ bionano_individuals_table(case, institute, tissue_types) }}</div>
-      </div> <!-- end of div class="row" -->
+      </div> <!-- end of div row -->
       <div class="row">
         <div class="col-md-4">
           {% if case.madeline_info and case.individuals|length > 1 %}
@@ -59,7 +59,7 @@
           {{ synopsis_panel() }}
           {{ comments_panel(institute, case, current_user, comments) }}
         </div>
-      </div> <!-- end of div class="row" -->
+      </div> <!-- end of div row -->
 
       <div class="row">
         <div class="col-sm-12">{{activity_panel(events)}}</div>

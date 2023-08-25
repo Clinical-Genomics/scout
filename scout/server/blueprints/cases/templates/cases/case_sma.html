@@ -47,7 +47,7 @@
 
       <div class="row">
             <div class="col-xs-12 col-md-12">{{ smn_individuals_table(case, institute, tissue_types) }}</div>
-        </div> <!-- <div class="row" -->
+        </div> <!-- end of div class row -->
         <div class="row">
           <div class="col-md-4">
             {% if case.madeline_info and case.individuals|length > 1 %}
@@ -60,7 +60,7 @@
             {{ synopsis_panel() }}
             {{ comments_panel(institute, case, current_user, comments) }}
           </div>
-        </div> <!-- end of   <div class="row"> -->
+        </div> <!-- end of div class row -->
 
         <div class="row">
           <div class="col-sm-12">{{activity_panel(events)}}</div>
@@ -70,7 +70,7 @@
     </div> <!-- end of card body -->
   </div> <!-- end of card div-->
 </div>
-</div> <!-- end of <div class="col"> -->
+</div> <!-- end of div class col -->
 {% endmacro %}
 
 {% macro smn_individuals_table(case, institute, tissues) %}
