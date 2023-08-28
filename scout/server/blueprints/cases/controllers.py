@@ -5,6 +5,7 @@ import json
 import logging
 import os
 from base64 import b64encode
+from typing import Dict, List, Set
 
 import query_phenomizer
 import requests
@@ -150,6 +151,53 @@ def _populate_case_groups(store, case_obj, case_groups, case_group_label):
             case_group_label[group] = store.case_group_label(group)
 
 
+def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
+    """Return any partial causatives a case has, populated as causative objs.
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(models.Case)
+    Returns:
+        partial(list(dict))
+    """
+
+    partial_causatives = []
+    if case_obj.get("partial_causatives"):
+        for var_id, values in case_obj["partial_causatives"].items():
+            causative_obj = {
+                "variant": store.variant(var_id) or var_id,
+                "omim_terms": values.get("diagnosis_phenotypes"),
+                "hpo_terms": values.get("phenotype_terms"),
+            }
+            partial_causatives.append(causative_obj)
+    return partial_causatives
+
+
+def _set_rank_model_links(case_obj: Dict):
+    """Add Rank Model links to case if rank model versions are set.
+
+    Appropriate configuration file prefix and postfix are concatenated to the version string.
+    """
+
+    if case_obj.get("rank_model_version"):
+        rank_model_link = "".join(
+            [
+                current_app.config.get("RANK_MODEL_LINK_PREFIX", ""),
+                str(case_obj["rank_model_version"]),
+                current_app.config.get("RANK_MODEL_LINK_POSTFIX", ""),
+            ]
+        )
+        case_obj["rank_model_link"] = rank_model_link
+
+    if case_obj.get("sv_rank_model_version"):
+        case_obj["sv_rank_model_link"] = "".join(
+            [
+                current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", ""),
+                str(case_obj["sv_rank_model_version"]),
+                current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", ""),
+            ]
+        )
+
+
 def case(store, institute_obj, case_obj):
     """Preprocess a single case.
 
@@ -220,15 +268,7 @@ def case(store, institute_obj, case_obj):
     _populate_assessments(evaluated_variants)
 
     # check for partial causatives and associated phenotypes
-    partial_causatives = []
-    if case_obj.get("partial_causatives"):
-        for var_id, values in case_obj["partial_causatives"].items():
-            causative_obj = {
-                "variant": store.variant(var_id) or var_id,
-                "omim_terms": values.get("diagnosis_phenotypes"),
-                "hpo_terms": values.get("phenotype_terms"),
-            }
-            partial_causatives.append(causative_obj)
+    partial_causatives = _get_partial_causatives(store, case_obj)
     _populate_assessments(partial_causatives)
 
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
@@ -243,24 +283,7 @@ def case(store, institute_obj, case_obj):
             hpo_term["phenotype_id"]
         )
 
-    if case_obj.get("rank_model_version"):
-        rank_model_link = "".join(
-            [
-                current_app.config.get("RANK_MODEL_LINK_PREFIX", ""),
-                str(case_obj["rank_model_version"]),
-                current_app.config.get("RANK_MODEL_LINK_POSTFIX", ""),
-            ]
-        )
-        case_obj["rank_model_link"] = rank_model_link
-
-    if case_obj.get("sv_rank_model_version"):
-        case_obj["sv_rank_model_link"] = "".join(
-            [
-                current_app.config.get("SV_RANK_MODEL_LINK_PREFIX", ""),
-                str(case_obj["sv_rank_model_version"]),
-                current_app.config.get("SV_RANK_MODEL_LINK_POSTFIX", ""),
-            ]
-        )
+    _set_rank_model_links(case_obj)
 
     # other collaborators than the owner of the case
     o_collaborators = []
@@ -842,6 +865,59 @@ def update_cancer_samples(
     _update_case(store, case_obj, user_obj, institute_obj, verb)
 
 
+def _all_hpo_gene_list_genes(
+    store: MongoAdapter,
+    hpo_genes: Dict,
+    build: str,
+    is_clinical: bool,
+    clinical_symbols: Set,
+    dynamic_gene_list: List,
+    hpo_gene_list: Set,
+) -> Set:
+    """Populate hpo_genes from dynamic gene list.
+
+    Loop over dynamic phenotypes of a case, populating hpo_genes.
+    Also return all gene symbols found as a set.
+
+    An empty set returned indicates that genes should not be grouped by phenotype - use a single "Analysed genes" group.
+    """
+
+    all_hpo_gene_list_genes = set()
+
+    # do not display genes by phenotype if we have no hpo gene list, but a dynamic one
+    if not hpo_gene_list and dynamic_gene_list:
+        return set()
+
+    # Loop over the dynamic phenotypes of a case
+    for hpo_id in hpo_gene_list:
+        hpo_term = store.hpo_term(hpo_id)
+        # Check that HPO term exists in database
+        if hpo_term is None:
+            LOG.warning(f"Could not find HPO term with ID '{hpo_id}' in database")
+            continue
+        # Create a list with all gene symbols (or HGNC ID if symbol is missing) associated with the phenotype
+        gene_list = []
+        for gene_id in hpo_term.get("genes", []):
+            gene_caption = store.hgnc_gene_caption(gene_id, build)
+            if gene_caption is None:
+                continue
+            if gene_id not in dynamic_gene_list:
+                # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
+                return set()
+            add_symbol = gene_caption.get("hgnc_symbol", f"hgnc:{gene_id}")
+            if is_clinical and (add_symbol not in clinical_symbols):
+                continue
+            gene_list.append(add_symbol)
+            all_hpo_gene_list_genes.add(add_symbol)
+
+        hpo_genes[hpo_id] = {
+            "description": hpo_term.get("description"),
+            "genes": ", ".join(sorted(gene_list)),
+        }
+
+    return all_hpo_gene_list_genes
+
+
 def phenotypes_genes(store, case_obj, is_clinical=True):
     """Generate a dictionary consisting of phenotype terms with associated genes from the case HPO panel
 
@@ -868,56 +944,34 @@ def phenotypes_genes(store, case_obj, is_clinical=True):
     clinical_symbols = store.clinical_symbols(case_obj) if is_clinical else None
     unique_genes = hpo_genes_from_dynamic_gene_list(case_obj, is_clinical, clinical_symbols)
 
-    by_phenotype = True  # display genes by phenotype
     hpo_gene_list = case_obj.get("dynamic_panel_phenotypes", [])
-    if not hpo_gene_list and dynamic_gene_list:
-        by_phenotype = False
 
-    all_hpo_gene_list_genes = set()
-    # Loop over the dynamic phenotypes of a case
-    for hpo_id in hpo_gene_list or []:
-        hpo_term = store.hpo_term(hpo_id)
-        # Check that HPO term exists in database
-        if hpo_term is None:
-            LOG.warning(f"Could not find HPO term with ID '{hpo_id}' in database")
-            continue
-        # Create a list with all gene symbols (or HGNC ID if symbol is missing) associated with the phenotype
-        gene_list = []
-        for gene_id in hpo_term.get("genes", []):
-            gene_caption = store.hgnc_gene_caption(gene_id, build)
-            if gene_caption is None:
-                continue
-            if gene_id not in dynamic_gene_list:
-                # gene was filtered out because min matching phenotypes > 1 (or the panel was generated with older genotype-phenotype mapping)
-                by_phenotype = False  # do not display genes by phenotype
-                continue
-            add_symbol = gene_caption.get("hgnc_symbol", f"hgnc:{gene_id}")
-            if is_clinical and (add_symbol not in clinical_symbols):
-                continue
-            gene_list.append(add_symbol)
-            all_hpo_gene_list_genes.add(add_symbol)
+    all_hpo_gene_list_genes = _all_hpo_gene_list_genes(
+        store,
+        hpo_genes,
+        build,
+        is_clinical,
+        clinical_symbols,
+        dynamic_gene_list,
+        hpo_gene_list,
+    )
 
-        hpo_genes[hpo_id] = {
-            "description": hpo_term.get("description"),
-            "genes": ", ".join(sorted(gene_list)),
-        }
-
-    if by_phenotype is True:
-        # if some gene was manually added (or is left on dynamic panel for other reasons)
+    if all_hpo_gene_list_genes:
+        # if just some gene ware manually added (or is left on dynamic panel for other reasons)
         non_hpo_genes = unique_genes - all_hpo_gene_list_genes
         if len(non_hpo_genes) > 0:
             hpo_genes["Analysed genes"] = {
                 "description": "Non HPO panel genes",
                 "genes": ", ".join(sorted(non_hpo_genes)),
             }
+        return hpo_genes
 
-    if by_phenotype is False:
-        hpo_genes = {}
-        hpo_genes["Analysed genes"] = {
-            "description": "HPO panel",
-            "genes": ", ".join(sorted(unique_genes)),
-        }
-
+    # otherwise do not display genes by phenotype - one unique gene group only
+    hpo_genes = {}
+    hpo_genes["Analysed genes"] = {
+        "description": "HPO panel",
+        "genes": ", ".join(sorted(unique_genes)),
+    }
     return hpo_genes
 
 
