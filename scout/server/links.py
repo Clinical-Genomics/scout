@@ -466,7 +466,7 @@ def get_variant_links(institute_obj, variant_obj, build=None):
         mitomap_link=mitomap_link(variant_obj),
         hmtvar_link=hmtvar_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
-        spliceai_link=spliceai_link(variant_obj),
+        spliceai_link=spliceai_link(variant_obj, build),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
     )
