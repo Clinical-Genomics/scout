@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.71]
 ### Added
 - Added Balsamic keys for SweGen and loqusdb local archive frequecies, SNV and SV
 - New filter option for Cancer variantS: local archive RD loqusdb
