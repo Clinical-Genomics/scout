@@ -143,3 +143,17 @@ def phenopackets_app():
     """Return an app connected to a Phenopackets API"""
     app = create_app(config=dict(TESTING=True, PHENOPAKET_API_URL="tip2toe.local"))
     return app
+
+
+@pytest.fixture
+def bionano_app():
+    """Return an app with a bionano access extension"""
+    app = create_app(
+        config=dict(
+            TESTING=True,
+            BIONANO_ACCESS="bionano.local",
+            BIONANO_USERNAME="USERNAME",
+            BIONANO_PASSWORD="PASSWORD",
+        )
+    )
+    return app

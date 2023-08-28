@@ -39,10 +39,11 @@ UPDATE_KEYS = UPDATE_DICT.keys()
 def individual(case_id, ind, key, value):
     """Update information on individual level in Scout
 
-    UPDATE_DICT holds keys and type of value. If the value type is "path" a check
+    UPDATE_DICT holds keys and type of value. If the value type is "path", and most are, a check
     for file existence is performed.
+
     If the key contains a dot (only one needed currently), keys for a dict type value is assumed:
-    e.g. "reviewer.alignment" -> ind["reviewer"]["alignment"].
+    e.g. "reviewer.alignment" -> ind["reviewer"]["alignment"] (path value required)
 
     """
 
