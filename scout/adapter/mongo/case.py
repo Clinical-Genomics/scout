@@ -3,6 +3,7 @@ import datetime
 import logging
 import operator
 from copy import deepcopy
+from typing import Any, Dict
 
 import pymongo
 
@@ -62,7 +63,9 @@ class CaseHandler(object):
         # Returns a list of tuples with highest score first
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
-    def _set_similar_phenotype_query(self, query, query_field, query_term, institute_id):
+    def _set_similar_phenotype_query(
+        self, query: Dict[str, Any], query_field: str, query_term: str, institute_id: str
+    ):
         """Adds query parameters when search is performed by case or phenotype similarity
 
         Args:
@@ -103,8 +106,12 @@ class CaseHandler(object):
 
         return order
 
-    def _set_genes_of_interest_query(self, query, query_field, query_term):
+    def _set_genes_of_interest_query(
+        self, query: Dict[str, Any], query_field: str, query_term: str
+    ):
         """Adds query parameters when search is aimed at retrieving cases with a certain pinned or causative gene
+
+        If the gene is not found in the hgnc collection, the id query should not return any results.
 
         Args:
             query(dict): cases search query
@@ -141,48 +148,62 @@ class CaseHandler(object):
         case_ids = [case["_id"] for case in cases_with_gene_doc]
         query["_id"] = {"$in": case_ids}
 
-    def _fill_in_case_name_query(self, query, query_term):
+    def _set_case_name_query(self, query: Dict[str, Any], query_term: str):
+        """Set case query to reg exp search in case and individual display names for parts of the name query."""
+
         query["$or"] = [
             {"display_name": {"$regex": query_term}},
             {"individuals.display_name": {"$regex": query_term}},
             {"_id": {"$regex": query_term}},
         ]
 
-    def _fill_in_case_phenotype_query(self, query, query_term):
+    def _set_case_phenotype_query(self, query: Dict[str, Any], query_term: str):
+        """Set case query based on phenotype terms.
+
+        The user may have provided multiple query (HPO) terms.
+
+        If the no query term is given (the phenotype query string is empty), instead query for cases
+        that lack HPO terms.
+        """
         if query_term != "":
-            # User might have provided multiple query terms
             query["phenotype_terms.phenotype_id"] = {
                 "$in": list(query_term.replace(" ", "").split(","))
             }
             return
 
-        # query for cases with no HPO terms
         query["$or"] = [
             {"phenotype_terms": {"$size": 0}},
             {"phenotype_terms": {"$exists": False}},
         ]
 
-    def _fill_in_diagnosis_query(self, query, query_term):
+    def _set_diagnosis_query(self, query: Dict[str, Any], query_term: str):
+        """Set diagnosis query based on query term.
+        The user might have provided multiple query terms.
+
+        The OMIM query terms needs to match both old style and current phenotypes for backwards
+        compatibility.
+
+        Presently, OMIM phenotypes are assigned as a list of dictionaries, but we also need to
+        match the old way of saving OMIM terms, which was a list of ids [616538,611277]
+
+        The query should be set to check for cases with no HPO terms if the query term is empty.
+        """
         if query_term != "":
-            # User might have provided multiple query terms
             omim_terms = list(query_term.replace(" ", "").split(","))
             query["$or"] = [
-                {
-                    "diagnosis_phenotypes.disease_id": {"$in": omim_terms}
-                },  # OMIM phenotypes are assigned as a list of dictionaries
-                {
-                    "diagnosis_phenotypes": {"$in": omim_terms}
-                },  # old way of saving OMIM terms --> list of ids [616538,611277]
+                {"diagnosis_phenotypes.disease_id": {"$in": omim_terms}},
+                {"diagnosis_phenotypes": {"$in": omim_terms}},
             ]
             return
 
-        # query for cases with no HPO terms
         query["$or"] = [
             {"diagnosis_phenotypes": {"$size": 0}},
             {"diagnosis_phenotypes": {"$exists": False}},
         ]
 
-    def _fill_in_synopsis_query(self, query, query_term):
+    def _set_synopsis_query(self, query: Dict[str, Any], query_term: str):
+        """Set query to search in the free text synopsis for query_term."""
+
         if query_term != "":
             query["$text"] = {"$search": query_term}
         else:
@@ -202,16 +223,16 @@ class CaseHandler(object):
         query_term = name_query[name_query.index(":") + 1 :].strip()
 
         if query_field == "case" and query_term != "":
-            self._fill_in_case_name_query(query, query_term)
+            self._set_case_name_query(query, query_term)
 
         if query_field == "exact_pheno":
-            self._fill_in_case_phenotype_query(query, query_term)
+            self._set_case_phenotype_query(query, query_term)
 
         if query_field == "exact_dia":
-            self._fill_in_diagnosis_query(query, query_term)
+            self._set_diagnosis_query(query, query_term)
 
         if query_field == "synopsis":
-            self._fill_in_synopsis_query(query, query_term)
+            self._set_synopsis_query(query, query_term)
 
         if query_field == "panel":
             query["panels"] = {"$elemMatch": {"panel_name": query_term, "is_default": True}}
