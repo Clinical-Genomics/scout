@@ -266,8 +266,7 @@ def pubmed(hgnc_symbol: str, gene_aliases: List[str]) -> str:
 
 
 def ppaint(hgnc_symbol):
-    link = "https://pecan.stjude.cloud/variants/protein-paint?gene={}"
-
+    link = "https://pecan.stjude.cloud/variants/proteinpaint?gene={}"
     if not hgnc_symbol:
         return None
 
