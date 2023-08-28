@@ -860,7 +860,7 @@ def _all_hpo_gene_list_genes(
     clinical_symbols: Set,
     dynamic_gene_list: List,
     hpo_gene_list: Set,
-):
+) -> Set:
     """Populate hpo_genes from dynamic gene list.
 
     Loop over dynamic phenotypes of a case, populating hpo_genes.
