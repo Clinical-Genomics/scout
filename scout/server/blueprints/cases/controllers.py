@@ -172,8 +172,8 @@ def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
     return partial_causatives
 
 
-def _link_rank_models(case_obj: Dict):
-    """Add Rank Model links if rank model versions are set on case.
+def _set_rank_model_links(case_obj: Dict):
+    """Add Rank Model links to case if rank model versions are set.
 
     Appropriate configuration file prefix and postfix are concatenated to the version string.
     """
@@ -270,7 +270,7 @@ def case(store, institute_obj, case_obj):
             hpo_term["phenotype_id"]
         )
 
-    _link_rank_models(case_obj)
+    _set_rank_model_links(case_obj)
 
     # other collaborators than the owner of the case
     o_collaborators = []
