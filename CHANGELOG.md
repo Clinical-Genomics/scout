@@ -19,12 +19,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Avoid filling up disk by creating a reduced VCF file for every variant that is visualized
 - Remove legacy incorrectly formatted CODEOWNERS file
 - Restrain variant_type requests to variantS views to "clinical" or "research"
+- Visualization of cancer variants where cancer case has no affected individual
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
 - Drop old HPO term collection only after parsing of new one completes
 - Move score to own column on Cancer Somatic SNV variantS page
--
+
 ## [4.70]
 ### Added
 - Download a list of Gene Variants (max 500) resulting from SNVs and Indels search
