@@ -151,7 +151,7 @@ def _populate_case_groups(store, case_obj, case_groups, case_group_label):
             case_group_label[group] = store.case_group_label(group)
 
 
-def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List:
+def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
     """Return any partial causatives a case has, populated as causative objs.
     Args:
         store(adapter.MongoAdapter)
