@@ -157,7 +157,7 @@ def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
         store(adapter.MongoAdapter)
         case_obj(models.Case)
     Returns:
-        partial(list(dict)): includes the cases, how many there are and the limit.
+        partial(list(dict))
     """
 
     partial_causatives = []
