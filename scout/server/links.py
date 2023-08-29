@@ -466,6 +466,7 @@ def get_variant_links(institute_obj, variant_obj, build=None):
         mitomap_link=mitomap_link(variant_obj),
         hmtvar_link=hmtvar_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
+        spliceai_link=spliceai_link(variant_obj, build),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
     )
@@ -557,6 +558,16 @@ def gnomad_link(variant_obj, build=37):
 
     if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
         url_template += "?dataset=gnomad_r3"
+
+    return url_template
+
+
+def spliceai_link(variant_obj, build=37):
+    """Compopse a link to BROADs SpliceAI Lookup for a somewhat live view of SpliceAI and Pangolin scores."""
+    url_template = (
+        "https://spliceailookup.broadinstitute.org/#variant={this[chromosome]}-"
+        "{this[position]}-{this[reference]}-{this[alternative]}&hg={build}&distance=500&mask=1"
+    ).format(this=variant_obj, build=build)
 
     return url_template
 
