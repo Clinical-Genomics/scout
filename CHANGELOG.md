@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Include three more splice variant SO terms in clinical filter severe SO terms
 - Drop old HPO term collection only after parsing of new one completes
 - Move score to own column on Cancer Somatic SNV variantS page
+- Refactored a few complex case operations, breaking out sub functionalities
 
 ## [4.70]
 ### Added
@@ -44,11 +45,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.69]
 ### Added
 - ClinVar submission howto available also on Case page
-
-### Changed
 - Somatic score and filtering for somatic SV callers, if available
 - Show caller as a tooltip on variantS list
-- Refactored a few complex case operations, breaking out sub functionalities
 ### Fixed
 - Crash when attempting to export phenotype from a case that had never had phenotypes
 - Aesthetic fix to Causative and Pinned Variants on Case page
