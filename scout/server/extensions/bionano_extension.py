@@ -5,7 +5,7 @@
 """
 import json
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple
 
 from scout.utils.convert import call_safe
 from scout.utils.scout_requests import get_request_json, post_data_request_json
@@ -64,7 +64,7 @@ class BioNanoAccessAPI:
         }
         return cookies
 
-    def _get_json(self, query):
+    def _get_json(self, query: str) -> Iterable:
         json_response = get_request_json(query, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
@@ -74,11 +74,10 @@ class BioNanoAccessAPI:
 
         return json_content
 
-    def _post_json(self, query, query_data):
+    def _post_json(self, query: str, query_data: Dict[str, str]) -> Iterable:
         json_response = post_data_request_json(query, query_data, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
-        json_status = json_response.get("status_code")
         if not json_content:
             return None
 
@@ -93,7 +92,7 @@ class BioNanoAccessAPI:
 
         return projects
 
-    def _get_samples(self, project_uid) -> Optional[List[Dict[str, str]]]:
+    def _get_samples(self, project_uid: str) -> Optional[List[Dict[str, str]]]:
         """Get a list of samples for a given project uid."""
         samples = []
         query = f"{self.url}/Bnx/api/2.0/getSamples?projectuid={project_uid}"
@@ -102,7 +101,9 @@ class BioNanoAccessAPI:
 
         return samples
 
-    def _get_uids_from_names(self, project_name, sample_name) -> Optional[Tuple[str, str]]:
+    def _get_uids_from_names(
+        self, project_name: str, sample_name: str
+    ) -> Optional[Tuple[str, str]]:
         """Get server UIDs given project name and sample name."""
         projects = self._get_projects()
         if not projects:
