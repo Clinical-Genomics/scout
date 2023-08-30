@@ -38,9 +38,7 @@ class BioNanoAccessAPI:
 
         json_content = json_response.get("content")
         if not json_content:
-            LOG.debug("No token JSON returned. Message: %s", json_response.get("message"))
             return None
-        LOG.debug("Token request response was %s", json_content)
         json_output = json_content.get("output")
 
         if "user" in json_output:
@@ -71,13 +69,8 @@ class BioNanoAccessAPI:
 
         json_content = json_response.get("content")
         json_status = json_response.get("status_code")
-        LOG.debug(
-            "Query %s cookies %s status code %s", query, self._get_auth_cookies(), json_status
-        )
         if not json_content:
-            LOG.debug("No response.")
             return None
-        LOG.debug("Response was %s", json_content)
 
         return json_content
 
@@ -86,13 +79,8 @@ class BioNanoAccessAPI:
 
         json_content = json_response.get("content")
         json_status = json_response.get("status_code")
-        LOG.debug(
-            "Query %s cookies %s status code %s", query, self._get_auth_cookies(), json_status
-        )
         if not json_content:
-            LOG.debug("No response.")
             return None
-        LOG.debug("Response was %s", json_content)
 
         return json_content
 
@@ -100,8 +88,6 @@ class BioNanoAccessAPI:
         """Get a list of projects for the current bionano-access user."""
         projects = []
         query = f"{self.url}/Bnx/api/2.0/getProjects"
-
-        LOG.info("List projects on BioNano Access")
 
         projects = self._get_json(query)
 
@@ -111,8 +97,6 @@ class BioNanoAccessAPI:
         """Get a list of samples for a given project uid."""
         samples = []
         query = f"{self.url}/Bnx/api/2.0/getSamples?projectuid={project_uid}"
-
-        LOG.info("List samples on BioNano Access")
 
         samples = self._get_json(query)
 
@@ -159,7 +143,7 @@ class BioNanoAccessAPI:
 
         detailed_results = report.get("Detailed results")
         if not detailed_results:
-            LOG.debug("No detailed results found.")
+            LOG.warning("No detailed FSHD results found.")
             return None
 
         fshd_loci = []
@@ -170,7 +154,6 @@ class BioNanoAccessAPI:
             d4z4["haplotype"] = result["Haplotype"]["value"]
             d4z4["count"] = result["Count_repeat"]["value"]
             d4z4["spanning_coverage"] = result["Repeat_spanning_coverage"]["value"]
-            LOG.debug("Found a d4z4 locus: %s", d4z4)
             fshd_loci.append(d4z4)
 
         return fshd_loci
@@ -199,5 +182,4 @@ class BioNanoAccessAPI:
             report_sample_uid_dict = report.get("job").get("value").get("sampleuid")
             report_sample_uid = report_sample_uid_dict.get("value")
             if report_sample_uid == sample_uid:
-                LOG.debug("Found FSHD result for sample %s", sample_name)
                 return self._parse_fshd_report(report)

@@ -72,11 +72,6 @@ def create_app(config_file=None, config=None):
 
     app.json.sort_keys = False
 
-    if __name__ != "__main__":
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        app.logger.handlers = gunicorn_logger.handlers
-        app.logger.setLevel(gunicorn_logger.level)
-
     current_log_level = LOG.getEffectiveLevel()
     coloredlogs.install(level="DEBUG" if app.debug else current_log_level)
     configure_extensions(app)
