@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 individual = dict(
     individual_id=str,  # required
+    subject_id=str,  # optional, subject grouping for cases with shared subjects depend on it
     display_name=str,
     sex=str,
     phenotype=int,

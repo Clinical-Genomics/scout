@@ -81,6 +81,9 @@ def build_individual(ind):
     except KeyError as err:
         raise (PedigreeError("Unknown phenotype: %s" % phenotype))
 
+    if "subject_id" in ind:
+        ind_obj["subject_id"] = ind["subject_id"]
+
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
     ind_files = [
         "bam_file",

@@ -17,6 +17,7 @@ cohorts:
 samples:
   - analysis_type: wes
     sample_id: ADM1059A2
+    subject_id: NA12882
     capture_kit: Agilent_SureSelectCRE.V1
     father: ADM1059A1
     mother: ADM1059A3
@@ -43,6 +44,7 @@ samples:
 
   - analysis_type: wes
     sample_id: ADM1059A1
+    subject_id: NA12877
     capture_kit: Agilent_SureSelectCRE.V1
     father: '0'
     mother: '0'
@@ -59,6 +61,7 @@ samples:
 
   - analysis_type: wes
     sample_id: ADM1059A3
+    subject_id: NA12878
     capture_kit: Agilent_SureSelectCRE.V1
     father: '0'
     mother: '0'

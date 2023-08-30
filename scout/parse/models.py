@@ -122,6 +122,7 @@ class ScoutIndividual(BaseModel):
     rhocall_wig: Optional[str] = None
     rna_coverage_bigwig: Optional[str] = None
     sample_name: Optional[str] = None
+    subject_id: Optional[str] = None
     sex: Literal["unknown", "female", "male"]
     smn1_cn: Optional[int] = None
     smn2_cn: Optional[int] = None
@@ -172,7 +173,6 @@ class ScoutIndividual(BaseModel):
             values.update({"display_name": values.get("sample_name")})
             return values
         if values.get("individual_id"):
-            # Dont't touch anything
             values.update({"display_name": values.get("individual_id")})
             return values
         return values
