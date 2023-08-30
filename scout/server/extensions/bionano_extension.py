@@ -1,5 +1,5 @@
 """
-    Connect to BioNano Access server via it's API.
+    Connect to BioNano Access server via its API.
 
     https://bionano.com/wp-content/uploads/2023/01/30462-Bionano-Access-API-Guide-1.pdf
 """
