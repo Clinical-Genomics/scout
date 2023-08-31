@@ -48,12 +48,15 @@ class BioNanoAccessAPI:
 
         return json_content
 
-    def _get_auth_cookies(self):
+    def _get_auth_cookies(self) -> Dict[str, str]:
         """Parse and set authentication cookies based on a prepopulated values of token etc.
         Called after self._get_token, by methods that need cookies for accessing bionano-access.
+        Note that the cookie names expected by subsequent calls are not exactly the names in the user dict returned
+        by the
+        auth request.
 
         Returns:
-
+            cookies(dict): "token", "email", "fullname", "userpk", "userrole"
         """
         cookies = {
             "token": self.bionano_token,
@@ -128,7 +131,6 @@ class BioNanoAccessAPI:
         self, project_uid: str, sample_uid: str
     ) -> Optional[List[Dict[str, str]]]:
         """Get FSHD report if available for the given project and sample."""
-
         query = f"{self.url}/Bnx/api/2.0/getFSHDReport"
         query_data = {"projectuid": project_uid, "sampleuid": sample_uid}
 
