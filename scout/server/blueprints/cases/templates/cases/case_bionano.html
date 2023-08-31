@@ -87,9 +87,9 @@
             {% if "fshd_loci" in ind and ind.fshd_loci is not none %}
               {% for d4z4 in ind.fshd_loci %}
                 <tr {% if d4z4.chromosome == 4 and d4z4.count < 11 and d4z4.haplotype == "4qA" %}
-                      class="bg-danger"
+                      class="bg-danger text-white"
                     {% elif d4z4.chromosome == 4 and d4z4.count < 11 %}
-                      class="bg-warning"
+                      class="bg-warning text-white"
                     {% endif %}>
                   {% if loop.index == 1 %}
                     <td> {{ ind.display_name }}</td>
@@ -152,8 +152,8 @@
           {% endfor %}
         </tbody>
         <tfoot>
-        <tr><td colspan="8">
-          This is the processed FSHD report for the case. Please visit your <a href="{bionano_access_url}">Bionano Access server</a>
+        <tr><td colspan="9">
+          This is the processed FSHD report for the case. Please visit your <a href="{{bionano_access_url}}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Bionano Access server</a>
         </td></tfoot>
         </tr>
       </table>
