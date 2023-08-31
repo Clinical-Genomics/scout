@@ -139,10 +139,22 @@ class BioNanoAccessAPI:
 
         return reports
 
+    #
+
     def _parse_fshd_report(self, report: Dict[str, str]) -> Optional[List[Dict[str, str]]]:
         """Parse BioNano FSHD report.
         Accepts a JSON iterable and returns an iterable with d4z4 loci dicts to display.
+
+        The FSHD report locus section contains a set of values that we want to parse out and store with case display
+        friendly key names.
         """
+        FSHD_D4Z4_LOCUS_KEY_MAPPING = {
+            "map_id": "MapID",
+            "chromosome": "Chr",
+            "haplotype": "Haplotype",
+            "count": "Count_repeat",
+            "spanning_coverage": "Repeat_spanning_coverage",
+        }
 
         detailed_results = report.get("Detailed results")
         if not detailed_results:
@@ -152,11 +164,8 @@ class BioNanoAccessAPI:
         fshd_loci = []
         for result in detailed_results.get("value"):
             d4z4 = {}
-            d4z4["map_id"] = result["MapID"]["value"]
-            d4z4["chromosome"] = result["Chr"]["value"]
-            d4z4["haplotype"] = result["Haplotype"]["value"]
-            d4z4["count"] = result["Count_repeat"]["value"]
-            d4z4["spanning_coverage"] = result["Repeat_spanning_coverage"]["value"]
+            for d4z4_key in FSHD_D4Z4_LOCUS_KEY_MAPPING.keys():
+                d4z4[d4z4_key] = result[FSHD_D4Z4_LOCUS_KEY_MAPPING[d4z4_key]]["value"]
             fshd_loci.append(d4z4)
 
         return fshd_loci
