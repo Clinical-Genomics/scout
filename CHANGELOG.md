@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Restrain variant_type requests to variantS views to "clinical" or "research"
 - Visualization of cancer variants where cancer case has no affected individual
 - ProteinPaint gene link (small StJude API change)
+- Causative MEI variant link on causatives page
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
