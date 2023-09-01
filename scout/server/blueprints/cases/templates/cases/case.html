@@ -256,6 +256,9 @@
         {% if case.smn_tsv %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.sma', institute_id=institute._id, case_name=case.display_name) }}">SMN CN</a>
         {% endif %}
+        {% if case.individuals|rejectattr('bionano_access', 'undefined')|list|length > 0 %}
+          <a class="btn btn-dark btn-sm text-white" href="{{ url_for('cases.bionano', institute_id=institute._id, case_name=case.display_name) }}">BioNano FSHD</a>
+        {% endif %}
         {% if case.vcf_files.vcf_cancer %}
           <a class="btn btn-dark btn-sm text-white" href="{{ url_for('variants.cancer_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical') }}">Clinical {% if case.track=="cancer" %}somatic {% endif %}SNV and INDELs</a>
         {% endif %}

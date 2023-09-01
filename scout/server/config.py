@@ -127,3 +127,8 @@ RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/re
 RANK_MODEL_LINK_POSTFIX = "-.ini"
 SV_RANK_MODEL_LINK_PREFIX = "https://raw.githubusercontent.com/Clinical-Genomics/reference-files/master/rare-disease/rank_model/svrank_model_-v"
 SV_RANK_MODEL_LINK_POSTFIX = "-.ini"
+
+# BioNano Access Server extension
+BIONANO_ACCESS = "https://bionano-access.scilifelab.se"
+BIONANO_USERNAME = "USERNAME"
+BIONANO_PASSWORD = "PASSWORD"

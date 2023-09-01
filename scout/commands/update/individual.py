@@ -1,22 +1,34 @@
-"""Code for updating information on individuals"""
+"""Code for updating information on individuals
+"""
 from pathlib import Path
 
 import click
 
 from scout.server.extensions import store
 
-UPDATE_KEYS = [
-    "bam_file",
-    "mt_bam",
-    "vcf2cytosure",
-    "rhocall_bed",
-    "rhocall_wig",
-    "tiddit_coverage_wig",
-    "upd_regions_bed",
-    "upd_sites_bed",
-    "splice_junctions_bed",  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
-    "rna_coverage_bigwig",  # Coverage islands generated from bam or cram files (RNA-seq analysis)
-]
+UPDATE_DICT = {
+    "bam_file": "path",
+    "bionano_access.sample": "str",
+    "bionano_access.project": "str",
+    "mt_bam": "path",
+    "vcf2cytosure": "path",
+    "rhocall_bed": "path",
+    "rhocall_wig": "path",
+    "tiddit_coverage_wig": "path",
+    "upd_regions_bed": "path",
+    "upd_sites_bed": "path",
+    "splice_junctions_bed": "path",  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
+    "rna_coverage_bigwig": "path",  # Coverage islands generated from bam or cram files (RNA-seq analysis)
+    "reviewer.alignment": "path",
+    "reviewer.alignment_index": "path",
+    "reviewer.vcf": "path",
+    "reviewer.catalog": "path",
+    "chromograph_images.autozygous": "str",
+    "chromograph_images.coverage": "str",
+    "chromograph_images.upd_regions": "str",
+    "chromograph_images.upd_sites": "str",
+}
+UPDATE_KEYS = UPDATE_DICT.keys()
 
 
 @click.command()
@@ -25,7 +37,15 @@ UPDATE_KEYS = [
 @click.argument("key", required=False)
 @click.argument("value", required=False)
 def individual(case_id, ind, key, value):
-    """Update information on individual level in Scout"""
+    """Update information on individual level in Scout
+
+    UPDATE_DICT holds keys and type of value. If the value type is "path", and most are, a check
+    for file existence is performed.
+
+    If the key contains a dot (only one needed currently), keys for a dict type value is assumed:
+    e.g. "reviewer.alignment" -> ind["reviewer"]["alignment"] (path value required)
+
+    """
 
     case_obj = store.case(case_id)
     if not case_obj:
@@ -47,19 +67,27 @@ def individual(case_id, ind, key, value):
     if key is None or not key in UPDATE_KEYS:
         click.echo(f"Please specify a valid key to update. Valid keys:{ UPDATE_KEYS }")
         return
+
     if value is None:
-        click.echo(f"Please specify a file path for key {key}")
+        click.echo(f"Please specify a value ({UPDATE_DICT[key]} for key {key}")
         return
-    file_path = Path(value)
-    # If file is not found on the server, ask if user wants to update the key anyway
-    if file_path.exists() is False:
-        click.confirm(
-            "The provided path was not found on the server, update key anyway?",
-            abort=True,
-        )
+    if UPDATE_DICT[key] == "path":
+        file_path = Path(value)
+        # If file is not found on the server, ask if user wants to update the key anyway
+        if file_path.exists() is False:
+            click.confirm(
+                "The provided path was not found on the server, update key anyway?",
+                abort=True,
+            )
+
     # perform the update
     for ind_obj in case_obj["individuals"]:
         if ind_obj["display_name"] == ind:
+            if "." in key:
+                key_parts = key.split(".")
+                ind_obj[key_parts[0]][key_parts[1]] = value
+                continue
+
             ind_obj[key] = value
 
     store.update_case(case_obj)
