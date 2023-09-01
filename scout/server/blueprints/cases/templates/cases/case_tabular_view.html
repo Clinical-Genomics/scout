@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+{% from "utils.html" import comments_panel, activity_panel %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+{% endblock %}
+
+
+{% macro pedigree_panel() %}
+  <div class="card panel-default">
+    <div class="panel-heading">Pedigree</div>
+    <div class="card-body bg-light text-center">
+      {{ case.madeline_info|safe }}
+    </div>
+  </div>
+{% endmacro %}
+
+
+{% macro synopsis_panel() %}
+  <div class="card panel-default">
+    <div data-bs-toggle='tooltip' class="panel-heading" title="Free text field. Write a summary about
+     the case! Markdown format">
+      Synopsis
+    </div>
+    <div class="card-body">
+      {{ case.synopsis|markdown if case.synopsis else 'Nothing written yet...' }}
+    </div>
+    <div class="card-footer">
+      <button type="button" class="btn btn-secondary form-control" data-bs-toggle="modal" data-bs-target="#edit-synopsis">
+        Edit
+      </button>
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro modal_synopsis() %}
+  <form action="{{ url_for('cases.case_synopsis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
+    <div class="modal fade" id="edit-synopsis" role="dialog">
+      <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit synopsis</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <textarea name="synopsis" class="form-control" cols="30" rows="10">{{ case.synopsis }}</textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha384-EEbPKCLAcxVCiXCi8k9bdeuayzAxVSmBzP/wLpmpd0LVW+Lvh2mjS1W02kdYm5z1" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.min.js" integrity="sha384-2q+7Pk3OSOseTKfNi/t8mZzYRIovdg+nfXYeKmmnivkyD+nxosintmGKX7SWcrOG" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
+
+<script>
+  $('#panel-table').DataTable({
+    scrollY: 350,
+    scrollCollapse: true,
+    paging: false,
+    searching: false,
+    ordering: true,
+    info: false
+        });
+</script>
+
+<script>
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    $(function () {
+      $('select[multiple]').multiselect({
+        buttonWidth: '100%'
+      });
+  });
+</script>
+{% endblock %}
+
+
+

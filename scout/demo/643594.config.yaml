@@ -28,6 +28,9 @@ samples:
     mitodel_file: scout/demo/mitodel_test_files/hugelymodelbat_lanes_1_sorted_md_mitodel.txt
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
+    bionano_access:
+        project: "230327_Hafdis1"
+        sample: "2022-39905"
     reviewer:
         'alignment': 'scout/demo/REViewer_test_data/justhusky_exphun_hugelymodelbat_realigned.bam'
         'alignment_index': 'scout/demo/REViewer_test_data/justhusky_exphun_hugelymodelbat_realigned.bam.bai'

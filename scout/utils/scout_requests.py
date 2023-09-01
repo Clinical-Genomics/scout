@@ -16,13 +16,14 @@ LOG = logging.getLogger(__name__)
 TIMEOUT = 20
 
 
-def post_request_json(url, data, headers=None):
+def post_request_json(url, data, headers=None, cookies=None):
     """Send json data via POST request and return response
 
     Args:
         url(str): url to send request to
         data(dict): data to be sent
         headers(dict): request headers
+        cookies(dict): cookies to pass with request
 
     Returns:
         json_response(dict)
@@ -31,10 +32,7 @@ def post_request_json(url, data, headers=None):
     json_response = {}
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
-        if headers:
-            resp = requests.post(url, headers=headers, json=data)
-        else:
-            resp = requests.post(url, json=data)
+        resp = requests.post(url, headers=headers, cookies=cookies, json=data)
         json_response["content"] = resp.json()
 
     except Exception as ex:
@@ -44,11 +42,38 @@ def post_request_json(url, data, headers=None):
     return json_response
 
 
-def get_request_json(url, headers=None):
+def post_data_request_json(url, data, headers=None, cookies=None):
+    """Send data via POST request and return response
+
+    Args:
+        url(str): url to send request to
+        data(dict): data to be sent
+        headers(dict): request headers
+        cookies(dict): cookies to pass with request
+
+    Returns:
+        json_response(dict)
+    """
+    resp = None
+    json_response = {}
+    try:
+        LOG.debug(f"Sending POST request with data to {url}")
+        resp = requests.post(url, headers=headers, cookies=cookies, data=data)
+        json_response["content"] = resp.json()
+
+    except Exception as ex:
+        return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
+
+    json_response["status_code"] = resp.status_code
+    return json_response
+
+
+def get_request_json(url, headers=None, cookies=None):
     """Send GET request and return response's json data
     Args:
         url(str): url to send request to
         headers(dict): eventual request HEADERS to use in request
+        cookies(dict): cookies to pass with request
     Returns:
         json_response(dict), example {"status_code":200, "content":{original json content}}
     """
@@ -56,10 +81,7 @@ def get_request_json(url, headers=None):
     json_response = {}
     try:
         LOG.debug(f"Sending GET request to {url}")
-        if headers:
-            resp = requests.get(url, timeout=TIMEOUT, headers=headers)
-        else:
-            resp = requests.get(url, timeout=TIMEOUT)
+        resp = requests.get(url, timeout=TIMEOUT, headers=headers, cookies=cookies)
         json_response["content"] = resp.json()
 
     except Exception as ex:

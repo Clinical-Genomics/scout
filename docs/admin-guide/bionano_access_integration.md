@@ -1,0 +1,29 @@
+## Matchmaker Exchange integration
+Starting from Scout release 4.71 the software can be configured to fetch FSHD reports for individual samples from a BioNano Genomics Access server.
+Currently, a single user account is used for accessing all project samples. Depending on your setup, this user may need admin privileges to read all.
+
+### Basic configuration for BioNano Access Integration
+Edit Scout config file adding the following parameters:
+```
+# BioNano Access Server extension
+BIONANO_ACCESS = "https://bionano-access.scilifelab.se"
+BIONANO_USERNAME = "USER"
+BIONANO_PASSWORD = "PASS"
+```
+
+### Adding BioNano Access project and sample to the case config
+Scout will look up samples using the BioNano Access project- and sample keys given for the individual.
+The preferred way is by case config file, adding fields:
+```
+bionano_access:
+    project: "230303_customer_projectA1"
+    sample: "2023-12345"
+```
+
+The `scout update individual` command can alternatively be directly used to update individuals that are already loaded.
+```bash
+scout update individual -c internal_id -i ADM1059A2 bionano_access.project 230303_customer_projectA1
+scout update individual -c internal_id -i ADM1059A2 bionano_access.sample 2023-12345
+```
+
+Results appear as a tab for each case, reachable from the case page for cases that have bionano_access project and sample configured for at least one individual.

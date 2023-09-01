@@ -38,6 +38,9 @@ individual = dict(
     tumor_purity=float,
     tissue_type=str,
     chromograph_images=str,  # path to image files
+    fshd_loci=list(
+        dict(mapid=str, chromosome=str, haplotype=str, count=str, spanning_coverage=str)
+    ),  # list of D4Z4 bionano access loci
 )
 
 case = dict(
