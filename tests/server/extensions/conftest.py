@@ -2,6 +2,7 @@
 import datetime
 
 import pytest
+import responses
 
 from scout.server.app import create_app
 
@@ -142,4 +143,54 @@ def hpo_term(gene_list):
 def phenopackets_app():
     """Return an app connected to a Phenopackets API"""
     app = create_app(config=dict(TESTING=True, PHENOPAKET_API_URL="tip2toe.local"))
+    return app
+
+
+@pytest.fixture
+def bionano_config():
+    config = dict(
+        TESTING=True,
+        BIONANO_ACCESS="https://localhost:1234",
+        BIONANO_USERNAME="USERNAME",
+        BIONANO_PASSWORD="PASSWORD",
+    )
+    return config
+
+
+@pytest.fixture
+def bionano_response(bionano_config):
+    TOKEN = "a_token"
+    user = {
+        "username": bionano_config["BIONANO_USERNAME"],
+        "role": 1,
+        "userpk": 1,
+        "full_name": "Super User",
+        "email": "clark.kent@mail.com",
+    }
+    bionano_response_dict = {"TOKEN": TOKEN, "user": user}
+    return bionano_response_dict
+
+
+@pytest.fixture
+@responses.activate
+def bionano_app(bionano_config, bionano_response):
+    """Return an app with a bionano access extension"""
+
+    query = f"{bionano_config['BIONANO_ACCESS']}/administration/api/1.4/login"
+
+    responses.add(
+        responses.GET,
+        query,
+        json={
+            "output": {
+                "StatusCode": 0,
+                "token": bionano_response["TOKEN"],
+                "user": bionano_response["user"],
+            },
+        },
+        status=200,
+        content_type="application/json",
+    )
+
+    app = create_app(config=bionano_config)
     return app

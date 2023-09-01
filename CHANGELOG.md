@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show case default panel on caseS page
 - CADD filter for Cancer Somatic SNV variantS - show score
 - SpliceAI-lookup link (BROAD, shows SpliceAI and Pangolin) from variant page
+- BioNano Access server API - check projects, samples and fetch FSHD reports
 ### Fixed
 - Name of reference genome build for RNA for compatibility with IGV locus search change
 - Howto to run the Docker image on Mac computers in `admin-guide/containers/container-deploy.md`
