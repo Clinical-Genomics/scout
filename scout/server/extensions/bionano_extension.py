@@ -1,7 +1,10 @@
 """
     Connect to BioNano Access server via its API.
 
+    The server API we connect to is described in the following document:
     https://bionano.com/wp-content/uploads/2023/01/30462-Bionano-Access-API-Guide-1.pdf
+    For further development, the server has a Swagger-like demo interface at https://bionano-access.scilifelab.se/Bnx/
+    which is useful for details, and for sniffing actual message content structure, required cookie variable names etc.
 """
 import json
 import logging
