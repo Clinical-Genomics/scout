@@ -70,17 +70,16 @@ class BioNanoAccessAPI:
         }
         return cookies
 
-    def _get_json(self, query: str) -> Iterable:
+    def _get_json(self, query: str) -> Optional[Iterable]:
         json_response = get_request_json(query, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
-        json_status = json_response.get("status_code")
         if not json_content:
             return None
 
         return json_content
 
-    def _post_json(self, query: str, query_data: Dict[str, str]) -> Iterable:
+    def _post_json(self, query: str, query_data: Dict[str, str]) -> Optional[Iterable]:
         json_response = post_data_request_json(query, query_data, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
