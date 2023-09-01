@@ -45,7 +45,7 @@ from scout.export.variant import export_mt_variants
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import RerunnerError, gens, matchmaker, rerunner, store
+from scout.server.extensions import RerunnerError, bionano_access, gens, matchmaker, rerunner, store
 from scout.server.utils import case_has_alignments, case_has_mt_alignments, institute_and_case
 
 LOG = logging.getLogger(__name__)
@@ -198,6 +198,83 @@ def _set_rank_model_links(case_obj: Dict):
         )
 
 
+def _populate_case_individuals(case_obj: Dict):
+    """Populate case individuals for display
+
+    Prepare the case to be displayed in the case view.
+
+    Args:
+        case_obj(models.Case)
+    """
+    case_obj["individual_ids"] = []
+    for individual in case_obj["individuals"]:
+        try:
+            sex = int(individual.get("sex", 0))
+        except ValueError as err:
+            sex = 0
+        individual["sex_human"] = SEX_MAP[sex]
+
+        pheno_map = PHENOTYPE_MAP
+        if case_obj.get("track", "rare") == "cancer":
+            pheno_map = CANCER_PHENOTYPE_MAP
+
+        individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
+        case_obj["individual_ids"].append(individual["individual_id"])
+
+
+def _get_events(store, institute_obj, case_obj) -> List:
+    """Prepare events for activity display."""
+    events = list(store.events(institute_obj, case=case_obj))
+    for event in events:
+        event["verb"] = VERBS_MAP.get(event["verb"], "did {} for".format(event["verb"]))
+
+    return events
+
+
+def bionano_case(store, institute_obj, case_obj) -> Dict:
+    """Preprocess a case for tabular view, BioNano."""
+
+    _populate_case_individuals(case_obj)
+
+    for individual in case_obj["individuals"]:
+        fshd_loci = None
+        if individual.get("bionano_access") and not individual.get("fshd_loci"):
+            fshd_loci = bionano_access.get_fshd_report(
+                individual["bionano_access"].get("project"),
+                individual["bionano_access"].get("sample"),
+            )
+            if not fshd_loci:
+                flash(
+                    f"Sample FSHD report configured for {individual['bionano_access'].get('project')} - {individual['bionano_access'].get('sample')} but could be retrieved. Check BioNano Access server ({current_app.config.get('BIONANO_ACCESS')}) manually if the error persists.",
+                    "danger",
+                )
+
+        individual["fshd_loci"] = fshd_loci
+
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "bionano_access_url": current_app.config.get("BIONANO_ACCESS"),
+        "comments": store.events(institute_obj, case=case_obj, comments=True),
+        "events": _get_events(store, institute_obj, case_obj),
+    }
+    return data
+
+
+def sma_case(store, institute_obj, case_obj):
+    """Preprocess a case for tabular view, SMA."""
+
+    _populate_case_individuals(case_obj)
+
+    data = {
+        "institute": institute_obj,
+        "case": case_obj,
+        "comments": store.events(institute_obj, case=case_obj, comments=True),
+        "events": _get_events(store, institute_obj, case_obj),
+    }
+    return data
+
+
 def case(store, institute_obj, case_obj):
     """Preprocess a single case.
 
@@ -213,20 +290,8 @@ def case(store, institute_obj, case_obj):
 
     """
     # Convert individual information to more readable format
-    case_obj["individual_ids"] = []
-    for individual in case_obj["individuals"]:
-        try:
-            sex = int(individual.get("sex", 0))
-        except ValueError as err:
-            sex = 0
-        individual["sex_human"] = SEX_MAP[sex]
 
-        pheno_map = PHENOTYPE_MAP
-        if case_obj.get("track", "rare") == "cancer":
-            pheno_map = CANCER_PHENOTYPE_MAP
-
-        individual["phenotype_human"] = pheno_map.get(individual["phenotype"])
-        case_obj["individual_ids"].append(individual["individual_id"])
+    _populate_case_individuals(case_obj)
 
     case_obj["assignees"] = [
         store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])
@@ -289,11 +354,6 @@ def case(store, institute_obj, case_obj):
             if institute_obj.get("collaborators")
             and collab["_id"] in institute_obj.get("collaborators")
         ]
-
-    events = list(store.events(institute_obj, case=case_obj))
-    for event in events:
-        event["verb"] = VERBS_MAP.get(event["verb"], "did {} for".format(event["verb"]))
-
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
 
     # if updated_at is a list, set it to the last update datetime
@@ -333,7 +393,6 @@ def case(store, institute_obj, case_obj):
     data = {
         "institute": institute_obj,
         "case": case_obj,
-        "status_class": STATUS_MAP.get(case_obj["status"]),
         "other_causatives": [
             var
             for var in store.case_matching_causatives(case_obj=case_obj, limit_genes=limit_genes)
@@ -357,7 +416,7 @@ def case(store, institute_obj, case_obj):
         "hpo_groups": pheno_groups,
         "case_groups": case_groups,
         "case_group_label": case_group_label,
-        "events": events,
+        "events": _get_events(store, institute_obj, case_obj),
         "suspects": suspects,
         "causatives": causatives,
         "evaluated_variants": evaluated_variants,
