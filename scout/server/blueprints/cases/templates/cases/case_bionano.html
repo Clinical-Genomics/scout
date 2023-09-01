@@ -1,0 +1,167 @@
+{% extends "cases/case_tabular_view.html" %}
+{% from "utils.html" import comments_panel, activity_panel %}
+
+{% block title %}
+  {{ super() }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">BioNano FSHD</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
+    {{ fshd_case_page() }}
+  </div> <!-- end of div id body-row -->
+</div>
+{% endblock %}
+
+{% macro fshd_case_page() %}
+<div class="container_spaced">
+  <div class="card col-md-12">
+    <h4 class="mt-3">Case: {{case.display_name}}</h4>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-xs-12 col-md-12">{{ bionano_individuals_table(case, institute, tissue_types) }}</div>
+      </div> <!-- end of div row -->
+      <div class="row">
+        <div class="col-md-4">
+          {% if case.madeline_info and case.individuals|length > 1 %}
+            {{ pedigree_panel() }}
+          {% else %}
+            <p>No pedigree picture available.</p>
+          {% endif %}
+        </div>
+        <div class="col-md-8">
+          {{ synopsis_panel() }}
+          {{ comments_panel(institute, case, current_user, comments) }}
+        </div>
+      </div> <!-- end of div row -->
+
+      <div class="row">
+        <div class="col-sm-12">{{activity_panel(events)}}</div>
+      </div>
+
+      {{ modal_synopsis() }}
+    </div> <!-- end of card body -->
+  </div> <!-- end of card div-->
+</div>
+{% endmacro %}
+
+{% macro bionano_individuals_table(case, institute, tissues) %}
+<form method="POST" action="{{ url_for('cases.update_individual', institute_id=institute._id, case_name=case.display_name) }}">
+  <div class="card panel-default">
+    <div class="panel-heading" id="fshd_table_heading">FSHD loci - Individuals</div>
+    <div class="table-responsive">
+      <table class="table table-sm" aria-describedby="fshd_table_heading">
+        <thead>
+          <tr>
+            <th data-bs-toggle='tooltip' data-bs-container='body' style="width: 20%"
+             title="Display name of sample">Sample</th>
+            <th data-bs-toggle='tooltip' style="width: 5%" title="Sample sex">Sex</th>
+            <th data-bs-toggle='tooltip' style="width: 5%" title="Phenotype of sample">Phenotype</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body'
+              style="width: 5%" title="Chromosome of D4Z4 locus">Chr</th>
+              <th data-bs-toggle='tooltip' data-bs-container='body'
+                style="width: 5%" title="Haplotype of D4Z4 locus">Haplotype</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body'
+             title="D4Z4 repeat unit count" style="width: 5%">D4Z4 count</th>
+             <th data-bs-toggle='tooltip' data-bs-container='body'
+              title="Repeat spanning coverage" style="width: 5%">Coverage</th>
+            <th data-bs-toggle='tooltip' data-bs-container='body'
+             title="Ancestry prediction from peddy" style="width: 10%">Ancestry (pred.)</th>
+             <th data-bs-toggle='tooltip' data-bs-container='body'
+              title="Tissue origin for the sample" style="width: 15%">Tissue</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ind in case.individuals %}
+            {% if "fshd_loci" in ind and ind.fshd_loci is not none %}
+              {% for d4z4 in ind.fshd_loci %}
+                <tr {% if d4z4.chromosome == 4 and d4z4.count < 11 and d4z4.haplotype == "4qA" %}
+                      class="bg-danger text-white"
+                    {% elif d4z4.chromosome == 4 and d4z4.count < 11 %}
+                      class="bg-warning text-white"
+                    {% endif %}>
+                  {% if loop.index == 1 %}
+                    <td> {{ ind.display_name }}</td>
+                    <td style="font-weight: bold;">
+                    {% if ind.sex_human in ['female','male'] %}
+                      {% if ind.sex_human == 'female' %}
+                        F
+                      {% elif ind.sex_human == 'male' %}
+                        M
+                      {% else %}
+                        {{ind.sex_human}}
+                      {% endif %}
+                    {% endif %}
+                    {% if ind.confirmed_sex %}
+                      <i class="fa fa-check"></i>
+                    {% endif %}
+                    </td>
+                    <td>{{ ind.phenotype_human }}</td>
+                  {% else %}
+                    <td></td><td></td><td></td>
+                  {% endif %}
+                  <td>{{ d4z4.chromosome }}</td>
+                  <td>{{ d4z4.haplotype }}</td>
+                  <td>{{ d4z4.count }}</td>
+                  <td>{{ d4z4.spanning_coverage }}</td>
+                  {% if loop.index == 1 %}<td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+                  <td>
+                    {{ ind.tissue_type }}
+                  </td>
+                  {% else %}
+                    <td></td><td></td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            {% else %} <!-- Individual in the family without any d4z4 locus data -->
+              <tr class="bg-secondary text-white">
+                <td> {{ ind.display_name }}</td>
+                    <td style="font-weight: bold;">
+                    {% if ind.sex_human in ['female','male'] %}
+                      {% if ind.sex_human == 'female' %}
+                        F
+                      {% elif ind.sex_human == 'male' %}
+                        M
+                      {% else %}
+                        {{ind.sex_human}}
+                      {% endif %}
+                    {% endif %}
+                    {% if ind.confirmed_sex %}
+                      <i class="fa fa-check"></i>
+                    {% endif %}
+                    </td>
+                    <td>{{ ind.phenotype_human }}</td>
+                  <td colspan="4">N/A</td>
+                  <td>{{ ind.predicted_ancestry or 'N/A' }}</td>
+                  <td>
+                    {{ ind.tissue_type }}
+                  </td>
+                </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr><td colspan="9">
+          This is the processed FSHD report for the case. Please visit your <a href="{{bionano_access_url}}" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Bionano Access server</a>
+        </td></tfoot>
+        </tr>
+      </table>
+    </div>
+  </div>
+</form>
+{% endmacro %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
