@@ -6,6 +6,7 @@ from click import progressbar
 
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
+from scout.models.phenotype_term import HpoTerm
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.hpo_terms import build_hpo_tree
 from scout.parse.omim import get_mim_phenotypes
@@ -88,12 +89,14 @@ def load_hpo_terms(
     # Parse the terms
     LOG.info("Parsing hpo terms")
     hpo_terms = build_hpo_tree(hpo_lines)
+    for hpo_id, hpo_term in hpo_terms.items():
+        HpoTerm(**hpo_term)  # Validate basic term using pydantic
 
     # Fetch the hpo gene information if no file
     if not hpo_gene_lines:
         hpo_gene_lines = fetch_hpo_to_genes_to_disease()
 
-    # Get a map with hgnc symbols to hgnc ids from scout
+    # Get a map with HGNC symbols to HGNC ids from scout
     if not alias_genes:
         alias_genes = adapter.genes_by_alias()
 
