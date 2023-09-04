@@ -16,7 +16,7 @@ class HpoTerm(BaseModel):
     ancestors: List = []
     all_ancestors: List = []
     children: List = []
-    genes: List = [] # List with integers that are hgnc_ids
+    genes: List = []  # List with integers that are hgnc_ids
 
     @validator("hpo_number", always=True)
     def get_hpo_number(cls, _, values) -> int:
