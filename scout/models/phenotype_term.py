@@ -5,13 +5,17 @@ from pydantic import BaseModel, validator
 
 # Hpo terms represents data from the hpo web
 class HpoTerm(BaseModel):
-    hpo_id: str
-    hpo_number: Optional[int]
-    description: str
+    """
+    Values that populate this class gets parsed from items present in the hpo.obo file:
+    https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo
+    """
+    hpo_id: str # id field in the hpo.obo file
+    hpo_number: Optional[int] # id field in the hpo.obo file, stripped of the 'HP:' part
+    description: str # name field in the hpo.obo file
     ancestors: List = []
     all_ancestors: List = []
-    children: List = []
-    genes: List = []
+    children: List = [] 
+    genes: List = [] # List with integers that are hgnc_ids
 
     @validator("hpo_number", always=True)
     def get_hpo_number(cls, value, values) -> int:
