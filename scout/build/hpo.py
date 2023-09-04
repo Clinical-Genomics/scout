@@ -1,11 +1,12 @@
 import logging
 
 from scout.models.phenotype_term import HpoTerm
+from typing import Dict
 
 LOG = logging.getLogger(__name__)
 
 
-def build_hpo_term(hpo_info):
+def build_hpo_term(hpo_info) -> Dict:
     """Build a hpo_term object
 
     Check that the information is correct and add the correct hgnc ids to the
@@ -41,4 +42,6 @@ def build_hpo_term(hpo_info):
         children=list(hpo_info.get("children", set())),
     )
 
-    return hpo_obj
+    dict_hpo_term: Dict = dict(hpo_obj)
+    dict_hpo_term["_id"] = hpo_obj.hpo_id
+    return dict_hpo_term
