@@ -9,13 +9,14 @@ class HpoTerm(BaseModel):
     Values that populate this class gets parsed from items present in the hpo.obo file:
     https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo
     """
-    hpo_id: str # id field in the hpo.obo file
-    hpo_number: Optional[int] # id field in the hpo.obo file, stripped of the 'HP:' part
-    description: str # name field in the hpo.obo file
+
+    hpo_id: str  # id field in the hpo.obo file
+    hpo_number: Optional[int]  # id field in the hpo.obo file, stripped of the 'HP:' part
+    description: str  # name field in the hpo.obo file
     ancestors: List = []
     all_ancestors: List = []
-    children: List = [] 
-    genes: List = [] # List with integers that are hgnc_ids
+    children: List = []
+    genes: List = []  # List with integers that are hgnc_ids
 
     @validator("hpo_number", always=True)
     def get_hpo_number(cls, value, values) -> int:
