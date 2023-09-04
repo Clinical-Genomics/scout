@@ -41,4 +41,4 @@ def build_hpo_term(hpo_info):
         children=list(hpo_info.get("children", set())),
     )
 
-    return hpo_obj
+    return dict(hpo_obj)
