@@ -28,7 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
-- Drop old HPO term collection only after parsing of new one completes
+- Drop old HPO term collection only after parsing and validation of new terms completes
 - Move score to own column on Cancer Somatic SNV variantS page
 - Refactored a few complex case operations, breaking out sub functionalities
 
