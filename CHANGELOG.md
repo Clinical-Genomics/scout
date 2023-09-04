@@ -24,7 +24,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visualization of cancer variants where cancer case has no affected individual
 - ProteinPaint gene link (small StJude API change)
 - Causative MEI variant link on causatives page
-- Bionano access api settings commented out by default in Scout config file
+- Bionano access api settings commented out by default in Scout demo config file.
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
