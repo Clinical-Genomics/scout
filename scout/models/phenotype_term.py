@@ -1,11 +1,10 @@
 from typing import List, Optional
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
 
 
 # Hpo terms represents data from the hpo web
 class HpoTerm(BaseModel):
-    _id: str
     hpo_id: str
     hpo_number: Optional[int]
     description: str
