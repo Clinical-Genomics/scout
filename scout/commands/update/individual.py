@@ -85,7 +85,7 @@ def individual(case_id, ind, key, value):
         if ind_obj["display_name"] == ind:
             if "." in key:
                 key_parts = key.split(".")
-                if not ind_obj[key_parts[0]]:
+                if not ind_obj.get(key_parts[0]):
                     ind_obj[key_parts[0]] = {}
                 ind_obj[key_parts[0]][key_parts[1]] = value
                 continue
