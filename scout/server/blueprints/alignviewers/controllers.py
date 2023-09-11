@@ -124,6 +124,9 @@ def make_sashimi_tracks(case_obj, variant_id):
     """
     build = "38"  # This feature is only available for RNA tracks in build 38
 
+    if not variant_id:
+        chromosome = "All"
+
     variant_obj = store.variant(document_id=variant_id)
 
     # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database

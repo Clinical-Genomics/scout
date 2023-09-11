@@ -70,6 +70,7 @@ Below are available configuration parameters for a Scout case. Names marked with
       - **vcf** _String_ Path to STR VCF file to view STR alignments
       - **catalog** _String_ Path or URL to REViewer catalog JSON file to view STR alignments
       - **reference** _String_ Path or URL for REViewer to reference sequence for the individual STR alignment
+    - **rna_alignment_path** _String_ Path to RNA alignment file (BAM/CRAM)
     - **rna_coverage_bigwig** _String_ Path to coverage islands file generated
     - **rhocall_bed** _String_ Path to BED file to view alignments [Reference][rhocall].
     - **rhocall_wig** _String_ Path to WIG file to view alignments [Reference][rhocall].

@@ -188,6 +188,13 @@
     <span class="text-muted">BAM file(s) missing</span>
   {% endif %}
 </div>
+{% if case.rna_tracks %}
+  <div href="#" class="bg-dark list-group-item d-inline-block text-white">
+    <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
+      <button role="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Only available in build GRCh38" class="btn btn-xs form-control btn-secondary">RNA splicing</button>
+    </form>
+  </div>
+{% endif %}
 {% endmacro %}
 
 {% macro rank_model(case) %}

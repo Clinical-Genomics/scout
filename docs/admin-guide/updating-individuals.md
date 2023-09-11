@@ -15,6 +15,7 @@ Options:
 ```
 And the tracks that can be updated are the following:
 - bam_file
+- rna_alignment_path
 - mt_bam
 - vcf2cytosure
 - rhocall_bed

@@ -137,10 +137,11 @@ def has_rna_tracks(case_obj):
         # Track contains 2 files and they should both be present
         splicej_bed = ind.get("splice_junctions_bed")
         rna_cov_bw = ind.get("rna_coverage_bigwig")
-        if None in [splicej_bed, rna_cov_bw]:
-            continue
-        if False in [os.path.exists(splicej_bed), os.path.exists(rna_cov_bw)]:
-            continue
+        rna_aln = ind.get("rna_alignment_path")
+
+        for path in [splicej_bed, rna_cov_bw, rna_aln]:
+            if not path or not os.path.exists(path):
+                continue
         return True
     return False
 
@@ -380,7 +381,7 @@ def variant(
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "inherit_palette": INHERITANCE_PALETTE,
         "igv_tracks": get_igv_tracks(genome_build),
-        "splice_junctions_tracks": has_rna_tracks(case_obj),
+        "rna_tracks": has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
         "rank_score_results": variant_rank_scores(store, case_obj, variant_obj),
