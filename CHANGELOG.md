@@ -7,6 +7,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Load and display full RNA alignments on alignment viewer
+### Changed
+- Column width adjustment on caseS page
+
 
 ## [4.71]
 ### Added
