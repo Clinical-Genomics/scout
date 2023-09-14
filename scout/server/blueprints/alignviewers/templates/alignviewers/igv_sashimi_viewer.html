@@ -77,7 +77,17 @@
                                   url: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed) }}",
                                   indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index) }}",
                                   minUniquelyMappedReads: 1
-                                }
+                                },
+                                {
+                                  name: "{{ track.name }}",
+                                  type: "alignment",
+                                  url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
+                                  indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
+                                  sourceType: "file",
+                                  format: "{{ track.format }}",
+                                  height: "{{track.height}}"
+                                },
+                        {% endfor %}
                             ]
                           }, // end of sashimi track with data
                           { // genes track

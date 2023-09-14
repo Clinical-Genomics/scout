@@ -15,7 +15,6 @@ samples:
     sex: male
     expected_coverage: 30
     mt_bam: scout/demo/reduced_mt.bam
-    rna_cram:
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
     tissue_type: blood
     rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig

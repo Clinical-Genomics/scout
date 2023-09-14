@@ -126,48 +126,51 @@ def make_sashimi_tracks(case_obj, variant_id):
 
     if not variant_id:
         chromosome = "All"
+        locus = chromosome
 
-    variant_obj = store.variant(document_id=variant_id)
+    if variant_id:
+        variant_obj = store.variant(document_id=variant_id)
 
-    # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
-    locus_start_coords = []
-    locus_end_coords = []
+        # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
+        locus_start_coords = []
+        locus_end_coords = []
 
-    # Check if variant coordinates are in genome build 38
-    # Otherwise do variant coords liftover
-    if build not in str(case_obj.get("genome_build")):
-        client = EnsemblRestApiClient()
-        mapped_coords = client.liftover(
-            case_obj.get("genome_build"),
-            variant_obj.get("chromosome"),
-            variant_obj.get("position"),
-            variant_obj.get("end"),
-        )
-        if mapped_coords:
-            mapped_start = mapped_coords[0]["mapped"].get("start")
-            mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
-            locus_start_coords.append(mapped_start)
-            locus_end_coords.append(mapped_end)
+        # Check if variant coordinates are in genome build 38
+        # Otherwise do variant coords liftover
+        if build not in str(case_obj.get("genome_build")):
+            client = EnsemblRestApiClient()
+            mapped_coords = client.liftover(
+                case_obj.get("genome_build"),
+                variant_obj.get("chromosome"),
+                variant_obj.get("position"),
+                variant_obj.get("end"),
+            )
+            if mapped_coords:
+                mapped_start = mapped_coords[0]["mapped"].get("start")
+                mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
+                locus_start_coords.append(mapped_start)
+                locus_end_coords.append(mapped_end)
 
-    # Use original coordinates only genome build was already 38 or liftover didn't work
-    if not locus_start_coords:
-        locus_start_coords.append(variant_obj.get("position"))
-    if not locus_end_coords:
-        locus_end_coords.append(variant_obj.get("end"))
+        # Use original coordinates only genome build was already 38 or liftover didn't work
+        if not locus_start_coords:
+            locus_start_coords.append(variant_obj.get("position"))
+        if not locus_end_coords:
+            locus_end_coords.append(variant_obj.get("end"))
 
-    # Collect locus coordinates. Take into account that variant can hit multiple genes
-    variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
-    for gene_id in variant_genes_ids:
-        gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene_id, build=build)
-        if gene_caption is None:
-            continue
-        locus_start_coords.append(gene_caption["start"])
-        locus_end_coords.append(gene_caption["end"])
+        # Collect locus coordinates. Take into account that variant can hit multiple genes
+        variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
+        for gene_id in variant_genes_ids:
+            gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene_id, build=build)
+            if gene_caption is None:
+                continue
+            locus_start_coords.append(gene_caption["start"])
+            locus_end_coords.append(gene_caption["end"])
 
-    locus_start = min(locus_start_coords)
-    locus_end = max(locus_end_coords)
+        locus_start = min(locus_start_coords)
+        locus_end = max(locus_end_coords)
 
-    locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
+        locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
+
     display_obj = {"locus": locus, "tracks": []}
 
     # Add Genes and reference tracks to display object
@@ -183,12 +186,18 @@ def make_sashimi_tracks(case_obj, variant_id):
         splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
         if splicej_bed_index is None:
             flash(f"Missing bed file index for individual {ind['display_name']}")
+        rna_aln = rna_alignment_path
+        rna_aln_index = rna_alignment_index_path
 
         track = {
             "name": ind["display_name"],
             "coverage_wig": coverage_wig,
             "splicej_bed": splicej_bed,
             "splicej_bed_index": splicej_bed_index,
+            "url": rna_aln,
+            "indexURL": rna_aln_index,
+            "format": rna_aln.split(".")[-1],  # "bam" or "cram"
+            "height": 800,
         }
         display_obj["tracks"].append(track)
 
