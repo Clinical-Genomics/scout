@@ -7,7 +7,7 @@ from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import cloud_tracks, store
-from scout.server.utils import case_append_alignments
+from scout.server.utils import case_append_alignments, find_index
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -186,19 +186,22 @@ def make_sashimi_tracks(case_obj, variant_id):
         splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
         if splicej_bed_index is None:
             flash(f"Missing bed file index for individual {ind['display_name']}")
-        rna_aln = rna_alignment_path
-        rna_aln_index = rna_alignment_index_path
+        rna_aln = None
+        if ind.get("rna_alignment_path"):
+            rna_aln = ind["rna_alignment_path"]
+            rna_aln_index = find_index(rna_aln)
 
         track = {
             "name": ind["display_name"],
             "coverage_wig": coverage_wig,
             "splicej_bed": splicej_bed,
             "splicej_bed_index": splicej_bed_index,
-            "url": rna_aln,
-            "indexURL": rna_aln_index,
-            "format": rna_aln.split(".")[-1],  # "bam" or "cram"
             "height": 800,
         }
+        if rna_aln:
+            track["url"] = rna_aln
+            track["indexURL"] = rna_aln_index
+            track["format"] = rna_aln.split(".")[-1]  # "bam" or "cram"
         display_obj["tracks"].append(track)
 
     display_obj["case"] = case_obj["display_name"]

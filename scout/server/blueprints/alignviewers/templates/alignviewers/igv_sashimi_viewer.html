@@ -85,9 +85,9 @@
                                   indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
                                   sourceType: "file",
                                   format: "{{ track.format }}",
-                                  height: "{{track.height}}"
+                                  height: "{{ track.height }}"
                                 },
-                        {% endfor %}
+
                             ]
                           }, // end of sashimi track with data
                           { // genes track
