@@ -134,7 +134,7 @@ def has_rna_tracks(case_obj):
     """
     # Display junctions track if available for any of the individuals
     for ind in case_obj.get("individuals", []):
-        # Track contains 2 files and they should both be present
+        # RNA can have three different aln track files
         splicej_bed = ind.get("splice_junctions_bed")
         rna_cov_bw = ind.get("rna_coverage_bigwig")
         rna_aln = ind.get("rna_alignment_path")
@@ -142,7 +142,7 @@ def has_rna_tracks(case_obj):
         for path in [splicej_bed, rna_cov_bw, rna_aln]:
             if not path or not os.path.exists(path):
                 continue
-        return True
+            return True
     return False
 
 

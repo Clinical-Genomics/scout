@@ -36,8 +36,8 @@ def check_session_tracks(resource):
 def set_session_tracks(display_obj):
     """Save igv tracks as a session object. This way it's easy to verify that a user is requesting one of these files from remote_static view endpoint
 
-    Args:
-        display_obj(dict): A display object containing case name, list of genes, lucus and tracks
+    Argso
+        display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
     session_tracks = list(display_obj.get("reference_track", {}).values())
     for key, track_items in display_obj.items():
@@ -178,30 +178,26 @@ def make_sashimi_tracks(case_obj, variant_id):
 
     # Populate tracks for each individual with splice junction track data
     for ind in case_obj.get("individuals", []):
-        if not all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
-            continue
-
-        coverage_wig = ind["rna_coverage_bigwig"]
-        splicej_bed = ind["splice_junctions_bed"]
-        splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
-        if splicej_bed_index is None:
-            flash(f"Missing bed file index for individual {ind['display_name']}")
-        rna_aln = None
-        if ind.get("rna_alignment_path"):
-            rna_aln = ind["rna_alignment_path"]
-            rna_aln_index = find_index(rna_aln)
-
         track = {
             "name": ind["display_name"],
-            "coverage_wig": coverage_wig,
-            "splicej_bed": splicej_bed,
-            "splicej_bed_index": splicej_bed_index,
-            "height": 800,
         }
-        if rna_aln:
+        if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
+            coverage_wig = ind["rna_coverage_bigwig"]
+            splicej_bed = ind["splice_junctions_bed"]
+            splicej_bed_index = (
+                f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
+            )
+            if splicej_bed_index is None:
+                flash(f"Missing bed file index for individual {ind['display_name']}")
+            track["coverage_wig"] = coverage_wig
+            track["splicej_bed"] = splicej_bed
+            track["splicej_bed_index"] = splicej_bed_index
+        if ind.get("rna_alignment_path"):
+            rna_aln = ind["rna_alignment_path"]
             track["url"] = rna_aln
-            track["indexURL"] = rna_aln_index
+            track["indexURL"] = find_index(rna_aln)
             track["format"] = rna_aln.split(".")[-1]  # "bam" or "cram"
+            track["aln_height"] = 400
         display_obj["tracks"].append(track)
 
     display_obj["case"] = case_obj["display_name"]

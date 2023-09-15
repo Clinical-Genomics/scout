@@ -60,7 +60,7 @@
                               type: 'merged',
                               name: '{{ track.name }}',
                               order: {{counter.loop}},
-                              height: 500,
+                              height: {% if "aln_height" in track %} {{ 500 + track.aln_height }} {% else %} 500 {% endif %},
                               tracks:
                               [
                                 {
@@ -78,17 +78,17 @@
                                   indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index) }}",
                                   minUniquelyMappedReads: 1
                                 },
-                                {
-                                  name: "{{ track.name }}",
-                                  type: "alignment",
-                                  url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
-                                  indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
-                                  sourceType: "file",
-                                  format: "{{ track.format }}",
-                                  height: "{{ track.height }}"
-                                },
-
-                            ]
+                                {% if track.url %}
+                                  {
+                                    name: "{{ track.name }}",
+                                    type: "alignment",
+                                    url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
+                                    indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
+                                    sourceType: "file",
+                                    format: "{{ track.format }}",
+                                  },
+                                {% endif %}
+                              ]
                           }, // end of sashimi track with data
                           { // genes track
                             name: geneTrack.name,
