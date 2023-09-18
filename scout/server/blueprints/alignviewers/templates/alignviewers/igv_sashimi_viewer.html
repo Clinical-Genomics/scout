@@ -59,6 +59,7 @@
                             {% if track.url %}
                               {
                                 name: "{{ track.name }}",
+                                order: {{counter.loop}},
                                 type: "alignment",
                                 url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
                                 indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
