@@ -4,8 +4,8 @@ from ped_parser import FamilyParser
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.exceptions import PedigreeError
+from scout.models.case_loading_models import CaseLoader
 from scout.parse.mitodel import parse_mitodel_file
-from scout.parse.models import ScoutLoadConfig
 from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
 
@@ -48,7 +48,10 @@ def parse_case_data(**kwargs):
     config = kwargs.pop("config", {})
 
     # populate configuration according to Pydantic defined classes
-    config_dict = parse_case_config(config)
+    LOG.warning(config)
+    config_dict = CaseLoader(**config)
+
+    """
 
     # If ped file  provided we need to parse that first
     if kwargs.get("ped"):
@@ -60,7 +63,7 @@ def parse_case_data(**kwargs):
         config_dict["samples"] = samples
 
     # Give passed keyword arguments precedence over file configuration
-    # Except for 'owner', prededence config file over arguments
+    # Except for 'owner', precedence config file over arguments
     if "owner" in config_dict:
         kwargs.pop("owner", None)  # dont crash if 'owner' is missing
     for key in kwargs:
@@ -105,15 +108,7 @@ def parse_case_data(**kwargs):
         add_smn_info_case(config_dict)
 
     return remove_none_recursive(config_dict)
-
-
-def parse_case_config(config):
-    """Parse configuration data for a case. Returns a dict"""
-    if config == {}:
-        LOG.warning("No configuration in command: {}".format(config))
-        return {}
-    parsed_config = ScoutLoadConfig(**config)
-    return parsed_config.dict()
+    """
 
 
 def add_mitodel_info(config_data):
