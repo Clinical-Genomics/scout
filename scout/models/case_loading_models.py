@@ -13,9 +13,18 @@ from typing import Optional, Union, List, Dict, Literal
 from pydantic import BaseModel, field_validator, model_validator, Field
 from scout.constants import ANALYSIS_TYPES
 
-SAMPLES_FILE_PATH_CHECKS = ["bam_file", "mitodel_file", "rhocall_bed", "rhocall_wig", "rna_coverage_bigwig",
-                            "splice_junctions_bed", "tiddit_coverage_wig", "upd_regions_bed", "upd_sites_bed",
-                            "vcf2cytosure"]
+SAMPLES_FILE_PATH_CHECKS = [
+    "bam_file",
+    "mitodel_file",
+    "rhocall_bed",
+    "rhocall_wig",
+    "rna_coverage_bigwig",
+    "splice_junctions_bed",
+    "tiddit_coverage_wig",
+    "upd_regions_bed",
+    "upd_sites_bed",
+    "vcf2cytosure",
+]
 
 GENOME_BUILDS = ["37", "38"]
 
@@ -38,10 +47,13 @@ def _get_demo_file_absolute_path(partial_path: str) -> str:
 
 
 def _is_string_path(string_path) -> bool:
-    return Path(string_path).is_file() or Path(_get_demo_file_absolute_path(partial_path=string_path))
+    return Path(string_path).is_file() or Path(
+        _get_demo_file_absolute_path(partial_path=string_path)
+    )
 
 
 #### Samples - related pydantic models ####
+
 
 class BioNanoAccess(BaseModel):
     project: Optional[str] = None
@@ -112,19 +124,30 @@ class SampleLoader(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
-    @model_validator(mode='before')
-    def set_sample_display_name(cls, values) -> 'SampleLoader':
+    @model_validator(mode="before")
+    def set_sample_display_name(cls, values) -> "SampleLoader":
         values.update(
-            {"display_name": values.get("display_name", values.get("sample_name", values.get("individual_id")))})
+            {
+                "display_name": values.get(
+                    "display_name", values.get("sample_name", values.get("individual_id"))
+                )
+            }
+        )
         return values
 
-    @model_validator(mode='before')
-    def set_alignment_path(cls, values) -> 'SampleLoader':
-        values.update({"bam_file": values.get("alignment_path", values.get("bam_file", values.get("bam_path")))})
+    @model_validator(mode="before")
+    def set_alignment_path(cls, values) -> "SampleLoader":
+        values.update(
+            {
+                "bam_file": values.get(
+                    "alignment_path", values.get("bam_file", values.get("bam_path"))
+                )
+            }
+        )
         return values
 
-    @model_validator(mode='before')
-    def validate_file_path(cls, values) -> 'SampleLoader':
+    @model_validator(mode="before")
+    def validate_file_path(cls, values) -> "SampleLoader":
         for item in SAMPLES_FILE_PATH_CHECKS:
             if values.get(item) is None:
                 continue
@@ -149,6 +172,7 @@ class SampleLoader(BaseModel):
 
 
 #### Case - related pydantic models ####
+
 
 class CaseLoader(BaseModel):
     owner: str
