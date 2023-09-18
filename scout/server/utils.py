@@ -203,6 +203,28 @@ def case_has_mt_alignments(case_obj):
             return
 
 
+def case_has_rna_tracks(case_obj):
+    """Returns True if one of more individuals of the case contain RNA-seq data
+
+    Args:
+        case_obj(dict)
+    Returns
+        True or False (bool)
+    """
+    # Display junctions track if available for any of the individuals
+    for ind in case_obj.get("individuals", []):
+        # RNA can have three different aln track files
+        splicej_bed = ind.get("splice_junctions_bed")
+        rna_cov_bw = ind.get("rna_coverage_bigwig")
+        rna_aln = ind.get("rna_alignment_path")
+
+        for path in [splicej_bed, rna_cov_bw, rna_aln]:
+            if not path or not os.path.exists(path):
+                continue
+            return True
+    return False
+
+
 def case_append_alignments(case_obj):
     """Deconvolute information about files to case_obj.
 

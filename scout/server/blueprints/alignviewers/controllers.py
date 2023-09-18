@@ -113,7 +113,7 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     return display_obj
 
 
-def make_sashimi_tracks(case_obj, variant_id):
+def make_sashimi_tracks(case_obj, variant_id=None):
     """Create a dictionary containing the required tracks for a splice junction plot
 
     Args:
