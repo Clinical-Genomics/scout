@@ -178,9 +178,6 @@ def make_sashimi_tracks(case_obj, variant_id):
 
     # Populate tracks for each individual with splice junction track data
     for ind in case_obj.get("individuals", []):
-        track = {
-            "name": ind["display_name"],
-        }
         if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
             coverage_wig = ind["rna_coverage_bigwig"]
             splicej_bed = ind["splice_junctions_bed"]
@@ -189,17 +186,23 @@ def make_sashimi_tracks(case_obj, variant_id):
             )
             if splicej_bed_index is None:
                 flash(f"Missing bed file index for individual {ind['display_name']}")
-            track["coverage_wig"] = coverage_wig
-            track["splicej_bed"] = splicej_bed
-            track["splicej_bed_index"] = splicej_bed_index
+            track = {
+                "name": ind["display_name"],
+                "coverage_wig": coverage_wig,
+                "splicej_bed": splicej_bed,
+                "splicej_bed_index": splicej_bed_index,
+            }
+            display_obj["tracks"].append(track)
         if ind.get("rna_alignment_path"):
             rna_aln = ind["rna_alignment_path"]
-            track["url"] = rna_aln
-            track["indexURL"] = find_index(rna_aln)
-            track["format"] = rna_aln.split(".")[-1]  # "bam" or "cram"
-            track["aln_height"] = 400
-        display_obj["tracks"].append(track)
-
+            aln_track = {
+                "name": ind["display_name"],
+                "url": rna_aln,
+                "indexURL": find_index(rna_aln),
+                "format": rna_aln.split(".")[-1],  # "bam" or "cram"
+                "aln_height": 400,
+            }
+            display_obj["tracks"].append(aln_track)
     display_obj["case"] = case_obj["display_name"]
 
     return display_obj
