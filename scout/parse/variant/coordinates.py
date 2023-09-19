@@ -64,7 +64,6 @@ def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
 
     Translocations needs their own treatment as usual
     """
-    svend = svend
     end = svend
 
     if ":" in alt:
