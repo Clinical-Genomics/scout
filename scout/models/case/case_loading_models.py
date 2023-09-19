@@ -239,27 +239,38 @@ def set_custom_images(images: List[Image]) -> List[Image]:
         )
         return matches
 
+    def _set_image_content(image: Image) -> Optional[Image]:
+        """Sets the content (data) and the format of each custom image."""
+
+        if _is_string_path(image.path):
+            path = Path(image.path)
+            with open(path, "rb") as file_handle:
+                image.data = bytes(file_handle.read())
+                image.format = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
+        return image
+
+
 
     real_folder_images: List[Image] = []
     for image in images:
-        LOG.warning(image)
         if image.str_repid == "{REPID}": # This will be more than one image in a folder
             for match in _glob_wildcard(path=image.path):
                 new_image: Dict = {
                     "data": None,
                     "description": image.description.replace("{REPID}", match["repid"]),
                     "height": image.height,
-                    "format": str(match["path"]).split(".")[-1],
+                    "format": None,
                     "path": str(match["path"]),
                     "str_repid": match["repid"],
                     "title": image.title.replace("{REPID}", match["repid"]),
                     "width": image.width
                 }
                 real_folder_images.append(Image(**new_image))
-        real_folder_images.append(image) # appen other non-repid images
+        real_folder_images.append(image) # append other non-repid images
 
-    
-    return images
+    real_folder_images = [ _set_image_content(image) for image in real_folder_images ]
+
+    return real_folder_images
 
 
 class RawCustomImages(BaseModel):
@@ -272,7 +283,6 @@ class RawCustomImages(BaseModel):
     def set_custom_image(cls, values: Dict) -> "RawCustomImages":
         values["variant_custom_images"] = values.get("variant_custom_images", values.get("str"))
         values["case_custom_images"] = values.get("case_custom_images", values.get("case"))
-
         return values
 
 
@@ -304,7 +314,7 @@ class CaseLoader(BaseModel):
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
     genome_build: Union[str, int] = Field(38, alias="human_genome_build")
-    individuals: List[SampleLoader] = Field([], alias="samples")
+    individuals: Union[List[SampleLoader]] = Field([], alias="samples")
     lims_id: Optional[str] = None
     madeline_info: Optional[str] = Field(None, alias="madeline")
     multiqc: Optional[str] = None
@@ -337,6 +347,22 @@ class CaseLoader(BaseModel):
     vcf_str: Optional[str] = None
     vcf_sv: Optional[str] = None
     vcf_sv_research: Optional[str] = None
+
+    @model_validator(mode="before")
+    def set_case_id(cls, values) -> "CaseLoader":
+        values.update(
+            {
+                "case_id": values.get("case_id", values.get("family"))
+            }
+        )
+        return values
+
+    @field_validator("synopsis", mode="before")
+    @classmethod
+    def set_synopsis(cls, value: Optional[Union[str, List]]) -> Optional[str]:
+        if isinstance(value, List):
+            value = ". ".join(value)
+        return value
 
     @field_validator("genome_build", mode="before")
     @classmethod

@@ -4,7 +4,7 @@ from ped_parser import FamilyParser
 
 from scout.constants import PHENOTYPE_MAP, SEX_MAP
 from scout.exceptions import PedigreeError
-from scout.models.case_loading_models import CaseLoader
+from scout.models.case.case_loading_models import CaseLoader
 from scout.parse.mitodel import parse_mitodel_file
 from scout.parse.peddy import parse_peddy_ped, parse_peddy_ped_check, parse_peddy_sex_check
 from scout.parse.smn import parse_smn_file
@@ -48,10 +48,7 @@ def parse_case_data(**kwargs):
     config = kwargs.pop("config", {})
 
     # populate configuration according to Pydantic defined classes
-    LOG.warning(config)
-    config_dict = CaseLoader(**config)
-
-    """
+    config_dict : Dict  = CaseLoader(**config).dict()
 
     # If ped file  provided we need to parse that first
     if kwargs.get("ped"):
@@ -65,7 +62,7 @@ def parse_case_data(**kwargs):
     # Give passed keyword arguments precedence over file configuration
     # Except for 'owner', precedence config file over arguments
     if "owner" in config_dict:
-        kwargs.pop("owner", None)  # dont crash if 'owner' is missing
+        kwargs.pop("owner", None)
     for key in kwargs:
         if kwargs[key] is not None:
             config_dict[key] = kwargs[key]
@@ -75,16 +72,6 @@ def parse_case_data(**kwargs):
             except KeyError:
                 config_dict[key] = None
 
-    # handle whitespace in gene panel names
-    try:
-        config_dict["gene_panels"] = [panel.strip() for panel in config_dict["gene_panels"]]
-        config_dict["default_gene_panels"] = [
-            panel.strip() for panel in config_dict["default_gene_panels"]
-        ]
-
-    except KeyError:
-        pass
-
     # This will add information from peddy to the individuals
     add_peddy_information(config_dict)
 
@@ -93,22 +80,12 @@ def parse_case_data(**kwargs):
 
     add_mitodel_info(config_dict)
 
-    if config_dict.get("synopsis"):
-        synopsis = (
-            ". ".join(config_dict["synopsis"])
-            if isinstance(config_dict["synopsis"], list)
-            else config_dict["synopsis"]
-        )
-    # Ensure case_id is set, this situation arises when no config file is given
-    if config_dict.get("case_id") is None:
-        config_dict["case_id"] = config_dict["family"]
-
     if config_dict.get("smn_tsv"):
         LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
         add_smn_info_case(config_dict)
 
     return remove_none_recursive(config_dict)
-    """
+
 
 
 def add_mitodel_info(config_data):
