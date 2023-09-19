@@ -48,7 +48,7 @@ def parse_case_data(**kwargs):
     config = kwargs.pop("config", {})
 
     # populate configuration according to Pydantic defined classes
-    config_dict : Dict  = CaseLoader(**config).dict()
+    config_dict: Dict = CaseLoader(**config).dict()
 
     # If ped file  provided we need to parse that first
     if kwargs.get("ped"):
@@ -85,7 +85,6 @@ def parse_case_data(**kwargs):
         add_smn_info_case(config_dict)
 
     return remove_none_recursive(config_dict)
-
 
 
 def add_mitodel_info(config_data):
