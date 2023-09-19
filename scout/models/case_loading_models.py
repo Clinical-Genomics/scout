@@ -25,12 +25,33 @@ SAMPLES_FILE_PATH_CHECKS = [
     "vcf2cytosure",
 ]
 
-CASE_FILE_PATH_CHECKS = ["cnv_report", "coverage_qc_report", "delivery_report", "gene_fusion_report",
-                         "gene_fusion_report_research", "madeline_info", "multiqc", "multiqc_rna", "peddy_ped",
-                         "peddy_ped_check",
-                         "peddy_sex_check", "RNAfusion_inspector", "RNAfusion_report", "RNAfusion_report_research",
-                         "vcf_cancer", "vcf_cancer_research", "vcf_cancer_sv", "vcf_cancer_sv_research", "vcf_snv",
-                         "vcf_snv_research", "vcf_mei", "vcf_mei_research", "vcf_str", "vcf_sv", "vcf_sv_research"]
+CASE_FILE_PATH_CHECKS = [
+    "cnv_report",
+    "coverage_qc_report",
+    "delivery_report",
+    "gene_fusion_report",
+    "gene_fusion_report_research",
+    "madeline_info",
+    "multiqc",
+    "multiqc_rna",
+    "peddy_ped",
+    "peddy_ped_check",
+    "peddy_sex_check",
+    "RNAfusion_inspector",
+    "RNAfusion_report",
+    "RNAfusion_report_research",
+    "vcf_cancer",
+    "vcf_cancer_research",
+    "vcf_cancer_sv",
+    "vcf_cancer_sv_research",
+    "vcf_snv",
+    "vcf_snv_research",
+    "vcf_mei",
+    "vcf_mei_research",
+    "vcf_str",
+    "vcf_sv",
+    "vcf_sv_research",
+]
 
 GENOME_BUILDS = ["37", "38"]
 TRACKS = ["rare", "cancer"]
@@ -153,8 +174,8 @@ class SampleLoader(BaseModel):
         )
         return values
 
-    @model_validator(mode='before')
-    def validate_file_path(cls, values: Dict) -> 'SampleLoader':
+    @model_validator(mode="before")
+    def validate_file_path(cls, values: Dict) -> "SampleLoader":
         for item in SAMPLES_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
             if item_path and _is_string_path(values[item]) is False:
@@ -171,6 +192,7 @@ class SampleLoader(BaseModel):
 
 
 #### Case - related pydantic models ####
+
 
 class Image(BaseModel):
     data: Optional[str] = None
@@ -244,8 +266,8 @@ class CaseLoader(BaseModel):
         else:
             raise ValueError("Genome build must be either '37' or '38'.")
 
-    @model_validator(mode='before')
-    def validate_file_path(cls, values: Dict) -> 'SampleLoader':
+    @model_validator(mode="before")
+    def validate_file_path(cls, values: Dict) -> "SampleLoader":
         for item in CASE_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
             if item_path and _is_string_path(values[item]) is False:
