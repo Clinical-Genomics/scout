@@ -215,6 +215,7 @@ class Image(BaseModel):
 
 class RawCustomImages(BaseModel):
     """This class makes a preliminary check that custom_images in the load config file has the expected structure."""
+
     custom_images: Dict[str, Union[List[Image], Dict[str, List[Image]]]] = None
 
 
@@ -224,6 +225,7 @@ class ParsedCustomImages(BaseModel):
 
 
 #### Case - related pydantic models ####
+
 
 class CaseLoader(BaseModel):
     analysis_date: Optional[datetime] = datetime.now()
