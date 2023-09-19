@@ -57,7 +57,7 @@ def sv_length(pos, end, chrom, end_chrom, svlen=None):
     return end - pos
 
 
-def sv_end(pos:int, alt:str, svend:int=None, svlen:int=None) -> int:
+def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
     """Return the end coordinate for a structural variant
     The END field from INFO usually works fine, although for some cases like insertions the callers
      set end to same as pos. In those cases we can hope that there is a svlen...
