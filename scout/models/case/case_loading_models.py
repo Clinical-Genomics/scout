@@ -42,7 +42,10 @@ CASE_FILE_PATH_CHECKS = [
     "peddy_sex_check",
     "RNAfusion_inspector",
     "RNAfusion_report",
-    "RNAfusion_report_research",
+    "RNAfusion_report_research"
+]
+
+VCF_FILE_PATH_CHECKS = [
     "vcf_cancer",
     "vcf_cancer_research",
     "vcf_cancer_sv",
@@ -53,7 +56,7 @@ CASE_FILE_PATH_CHECKS = [
     "vcf_mei_research",
     "vcf_str",
     "vcf_sv",
-    "vcf_sv_research",
+    "vcf_sv_research"
 ]
 
 GENOME_BUILDS = ["37", "38"]
@@ -87,6 +90,31 @@ def _is_string_path(string_path:str) -> bool:
         return False
 
 
+#### VCF files class ####
+
+class VcfFiles(BaseModel):
+    vcf_cancer: Optional[str] = None
+    vcf_cancer_research: Optional[str] = None
+    vcf_cancer_sv: Optional[str] = None
+    vcf_cancer_sv_research: Optional[str] = None
+    vcf_snv: Optional[str] = None
+    vcf_snv_research: Optional[str] = None
+    vcf_mei: Optional[str] = None
+    vcf_mei_research: Optional[str] = None
+    vcf_str: Optional[str] = None
+    vcf_sv: Optional[str] = None
+    vcf_sv_research: Optional[str] = None
+
+    @model_validator(mode="before")
+    def validate_file_path(cls, values: Dict) -> "VcfFiles":
+        LOG.warning(values)
+        for item in VCF_FILE_PATH_CHECKS:
+            item_path: str = values.get(item)
+            LOG.warning(item_path)
+            if item_path and _is_string_path(values[item]) is False:
+                raise ValueError(f"{item} path '{values[item]}' is not valid.")
+
+        return values
 
 #### Samples - related pydantic models ####
 
@@ -160,6 +188,7 @@ class SampleLoader(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
+
     @field_validator("tumor_purity", mode="before")
     @classmethod
     def set_tumor_purity(cls, value: Union[str, float]) -> float:
@@ -210,7 +239,7 @@ class SampleLoader(BaseModel):
 
 
 class Image(BaseModel):
-    data: Optional[str] = None
+    data: Optional[bytes] = None
     description: Optional[str] = None
     height: Optional[int] = None
     format: Optional[str] = None
@@ -335,18 +364,17 @@ class CaseLoader(BaseModel):
     sv_rank_model_version: Optional[str] = None
     synopsis: Union[List[str], str] = None
     track: Literal["rare", "cancer"] = "rare"
+    vcf_files: Optional[VcfFiles]
 
-    vcf_cancer: Optional[str] = None
-    vcf_cancer_research: Optional[str] = None
-    vcf_cancer_sv: Optional[str] = None
-    vcf_cancer_sv_research: Optional[str] = None
-    vcf_snv: Optional[str] = None
-    vcf_snv_research: Optional[str] = None
-    vcf_mei: Optional[str] = None
-    vcf_mei_research: Optional[str] = None
-    vcf_str: Optional[str] = None
-    vcf_sv: Optional[str] = None
-    vcf_sv_research: Optional[str] = None
+    def __init__(self, **data):
+        """Override init() for handling nested vcf_files dicts.
+        Use try/except to handle TypeError if `vcf_files`is already set in
+        previous call `parse_case_data()` or `parse_case()`."""
+        vcfs = VcfFiles(**data)
+        try:
+            super().__init__(vcf_files=vcfs, **data)
+        except TypeError as err:
+            super().__init__(**data)
 
     @model_validator(mode="before")
     def set_case_id(cls, values) -> "CaseLoader":

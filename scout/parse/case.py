@@ -50,6 +50,8 @@ def parse_case_data(**kwargs):
     # populate configuration according to Pydantic defined classes
     config_dict : Dict  = CaseLoader(**config).dict()
 
+    LOG.warning(config_dict)
+
     # If ped file  provided we need to parse that first
     if kwargs.get("ped"):
         LOG.warning(
