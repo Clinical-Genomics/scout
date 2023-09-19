@@ -73,7 +73,7 @@ def sv_end(pos, alt, svend=None, svlen=None):
     Returns:
         end(int)
     """
-    end = svend
+    end = svend or pos
 
     if ":" in alt:
         match = BND_ALT_PATTERN.match(alt)
