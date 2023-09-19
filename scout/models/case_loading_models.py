@@ -17,7 +17,15 @@ SAMPLES_FILE_PATH_CHECKS = ["bam_file", "mitodel_file", "rhocall_bed", "rhocall_
                             "splice_junctions_bed", "tiddit_coverage_wig", "upd_regions_bed", "upd_sites_bed",
                             "vcf2cytosure"]
 
+CASE_FILE_PATH_CHECKS = ["cnv_report", "coverage_qc_report", "delivery_report", "gene_fusion_report",
+                         "gene_fusion_report_research", "madeline_info", "multiqc", "multiqc_rna", "peddy_ped",
+                         "peddy_ped_check",
+                         "peddy_sex_check", "RNAfusion_inspector", "RNAfusion_report", "RNAfusion_report_research",
+                         "vcf_cancer", "vcf_cancer_research", "vcf_cancer_sv", "vcf_cancer_sv_research", "vcf_snv",
+                         "vcf_snv_research", "vcf_mei", "vcf_mei_research", "vcf_str", "vcf_sv", "vcf_sv_research"]
+
 GENOME_BUILDS = ["37", "38"]
+TRACKS = ["rare", "cancer"]
 
 
 class PhenoType(str, Enum):
@@ -76,7 +84,7 @@ class SampleLoader(BaseModel):
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
     bionano_access: Optional[BioNanoAccess] = None
-    capture_kits: Optional[str] = Field(alias="capture_kit")
+    capture_kits: Optional[Union[str, List]] = Field(alias="capture_kit")
     chromograph_images: Optional[ChromographImages] = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
@@ -112,33 +120,32 @@ class SampleLoader(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
-    @model_validator(mode='before')
-    def set_sample_display_name(cls, values) -> 'SampleLoader':
-        values.update(
-            {"display_name": values.get("display_name", values.get("sample_name", values.get("individual_id")))})
-        return values
-
-    @model_validator(mode='before')
-    def set_alignment_path(cls, values) -> 'SampleLoader':
-        values.update({"bam_file": values.get("alignment_path", values.get("bam_file", values.get("bam_path")))})
-        return values
-
-    @model_validator(mode='before')
-    def validate_file_path(cls, values) -> 'SampleLoader':
-        for item in SAMPLES_FILE_PATH_CHECKS:
-            if values.get(item) is None:
-                continue
-            if _is_string_path(values[item]) is True:
-                return values
-            else:
-                raise ValueError(f"{item} path '{values[item]}' is not valid.")
-
     @field_validator("tumor_purity", mode="before")
     @classmethod
     def set_tumor_purity(cls, value: Union[str, float]) -> float:
         if isinstance(value, str):
             return float(Fraction(value))
         return value
+
+    @model_validator(mode='before')
+    def set_sample_display_name(cls, values: Dict) -> 'SampleLoader':
+        values.update(
+            {"display_name": values.get("display_name", values.get("sample_name", values.get("individual_id")))})
+        return values
+
+    @model_validator(mode='before')
+    def set_alignment_path(cls, values: Dict) -> 'SampleLoader':
+        values.update({"bam_file": values.get("alignment_path", values.get("bam_file", values.get("bam_path")))})
+        return values
+
+    @model_validator(mode='before')
+    def validate_file_path(cls, values: Dict) -> 'SampleLoader':
+        for item in SAMPLES_FILE_PATH_CHECKS:
+            item_path: str = values.get(item)
+            if item_path and _is_string_path(values[item]) is False:
+                raise ValueError(f"{item} path '{values[item]}' is not valid.")
+
+        return values
 
     @field_validator("capture_kits", mode="before")
     @classmethod
@@ -150,40 +157,70 @@ class SampleLoader(BaseModel):
 
 #### Case - related pydantic models ####
 
-class CaseLoader(BaseModel):
-    owner: str
-    family: str
-    family_name: str
-    lims_id: Optional[str]
-    synopsis: Optional[Union[List, str]]
-    phenotype_terms: Optional[List] = []
-    samples: List[SampleLoader]
-    custom_images: Dict[str, str]
-    vcf_snv: Optional[str]
-    vcf_sv: Optional[str]
-    vcf_str: Optional[str]
-    vcf_mei: Optional[str]
-    vcf_snv_research: Optional[str]
-    vcf_sv_research: Optional[str]
-    vcf_mei_research: Optional[str]
-    smn_tsv: Optional[str]
-    madeline: Optional[str]
-    analysis_date: Optional[datetime] = datetime.now()
-    human_genome_build: Union[str, int]
-    delivery_report: Optional[str]
-    gene_fusion_report: Optional[str]
-    exe_ver: Optional[str]
-    reference_info: Optional[str]
-    rank_model_version: Optional[str]
-    sv_rank_model_version: Optional[str]
-    rank_score_threshold: Optional[int]
-    default_gene_panels: List[str]
-    gene_panels: List[str]
-    peddy_ped: Optional[str]  # Soon to be deprecated
-    peddy_check: Optional[str]  # Soon to be deprecated
-    peddy_sex: Optional[str]  # Soon to be deprecated
+class Image(BaseModel):
+    data: Optional[str] = None
+    description: Optional[str] = None
+    height: Optional[int] = None
+    format: Optional[str] = None
+    path: str = None
+    str_repid: Optional[str] = None
+    title: str = None
+    width: Optional[int] = None
 
-    @field_validator("human_genome_build", mode="before")
+
+class CaseLoader(BaseModel):
+    analysis_date: Optional[datetime] = datetime.now()
+    assignee: Optional[str] = None
+    case_id: str = Field(alias="family")
+    cnv_report: Optional[str] = None
+    cohorts: Optional[List[str]] = None
+    collaborators: Optional[List[str]] = None
+    coverage_qc_report: Optional[str] = None
+    custom_images: Dict[str, Union[List[Image], Dict[str, List[Image]]]] = None
+    default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
+    delivery_report: Optional[str] = None
+    display_name: Optional[str] = Field(alias="family_name")
+    exe_ver: Optional[str] = None
+    family: str = None
+    gene_fusion_report: Optional[str] = None
+    gene_fusion_report_research: Optional[str] = None
+    gene_panels: Optional[List[str]] = []
+    genome_build: Union[str, int] = Field(38, alias="human_genome_build")
+    individuals: List[SampleLoader] = Field([], alias="samples")
+    lims_id: Optional[str] = None
+    madeline_info: Optional[str] = Field(None, alias="madeline")
+    multiqc: Optional[str] = None
+    multiqc_rna: Optional[str] = None
+    owner: str = None
+    peddy_ped: Optional[str] = None  # Soon to be deprecated
+    peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")  # Soon to be deprecated
+    peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")  # Soon to be deprecated
+    phenotype_terms: Optional[List[str]] = None
+    rank_model_version: Optional[str] = None
+    rank_score_threshold: Optional[int] = 0
+    reference_info: Optional[str] = None
+    RNAfusion_inspector: Optional[str] = None
+    RNAfusion_inspector_research: Optional[str] = None
+    RNAfusion_report: Optional[str] = None
+    RNAfusion_report_research: Optional[str] = None
+    smn_tsv: Optional[str] = None
+    sv_rank_model_version: Optional[str] = None
+    synopsis: Union[List[str], str] = None
+    track: Literal["rare", "cancer"] = "rare"
+
+    vcf_cancer: Optional[str] = None
+    vcf_cancer_research: Optional[str] = None
+    vcf_cancer_sv: Optional[str] = None
+    vcf_cancer_sv_research: Optional[str] = None
+    vcf_snv: Optional[str] = None
+    vcf_snv_research: Optional[str] = None
+    vcf_mei: Optional[str] = None
+    vcf_mei_research: Optional[str] = None
+    vcf_str: Optional[str] = None
+    vcf_sv: Optional[str] = None
+    vcf_sv_research: Optional[str] = None
+
+    @field_validator("genome_build", mode="before")
     @classmethod
     def format_build(cls, value: Union[str, int]) -> str:
         str_build: str = str(value)
@@ -191,3 +228,12 @@ class CaseLoader(BaseModel):
             return str_build
         else:
             raise ValueError("Genome build must be either '37' or '38'.")
+
+    @model_validator(mode='before')
+    def validate_file_path(cls, values: Dict) -> 'SampleLoader':
+        for item in CASE_FILE_PATH_CHECKS:
+            item_path: str = values.get(item)
+            if item_path and _is_string_path(values[item]) is False:
+                raise ValueError(f"{item} path '{values[item]}' is not valid.")
+
+        return values
