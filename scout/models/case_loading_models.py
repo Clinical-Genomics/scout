@@ -1,6 +1,8 @@
 import logging
+import re
 from datetime import datetime
 from fractions import Fraction
+from glob import glob
 from pathlib import Path
 
 import path
@@ -8,7 +10,7 @@ import path
 LOG = logging.getLogger(__name__)
 
 from enum import Enum
-from typing import Optional, Union, List, Dict, Literal
+from typing import Optional, Union, List, Dict, Literal, Tuple
 
 from pydantic import BaseModel, field_validator, model_validator, Field
 from scout.constants import ANALYSIS_TYPES
@@ -75,10 +77,15 @@ def _get_demo_file_absolute_path(partial_path: str) -> str:
     return path.join(APP_ROOT, partial_path)
 
 
-def _is_string_path(string_path) -> bool:
-    return Path(string_path).is_file() or Path(
-        _get_demo_file_absolute_path(partial_path=string_path)
-    )
+def _is_string_path(string_path:str) -> bool:
+    try:
+        path = Path(string_path) or Path(
+            _get_demo_file_absolute_path(partial_path=string_path)
+        )
+        return path.is_file()
+    except AttributeError:
+        return False
+
 
 
 #### Samples - related pydantic models ####
@@ -213,6 +220,48 @@ class Image(BaseModel):
     width: Optional[int] = None
 
 
+
+def set_custom_images(images: List[Image]) -> List[Image]:
+    """Fix custom image's path and data."""
+
+    def _glob_wildcard(path) -> Tuple[Dict]:
+        """Search for multiple files using a path with wildcard."""
+        wildcard = re.search(r"{([A-Za-z0-9_-]+)}", path)
+        # make proper wildcard path
+        glob_path = path[: wildcard.start()] + "*" + path[wildcard.end():]
+        wildcard_end = len(path) - wildcard.end()
+        matches = tuple(
+            {
+                "repid": match[wildcard.start(): -wildcard_end],
+                "path": Path(match),
+            }
+            for match in glob(glob_path)
+        )
+        return matches
+
+
+    real_folder_images: List[Image] = []
+    for image in images:
+        LOG.warning(image)
+        if image.str_repid == "{REPID}": # This will be more than one image in a folder
+            for match in _glob_wildcard(path=image.path):
+                new_image: Dict = {
+                    "data": None,
+                    "description": image.description.replace("{REPID}", match["repid"]),
+                    "height": image.height,
+                    "format": str(match["path"]).split(".")[-1],
+                    "path": str(match["path"]),
+                    "str_repid": match["repid"],
+                    "title": image.title.replace("{REPID}", match["repid"]),
+                    "width": image.width
+                }
+                real_folder_images.append(Image(**new_image))
+        real_folder_images.append(image) # appen other non-repid images
+
+    
+    return images
+
+
 class RawCustomImages(BaseModel):
     """This class makes a preliminary check that custom_images in the load config file has the expected structure."""
 
@@ -230,8 +279,8 @@ class RawCustomImages(BaseModel):
 class ParsedCustomImages(BaseModel):
     """This class corresponds to the parsed fields of the custom_images config item."""
 
-    variant_custom_images: Optional[Dict] = Field(alias="str")
-    case_custom_images: Optional[Dict] = Field(alias="case")
+    variant_custom_images: List[Image] = []
+    case_custom_images: Dict[str, List[Image]] ={}
 
 
 #### Case - related pydantic models ####
@@ -309,4 +358,18 @@ class CaseLoader(BaseModel):
 
     @field_validator("custom_images", mode="after")
     def parse_custom_images(cls, value: RawCustomImages) -> ParsedCustomImages:
-        LOG.warning(f"HERE BITCHES --->{value}")
+        """Fixes image path and image data for each custom image in variant_custom_images and case_custom_images."""
+
+        value.variant_custom_images = set_custom_images(images=value.variant_custom_images)
+
+        for key, images in value.case_custom_images.items():
+            value.case_custom_images[key] = set_custom_images(images=value.case_custom_images[key])
+
+        return value
+
+
+
+
+
+
+
