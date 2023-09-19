@@ -13,9 +13,18 @@ from typing import Optional, Union, List, Dict, Literal
 from pydantic import BaseModel, field_validator, model_validator, Field
 from scout.constants import ANALYSIS_TYPES
 
-SAMPLES_FILE_PATH_CHECKS = ["bam_file", "mitodel_file", "rhocall_bed", "rhocall_wig", "rna_coverage_bigwig",
-                            "splice_junctions_bed", "tiddit_coverage_wig", "upd_regions_bed", "upd_sites_bed",
-                            "vcf2cytosure"]
+SAMPLES_FILE_PATH_CHECKS = [
+    "bam_file",
+    "mitodel_file",
+    "rhocall_bed",
+    "rhocall_wig",
+    "rna_coverage_bigwig",
+    "splice_junctions_bed",
+    "tiddit_coverage_wig",
+    "upd_regions_bed",
+    "upd_sites_bed",
+    "vcf2cytosure",
+]
 
 CASE_FILE_PATH_CHECKS = ["cnv_report", "coverage_qc_report", "delivery_report", "gene_fusion_report",
                          "gene_fusion_report_research", "madeline_info", "multiqc", "multiqc_rna", "peddy_ped",
@@ -46,10 +55,13 @@ def _get_demo_file_absolute_path(partial_path: str) -> str:
 
 
 def _is_string_path(string_path) -> bool:
-    return Path(string_path).is_file() or Path(_get_demo_file_absolute_path(partial_path=string_path))
+    return Path(string_path).is_file() or Path(
+        _get_demo_file_absolute_path(partial_path=string_path)
+    )
 
 
 #### Samples - related pydantic models ####
+
 
 class BioNanoAccess(BaseModel):
     project: Optional[str] = None
@@ -120,6 +132,41 @@ class SampleLoader(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
+<<<<<<< HEAD
+=======
+    @model_validator(mode="before")
+    def set_sample_display_name(cls, values) -> "SampleLoader":
+        values.update(
+            {
+                "display_name": values.get(
+                    "display_name", values.get("sample_name", values.get("individual_id"))
+                )
+            }
+        )
+        return values
+
+    @model_validator(mode="before")
+    def set_alignment_path(cls, values) -> "SampleLoader":
+        values.update(
+            {
+                "bam_file": values.get(
+                    "alignment_path", values.get("bam_file", values.get("bam_path"))
+                )
+            }
+        )
+        return values
+
+    @model_validator(mode="before")
+    def validate_file_path(cls, values) -> "SampleLoader":
+        for item in SAMPLES_FILE_PATH_CHECKS:
+            if values.get(item) is None:
+                continue
+            if _is_string_path(values[item]) is True:
+                return values
+            else:
+                raise ValueError(f"{item} path '{values[item]}' is not valid.")
+
+>>>>>>> 5b0f207bb54893218b50b9a923069bc148d3564d
     @field_validator("tumor_purity", mode="before")
     @classmethod
     def set_tumor_purity(cls, value: Union[str, float]) -> float:
@@ -157,6 +204,7 @@ class SampleLoader(BaseModel):
 
 #### Case - related pydantic models ####
 
+<<<<<<< HEAD
 class Image(BaseModel):
     data: Optional[str] = None
     description: Optional[str] = None
@@ -166,6 +214,41 @@ class Image(BaseModel):
     str_repid: Optional[str] = None
     title: str = None
     width: Optional[int] = None
+=======
+
+class CaseLoader(BaseModel):
+    owner: str
+    family: str
+    family_name: str
+    lims_id: Optional[str]
+    synopsis: Optional[Union[List, str]]
+    phenotype_terms: Optional[List] = []
+    samples: List[SampleLoader]
+    custom_images: Dict[str, str]
+    vcf_snv: Optional[str]
+    vcf_sv: Optional[str]
+    vcf_str: Optional[str]
+    vcf_mei: Optional[str]
+    vcf_snv_research: Optional[str]
+    vcf_sv_research: Optional[str]
+    vcf_mei_research: Optional[str]
+    smn_tsv: Optional[str]
+    madeline: Optional[str]
+    analysis_date: Optional[datetime] = datetime.now()
+    human_genome_build: Union[str, int]
+    delivery_report: Optional[str]
+    gene_fusion_report: Optional[str]
+    exe_ver: Optional[str]
+    reference_info: Optional[str]
+    rank_model_version: Optional[str]
+    sv_rank_model_version: Optional[str]
+    rank_score_threshold: Optional[int]
+    default_gene_panels: List[str]
+    gene_panels: List[str]
+    peddy_ped: Optional[str]  # Soon to be deprecated
+    peddy_check: Optional[str]  # Soon to be deprecated
+    peddy_sex: Optional[str]  # Soon to be deprecated
+>>>>>>> 5b0f207bb54893218b50b9a923069bc148d3564d
 
 
 class CaseLoader(BaseModel):

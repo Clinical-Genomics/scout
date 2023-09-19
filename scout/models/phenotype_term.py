@@ -22,7 +22,7 @@ class HpoTerm(BaseModel):
     genes: List = []  # List with integers that are hgnc_ids
 
     @model_validator(mode="after")
-    def set_hpo_number(self) -> 'HpoTerm':
+    def set_hpo_number(self) -> "HpoTerm":
         self.hpo_number = self.hpo_id.split(":")[1]
         return self
 
