@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from fractions import Fraction
 from pathlib import Path
 
 import path
@@ -132,8 +131,6 @@ class SampleLoader(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
-<<<<<<< HEAD
-=======
     @model_validator(mode="before")
     def set_sample_display_name(cls, values) -> "SampleLoader":
         values.update(
@@ -156,35 +153,6 @@ class SampleLoader(BaseModel):
         )
         return values
 
-    @model_validator(mode="before")
-    def validate_file_path(cls, values) -> "SampleLoader":
-        for item in SAMPLES_FILE_PATH_CHECKS:
-            if values.get(item) is None:
-                continue
-            if _is_string_path(values[item]) is True:
-                return values
-            else:
-                raise ValueError(f"{item} path '{values[item]}' is not valid.")
-
->>>>>>> 5b0f207bb54893218b50b9a923069bc148d3564d
-    @field_validator("tumor_purity", mode="before")
-    @classmethod
-    def set_tumor_purity(cls, value: Union[str, float]) -> float:
-        if isinstance(value, str):
-            return float(Fraction(value))
-        return value
-
-    @model_validator(mode='before')
-    def set_sample_display_name(cls, values: Dict) -> 'SampleLoader':
-        values.update(
-            {"display_name": values.get("display_name", values.get("sample_name", values.get("individual_id")))})
-        return values
-
-    @model_validator(mode='before')
-    def set_alignment_path(cls, values: Dict) -> 'SampleLoader':
-        values.update({"bam_file": values.get("alignment_path", values.get("bam_file", values.get("bam_path")))})
-        return values
-
     @model_validator(mode='before')
     def validate_file_path(cls, values: Dict) -> 'SampleLoader':
         for item in SAMPLES_FILE_PATH_CHECKS:
@@ -204,7 +172,6 @@ class SampleLoader(BaseModel):
 
 #### Case - related pydantic models ####
 
-<<<<<<< HEAD
 class Image(BaseModel):
     data: Optional[str] = None
     description: Optional[str] = None
@@ -214,41 +181,6 @@ class Image(BaseModel):
     str_repid: Optional[str] = None
     title: str = None
     width: Optional[int] = None
-=======
-
-class CaseLoader(BaseModel):
-    owner: str
-    family: str
-    family_name: str
-    lims_id: Optional[str]
-    synopsis: Optional[Union[List, str]]
-    phenotype_terms: Optional[List] = []
-    samples: List[SampleLoader]
-    custom_images: Dict[str, str]
-    vcf_snv: Optional[str]
-    vcf_sv: Optional[str]
-    vcf_str: Optional[str]
-    vcf_mei: Optional[str]
-    vcf_snv_research: Optional[str]
-    vcf_sv_research: Optional[str]
-    vcf_mei_research: Optional[str]
-    smn_tsv: Optional[str]
-    madeline: Optional[str]
-    analysis_date: Optional[datetime] = datetime.now()
-    human_genome_build: Union[str, int]
-    delivery_report: Optional[str]
-    gene_fusion_report: Optional[str]
-    exe_ver: Optional[str]
-    reference_info: Optional[str]
-    rank_model_version: Optional[str]
-    sv_rank_model_version: Optional[str]
-    rank_score_threshold: Optional[int]
-    default_gene_panels: List[str]
-    gene_panels: List[str]
-    peddy_ped: Optional[str]  # Soon to be deprecated
-    peddy_check: Optional[str]  # Soon to be deprecated
-    peddy_sex: Optional[str]  # Soon to be deprecated
->>>>>>> 5b0f207bb54893218b50b9a923069bc148d3564d
 
 
 class CaseLoader(BaseModel):
