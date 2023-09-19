@@ -89,7 +89,7 @@ If the above command should fail due to permission issues, run it as superuser (
 ## Generating the Ignition file _scout.ign_
 
 To start Fedora CoreOS, the [Ignition file](https://docs.fedoraproject.org/en-US/fedora-coreos/producing-ign/) _scout.ign_ is needed.
-It is generated from from the input file [scout.fcc](./scout.fcc) with the command
+It is generated from from the input file `scout/containters/systemd/scout.fcc` with the command
 
 ```
 podman run --rm -v ./systemd:/input:Z quay.io/coreos/fcct:release --pretty --strict -d /input /input/scout.fcc > ./scout.ign
