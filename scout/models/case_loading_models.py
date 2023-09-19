@@ -216,10 +216,19 @@ class Image(BaseModel):
 class RawCustomImages(BaseModel):
     """This class makes a preliminary check that custom_images in the load config file has the expected structure."""
 
-    custom_images: Dict[str, Union[List[Image], Dict[str, List[Image]]]] = None
+    variant_custom_images: List[Image] = []
+    case_custom_images: Dict[str, List[Image]] = {}
+
+    @model_validator(mode="before")
+    def set_custom_image(cls, values: Dict) -> "RawCustomImages":
+        values["variant_custom_images"] = values.get("variant_custom_images", values.get("str"))
+        values["case_custom_images"] = values.get("case_custom_images", values.get("case"))
+
+        return values
 
 
 class ParsedCustomImages(BaseModel):
+    """This class corresponds to the parsed fields of the custom_images config item."""
     variant_custom_images: Optional[Dict] = Field(alias="str")
     case_custom_images: Optional[Dict] = Field(alias="case")
 
@@ -235,7 +244,7 @@ class CaseLoader(BaseModel):
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
     coverage_qc_report: Optional[str] = None
-    custom_images: Union[RawCustomImages, ParsedCustomImages] = None
+    custom_images: Optional[Union[RawCustomImages, ParsedCustomImages]] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(alias="family_name")
@@ -296,3 +305,7 @@ class CaseLoader(BaseModel):
                 raise ValueError(f"{item} path '{values[item]}' is not valid.")
 
         return values
+
+    @field_validator("custom_images", mode="after")
+    def set_custom_images_path(cls, value: RawCustomImages) -> ParsedCustomImages:
+        LOG.warning(f"HERE BITCHES --->{value}")
