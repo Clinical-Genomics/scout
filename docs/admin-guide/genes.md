@@ -45,7 +45,7 @@ scout load exons --exons-file path/to/mart_export.txt --build 38
 ```
 
 
-[martview]: https://www.ensembl.org/biomart/martview/
+[martview]: https://www.ensembl.org/biomart/martview
 [hgnc]: https://www.genenames.org
 [biomart]: http://www.ensembl.org/biomart/martview/63a1d476e23a0672e6c89d0e80fb62b5
 [omim]: https://omim.org
