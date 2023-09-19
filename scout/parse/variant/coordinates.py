@@ -64,7 +64,7 @@ def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
 
     Translocations needs their own treatment as usual
     """
-    svend = svend or pos
+    svend = svend
     end = svend
 
     if ":" in alt:
@@ -72,7 +72,7 @@ def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
         if match:
             end = int(match.group(2))
 
-    if end is None and svend == pos and svlen:
+    if end is None and svlen:
         end = pos + svlen
 
     return end
