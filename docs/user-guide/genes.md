@@ -311,5 +311,5 @@ This is unclear. We might miss variants here
 
  Here one of the transcripts have been given a refseq identifier in build 38, that transcript exists in build 37 so no variants would be missed here.
 
-[hgnc]: www.genenames.org
+[hgnc]: https://www.genenames.org
 [issue]: https://github.com/Clinical-Genomics/scout/issues/570
