@@ -308,5 +308,5 @@ class CaseLoader(BaseModel):
         return values
 
     @field_validator("custom_images", mode="after")
-    def set_custom_images_path(cls, value: RawCustomImages) -> ParsedCustomImages:
+    def parse_custom_images(cls, value: RawCustomImages) -> ParsedCustomImages:
         LOG.warning(f"HERE BITCHES --->{value}")
