@@ -1,4 +1,4 @@
-## Matchmaker Exchange integration
+## BioNano Access Server Integration
 Starting from Scout release 4.71 the software can be configured to fetch FSHD reports for individual samples from a BioNano Genomics Access server.
 Currently, a single user account is used for accessing all project samples. Depending on your setup, this user may need admin privileges to read all.
 
