@@ -109,7 +109,7 @@ custom_images:
         path: scout/demo/images/custom_images/640x480_three.svg
 
 vcf_snv: scout/demo/643594.clinical.vcf.gz
-vcf_sv: scout/demo/643594.clinical.SV.vcf.gz
+vcf_sv: /users/chiararasi/Downloads/truvari_vep_genmod_ranked_small.vcf
 vcf_str: scout/demo/643594.clinical.str.stranger.vcf.gz
 vcf_mei: scout/demo/643594.clinical.mei.vcf.gz
 vcf_snv_research: scout/demo/643594.research.vcf.gz

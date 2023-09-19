@@ -64,7 +64,8 @@ def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
 
     Translocations needs their own treatment as usual
     """
-    end = svend or pos
+    svend = svend or pos
+    end = svend
 
     if ":" in alt:
         match = BND_ALT_PATTERN.match(alt)
