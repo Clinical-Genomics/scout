@@ -18,7 +18,7 @@ This includes instructions for bioinformaticians to install, manage and update a
   * [Chanjo coverage integration](./chanjo_coverage_integration.md)
   * [Loqusdb integration](./loqusdb_integration.md)
   * [Matchmaker Exchange integration](./matchmaker_exchange_integration.md)
-  * [BioNano Genomics Access FSHD integration](./bionano_integration.md)
+  * [BioNano Genomics Access FSHD integration](./bionano_access_integration.md)
   * [Indexes](./indexes.md)
   * [Scripts folder](./scripts.md)
   * [Backup and restore](./backup.md)
