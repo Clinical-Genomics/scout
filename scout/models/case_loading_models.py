@@ -229,6 +229,7 @@ class RawCustomImages(BaseModel):
 
 class ParsedCustomImages(BaseModel):
     """This class corresponds to the parsed fields of the custom_images config item."""
+
     variant_custom_images: Optional[Dict] = Field(alias="str")
     case_custom_images: Optional[Dict] = Field(alias="case")
 
