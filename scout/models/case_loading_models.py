@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from fractions import Fraction
 from pathlib import Path
 
 import path
@@ -131,6 +132,13 @@ class SampleLoader(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
+    @field_validator("tumor_purity", mode="before")
+    @classmethod
+    def set_tumor_purity(cls, value: Union[str, float]) -> float:
+        if isinstance(value, str):
+            return float(Fraction(value))
+        return value
+
     @model_validator(mode="before")
     def set_sample_display_name(cls, values) -> "SampleLoader":
         values.update(
@@ -170,7 +178,7 @@ class SampleLoader(BaseModel):
         return value
 
 
-#### Case - related pydantic models ####
+#### Custom images - related classes ####
 
 class Image(BaseModel):
     data: Optional[str] = None
@@ -183,6 +191,18 @@ class Image(BaseModel):
     width: Optional[int] = None
 
 
+class RawCustomImages(BaseModel):
+    """This class makes a preliminary check that custom_images in the load config file has the expected structure."""
+    custom_images: Dict[str, Union[List[Image], Dict[str, List[Image]]]] = None
+
+
+class ParsedCustomImages(BaseModel):
+    variant_custom_images: Optional[Dict] = Field(alias="str")
+    case_custom_images: Optional[Dict] = Field(alias="case")
+
+
+#### Case - related pydantic models ####
+
 class CaseLoader(BaseModel):
     analysis_date: Optional[datetime] = datetime.now()
     assignee: Optional[str] = None
@@ -191,7 +211,7 @@ class CaseLoader(BaseModel):
     cohorts: Optional[List[str]] = None
     collaborators: Optional[List[str]] = None
     coverage_qc_report: Optional[str] = None
-    custom_images: Dict[str, Union[List[Image], Dict[str, List[Image]]]] = None
+    custom_images: Union[RawCustomImages, ParsedCustomImages] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(alias="family_name")
