@@ -72,9 +72,8 @@ def sv_end(pos: int, alt: str, svend: int = None, svlen: int = None) -> int:
         if match:
             end = int(match.group(2))
 
-    if svend == pos:
-        if svlen:
-            end = pos + svlen
+    if end is None and svend == pos and svlen:
+        end = pos + svlen
 
     return end
 
