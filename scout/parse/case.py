@@ -46,6 +46,7 @@ def parse_case_data(**kwargs):
                            Scout
     """
     config = kwargs.pop("config", {})
+    LOG.warning(config)
 
     # populate configuration according to Pydantic defined classes
     config_dict: Dict = CaseLoader(**config).dict()

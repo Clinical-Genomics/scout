@@ -108,7 +108,6 @@ class VcfFiles(BaseModel):
     def validate_file_path(cls, values: Dict) -> "VcfFiles":
         for item in VCF_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
-            LOG.warning(item_path)
             if item_path and _is_string_path(values[item]) is False:
                 raise ValueError(f"{item} path '{values[item]}' is not valid.")
 
@@ -151,7 +150,7 @@ class SampleLoader(BaseModel):
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
     bionano_access: Optional[BioNanoAccess] = None
-    capture_kits: Optional[Union[str, List]] = Field(alias="capture_kit")
+    capture_kits: Optional[Union[str, List]] = Field(None, validation_alias="capture_kit", serialization_alias="capture_kit")
     chromograph_images: Optional[ChromographImages] = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
@@ -187,6 +186,17 @@ class SampleLoader(BaseModel):
     upd_sites_bed: Optional[str] = None
     vcf2cytosure: Optional[str] = None
 
+    class Config:
+        allow_population_by_field_name = True
+
+    @model_validator(mode="before")
+    def convert_int_to_str(cls, values) -> "SampleLoader":
+        """This is a required step in Pydantic2, in Pydantic1 values were just coerced from int to str."""
+        for item in ["msi", "tmb"]:
+            if values.get(item):
+                values[item] = str(values[item])
+        return values
+
 
     @field_validator("tumor_purity", mode="before")
     @classmethod
@@ -197,24 +207,12 @@ class SampleLoader(BaseModel):
 
     @model_validator(mode="before")
     def set_sample_display_name(cls, values) -> "SampleLoader":
-        values.update(
-            {
-                "display_name": values.get(
-                    "display_name", values.get("sample_name", values.get("individual_id"))
-                )
-            }
-        )
+        values["display_name"] = values.get("display_name", values.get("sample_name", values.get("individual_id")))
         return values
 
     @model_validator(mode="before")
     def set_alignment_path(cls, values) -> "SampleLoader":
-        values.update(
-            {
-                "bam_file": values.get(
-                    "alignment_path", values.get("bam_file", values.get("bam_path"))
-                )
-            }
-        )
+        values["bam_file"] = values.get("alignment_path", values.get("bam_file", values.get("bam_path")))
         return values
 
     @model_validator(mode="before")
@@ -228,7 +226,7 @@ class SampleLoader(BaseModel):
 
     @field_validator("capture_kits", mode="before")
     @classmethod
-    def set_capture_kits(cls, value: Union[str, List[str]]) -> List:
+    def set_capture_kits(cls, value: Optional[Union[str, List[str]]]) -> Optional[List]:
         if isinstance(value, str):
             return [value]
         return value
@@ -388,6 +386,10 @@ class CaseLoader(BaseModel):
     @classmethod
     def format_build(cls, value: Union[str, int]) -> str:
         str_build: str = str(value)
+        if "37" in str_build:
+            str_build = "37"
+        elif "38" in str_build:
+            str_build = "38"
         if str_build in GENOME_BUILDS:
             return str_build
         else:
