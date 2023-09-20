@@ -13,6 +13,7 @@ from enum import Enum
 from typing import Optional, Union, List, Dict, Literal, Tuple
 
 from pydantic import BaseModel, field_validator, model_validator, Field
+
 from scout.constants import ANALYSIS_TYPES
 
 SAMPLES_FILE_PATH_CHECKS = [
@@ -105,7 +106,6 @@ class VcfFiles(BaseModel):
 
     @model_validator(mode="before")
     def validate_file_path(cls, values: Dict) -> "VcfFiles":
-        LOG.warning(values)
         for item in VCF_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
             LOG.warning(item_path)
