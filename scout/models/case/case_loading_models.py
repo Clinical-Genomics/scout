@@ -10,9 +10,9 @@ import path
 LOG = logging.getLogger(__name__)
 
 from enum import Enum
-from typing import Optional, Union, List, Dict, Literal, Tuple
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
-from pydantic import BaseModel, field_validator, model_validator, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from scout.constants import ANALYSIS_TYPES
 
@@ -303,21 +303,27 @@ def set_custom_images(images: List[Image]) -> List[Image]:
 class RawCustomImages(BaseModel):
     """This class makes a preliminary check that custom_images in the load config file has the expected structure."""
 
-    variant_custom_images: List[Image] = []
-    case_custom_images: Dict[str, List[Image]] = {}
+    str_variants_images: List[Image] = []
+    case_images: Dict[str, List[Image]] = {}
 
     @model_validator(mode="before")
     def set_custom_image(cls, values: Dict) -> "RawCustomImages":
-        values["variant_custom_images"] = values.get("variant_custom_images", values.get("str"))
-        values["case_custom_images"] = values.get("case_custom_images", values.get("case"))
+        values["str_variants_images"] = values.get(
+            "str_variants_images",
+            values.get("str"),
+        )
+        values["case_images"] = values.get(
+            "case_images",
+            values.get("case"),
+        )
         return values
 
 
 class ParsedCustomImages(BaseModel):
     """This class corresponds to the parsed fields of the custom_images config item."""
 
-    variant_custom_images: List[Image] = []
-    case_custom_images: Dict[str, List[Image]] = {}
+    str_variants_images: List[Image] = []
+    case_images: Dict[str, List[Image]] = {}
 
 
 #### Case - related pydantic models ####
@@ -410,11 +416,11 @@ class CaseLoader(BaseModel):
 
     @field_validator("custom_images", mode="after")
     def parse_custom_images(cls, value: RawCustomImages) -> ParsedCustomImages:
-        """Fixes image path and image data for each custom image in variant_custom_images and case_custom_images."""
+        """Fixes image path and image data for each custom image in variant_custom_images and case_images."""
 
-        value.variant_custom_images = set_custom_images(images=value.variant_custom_images)
+        value.str_variants_images = set_custom_images(images=value.str_variants_images)
 
-        for key, images in value.case_custom_images.items():
-            value.case_custom_images[key] = set_custom_images(images=value.case_custom_images[key])
+        for key, images in value.case_images.items():
+            value.case_images[key] = set_custom_images(images=value.case_images[key])
 
         return value

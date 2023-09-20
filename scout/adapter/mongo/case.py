@@ -3,7 +3,7 @@ import datetime
 import logging
 import operator
 from copy import deepcopy
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 import pymongo
 
@@ -888,12 +888,6 @@ class CaseHandler(object):
                         category=category,
                     )
 
-                # get custom images from config file
-                custom_images = (
-                    case_obj["custom_images"][category]
-                    if case_obj.get("custom_images") and category in case_obj.get("custom_images")
-                    else None
-                )
                 # add variants
                 self.load_variants(
                     case_obj=case_obj,
@@ -901,7 +895,9 @@ class CaseHandler(object):
                     category=category,
                     build=genome_build,
                     rank_threshold=case_obj.get("rank_score_threshold", 5),
-                    custom_images=custom_images,
+                    custom_images=self._get_variants_custom_images(
+                        variant_category=category, case=case_obj
+                    ),
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:
@@ -927,6 +923,17 @@ class CaseHandler(object):
             self._add_case(case_obj)
 
         return case_obj
+
+    def _get_variants_custom_images(
+        self, variant_category: str, case: dict
+    ) -> Optional[List[dict]]:
+        """Retrieve a list of images associated to a variant category.
+        supports old cases with case_obj["custom_images"]["str"] key and new cases with key case_obj["custom_images"]["str_variants_images"] key
+        """
+        if case.get("custom_images"):
+            return case["custom_images"].get(f"{variant_category}_variants_images") or case[
+                "custom_images"
+            ].get(variant_category)
 
     def _add_case(self, case_obj):
         """Add a case to the database

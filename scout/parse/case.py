@@ -46,12 +46,9 @@ def parse_case_data(**kwargs):
                            Scout
     """
     config = kwargs.pop("config", {})
-    LOG.warning(config)
 
     # populate configuration according to Pydantic defined classes
-    config_dict: Dict = CaseLoader(**config).dict()
-
-    LOG.warning(config_dict)
+    config_dict: dict = parse_case_config(config=config)
 
     # If ped file  provided we need to parse that first
     if kwargs.get("ped"):
@@ -88,6 +85,14 @@ def parse_case_data(**kwargs):
         add_smn_info_case(config_dict)
 
     return remove_none_recursive(config_dict)
+
+
+def parse_case_config(config: dict) -> dict:
+    """Parse configuration data for a case. Returns a dict"""
+    if config == {}:
+        LOG.warning("No configuration in command: {}".format(config))
+        return {}
+    return CaseLoader(**config).dict()
 
 
 def add_mitodel_info(config_data):
