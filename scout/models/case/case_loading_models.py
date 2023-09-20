@@ -43,7 +43,7 @@ CASE_FILE_PATH_CHECKS = [
     "peddy_sex_check",
     "RNAfusion_inspector",
     "RNAfusion_report",
-    "RNAfusion_report_research"
+    "RNAfusion_report_research",
 ]
 
 VCF_FILE_PATH_CHECKS = [
@@ -57,7 +57,7 @@ VCF_FILE_PATH_CHECKS = [
     "vcf_mei_research",
     "vcf_str",
     "vcf_sv",
-    "vcf_sv_research"
+    "vcf_sv_research",
 ]
 
 GENOME_BUILDS = ["37", "38"]
@@ -90,6 +90,7 @@ def _is_string_path(string_path: str) -> bool:
 
 
 #### VCF files class ####
+
 
 class VcfFiles(BaseModel):
     vcf_cancer: Optional[str] = None
@@ -150,7 +151,7 @@ class SampleLoader(BaseModel):
     bam_file: Optional[str] = ""
     bam_path: Optional[str] = None
     bionano_access: Optional[BioNanoAccess] = None
-    capture_kits: Optional[Union[str, List]] = Field(None, validation_alias="capture_kit", serialization_alias="capture_kit")
+    capture_kits: Optional[Union[str, List]] = Field(None, alias="capture_kit")
     chromograph_images: Optional[ChromographImages] = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
@@ -197,7 +198,6 @@ class SampleLoader(BaseModel):
                 values[item] = str(values[item])
         return values
 
-
     @field_validator("tumor_purity", mode="before")
     @classmethod
     def set_tumor_purity(cls, value: Union[str, float]) -> float:
@@ -207,12 +207,16 @@ class SampleLoader(BaseModel):
 
     @model_validator(mode="before")
     def set_sample_display_name(cls, values) -> "SampleLoader":
-        values["display_name"] = values.get("display_name", values.get("sample_name", values.get("individual_id")))
+        values["display_name"] = values.get(
+            "display_name", values.get("sample_name", values.get("individual_id"))
+        )
         return values
 
     @model_validator(mode="before")
     def set_alignment_path(cls, values) -> "SampleLoader":
-        values["bam_file"] = values.get("alignment_path", values.get("bam_file", values.get("bam_path")))
+        values["bam_file"] = values.get(
+            "alignment_path", values.get("bam_file", values.get("bam_path"))
+        )
         return values
 
     @model_validator(mode="before")
