@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Documentation nav links for a few documents
+- Loading of SVs when VCF is missing the INFO.END field but has INFO.SVLEN field
 ### Changed
 - Column width adjustment on caseS page
 
