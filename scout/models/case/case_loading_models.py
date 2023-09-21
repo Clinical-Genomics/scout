@@ -256,9 +256,9 @@ class Image(BaseModel):
     description: Optional[str] = None
     height: Optional[int] = None
     format: Optional[str] = None
-    path: str = None
+    path: Optional[str] = None
     str_repid: Optional[str] = None
-    title: str = None
+    title: Optional[str] = None
     width: Optional[int] = None
 
     @field_validator("path", mode="before")
@@ -266,7 +266,7 @@ class Image(BaseModel):
     def check_image_format(cls, path: str) -> Optional[str]:
         """Make sure that the image is has standard format."""
         image_format: str = path.split(".")[-1]
-        if not image_format in SUPPORTED_IMAGE_FORMATS:
+        if image_format not in SUPPORTED_IMAGE_FORMATS:
             raise TypeError(
                 f"Custom images should be of type: {', '.join(SUPPORTED_IMAGE_FORMATS)}"
             )
@@ -300,7 +300,9 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
             path = Path(image.path)
             with open(path, "rb") as file_handle:
                 image.data = bytes(file_handle.read())
-                image.format = "svg+xml" if path.suffix[1:] == "svg" else path.suffix[1:]
+                image.format = (
+                    "svg+xml" if image.path.endswith("svg") else image.path.split(".")[-1]
+                )
         return image
 
     real_folder_images: List[Image] = []
@@ -367,7 +369,7 @@ class CaseLoader(BaseModel):
     delivery_report: Optional[str] = None
     display_name: Optional[str] = Field(alias="family_name")
     exe_ver: Optional[str] = None
-    family: str = None
+    family: Optional[str] = None
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
@@ -377,7 +379,7 @@ class CaseLoader(BaseModel):
     madeline_info: Optional[str] = Field(None, alias="madeline")
     multiqc: Optional[str] = None
     multiqc_rna: Optional[str] = None
-    owner: str = None
+    owner: Optional[str] = None
     peddy_ped: Optional[str] = None  # Soon to be deprecated
     peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")  # Soon to be deprecated
     peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")  # Soon to be deprecated
@@ -391,7 +393,7 @@ class CaseLoader(BaseModel):
     RNAfusion_report_research: Optional[str] = None
     smn_tsv: Optional[str] = None
     sv_rank_model_version: Optional[str] = None
-    synopsis: Union[List[str], str] = None
+    synopsis: Optional[Union[List[str], str]] = None
     track: Literal["rare", "cancer"] = "rare"
     vcf_files: Optional[VcfFiles]
 
@@ -402,7 +404,7 @@ class CaseLoader(BaseModel):
         vcfs = VcfFiles(**data)
         try:
             super().__init__(vcf_files=vcfs, **data)
-        except TypeError as err:
+        except TypeError:
             super().__init__(**data)
 
     @model_validator(mode="before")
@@ -461,13 +463,11 @@ class CaseLoader(BaseModel):
         # Check if relations are correct
         for parsed_ind in individual_dicts:
             father = parsed_ind.get("father")
-            if father and father != "0":
-                if father not in all_ids:
-                    raise PedigreeError("father %s does not exist in family" % father)
+            if father and father != "0" and father not in all_ids:
+                raise PedigreeError("father %s does not exist in family" % father)
             mother = parsed_ind.get("mother")
-            if mother and mother != "0":
-                if mother not in all_ids:
-                    raise PedigreeError("mother %s does not exist in family" % mother)
+            if mother and mother != "0" and mother not in all_ids:
+                raise PedigreeError("mother %s does not exist in family" % mother)
         return individuals
 
     @model_validator(mode="before")
