@@ -5,11 +5,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Genome build check when loading a case
 ### Fixed
 - Documentation nav links for a few documents
 - Loading of SVs when VCF is missing the INFO.END field but has INFO.SVLEN field
 ### Changed
 - Column width adjustment on caseS page
+- Upgraded Pydantic to version 2
+- Case validation fails on loading when associated files (alignments, VCFs and reports) are not present on disk
+- Case validation fails on loading when custom images have format different than:
+- Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `srt_variants_images`
 
 ## [4.71]
 ### Added

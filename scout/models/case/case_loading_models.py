@@ -1,20 +1,21 @@
 import logging
 import re
 from datetime import datetime
+from enum import Enum
 from fractions import Fraction
 from glob import glob
 from pathlib import Path
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import path
-
-LOG = logging.getLogger(__name__)
-
-from enum import Enum
-from typing import Dict, List, Literal, Optional, Tuple, Union
-
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from scout.constants import ANALYSIS_TYPES
+from scout.exceptions import PedigreeError
+from scout.utils.date import get_date
+
+LOG = logging.getLogger(__name__)
+
 
 SAMPLES_FILE_PATH_CHECKS = [
     "bam_file",
@@ -62,6 +63,7 @@ VCF_FILE_PATH_CHECKS = [
 
 GENOME_BUILDS = ["37", "38"]
 TRACKS = ["rare", "cancer"]
+SUPPORTED_IMAGE_FORMATS = ["gif", "svg", "png", "jpg", "jpeg"]
 
 
 class PhenoType(str, Enum):
@@ -93,6 +95,8 @@ def _is_string_path(string_path: str) -> bool:
 
 
 class VcfFiles(BaseModel):
+    """A class representing any type of VCF file."""
+
     vcf_cancer: Optional[str] = None
     vcf_cancer_research: Optional[str] = None
     vcf_cancer_sv: Optional[str] = None
@@ -107,6 +111,7 @@ class VcfFiles(BaseModel):
 
     @model_validator(mode="before")
     def validate_file_path(cls, values: Dict) -> "VcfFiles":
+        """Make sure that VCF file exists on disk."""
         for item in VCF_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
             if item_path and _is_string_path(values[item]) is False:
@@ -191,8 +196,8 @@ class SampleLoader(BaseModel):
         allow_population_by_field_name = True
 
     @model_validator(mode="before")
-    def convert_int_to_str(cls, values) -> "SampleLoader":
-        """This is a required step in Pydantic2, in Pydantic1 values were just coerced from int to str."""
+    def convert_cancer_int_values_to_str(cls, values) -> "SampleLoader":
+        """Sets 'msi' and 'msi' values for cancer cases to string. This is a required step in Pydantic2, in Pydantic1 values were just coerced from int to str."""
         for item in ["msi", "tmb"]:
             if values.get(item):
                 values[item] = str(values[item])
@@ -200,13 +205,15 @@ class SampleLoader(BaseModel):
 
     @field_validator("tumor_purity", mode="before")
     @classmethod
-    def set_tumor_purity(cls, value: Union[str, float]) -> float:
-        if isinstance(value, str):
-            return float(Fraction(value))
-        return value
+    def set_tumor_purity(cls, tumor_purity: Union[str, float]) -> float:
+        """Set tumor purity value as a fraction."""
+        if isinstance(tumor_purity, str):
+            return float(Fraction(tumor_purity))
+        return tumor_purity
 
     @model_validator(mode="before")
     def set_sample_display_name(cls, values) -> "SampleLoader":
+        """Make sure a sample as a display name."""
         values["display_name"] = values.get(
             "display_name", values.get("sample_name", values.get("individual_id"))
         )
@@ -214,6 +221,7 @@ class SampleLoader(BaseModel):
 
     @model_validator(mode="before")
     def set_alignment_path(cls, values) -> "SampleLoader":
+        """prefer key 'bam file over 'alignment_path' or 'bam_path'."""
         values["bam_file"] = values.get(
             "alignment_path", values.get("bam_file", values.get("bam_path"))
         )
@@ -221,6 +229,7 @@ class SampleLoader(BaseModel):
 
     @model_validator(mode="before")
     def validate_file_path(cls, values: Dict) -> "SampleLoader":
+        """Make sure that files associated to samples (mostly alignment files) exist on disk."""
         for item in SAMPLES_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
             if item_path and _is_string_path(values[item]) is False:
@@ -230,16 +239,19 @@ class SampleLoader(BaseModel):
 
     @field_validator("capture_kits", mode="before")
     @classmethod
-    def set_capture_kits(cls, value: Optional[Union[str, List[str]]]) -> Optional[List]:
-        if isinstance(value, str):
-            return [value]
-        return value
+    def set_capture_kits(cls, capture_kits: Optional[Union[str, List[str]]]) -> Optional[List]:
+        """Format capture kit (str) as a list of items."""
+        if isinstance(capture_kits, str):
+            return [capture_kits]
+        return capture_kits
 
 
 #### Custom images - related classes ####
 
 
 class Image(BaseModel):
+    """A class representing an image either associated to a case or a str variant."""
+
     data: Optional[bytes] = None
     description: Optional[str] = None
     height: Optional[int] = None
@@ -249,9 +261,23 @@ class Image(BaseModel):
     title: str = None
     width: Optional[int] = None
 
+    @field_validator("path", mode="before")
+    @classmethod
+    def check_image_format(cls, path: str) -> Optional[str]:
+        """Make sure that the image is has standard format."""
+        image_format: str = path.split(".")[-1]
+        if not image_format in SUPPORTED_IMAGE_FORMATS:
+            raise TypeError(
+                f"Custom images should be of type: {', '.join(SUPPORTED_IMAGE_FORMATS)}"
+            )
+        return path
 
-def set_custom_images(images: List[Image]) -> List[Image]:
+
+def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
     """Fix custom image's path and data."""
+
+    if images is None:
+        return
 
     def _glob_wildcard(path) -> Tuple[Dict]:
         """Search for multiple files using a path with wildcard."""
@@ -270,7 +296,6 @@ def set_custom_images(images: List[Image]) -> List[Image]:
 
     def _set_image_content(image: Image) -> Optional[Image]:
         """Sets the content (data) and the format of each custom image."""
-
         if _is_string_path(image.path):
             path = Path(image.path)
             with open(path, "rb") as file_handle:
@@ -301,10 +326,10 @@ def set_custom_images(images: List[Image]) -> List[Image]:
 
 
 class RawCustomImages(BaseModel):
-    """This class makes a preliminary check that custom_images in the load config file has the expected structure."""
+    """This class makes a preliminary check that custom_images in the load config file has the expected structure for the custom images.."""
 
-    str_variants_images: List[Image] = []
-    case_images: Dict[str, List[Image]] = {}
+    str_variants_images: Optional[List[Image]] = []
+    case_images: Optional[Dict[str, List[Image]]] = {}
 
     @model_validator(mode="before")
     def set_custom_image(cls, values: Dict) -> "RawCustomImages":
@@ -322,15 +347,15 @@ class RawCustomImages(BaseModel):
 class ParsedCustomImages(BaseModel):
     """This class corresponds to the parsed fields of the custom_images config item."""
 
-    str_variants_images: List[Image] = []
-    case_images: Dict[str, List[Image]] = {}
+    str_variants_images: Optional[List[Image]] = []
+    case_images: Optional[Dict[str, List[Image]]] = {}
 
 
 #### Case - related pydantic models ####
 
 
 class CaseLoader(BaseModel):
-    analysis_date: Optional[datetime] = datetime.now()
+    analysis_date: Optional[Any] = datetime.now()
     assignee: Optional[str] = None
     case_id: str = Field(alias="family")
     cnv_report: Optional[str] = None
@@ -382,31 +407,72 @@ class CaseLoader(BaseModel):
 
     @model_validator(mode="before")
     def set_case_id(cls, values) -> "CaseLoader":
+        """Make sure case will have an _id."""
         values.update({"case_id": values.get("case_id", values.get("family"))})
         return values
 
+    @field_validator("analysis_date", mode="before")
+    @classmethod
+    def set_analysis_date(cls, analysis_date: Optional[Any]) -> datetime:
+        """Make sure analysis date is set."""
+        if isinstance(analysis_date, datetime):
+            return analysis_date
+        try:
+            return get_date(analysis_date)
+        except ValueError:
+            LOG.warning(
+                "An error occurred while formatting the analysis date. Setting it to today's date."
+            )
+            return datetime.now()
+
     @field_validator("synopsis", mode="before")
     @classmethod
-    def set_synopsis(cls, value: Optional[Union[str, List]]) -> Optional[str]:
-        if isinstance(value, List):
-            value = ". ".join(value)
-        return value
+    def set_synopsis(cls, synopsis: Optional[Union[str, List]]) -> Optional[str]:
+        """Make sure that synopsis will be saved as a string even if it's passed as a list of strings."""
+        if isinstance(synopsis, List):
+            synopsis = ". ".join(synopsis)
+        return synopsis
 
     @field_validator("genome_build", mode="before")
     @classmethod
-    def format_build(cls, value: Union[str, int]) -> str:
-        str_build: str = str(value)
+    def format_build(cls, genome_build: Union[str, int]) -> str:
+        """Format the genome build so it will be saves as either '37' or '38'."""
+        str_build = str(genome_build)
         if "37" in str_build:
             str_build = "37"
         elif "38" in str_build:
             str_build = "38"
-        if str_build in GENOME_BUILDS:
-            return str_build
-        else:
+        if str_build not in GENOME_BUILDS:
             raise ValueError("Genome build must be either '37' or '38'.")
+        return str_build
+
+    @field_validator("individuals", mode="after")
+    @classmethod
+    def check_family_relations_consistent(
+        cls, individuals: List[SampleLoader]
+    ) -> List[SampleLoader]:
+        """Check family relationships. If configured parent exist. If
+        individual(s) are configured."""
+        if not individuals:
+            raise PedigreeError("No samples could be found")
+
+        individual_dicts = [i.model_dump() for i in individuals]
+        all_ids = [i["individual_id"] for i in individual_dicts]
+        # Check if relations are correct
+        for parsed_ind in individual_dicts:
+            father = parsed_ind.get("father")
+            if father and father != "0":
+                if father not in all_ids:
+                    raise PedigreeError("father %s does not exist in family" % father)
+            mother = parsed_ind.get("mother")
+            if mother and mother != "0":
+                if mother not in all_ids:
+                    raise PedigreeError("mother %s does not exist in family" % mother)
+        return individuals
 
     @model_validator(mode="before")
-    def validate_file_path(cls, values: Dict) -> "SampleLoader":
+    def validate_file_path(cls, values: Dict) -> "CaseLoader":
+        """Make sure the files associated to the case (mostly reports) exist on disk."""
         for item in CASE_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
             if item_path and _is_string_path(values[item]) is False:
@@ -415,12 +481,27 @@ class CaseLoader(BaseModel):
         return values
 
     @field_validator("custom_images", mode="after")
-    def parse_custom_images(cls, value: RawCustomImages) -> ParsedCustomImages:
+    @classmethod
+    def parse_custom_images(cls, custom_images: RawCustomImages) -> ParsedCustomImages:
         """Fixes image path and image data for each custom image in variant_custom_images and case_images."""
 
-        value.str_variants_images = set_custom_images(images=value.str_variants_images)
+        custom_images.str_variants_images = set_custom_images(
+            images=custom_images.str_variants_images
+        )
 
-        for key, images in value.case_images.items():
-            value.case_images[key] = set_custom_images(images=value.case_images[key])
+        for key, images in custom_images.case_images.items():
+            custom_images.case_images[key] = set_custom_images(
+                images=custom_images.case_images[key]
+            )
 
-        return value
+        return custom_images
+
+    @model_validator(mode="before")
+    def set_collaborators(cls, values) -> "CaseLoader":
+        """Set collaborators to owner if no collaborators are provided."""
+        if values.get("collaborators") is None:
+            owner = values.get("owner")
+            if owner is None:
+                raise ValueError("Case owner is missing.")
+            values["collaborators"] = [values["owner"]]
+        return values

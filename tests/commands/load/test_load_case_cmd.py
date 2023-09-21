@@ -64,7 +64,7 @@ def test_load_case_from_yaml(mock_app, institute_obj, case_obj):
     assert sum(1 for i in store.case_collection.find()) == 1
 
 
-def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
+def test_load_case_key_error(mock_app, institute_obj, case_obj, monkeypatch):
     """Test loading a case with a config file that will trigger keyError"""
 
     runner = mock_app.test_cli_runner()
@@ -88,7 +88,7 @@ def test_load_case_KeyError(mock_app, institute_obj, case_obj, monkeypatch):
     assert "KeyError" in result.output
 
 
-def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
+def test_load_case_syntax_error(mock_app, institute_obj, case_obj, monkeypatch):
     """Test loading a case with a config file that will trigger KeyError"""
     runner = mock_app.test_cli_runner()
 
@@ -111,7 +111,7 @@ def test_load_case_SyntaxError(mock_app, institute_obj, case_obj, monkeypatch):
     assert "SyntaxError" in result.output
 
 
-def test_load_case_KeyMissing(mock_app, institute_obj, case_obj):
+def test_load_case_key_missing(mock_app, institute_obj, case_obj):
     # GIVEN a config setup with 'sample_id' missing
     runner = mock_app.test_cli_runner()
     assert runner
@@ -142,7 +142,7 @@ def test_load_case_KeyMissing(mock_app, institute_obj, case_obj):
     assert result.exit_code != 0
 
 
-def test_load_case_NoConf(mock_app, institute_obj, case_obj):
+def test_load_case_no_config(mock_app, institute_obj, case_obj):
     # GIVEN a load command missing path to config
     runner = mock_app.test_cli_runner()
     assert runner
@@ -161,7 +161,7 @@ def test_load_case_NoConf(mock_app, institute_obj, case_obj):
     assert result.exit_code != 0
 
 
-def test_load_case_BadPath(mock_app, institute_obj, case_obj):
+def test_load_case_bad_path(mock_app, institute_obj, case_obj):
     # GIVEN a config setup with an incorrect path configured
     runner = mock_app.test_cli_runner()
     assert runner
@@ -191,4 +191,3 @@ def test_load_case_BadPath(mock_app, institute_obj, case_obj):
     result = runner.invoke(cli, ["load", "case", temp_conf])
     # THEN KeyError is caught and exit value is non-zero
     assert result.exit_code == 1
-    assert "Error opening" in result.output

@@ -80,6 +80,10 @@ def parse_case_data(**kwargs):
 
     add_mitodel_info(config_dict)
 
+    # Ensure case_id is set, this situation arises when case is loaded with ped file
+    if config_dict.get("case_id") is None:
+        config_dict["case_id"] = config_dict["family"]
+
     if config_dict.get("smn_tsv"):
         LOG.info("Adding SMN info from {}.".format(config_dict["smn_tsv"]))
         add_smn_info_case(config_dict)
@@ -92,7 +96,7 @@ def parse_case_config(config: dict) -> dict:
     if config == {}:
         LOG.warning("No configuration in command: {}".format(config))
         return {}
-    return CaseLoader(**config).dict()
+    return CaseLoader(**config).model_dump()
 
 
 def add_mitodel_info(config_data):
