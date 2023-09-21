@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Extend event index to previous causative variants and always load them
 ### Fixed
 - Documentation nav links for a few documents
 - Loading of SVs when VCF is missing the INFO.END field but has INFO.SVLEN field

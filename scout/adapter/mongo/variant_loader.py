@@ -413,6 +413,7 @@ class VariantLoader(object):
             rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
             managed = self._is_managed(variant, category)
+            causative = self._is_causative_other(variant)
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
@@ -423,6 +424,7 @@ class VariantLoader(object):
                 or (rank_score > rank_threshold)
                 or mt_variant
                 or pathogenic
+                or causative
                 or managed
                 or category in ["str"]
             ):
@@ -542,6 +544,37 @@ class VariantLoader(object):
         LOG.debug("Nr bulks inserted: %s", nr_bulks)
 
         return nr_inserted
+
+    def _is_causative_other(
+        self,
+        variant,
+        build="37",
+    ):
+        """Check if variant is on the list of causatives from other cases.
+        All variants that have been marked causative will be loaded, even if the other case does not exist anymore, or has been reclassified.
+
+        Arguments:
+            variant(cyvcf2.Variant)
+            build(str): "37" or "38"
+
+        Returns:
+            is_managed(boolean)
+
+        """
+
+        variant_prefix = variant["simple_id"]
+        clinical_variant = "".join([variant_prefix, "_clinical"])
+        research_variant = "".join([variant_prefix, "_research"])
+
+        var_causative_events = self.event_collection.find(
+            {
+                "verb": "mark_causative",
+                "category": "variant",
+                "subject": {"$in": [clinical_variant, research_variant]},
+            }
+        )
+
+        return len(var_causative_events)
 
     def _is_managed(
         self,
