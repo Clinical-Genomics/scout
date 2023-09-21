@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+###
+- A GitHub action that checks for broken internal links in docs pages
 ### Fixed
 - Documentation nav links for a few documents
 - Slightly extended the BioNano Genomics Access integration docs

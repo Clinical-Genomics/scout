@@ -1,0 +1,24 @@
+name: Validate internal documentation links
+
+"on": [pull_request]
+
+jobs:
+    tests:
+        name: mkdocs serve strict
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4.0.0
+
+            - name: Set up Python
+              uses: actions/setup-python@v4.7.0
+              with:
+                  cache: "pipenv"
+
+            - name: Set up pipenv
+              run: pip install pipenv
+
+            - name: Install package
+              run: pipenv install --dev
+
+            - name: launch mkdocs in strict mode
+              run: timeout 20 pipenv run mkdocs serve --dev-addr 127.0.0.1:8000 --strict || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
