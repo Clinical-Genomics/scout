@@ -77,7 +77,7 @@ samples:
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
 
 custom_images:
-  str:
+  str_variants_images:
     - title: A png image
       str_repid: AFF2
       description: A very good description
@@ -92,7 +92,7 @@ custom_images:
       str_repid: '{REPID}'
       description: Usage of substitution
       path: scout/demo/images/custom_images/640x480_{REPID}.svg
-  case:
+  case_images:
     section_one:
       - title: A png image
         description: A very good description
