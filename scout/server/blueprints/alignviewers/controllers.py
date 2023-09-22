@@ -36,7 +36,7 @@ def check_session_tracks(resource):
 def set_session_tracks(display_obj):
     """Save igv tracks as a session object. This way it's easy to verify that a user is requesting one of these files from remote_static view endpoint
 
-    Argso
+    Args:
         display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
     session_tracks = list(display_obj.get("reference_track", {}).values())
