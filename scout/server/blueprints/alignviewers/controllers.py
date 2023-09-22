@@ -128,7 +128,7 @@ def make_sashimi_tracks(case_obj, variant_id=None):
     locus = "All"
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
-        locus = make_locus_from_variant(variant_obj)
+        locus = make_locus_from_variant(variant_obj, case_obj, build)
 
     display_obj = {"locus": locus, "tracks": []}
 
@@ -166,7 +166,7 @@ def make_sashimi_tracks(case_obj, variant_id=None):
     return display_obj
 
 
-def make_locus_from_variant(variant_obj: Dict) -> str:
+def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> str:
     """Given a variant obj, construct a locus string across any gene touched for IGV to display.
 
     Initialize locus coordinates with variant coordinates so it won't crash if variant gene(s) no longer exist in database.
