@@ -10,6 +10,10 @@ markdown_extensions:
   - markdown_include.include:
       base_path: docs
 
+validation:
+  absolute_links: warn
+  unrecognized_links: warn
+
 theme:
   name: 'material'
   logo: 'img/logo-only.png'
