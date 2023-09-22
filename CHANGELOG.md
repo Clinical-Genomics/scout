@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- A GitHub action that checks for broken internal links in docs pages
+- Link validation settings in mkdocs.yml file
 - Extend event index to previous causative variants and always load them
 ### Fixed
 - Documentation nav links for a few documents
