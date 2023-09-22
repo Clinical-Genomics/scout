@@ -6,6 +6,7 @@ import pathlib
 import zipfile
 from functools import wraps
 from io import BytesIO
+from typing import Dict
 
 import pdfkit
 from bson.objectid import ObjectId

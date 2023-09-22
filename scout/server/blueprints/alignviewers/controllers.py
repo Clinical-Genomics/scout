@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+from typing import Dict
 
 from flask import flash, session
 from flask_login import current_user
