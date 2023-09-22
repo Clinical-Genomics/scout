@@ -6,7 +6,7 @@ The default is to show information for the whole instance. A user can also see s
 institute/institutes that they can access.
 We will here describe in more detail what the numbers mean.
 
-  ![Case report](whatevs)
+  ![Case report](../img/dashboard.png)
 
 
 ## Basic statistics
