@@ -1,0 +1,25 @@
+name: Validate internal documentation links
+
+"on": [pull_request]
+
+jobs:
+    tests:
+        name: mkdocs serve strict
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: 3.8
+
+            -   name: Install deps
+                run: |
+                    pip install --upgrade --upgrade-strategy eager -r requirements-dev.txt -e .
+                    pip check
+
+            - name: launch mkdocs in strict mode
+              run: mkdocs build --strict
+
+

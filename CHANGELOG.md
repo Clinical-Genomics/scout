@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- A GitHub action that checks for broken internal links in docs pages
+- Link validation settings in mkdocs.yml file
 - Load and display full RNA alignments on alignment viewer
 ### Fixed
 - Documentation nav links for a few documents
