@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ###
 - A GitHub action that checks for broken internal links in docs pages
+- Link validation settings in mkdocs.yml file
 ### Fixed
 - Documentation nav links for a few documents
 - Slightly extended the BioNano Genomics Access integration docs
