@@ -189,7 +189,7 @@ def case_has_alignments(case_obj):
             return
 
 
-def case_has_mt_alignments(case_obj):
+def case_has_mt_alignments(case_obj: Dict):
     """Add info on MT bam files availability to a case dictionary
 
     Args:
@@ -197,13 +197,12 @@ def case_has_mt_alignments(case_obj):
     """
     case_obj["mt_bams"] = False  # Availability of alignments for MT chromosome
     for ind in case_obj.get("individuals"):
-        mt_bam_path = ind.get("mt_bam")
-        if mt_bam_path and os.path.exists(mt_bam_path):
+        if _check_path_name(ind, "mt_bam"):
             case_obj["mt_bams"] = True
             return
 
 
-def case_has_rna_tracks(case_obj):
+def case_has_rna_tracks(case_obj: Dict) -> bool:
     """Returns True if one of more individuals of the case contain RNA-seq data
 
     Args:
@@ -214,14 +213,18 @@ def case_has_rna_tracks(case_obj):
     # Display junctions track if available for any of the individuals
     for ind in case_obj.get("individuals", []):
         # RNA can have three different aln track files
-        splicej_bed = ind.get("splice_junctions_bed")
-        rna_cov_bw = ind.get("rna_coverage_bigwig")
-        rna_aln = ind.get("rna_alignment_path")
+        for path_name in ["splice_junctions_bed", "rna_coverage_bigwig", "rna_alignment_path"]:
+            if _check_path_name(ind, path_name):
+                return True
+    return False
 
-        for path in [splicej_bed, rna_cov_bw, rna_aln]:
-            if not path or not os.path.exists(path):
-                continue
-            return True
+
+def _check_path_name(ind: Dict, path_name: str) -> bool:
+    """Returns True if path with name path_name is set on individual and exists on disk."""
+
+    path = ind.get(path_name)
+    if path and os.path.exists(path):
+        return True
     return False
 
 

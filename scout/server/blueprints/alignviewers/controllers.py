@@ -124,56 +124,13 @@ def make_sashimi_tracks(case_obj, variant_id=None):
     """
     build = "38"  # This feature is only available for RNA tracks in build 38
 
-    if not variant_id:
-        chromosome = "All"
-        locus = chromosome
-
+    locus = "All"
     if variant_id:
         variant_obj = store.variant(document_id=variant_id)
-
-        # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
-        locus_start_coords = []
-        locus_end_coords = []
-
-        # Check if variant coordinates are in genome build 38
-        # Otherwise do variant coords liftover
-        if build not in str(case_obj.get("genome_build")):
-            client = EnsemblRestApiClient()
-            mapped_coords = client.liftover(
-                case_obj.get("genome_build"),
-                variant_obj.get("chromosome"),
-                variant_obj.get("position"),
-                variant_obj.get("end"),
-            )
-            if mapped_coords:
-                mapped_start = mapped_coords[0]["mapped"].get("start")
-                mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
-                locus_start_coords.append(mapped_start)
-                locus_end_coords.append(mapped_end)
-
-        # Use original coordinates only genome build was already 38 or liftover didn't work
-        if not locus_start_coords:
-            locus_start_coords.append(variant_obj.get("position"))
-        if not locus_end_coords:
-            locus_end_coords.append(variant_obj.get("end"))
-
-        # Collect locus coordinates. Take into account that variant can hit multiple genes
-        variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
-        for gene_id in variant_genes_ids:
-            gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene_id, build=build)
-            if gene_caption is None:
-                continue
-            locus_start_coords.append(gene_caption["start"])
-            locus_end_coords.append(gene_caption["end"])
-
-        locus_start = min(locus_start_coords)
-        locus_end = max(locus_end_coords)
-
-        locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
+        locus = make_locus_from_variant(variant_obj)
 
     display_obj = {"locus": locus, "tracks": []}
 
-    # Add Genes and reference tracks to display object
     set_common_tracks(display_obj, build)
 
     # Populate tracks for each individual with splice junction track data
@@ -208,6 +165,51 @@ def make_sashimi_tracks(case_obj, variant_id=None):
     return display_obj
 
 
+def make_locus_from_variant(variant_obj: Dict) -> str:
+    """Given a variant obj, construct a locus string across any gene touched for IGV to display.
+
+    Initialize locus coordinates with variant coordinates so it won't crash if variant gene(s) no longer exist in database.
+    Check if variant coordinates are in genome build 38, otherwise do variant coords liftover.
+    Use original coordinates only if genome build was already 38 or liftover didn't work.
+    Collect locus coordinates. Take into account that variant can hit multiple genes.
+    The returned locus will so span all genes the variant falls into.
+    """
+    locus_start_coords = []
+    locus_end_coords = []
+
+    if build not in str(case_obj.get("genome_build")):
+        client = EnsemblRestApiClient()
+        mapped_coords = client.liftover(
+            case_obj.get("genome_build"),
+            variant_obj.get("chromosome"),
+            variant_obj.get("position"),
+            variant_obj.get("end"),
+        )
+        if mapped_coords:
+            mapped_start = mapped_coords[0]["mapped"].get("start")
+            mapped_end = mapped_coords[0]["mapped"].get("end") or mapped_start
+            locus_start_coords.append(mapped_start)
+            locus_end_coords.append(mapped_end)
+
+    if not locus_start_coords:
+        locus_start_coords.append(variant_obj.get("position"))
+    if not locus_end_coords:
+        locus_end_coords.append(variant_obj.get("end"))
+
+    variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
+    for gene_id in variant_genes_ids:
+        gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene_id, build=build)
+        if gene_caption is None:
+            continue
+        locus_start_coords.append(gene_caption["start"])
+        locus_end_coords.append(gene_caption["end"])
+
+    locus_start = min(locus_start_coords)
+    locus_end = max(locus_end_coords)
+
+    return f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"
+
+
 def set_tracks(name, file_list):
     """Return a dict according to IGV track format."""
     track_list = []
@@ -218,6 +220,8 @@ def set_tracks(name, file_list):
 
 def set_common_tracks(display_obj, build):
     """Set up tracks common to all cases (Genes, ClinVar ClinVar CNVs) according to user preferences
+
+    Add Genes and reference tracks to display object
 
     Args:
         display_obj(dict) dictionary containing all tracks info
