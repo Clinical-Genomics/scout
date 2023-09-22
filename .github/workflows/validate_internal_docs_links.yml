@@ -20,6 +20,6 @@ jobs:
                     pip check
 
             - name: launch mkdocs in strict mode
-              run: timeout 10 mkdocs serve --dev-addr 127.0.0.1:8000 --strict  || code=$?; if [[ $code -ne 124 && $code -ne 0 ]]; then exit $code; fi
+              run: mkdocs build --strict
 
 

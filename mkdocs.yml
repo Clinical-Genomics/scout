@@ -2,8 +2,8 @@
 site_name: Scout Docs
 site_url: https://clinical-genomics.github.io/scout
 repo_url: https://github.com/Clinical-Genomics/scout
-dev_addr: "0.0.0.0:4000"
-site_author: Clinical Genomics bioinfo team
+dev_addr: "127.0.0.1:4000"
+site_author: Clinical Genomics Scout team
 docs_dir: docs
 
 markdown_extensions:
@@ -11,8 +11,12 @@ markdown_extensions:
       base_path: docs
 
 validation:
-  absolute_links: warn
-  unrecognized_links: warn
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    unrecognized_links: warn
 
 theme:
   name: 'material'
@@ -99,4 +103,8 @@ nav:
       - Whats new in 4.20?: 'blog/new-4.20.md'
       - Whats new in 4.34?: 'blog/new-4.34.md'
       - Whats new in 4.67?: 'blog/new-4.67.md'
+
+not_in_nav: |
+    admin-guide/reference-sets/genes_transcripts.md
+    user-guide/defining-scorescheme.md
 
