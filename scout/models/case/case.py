@@ -29,6 +29,7 @@ individual = dict(
     smn2_cn=int,  # CopyNumber
     smn2delta78_cn=int,  # CopyNumber
     smn_27134_cn=int,  # CopyNumber
+    rna_alignment_path=str,  # Path to bam file
     rna_coverage_bigwig=str,  # Coverage islands generated from bam or cram files (RNA-seq analysis)
     splice_junctions_bed=str,  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
     predicted_ancestry=str,  # one of AFR AMR EAS EUR SAS UNKNOWN

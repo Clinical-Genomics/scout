@@ -56,44 +56,57 @@
                     [
                         {% for track in tracks %} // sample tracks
                         {% set counter.loop = counter.loop + 1 %}
-                          {
-                              type: 'merged',
-                              name: '{{ track.name }}',
-                              order: {{counter.loop}},
-                              height: 500,
-                              tracks:
-                              [
-                                {
-                                  type: 'wig',
-                                  format: "bigwig",
-                                  url: "{{ url_for('alignviewers.remote_static', file=track.coverage_wig) }}",
-                                },
-                                {
-                                  type: 'spliceJunctions',
-                                  format: 'bed',
-                                  colorBy: 'strand',
-                                  thicknessBasedOn: 'numUniqueRead',
-                                  labelUniqueReadCount: true,
-                                  url: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed) }}",
-                                  indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index) }}",
-                                  minUniquelyMappedReads: 1
-                                }
-                            ]
-                          }, // end of sashimi track with data
-                          { // genes track
-                            name: geneTrack.name,
-                            type: geneTrack.type,
-                            format: geneTrack.format,
-                            sourceType: geneTrack.sourceType,
-                            url: geneTrack.url,
-                            indexURL: geneTrack.indexURL,
-                            displayMode: geneTrack.displayMode,
-                            visibilityWindow: 300000000,
-                            height: 100,
-                            searchable: true,
-                            order: {{counter.loop}},
-                            infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
-                          }, // end of genes track
+                            {% if track.url %}
+                              {
+                                name: "{{ track.name }}",
+                                order: {{counter.loop}},
+                                type: "alignment",
+                                url: "{{ url_for('alignviewers.remote_static', file=track.url) }}",
+                                indexURL: "{{ url_for('alignviewers.remote_static', file=track.indexURL) }}",
+                                sourceType: "file",
+                                format: "{{ track.format }}",
+                                height: {{ track.aln_height }}
+                              },
+                            {% else %}
+                              {
+                                type: 'merged',
+                                name: '{{ track.name }}',
+                                order: {{counter.loop}},
+                                height: 500,
+                                tracks:
+                                [
+                                  {
+                                    type: 'wig',
+                                    format: "bigwig",
+                                    url: "{{ url_for('alignviewers.remote_static', file=track.coverage_wig) }}",
+                                  },
+                                  {
+                                    type: 'spliceJunctions',
+                                    format: 'bed',
+                                    colorBy: 'strand',
+                                    thicknessBasedOn: 'numUniqueRead',
+                                    labelUniqueReadCount: true,
+                                    url: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed) }}",
+                                    indexURL: "{{ url_for('alignviewers.remote_static', file=track.splicej_bed_index) }}",
+                                    minUniquelyMappedReads: 1
+                                  },
+                                ]
+                              }, // end of sashimi track with data
+                              { // genes track
+                                name: geneTrack.name,
+                                type: geneTrack.type,
+                                format: geneTrack.format,
+                                sourceType: geneTrack.sourceType,
+                                url: geneTrack.url,
+                                indexURL: geneTrack.indexURL,
+                                displayMode: geneTrack.displayMode,
+                                visibilityWindow: 300000000,
+                                height: 100,
+                                searchable: true,
+                                order: {{counter.loop}},
+                                infoURL: "https://www.ncbi.nlm.nih.gov/gene/?term=$$"
+                              }, // end of genes track
+                            {% endif %}
                         {% endfor %}
                     ] // end of tracks
             };
