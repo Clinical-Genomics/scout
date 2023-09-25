@@ -11,7 +11,6 @@ from scout.server.app import create_app
 from scout.server.blueprints.variant.controllers import (
     check_reset_variant_classification,
     get_igv_tracks,
-    has_rna_tracks,
     observations,
     tx_overview,
     variant,
@@ -19,6 +18,7 @@ from scout.server.blueprints.variant.controllers import (
 )
 from scout.server.blueprints.variant.utils import evaluation
 from scout.server.extensions import cloud_tracks, loqusdb, store
+from scout.server.utils import case_has_rna_tracks
 
 LOG = logging.getLogger(__name__)
 
@@ -152,7 +152,7 @@ def test_has_rna_tracks(case_obj, tmpdir):
         ind["rna_coverage_bigwig"] = str(rna_cov_bw)
 
     # THEN case should result having RNA tracks
-    assert has_rna_tracks(case_obj) is True
+    assert case_has_rna_tracks(case_obj) is True
 
 
 def test_get_igv_tracks():

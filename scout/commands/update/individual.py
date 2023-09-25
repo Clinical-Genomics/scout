@@ -14,6 +14,7 @@ UPDATE_DICT = {
     "vcf2cytosure": "path",
     "rhocall_bed": "path",
     "rhocall_wig": "path",
+    "rna_alignment_path": "path",
     "tiddit_coverage_wig": "path",
     "upd_regions_bed": "path",
     "upd_sites_bed": "path",

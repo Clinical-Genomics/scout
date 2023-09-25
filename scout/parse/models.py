@@ -126,6 +126,7 @@ class ScoutIndividual(BaseModel):
     reviewer: Optional[REViewer] = REViewer()
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
+    rna_alignment_path: Optional[str] = None
     rna_coverage_bigwig: Optional[str] = None
     sample_name: Optional[str] = None
     sex: Literal["unknown", "female", "male"]
