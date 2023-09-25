@@ -22,6 +22,7 @@ SAMPLES_FILE_PATH_CHECKS = [
     "mitodel_file",
     "rhocall_bed",
     "rhocall_wig",
+    "rna_alignment_path",
     "rna_coverage_bigwig",
     "splice_junctions_bed",
     "tiddit_coverage_wig",
@@ -175,6 +176,7 @@ class SampleLoader(BaseModel):
     reviewer: Optional[REViewer] = REViewer()
     rhocall_bed: Optional[str] = None
     rhocall_wig: Optional[str] = None
+    rna_alignment_path: Optional[str] = None
     rna_coverage_bigwig: Optional[str] = None
     sample_name: Optional[str] = None
     sex: Literal["unknown", "female", "male"]

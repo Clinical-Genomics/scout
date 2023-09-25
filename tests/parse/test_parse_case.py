@@ -227,9 +227,9 @@ def test_parse_case_multiple_alignment_files(scout_config, custom_temp_file):
         assert ind["bam_file"] == cram_path
 
 
-def test_parse_case_ribonucleic_acid_alignment_files(scout_config):
+def test_parse_case_ribonucleic_acid_alignment_files(scout_config, custom_temp_file):
     # GIVEN a load config with RNA alignment paths
-    cram_path = "a cram"
+    cram_path = str(custom_temp_file(".cram"))
     for sample in scout_config["samples"]:
         sample["rna_alignment_path"] = cram_path
 
