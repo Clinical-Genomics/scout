@@ -36,7 +36,7 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row" id="body-row"> <!--sidebar and main container are on the same row-->
-    {{ action_bar(institute, case, causatives, collaborators, current_user, report_types) }} <!-- This is the sidebar -->
+    {{ action_bar(institute, case, causatives, collaborators, current_user, report_types, has_rna_tracks) }} <!-- This is the sidebar -->
     {{ case_page() }}
   </div> <!-- end of div id body-row -->
 </div>

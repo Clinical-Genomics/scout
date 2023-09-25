@@ -86,9 +86,12 @@ def remote_static():
 
 
 @alignviewers_bp.route(
+    "/<institute_id>/<case_name>/igv-splice-junctions", methods=["GET"]
+)  # from case page
+@alignviewers_bp.route(
     "/<institute_id>/<case_name>/<variant_id>/igv-splice-junctions", methods=["GET"]
 )
-def sashimi_igv(institute_id, case_name, variant_id):
+def sashimi_igv(institute_id, case_name, variant_id=None):
     """Visualize splice junctions on igv.js sashimi-like viewer for one or more individuals of a case.
     wiki: https://github.com/igvteam/igv.js/wiki/Splice-Junctions
     """

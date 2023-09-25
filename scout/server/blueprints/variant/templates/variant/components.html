@@ -60,7 +60,7 @@
   </li>
 {% endmacro %}
 
-{% macro alignments(institute, case, variant, current_user, config, igv_tracks, splice_junctions_tracks=False) %}
+{% macro alignments(institute, case, variant, current_user, config, igv_tracks, has_rna_tracks=False) %}
    <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between">
           {% if variant.chromosome in ["MT","M"] and case.mt_bams or case.bam_files %}
@@ -73,7 +73,7 @@
               {{ reviewer_button(case,variant,case_groups,institute._id) }}
             </div>
           {% endif %}
-          {% if splice_junctions_tracks %}
+          {% if has_rna_tracks %}
             <div>
               {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
             </div>

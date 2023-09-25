@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - A GitHub action that checks for broken internal links in docs pages
 - Link validation settings in mkdocs.yml file
+- Load and display full RNA alignments on alignment viewer
 - Genome build check when loading a case
 ### Fixed
 - Documentation nav links for a few documents
@@ -20,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case validation fails on loading when associated files (alignments, VCFs and reports) are not present on disk
 - Case validation fails on loading when custom images have format different then ["gif", "svg", "png", "jpg", "jpeg"]
 - Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `srt_variants_images`
+
 
 ## [4.71]
 ### Added

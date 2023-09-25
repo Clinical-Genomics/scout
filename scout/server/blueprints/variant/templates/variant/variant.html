@@ -356,7 +356,7 @@
       {% if variant.category != "str" %}
         {{ database_buttons(variant) }}
       {% endif %}
-      {{ alignments(institute, case, variant, current_user, config, igv_tracks, splice_junctions_tracks) }}
+      {{ alignments(institute, case, variant, current_user, config, igv_tracks, has_rna_tracks) }}
       {% if variant.custom %}
       <table class="table table-bordered table-sm">
 	<thead class="thead table-light">

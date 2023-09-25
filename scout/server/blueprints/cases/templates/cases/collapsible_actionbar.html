@@ -1,4 +1,4 @@
-{% macro action_bar(institute, case, causatives, collaborators, current_user, report_types) %}
+{% macro action_bar(institute, case, causatives, collaborators, current_user, report_types, has_rna_tracks) %}
 <!-- Collapsible Sidebar, Based on https://www.codeply.com/go/LFd2SEMECH -->
   <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
       <!-- Bootstrap List Group -->
@@ -13,7 +13,7 @@
           {{ reports(institute,case, report_types) }}
           {{ default_gene_panel(institute, case) }}
           {{ analysis_date(case) }}
-          {{ genome_build(case, case_groups) }}
+          {{ genome_build(case, case_groups, has_rna_tracks) }}
           {{ rank_model(case) }}
           <li class="list-group-item bg-dark sidebar-separator menu-collapsed"></li>
           {{ status(case) }}
@@ -172,7 +172,7 @@
 {% endif %}
 {% endmacro %}
 
-{% macro genome_build(case, case_groups) %}
+{% macro genome_build(case, case_groups, has_rna_tracks) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
       <span class="fa fa-wrench fa-fw me-3"></span>
@@ -188,6 +188,13 @@
     <span class="text-muted">BAM file(s) missing</span>
   {% endif %}
 </div>
+{% if has_rna_tracks %}
+  <div href="#" class="bg-dark list-group-item d-inline-block text-white">
+    <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
+      <button role="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Only available in build GRCh38" class="btn btn-xs form-control btn-secondary">RNA splicing</button>
+    </form>
+  </div>
+{% endif %}
 {% endmacro %}
 
 {% macro rank_model(case) %}
