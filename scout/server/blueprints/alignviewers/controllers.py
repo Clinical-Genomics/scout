@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 import os.path
+from typing import Dict
 
 from flask import flash, session
 from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
 from scout.server.extensions import cloud_tracks, store
-from scout.server.utils import case_append_alignments
+from scout.server.utils import case_append_alignments, find_index
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
 LOG = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ def set_session_tracks(display_obj):
     """Save igv tracks as a session object. This way it's easy to verify that a user is requesting one of these files from remote_static view endpoint
 
     Args:
-        display_obj(dict): A display object containing case name, list of genes, lucus and tracks
+        display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
     session_tracks = list(display_obj.get("reference_track", {}).values())
     for key, track_items in display_obj.items():
@@ -113,7 +114,7 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
     return display_obj
 
 
-def make_sashimi_tracks(case_obj, variant_id):
+def make_sashimi_tracks(case_obj, variant_id=None):
     """Create a dictionary containing the required tracks for a splice junction plot
 
     Args:
@@ -124,14 +125,59 @@ def make_sashimi_tracks(case_obj, variant_id):
     """
     build = "38"  # This feature is only available for RNA tracks in build 38
 
-    variant_obj = store.variant(document_id=variant_id)
+    locus = "All"
+    if variant_id:
+        variant_obj = store.variant(document_id=variant_id)
+        locus = make_locus_from_variant(variant_obj, case_obj, build)
 
-    # Initialize locus coordinates it with variant coordinates so it won't crash if variant gene(s) no longer exist in database
+    display_obj = {"locus": locus, "tracks": []}
+
+    set_common_tracks(display_obj, build)
+
+    # Populate tracks for each individual with splice junction track data
+    for ind in case_obj.get("individuals", []):
+        if all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
+            coverage_wig = ind["rna_coverage_bigwig"]
+            splicej_bed = ind["splice_junctions_bed"]
+            splicej_bed_index = (
+                f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
+            )
+            if splicej_bed_index is None:
+                flash(f"Missing bed file index for individual {ind['display_name']}")
+            track = {
+                "name": ind["display_name"],
+                "coverage_wig": coverage_wig,
+                "splicej_bed": splicej_bed,
+                "splicej_bed_index": splicej_bed_index,
+            }
+            display_obj["tracks"].append(track)
+        if ind.get("rna_alignment_path"):
+            rna_aln = ind["rna_alignment_path"]
+            aln_track = {
+                "name": ind["display_name"],
+                "url": rna_aln,
+                "indexURL": find_index(rna_aln),
+                "format": rna_aln.split(".")[-1],  # "bam" or "cram"
+                "aln_height": 400,
+            }
+            display_obj["tracks"].append(aln_track)
+    display_obj["case"] = case_obj["display_name"]
+
+    return display_obj
+
+
+def make_locus_from_variant(variant_obj: Dict, case_obj: Dict, build: str) -> str:
+    """Given a variant obj, construct a locus string across any gene touched for IGV to display.
+
+    Initialize locus coordinates with variant coordinates so it won't crash if variant gene(s) no longer exist in database.
+    Check if variant coordinates are in genome build 38, otherwise do variant coords liftover.
+    Use original coordinates only if genome build was already 38 or liftover didn't work.
+    Collect locus coordinates. Take into account that variant can hit multiple genes.
+    The returned locus will so span all genes the variant falls into.
+    """
     locus_start_coords = []
     locus_end_coords = []
 
-    # Check if variant coordinates are in genome build 38
-    # Otherwise do variant coords liftover
     if build not in str(case_obj.get("genome_build")):
         client = EnsemblRestApiClient()
         mapped_coords = client.liftover(
@@ -146,13 +192,11 @@ def make_sashimi_tracks(case_obj, variant_id):
             locus_start_coords.append(mapped_start)
             locus_end_coords.append(mapped_end)
 
-    # Use original coordinates only genome build was already 38 or liftover didn't work
     if not locus_start_coords:
         locus_start_coords.append(variant_obj.get("position"))
     if not locus_end_coords:
         locus_end_coords.append(variant_obj.get("end"))
 
-    # Collect locus coordinates. Take into account that variant can hit multiple genes
     variant_genes_ids = [gene["hgnc_id"] for gene in variant_obj.get("genes", [])]
     for gene_id in variant_genes_ids:
         gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene_id, build=build)
@@ -164,34 +208,7 @@ def make_sashimi_tracks(case_obj, variant_id):
     locus_start = min(locus_start_coords)
     locus_end = max(locus_end_coords)
 
-    locus = f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"  # Locus will span all genes the variant falls into
-    display_obj = {"locus": locus, "tracks": []}
-
-    # Add Genes and reference tracks to display object
-    set_common_tracks(display_obj, build)
-
-    # Populate tracks for each individual with splice junction track data
-    for ind in case_obj.get("individuals", []):
-        if not all([ind.get("splice_junctions_bed"), ind.get("rna_coverage_bigwig")]):
-            continue
-
-        coverage_wig = ind["rna_coverage_bigwig"]
-        splicej_bed = ind["splice_junctions_bed"]
-        splicej_bed_index = f"{splicej_bed}.tbi" if os.path.isfile(f"{splicej_bed}.tbi") else None
-        if splicej_bed_index is None:
-            flash(f"Missing bed file index for individual {ind['display_name']}")
-
-        track = {
-            "name": ind["display_name"],
-            "coverage_wig": coverage_wig,
-            "splicej_bed": splicej_bed,
-            "splicej_bed_index": splicej_bed_index,
-        }
-        display_obj["tracks"].append(track)
-
-    display_obj["case"] = case_obj["display_name"]
-
-    return display_obj
+    return f"{variant_obj['chromosome']}:{locus_start}-{locus_end}"
 
 
 def set_tracks(name, file_list):
@@ -204,6 +221,8 @@ def set_tracks(name, file_list):
 
 def set_common_tracks(display_obj, build):
     """Set up tracks common to all cases (Genes, ClinVar ClinVar CNVs) according to user preferences
+
+    Add Genes and reference tracks to display object
 
     Args:
         display_obj(dict) dictionary containing all tracks info

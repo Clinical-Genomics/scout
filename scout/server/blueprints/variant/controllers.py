@@ -30,6 +30,7 @@ from scout.server.links import get_variant_links
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
+    case_has_rna_tracks,
     institute_and_case,
     user_institutes,
 )
@@ -122,27 +123,6 @@ def tx_overview(variant_obj):
     variant_obj["overview_transcripts"] = sorted(
         overview_txs, key=lambda tx: (tx["mane"], tx["mane_plus"]), reverse=True
     )
-
-
-def has_rna_tracks(case_obj):
-    """Returns True if one of more individuals of the case contain RNA-seq data
-
-    Args:
-        case_obj(dict)
-    Returns
-        True or False (bool)
-    """
-    # Display junctions track if available for any of the individuals
-    for ind in case_obj.get("individuals", []):
-        # Track contains 2 files and they should both be present
-        splicej_bed = ind.get("splice_junctions_bed")
-        rna_cov_bw = ind.get("rna_coverage_bigwig")
-        if None in [splicej_bed, rna_cov_bw]:
-            continue
-        if False in [os.path.exists(splicej_bed), os.path.exists(rna_cov_bw)]:
-            continue
-        return True
-    return False
 
 
 def get_igv_tracks(build="37"):
@@ -380,7 +360,7 @@ def variant(
         "ACMG_OPTIONS": ACMG_OPTIONS,
         "inherit_palette": INHERITANCE_PALETTE,
         "igv_tracks": get_igv_tracks(genome_build),
-        "splice_junctions_tracks": has_rna_tracks(case_obj),
+        "has_rna_tracks": case_has_rna_tracks(case_obj),
         "gens_info": gens.connection_settings(genome_build),
         "evaluations": evaluations,
         "rank_score_results": variant_rank_scores(store, case_obj, variant_obj),
