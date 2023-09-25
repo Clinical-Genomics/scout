@@ -488,6 +488,7 @@ class CaseHandler(object):
             "$or": [
                 {"gene_fusion_report": EXISTS_NOT_NULL},
                 {"gene_fusion_report_research": EXISTS_NOT_NULL},
+                {"individuals.rna_alignment_path": EXISTS_NOT_NULL},
                 {"individuals.splice_junctions_bed": EXISTS_NOT_NULL},
                 {"individuals.rna_coverage_bigwig": EXISTS_NOT_NULL},
                 {"RNAfusion_report": EXISTS_NOT_NULL},
@@ -722,7 +723,7 @@ class CaseHandler(object):
             cases(pymongo.cursor): The cases with a matching ind_id
         """
 
-        return self.case_collection.find({"individuals.disply_name": ind_id})
+        return self.case_collection.find({"individuals.display_name": ind_id})
 
     def delete_case(self, case_id=None, institute_id=None, display_name=None):
         """Delete a single case from database
