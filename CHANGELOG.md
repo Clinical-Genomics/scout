@@ -14,7 +14,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Documentation nav links for a few documents
 - Slightly extended the BioNano Genomics Access integration docs
 - Loading of SVs when VCF is missing the INFO.END field but has INFO.SVLEN field
-- HPO numbers silently converted to integers during HPO terms loading
 ### Changed
 - Column width adjustment on caseS page
 - Upgraded Pydantic to version 2
