@@ -327,7 +327,8 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
                     "width": image.width,
                 }
                 real_folder_images.append(Image(**new_image))
-        real_folder_images.append(image)  # append other non-repid images
+        else:
+            real_folder_images.append(image)  # append other non-repid images
 
     real_folder_images = [_set_image_content(image) for image in real_folder_images]
 
