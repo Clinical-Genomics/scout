@@ -94,7 +94,7 @@ custom_images:
     - title: Image for replicon {REPID}
       str_repid: '{REPID}'
       description: Usage of substitution
-      path: scout/demo/images/custom_images/640x480_{REPID}.svg
+      path: scout/demo/images/custom_images/replicons/640x480_{REPID}.svg
   case_images:
     section_one:
       - title: A png image
@@ -133,7 +133,7 @@ exe_ver: scout/demo/exe_ver.yaml
 reference_info: scout/demo/reference_info.yaml
 
 default_gene_panels: [panel1]
-gene_panels: [panel1]
+# gene_panels: [panel1]
 
 # meta data
 rank_model_version: '1.20'
