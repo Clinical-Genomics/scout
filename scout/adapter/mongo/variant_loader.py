@@ -561,6 +561,19 @@ class VariantLoader(object):
             is_managed(boolean)
 
         """
+        coordinates = parse_coordinates(variant, category, build)
+
+        category = ["snv", "sv", "str", "cancer", "cancer-sv"]
+
+        parse_other_causative_variant_id(
+            coordinates["chrom"],
+            coordinates["position"],
+            coordinates["ref"],
+            coordinates["alt"],
+            category,
+            coordinates["sub_category"],
+            build,
+        )
 
         variant_prefix = variant["simple_id"]
         clinical_variant = "".join([variant_prefix, "_clinical"])
