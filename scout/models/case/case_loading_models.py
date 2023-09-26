@@ -5,7 +5,12 @@ from enum import Enum
 from fractions import Fraction
 from glob import glob
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 import path
 from pydantic import BaseModel, Field, field_validator, model_validator
