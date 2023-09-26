@@ -133,7 +133,7 @@ exe_ver: scout/demo/exe_ver.yaml
 reference_info: scout/demo/reference_info.yaml
 
 default_gene_panels: [panel1]
-# gene_panels: [panel1]
+gene_panels: [panel1]
 
 # meta data
 rank_model_version: '1.20'
