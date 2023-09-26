@@ -200,7 +200,7 @@ class SampleLoader(BaseModel):
     vcf2cytosure: Optional[str] = None
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
     @model_validator(mode="before")
     def convert_cancer_int_values_to_str(cls, values) -> "SampleLoader":
