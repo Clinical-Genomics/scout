@@ -424,7 +424,7 @@ class CaseLoader(BaseModel):
             values[panels_type] = [panel.strip() for panel in values[panels_type]]
 
         if not values.get("gene_panels"):
-            raise ValueError("One of more default gene panels should be set.")
+            raise ValueError("One of more gene panels should be set.")
 
         if values.get("default_panels"):
             values["default_default_panels"] = values["default_panels"]
