@@ -115,7 +115,7 @@ The fields `title`, `description` and `path` are mandatory regarless of location
 ``` yaml
 
 custom_images:
-  case:
+  case_images:
     group_one:
       - title: <string> title of image [mandatory]
         description: <string> replacement description of image [mandatory]
@@ -130,7 +130,7 @@ custom_images:
       - title: <string> An SVG image [mandatory]
         description: <string> Another very good description
         path: <string> scout/demo/images/custom_images/640x480_three.svg [mandatory]
-  str:
+  str_variants_images:
     - title: <string> title of image [mandatory]
       str_repid: AFF2 [mandatory]
       description: <string> replacement description of image [mandatory]
@@ -155,7 +155,7 @@ Given the two files above will this configuration
 
 ``` yaml
 custom_images:
-  str:
+  str_variants_images:
     - title: <string> A jpg image {REPID} [mandatory]
       str_repid: {REPID} [mandatory]
       path: <string> scout/demo/images/custom_images/640x480_{REPID}.jpg [mandatory]
@@ -165,7 +165,7 @@ be equivalent to
 
 ``` yaml
 custom_images:
-  str:
+  str_variants_images:
     - title: <string> An image of AR
       str_repid: AR
       path: <string> scout/demo/images/custom_images/640x480_AR.jpg
