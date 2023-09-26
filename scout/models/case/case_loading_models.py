@@ -415,6 +415,22 @@ class CaseLoader(BaseModel):
         values.update({"case_id": values.get("case_id", values.get("family"))})
         return values
 
+    @model_validator(mode="before")
+    def set_gene_panels(cls, values) -> "CaseLoader":
+        """Make sure default_gene_panels and gene_panels lists don't contain strings with spaces."""
+        for panels_type in ["default_default_panels", "default_panels", "gene_panels"]:
+            if not values.get(panels_type):
+                continue
+            values[panels_type] = [panel.strip() for panel in values[panels_type]]
+
+        if not values.get("gene_panels"):
+            raise ValueError("One of more default gene panels should be set.")
+
+        if values.get("default_panels"):
+            values["default_default_panels"] = values["default_panels"]
+
+        return values
+
     @field_validator("analysis_date", mode="before")
     @classmethod
     def set_analysis_date(cls, analysis_date: Optional[Any]) -> datetime:
