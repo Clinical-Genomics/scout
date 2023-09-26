@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+from pathlib import PosixPath
 
 import pymongo
 import pytest
@@ -465,7 +466,7 @@ def case_obj(request, parsed_case):
     case["synopsis"] = ""
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
-    case["custom_images"] = parsed_case["custom_images"]["case"]
+    case["custom_images"] = parsed_case["custom_images"]["case_images"]
     case["assignees"] = []
     case["phenotype_terms"] = []  # do not assign any phenotype
     case["cohorts"] = []  # do not assign any cohort
@@ -1617,3 +1618,16 @@ def match_objs():
         },
     ]
     return matches
+
+
+@pytest.fixture(name="custom_temp_file")
+def custom_temp_file(tmp_path) -> PosixPath:
+    """Returns a temp file with the provided extension."""
+
+    def _get_file_with_extension(extension):  # extension example -> '.bam'
+        tmp_file = tmp_path / extension
+        tmp_file.touch()
+        tmp_file.write_text("some_content")
+        return tmp_file
+
+    return _get_file_with_extension

@@ -1,6 +1,9 @@
+import logging
 from typing import List, Optional
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, model_validator
+
+LOG = logging.getLogger(__name__)
 
 
 # Hpo terms represents data from the hpo web
@@ -11,16 +14,19 @@ class HpoTerm(BaseModel):
     """
 
     hpo_id: str  # id field in the hpo.obo file
-    hpo_number: Optional[int]  # id field in the hpo.obo file, stripped of the 'HP:' part
+    hpo_number: Optional[
+        int
+    ] = None  # id field in the hpo.obo file, stripped of the 'HP:' part and the zeroes
     description: str  # name field in the hpo.obo file
     ancestors: List = []
     all_ancestors: List = []
     children: List = []
     genes: List = []  # List with integers that are hgnc_ids
 
-    @validator("hpo_number", always=True)
-    def get_hpo_number(cls, _, values) -> int:
-        return int(values["hpo_id"].split(":")[-1])
+    @model_validator(mode="after")
+    def set_hpo_number(self) -> "HpoTerm":
+        self.hpo_number = int(self.hpo_id.split(":")[1])
+        return self
 
 
 # Disease terms represent diseases collected from omim, orphanet and decipher.
