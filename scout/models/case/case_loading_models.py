@@ -417,7 +417,7 @@ class CaseLoader(BaseModel):
 
     @model_validator(mode="before")
     def set_gene_panels(cls, values) -> "CaseLoader":
-        """Make sure default_gene_panels and gene_panels lists don't contain strings with spaces."""
+        """Make sure gene_panels has data and that together with default_gene_panels doesn't contain strings with spaces."""
         for panels_type in ["default_default_panels", "default_panels", "gene_panels"]:
             if not values.get(panels_type):
                 continue
