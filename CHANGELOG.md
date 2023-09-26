@@ -16,6 +16,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Loading of SVs when VCF is missing the INFO.END field but has INFO.SVLEN field
 ### Changed
 - Column width adjustment on caseS page
+- Use Python 3.11 in tests
+- Update some github actions
 
 
 ## [4.71]
