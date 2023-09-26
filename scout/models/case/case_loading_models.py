@@ -452,12 +452,10 @@ class CaseLoader(BaseModel):
         """Add the pedigree figure."""
         madeline_path = Path(madeline)
         try:
-            if not madeline_path.exists():
-                raise ValueError("madeline path not found: {}".format(madeline_path))
             with madeline_path.open("r") as in_handle:
                 return in_handle.read()
         except Exception as ex:
-            raise ex
+            LOG.warning(f"madeline_info is not reachable or a valid path: {}.")
 
     @field_validator("synopsis", mode="before")
     @classmethod
