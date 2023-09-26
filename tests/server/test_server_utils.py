@@ -41,7 +41,7 @@ def test_case_has_alignments(case_obj):
 
     # GIVEN a case with no autosomal alignment files
     for ind in case_obj["individuals"]:
-        assert ind["bam_file"] == ""
+        assert ind["bam_file"] is None
 
     # THEN case_has_alignments should assign bam_files = False to a case
     assert case_obj.get("bam_files") is None
