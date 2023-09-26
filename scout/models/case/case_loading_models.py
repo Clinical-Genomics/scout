@@ -447,6 +447,15 @@ class CaseLoader(BaseModel):
             )
             return datetime.now()
 
+    @field_validator("madeline_info", mode="after")
+    def check_if_madeline_exists(cls, madeline: str) -> Optional[str]:
+        """Add the pedigree figure."""
+        madeline_path = Path(madeline)
+        if not madeline_path.exists():
+            raise ValueError("madeline path not found: {}".format(madeline_path))
+        with madeline_path.open("r") as in_handle:
+            return in_handle.read()
+
     @field_validator("synopsis", mode="before")
     @classmethod
     def set_synopsis(cls, synopsis: Optional[Union[str, List]]) -> Optional[str]:
