@@ -455,7 +455,7 @@ class CaseLoader(BaseModel):
             with madeline_path.open("r") as in_handle:
                 return in_handle.read()
         except Exception as ex:
-            LOG.warning(f"madeline_info is not reachable or a valid path: {madeline_path}.")
+            LOG.warning(f"madeline_info is not reachable or a valid path: {ex}.")
 
     @field_validator("synopsis", mode="before")
     @classmethod
