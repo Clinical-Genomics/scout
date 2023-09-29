@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case validation fails on loading when associated files (alignments, VCFs and reports) are not present on disk
 - Case validation fails on loading when custom images have format different then ["gif", "svg", "png", "jpg", "jpeg"]
 - Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `srt_variants_images`
+- Upgrade python version from 3.8 to 3.11 in Docker images
 
 
 ## [4.71]
