@@ -12,7 +12,7 @@ COPY requirements.txt .
 # No wheel for indirect pycairo dependency so need build env for it to install
 RUN apt-get update && \
     apt-get -y upgrade && \
-    apt-get -y install --no-install-recommends gcc libcairo2-dev pkg-config python3-dev
+    apt-get -y install --no-install-recommends gcc python3-dev libcairo2 libcairo2-dev pkg-config
 RUN pip install --no-cache-dir -r requirements.txt
 
 #########
