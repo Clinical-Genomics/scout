@@ -9,9 +9,12 @@ WORKDIR /app
 
 # Install Scout dependencies
 COPY requirements.txt .
+
+# No wheel for indirect pycairo dependency so need build env for it to install
 RUN apt-get update && \
     apt-get -y upgrade && \
     apt-get -y install --no-install-recommends gcc libcairo2-dev pkg-config python3-dev
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 #########
@@ -30,12 +33,10 @@ RUN apt-get update && \
      apt-get -y install -y --no-install-recommends wkhtmltopdf libpango-1.0-0 libpangocairo-1.0-0 && \
      apt-get clean && \
      rm -rf /var/lib/apt/lists/*
-
 # Do not upgrade to the latest pip version to ensure more reproducible builds
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PATH="/venv/bin:$PATH"
 RUN echo export PATH="/venv/bin:\$PATH" > /etc/profile.d/venv.sh
-
 # Create a non-root user to run commands
 RUN groupadd --gid 1000 worker && useradd -g worker --uid 1000 --shell /usr/sbin/nologin --create-home worker
 
