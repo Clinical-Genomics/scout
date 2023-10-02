@@ -47,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Causative MEI variant link on causatives page
 - Bionano access api settings commented out by default in Scout demo config file.
 - Do not show FSHD button on freshly loaded cases without bionano_access individuals
+- Truncate long variants' HGVS on causative/Clinically significant and pinned variants case panels
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms
