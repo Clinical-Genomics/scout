@@ -22,6 +22,7 @@ from scout.parse.variant.headers import (
     parse_rank_results_header,
     parse_vep_header,
 )
+from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
 
@@ -563,19 +564,12 @@ class VariantLoader(object):
         """
         coordinates = parse_coordinates(variant, category, build)
 
-        category = ["snv", "sv", "str", "cancer", "cancer-sv"]
-
-        parse_other_causative_variant_id(
+        variant_prefix = parse_simple_id(
             coordinates["chrom"],
             coordinates["position"],
             coordinates["ref"],
             coordinates["alt"],
-            category,
-            coordinates["sub_category"],
-            build,
         )
-
-        variant_prefix = variant["simple_id"]
         clinical_variant = "".join([variant_prefix, "_clinical"])
         research_variant = "".join([variant_prefix, "_research"])
 
@@ -586,7 +580,6 @@ class VariantLoader(object):
                 "subject": {"$in": [clinical_variant, research_variant]},
             }
         )
-
         return len(var_causative_events)
 
     def _is_managed(
