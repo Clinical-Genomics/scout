@@ -738,7 +738,6 @@ def case_report_content(store, institute_id, case_name):
 
     now = time.process_time()
     LOG.warning(f"Collected report variants -->{time.process_time() - start}")
-    start = now
 
     return data
 
