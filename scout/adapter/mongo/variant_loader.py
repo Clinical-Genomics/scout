@@ -3,9 +3,11 @@
 import logging
 from datetime import datetime
 
+import cyvcf2
+
 # Third party modules
 import pymongo
-from cyvcf2 import VCF
+from cyvcf2 import VCF, Variant
 from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
@@ -414,7 +416,7 @@ class VariantLoader(object):
             rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
             managed = self._is_managed(variant, category)
-            causative = self._is_causative_other(variant)
+            causative = self._is_causative_other(variant, category)
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
@@ -548,9 +550,10 @@ class VariantLoader(object):
 
     def _is_causative_other(
         self,
-        variant,
-        build="37",
-    ):
+        variant: cyvcf2.Variant,
+        category: str = "snv",
+        build: str = "37",
+    ) -> bool:
         """Check if variant is on the list of causatives from other cases.
         All variants that have been marked causative will be loaded, even if the other case does not exist anymore, or has been reclassified.
 
@@ -562,25 +565,26 @@ class VariantLoader(object):
             is_managed(boolean)
 
         """
+
         coordinates = parse_coordinates(variant, category, build)
 
         variant_prefix = parse_simple_id(
             coordinates["chrom"],
-            coordinates["position"],
+            str(coordinates["position"]),
             coordinates["ref"],
             coordinates["alt"],
         )
         clinical_variant = "".join([variant_prefix, "_clinical"])
         research_variant = "".join([variant_prefix, "_research"])
 
-        var_causative_events = self.event_collection.find(
+        var_causative_events_count = self.event_collection.find(
             {
                 "verb": "mark_causative",
                 "category": "variant",
                 "subject": {"$in": [clinical_variant, research_variant]},
             }
-        )
-        return len(var_causative_events)
+        ).count()
+        return var_causative_events_count > 0
 
     def _is_managed(
         self,
