@@ -9,14 +9,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A GitHub action that checks for broken internal links in docs pages
 - Link validation settings in mkdocs.yml file
 - Load and display full RNA alignments on alignment viewer
+- Genome build check when loading a case
 ### Fixed
 - Documentation nav links for a few documents
 - Slightly extended the BioNano Genomics Access integration docs
 - Loading of SVs when VCF is missing the INFO.END field but has INFO.SVLEN field
+- Escape protein sequence name in case general report to render special characters correctly
 ### Changed
 - Column width adjustment on caseS page
 - Use Python 3.11 in tests
 - Update some github actions
+- Upgraded Pydantic to version 2
+- Case validation fails on loading when associated files (alignments, VCFs and reports) are not present on disk
+- Case validation fails on loading when custom images have format different then ["gif", "svg", "png", "jpg", "jpeg"]
+- Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `srt_variants_images`
 
 
 ## [4.71]
@@ -41,6 +47,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Causative MEI variant link on causatives page
 - Bionano access api settings commented out by default in Scout demo config file.
 - Do not show FSHD button on freshly loaded cases without bionano_access individuals
+- Truncate long variants' HGVS on causative/Clinically significant and pinned variants case panels
 ### Changed
 - Remove function call that tracks users' browser version
 - Include three more splice variant SO terms in clinical filter severe SO terms

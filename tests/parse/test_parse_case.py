@@ -127,8 +127,9 @@ def test_parse_custom_images(scout_config):
     assert original_custom_images.keys() == parsed_custom_images.keys()
 
     assert all(
-        len(parsed_custom_images["case"][section]) == len(original_custom_images["case"][section])
-        for section in parsed_custom_images["case"]
+        len(parsed_custom_images["case_images"][section])
+        == len(original_custom_images["case_images"][section])
+        for section in parsed_custom_images["case_images"]
     )
 
 
@@ -136,7 +137,7 @@ def test_parse_incorrect_custom_images(scout_config):
     """Test parsing of case with a mix of accepted file types and not-accepted
     file types"""
 
-    # GIVEN one valid suffix and two invalid suffixes (.bnp, .pdf)
+    # GIVEN one or more custom images with unsupported format
     scout_config["custom_images"] = {
         "case": {
             "section_one": [
@@ -161,12 +162,9 @@ def test_parse_incorrect_custom_images(scout_config):
         }
     }
 
-    # WHEN images is parsed
-    parsed_data = parse_case_config(scout_config)
-
-    # THEN check that non valid image formats are being rejected
-    assert len(parsed_data["custom_images"]["case"]["section_one"]) == 1
-    assert "section_two" not in parsed_data["custom_images"]
+    # THEN image validation when loading a case should fail
+    with pytest.raises(TypeError):
+        parse_case_config(scout_config)
 
 
 def test_parse_case_collaborators(scout_config):
@@ -198,9 +196,9 @@ def test_parse_case_vcf_files(scout_config, vcf_file):
 
 
 @pytest.mark.parametrize("bam_name", ["alignment_path", "bam_file", "bam_path"])
-def test_parse_case_bams(scout_config, bam_name):
+def test_parse_case_bams(scout_config, bam_name, custom_temp_file):
     # GIVEN a load config with bam_path as key to bam/cram files
-    bam_path = "a bam"
+    bam_path = str(custom_temp_file(".bam"))
     for sample in scout_config["samples"]:
         sample[bam_name] = bam_path
     # WHEN case is parsed
@@ -211,13 +209,13 @@ def test_parse_case_bams(scout_config, bam_name):
         assert ind["bam_file"] == bam_path
 
 
-def test_parse_case_multiple_alignment_files(scout_config):
+def test_parse_case_multiple_alignment_files(scout_config, custom_temp_file):
     # GIVEN a load config with both cram and bam files
-    bam_path = "a bam"
+    bam_path = str(custom_temp_file(".bam"))
     for sample in scout_config["samples"]:
         sample["bam_file"] = bam_path
 
-    cram_path = "a cram"
+    cram_path = str(custom_temp_file(".cram"))
     for sample in scout_config["samples"]:
         sample["alignment_path"] = cram_path
 
@@ -229,9 +227,9 @@ def test_parse_case_multiple_alignment_files(scout_config):
         assert ind["bam_file"] == cram_path
 
 
-def test_parse_case_ribonucleic_acid_alignment_files(scout_config):
+def test_parse_case_ribonucleic_acid_alignment_files(scout_config, custom_temp_file):
     # GIVEN a load config with RNA alignment paths
-    cram_path = "a cram"
+    cram_path = str(custom_temp_file(".cram"))
     for sample in scout_config["samples"]:
         sample["rna_alignment_path"] = cram_path
 
@@ -388,18 +386,18 @@ def test_remove_none_values():
     assert {"a": "1", "b": 2} == remove_none_values(d)
 
 
-def test_parse_optional_igv_param(scout_config):
+def test_parse_optional_igv_param(scout_config, custom_temp_file):
     # GIVEN a dict contains optional igv params
     # i.e. rhocall_wig
     samples = scout_config["samples"]
 
     # WHEN optional parameters are added to config
     for sample in samples:
-        sample["rhocall_bed"] = "path/to/rb"
-        sample["rhocall_wig"] = "path/to/rw"
-        sample["upd_regions_bed"] = "path/to/up"
-        sample["upd_sites_bed"] = "path/to/us"
-        sample["tiddit_coverage_wig"] = "path/to/tc"
+        sample["rhocall_bed"] = str(custom_temp_file(".bed"))
+        sample["rhocall_wig"] = str(custom_temp_file(".wig"))
+        sample["upd_regions_bed"] = str(custom_temp_file(".bed"))
+        sample["upd_sites_bed"] = str(custom_temp_file(".bed"))
+        sample["tiddit_coverage_wig"] = str(custom_temp_file(".wig"))
     scout_config["samples"] = samples
 
     # THEN parsing the config will add those to case data
@@ -452,5 +450,5 @@ def test_missing_mandatory_config_key(scout_config, key):
     ## WHEN deleting key
     scout_config.pop(key)
     ## THEN calling parse_case_config() will raise ConfigError
-    with pytest.raises(ConfigError):
+    with pytest.raises(ValueError):
         parse_case_config(scout_config)
