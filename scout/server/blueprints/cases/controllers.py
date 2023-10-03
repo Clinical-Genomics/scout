@@ -4,6 +4,7 @@ import itertools
 import json
 import logging
 import os
+import time
 from base64 import b64encode
 from typing import Dict, List, Set
 
@@ -671,6 +672,7 @@ def case_report_content(store, institute_id, case_name):
         "_id": institute_obj["_id"],
     }
     # Populate case individuals with required information
+    start = time.process_time()
     case_individuals = []
     for ind in case_obj.get("individuals"):
         ind_feat = {}
@@ -682,9 +684,17 @@ def case_report_content(store, institute_id, case_name):
             ind_feat["phenotype_human"] = pheno_map.get(ind["phenotype"])
         case_individuals.append(ind_feat)
 
+    now = time.process_time()
+    LOG.warning(f"Collected individuals -->{time.process_time() - start}")
+    start = now
+
     case_info = {"individuals": case_individuals}
     for feat in CASE_REPORT_CASE_FEATURES:
         case_info[feat] = case_obj.get(feat)
+
+    now = time.process_time()
+    LOG.warning(f"Collected case features -->{time.process_time() - start}")
+    start = now
 
     data["case"] = case_info
 
@@ -705,9 +715,18 @@ def case_report_content(store, institute_id, case_name):
         )
 
     data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
+
+    now = time.process_time()
+    LOG.warning(f"Collected comments -->{time.process_time() - start}")
+    start = now
+
     data["audits"] = store.case_events_by_verb(
         category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
     )
+
+    now = time.process_time()
+    LOG.warning(f"Collected audits -->{time.process_time() - start}")
+    start = now
 
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
     data["cancer_tier_options"] = CANCER_TIER_OPTIONS
@@ -716,6 +735,10 @@ def case_report_content(store, institute_id, case_name):
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
     case_report_variants(store, case_obj, institute_obj, data)
+
+    now = time.process_time()
+    LOG.warning(f"Collected report variants -->{time.process_time() - start}")
+    start = now
 
     return data
 
