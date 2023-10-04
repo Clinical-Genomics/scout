@@ -416,7 +416,7 @@ class VariantLoader(object):
             rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
             managed = self._is_managed(variant, category)
-            causative = self._is_causative_other(variant, category)
+            causative = self._is_causative_other_cases(variant, category)
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
