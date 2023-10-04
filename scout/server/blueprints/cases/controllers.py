@@ -29,7 +29,6 @@ from scout.constants import (
     PHENOTYPE_MAP,
     SAMPLE_SOURCE,
     SEX_MAP,
-    VARIANT_REPORT_VARIANT_FEATURES,
     VERBS_MAP,
 )
 from scout.constants.variant_tags import (
@@ -40,10 +39,22 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.parse.matchmaker import (
+    genomic_features,
+    hpo_terms,
+    omim_terms,
+    parse_matches,
+)
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import RerunnerError, bionano_access, gens, matchmaker, rerunner, store
+from scout.server.extensions import (
+    RerunnerError,
+    bionano_access,
+    gens,
+    matchmaker,
+    rerunner,
+    store,
+)
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
@@ -564,110 +575,67 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
     return extra_genes, missing_genes
 
 
-def case_report_variants(store, case_obj, institute_obj, data):
-    """Gather evaluated variants info to include in case report
+def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dict, data: dict):
+    """Gather evaluated variants info to include in case report."""
 
-    Args:
-        store(adapter.MongoAdapter)
-        case_obj(dict): case dictionary
-        data(dict): data dictionary containing case report information
-    """
-    evaluated_variants = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
-    # We collect all causatives (including the partial ones) and suspected variants
-    # These are handeled in separate since they are on case level
-    for var_type in ["causatives", "suspects", "partial_causatives"]:
-        # These include references to variants
-        vt = "_".join([var_type, "detailed"])
-        for var_id in case_obj.get(var_type, []):
-            variant_obj = store.variant(var_id)
-            if not variant_obj:
-                continue
-            if var_type == "partial_causatives":  # Collect associated phenotypes
-                variant_obj["phenotypes"] = [
-                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
-                ][0]
-            evaluated_variants[vt].append(variant_obj)
+    evaluated_variants_by_type: Dict[str, list] = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
 
-    ## get variants for this case that are either classified, commented, tagged or dismissed.
     for var_obj in store.evaluated_variants(
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
     ):
-        # Check which category it belongs to
-        for vt in CASE_REPORT_VARIANT_TYPES:
-            keyword = CASE_REPORT_VARIANT_TYPES[vt]
-            # When found we add it to the category
-            # Each variant can belong to multiple categories
-            if keyword not in var_obj:
-                continue
-            evaluated_variants[vt].append(var_obj)
+        variant_id: str = var_obj["_id"]
+        if variant_id in case_obj.get("causatives", []):
+            evaluated_variants_by_type["causatives_detailed"].append(var_obj)
+        if variant_id in case_obj.get("suspects", []):
+            evaluated_variants_by_type["suspects_detailed"].append(var_obj)
+        if variant_id in case_obj.get("partial_causatives", []):
+            var_obj["phenotypes"] = [
+                value for key, value in case_obj["partial_causatives"].items() if key == var_id
+            ][0]
+            evaluated_variants_by_type["suspects_detailed"].append(var_obj)
 
-    data["variants"] = {}
+        for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
+            if var_obj.get(variant_key):
+                evaluated_variants_by_type[eval_category].append(var_obj)
 
-    for var_type in evaluated_variants:
-        decorated_variants = []
-        for var_obj in evaluated_variants[var_type]:
-            # We decorate the variant with some extra information
-            filtered_var_obj = {}
-            for feat in VARIANT_REPORT_VARIANT_FEATURES:
-                filtered_var_obj[feat] = var_obj.get(feat)
-
-            variant_category = var_obj["category"]
-
-            populate_individual_callers(filtered_var_obj, var_obj)
-
+    for category, variant_list in evaluated_variants_by_type.items():
+        decorated_variants_list = []
+        for var_obj in variant_list:
             decorated_info = variant_decorator(
                 store=store,
                 institute_id=institute_obj["_id"],
                 case_name=case_obj["display_name"],
                 variant_id=None,
-                variant_obj=filtered_var_obj,
+                variant_obj=var_obj,
                 add_other=False,
                 get_overlapping=False,
-                variant_type=variant_category,
+                variant_type=var_obj["category"],
                 institute_obj=institute_obj,
                 case_obj=case_obj,
             )
-            decorated_variants.append(decorated_info["variant"])
-        # Add the decorated variants to the case
-        data["variants"][var_type] = decorated_variants
+            decorated_variants_list.append(decorated_info["variant"])
 
+        # Replace list of variants with list of decorated variants
+        evaluated_variants_by_type[category] = decorated_variants_list
 
-def populate_individual_callers(filtered_var_obj, var_obj):
-    """Adds caller status for variant, for export/filtering.
-    Uses the CALLERS constant to copy fields appropriate for the variant category
-    from the rich store variant to the filtered display variant object.
-
-    Args:
-        filtered_var_obj: variant object to be exported/displayed
-        rich_var_obj: original richer variant object recently fetched from store
-
-    """
-    variant_category = var_obj["category"]
-    for var_cat, var_callers in CALLERS.items():
-        if var_cat == variant_category:
-            for caller in var_callers:
-                caller_id = caller.get("id")
-                filtered_var_obj[caller_id] = var_obj.get(caller_id)
+    data["variants"] = evaluated_variants_by_type
 
 
 def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
     """Gather data to be visualized in a case report."""
 
-    def _set_individuals_phenotype() -> list:
-        pheno_map = (
-            CANCER_PHENOTYPE_MAP if case_obj.get("track", "rare") == "cancer" else PHENOTYPE_MAP
-        )
-        for ind in case_obj.get("individuals"):
-            ind["phenotype_human"] = pheno_map.get(ind["phenotype"])
-
-    _set_individuals_phenotype()
-
     data = {"institute": institute_obj}
     data["case"] = case_obj
+    data["cancer"] = case_obj.get("track") == "cancer"
+
+    # Set a human-readable phenotype for the individuals
+    pheno_map = CANCER_PHENOTYPE_MAP if data["cancer"] else PHENOTYPE_MAP
+    for ind in case_obj.get("individuals"):
+        ind["phenotype_human"] = pheno_map.get(ind["phenotype"])
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
-    data["cancer"] = case_obj.get("track") == "cancer"
     if data["cancer"]:
+        data["cancer_tier_options"] = CANCER_TIER_OPTIONS
         dismiss_options = {
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
@@ -680,15 +648,16 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
             ],
             gene_format="symbol",
         )
+    data["dismissed_options"] = dismiss_options
 
-    data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
+    data["comments"] = store.case_events_by_verb(
+        category="case", institute=institute_obj, case=case_obj, verb="comment"
+    )
     data["audits"] = store.case_events_by_verb(
         category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
     )
 
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
-    data["cancer_tier_options"] = CANCER_TIER_OPTIONS
-    data["dismissed_options"] = dismiss_options
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 

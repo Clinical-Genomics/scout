@@ -53,7 +53,12 @@ from .gene_tags import (
     UPDATE_GENES_RESOURCES,
     VALID_MODELS,
 )
-from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
+from .igv_tracks import (
+    CASE_SPECIFIC_TRACKS,
+    HUMAN_REFERENCE,
+    IGV_TRACKS,
+    USER_DEFAULT_TRACKS,
+)
 from .indexes import INDEXES
 from .phenotype import (
     COHORT_TAGS,
@@ -81,7 +86,6 @@ from .variant_tags import (
     VARIANT_CALL,
     VARIANT_FILTERS,
     VARIANT_GENOTYPES,
-    VARIANT_REPORT_VARIANT_FEATURES,
 )
 from .variants_export import (
     CANCER_EXPORT_HEADER,
