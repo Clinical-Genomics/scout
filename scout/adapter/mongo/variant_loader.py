@@ -548,7 +548,7 @@ class VariantLoader(object):
 
         return nr_inserted
 
-    def _is_causative_other(
+    def _is_causative_other_cases(
         self,
         variant: cyvcf2.Variant,
         category: str = "snv",
