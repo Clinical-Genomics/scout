@@ -26,17 +26,11 @@ def parse_ids(chrom, pos, ref, alt, case_id, variant_type):
     return ids
 
 
-def parse_simple_id(chrom, pos, ref, alt):
+def parse_simple_id(chrom: str, pos: str, ref: str, alt: str) -> str:
     """Parse the simple id for a variant
 
     Simple id is used as a human readable reference for a position, it is
     in no way unique.
-
-    Args:
-        chrom(str)
-        pos(str)
-        ref(str)
-        alt(str)
 
     Returns:
         simple_id(str): The simple human readable variant id
