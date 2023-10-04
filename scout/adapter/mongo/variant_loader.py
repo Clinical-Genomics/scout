@@ -554,16 +554,8 @@ class VariantLoader(object):
         category: str = "snv",
         build: str = "37",
     ) -> bool:
-        """Check if variant is on the list of causatives from other cases.
+        """Check if variant is on the list of causatives from other cases, also from other institutes.
         All variants that have been marked causative will be loaded, even if the other case does not exist anymore, or has been reclassified.
-
-        Arguments:
-            variant(cyvcf2.Variant)
-            build(str): "37" or "38"
-
-        Returns:
-            is_managed(boolean)
-
         """
 
         coordinates = parse_coordinates(variant, category, build)
@@ -579,7 +571,7 @@ class VariantLoader(object):
 
         var_causative_events_count = self.event_collection.find(
             {
-                "verb": "mark_causative",
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
                 "category": "variant",
                 "subject": {"$in": [clinical_variant, research_variant]},
             }
@@ -588,21 +580,14 @@ class VariantLoader(object):
 
     def _is_managed(
         self,
-        variant,
-        category="snv",
-        build="37",
-    ):
-        """Check if variant is on the managaged list.
+        variant: cyvcf2.Variant,
+        category: str = "snv",
+        build: str = "37",
+    ) -> bool:
+        """Check if variant is on the managed list.
         All variants on the list will be loaded regardless of the kind of relevance.
 
-        Arguments:
-            variant(cyvcf2.Variant)
-            category(str): snv, sv, str, cancer, cancer_sv
-            build(str): "37" or "38"
-
-        Returns:
-            is_managed(boolean)
-
+        Returns true if variant is matched with a variant on the managed list.
         """
 
         coordinates = parse_coordinates(variant, category, build)
