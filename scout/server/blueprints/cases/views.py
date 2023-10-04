@@ -225,7 +225,10 @@ def api_case_report(institute_id, case_name):
 @templated("cases/case_report.html")
 def case_report(institute_id, case_name):
     """Visualize case report"""
-    data = controllers.case_report_content(store, institute_id, case_name)
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case_report_content(
+        store=store, institute_obj=institute_obj, case_obj=case_obj
+    )
     return dict(format="html", **data)
 
 

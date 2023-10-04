@@ -19,8 +19,6 @@ from scout.adapter import MongoAdapter
 from scout.constants import (
     CALLERS,
     CANCER_PHENOTYPE_MAP,
-    CASE_REPORT_CASE_FEATURES,
-    CASE_REPORT_CASE_IND_FEATURES,
     CASE_REPORT_VARIANT_TYPES,
     CUSTOM_CASE_REPORTS,
     DATE_DAY_FORMATTER,
@@ -652,41 +650,20 @@ def populate_individual_callers(filtered_var_obj, var_obj):
                 filtered_var_obj[caller_id] = var_obj.get(caller_id)
 
 
-def case_report_content(store, institute_id, case_name):
-    """Gather contents to be visualized in a case report
+def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
+    """Gather data to be visualized in a case report."""
 
-    Args:
-        store(adapter.MongoAdapter)
-        institute_id(str): _id of an institute
-        case_name(str): case display name
+    def _set_individuals_phenotype() -> list:
+        pheno_map = (
+            CANCER_PHENOTYPE_MAP if case_obj.get("track", "rare") == "cancer" else PHENOTYPE_MAP
+        )
+        for ind in case_obj.get("individuals"):
+            ind["phenotype_human"] = pheno_map.get(ind["phenotype"])
 
-    Returns:
-        data(dict)
+    _set_individuals_phenotype()
 
-    """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {}
-    # Populate data with required institute _id
-    data["institute"] = {
-        "_id": institute_obj["_id"],
-    }
-    # Populate case individuals with required information
-    case_individuals = []
-    for ind in case_obj.get("individuals"):
-        ind_feat = {}
-        for feat in CASE_REPORT_CASE_IND_FEATURES:
-            ind_feat[feat] = ind.get(feat)
-            pheno_map = PHENOTYPE_MAP
-            if case_obj.get("track", "rare") == "cancer":
-                pheno_map = CANCER_PHENOTYPE_MAP
-            ind_feat["phenotype_human"] = pheno_map.get(ind["phenotype"])
-        case_individuals.append(ind_feat)
-
-    case_info = {"individuals": case_individuals}
-    for feat in CASE_REPORT_CASE_FEATURES:
-        case_info[feat] = case_obj.get(feat)
-
-    data["case"] = case_info
+    data = {"institute": institute_obj}
+    data["case"] = case_obj
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
     data["cancer"] = case_obj.get("track") == "cancer"
