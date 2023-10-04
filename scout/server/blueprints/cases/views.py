@@ -230,56 +230,6 @@ def case_report(institute_id, case_name):
     return dict(format="html", **data)
 
 
-@cases_bp.route("/<institute_id>/<case_name>/pdf_report", methods=["GET"])
-def pdf_case_report(institute_id, case_name):
-    """Download a pdf report for a case"""
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_id, case_name)
-
-    # add coverage report on the bottom of this report
-    if (
-        current_app.config.get("SQLALCHEMY_DATABASE_URI")
-        and case_obj.get("track", "rare") != "cancer"
-    ):
-        data["coverage_report"] = controllers.coverage_report_contents(
-            request.url_root, institute_obj, case_obj
-        )
-
-    # Workaround to be able to print the case pedigree to pdf
-    if case_obj.get("madeline_info") and case_obj.get("madeline_info") != "":
-        try:
-            write_to = os.path.join(cases_bp.static_folder, "madeline.png")
-            svg2png(
-                bytestring=case_obj["madeline_info"],
-                write_to=write_to,
-            )  # Transform to png, since PDFkit can't render svg images
-            data["case"]["madeline_path"] = write_to
-        except Exception as ex:
-            LOG.error(
-                f"Could not convert SVG pedigree figure {case_obj['madeline_info']} to PNG: {ex}"
-            )
-
-    html_report = render_template("cases/case_report.html", format="pdf", **data)
-
-    bytes_file = html_to_pdf_file(
-        html_string=html_report, orientation="portrait", dpi=300, zoom=0.6
-    )
-    file_name = "_".join(
-        [
-            case_obj["display_name"],
-            datetime.datetime.now().strftime(DATE_DAY_FORMATTER),
-            "scout_report.pdf",
-        ]
-    )
-    return send_file(
-        bytes_file,
-        download_name=file_name,
-        mimetype="application/pdf",
-        as_attachment=True,
-    )
-
-
 @cases_bp.route("/<institute_id>/<case_name>/mt_report", methods=["GET"])
 def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

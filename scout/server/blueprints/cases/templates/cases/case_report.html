@@ -48,7 +48,7 @@
       </li>
     </ul>
     <span class="navbar-text">
-      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-secondary" type="button">Download PDF</button></a>
+      <button class="navbar-brand" onclick="window.print();">Create PDF</button>
     </span>
   </div>
 </nav>

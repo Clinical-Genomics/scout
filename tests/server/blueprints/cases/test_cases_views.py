@@ -5,7 +5,10 @@ from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
+from scout.server.blueprints.cases.views import (
+    parse_raw_gene_ids,
+    parse_raw_gene_symbols,
+)
 from scout.server.extensions import store
 
 TEST_TOKEN = "test_token"
@@ -740,27 +743,6 @@ def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
         )
         # Response should be redirected to case page
         assert resp.status_code == 302
-
-
-def test_pdf_case_report(app, institute_obj, case_obj):
-    # Test the web page containing the general case report
-
-    # GIVEN an initialized app and a valid user and institute
-    with app.test_client() as client:
-        # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
-
-        # When clicking on 'Download PDF' button on general report page
-        resp = client.get(
-            url_for(
-                "cases.pdf_case_report",
-                institute_id=institute_obj["internal_id"],
-                case_name=case_obj["display_name"],
-            )
-        )
-        # a successful response should be returned
-        assert resp.status_code == 200
 
 
 def test_mt_report(app, institute_obj, case_obj):
