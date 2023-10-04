@@ -28,7 +28,6 @@ from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
-    jsonconverter,
     templated,
     user_cases,
     user_institutes,
@@ -217,8 +216,7 @@ def case_synopsis(institute_id, case_name):
 def api_case_report(institute_id, case_name):
     """API endpoint that returns case report json data"""
     data = controllers.case_report_content(store, institute_id, case_name)
-    json_data = json.dumps({"data": data}, default=jsonconverter)
-    return json_data
+    return jsonify({"data": data})
 
 
 @cases_bp.route("/<institute_id>/<case_name>/case_report", methods=["GET"])
