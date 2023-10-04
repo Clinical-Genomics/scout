@@ -3,9 +3,11 @@
 import logging
 from datetime import datetime
 
+import cyvcf2
+
 # Third party modules
 import pymongo
-from cyvcf2 import VCF
+from cyvcf2 import VCF, Variant
 from intervaltree import IntervalTree
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
@@ -22,6 +24,7 @@ from scout.parse.variant.headers import (
     parse_rank_results_header,
     parse_vep_header,
 )
+from scout.parse.variant.ids import parse_simple_id
 from scout.parse.variant.managed_variant import parse_managed_variant_id
 from scout.parse.variant.rank_score import parse_rank_score
 
@@ -413,6 +416,7 @@ class VariantLoader(object):
             rank_score = parse_rank_score(variant.INFO.get("RankScore"), case_obj["_id"])
             pathogenic = is_pathogenic(variant)
             managed = self._is_managed(variant, category)
+            causative = self._is_causative_other_cases(variant, category)
 
             # Check if the variant should be loaded at all
             # if rank score is None means there are no rank scores annotated, all variants will be loaded
@@ -423,6 +427,7 @@ class VariantLoader(object):
                 or (rank_score > rank_threshold)
                 or mt_variant
                 or pathogenic
+                or causative
                 or managed
                 or category in ["str"]
             ):
@@ -543,23 +548,46 @@ class VariantLoader(object):
 
         return nr_inserted
 
+    def _is_causative_other_cases(
+        self,
+        variant: cyvcf2.Variant,
+        category: str = "snv",
+        build: str = "37",
+    ) -> bool:
+        """Check if variant is on the list of causatives from other cases, also from other institutes.
+        All variants that have been marked causative will be loaded, even if the other case does not exist anymore, or has been reclassified.
+        """
+
+        coordinates = parse_coordinates(variant, category, build)
+
+        variant_prefix = parse_simple_id(
+            coordinates["chrom"],
+            str(coordinates["position"]),
+            coordinates["ref"],
+            coordinates["alt"],
+        )
+        clinical_variant = "".join([variant_prefix, "_clinical"])
+        research_variant = "".join([variant_prefix, "_research"])
+
+        var_causative_events_count = self.event_collection.find(
+            {
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                "category": "variant",
+                "subject": {"$in": [clinical_variant, research_variant]},
+            }
+        ).count()
+        return var_causative_events_count > 0
+
     def _is_managed(
         self,
-        variant,
-        category="snv",
-        build="37",
-    ):
-        """Check if variant is on the managaged list.
+        variant: cyvcf2.Variant,
+        category: str = "snv",
+        build: str = "37",
+    ) -> bool:
+        """Check if variant is on the managed list.
         All variants on the list will be loaded regardless of the kind of relevance.
 
-        Arguments:
-            variant(cyvcf2.Variant)
-            category(str): snv, sv, str, cancer, cancer_sv
-            build(str): "37" or "38"
-
-        Returns:
-            is_managed(boolean)
-
+        Returns true if variant is matched with a variant on the managed list.
         """
 
         coordinates = parse_coordinates(variant, category, build)
