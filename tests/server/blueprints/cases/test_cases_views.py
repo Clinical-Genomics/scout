@@ -5,10 +5,7 @@ from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.blueprints.cases.views import (
-    parse_raw_gene_ids,
-    parse_raw_gene_symbols,
-)
+from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
 from scout.server.extensions import store
 
 TEST_TOKEN = "test_token"
