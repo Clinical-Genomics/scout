@@ -92,7 +92,10 @@ INDEXES = {
         IndexModel([("hpo_number", ASCENDING)], name="number", background=True),
     ],
     "event": [
-        IndexModel([("category", ASCENDING), ("verb", ASCENDING)], name="category_verb"),
+        IndexModel(
+            [("category", ASCENDING), ("verb", ASCENDING), ("subject", ASCENDING)],
+            name="category_verb_subject",
+        ),
         IndexModel([("variant_id", ASCENDING)], name="variant_id"),
         IndexModel(
             [

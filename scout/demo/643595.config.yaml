@@ -63,6 +63,6 @@ gene_panels: [panel1]
 
 # meta data
 rank_model_version: '1.20'
-rank_score_threshold: -100
+rank_score_threshold: 5
 analysis_date: 2016-10-12 14:00:46
 human_genome_build: 37
