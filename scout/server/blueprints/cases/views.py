@@ -12,7 +12,6 @@ from flask import (
     abort,
     current_app,
     flash,
-    jsonify,
     redirect,
     render_template,
     request,
@@ -27,6 +26,7 @@ from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
     institute_and_case,
+    jsonconverter,
     templated,
     user_cases,
     user_institutes,
@@ -214,8 +214,11 @@ def case_synopsis(institute_id, case_name):
 @cases_bp.route("/api/v1/<institute_id>/<case_name>/case_report", methods=["GET"])
 def api_case_report(institute_id, case_name):
     """API endpoint that returns case report json data"""
-    data = controllers.case_report_content(store, institute_id, case_name)
-    return jsonify({"data": data})
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case_report_content(
+        store=store, institute_obj=institute_obj, case_obj=case_obj
+    )
+    return json.dumps({"data": data}, default=jsonconverter)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/case_report", methods=["GET"])
