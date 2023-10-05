@@ -17,7 +17,6 @@ from xlsxwriter import Workbook
 
 from scout.adapter import MongoAdapter
 from scout.constants import (
-    CALLERS,
     CANCER_PHENOTYPE_MAP,
     CASE_REPORT_VARIANT_TYPES,
     CUSTOM_CASE_REPORTS,

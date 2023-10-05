@@ -7,7 +7,6 @@ import shutil
 from io import BytesIO
 from operator import itemgetter
 
-from cairosvg import svg2png
 from flask import (
     Blueprint,
     abort,

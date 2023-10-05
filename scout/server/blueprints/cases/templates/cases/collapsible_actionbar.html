@@ -76,10 +76,6 @@
           <a href="{{ url_for('cases.case_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener">
                 <span class="fa fa-link"></span></a>
         </div>
-        <div>
-          <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}" download>
-                <span class="fa fa-file-pdf-o"></span></a>
-        </div>
       </div>
     </div>
 
