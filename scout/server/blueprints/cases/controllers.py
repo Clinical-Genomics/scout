@@ -565,45 +565,41 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
 def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dict, data: dict):
     """Gather evaluated variants info to include in case report."""
 
+    def _get_decorated_var(var_obj: dict) -> dict:
+        return variant_decorator(
+            store=store,
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+            variant_id=None,
+            variant_obj=var_obj,
+            add_other=False,
+            get_overlapping=False,
+            variant_type=var_obj["category"],
+            institute_obj=institute_obj,
+            case_obj=case_obj,
+        )["variant"]
+
     evaluated_variants_by_type: Dict[str, list] = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
 
+    # Collect causative, partial causative and suspected variants
+    for eval_category, case_key in CASE_REPORT_VARIANT_TYPES.items():
+        for var_id in case_obj.get(case_key, []):
+            var_obj = store.variant(document_id=var_id)
+            if not var_obj:
+                continue
+            if case_key == "partial_causatives":
+                var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
+            evaluated_variants_by_type[eval_category].append(_get_decorated_var(var_obj=var_obj))
+
+    # Collect all evaluated variants except causative, partial causative and suspected variants
     for var_obj in store.evaluated_variants(
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
     ):
-        variant_id: str = var_obj["_id"]
-        if variant_id in case_obj.get("causatives", []):
-            evaluated_variants_by_type["causatives_detailed"].append(var_obj)
-        if variant_id in case_obj.get("suspects", []):
-            evaluated_variants_by_type["suspects_detailed"].append(var_obj)
-        if variant_id in case_obj.get("partial_causatives", []):
-            var_obj["phenotypes"] = [
-                value for key, value in case_obj["partial_causatives"].items() if key == variant_id
-            ][0]
-            evaluated_variants_by_type["suspects_detailed"].append(var_obj)
-
         for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
             if var_obj.get(variant_key):
-                evaluated_variants_by_type[eval_category].append(var_obj)
-
-    for category, variant_list in evaluated_variants_by_type.items():
-        decorated_variants_list = []
-        for var_obj in variant_list:
-            decorated_info = variant_decorator(
-                store=store,
-                institute_id=institute_obj["_id"],
-                case_name=case_obj["display_name"],
-                variant_id=None,
-                variant_obj=var_obj,
-                add_other=False,
-                get_overlapping=False,
-                variant_type=var_obj["category"],
-                institute_obj=institute_obj,
-                case_obj=case_obj,
-            )
-            decorated_variants_list.append(decorated_info["variant"])
-
-        # Replace list of variants with list of decorated variants
-        evaluated_variants_by_type[category] = decorated_variants_list
+                evaluated_variants_by_type[eval_category].append(
+                    _get_decorated_var(var_obj=var_obj)
+                )
 
     data["variants"] = evaluated_variants_by_type
 
