@@ -1431,20 +1431,3 @@
   }
   </script>
 {% endblock %}
-
-
-fetch('{{ url_for('cases.case_coverage_data', institute_id=institute._id, case_name=case.display_name) }}', {
-  method: 'GET',
-  headers: {'Content-Type': 'application/json'}
-  })
-  .then(resp => resp.text())
-  .then(html => {
-    document.body.innerHTML = document.body.innerHTM+html;
-    alert(document.body.innerHTML);
-    window.focus();
-    window.print();
-  })
-  .catch(error => {
-    console.error(error);
-});
-
