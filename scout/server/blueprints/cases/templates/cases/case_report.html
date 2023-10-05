@@ -1417,7 +1417,6 @@
           .then(resp => resp.text())
           .then(html => {
             document.body.innerHTML = document.body.innerHTML + "<hr>" + html;
-            alert(document.body.innerHTML);
             window.focus();
             window.print();
           })
