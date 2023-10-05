@@ -233,6 +233,15 @@ def case_report(institute_id, case_name):
     return dict(format="html", **data)
 
 
+@cases_bp.route("/<institute_id>/<case_name>/case_report_coverage", methods=["GET"])
+def case_coverage_data(institute_id, case_name):
+    """Returns the body of the coverage report (report.report endpoint)."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    return controllers.coverage_report_contents(
+        base_url=request.url_root, institute_obj=institute_obj, case_obj=case_obj
+    )
+
+
 @cases_bp.route("/<institute_id>/<case_name>/mt_report", methods=["GET"])
 def mt_report(institute_id, case_name):
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

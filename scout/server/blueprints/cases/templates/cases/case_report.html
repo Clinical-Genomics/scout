@@ -48,7 +48,7 @@
       </li>
     </ul>
     <span class="navbar-text">
-      <button class="navbar-brand" onclick="window.focus(); window.print();">Create PDF</button>
+      <button class="navbar-brand" onclick="printPDF();">Create PDF</button>
     </span>
   </div>
 </nav>
@@ -1404,3 +1404,47 @@
   </td>
 </tr>
 {% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    function printPDF(){
+      {% if config.SQLALCHEMY_DATABASE_URI %} // include coverage report
+        fetch('{{ url_for('cases.case_coverage_data', institute_id=institute._id, case_name=case.display_name) }}', {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json'}
+          })
+          .then(resp => resp.text())
+          .then(html => {
+            document.body.innerHTML = document.body.innerHTML + "<hr>" + html;
+            alert(document.body.innerHTML);
+            window.focus();
+            window.print();
+          })
+          .catch(error => {
+            console.error(error);
+        });
+      {% else %}
+        window.focus();
+        window.print();
+      {% endif %}
+  }
+  </script>
+{% endblock %}
+
+
+fetch('{{ url_for('cases.case_coverage_data', institute_id=institute._id, case_name=case.display_name) }}', {
+  method: 'GET',
+  headers: {'Content-Type': 'application/json'}
+  })
+  .then(resp => resp.text())
+  .then(html => {
+    document.body.innerHTML = document.body.innerHTM+html;
+    alert(document.body.innerHTML);
+    window.focus();
+    window.print();
+  })
+  .catch(error => {
+    console.error(error);
+});
+
