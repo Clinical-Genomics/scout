@@ -1408,7 +1408,16 @@
 {% block scripts %}
   {{ super() }}
   <script>
+    function setDocumentName()
+    {
+      let todayDate =  new Date().toISOString().slice(0, 10);
+      document.title= '{{case.display_name}}_'+todayDate+'_scout_report'
+    }
+
     function printPDF(){
+
+      setDocumentName();
+
       {% if config.SQLALCHEMY_DATABASE_URI %} // include coverage report
         fetch('{{ url_for('cases.case_coverage_data', institute_id=institute._id, case_name=case.display_name) }}', {
           method: 'GET',
