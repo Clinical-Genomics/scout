@@ -48,7 +48,7 @@
       </li>
     </ul>
     <span class="navbar-text">
-      <button class="navbar-brand" onclick="printPDF();">Create PDF</button>
+      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-secondary" type="button">Download PDF</button></a>
     </span>
   </div>
 </nav>
@@ -1404,40 +1404,3 @@
   </td>
 </tr>
 {% endmacro %}
-
-{% block scripts %}
-  {{ super() }}
-  <script>
-    function setDocumentName()
-    {
-      let todayDate =  new Date().toISOString().slice(0, 10);
-      document.title= '{{case.display_name}}_'+todayDate+'_scout_report';
-    }
-
-    function printPDF(){
-      setDocumentName();
-      {% if config.SQLALCHEMY_DATABASE_URI %} // include coverage report
-        let documentBody = document.body.innerHTML;
-        fetch('{{ url_for('cases.case_coverage_data', institute_id=institute._id, case_name=case.display_name) }}', {
-          method: 'GET',
-          headers: {'Content-Type': 'application/json'}
-          })
-          .then(resp => resp.text())
-          .then(html => {
-            document.body.innerHTML = document.body.innerHTML + "<hr>" + html;
-            window.focus();
-            window.print();
-            document.body.innerHTML = documentBody; // Restore the page as it was, without coverage data
-          })
-          .catch(error => {
-            console.error(error);
-        });
-      {% else %}
-        window.focus();
-        window.print();
-      {% endif %}
-
-
-  }
-  </script>
-{% endblock %}
