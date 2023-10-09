@@ -1416,8 +1416,8 @@
 
     function printPDF(){
       setDocumentName();
-      let documentBody = document.body.innerHTML;
       {% if config.SQLALCHEMY_DATABASE_URI %} // include coverage report
+        let documentBody = document.body.innerHTML;
         fetch('{{ url_for('cases.case_coverage_data', institute_id=institute._id, case_name=case.display_name) }}', {
           method: 'GET',
           headers: {'Content-Type': 'application/json'}
