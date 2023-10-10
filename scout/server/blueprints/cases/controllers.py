@@ -1373,9 +1373,14 @@ def matchmaker_match(request, target, institute_id, case_name):
 def _matching_causatives(
     store, case_obj, other_causatives_filter, other_causatives_in_default_panels_filter
 ) -> tuple:
-    matching_causatives_filter = list(
-        set(other_causatives_filter + other_causatives_in_default_panels_filter)
-    )
+    matching_causatives_filter = []
+
+    # Combine into one query if both filters defined, otherwise don't limit genes in query:
+    if other_causatives_filter and other_causatives_in_default_panels_filter:
+        matching_causatives_filter = list(
+            set(other_causatives_filter + other_causatives_in_default_panels_filter)
+        )
+
     matching_causatives = store.case_matching_causatives(
         case_obj=case_obj, limit_genes=matching_causatives_filter
     )
@@ -1385,10 +1390,10 @@ def _matching_causatives(
 
     for causative in matching_causatives:
         hgnc_ids = [gene.get("hgnc_id") for gene in causative.get("genes", [])]
-        print("hgnc_ids")
-        print(hgnc_ids)
-        if set(hgnc_ids) & set(other_causatives_filter):
+        # Show all matching causatives:
+        if not other_causatives_filter or (set(hgnc_ids) & set(other_causatives_filter)):
             other_causatives.append(causative)
+        # Only matching causatives in default gene panels:
         if set(hgnc_ids) & set(other_causatives_in_default_panels_filter):
             other_causatives_in_default_panels.append(causative)
 
