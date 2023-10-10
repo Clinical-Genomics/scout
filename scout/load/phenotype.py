@@ -117,7 +117,7 @@ def load_hpo_terms(
 
         hpo_term = hpo_terms[hpo_id]
 
-        if not "genes" in hpo_term:
+        if "genes" not in hpo_term:
             hpo_term["genes"] = set()
 
         hpo_term["genes"].add(hgnc_id)
