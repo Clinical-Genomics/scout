@@ -42,10 +42,22 @@ from scout.constants.variant_tags import (
     MANUAL_RANK_OPTIONS,
 )
 from scout.export.variant import export_mt_variants
-from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+from scout.parse.matchmaker import (
+    genomic_features,
+    hpo_terms,
+    omim_terms,
+    parse_matches,
+)
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import RerunnerError, bionano_access, gens, matchmaker, rerunner, store
+from scout.server.extensions import (
+    RerunnerError,
+    bionano_access,
+    gens,
+    matchmaker,
+    rerunner,
+    store,
+)
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
@@ -394,19 +406,28 @@ def case(store, institute_obj, case_obj):
         case_obj["default_genes"], limit_genes
     )
 
+    # Fetch secondary findings in one db call:
+    case_causative_gene_filter = list(set(limit_genes + limit_genes_default_panels))
+    matching_causatives = store.case_matching_causatives(
+        case_obj=case_obj, limit_genes=case_causative_gene_filter
+    )
+
+    # Filter secondary findings:
+    other_causatives = []
+    other_causatives_in_default_panels = []
+    for causative in matching_causatives:
+        hgnc_ids = [gene.get("hgnc_id") for gene in causative.get("genes", [])]
+        # Sort into approriate list based if overlap with filter lists:
+        if set(hgnc_ids) & set(limit_genes):
+            other_causatives.append(causative)
+        if set(hgnc_ids) & set(limit_genes_default_panels):
+            other_causatives_in_default_panels.append(causative)
+
     data = {
         "institute": institute_obj,
         "case": case_obj,
-        "other_causatives": [
-            var
-            for var in store.case_matching_causatives(case_obj=case_obj, limit_genes=limit_genes)
-        ],
-        "default_other_causatives": [
-            var
-            for var in store.case_matching_causatives(
-                case_obj=case_obj, limit_genes=limit_genes_default_panels
-            )
-        ],
+        "other_causatives": other_causatives,
+        "default_other_causatives": other_causatives_in_default_panels,
         "managed_variants": [
             var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
         ],
