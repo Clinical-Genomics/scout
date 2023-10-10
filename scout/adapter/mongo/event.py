@@ -38,7 +38,10 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         add_fields = {
             "$addFields": {
                 "yearMonthDay": {
-                    "$dateToString": {"format": DATE_DAY_FORMATTER, "date": "$updated_at"}
+                    "$dateToString": {
+                        "format": DATE_DAY_FORMATTER,
+                        "date": "$updated_at",
+                    }
                 },
             }
         }  # Create an additional field: yearMonthDay to group and display events better later
@@ -146,7 +149,6 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         institute,
         case=None,
         variant_id=None,
-        level=None,
         comments=False,
         panel=None,
     ):
@@ -156,7 +158,6 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
           institute (dict): An institute
           case (dict): A case
           variant_id (str, optional): global variant id
-          level (str, optional): restrict comments to 'specific' or 'global'
           comments (bool, optional): restrict events to include only comments
           audits (bool, optional): restrict events to include only audits
           panel (str): A panel name
@@ -515,7 +516,10 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
             },
         )
         if not updated_comment:
-            flash("Comment could not be edited because it is no longer available.", "warning")
+            flash(
+                "Comment could not be edited because it is no longer available.",
+                "warning",
+            )
             return
         # create an event to register that user has updated a comment
         current_time = datetime.now()
