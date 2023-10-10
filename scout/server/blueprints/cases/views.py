@@ -216,26 +216,31 @@ def case_synopsis(institute_id, case_name):
 @cases_bp.route("/api/v1/<institute_id>/<case_name>/case_report", methods=["GET"])
 def api_case_report(institute_id, case_name):
     """API endpoint that returns case report json data"""
-    data = controllers.case_report_content(store, institute_id, case_name)
-    json_data = json.dumps({"data": data}, default=jsonconverter)
-    return json_data
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case_report_content(
+        store=store, institute_obj=institute_obj, case_obj=case_obj
+    )
+    return json.dumps({"data": data}, default=jsonconverter)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/case_report", methods=["GET"])
 @templated("cases/case_report.html")
 def case_report(institute_id, case_name):
-    """Visualize case report"""
-    data = controllers.case_report_content(store, institute_id, case_name)
+    """Visualize case report."""
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    data = controllers.case_report_content(
+        store=store, institute_obj=institute_obj, case_obj=case_obj
+    )
     return dict(format="html", **data)
 
 
 @cases_bp.route("/<institute_id>/<case_name>/pdf_report", methods=["GET"])
 def pdf_case_report(institute_id, case_name):
     """Download a pdf report for a case"""
-
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = controllers.case_report_content(store, institute_id, case_name)
-
+    data = controllers.case_report_content(
+        store=store, institute_obj=institute_obj, case_obj=case_obj
+    )
     # add coverage report on the bottom of this report
     if (
         current_app.config.get("SQLALCHEMY_DATABASE_URI")
