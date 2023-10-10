@@ -33,29 +33,6 @@ CUSTOM_CASE_REPORTS = {
     },
 }
 
-CASE_REPORT_CASE_FEATURES = [
-    "display_name",
-    "created_at",
-    "updated_at",
-    "status",
-    "madeline_info",
-    "synopsis",
-    "phenotype_terms",
-    "diagnosis_phenotypes",
-    "panels",
-]
-
-CASE_REPORT_CASE_IND_FEATURES = [
-    "display_name",
-    "sex",
-    "confirmed_sex",
-    "phenotype",
-    "phenotype_human",
-    "analysis_type",
-    "predicted_ancestry",
-    "confirmed_parent",
-]
-
 CASE_REPORT_VARIANT_TYPES = {
     "causatives_detailed": "causatives",
     "partial_causatives_detailed": "partial_causatives",
