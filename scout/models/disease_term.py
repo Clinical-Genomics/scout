@@ -13,7 +13,7 @@ class DiseaseTerm(BaseModel):
     description: str
     source: str
     genes: Optional[List[int]] = []  # List of HGNC IDs
-    inheritance: Optional[List[str]] = []
+    inheritance: Optional[list] = []
     hpo_terms: Optional[List[str]]  # List of HPO terms associated with the disease
 
     @field_validator("disease_nr", mode="after")
