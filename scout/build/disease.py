@@ -16,19 +16,15 @@ def build_disease_term(disease_info: dict, alias_genes:dict={}) -> DiseaseTerm:
                                         'ids': [<hgnc_id>, ...]}}
 
     """
-    disease_nr = int(disease_info["mim_number"])
-
-    disease_obj = dict(
-        disease_id="{0}:{1}".format("OMIM", disease_nr),
-        disease_nr=disease_nr,
-        description=disease_info.get("description"),
-        source="OMIM",
-    )
-
-    # Check for inheritance models info
-    inheritance_models = disease_info.get("inheritance")
-    if inheritance_models:
-        disease_obj["inheritance"] = list(inheritance_models)
+    disease_obj = {}
+    disease_nr = disease_info.get("mim_number")
+    if disease_nr:
+        disease_obj["disease_nr"] = disease_nr
+        disease_obj["disease_id"] = "{0}:{1}".format("OMIM", disease_nr)
+    disease_obj["source"] = "OMIM"
+    disease_obj["inheritance"] = list(disease_info.get("inheritance"))
+    if disease_info.get("description"):
+        disease_obj["description"] = disease_info["description"]
 
     hgnc_symbols_not_found = set()
     hgnc_ids = set()

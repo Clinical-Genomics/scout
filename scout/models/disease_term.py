@@ -1,6 +1,6 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class DiseaseTerm(BaseModel):
@@ -8,11 +8,15 @@ class DiseaseTerm(BaseModel):
     https://www.omim.org/
     """
 
-    # _id
     disease_id: str  # example: OMIM:600233
-    disease_nr: int  # example: 600233
+    disease_nr: Union[str, int]  # example: 600233
     description: str
     source: str
     genes: Optional[List[int]] = []  # List of HGNC IDs
     inheritance: Optional[List[str]] = []
     hpo_terms: Optional[List[str]]  # List of HPO terms associated with the disease
+
+    @field_validator("disease_nr", mode="after")
+    def set_disease_nr(cls, disease_nr: str) -> Optional[int]:
+        if disease_nr:
+            return int(disease_nr)
