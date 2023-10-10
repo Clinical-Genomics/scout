@@ -19,7 +19,7 @@ from scout.utils.scout_requests import (
 LOG = logging.getLogger(__name__)
 
 
-def load_hpo(
+def load_phenotypes(
     adapter,
     disease_lines=None,
     hpo_lines=None,

@@ -53,7 +53,7 @@ from scout.demo.resources import (
     transcripts37_reduced_path,
 )
 from scout.load import load_hgnc_genes
-from scout.load.phenotype import load_hpo
+from scout.load.phenotype import load_phenotypes
 from scout.load.transcript import load_transcripts
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case_config
@@ -347,7 +347,7 @@ def hpo_database(
     "Returns an adapter to a database populated with hpo terms"
     adapter = gene_database
 
-    load_hpo(
+    load_phenotypes(
         adapter=gene_database,
         disease_lines=get_file_handle(genemap_file),
         hpo_lines=get_file_handle(hpo_terms_file),
