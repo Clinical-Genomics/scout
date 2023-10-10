@@ -25,7 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case validation fails on loading when custom images have format different then ["gif", "svg", "png", "jpg", "jpeg"]
 - Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `srt_variants_images`
 - Simplify and speed up case general report code
-- Modified DiseaseTerm to be a Pydantic model in its own module
+- When updating disease terms, check that all terms are consistent with a DiseaseTerm model before dropping the old collection
 - Renamed `scout.load.hpo` module to `scout.load.phenotype` since it's loading both HPO terms and diseases.
 - Renamed `scout.load.hpo.load_hpo` funtion to `scout.load.phenotype.load_phenotypes since` it's loading both HPO terms and diseases.
 

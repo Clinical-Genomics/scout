@@ -99,11 +99,11 @@ def diseases(downloads_folder, api_key):
             LOG.warning(err)
             raise click.Abort()
 
-    _check_resources(resources)
-
     LOG.info("Dropping DiseaseTerms")
     adapter.disease_term_collection.delete_many({})
-    LOG.debug("DiseaseTerms dropped")
+    LOG.debug("Disease terms dropped")
+
+    _check_resources(resources)
 
     load_disease_terms(
         adapter=adapter,

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import List
 
 from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
+from scout.models.disease_term import DiseaseTerm
 
 LOG = logging.getLogger(__name__)
 
@@ -150,4 +152,13 @@ class DiagnosisHandler(object):
         except DuplicateKeyError as err:
             raise IntegrityError(
                 "Disease term %s already exists in database".format(disease_obj["_id"])
+            )
+
+    def load_disease_terms(self, disease_objs: List[DiseaseTerm]):
+        """Load many diseases terms into the database."""
+        try:
+            self.disease_term_collection.insert_many(disease_objs)
+        except DuplicateKeyError as err:
+            raise IntegrityError(
+                f"An error occurred while inserting disease terms into the database: {err}"
             )

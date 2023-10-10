@@ -6,6 +6,7 @@ from click import progressbar
 
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
+from scout.models.disease_term import DiseaseTerm
 from scout.models.phenotype_term import HpoTerm
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.hpo_terms import build_hpo_tree
@@ -196,6 +197,7 @@ def load_disease_terms(
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
     nr_diseases = len(disease_terms)
+    disease_objs = []
     with progressbar(
         disease_terms.keys(), label="Loading disease terms", length=nr_diseases
     ) as bar:
@@ -208,10 +210,9 @@ def load_disease_terms(
                 disease_id="OMIM:{0}".format(disease_number),
                 hpo_term_to_symbol=hpo_term_to_symbol,
             )
+            disease_objs.append(build_disease_term(disease_info, genes))
 
-            disease_obj = build_disease_term(disease_info, genes)
-
-            adapter.load_disease_term(disease_obj)
+    adapter.load_disease_terms(disease_objs)
 
     LOG.info("Loading done. Nr of diseases loaded {0}".format(nr_diseases))
     LOG.info("Time to load diseases: {0}".format(datetime.now() - start_time))
