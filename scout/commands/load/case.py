@@ -39,6 +39,11 @@ LOG = logging.getLogger(__name__)
     type=click.Path(exists=True),
     help="path to clinical STR VCF file to be loaded",
 )
+@click.option(
+    "--vcf-fusion",
+    type=click.Path(exists=True),
+    help="path to clinical FUSION VCF file to be loaded",
+)
 @click.option("--owner", help="parent institute for the case", default="test")
 @click.option("--ped", type=click.File("r"))
 @click.option("-u", "--update", is_flag=True)
@@ -60,6 +65,7 @@ def case(
     vcf_cancer_sv,
     vcf_mei,
     vcf_str,
+    vcf_fusion,
     owner,
     ped,
     update,
@@ -95,6 +101,7 @@ def case(
             vcf_cancer=vcf_cancer,
             vcf_cancer_sv=vcf_cancer_sv,
             vcf_mei=vcf_mei,
+            vcf_fusion=vcf_fusion,
             peddy_ped=peddy_ped,
             peddy_sex=peddy_sex,
             peddy_check=peddy_check,

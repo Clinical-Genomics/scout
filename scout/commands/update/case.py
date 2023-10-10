@@ -74,10 +74,12 @@ def case(
     vcf_sv,
     vcf_cancer,
     vcf_cancer_sv,
+    vcf_fusion,
     vcf_research,
     vcf_sv_research,
     vcf_cancer_research,
     vcf_cancer_sv_research,
+    vcf_fusion_research,
     reupload_sv,
     rankscore_treshold,
     rankmodel_version,
@@ -128,6 +130,10 @@ def case(
         LOG.info("Updating 'vcf_cancer_sv' to %s", vcf_cancer_sv)
         case_obj["vcf_files"]["vcf_cancer_sv"] = vcf_cancer_sv
         case_changed = True
+    if vcf_fusion:
+        LOG.info("Updating 'vcf_fusion' to %s", vcf_fusion)
+        case_obj["vcf_files"]["vcf_fusion"] = vcf_fusion
+        case_changed = True
     if vcf_research:
         LOG.info("Updating 'vcf_research' to %s", vcf_research)
         case_obj["vcf_files"]["vcf_research"] = vcf_research
@@ -143,6 +149,10 @@ def case(
     if vcf_cancer_sv_research:
         LOG.info("Updating 'vcf_cancer_sv_research' to %s", vcf_cancer_sv_research)
         case_obj["vcf_files"]["vcf_cancer_sv_research"] = vcf_cancer_sv_research
+        case_changed = True
+    if vcf_fusion_research:
+        LOG.info("Updating 'vcf_fusion_research' to %s", vcf_fusion_research)
+        case_obj["vcf_files"]["vcf_fusion_research"] = vcf_fusion_research
         case_changed = True
 
     if case_changed:
