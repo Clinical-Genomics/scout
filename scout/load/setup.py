@@ -17,7 +17,7 @@ from scout.demo import cancer_load_path, load_path, panel_path, rnafusion_load_p
 
 ### Import demo files ###
 from scout.demo.resources import demo_files
-from scout.load import load_cytobands, load_hgnc_genes, load_hpo, load_transcripts
+from scout.load import load_cytobands, load_hgnc_genes, load_phenotypes, load_transcripts
 
 # Resources
 from scout.parse.case import parse_case_data
@@ -177,7 +177,7 @@ def setup_scout(
     if resource_files.get("hpo_phenotype_annotation_path"):
         hpo_annotation_handle = get_file_handle(resource_files["hpo_phenotype_annotation_path"])
 
-    load_hpo(
+    load_phenotypes(
         adapter=adapter,
         disease_lines=genemap_lines,
         hpo_lines=hpo_terms_handle,

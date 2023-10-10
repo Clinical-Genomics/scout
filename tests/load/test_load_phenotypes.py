@@ -1,4 +1,4 @@
-from scout.load.phenotype import load_disease_terms, load_hpo, load_hpo_terms
+from scout.load.phenotype import load_disease_terms, load_hpo_terms, load_phenotypes
 from scout.utils.handle import get_file_handle
 
 
@@ -45,7 +45,7 @@ def test_load_hpo_terms(gene_database, hpo_terms_handle, hpo_disease_handle):
     assert len([term for term in hpo_terms_objs]) > 0
 
 
-def test_load_hpo(
+def test_load_phenotypes(
     gene_database,
     hpo_terms_handle,
     hpo_disease_handle,
@@ -58,7 +58,7 @@ def test_load_hpo(
     genemap_handle = get_file_handle(genemap_file)
 
     # WHEN loading the disease and hpo terms
-    load_hpo(
+    load_phenotypes(
         adapter=gene_database,
         hpo_lines=hpo_terms_handle,
         hpo_gene_lines=hpo_disease_handle,
