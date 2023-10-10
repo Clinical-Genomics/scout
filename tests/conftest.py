@@ -53,7 +53,7 @@ from scout.demo.resources import (
     transcripts37_reduced_path,
 )
 from scout.load import load_hgnc_genes
-from scout.load.hpo import load_hpo
+from scout.load.phenotype import load_hpo
 from scout.load.transcript import load_transcripts
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case_config

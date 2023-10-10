@@ -6,7 +6,7 @@ import click
 from flask.cli import with_appcontext
 
 from scout.commands.utils import abort_if_false
-from scout.load.hpo import load_hpo_terms
+from scout.load.phenotype import load_hpo_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 

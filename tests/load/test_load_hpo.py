@@ -1,4 +1,4 @@
-from scout.load.hpo import load_disease_terms, load_hpo, load_hpo_terms
+from scout.load.phenotype import load_disease_terms, load_hpo, load_hpo_terms
 from scout.utils.handle import get_file_handle
 
 
