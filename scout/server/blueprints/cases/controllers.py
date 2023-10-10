@@ -16,50 +16,24 @@ from requests.auth import HTTPBasicAuth
 from xlsxwriter import Workbook
 
 from scout.adapter import MongoAdapter
-from scout.constants import (
-    CANCER_PHENOTYPE_MAP,
-    CASE_REPORT_VARIANT_TYPES,
-    CUSTOM_CASE_REPORTS,
-    DATE_DAY_FORMATTER,
-    MITODEL_HEADER,
-    MT_COV_STATS_HEADER,
-    MT_EXPORT_HEADER,
-    PHENOTYPE_GROUPS,
-    PHENOTYPE_MAP,
-    SAMPLE_SOURCE,
-    SEX_MAP,
-    VERBS_MAP,
-)
+from scout.constants import (CANCER_PHENOTYPE_MAP, CASE_REPORT_VARIANT_TYPES,
+                             CUSTOM_CASE_REPORTS, DATE_DAY_FORMATTER,
+                             MITODEL_HEADER, MT_COV_STATS_HEADER,
+                             MT_EXPORT_HEADER, PHENOTYPE_GROUPS, PHENOTYPE_MAP,
+                             SAMPLE_SOURCE, SEX_MAP, VERBS_MAP)
 from scout.constants.variant_tags import (
-    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
-    CANCER_TIER_OPTIONS,
-    DISMISS_VARIANT_OPTIONS,
-    GENETIC_MODELS,
-    MANUAL_RANK_OPTIONS,
-)
+    CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS, CANCER_TIER_OPTIONS,
+    DISMISS_VARIANT_OPTIONS, GENETIC_MODELS, MANUAL_RANK_OPTIONS)
 from scout.export.variant import export_mt_variants
-from scout.parse.matchmaker import (
-    genomic_features,
-    hpo_terms,
-    omim_terms,
-    parse_matches,
-)
-from scout.server.blueprints.variant.controllers import variant as variant_decorator
+from scout.parse.matchmaker import (genomic_features, hpo_terms, omim_terms,
+                                    parse_matches)
+from scout.server.blueprints.variant.controllers import \
+    variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
-from scout.server.extensions import (
-    RerunnerError,
-    bionano_access,
-    gens,
-    matchmaker,
-    rerunner,
-    store,
-)
-from scout.server.utils import (
-    case_has_alignments,
-    case_has_mt_alignments,
-    case_has_rna_tracks,
-    institute_and_case,
-)
+from scout.server.extensions import (RerunnerError, bionano_access, gens,
+                                     matchmaker, rerunner, store)
+from scout.server.utils import (case_has_alignments, case_has_mt_alignments,
+                                case_has_rna_tracks, institute_and_case)
 
 LOG = logging.getLogger(__name__)
 
