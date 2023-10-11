@@ -1371,7 +1371,7 @@ def matchmaker_match(request, target, institute_id, case_name):
 
 
 def _matching_causatives(
-    store, case_obj, other_causatives_filter, other_causatives_in_default_panels_filter
+    store, case_obj, other_causatives_filter=[], other_causatives_in_default_panels_filter=[]
 ) -> tuple:
     """Fetch and categorize matching causatives for a case
 
