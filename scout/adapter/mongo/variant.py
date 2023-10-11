@@ -550,12 +550,20 @@ class VariantHandler(VariantLoader):
                 "category": "variant",
             }
         )
+
+        # Fetching all cases in one go faster that one by one through self.case:
+        target_cases = var_causative_events.clone().distinct("case")
+        required_case_fields = {"causatives": 1, "partial_causatives": 1, "_id": 1}
+        cases = self.case_collection.find({"_id": {"$in": target_cases}}, required_case_fields)
+        cases_cache = {case["_id"]: case for case in cases}
+
         positional_variant_ids = set()
         for var_event in var_causative_events:
             if var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
                 continue
-            other_case = self.case(var_event["case"])
+
+            other_case = cases_cache.get(var_event["case"])
             if other_case is None:
                 # Other variant belongs to a case that doesn't exist any more
                 continue
