@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 
 from click import progressbar
 
+from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
 from scout.models.phenotype_term import HpoTerm
@@ -65,7 +66,9 @@ def load_hpo(
     )
 
 
-def _set_hpo_terms_genes(hpo_terms: dict, hpo_gene_lines: List[str], alias_genes: Dict[str, Dict]):
+def _set_hpo_terms_genes(
+    adapter: MongoAdapter, hpo_terms: dict, hpo_gene_lines: List[str], alias_genes: Dict[str, Dict]
+):
     """Populate the 'genes' key of the HPO term dictionary."""
 
     # Fetch the hpo gene information if no file
@@ -127,7 +130,7 @@ def load_hpo_terms(
         return
 
     _set_hpo_terms_genes(
-        hpo_terms=hpo_terms, hpo_gene_lines=hpo_gene_lines, alias_genes=alias_genes
+        adapter=adapter, hpo_terms=hpo_terms, hpo_gene_lines=hpo_gene_lines, alias_genes=alias_genes
     )
 
     LOG.info("Dropping old HPO term collection")
