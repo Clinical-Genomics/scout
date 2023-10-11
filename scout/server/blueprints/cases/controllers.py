@@ -1373,6 +1373,27 @@ def matchmaker_match(request, target, institute_id, case_name):
 def _matching_causatives(
     store, case_obj, other_causatives_filter, other_causatives_in_default_panels_filter
 ) -> tuple:
+    """Fetch and categorize matching causatives for a case
+
+    Matching causative variants from other cases are fetched and sorted into a
+    tuple of two lists of all matching causative variants and a subset of those
+    found in default gene panels.
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(models.Case)
+        other_causatives_filter(list[str])
+        other_causatives_in_default_panels_filter(list[str])
+
+    Returns:
+        tuple(
+            other_causatives(list[dict]),
+                All matched secondary findings, including secondary findings
+                found in default gene panels
+            other_causatives_in_default_panels(list[dict]),
+                The subset of all secondary findings found in default gene panels
+        )
+    """
     matching_causatives_filter = []
 
     # Combine into one query if both filters defined, otherwise don't limit genes in query:
@@ -1390,7 +1411,8 @@ def _matching_causatives(
 
     for causative in matching_causatives:
         hgnc_ids = [gene.get("hgnc_id") for gene in causative.get("genes", [])]
-        # Show all matching causatives:
+        # Fetch all matching causatives if no causatives_filter defined
+        # or only causatives matching the filter:
         if not other_causatives_filter or (set(hgnc_ids) & set(other_causatives_filter)):
             other_causatives.append(causative)
         # Only matching causatives in default gene panels:
