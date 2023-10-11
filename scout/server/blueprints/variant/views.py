@@ -109,6 +109,7 @@ def sv_variant(institute_id, case_name, variant_id):
 
     return data
 
+
 @variant_bp.route("/<institute_id>/<case_name>/fusion/variants/<variant_id>")
 @templated("variant/fusion-variant.html")
 def fusion_variant(institute_id, case_name, variant_id):
@@ -124,6 +125,7 @@ def fusion_variant(institute_id, case_name, variant_id):
         )
 
     return data
+
 
 @variant_bp.route("/<institute_id>/<case_name>/str/variant/<variant_id>", methods=["GET"])
 @templated("variant/str-variant-reviewer.html")

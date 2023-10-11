@@ -20,7 +20,14 @@ from scout.server.extensions import store
 from scout.server.utils import institute_and_case, templated
 
 from . import controllers
-from .forms import CancerFiltersForm, FiltersForm, MeiFiltersForm, StrFiltersForm, SvFiltersForm, FusionFiltersForm
+from .forms import (
+    CancerFiltersForm,
+    FiltersForm,
+    MeiFiltersForm,
+    StrFiltersForm,
+    SvFiltersForm,
+    FusionFiltersForm,
+)
 
 LOG = logging.getLogger(__name__)
 variants_bp = Blueprint(
@@ -626,7 +633,9 @@ def fusion_variants(institute_id, case_name):
 
     # update status of case if visited for the first time
     controllers.activate_case(store, institute_obj, case_obj, current_user)
-    form = controllers.populate_fusion_filters_form(store, institute_obj, case_obj, category, request)
+    form = controllers.populate_fusion_filters_form(
+        store, institute_obj, case_obj, category, request
+    )
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_obj["_id"], category))
@@ -675,7 +684,6 @@ def fusion_variants(institute_id, case_name):
         variant_type=variant_type,
         **data,
     )
-
 
 
 @variants_bp.route("/<institute_id>/<case_name>/upload", methods=["POST"])
