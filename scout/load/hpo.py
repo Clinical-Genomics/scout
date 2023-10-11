@@ -101,6 +101,9 @@ def load_hpo_terms(
         alias_genes = adapter.genes_by_alias()
 
     for hpo_id, hgnc_symbols in parse_hpo_to_genes(hpo_gene_lines).items():
+        if hpo_id not in hpo_terms:
+            continue
+
         for hgnc_symbol in hgnc_symbols:
             # Fetch gene info to get correct HGNC id
             gene_info = alias_genes.get(hgnc_symbol)
@@ -108,9 +111,6 @@ def load_hpo_terms(
                 continue
 
             hgnc_id = gene_info["true"]
-
-            if hpo_id not in hpo_terms:
-                continue
 
             hpo_term = hpo_terms[hpo_id]
 
