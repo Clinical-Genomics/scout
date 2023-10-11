@@ -215,19 +215,10 @@ def _parse_disease_term_info(
     disease_annotations: Dict[str, Any],
     disease_id: str,
     hpo_term_to_symbol: Dict[Any, set],
-) -> Dict:
+) -> Optional[Dict]:
     """
     Starting from the OMIM disease terms (genemap2), update with HPO terms from
-    HPO annotations, add in any missing diseases from hpo_annotations,
-    and
-    Args:
-        disease_annotations(dict(dict)): indexed by disease_id, from phenotype.hpoa
-        disease_terms(dict(dict)): indexed by HPO term number, from genemap2.txt
-        disease_number: current disease number
-        hpo_term_to_symbol(dict(set)):  dict, keyed on HPO term, with sets of gene symbols, from phenotype_to_genes.txt
-
-    Modifies:
-        disease_info(dict)
+    HPO annotations, add in any missing diseases from hpo_annotations.
     """
 
     if disease_id not in disease_annotations:
