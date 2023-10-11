@@ -58,8 +58,8 @@ peddy_sex_check: scout/demo/643594.sex_check.csv
 
 delivery_report: scout/demo/delivery_report.html
 
-default_gene_panels: [panel2]
-gene_panels: [panel2]
+default_gene_panels: [panel1]
+gene_panels: [panel1]
 
 # meta data
 rank_model_version: '1.20'
