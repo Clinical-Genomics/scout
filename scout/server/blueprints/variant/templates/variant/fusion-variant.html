@@ -1,0 +1,464 @@
+{% extends "layout.html" %}
+{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "variant/variant_details.html" import old_observations %}
+{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants %}
+{% from "variant/utils.html" import modal_causative, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
+{% from "variant/rank_score_results.html" import rankscore_panel %}
+{% from "variant/gene_disease_relations.html" import omim_phenotypes %}
+{% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
+{% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button, splice_junctions_button %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+  {{ external_stylesheets() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    {% if variant.category == "fusion" %}
+      <a class="nav-link text-nowrap" href="{{ url_for('variants.fusion_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
+        {{ variant.variant_type|capitalize }} fusion variants
+      </a>
+  </li>
+  <li class="active nav-item">
+    <p class="navbar-text text-nowrap">{{ variant.display_name|truncate(20, True) }}</p>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    <li class="nav-item text-nowrap">{{ verify_button() }}</li>
+  {% endif %}
+  <li class="nav-item text-nowrap">{{ pin_button(variant, case, institute) }}</li>
+  <li class="nav-item text-nowrap">{{ causative_button(variant, case, institute) }}</li>
+  {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  {% if variant.missing_data %}
+    <div class="alert alert-warning">Showing only first 30 genes!
+       <a class="ml-3" data-bs-toggle="collapse" href="#showAllGenes" role="button" aria-expanded="false" aria-controls="showAllGenes">All genes</a><br>
+       <div class="collapse" id="showAllGenes">
+         {{variant.hgnc_symbols|sort|join(", ")}}
+       </div>
+    </div>
+  {% endif %}
+
+   <div class="row">
+     <div class="col-12">
+       {% if variant.category == "fusion" %}
+        {{matching_variants(managed_variant, causatives, variant.matching_tiered) }}
+       {% else %}
+        {{matching_variants(managed_variant, causatives) }}
+       {% endif %}
+      </div>
+   </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      {{ panel_basics() }}
+    </div> <!-- end of col -->
+
+    <div class="col-md-4">
+      {{ panel_summary() }}
+    </div> <!-- end of col -->
+
+  </div> <!-- end of row -->
+
+  <div class="row">
+    <div class="col-md-8">{{ gtcall_panel(variant) }}</div>
+    {% set has_pedigree = case.madeline_info and case.individuals|length > 1 %}
+    {% if has_pedigree %}
+      <div class="col-md-4">{{ pedigree_panel(case) }}</div>
+    {% endif %}
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+       <div class="card panel-default">
+        {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
+       </div>
+    </div>
+    <div class="col-md-6">
+      {{ omim_phenotypes(variant) }}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">{{ rankscore_panel(rank_score_results) }}</div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">{{ overlapping_panel(variant, overlapping_vars, case, institute) }}</div>
+  </div>
+
+  <div class="mt-3 row">
+    <div class="col-12">
+      <div class="card">
+        <div class="panel-heading">
+          <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <a class="nav-link active" id="nav-genes-tab" data-bs-toggle="tab" href="#nav-genes" role="tab" aria-controls="nav-genes" aria-selected="true">Genes</a>
+              <a class="nav-link" id="nav-transcripts-tab" data-bs-toggle="tab" href="#nav-transcripts" role="tab" aria-controls="nav-transcripts" aria-selected="false">Transcripts</a>
+            </div>
+          </nav>
+        </div>
+        <div class="card-body">
+          <div class="tab-content mt-3" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-genes" role="tabpanel" aria-labelledby="nav-genes-tab">{{ genes_panel(variant) }}</div>
+            <div class="tab-pane fade" id="nav-transcripts" role="tabpanel" aria-labelledby="nav-transcripts-tab">{{ transcripts_panel(variant) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">{{ ext_links(variant) }}</div>
+  </div>
+  <div class="row">
+    <div class="col-12">{{ activity_panel(events|reverse) }}</div>
+  </div>
+
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    {{ verify_modal() }}
+  {% endif %}
+
+  {% if config['MAIL_USERNAME'] %}
+    {# Email setting must be setup #}
+    {{ modal_cancel_verify() }}
+  {% endif %}
+</div>
+{{ modal_causative(case, institute, variant) }}
+{% endblock %}
+
+{% macro panel_basics() %}
+  <div class="card panel-default">
+    <div class="panel-heading">Basics</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">Rank <span class="badge rounded-pill bg-secondary float-end">{{ variant.variant_rank }}</span></li>
+        <li class="list-group-item">
+          Rank score
+          <span class="badge rounded-pill bg-secondary float-end">{{ variant.rank_score }}</span>
+        </li>
+
+        <li class="list-group-item">
+          Category
+          <span class="badge rounded-pill bg-secondary float-end">{{ variant.sub_category|upper }}</span>
+        </li>
+        {% if variant.category == "fusion" and variant.somatic_score %}
+        <li class="list-group-item">
+          Somatic score
+          <span class="badge rounded-pill bg-secondary float-end">{{ variant.somatic_score }}</span>
+        </li>
+        {% endif %}
+
+        <div class="list-group-item">
+          <strong>Gene panels:</strong><br>
+          {% for panel_id in variant.panels|sort(case_sensitive=False) %}
+            <a href="{{ url_for('panels.panel', panel_id=panel_id) }}">{{ panel_id }}</a>&nbsp;&nbsp;
+          {% endfor %}
+        </div>
+        <div class="list-group mt-3">
+          <div>
+            {{ variant_tag_button(variant, institute, case, manual_rank_options) }}
+          </div>
+        </div>
+        <div class="list-group mt-3">
+          <div>{{ dismiss_variant_button(variant, institute, case, dismiss_variant_options) }}</div>
+        </div>
+      </ul>
+    </div> <!-- end of card body -->
+  </div> <!-- end of card -->
+{% endmacro%}
+
+{% macro panel_summary() %}
+  <div class="card panel-default">
+    <div class="panel-heading">Summary</div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <span class="d-inline">Position</span>
+          <span class="d-inline float-end">
+            {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
+          </span>
+        </li>
+        <li class="list-group-item">
+          <span class="d-inline">Cytoband</span>
+          <span class="d-inline float-end">
+            {% if variant.end_chrom == variant.chromosome %}
+              {{ variant.chromosome }}{{ variant.cytoband_start }}{{ variant.cytoband_end if variant.cytoband_end != variant.cytoband_start else "" }}
+            {% else %}
+              ({{ variant.chromosome + ";" + variant.end_chrom}})({{ variant.cytoband_start + ";" + variant.cytoband_end }})
+            {% endif %}
+          </span>
+        </li>
+        <li class="list-group-item">
+          <span class="d-inline">Type</span>
+          <span class="d-inline float-end">{{ variant.sub_category|upper }}</span>
+        </li>
+        {% if gens_info.display %}
+        <li class="list-group-item">
+          <span class="d-inline">Copy number profile</span>
+          <span class="d-inline ms-3">
+            {% for sample in variant.samples %}
+              <a class="btn btn-secondary" target="_blank" href="http://{{gens_info.host}}/{{sample.display_name}}?region={{variant.chromosome}}:{{variant.position - 2000}}-{{variant.end + 2000}}&variant={{variant._id}}&genome_build={{gens_info.genome_build}}&case_id={{case._id}}&individual_id={{sample.sample_id}}", {{variant.chromosome}})>Gens {{ sample.display_name }}</a>
+            {% endfor %}
+          </span>
+        </li>
+        {% endif %}
+        <li class="list-group-item">
+          <div class="row d-flex align-items-center">
+            <div>Breakpoint 1</div>
+            {{ sv_alignments(variant, case, "start") }}
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row d-flex align-items-center">
+            <div>Breakpoint 2</div>
+            {{ sv_alignments(variant, case, "end") }}
+          </div>
+        </li>
+        <li class="list-group-item">
+          <div class="row d-flex align-items-center">
+            <div>Length</div>
+            {{ sv_alignments(variant, case, "length") }}
+          </div>
+        </li>
+        {% if case.mt_bams or case.bam_files %}
+          <li class="list-group-item">
+            {{ igv_track_selection(igv_tracks, current_user) }}
+          </li>
+        {% endif %}
+        {% if rna_tracks %}
+          <li class="list-group-item">
+            {{ splice_junctions_button(institute._id, case.display_name, variant._id) }}
+          </li>
+        {% endif %}
+      {% if variant.custom %}
+        {% for pair in variant.custom %}
+        <li class="list-group-item">
+          <div class="row d-flex justify-content-between">
+            <div>{{pair[0]}}</div><div class="float-end">{{pair[1]}}</div>
+          </div>
+        </li>
+        {% endfor %}
+      {% endif %}
+      </ul>
+    </div> <!-- end of card body -->
+  </div> <!-- end of card -->
+
+{% endmacro %}
+
+{% macro ext_links(variant) %}
+  {# External links #}
+  <div class="card">
+    <table class="table table-bordered">
+      <tbody>
+        <tr>
+          <td>
+            <a class="btn btn-secondary form-control" href="{{variant.ensembl_link}}" target="_blank" rel="noopener">Ensembl</a>
+          </td>
+	        <td>
+	          <a class="btn btn-secondary form-control" href="{{variant.decipher_link}}" target="_blank" rel="noopener">DECIPHER</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+
+
+{% macro verify_button() %}
+  {% if variant.sanger_ordered %}
+    {% if variant.validation in ['True positive', 'False positive']%}
+      <p class="navbar-text">Validation: {{ variant.validation }}</p>
+    {% else %}
+      <button class="btn btn-light navbar-btn" data-bs-toggle="modal" data-bs-target="#cancelVerifyModal">
+        Verification pending...
+      </button>
+    {% endif %}
+  {% else %}
+    <button class="btn btn-light navbar-btn" data-bs-toggle="modal" data-bs-target="#fusionVerifyModal">
+      Verify
+    </button>
+  {% endif %}
+{% endmacro %}
+
+{% macro verify_modal() %}
+<form action="{{ url_for('variant.verify', institute_id=institute._id,
+                         case_name=case.display_name, variant_id=variant._id, order=True) }}"
+      method="POST">
+  <div class="modal fade" id="fusionVerifyModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Order verification</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {{ verify_form() }}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Send verification order request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{% endmacro %}
+
+{% macro modal_cancel_verify() %}
+  <form action="{{ url_for('variant.verify', institute_id=institute._id,
+                           case_name=case.display_name, variant_id=variant._id, order=False) }}"
+        method="POST">
+    <div class="modal fade" id="cancelVerifyModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button class="close" data-bs-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Cancel variant verification</h4>
+          </div>
+          <div class="modal-body">
+            {{ verify_form() }}
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Send cancellation request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+{% endmacro %}
+
+{% macro verify_form() %}
+<ul class="list-group">
+  <div class="list-group-item">
+    <strong>Case {{ case.display_name }}</strong><br>
+    <a href="{{ url_for('variant.fusion_variant', institute_id=institute._id,
+                        case_name=case.display_name, variant_id=variant._id) }}">
+      {% if variant.end_chrom and variant.end_chrom == variant.chromosome %}
+        {{variant.chromosome}}:{{variant.position}}-{{variant.end}}
+      {% elif variant.end_chrom %}
+        {{variant.chromosome}}:{{variant.position}} - {{variant.end_chrom}}:{{variant.end}}
+      {% endif %}
+      {{ variant.sub_category|upper }}
+    </a>
+  <div class="list-group-item"><strong>Variant type</strong>: {{variant.sub_category|upper}}</div>
+  <div class="list-group-item"><strong>Breakpoint 1</strong>: chr{{variant.chromosome}}:{{variant.position}}</div>
+  <div class="list-group-item"><strong>Breakpoint 2</strong>: chr{{variant.end_chrom if variant.end_chrom else variant.chromosome}}:{{variant.end}}</div>
+  <div class="list-group-item"><strong>Lenght</strong>: {{variant.length}}</div>
+  </div>
+  <div class="list-group-item">
+    <strong>Encompassing genes</strong>:
+    {{ variant.hgnc_symbols|join(', ') }}
+  </div>
+  <div class="list-group-item">
+    <strong>Gene panels</strong>:
+    {{ variant.panels|sort|join(', ') }}
+  </div>
+  <div class="list-group-item disabled"><strong>GT call</strong></div>
+  {% for individual in variant.samples %}
+    <div class="list-group-item">
+      {{ individual.display_name }}: {{ individual.genotype_call }}
+    </div>
+  {% endfor %}
+  <div class="list-group-item">
+    <strong>Ordered by</strong>:
+    {{ current_user.name }}
+  </div>
+  <div class="list-group-item">
+    Comment: <input type="text" size=45 name="verification_comment">
+  </div>
+</ul>
+{% endmacro %}
+
+{% block scripts %}
+  {{ super() }}
+  {{ external_scripts() }}
+  <script>
+    var triggerGenesTabList = [].slice.call(document.querySelectorAll('#nav-genes-tab'))
+      triggerGenesTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', function (event) {
+        event.preventDefault()
+        tabTrigger.show()
+      })
+    })
+
+    var triggerTransTabList = [].slice.call(document.querySelectorAll('#nav-transcripts-tab'))
+      triggerTransTabList.forEach(function (triggerEl) {
+        var tabTrigger = new bootstrap.Tab(triggerEl)
+
+        triggerEl.addEventListener('click', function (event) {
+        event.preventDefault()
+        tabTrigger.show()
+      })
+    })
+
+    function set_scrolly_table(table_id) {
+      if (document.getElementById(table_id).rows.length > 5) {
+        $('#' + table_id).DataTable({
+          scrollY: 350,
+          stripeClasses: [],
+          scrollCollapse: true,
+          paging: false,
+          searching: false,
+          ordering: true,
+          info: false})
+      }
+    }
+
+    set_scrolly_table('overlapping_table')
+    set_scrolly_table('genes_panel_table')
+    set_scrolly_table('transcripts_panel_table')
+
+    // Tab hidden thead are not always drawn well, as they have no size. Force adjust and redraw on show.
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+      $($.fn.dataTable.tables(true)).DataTable()
+      .columns.adjust().draw();
+    });
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
+    })
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body'})
+    })
+
+  </script>
+{% endblock %}

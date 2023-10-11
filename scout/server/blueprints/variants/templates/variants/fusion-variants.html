@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+{% from "variants/utils.html" import fusion_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell %}
+
+{% block title %}
+  {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Fusion variants
+{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  {{ external_stylesheets() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('overview.cases', institute_id=institute._id) }}">
+      {{ institute.display_name }}
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-nowrap" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
+      {{ case.display_name }}
+    </a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">{{ form.variant_type.data|capitalize }} Fusion variants</span>
+  </li>
+{% endblock %}
+
+{% block top_nav_right %}
+  <li class="nav-item text-nowrap"><p class="navbar-text">Panels: {{ (form.gene_panels.data or ['All'])|join(',') }}</p></li>
+  {{ super() }}
+{% endblock %}
+
+{% block content_main %}
+ <form method="POST" id="filters_form" action="{{url_for('variants.fusion_variants', institute_id=institute._id, case_name=case.display_name)}}"
+onsubmit="return validateForm()">
+  <div class="container-float">
+    {{ pagination_hidden_div(page) }}
+    <div class="card panel-default" id="accordion">
+      <div class="card-header">
+        <strong><a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseFilters">FusionFilters</a></strong>
+      </div>
+      <!--Expand filters form if filters were used in a previous POST request-->
+      <div id="collapseFilters" class="card-body panel-collapse collapse {{ 'show' if expand_search is sameas true }}">
+        {{ fusion_filters(form, institute, case) }}
+      </div>
+      {{ filter_form_footer(form, result_size, total_variants, more_variants, page, variants|length, institute) }}
+    </div>
+
+    <div class="card mt-3">
+      <table id="variantsTable" class="table table-hover table-bordered" aria-label="Fusion variants table">
+        <thead class="table-light thead">
+          <tr>
+            <th style="width:3%"></th>
+            <th>Rank</th>
+            <th>Score</th>
+            <th>Type</th>
+            <th>Chr</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Length</th>
+            <th>Pop Freq</th>
+            <th>Observed</th>
+            <th>Gene(s)</th>
+            <th>Region</th>
+            <th>Function</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for variant in variants %}
+            {{ variant_row(variant) }}
+          {% else %}
+            <tr>
+                <td colspan="11">No matching variants</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{ dismiss_variants_block(dismiss_variant_options, institute, case, show_dismiss_block) }}
+</form>
+<div class="container-fluid" style="padding-bottom: 100px">
+ {{ pagination_footer(more_variants, page) }}
+</div>
+{% endblock %}
+
+{% macro variant_row(variant) %}
+  {% if variant.dismiss_variant %}
+   <tr class="dismiss">
+  {% elif 'causatives' in case and variant._id in case.causatives %}
+   <tr class="causative">
+  {% else %}
+  <tr>
+  {% endif %}
+    <td><input type="checkbox" value="{{variant._id}}" name="dismiss" onclick="enableDismiss()"></td>
+    <td class="text-start">
+      {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
+    </td>
+    <td class="text-end">{{ variant.rank_score|int }}</td>
+    <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
+      {{ variant.sub_category|upper }}</span></td>
+    <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
+    <td>{{ variant.position }}</td>
+    <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
+    <td class="text-end">{{ '-' if variant.length == 100000000000 else variant.length }}</td>
+    <td>
+      {{ frequency_cell_general(variant) }}
+    </td>
+    <td>{{observed_cell_general(variant)}}</td>
+    <td>
+      {{ variant_gene_symbols_cell(variant) }}
+    </td>
+    <td style="word-wrap:break-word;">
+      {{ variant_region_anno_cell(variant) }}
+    </td>
+    <td style="word-wrap:break-word;">
+      {{ variant_funct_anno_cell(variant) }}
+    </td>
+  </tr>
+{% endmacro %}
+
+
+{% block scripts %}
+  {{ super() }}
+  {{ external_scripts() }}
+  <script src="{{ url_for('variants.static', filename='form_scripts.js') }}"></script>
+  {{ filter_script_main(cytobands) }}
+  <script type="text/javascript">
+
+    window.onload=function() {
+        populateCytobands({{cytobands|safe}});
+        {{update_stash_filter_button_status(current_user, filters)}}
+    }
+
+    $('select[multiple]').selectpicker({
+      width: '100%'
+    });
+
+    $("#filters").change(function () {
+      {{ update_stash_filter_button_status(current_user, filters) }}
+    });
+
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl, {
+        sanitizeFn: function (content) {
+          return DOMPurify.sanitize(content)
+        },
+        container: 'body',
+      })
+    })
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  </script>
+{% endblock %}
