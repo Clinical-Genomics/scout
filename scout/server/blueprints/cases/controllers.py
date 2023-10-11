@@ -17,10 +17,7 @@ from xlsxwriter import Workbook
 
 from scout.adapter import MongoAdapter
 from scout.constants import (
-    CALLERS,
     CANCER_PHENOTYPE_MAP,
-    CASE_REPORT_CASE_FEATURES,
-    CASE_REPORT_CASE_IND_FEATURES,
     CASE_REPORT_VARIANT_TYPES,
     CUSTOM_CASE_REPORTS,
     DATE_DAY_FORMATTER,
@@ -31,7 +28,6 @@ from scout.constants import (
     PHENOTYPE_MAP,
     SAMPLE_SOURCE,
     SEX_MAP,
-    VARIANT_REPORT_VARIANT_FEATURES,
     VERBS_MAP,
 )
 from scout.constants.variant_tags import (
@@ -394,19 +390,15 @@ def case(store, institute_obj, case_obj):
         case_obj["default_genes"], limit_genes
     )
 
+    other_causatives, other_causatives_in_default_panels = _matching_causatives(
+        store, case_obj, limit_genes, limit_genes_default_panels
+    )
+
     data = {
         "institute": institute_obj,
         "case": case_obj,
-        "other_causatives": [
-            var
-            for var in store.case_matching_causatives(case_obj=case_obj, limit_genes=limit_genes)
-        ],
-        "default_other_causatives": [
-            var
-            for var in store.case_matching_causatives(
-                case_obj=case_obj, limit_genes=limit_genes_default_panels
-            )
-        ],
+        "other_causatives": other_causatives,
+        "default_other_causatives": other_causatives_in_default_panels,
         "managed_variants": [
             var for var in store.check_managed(case_obj=case_obj, limit_genes=limit_genes)
         ],
@@ -566,131 +558,63 @@ def check_outdated_gene_panel(panel_obj, latest_panel):
     return extra_genes, missing_genes
 
 
-def case_report_variants(store, case_obj, institute_obj, data):
-    """Gather evaluated variants info to include in case report
+def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dict, data: dict):
+    """Gather evaluated variants info to include in case report."""
 
-    Args:
-        store(adapter.MongoAdapter)
-        case_obj(dict): case dictionary
-        data(dict): data dictionary containing case report information
-    """
-    evaluated_variants = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
-    # We collect all causatives (including the partial ones) and suspected variants
-    # These are handeled in separate since they are on case level
-    for var_type in ["causatives", "suspects", "partial_causatives"]:
-        # These include references to variants
-        vt = "_".join([var_type, "detailed"])
-        for var_id in case_obj.get(var_type, []):
-            variant_obj = store.variant(var_id)
-            if not variant_obj:
+    def _get_decorated_var(var_obj: dict) -> dict:
+        return variant_decorator(
+            store=store,
+            institute_id=institute_obj["_id"],
+            case_name=case_obj["display_name"],
+            variant_id=None,
+            variant_obj=var_obj,
+            add_other=False,
+            get_overlapping=False,
+            variant_type=var_obj["category"],
+            institute_obj=institute_obj,
+            case_obj=case_obj,
+        )["variant"]
+
+    evaluated_variants_by_type: Dict[str, list] = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
+
+    # Collect causative, partial causative and suspected variants
+    for eval_category, case_key in CASE_REPORT_VARIANT_TYPES.items():
+        for var_id in case_obj.get(case_key, []):
+            var_obj = store.variant(document_id=var_id)
+            if not var_obj:
                 continue
-            if var_type == "partial_causatives":  # Collect associated phenotypes
-                variant_obj["phenotypes"] = [
-                    value for key, value in case_obj["partial_causatives"].items() if key == var_id
-                ][0]
-            evaluated_variants[vt].append(variant_obj)
+            if case_key == "partial_causatives":
+                var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
+            evaluated_variants_by_type[eval_category].append(_get_decorated_var(var_obj=var_obj))
 
-    ## get variants for this case that are either classified, commented, tagged or dismissed.
+    # Collect all evaluated variants except causative, partial causative and suspected variants
     for var_obj in store.evaluated_variants(
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
     ):
-        # Check which category it belongs to
-        for vt in CASE_REPORT_VARIANT_TYPES:
-            keyword = CASE_REPORT_VARIANT_TYPES[vt]
-            # When found we add it to the category
-            # Each variant can belong to multiple categories
-            if keyword not in var_obj:
-                continue
-            evaluated_variants[vt].append(var_obj)
+        for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
+            if var_obj.get(variant_key):
+                evaluated_variants_by_type[eval_category].append(
+                    _get_decorated_var(var_obj=var_obj)
+                )
 
-    data["variants"] = {}
-
-    for var_type in evaluated_variants:
-        decorated_variants = []
-        for var_obj in evaluated_variants[var_type]:
-            # We decorate the variant with some extra information
-            filtered_var_obj = {}
-            for feat in VARIANT_REPORT_VARIANT_FEATURES:
-                filtered_var_obj[feat] = var_obj.get(feat)
-
-            variant_category = var_obj["category"]
-
-            populate_individual_callers(filtered_var_obj, var_obj)
-
-            decorated_info = variant_decorator(
-                store=store,
-                institute_id=institute_obj["_id"],
-                case_name=case_obj["display_name"],
-                variant_id=None,
-                variant_obj=filtered_var_obj,
-                add_other=False,
-                get_overlapping=False,
-                variant_type=variant_category,
-                institute_obj=institute_obj,
-                case_obj=case_obj,
-            )
-            decorated_variants.append(decorated_info["variant"])
-        # Add the decorated variants to the case
-        data["variants"][var_type] = decorated_variants
+    data["variants"] = evaluated_variants_by_type
 
 
-def populate_individual_callers(filtered_var_obj, var_obj):
-    """Adds caller status for variant, for export/filtering.
-    Uses the CALLERS constant to copy fields appropriate for the variant category
-    from the rich store variant to the filtered display variant object.
+def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict) -> dict:
+    """Gather data to be visualized in a case report."""
 
-    Args:
-        filtered_var_obj: variant object to be exported/displayed
-        rich_var_obj: original richer variant object recently fetched from store
+    data = {"institute": institute_obj}
+    data["case"] = case_obj
+    data["cancer"] = case_obj.get("track") == "cancer"
 
-    """
-    variant_category = var_obj["category"]
-    for var_cat, var_callers in CALLERS.items():
-        if var_cat == variant_category:
-            for caller in var_callers:
-                caller_id = caller.get("id")
-                filtered_var_obj[caller_id] = var_obj.get(caller_id)
-
-
-def case_report_content(store, institute_id, case_name):
-    """Gather contents to be visualized in a case report
-
-    Args:
-        store(adapter.MongoAdapter)
-        institute_id(str): _id of an institute
-        case_name(str): case display name
-
-    Returns:
-        data(dict)
-
-    """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    data = {}
-    # Populate data with required institute _id
-    data["institute"] = {
-        "_id": institute_obj["_id"],
-    }
-    # Populate case individuals with required information
-    case_individuals = []
+    # Set a human-readable phenotype for the individuals
+    pheno_map = CANCER_PHENOTYPE_MAP if data["cancer"] else PHENOTYPE_MAP
     for ind in case_obj.get("individuals"):
-        ind_feat = {}
-        for feat in CASE_REPORT_CASE_IND_FEATURES:
-            ind_feat[feat] = ind.get(feat)
-            pheno_map = PHENOTYPE_MAP
-            if case_obj.get("track", "rare") == "cancer":
-                pheno_map = CANCER_PHENOTYPE_MAP
-            ind_feat["phenotype_human"] = pheno_map.get(ind["phenotype"])
-        case_individuals.append(ind_feat)
-
-    case_info = {"individuals": case_individuals}
-    for feat in CASE_REPORT_CASE_FEATURES:
-        case_info[feat] = case_obj.get(feat)
-
-    data["case"] = case_info
+        ind["phenotype_human"] = pheno_map.get(ind["phenotype"])
 
     dismiss_options = DISMISS_VARIANT_OPTIONS
-    data["cancer"] = case_obj.get("track") == "cancer"
     if data["cancer"]:
+        data["cancer_tier_options"] = CANCER_TIER_OPTIONS
         dismiss_options = {
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
@@ -703,15 +627,16 @@ def case_report_content(store, institute_id, case_name):
             ],
             gene_format="symbol",
         )
+    data["dismissed_options"] = dismiss_options
 
-    data["comments"] = store.events(institute_obj, case=case_obj, comments=True)
+    data["comments"] = store.case_events_by_verb(
+        category="case", institute=institute_obj, case=case_obj, verb="comment"
+    )
     data["audits"] = store.case_events_by_verb(
         category="case", institute=institute_obj, case=case_obj, verb="filter_audit"
     )
 
     data["manual_rank_options"] = MANUAL_RANK_OPTIONS
-    data["cancer_tier_options"] = CANCER_TIER_OPTIONS
-    data["dismissed_options"] = dismiss_options
     data["genetic_models"] = dict(GENETIC_MODELS)
     data["report_created_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -1443,3 +1368,51 @@ def matchmaker_match(request, target, institute_id, case_name):
         )
 
     return ok_responses
+
+
+def _matching_causatives(
+    store, case_obj, other_causatives_filter=[], other_causatives_in_default_panels_filter=[]
+) -> tuple:
+    """Fetch and categorize matching causatives for a case
+
+    Matching causative variants from other cases are fetched and sorted into a
+    tuple of two lists of all matching causative variants and a subset of those
+    found in default gene panels.
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(models.Case)
+        other_causatives_filter(list[str])
+        other_causatives_in_default_panels_filter(list[str])
+
+    Returns:
+        tuple(
+            other_causatives(list[dict]),
+                All matched secondary findings, including secondary findings
+                found in default gene panels
+            other_causatives_in_default_panels(list[dict]),
+                The subset of all secondary findings found in default gene panels
+        )
+    """
+    matching_causatives_filter = list(
+        set(other_causatives_filter + other_causatives_in_default_panels_filter)
+    )
+
+    matching_causatives = store.case_matching_causatives(
+        case_obj=case_obj, limit_genes=matching_causatives_filter
+    )
+
+    other_causatives = []
+    other_causatives_in_default_panels = []
+
+    for causative in matching_causatives:
+        hgnc_ids = [gene.get("hgnc_id") for gene in causative.get("genes", [])]
+        # Fetch all matching causatives if no causatives_filter defined
+        # or only causatives matching the filter:
+        if not other_causatives_filter or (set(hgnc_ids) & set(other_causatives_filter)):
+            other_causatives.append(causative)
+        # Only matching causatives in default gene panels:
+        if set(hgnc_ids) & set(other_causatives_in_default_panels_filter):
+            other_causatives_in_default_panels.append(causative)
+
+    return other_causatives, other_causatives_in_default_panels
