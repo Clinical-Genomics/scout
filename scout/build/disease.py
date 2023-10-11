@@ -80,4 +80,6 @@ def build_disease_term(disease_info, alias_genes={}):
     if "hpo_terms" in disease_info:
         disease_obj["hpo_terms"] = list(disease_info["hpo_terms"])
 
+    LOG.warning(disease_obj)
+
     return disease_obj
