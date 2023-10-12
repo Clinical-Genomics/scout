@@ -663,6 +663,46 @@ def test_cases_by_phenotype(hpo_database, test_hpo_terms, case_obj):
     assert similar_cases[0][1] > similar_cases[1][1]
 
 
+def test_get_cases_by_phenotype_name_query(hpo_database, test_hpo_terms, case_obj):
+    adapter = hpo_database
+
+    # Make sure database contains HPO terms
+    assert sum(1 for i in adapter.hpo_terms())
+
+    # Give the case HPO terms
+    case_obj["phenotype_terms"] = test_hpo_terms
+    adapter.case_collection.find_one_and_update(
+        {"_id": case_obj["_id"]},
+        {"$set": {"phenotype_terms": test_hpo_terms}},
+        return_document=pymongo.ReturnDocument.AFTER,
+    )
+
+    # Insert a case into the db
+    adapter.case_collection.insert_one(case_obj)
+    assert sum(1 for i in adapter.case_collection.find()) == 1
+
+    # WHEN querying for a case with one of the test phenotype ids
+    name_query = f"exact_pheno:{test_hpo_terms[0]['phenotype_id']}"
+
+    # THEN one case should be returned
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
+
+    # WHEN repeating the same query with a term not on the case included,
+    name_query = f"exact_pheno:HP:0000532"
+
+    # THEN no case should be returned
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 0
+
+    # WHEN repeating the same query with a term not on the case included AS WELL AS one on the case
+    name_query = f"exact_pheno:HP:0000532, {test_hpo_terms[0]['phenotype_id']}"
+
+    # THEN one case should be returned
+    cases = list(adapter.cases(collaborator=case_obj["owner"], name_query=name_query))
+    assert len(cases) == 1
+
+
 def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj):
     adapter = hpo_database
 
