@@ -2,6 +2,7 @@
 import datetime
 import logging
 import operator
+import re
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
@@ -78,7 +79,6 @@ class CaseHandler(object):
         hpo_terms = []
         order = None
         if query_field == "similar_case":
-            LOG.debug(f"Search for cases similar to case: {query}")
             case_obj = self.case(display_name=query_term, institute_id=institute_id)
             if case_obj is None:
                 query["_id"] = {"$in": []}  # No result should be returned by query
@@ -88,9 +88,7 @@ class CaseHandler(object):
                 hpo_terms.append(term.get("phenotype_id"))
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, case_obj["_id"])
         else:  # similar HPO terms
-            LOG.debug(f"Search for cases with phenotype similar to HPO terms: {hpo_terms}")
-            hpo_terms = query_term.split(",")
-            hpo_terms = [term.strip() for term in hpo_terms]
+            hpo_terms = list(query_term.replace(" ", "").split(","))
             similar_cases = self.cases_by_phenotype(hpo_terms, institute_id, None)
 
         if len(similar_cases) == 0:  # No cases similar to given phenotype
@@ -151,10 +149,11 @@ class CaseHandler(object):
     def _set_case_name_query(self, query: Dict[str, Any], query_term: str):
         """Set case query to reg exp search in case and individual display names for parts of the name query."""
 
+        escaped_query_term = re.escape(query_term)
         query["$or"] = [
-            {"display_name": {"$regex": query_term}},
-            {"individuals.display_name": {"$regex": query_term}},
-            {"_id": {"$regex": query_term}},
+            {"display_name": {"$regex": escaped_query_term}},
+            {"individuals.display_name": {"$regex": escaped_query_term}},
+            {"_id": {"$regex": escaped_query_term}},
         ]
 
     def _set_case_phenotype_query(self, query: Dict[str, Any], query_term: str):
@@ -205,7 +204,7 @@ class CaseHandler(object):
         """Set query to search in the free text synopsis for query_term."""
 
         if query_term != "":
-            query["$text"] = {"$search": query_term}
+            query["$text"] = {"$search": re.escape(query_term)}
         else:
             query["synopsis"] = ""
 
@@ -221,6 +220,8 @@ class CaseHandler(object):
         order = None
         query_field = name_query.split(":")[0]  # example:status
         query_term = name_query[name_query.index(":") + 1 :].strip()
+
+        LOG.info("Name query: %s Field: %s term: %s", name_query, query_field, query_term)
 
         if query_field == "case" and query_term != "":
             self._set_case_name_query(query, query_term)
