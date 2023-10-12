@@ -264,7 +264,7 @@ def test_get_cases_no_HPO(adapter, case_obj):
     name_query = "pheno_group:"
     # Then case should NOT be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for i in cases) == 0
+    assert sum(_ for _ in cases) == 0
 
 
 def test_cases_no_diagnosis(adapter, case_obj):

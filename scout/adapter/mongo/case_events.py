@@ -1,8 +1,8 @@
 import logging
 from collections import Counter
+from typing import Optional
 
 import pymongo
-from flask import flash
 
 from scout.constants import CASE_STATUSES
 
@@ -554,7 +554,7 @@ class CaseEventHandler(object):
         disease_id: str,
         omim_inds: list = [],
         remove: bool = False,
-    ) -> dict:
+    ) -> Optional[dict]:
         """Add or remove a diagnose to a case and eventually case individuals."""
 
         updated_diagnoses = []
