@@ -714,6 +714,22 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     assert sum(1 for i in result) == 1
 
 
+def test_get_cases_cohort_with_space(real_adapter, case_obj, user_obj):
+    adapter = real_adapter
+    # GIVEN an empty database (no cases)
+    assert sum(1 for i in adapter.cases()) == 0
+
+    cohort_name = "cohort with spaceS"
+
+    case_obj["cohorts"] = [cohort_name]
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving cases by a cohort name query
+    result = adapter.cases(name_query="cohort:{}".format(cohort_name))
+    # THEN we should get the case returned
+    assert sum(1 for i in result) == 1
+
+
 def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)

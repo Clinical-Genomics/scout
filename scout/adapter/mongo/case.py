@@ -221,6 +221,8 @@ class CaseHandler(object):
         query_field = name_query.split(":")[0]  # example:status
         query_term = name_query[name_query.index(":") + 1 :].strip()
 
+        LOG.info("Name query: %s Field: %s term: %s", name_query, query_field, query_term)
+
         if query_field == "case" and query_term != "":
             self._set_case_name_query(query, query_term)
 
