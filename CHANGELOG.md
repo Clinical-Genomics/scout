@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case validation fails on loading when custom images have format different then ["gif", "svg", "png", "jpg", "jpeg"]
 - Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `srt_variants_images`
 - Simplify and speed up case general report code
+- Speed up case retrieval in case_matching_causatives
 
 
 ## [4.71]
