@@ -1,6 +1,4 @@
-def test_case_dismissed_variants(
-    adapter, institute_obj, case_obj, user_obj, variant_obj
-):
+def test_case_dismissed_variants(adapter, institute_obj, case_obj, user_obj, variant_obj):
     """Test adapter function that retrieves the list of dismissed variant ids for a case"""
     # GIVEN a variant db with at least one variant, and no events
     adapter.case_collection.insert_one(case_obj)
@@ -22,9 +20,7 @@ def test_case_dismissed_variants(
     # THEN one event should be found in events collection
     assert sum(1 for i in adapter.event_collection.find()) == 1
     # AND case_dismissed_variants should return a list containing the id of the variant
-    assert adapter.case_dismissed_variants(institute_obj, case_obj) == [
-        variant_obj["_id"]
-    ]
+    assert adapter.case_dismissed_variants(institute_obj, case_obj) == [variant_obj["_id"]]
 
     # IF the variant dismissed status is reset
     updated_variant = adapter.update_dismiss_variant(
@@ -52,6 +48,4 @@ def test_case_dismissed_variants(
     # THEN three events should be found in events collection
     assert sum(1 for i in adapter.event_collection.find()) == 3
     # AND case_dismissed_variants should again return a list containing the id of the variant
-    assert adapter.case_dismissed_variants(institute_obj, case_obj) == [
-        variant_obj["_id"]
-    ]
+    assert adapter.case_dismissed_variants(institute_obj, case_obj) == [variant_obj["_id"]]
