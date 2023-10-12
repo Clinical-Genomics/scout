@@ -16,7 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Slightly extended the BioNano Genomics Access integration docs
 - Loading of SVs when VCF is missing the INFO.END field but has INFO.SVLEN field
 - Escape protein sequence name (if available) in case general report to render special characters correctly
-- Remove diagnoses from cases eve if OMIM terms doesn't exist any more in database
+- Remove diagnoses from cases even if OMIM term is not found in the database
 ### Changed
 - Column width adjustment on caseS page
 - Use Python 3.11 in tests
