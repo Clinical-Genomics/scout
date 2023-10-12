@@ -771,7 +771,7 @@ def test_case_diagnosis(app, institute_obj, case_obj, test_omim_term, mocker, mo
         case_obj = store.case_collection.find_one({"_id": case_obj["_id"]})
         assert not case_obj.get("diagnosis_phenotypes")
         # And a new event should have been saved into the database
-        assert sum(_ for _ in store.event_collection.find()) == 2
+        assert sum(1 for _ in store.event_collection.find()) == 2
 
 
 def test_pdf_case_report(app, institute_obj, case_obj):
