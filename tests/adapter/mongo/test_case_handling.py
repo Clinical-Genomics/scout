@@ -278,7 +278,7 @@ def test_cases_no_diagnosis(adapter, case_obj):
     name_query = "exact_dia:"
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     # THEN a case should be returned
-    assert sum(1 for i in cases) == 1
+    assert sum(_ for _ in cases) == 1
 
 
 def test_get_cases_no_assignees(real_adapter, case_obj):
