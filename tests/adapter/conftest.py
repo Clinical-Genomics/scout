@@ -7,9 +7,7 @@ import pytest
 def real_oldcase_database(real_panel_database, parsed_case):
     # add case with old case id construct
     config_data = deepcopy(parsed_case)
-    config_data["case_id"] = "-".join(
-        [config_data["owner"], config_data["display_name"]]
-    )
+    config_data["case_id"] = "-".join([config_data["owner"], config_data["display_name"]])
     case_obj = real_panel_database.load_case(config_data)
     # add suspect and causative!
     institute_obj = real_panel_database.institute(case_obj["owner"])
