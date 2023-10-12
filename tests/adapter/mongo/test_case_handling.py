@@ -137,7 +137,7 @@ def test_get_prioritized_cases(adapter, case_obj, institute_obj):
     result = adapter.prioritized_cases(institute_id=institute_obj["_id"])
 
     # THEN one prioritized case is returned
-    assert sum(1 for i in result) == 1
+    assert sum(1 for _ in result) == 1
 
 
 def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
@@ -157,13 +157,13 @@ def test_search_active_case(real_adapter, case_obj, institute_obj, user_obj):
     name_query = "status:active"
     # THEN a case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for i in cases) == 1
+    assert sum(1 for _ in cases) == 1
 
     # BUT WHEN querying for inactive cases
     name_query = "status:inactive"
     # THEN no case should be returned.
     inactive_cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for i in inactive_cases) == 0
+    assert sum(1 for _ in inactive_cases) == 0
 
 
 def test_get_research_case(real_adapter, case_obj, institute_obj):
@@ -182,7 +182,7 @@ def test_get_research_case(real_adapter, case_obj, institute_obj):
 
     # THEN searching for reasearch cases should return one case
     research_cases = adapter.cases(owner=case_obj["owner"], is_research=True)
-    assert sum(1 for i in research_cases) == 1
+    assert sum(1 for _ in research_cases) == 1
 
 
 def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
@@ -199,7 +199,7 @@ def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
     name_query = "synopsis:"
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for i in cases) == 1
+    assert sum(1 for _ in cases) == 1
 
     # After adding synopsis to case
     link = "synopsislink"
@@ -224,7 +224,7 @@ def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
 
     # Then updated case should be returned
     cases = adapter.cases(collaborator=updated_case["owner"], name_query=name_query)
-    assert sum(1 for i in cases) == 1
+    assert sum(1 for _ in cases) == 1
 
 
 def test_get_cases_no_HPO(adapter, case_obj):
@@ -236,7 +236,7 @@ def test_get_cases_no_HPO(adapter, case_obj):
     name_query = "exact_pheno:"
     # Then case should be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for i in cases) == 1
+    assert sum(1 for _ in cases) == 1
 
     # WHEN providing an empty value for phenotype group:
     name_query = "pheno_group:"
@@ -258,13 +258,13 @@ def test_get_cases_no_HPO(adapter, case_obj):
     name_query = "exact_pheno:"
     # Then case should NOT be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(1 for i in cases) == 0
+    assert sum(1 for _ in cases) == 0
 
     # WHEN providing an empty value for phenotype group:
     name_query = "pheno_group:"
     # Then case should NOT be returned
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
-    assert sum(_ for _ in cases) == 0
+    assert sum(1 for _ in cases) == 0
 
 
 def test_cases_no_diagnosis(adapter, case_obj):
@@ -278,7 +278,7 @@ def test_cases_no_diagnosis(adapter, case_obj):
     name_query = "exact_dia:"
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     # THEN a case should be returned
-    assert sum(_ for _ in cases) == 1
+    assert sum(1 for _ in cases) == 1
 
 
 def test_get_cases_no_assignees(real_adapter, case_obj):
@@ -289,7 +289,7 @@ def test_get_cases_no_assignees(real_adapter, case_obj):
     # WHEN retreiving an existing case from the database
     result = adapter.cases(name_query="user:john")
     # THEN we should get the correct case
-    assert sum(1 for i in result) == 0
+    assert sum(1 for _ in result) == 0
 
 
 def test_get_cases_display_name(real_adapter, case_obj):
@@ -306,7 +306,7 @@ def test_get_cases_display_name(real_adapter, case_obj):
     # WHEN retreiving cases by partial display name
     result = adapter.cases(name_query="case:643")
     # THEN we should get the correct case
-    assert sum(1 for i in result) == 1
+    assert sum(1 for _ in result) == 1
 
 
 def test_get_cases_existing_individual(real_adapter, case_obj):
@@ -317,7 +317,7 @@ def test_get_cases_existing_individual(real_adapter, case_obj):
     # WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query="case:NA1288")
     # THEN we should get the correct case
-    assert sum(1 for i in result) == 1
+    assert sum(1 for _ in result) == 1
 
 
 def test_get_cases_assignees(real_adapter, case_obj, user_obj):
@@ -334,7 +334,7 @@ def test_get_cases_assignees(real_adapter, case_obj, user_obj):
     # WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query="user:john")
     # THEN we should get the correct case
-    assert sum(1 for i in result) == 1
+    assert sum(1 for _ in result) == 1
 
 
 def test_get_cases_non_existing_assignee(real_adapter, case_obj, user_obj):
@@ -351,7 +351,7 @@ def test_get_cases_non_existing_assignee(real_adapter, case_obj, user_obj):
     # WHEN retreiving cases by partial individual name
     result = adapter.cases(name_query="user:damien")
     # THEN we should get the correct case
-    assert sum(1 for i in result) == 0
+    assert sum(1 for _ in result) == 0
 
 
 def test_get_cases_causatives(adapter, case_obj):
@@ -366,7 +366,7 @@ def test_get_cases_causatives(adapter, case_obj):
     # WHEN retreiving cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should find one case
-    assert sum(1 for i in result) == 1
+    assert sum(1 for _ in result) == 1
 
 
 def test_get_cases_causatives_no_causatives(adapter, case_obj):
@@ -379,7 +379,7 @@ def test_get_cases_causatives_no_causatives(adapter, case_obj):
     # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should get the correct case
-    assert sum(1 for i in result) == 0
+    assert sum(1 for _ in result) == 0
 
 
 def test_get_cases_empty_causatives(adapter, case_obj):
@@ -394,7 +394,7 @@ def test_get_cases_empty_causatives(adapter, case_obj):
     # WHEN retreiving all cases that have causatives
     result = adapter.cases(has_causatives=True)
     # THEN we should not find any cases
-    assert sum(1 for i in result) == 0
+    assert sum(1 for _ in result) == 0
 
 
 def test_get_cases_non_existing_display_name(real_adapter, case_obj):
@@ -405,7 +405,7 @@ def test_get_cases_non_existing_display_name(real_adapter, case_obj):
     # WHEN retreiving cases by partial display name
     result = adapter.cases(name_query="case:hello")
     # THEN we should get the correct case
-    assert sum(1 for i in result) == 0
+    assert sum(1 for _ in result) == 0
 
 
 def test_get_non_existing_case(adapter, case_obj):
@@ -428,7 +428,7 @@ def test_delete_case_by_id(adapter, case_obj):
     # WHEN deleting a case from the database using case _id
     result = adapter.delete_case(case_id=case_obj["_id"])
     # THEN there should be no cases left in the database
-    assert sum(1 for i in adapter.cases()) == 0
+    assert sum(1 for _ in adapter.cases()) == 0
 
 
 def test_delete_case_by_display_name(adapter, case_obj):
@@ -441,7 +441,7 @@ def test_delete_case_by_display_name(adapter, case_obj):
         institute_id=case_obj["owner"], display_name=case_obj["display_name"]
     )
     # THEN there should be no cases left in the database
-    assert sum(1 for i in adapter.cases()) == 0
+    assert sum(1 for _ in adapter.cases()) == 0
 
 
 def test_update_case_collaborators(adapter, case_obj):
@@ -613,7 +613,7 @@ def test_cases_by_diagnosis(adapter, case_obj, test_omim_term):
     # WHEN querying for cases with the given OMIM term
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
     # THEN a case should be returned
-    assert sum(1 for i in cases) == 1
+    assert sum(1 for _ in cases) == 1
 
 
 def test_cases_by_phenotype(hpo_database, test_hpo_terms, case_obj):
@@ -711,7 +711,7 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
     # WHEN retreiving cases by a cohort name query
     result = adapter.cases(name_query="cohort:{}".format(cohort_name))
     # THEN we should get the case returned
-    assert sum(1 for i in result) == 1
+    assert sum(1 for _ in result) == 1
 
 
 def test_get_cases_solved_since(real_adapter, case_obj, user_obj, institute_obj, variant_obj):
@@ -1018,7 +1018,7 @@ def test_keep_variant_comments_after_reupload(
         content="Hello, globally",
         comment_level="global",
     )
-    assert sum(1 for i in adapter.event_collection.find()) == 2
+    assert sum(1 for _ in adapter.event_collection.find()) == 2
 
     # WHEN the variant is re-uploaded
     adapter.variant_collection.delete_one(old_variant)
@@ -1037,4 +1037,4 @@ def test_keep_variant_comments_after_reupload(
     assert updated_new_vars["is_commented"] == [new_variant["_id"]]
 
     # and 2 new comments should be created in the database
-    assert sum(1 for i in adapter.event_collection.find()) == 4
+    assert sum(1 for i_ in adapter.event_collection.find()) == 4
