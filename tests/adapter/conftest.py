@@ -7,7 +7,9 @@ import pytest
 def real_oldcase_database(real_panel_database, parsed_case):
     # add case with old case id construct
     config_data = deepcopy(parsed_case)
-    config_data["case_id"] = "-".join([config_data["owner"], config_data["display_name"]])
+    config_data["case_id"] = "-".join(
+        [config_data["owner"], config_data["display_name"]]
+    )
     case_obj = real_panel_database.load_case(config_data)
     # add suspect and causative!
     institute_obj = real_panel_database.institute(case_obj["owner"])
@@ -65,17 +67,3 @@ def parsed_gene():
         "build": "37",
     }
     return gene_info
-
-
-@pytest.fixture
-def omim_term():
-    """Returns a test OMIM term as it is saved in the database"""
-    disease_term = dict(
-        _id="OMIM:1",
-        disease_id="OMIM:1",
-        disease_nr=1,
-        source="OMIM",
-        description="First disease",
-        genes=[1],  # List with integers that are hgnc_ids
-    )
-    return disease_term

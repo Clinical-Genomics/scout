@@ -5,7 +5,10 @@ from bson.objectid import ObjectId
 from flask import current_app, json, url_for
 
 from scout.constants import CUSTOM_CASE_REPORTS
-from scout.server.blueprints.cases.views import parse_raw_gene_ids, parse_raw_gene_symbols
+from scout.server.blueprints.cases.views import (
+    parse_raw_gene_ids,
+    parse_raw_gene_symbols,
+)
 from scout.server.extensions import store
 
 TEST_TOKEN = "test_token"
@@ -123,7 +126,9 @@ def test_add_individual_phenotype(app, institute_obj):
 def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the call to the case reanalysis API"""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # WHEN the rerun is triggered using the reanalysis endpoint
     with app.test_client() as client:
@@ -146,7 +151,9 @@ def test_reanalysis(app, institute_obj, case_obj, mocker, mock_redirect):
 def test_rerun_monitor(app, institute_obj, mocker, mock_redirect):
     """test case rerun monitoring function"""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an initialized app
     # GIVEN a valid user
@@ -188,7 +195,9 @@ def test_rerun_monitor(app, institute_obj, mocker, mock_redirect):
 def test_research(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the endpoint to request research variants for a case"""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN a test case without request research pending
     test_case = store.case_collection.find_one()
@@ -216,7 +225,9 @@ def test_research(app, institute_obj, case_obj, mocker, mock_redirect):
 def test_reset_research(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test the endpoint to cancel the upload of research variants for a case"""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     with app.test_client() as client:
         # GIVEN that the user could be logged in
@@ -276,7 +287,9 @@ def test_parse_raw_gene_ids(app):
 def test_update_cancer_case_sample(
     app, user_obj, institute_obj, cancer_case_obj, mocker, mock_redirect
 ):
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -423,8 +436,12 @@ def test_case_sma(app, case_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_redirect):
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+def test_update_individual(
+    app, user_obj, institute_obj, case_obj, mocker, mock_redirect
+):
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
     # GIVEN an initialized app
     # GIVEN a valid user and institute
 
@@ -472,7 +489,9 @@ def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_
 
 
 def test_case_synopsis(app, institute_obj, case_obj, mocker, mock_redirect):
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -497,10 +516,14 @@ def test_case_synopsis(app, institute_obj, case_obj, mocker, mock_redirect):
         assert resp.status_code == 302
 
 
-def test_update_case_comment(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
+def test_update_case_comment(
+    app, institute_obj, case_obj, user_obj, mocker, mock_redirect
+):
     """Test the functionality that allows updating of case-specific comments"""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -716,18 +739,30 @@ def test_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
-    # Test the web page containing the general case report
+def test_case_add_diagnosis(
+    app, institute_obj, case_obj, test_omim_term, mocker, mock_redirect
+):
+    """Test the cases.case_diagnosis by adding and removing a diagnosis."""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
+
+    # GIVEN a case with no diagnosis:
+    assert case_obj.get("diagnosis_phenotypes") is None
+    # And no events in the database
+    assert not store.event_collection.find_one()
+
+    # GIVEN a disease term present in the database
+    store.disease_term_collection.insert_one(test_omim_term)
+    disease_id = test_omim_term["_id"]
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
+        client.get(url_for("auto_login"))
 
-        req_data = {"omim_term": "OMIM:615349"}
+        req_data = {"omim_term": disease_id}
 
         # When updating an OMIM diagnosis for a case
         resp = client.post(
@@ -740,6 +775,11 @@ def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
         )
         # Response should be redirected to case page
         assert resp.status_code == 302
+        # And case should have a diagnosis:
+        case_obj = store.case_collection.find_one({"_id": case_obj["_id"]})
+        assert case_obj.get("diagnosis_phenotypes")
+        # And a new event should have been saved into the database
+        assert store.event_collection.find_one()
 
 
 def test_pdf_case_report(app, institute_obj, case_obj):
@@ -787,7 +827,9 @@ def test_mt_report(app, institute_obj, case_obj):
 
 
 def test_status(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -866,7 +908,9 @@ def test_omimterms(app, test_omim_term):
 def test_beacon_add_variants(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test Beacon add variants endpoint"""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an app with an authenticated user
     with app.test_client() as client:
@@ -888,7 +932,9 @@ def test_beacon_add_variants(app, institute_obj, case_obj, mocker, mock_redirect
 def test_beacon_remove_variants(app, institute_obj, case_obj, mocker, mock_redirect):
     """Test Beacon remove variants endpoint"""
 
-    mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+    mocker.patch(
+        "scout.server.blueprints.cases.views.redirect", return_value=mock_redirect
+    )
 
     # GIVEN an app with an authenticated user
     with app.test_client() as client:
