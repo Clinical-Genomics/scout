@@ -149,11 +149,11 @@ class CaseHandler(object):
     def _set_case_name_query(self, query: Dict[str, Any], query_term: str):
         """Set case query to reg exp search in case and individual display names for parts of the name query."""
 
-        escaped_query_term = re.escape(query_term)
+        case_name_regex = {"$regex": re.escape(query_term)}
         query["$or"] = [
-            {"display_name": {"$regex": escaped_query_term}},
-            {"individuals.display_name": {"$regex": escaped_query_term}},
-            {"_id": {"$regex": escaped_query_term}},
+            {"display_name": case_name_regex},
+            {"individuals.display_name": case_name_regex},
+            {"_id": case_name_regex},
         ]
 
     def _set_case_phenotype_query(self, query: Dict[str, Any], query_term: str):
