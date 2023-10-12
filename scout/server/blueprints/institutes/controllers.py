@@ -424,7 +424,7 @@ def cases(store, request, institute_id):
         name_query = "".join(
             [
                 request.args.get("search_type"),
-                re.escape(request.args["search_term"].strip()),
+                request.args["search_term"].strip(),
             ]
         )
     data["name_query"] = name_query
