@@ -267,7 +267,7 @@ def test_get_cases_no_HPO(adapter, case_obj):
     assert sum(1 for i in cases) == 0
 
 
-def test_cases_no_diagnosis(adapter, case_obj, omim_term):
+def test_cases_no_diagnosis(adapter, case_obj):
     """Test filtering cases by empty diagnosis field"""
 
     # GIVEN a case without any diagnosis:
@@ -597,18 +597,18 @@ def test_update_case_rerun_status(adapter, case_obj, institute_obj, user_obj):
     assert res["status"] == "inactive"
 
 
-def test_cases_by_diagnosis(adapter, case_obj, omim_term):
+def test_cases_by_diagnosis(adapter, case_obj, test_omim_term):
     """Test filtering cases by assigned OMIM terms"""
 
     # GIVEN a case with a diagnosis:
     case_obj["diagnosis_phenotypes"] = {
-        "disease_nr": omim_term["disease_nr"],
-        "disease_id": omim_term["disease_id"],
-        "description": omim_term["description"],
+        "disease_nr": test_omim_term["disease_nr"],
+        "disease_id": test_omim_term["disease_id"],
+        "description": test_omim_term["description"],
     }
     adapter.case_collection.insert_one(case_obj)
     # WHEN cases are filtered using OMIM terms containing that term
-    name_query = f"exact_dia:{omim_term['disease_id']},OMIM:999999"
+    name_query = f"exact_dia:{test_omim_term['disease_id']},OMIM:999999"
 
     # WHEN querying for cases with the given OMIM term
     cases = adapter.cases(collaborator=case_obj["owner"], name_query=name_query)
