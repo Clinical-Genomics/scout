@@ -149,16 +149,7 @@ class DiagnosisHandler(object):
         """
         try:
             self.disease_term_collection.insert_one(disease_obj)
-        except DuplicateKeyError as err:
+        except DuplicateKeyError:
             raise IntegrityError(
                 "Disease term %s already exists in database".format(disease_obj["_id"])
-            )
-
-    def load_disease_terms(self, disease_objs: List[DiseaseTerm]):
-        """Load many diseases terms into the database."""
-        try:
-            self.disease_term_collection.insert_many(disease_objs)
-        except DuplicateKeyError as err:
-            raise IntegrityError(
-                f"An error occurred while inserting disease terms into the database: {err}"
             )

@@ -12,7 +12,7 @@ class DiseaseTerm(BaseModel):
     disease_nr: int  # example: 600233
     description: str
     source: str
-    genes: Optional[List[int]] = []  # List of HGNC IDs
+    hgnc_ids: Optional[List[int]] = []  # List of HGNC IDs
     inheritance: Optional[list] = []
     hpo_terms: Optional[List[str]]  # List of HPO terms associated with the disease
 

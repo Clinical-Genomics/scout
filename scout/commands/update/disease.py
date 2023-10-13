@@ -1,14 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-"""
-update/disease.py
-
-Update the disease terms in database
-
-Created by Måns Magnusson on 2017-04-03.
-Copyright (c) 2017 __MoonsoInc__. All rights reserved.
-"""
-
 import logging
 import os
 
@@ -16,7 +5,7 @@ import click
 from flask.cli import current_app, with_appcontext
 
 from scout.constants import UPDATE_DISEASES_RESOURCES
-from scout.load.phenotype import load_disease_terms
+from scout.load.disease import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (

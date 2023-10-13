@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, Optional
 
 from click import progressbar
 
@@ -14,27 +14,10 @@ from scout.utils.scout_requests import fetch_hpo_terms, fetch_hpo_to_genes_to_di
 LOG = logging.getLogger(__name__)
 
 
-def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
-    """
-    Parse out a mapping between HPO term id and hgnc symbol from
-    the HPO phenotype to genes file.
-    """
-    hpo_term_to_symbol = {}
-    for hpo_to_symbol in parse_hpo_to_genes(hpo_disease_lines):
-        hpo_id = hpo_to_symbol["hpo_id"]
-        hgnc_symbol = hpo_to_symbol["hgnc_symbol"]
-
-        if hpo_id not in hpo_term_to_symbol:
-            hpo_term_to_symbol[hpo_id] = set([hgnc_symbol])
-        else:
-            hpo_term_to_symbol[hpo_id].add(hgnc_symbol)
-    return hpo_term_to_symbol
-
-
 def load_hpo_terms(
     adapter: MongoAdapter,
-    hpo_lines: Optional[List[str]] = None,
-    hpo_gene_lines: Optional[List[str]] = None,
+    hpo_lines: Optional[Iterable] = None,
+    hpo_gene_lines: Optional[Iterable] = None,
     alias_genes: dict = None,
 ):
     """Load the hpo terms into the database."""
