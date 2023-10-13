@@ -1,11 +1,11 @@
 import logging
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_hpo_to_genes(lines):
-    """Parse the map from hpo term to hgnc symbol
+def parse_hpo_to_genes(lines) -> Dict[str, List[str]]:
+    """Parse the map from hpo term to HGNC symbols
 
     Args:
         lines(iterable(str)): example:
@@ -16,16 +16,23 @@ def parse_hpo_to_genes(lines):
         HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
 
     Yields:
-        hpo_to_gene(dict): A dictionary with information on how a term map to a hgnc symbol
+        hpo_to_genes(dict): A dictionary with information on how an HPO term maps to HGNC symbols
     """
+    hpo_to_genes = {}
     for line in lines:
         if line.startswith("#") or len(line) < 5:
             continue
         line = line.rstrip().split("\t")
+
         hpo_id = line[0]
         hgnc_symbol = line[3]
 
-        yield {"hpo_id": hpo_id, "hgnc_symbol": hgnc_symbol}
+        if hpo_to_genes.get(hpo_id):
+            hpo_to_genes[hpo_id].append(hgnc_symbol)
+        else:
+            hpo_to_genes[hpo_id] = [hgnc_symbol]
+
+    return hpo_to_genes
 
 
 def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]:

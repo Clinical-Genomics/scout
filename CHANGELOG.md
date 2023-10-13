@@ -20,7 +20,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CaseS search regexp should not allow backslash
 - CaseS cohort tags can contain whitespace and still match
 - Remove diagnoses from cases even if OMIM term is not found in the database
+<<<<<<< HEAD
 - Parsing of disease-associated HPO terms
+=======
+- Parsing of HPO terms associated to OMIM diagnoses
+>>>>>>> f915f1a13af58f772553ee7f4774e5c68d6290f6
 ### Changed
 - Column width adjustment on caseS page
 - Use Python 3.11 in tests

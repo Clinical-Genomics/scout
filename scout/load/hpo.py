@@ -1,9 +1,10 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, List, Optional
 
 from click import progressbar
 
+from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
 from scout.models.phenotype_term import HpoTerm
@@ -65,6 +66,38 @@ def load_hpo(
     )
 
 
+def _set_hpo_terms_genes(
+    adapter: MongoAdapter, hpo_terms: dict, hpo_gene_lines: List[str], alias_genes: Dict[str, Dict]
+):
+    """Populate the 'genes' key of the HPO term dictionary."""
+
+    # Fetch the hpo gene information if no file
+    if not hpo_gene_lines:
+        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
+
+    # Get a map with HGNC symbols to HGNC ids from scout
+    if not alias_genes:
+        alias_genes = adapter.genes_by_alias()
+
+    for hpo_id, hgnc_symbols in parse_hpo_to_genes(hpo_gene_lines).items():
+        if hpo_id not in hpo_terms:
+            continue
+
+        for hgnc_symbol in hgnc_symbols:
+            # Fetch gene info to get correct HGNC id
+            gene_info = alias_genes.get(hgnc_symbol)
+            if not gene_info:
+                continue
+
+            hgnc_id = gene_info["true"]
+            hpo_term = hpo_terms[hpo_id]
+
+            if not "genes" in hpo_term:
+                hpo_term["genes"] = set()
+
+            hpo_term["genes"].add(hgnc_id)
+
+
 def load_hpo_terms(
     adapter,
     hpo_lines=None,
@@ -92,40 +125,16 @@ def load_hpo_terms(
     for hpo_id, hpo_term in hpo_terms.items():
         HpoTerm(**hpo_term)  # Validate basic term using pydantic
 
-    # Fetch the hpo gene information if no file
-    if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
-
-    # Get a map with HGNC symbols to HGNC ids from scout
-    if not alias_genes:
-        alias_genes = adapter.genes_by_alias()
-
-    for hpo_to_symbol in parse_hpo_to_genes(hpo_gene_lines):
-        hgnc_symbol = hpo_to_symbol["hgnc_symbol"]
-        hpo_id = hpo_to_symbol["hpo_id"]
-
-        # Fetch gene info to get correct hgnc id
-        gene_info = alias_genes.get(hgnc_symbol)
-        if not gene_info:
-            continue
-
-        hgnc_id = gene_info["true"]
-
-        if hpo_id not in hpo_terms:
-            continue
-
-        hpo_term = hpo_terms[hpo_id]
-
-        if not "genes" in hpo_term:
-            hpo_term["genes"] = set()
-
-        hpo_term["genes"].add(hgnc_id)
-
     if not hpo_terms:
         LOG.error("No HPO terms found. Aborting update without dropping HPO term collection.")
         return
 
+    _set_hpo_terms_genes(
+        adapter=adapter, hpo_terms=hpo_terms, hpo_gene_lines=hpo_gene_lines, alias_genes=alias_genes
+    )
+
     LOG.info("Dropping old HPO term collection")
+
     adapter.hpo_term_collection.delete_many({})
 
     start_time = datetime.now()
@@ -189,7 +198,7 @@ def load_disease_terms(
 
     if not hpo_disease_lines:
         hpo_disease_lines = fetch_hpo_to_genes_to_disease()
-    hpo_term_to_symbol = _get_hpo_term_to_symbol(hpo_disease_lines)
+    hpo_term_to_symbol = parse_hpo_to_genes(lines=hpo_disease_lines)
 
     if not hpo_annotation_lines:
         hpo_annotation_lines = fetch_hpo_disease_annotation()
@@ -222,32 +231,25 @@ def _parse_disease_term_info(
     disease_annotations: Dict[str, Any],
     disease_id: str,
     hpo_term_to_symbol: Dict[Any, set],
-) -> Dict:
+) -> Optional[Dict]:
     """
     Starting from the OMIM disease terms (genemap2), update with HPO terms from
-    HPO annotations, aadd in any missing diseases from hpo_anontations,
-    and
-    Args:
-        disease_annotations(dict(dict)): indexed by disease_id, from phenotype.hpoa
-        disease_terms(dict(dict)): indexed by HPO term number, from genemap2.txt
-        disease_number: current disease number
-        hpo_term_to_symbol(dict(set)):  dict, keyed on HPO term, with sets of gene symbols, from phenotype_to_genes.txt
-
-    Modifies:
-        disease_info(dict)
+    HPO annotations, add in any missing diseases from hpo_annotations.
     """
 
-    if disease_id in disease_annotations:
-        if "hpo_terms" in disease_info:
-            disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
+    if disease_id not in disease_annotations:
+        return
+
+    if "hpo_terms" in disease_info:
+        disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
+    else:
+        disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
+
+    for hpo_term in disease_info["hpo_terms"]:
+        if hpo_term not in hpo_term_to_symbol:
+            continue
+
+        if disease_info.get("hgnc_symbols"):
+            disease_info["hgnc_symbols"].update(hpo_term_to_symbol[hpo_term])
         else:
-            disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
-
-        for hpo_term in disease_info["hpo_terms"]:
-            if hpo_term not in hpo_term_to_symbol:
-                continue
-
-            if disease_info["hgnc_symbols"]:
-                disease_info["hgnc_symbols"].update(hpo_term_to_symbol[hpo_term])
-            else:
-                disease_info["hgnc_symbols"] = hpo_term_to_symbol[hpo_term]
+            disease_info["hgnc_symbols"] = hpo_term_to_symbol[hpo_term]

@@ -8,9 +8,9 @@ def test_parse_hpo_to_genes(hpo_disease_handle):
     hpo_2_genes = parse_hpo_to_genes(hpo_disease_handle)
 
     # THEN the iterator returned should contain hpo_id and hgnc_symbol
-    for item in hpo_2_genes:
-        assert item["hpo_id"]
-        assert item["hgnc_symbol"]
+    for hpo_id, gene_list in hpo_2_genes.items():
+        assert hpo_id.startswith("HP:")
+        assert isinstance(gene_list, list)
 
 
 def test_parse_hpo_annotations(hpo_phenotype_annotation_handle):
