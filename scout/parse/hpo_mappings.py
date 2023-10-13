@@ -68,8 +68,8 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]
                 "hpo_terms": set(),
             }
 
-        if "hpo_term" in disease and disease["hpo_term"]:
-            diseases[disease_id]["hpo_terms"].add(disease["hpo_term"])
+        if "hpo_terms" in disease and disease["hpo_terms"]:
+            diseases[disease_id]["hpo_terms"].add(disease["hpo_terms"])
 
     return diseases
 
