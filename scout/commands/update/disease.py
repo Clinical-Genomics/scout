@@ -28,18 +28,6 @@ from scout.utils.scout_requests import (
 LOG = logging.getLogger(__name__)
 
 
-def _check_resources(resources):
-    """Check that resource lines file contain valid data
-
-    Args:
-        resources(dict): resource names as keys and resource file lines as values
-    """
-    for resname, lines in resources.items():
-        if not lines:
-            LOG.error(f"Resource file '{resname}' doesn't contain valid data.")
-            raise click.Abort()
-
-
 def _fetch_downloaded_resources(resources, downloads_folder):
     """Populate resource lines if a resource exists in downloads folder
 
@@ -98,12 +86,6 @@ def diseases(downloads_folder, api_key):
         except Exception as err:
             LOG.warning(err)
             raise click.Abort()
-
-    LOG.info("Dropping DiseaseTerms")
-    adapter.disease_term_collection.delete_many({})
-    LOG.debug("Disease terms dropped")
-
-    _check_resources(resources)
 
     load_disease_terms(
         adapter=adapter,

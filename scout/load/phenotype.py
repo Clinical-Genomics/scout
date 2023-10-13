@@ -212,6 +212,10 @@ def load_disease_terms(
             )
             disease_objs.append(build_disease_term(disease_info, genes))
 
+    LOG.info("Dropping DiseaseTerms")
+    adapter.disease_term_collection.delete_many({})
+    LOG.debug("Disease terms dropped")
+
     adapter.load_disease_terms(disease_objs)
 
     LOG.info("Loading done. Nr of diseases loaded {0}".format(nr_diseases))
