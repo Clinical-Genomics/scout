@@ -16,7 +16,7 @@ def parse_hpo_to_genes(lines) -> Dict[str, List[str]]:
         HP:0000002	Abnormality of body height	79633	FAT4		orphadata	ORPHA:314679
 
     Yields:
-        hpo_to_genes(dict): A dictionary with information on how a term map to a hgnc symbols
+        hpo_to_genes(dict): A dictionary with information on how an HPO term maps to HGNC symbols
     """
     hpo_to_genes = {}
     for line in lines:
