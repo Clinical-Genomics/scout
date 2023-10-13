@@ -1,12 +1,13 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, List, Optional
 
 from click import progressbar
 
+from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.build.hpo import build_hpo_term
-from scout.models.disease_term import DiseaseTerm
+from scout.load.hpo import load_hpo_terms
 from scout.models.phenotype_term import HpoTerm
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.hpo_terms import build_hpo_tree
@@ -21,36 +22,18 @@ LOG = logging.getLogger(__name__)
 
 
 def load_phenotypes(
-    adapter,
-    disease_lines=None,
-    hpo_lines=None,
-    hpo_gene_lines=None,
-    hpo_annotation_lines=None,
+    adapter: MongoAdapter,
+    disease_lines: Optional[List[str]] = None,
+    hpo_lines: Optional[List[str]] = None,
+    hpo_gene_lines: Optional[List[str]] = None,
+    hpo_annotation_lines: Optional[List[str]] = None,
 ):
-    """Load the hpo terms and hpo diseases into database
+    """Load HPO terms and OMIM diseases into database."""
 
-    Args:
-        adapter(MongoAdapter)
-        disease_lines(iterable(str)): These are the omim genemap2 information
-        hpo_lines(iterable(str)): lines from file http://purl.obolibrary.org/obo/hp.obo
-        hpo_gene_lines(iterable(str)): lines from file
-            https://ci.monarchinitiative.org/view/hpo/job/hpo.annotations/lastSuccessfulBuild/artifact/rare-diseases/util/annotation/phenotype_to_genes.txt
-
-    """
     # Create a map from gene aliases to gene objects
     alias_genes = adapter.genes_by_alias()
 
-    # Fetch the hpo terms if no file
-    if not hpo_lines:
-        hpo_lines = fetch_hpo_terms()
-
-    # Fetch the hpo gene information if no file
-    if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
-
-    if not hpo_annotation_lines:
-        hpo_annotation_lines = fetch_hpo_disease_annotation()
-
+    # Load HPO terms
     load_hpo_terms(adapter, hpo_lines, hpo_gene_lines, alias_genes)
 
     if not disease_lines:
@@ -213,13 +196,15 @@ def load_disease_terms(
             )
             disease_objs.append(build_disease_term(disease_info, genes))
 
-    LOG.info("Dropping DiseaseTerms")
+    LOG.info("Dropping disease terms")
     adapter.disease_term_collection.delete_many({})
     LOG.debug("Disease terms dropped")
 
+    LOG.info("Loading new disease terms")
+
     adapter.load_disease_terms(disease_objs)
 
-    LOG.info("Loading done. Nr of diseases loaded {0}".format(nr_diseases))
+    LOG.info(f"Loading done. Nr of diseases loaded {0}".format(nr_diseases))
     LOG.info("Time to load diseases: {0}".format(datetime.now() - start_time))
 
 
