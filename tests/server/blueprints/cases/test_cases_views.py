@@ -716,20 +716,28 @@ def test_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
-    # Test the web page containing the general case report
+def test_case_diagnosis(app, institute_obj, case_obj, test_omim_term, mocker, mock_redirect):
+    """Test the cases.case_diagnosis by adding and removing a diagnosis."""
 
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
+
+    # GIVEN a case with no diagnosis:
+    assert case_obj.get("diagnosis_phenotypes") is None
+    # And no events in the database
+    assert not store.event_collection.find_one()
+
+    # GIVEN a disease term present in the database
+    store.disease_term_collection.insert_one(test_omim_term)
+    disease_id = test_omim_term["_id"]
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
-        assert resp.status_code == 200
+        client.get(url_for("auto_login"))
 
-        req_data = {"omim_term": "OMIM:615349"}
+        req_data = {"omim_term": disease_id}
 
-        # When updating an OMIM diagnosis for a case
+        # WHEN updating an OMIM diagnosis for a case
         resp = client.post(
             url_for(
                 "cases.case_diagnosis",
@@ -738,8 +746,32 @@ def test_case_diagnosis(app, institute_obj, case_obj, mocker, mock_redirect):
             ),
             data=req_data,
         )
-        # Response should be redirected to case page
+        # THEN response should be redirected to case page
         assert resp.status_code == 302
+        # And case should have a diagnosis:
+        case_obj = store.case_collection.find_one({"_id": case_obj["_id"]})
+        assert case_obj.get("diagnosis_phenotypes")
+        # And a new event should have been saved into the database
+        assert store.event_collection.find_one()
+
+        # WHEN using the same endpoint to remove the diagnosis
+        req_data = {"omim_term": disease_id}
+        resp = client.post(
+            url_for(
+                "cases.case_diagnosis",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                remove="yes",
+            ),
+            data=req_data,
+        )
+        # THEN response should be redirected to case page
+        assert resp.status_code == 302
+        # And case should have no diagnoses
+        case_obj = store.case_collection.find_one({"_id": case_obj["_id"]})
+        assert not case_obj.get("diagnosis_phenotypes")
+        # And a new event should have been saved into the database
+        assert sum(1 for _ in store.event_collection.find()) == 2
 
 
 def test_pdf_case_report(app, institute_obj, case_obj):
