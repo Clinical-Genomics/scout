@@ -159,7 +159,7 @@ def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
         if hpo_id not in hpo_term_to_symbol:
             hpo_term_to_symbol[hpo_id] = set([hpo_to_symbol["hgnc_symbol"]])
         else:
-            hpo_term_to_symbol[hpo_id].update(hpo_to_symbol["hgnc_symbol"])
+            hpo_term_to_symbol[hpo_id].add(hpo_to_symbol["hgnc_symbol"])
     return hpo_term_to_symbol
 
 
