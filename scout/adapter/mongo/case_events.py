@@ -1,9 +1,8 @@
 import logging
 from collections import Counter
-from datetime import datetime
+from typing import Optional
 
 import pymongo
-from bson import ObjectId
 
 from scout.constants import CASE_STATUSES
 
@@ -546,36 +545,34 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
-    def diagnose(self, institute, case, user, link, omim_obj, omim_inds=[], remove=False):
-        """Diagnose a case using OMIM ids.
+    def diagnose(
+        self,
+        institute: dict,
+        case: dict,
+        user: dict,
+        link: str,
+        disease_id: str,
+        omim_inds: list = [],
+        remove: bool = False,
+    ) -> Optional[dict]:
+        """Add or remove a diagnose to a case and eventually case individuals."""
 
-        Args:
-            institute (dict): A Institute object
-            case (dict): Case object
-            user (dict): A User object
-            link (str): The url to be used in the event
-            omim_obj(dict): An OMIM term dictionary
-            omim_inds(list): List of case individuals with diagnosis
-            remove(bool):
-
-        Return:
-            updated_case
-
-        """
-        omim_modif_id = omim_obj["_id"]  # OMIM ID to add or remove from case diagnoses
         updated_diagnoses = []
         case_diagnoses = case.get("diagnosis_phenotypes") or []
 
         if remove is True:  # Remove term from case diagnoses list
             for case_dia in case_diagnoses:
-                if case_dia.get("disease_id") == omim_modif_id:
+                if case_dia.get("disease_id") == disease_id:
                     continue
                 updated_diagnoses.append(case_dia)
         else:  # Add new diagnosis term to case diseases list
+            omim_obj = self.disease_term(disease_identifier=disease_id)
+            if omim_obj is None:
+                return
             updated_diagnoses = case_diagnoses
             new_dia = {
                 "disease_nr": omim_obj["disease_nr"],
-                "disease_id": omim_modif_id,
+                "disease_id": disease_id,
                 "description": omim_obj["description"],
             }
             if omim_inds:
@@ -603,7 +600,7 @@ class CaseEventHandler(object):
                 category="case",
                 verb="update_diagnosis",
                 subject=case["display_name"],
-                content=omim_modif_id,
+                content=disease_id,
                 individuals=[ind.split("|")[1] for ind in omim_inds],
             )
 

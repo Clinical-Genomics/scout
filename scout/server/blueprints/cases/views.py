@@ -327,14 +327,15 @@ def case_diagnosis(institute_id, case_name):
     if not "OMIM:" in omim_id:  # Could be an omim number provided by user
         omim_id = ":".join(["OMIM", omim_id])
 
-    # Make sure omim term exists in database:
-    omim_obj = store.disease_term(omim_id.strip())
-    if omim_obj is None:
-        flash("Couldn't find any disease term with id: {}".format(omim_id), "warning")
-        return redirect(request.referrer)
-
-    remove = True if request.args.get("remove") == "yes" else False
-    store.diagnose(institute_obj, case_obj, user_obj, link, omim_obj, omim_inds, remove)
+    store.diagnose(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        disease_id=omim_id.strip(),
+        omim_inds=omim_inds,
+        remove=True if request.args.get("remove") == "yes" else False,
+    )
     return redirect("#".join([link, "omim_assign"]))
 
 
