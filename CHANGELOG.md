@@ -32,8 +32,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Simplify and speed up case general report code
 - Speed up case retrieval in case_matching_causatives
 - When updating disease terms, check that all terms are consistent with a DiseaseTerm model before dropping the old collection
-- Renamed `scout.load.hpo` module to `scout.load.phenotype` since it's loading both HPO terms and diseases.
-- Renamed `scout.load.hpo.load_hpo` funtion to `scout.load.phenotype.load_phenotypes since` it's loading both HPO terms and diseases.
+- Better separation between modules loading HPO terms and diseases
 
 
 ## [4.71]

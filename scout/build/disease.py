@@ -40,8 +40,10 @@ def build_disease_term(disease_info: dict, alias_genes: dict = {}) -> dict:
             hgnc_symbols_not_found,
         )
 
-    disease_obj["hgnc_ids"] = list(hgnc_ids)
+    disease_obj["genes"] = list(hgnc_ids)
 
     DiseaseTerm(**disease_obj)
 
-    disease_info = disease_obj
+    disease_obj["_id"] = disease_obj["disease_id"]
+
+    return disease_obj
