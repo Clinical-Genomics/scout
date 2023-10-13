@@ -558,7 +558,7 @@ class CaseEventHandler(object):
         """Add or remove a diagnose to a case and eventually case individuals."""
 
         updated_diagnoses = []
-        case_diagnoses = case.get("diagnosis_phenotypes", [])
+        case_diagnoses = case.get("diagnosis_phenotypes") or []
 
         if remove is True:  # Remove term from case diagnoses list
             for case_dia in case_diagnoses:
