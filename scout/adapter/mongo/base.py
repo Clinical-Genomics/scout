@@ -83,7 +83,7 @@ class MongoAdapter(
     """Adapter for communication with a Mongo database."""
 
     def __init__(self, database=None):
-        if database:
+        if database is not None:
             self.setup(database)
 
     def init_app(self, app):

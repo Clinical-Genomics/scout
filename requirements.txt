@@ -14,7 +14,7 @@ Flask-Babel>=3
 livereload
 tornado<6.3
 python-dateutil
-pymongo>=3.7,<4.0
+pymongo
 pathlib
 pdfkit
 phenopackets
