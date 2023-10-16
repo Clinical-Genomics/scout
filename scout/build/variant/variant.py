@@ -214,6 +214,7 @@ def build_variant(
     variant_obj["gene_b"] = variant.get("gene_b")
     variant_obj["tool_hits"] = variant.get("tool_hits")
     variant_obj["fusion_score"] = variant.get("fusion_score")
+    variant_obj["rank_score"] = variant.get("fusion_score")
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
