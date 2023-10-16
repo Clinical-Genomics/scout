@@ -2,7 +2,7 @@ import copy
 import logging
 
 from bson.objectid import ObjectId
-from flask_wtf import FlaskForm
+from flask_wtf import Form
 from pymongo import ReturnDocument
 from wtforms import SelectField, StringField
 
@@ -399,7 +399,7 @@ def test_populate_chrom_choices(app):
     # GIVEN a variants filter form
     with app.test_client() as client:
 
-        class TestForm(FlaskForm):
+        class TestForm(Form):
             chrom = SelectField("Chromosome", choices=[], default="")
 
         form = TestForm()
@@ -781,7 +781,7 @@ def test_update_form_hgnc_symbols_valid_gene_symbol(app, case_obj):
     case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
 
     # GIVEN a variants filter form
-    class TestForm(FlaskForm):
+    class TestForm(Form):
         hgnc_symbols = StringField()
         data = StringField()
 
@@ -804,7 +804,7 @@ def test_update_form_hgnc_symbols_valid_gene_id(app, case_obj):
     case_obj["panels"] = [{"panel_id": test_panel["_id"]}]
 
     # GIVEN a variants filter form
-    class TestForm(FlaskForm):
+    class TestForm(Form):
         hgnc_symbols = StringField()
         data = StringField()
 

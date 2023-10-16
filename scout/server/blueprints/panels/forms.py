@@ -1,11 +1,11 @@
 """Code for panel gene form"""
-from flask_wtf import FlaskForm
+from flask_wtf import Form
 from wtforms import BooleanField, SelectMultipleField, StringField
 
 from scout.constants import GENE_PANELS_INHERITANCE_MODELS
 
 
-class PanelGeneForm(FlaskForm):
+class PanelGeneForm(Form):
     disease_associated_transcripts = SelectMultipleField("Disease transcripts", choices=[])
     reduced_penetrance = BooleanField()
     mosaicism = BooleanField()

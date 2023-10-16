@@ -1,8 +1,9 @@
 import logging
 
-from flask_wtf import FlaskForm
+from flask_wtf import Form
 from wtforms import (
     BooleanField,
+    DateField,
     HiddenField,
     IntegerField,
     RadioField,
@@ -13,7 +14,6 @@ from wtforms import (
     validators,
     widgets,
 )
-from wtforms.ext.dateutil.fields import DateField
 
 from scout.constants import (
     AFFECTED_STATUS,
@@ -35,7 +35,7 @@ class MultiCheckboxField(SelectMultipleField):
     option_widget = widgets.CheckboxInput()
 
 
-class ClinVarVariantForm(FlaskForm):
+class ClinVarVariantForm(Form):
     """Contains the key/values to fill in to specify a single general variant in the ClinVar submssion creation page"""
 
     # Variant-specific fields
@@ -102,7 +102,7 @@ class SVariantForm(ClinVarVariantForm):
     comments = TextAreaField("Comments on this variant")
 
 
-class CaseDataForm(FlaskForm):
+class CaseDataForm(Form):
     """Contains the key/values to fill in to specify a case individual (or sample) in the ClinVar submssion creation page
     Schema available here: https://github.com/Clinical-Genomics/preClinVar/blob/718905521590196dc84fd576bc43d9fac418b97a/preClinVar/resources/submission_schema.json#L288
     """

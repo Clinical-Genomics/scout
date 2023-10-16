@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from flask_wtf import FlaskForm
+from flask_wtf import Form
 from wtforms import (
     IntegerField,
     SelectField,
@@ -23,7 +23,7 @@ CATEGORY_CHOICES = [
 ]
 
 
-class ManagedVariantForm(FlaskForm):
+class ManagedVariantForm(Form):
     position = IntegerField("Start position", [validators.Optional()])
     end = IntegerField("End position", [validators.Optional()])
     cytoband_start = SelectField("Cytoband start", choices=[])

@@ -2,7 +2,7 @@
 import decimal
 import logging
 
-from flask_wtf import FlaskForm
+from flask_wtf import Form
 from flask_wtf.file import FileField
 from wtforms import (
     BooleanField,
@@ -85,7 +85,7 @@ class BetterDecimalField(DecimalField):
                 raise ValueError(self.gettext("Not a valid decimal value"))
 
 
-class VariantFiltersForm(FlaskForm):
+class VariantFiltersForm(Form):
     variant_type = HiddenField(default="clinical")
 
     gene_panels = NonValidatingSelectMultipleField(choices=[])
