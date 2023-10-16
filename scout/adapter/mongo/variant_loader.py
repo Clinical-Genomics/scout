@@ -585,13 +585,17 @@ class VariantLoader(object):
         clinical_variant = "".join([variant_prefix, "_clinical"])
         research_variant = "".join([variant_prefix, "_research"])
 
-        var_causative_events_count = self.event_collection.find(
-            {
-                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
-                "category": "variant",
-                "subject": {"$in": [clinical_variant, research_variant]},
-            }
-        ).count()
+        var_causative_events_count = len(
+            list(
+                self.event_collection.find(
+                    {
+                        "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                        "category": "variant",
+                        "subject": {"$in": [clinical_variant, research_variant]},
+                    }
+                )
+            )
+        )
         return var_causative_events_count > 0
 
     def _is_managed(
