@@ -1,5 +1,4 @@
 from scout.build.disease import build_disease_term
-from scout.models.phenotype_term import DiseaseTerm
 import pytest
 
 

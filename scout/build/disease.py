@@ -1,6 +1,6 @@
 import logging
 
-from scout.models.phenotype_term import DiseaseTerm
+from scout.models.disease_term import DiseaseTerm
 
 LOG = logging.getLogger(__name__)
 
