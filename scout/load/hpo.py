@@ -32,9 +32,6 @@ def load_hpo_terms(
     for hpo_id, hpo_term in hpo_terms.items():
         HpoTerm(**hpo_term)  # Validate basic term using pydantic
 
-    if not hpo_gene_lines:
-        hpo_gene_lines = fetch_hpo_to_genes_to_disease()
-
     # Get a map with HGNC symbols to HGNC ids from scout
     if not alias_genes:
         alias_genes = adapter.genes_by_alias()
@@ -43,7 +40,7 @@ def load_hpo_terms(
         hgnc_symbol = hpo_to_symbol["hgnc_symbol"]
         hpo_id = hpo_to_symbol["hpo_id"]
 
-        # Fetch gene info to get correct hgnc id
+        # Fetch gene info to get correct HGNC id
         gene_info = alias_genes.get(hgnc_symbol)
         if not gene_info:
             continue
