@@ -54,7 +54,7 @@ def build_variant(
         # the clinical variants have limited annotation fields.
         variant_type = str, # required, choices=('research', 'clinical'))
 
-        category = str, # choices=('sv', 'snv', 'str')
+        category = str, # choices=('sv', 'snv', 'str', 'fusion')
         sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
         mate_id = str, # For SVs this identifies the other end
 
@@ -208,6 +208,12 @@ def build_variant(
     ## MEI variant specific
     variant_obj["mei_name"] = variant.get("mei_name")
     variant_obj["mei_polarity"] = variant.get("mei_polarity")
+
+    ## Fusion variant specific
+    variant_obj["gene_a"] = variant.get("gene_a")
+    variant_obj["gene_b"] = variant.get("gene_b")
+    variant_obj["tool_hits"] = variant.get("tool_hits")
+    variant_obj["fusion_score"] = variant.get("fusion_score")
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")

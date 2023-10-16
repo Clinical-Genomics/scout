@@ -59,16 +59,9 @@ onsubmit="return validateForm()">
             <th style="width:3%"></th>
             <th>Rank</th>
             <th>Score</th>
-            <th>Type</th>
-            <th>Chr</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Length</th>
-            <th>Pop Freq</th>
-            <th>Observed</th>
-            <th>Gene(s)</th>
-            <th>Region</th>
-            <th>Function</th>
+            <th>Callers</th>
+            <th>Gene A</th>
+            <th>Gene B</th>
           </tr>
         </thead>
         <tbody>
@@ -102,26 +95,11 @@ onsubmit="return validateForm()">
     <td class="text-start">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td class="text-end">{{ variant.rank_score|int }}</td>
+    <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
-      {{ variant.sub_category|upper }}</span></td>
-    <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
-    <td>{{ variant.position }}</td>
-    <td>{{ 'inf' if variant.end == 100000000000 else variant.end }}</td>
-    <td class="text-end">{{ '-' if variant.length == 100000000000 else variant.length }}</td>
-    <td>
-      {{ frequency_cell_general(variant) }}
-    </td>
-    <td>{{observed_cell_general(variant)}}</td>
-    <td>
-      {{ variant_gene_symbols_cell(variant) }}
-    </td>
-    <td style="word-wrap:break-word;">
-      {{ variant_region_anno_cell(variant) }}
-    </td>
-    <td style="word-wrap:break-word;">
-      {{ variant_funct_anno_cell(variant) }}
-    </td>
+      {{ variant.tool_hits|int }}</span></td>
+    <td>{{ variant.gene_a }}</td>
+    <td>{{ variant.gene_b }}</td>
   </tr>
 {% endmacro %}
 

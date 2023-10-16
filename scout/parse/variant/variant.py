@@ -47,7 +47,7 @@ def parse_variant(
         vep_header(list)
         individual_positions(dict): Explain what position each individual has
                                     in vcf
-        category(str): 'snv', 'sv', 'str', 'cancer' or 'cancer_sv'
+        category(str): 'snv', 'sv', 'str', 'cancer', 'cancer_sv' or 'fusion'
         local_archive_info(dict): date and total count for local obs
     Returns:
          parsed_variant(dict): Parsed variant
@@ -154,6 +154,9 @@ def parse_variant(
 
     # Add MEI info
     get_mei_info(variant, parsed_variant)
+
+    # Add Fusion info
+    set_fusion_info(variant, parsed_variant)
 
     ################# Add somatic info ##################
     parsed_variant["somatic_score"] = call_safe(int, variant.INFO.get("SOMATICSCORE"))
@@ -416,6 +419,14 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
 
     # str disease inheritance mode string annotation
     parsed_variant["str_inheritance_mode"] = call_safe(str, variant.INFO.get("InheritanceMode"))
+
+
+def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
+    """Add Fusion information if present."""
+    parsed_variant["gene_a"] = call_safe(str, variant.INFO.get("GENEA", ""))
+    parsed_variant["gene_b"] = call_safe(str, variant.INFO.get("GENEB", ""))
+    parsed_variant["tool_hits"] = call_safe(str, variant.INFO.get("TOOL_HITS", 0))
+    parsed_variant["fusion_score"] = call_safe(str, variant.INFO.get("SCORE", 0))
 
 
 def set_str_source(parsed_variant: Dict[str, Any], variant: Variant):
