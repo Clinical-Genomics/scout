@@ -8,7 +8,7 @@ class DiseaseTerm(BaseModel):
     https://www.omim.org/
     """
 
-    # _id: str # same as disease_id # will be present in the disease term saved in the database
+    # _id: str # same as disease_id,  will be present in the disease term saved in the database
     disease_id: str  # example: OMIM:600233
     disease_nr: int  # example: 600233
     description: str
