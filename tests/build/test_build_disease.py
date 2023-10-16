@@ -29,7 +29,7 @@ def test_build_disease_missing_key(key, test_disease):
     # WHEN deleting a mandatory key
     test_disease.pop(key)
     # THEN calling build_disease_term() will raise ValueError
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         build_disease_term(test_disease, alias_genes)
 
 

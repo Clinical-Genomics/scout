@@ -42,6 +42,7 @@ def build_disease_term(disease_info: dict, alias_genes: dict = {}) -> dict:
 
     disease_obj["genes"] = list(hgnc_ids)
 
+    LOG.warning(disease_obj)
     DiseaseTerm(**disease_obj)
 
     disease_obj["_id"] = disease_obj["disease_id"]
