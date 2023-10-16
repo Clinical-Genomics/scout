@@ -5,7 +5,7 @@ from wtforms import BooleanField, SelectMultipleField, StringField
 from scout.constants import GENE_PANELS_INHERITANCE_MODELS
 
 
-class PanelGeneForm(Form):
+class PanelGeneForm(FlaskForm):
     disease_associated_transcripts = SelectMultipleField("Disease transcripts", choices=[])
     reduced_penetrance = BooleanField()
     mosaicism = BooleanField()
