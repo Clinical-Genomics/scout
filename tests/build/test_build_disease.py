@@ -18,7 +18,7 @@ def test_build_disease_term(adapter, test_disease):
     assert disease_obj["genes"] == [17978]
     assert disease_obj["source"] == "OMIM"
 
-    assert isinstance(disease_obj, DiseaseTerm)
+    assert isinstance(disease_obj, dict)
 
 
 @pytest.mark.parametrize("key", ["mim_number", "description"])
@@ -32,6 +32,7 @@ def test_build_disease_missing_key(key, test_disease):
     # THEN calling build_disease_term() will raise ValueError
     with pytest.raises(TypeError):
         build_disease_term(test_disease, alias_genes)
+
 
 def test_build_disease_wrong_value(test_disease):
     ## GIVEN a dictionary with disease information and genes
