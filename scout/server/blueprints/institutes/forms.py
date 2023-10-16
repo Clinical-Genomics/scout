@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
     DecimalField,
@@ -33,7 +33,7 @@ class NonValidatingSelectMultipleField(SelectMultipleField):
         pass
 
 
-class InstituteForm(Form):
+class InstituteForm(FlaskForm):
     """Institute-specific settings"""
 
     hpo_tuples = []
@@ -109,7 +109,7 @@ class InstituteForm(Form):
     submit_btn = SubmitField("Save settings")
 
 
-class BeaconDatasetForm(Form):
+class BeaconDatasetForm(FlaskForm):
     """A form that allows admins to create a new Beacon dataset for the institute with a controlled dictionary"""
 
     beacon_dataset = NonValidatingSelectField("Select dataset to be created")
@@ -133,7 +133,7 @@ class TagListField(Field):
             self.data = []
 
 
-class GeneVariantFiltersForm(Form):
+class GeneVariantFiltersForm(FlaskForm):
     """Base FiltersForm for SNVs"""
 
     variant_type = SelectMultipleField(choices=[("clinical", "clinical"), ("research", "research")])
@@ -149,7 +149,7 @@ class GeneVariantFiltersForm(Form):
     filter_export_variants = SubmitField(label="Filter and export variants")
 
 
-class CaseFilterForm(Form):
+class CaseFilterForm(FlaskForm):
     """Takes care of cases filtering in cases page"""
 
     search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)

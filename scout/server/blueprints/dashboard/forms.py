@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, SubmitField, validators
 
 from scout.constants import CASE_SEARCH_TERMS
@@ -16,7 +16,7 @@ class NonValidatingSelectField(SelectField):
         pass
 
 
-class DashboardFilterForm(Form):
+class DashboardFilterForm(FlaskForm):
     """Takes care of cases filtering in cases page"""
 
     search_type = NonValidatingSelectField(

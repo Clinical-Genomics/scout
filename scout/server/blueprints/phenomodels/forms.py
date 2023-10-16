@@ -1,8 +1,8 @@
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, validators
 
 
-class PhenoModelForm(Form):
+class PhenoModelForm(FlaskForm):
     """Base Phenopanel form, not including any subpanel"""
 
     model_name = StringField("Phenotype panel name", validators=[validators.InputRequired()])
@@ -10,7 +10,7 @@ class PhenoModelForm(Form):
     create_model = SubmitField("Create")
 
 
-class PhenoSubPanelForm(Form):
+class PhenoSubPanelForm(FlaskForm):
     """A form corresponfing to a phenopanel sub-panel"""
 
     title = StringField("Phenotype subpanel title", validators=[validators.InputRequired()])

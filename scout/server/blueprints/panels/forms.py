@@ -1,5 +1,5 @@
 """Code for panel gene form"""
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import BooleanField, SelectMultipleField, StringField
 
 from scout.constants import GENE_PANELS_INHERITANCE_MODELS
