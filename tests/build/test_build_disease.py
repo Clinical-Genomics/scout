@@ -1,5 +1,4 @@
 from scout.build.disease import build_disease_term
-from scout.models.phenotype_term import DiseaseTerm
 import pytest
 
 
@@ -18,7 +17,7 @@ def test_build_disease_term(adapter, test_disease):
     assert disease_obj["genes"] == [17978]
     assert disease_obj["source"] == "OMIM"
 
-    assert isinstance(disease_obj, DiseaseTerm)
+    assert isinstance(disease_obj, dict)
 
 
 @pytest.mark.parametrize("key", ["mim_number", "description"])
@@ -27,19 +26,19 @@ def test_build_disease_missing_key(key, test_disease):
     alias_genes = {}
     alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
 
-    # WHEN deleteing key
+    # WHEN deleting a mandatory key
     test_disease.pop(key)
-    # THEN calling build_disease_term() will raise KeyError
-    with pytest.raises(KeyError):
+    # THEN calling build_disease_term() will raise ValueError
+    with pytest.raises(ValueError):
         build_disease_term(test_disease, alias_genes)
 
 
-@pytest.mark.parametrize("key", ["mim_number"])
-def test_build_disease_inappropriate_value(key, test_disease):
+def test_build_disease_wrong_value(test_disease):
+    ## GIVEN a dictionary with disease information and genes
     alias_genes = {}
     alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
-    test_disease[key] = "not_an_int"
-    # THEN calling build_disease_term(test_disease, alias_genes) a
-    # ValueError is thrown, caught and converted into a KeyError
-    with pytest.raises(KeyError):
+    # WHEN disease number is not an integer
+    test_disease["mim_number"] = "not_an_int"
+    # THEN calling build_disease_term() will raise ValueError
+    with pytest.raises(ValueError):
         build_disease_term(test_disease, alias_genes)
