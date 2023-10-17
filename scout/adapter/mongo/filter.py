@@ -19,7 +19,7 @@ VARIANTS_TARGET_FROM_CATEGORY = {
 class FilterHandler(object):
     """Class to handle persistent variant filters in the mongo adapter"""
 
-    def retrieve_filter(self, filter_id):
+    def retrieve_filter(self, filter_id: str) -> dict:
         """Retrieve a known stored filter object from the db
 
         Arguments:

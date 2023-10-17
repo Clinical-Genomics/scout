@@ -1,3 +1,4 @@
+import decimal
 import logging
 import re
 from datetime import date
@@ -1480,13 +1481,40 @@ def persistent_filter_actions(
         form = FiltersFormClass(request_form)
         # Stash the filter to db to make available for this institute
         filter_obj = request_form
+        # TODO validate form!
         store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
 
     if bool(request_form.get("load_filter")):
         filter_id = request_form.get("filters")
         filter_obj = store.retrieve_filter(filter_id)
         if filter_obj is not None:
-            form = FiltersFormClass(MultiDict(filter_obj))
+
+            def _coerce_formdata(filter: dict) -> MultiDict:
+                for filter_decimal_value_form_field in [
+                    "cadd_score",
+                    "revel",
+                    "gnomad_frequency",
+                    "control_frequency",
+                    "tumor_frequency",
+                ]:
+                    if (
+                        filter_decimal_value_form_field in filter
+                        and type(filter[filter_decimal_value_form_field][0]) is str
+                    ):
+                        try:
+                            raw_value = decimal.Decimal(
+                                filter[filter_decimal_value_form_field][0].replace(",", ".")
+                            )
+                        except (decimal.InvalidOperation, ValueError):
+                            raw_value = filter[filter_decimal_value_form_field][0]
+                            raise ValueError(self.gettext("Not a valid decimal value"))
+
+                        filter[filter_decimal_value_form_field] = [raw_value]
+
+                return MultiDict(filter)
+
+            form = FiltersFormClass(_coerce_formdata(filter_obj))
+            LOG.info("Filter formdata: %s Form: %s", filter_obj, form.data)
         else:
             flash("Requested filter was not found", "warning")
 
