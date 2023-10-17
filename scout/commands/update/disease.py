@@ -1,14 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-"""
-update/disease.py
-
-Update the disease terms in database
-
-Created by Måns Magnusson on 2017-04-03.
-Copyright (c) 2017 __MoonsoInc__. All rights reserved.
-"""
-
 import logging
 import os
 
@@ -16,7 +5,7 @@ import click
 from flask.cli import current_app, with_appcontext
 
 from scout.constants import UPDATE_DISEASES_RESOURCES
-from scout.load.hpo import load_disease_terms
+from scout.load.disease import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
@@ -30,7 +19,6 @@ LOG = logging.getLogger(__name__)
 
 def _check_resources(resources):
     """Check that resource lines file contain valid data
-
     Args:
         resources(dict): resource names as keys and resource file lines as values
     """
@@ -100,10 +88,6 @@ def diseases(downloads_folder, api_key):
             raise click.Abort()
 
     _check_resources(resources)
-
-    LOG.info("Dropping DiseaseTerms")
-    adapter.disease_term_collection.delete_many({})
-    LOG.debug("DiseaseTerms dropped")
 
     load_disease_terms(
         adapter=adapter,
