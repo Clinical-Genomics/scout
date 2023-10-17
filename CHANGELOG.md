@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.72]
 ### Added
 - A GitHub action that checks for broken internal links in docs pages
 - Link validation settings in mkdocs.yml file
@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CaseS cohort tags can contain whitespace and still match
 - Remove diagnoses from cases even if OMIM term is not found in the database
 - Parsing of disease-associated genes
+- Removed an annoying warning while updating database's disease terms
 ### Changed
 - Column width adjustment on caseS page
 - Use Python 3.11 in tests
@@ -28,7 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Upgraded Pydantic to version 2
 - Case validation fails on loading when associated files (alignments, VCFs and reports) are not present on disk
 - Case validation fails on loading when custom images have format different then ["gif", "svg", "png", "jpg", "jpeg"]
-- Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `srt_variants_images`
+- Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `str_variants_images`
 - Simplify and speed up case general report code
 - Speed up case retrieval in case_matching_causatives
 - Upgrade pymongo to version 4
