@@ -13,6 +13,6 @@
 
 ![v4](img/v4.png)
 
-**Latest entry in the blog**: [What's new in 4.67?](blog/new-4.67.md)
+**Latest entry in the blog**: [What's new in 4.72?](blog/new-4.72.md)
 
 **Version migration issues**: [Breaking](admin-guide/breaking.md)
