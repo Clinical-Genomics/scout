@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Upgrade pymongo to version 4
 - When updating disease terms, check that all terms are consistent with a DiseaseTerm model before dropping the old collection
 - Better separation between modules loading HPO terms and diseases
+- Stricter validation of provided genome build when loading a case. Allowed values are ['37','38',37,38]
 
 
 ## [4.71]
