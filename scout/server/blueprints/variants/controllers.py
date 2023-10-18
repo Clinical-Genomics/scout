@@ -1507,7 +1507,7 @@ def persistent_filter_actions(
                             )
                         except (decimal.InvalidOperation, ValueError):
                             raw_value = filter[filter_decimal_value_form_field][0]
-                            raise ValueError(self.gettext("Not a valid decimal value"))
+                            raise ValueError("Not a valid decimal value")
 
                         filter[filter_decimal_value_form_field] = [raw_value]
 
