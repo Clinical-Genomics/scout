@@ -469,7 +469,7 @@ class CaseLoader(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def format_build(cls, values) -> "CaseLoader":
-        """Format the genome build so it will be saves as either '37' or '38'."""
+        """Format the genome build collected from genome_build or human_genome_build keys, so it will be saved as either '37' or '38'."""
         str_build = str(values.get("genome_build") or values.get("human_genome_build", ""))
         if "37" in str_build:
             str_build = "37"
