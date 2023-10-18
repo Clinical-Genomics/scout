@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CaseS cohort tags can contain whitespace and still match
 - Remove diagnoses from cases even if OMIM term is not found in the database
 - Parsing of disease-associated genes
+- Removed an annoying warning while updating database's disease terms
 ### Changed
 - Column width adjustment on caseS page
 - Use Python 3.11 in tests
@@ -34,6 +35,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Upgrade pymongo to version 4
 - When updating disease terms, check that all terms are consistent with a DiseaseTerm model before dropping the old collection
 - Better separation between modules loading HPO terms and diseases
+- Deleted unused scout.build.phenotype module
 - Improved readability of variants length and coordinates on variantS pages
 
 
