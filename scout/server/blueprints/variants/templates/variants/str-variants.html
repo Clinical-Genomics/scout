@@ -104,7 +104,7 @@
             </td>
             <td class="text-end">{{ variant.chromosome }}</td>
             <td class="text-end">
-              {{ variant.position }}
+              {{ variant.position|human_longint }}
               {{ reviewer_button(case,variant,case_groups,institute._id) }}
               {% if case.bam_files %}
                 <a class="btn btn-secondary btn-sm text-white" href="{{url_for('alignviewers.igv', institute_id=institute['_id'], case_name=case['display_name'], variant_id=variant['_id'])}}" rel="noopener" target="_blank">IGV viewer</a>
