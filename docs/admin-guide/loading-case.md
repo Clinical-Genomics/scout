@@ -60,7 +60,7 @@ rank_model_version: '1.12'
 sv_rank_model_version: '1.5'
 rank_score_threshold: -100
 analysis_date: 2016-10-12 14:00:46
-human_genome_build: 37
+human_genome_build: '37'
 
 ```
 
