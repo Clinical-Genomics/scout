@@ -2,6 +2,7 @@
 import logging
 import os
 from datetime import timedelta
+from typing import Union
 
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
@@ -195,6 +196,13 @@ def register_blueprints(app):
 
 
 def register_filters(app):
+    @app.template_filter()
+    def human_longint(value: Union[int, str]) -> str:
+        """Convert a long integers int or string representation into a human easily readable number."""
+        if value == "inf":
+            return value
+        return "{:,}".format(int(value)).replace(",", " ")
+
     @app.template_filter()
     def human_decimal(number, ndigits=4):
         """Return a standard representation of a decimal number.
