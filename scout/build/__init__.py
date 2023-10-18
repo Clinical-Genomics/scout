@@ -6,7 +6,6 @@ from .variant import build_variant
 
 from .hpo import build_hpo_term
 from .institute import build_institute
-from .phenotype import build_phenotype
 from .individual import build_individual
 from .panel import build_panel
 from .case import build_case
