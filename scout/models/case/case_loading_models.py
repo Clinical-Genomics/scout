@@ -381,7 +381,7 @@ class CaseLoader(BaseModel):
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
-    genome_build: Union[str, int] = Field(38, alias="human_genome_build")
+    genome_build: str
     individuals: Union[List[SampleLoader]] = Field([], alias="samples")
     lims_id: Optional[str] = None
     madeline_info: Optional[str] = Field(None, alias="madeline")
@@ -466,18 +466,19 @@ class CaseLoader(BaseModel):
             synopsis = ". ".join(synopsis)
         return synopsis
 
-    @field_validator("genome_build", mode="before")
+    @model_validator(mode="before")
     @classmethod
-    def format_build(cls, genome_build: Union[str, int]) -> str:
-        """Format the genome build so it will be saves as either '37' or '38'."""
-        str_build = str(genome_build)
+    def format_build(cls, values) -> "CaseLoader":
+        """Format the genome build collected from genome_build or human_genome_build keys, so it will be saved as either '37' or '38'."""
+        str_build = str(values.get("genome_build") or values.get("human_genome_build", ""))
         if "37" in str_build:
             str_build = "37"
         elif "38" in str_build:
             str_build = "38"
         if str_build not in GENOME_BUILDS:
             raise ValueError("Genome build must be either '37' or '38'.")
-        return str_build
+        values["genome_build"] = str_build
+        return values
 
     @field_validator("individuals", mode="after")
     @classmethod

@@ -36,6 +36,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - When updating disease terms, check that all terms are consistent with a DiseaseTerm model before dropping the old collection
 - Better separation between modules loading HPO terms and diseases
 - Deleted unused scout.build.phenotype module
+- Stricter validation of mandatory genome build key when loading a case. Allowed values are ['37','38',37,38]
 - Refactored especially cancer filter for decimal place fields to allow unfreezing WTForms and upgrade to v3
  
 
