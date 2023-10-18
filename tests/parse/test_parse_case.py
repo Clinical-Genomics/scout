@@ -5,7 +5,7 @@ import pytest
 from pydantic import ValidationError
 
 from scout.constants import REV_SEX_MAP
-from scout.exceptions import ConfigError, PedigreeError
+from scout.exceptions import PedigreeError
 from scout.parse.case import parse_case_config, parse_case_data, parse_ped, remove_none_values
 
 LOG = logging.getLogger(__name__)
