@@ -456,7 +456,7 @@ def test_missing_mandatory_config_key(scout_config, key):
 
 @pytest.mark.parametrize("key", ["genome_build", "human_genome_build"])
 def test_load_case_wrong_genome_build(scout_config, key):
-    """Test loading a case with a genome ID of wrong format."""
+    """Test loading a case with a genome build of wrong format."""
 
     ## GIVEN a scout_config (dict) containing user case information
     ## WHEN setting one of the genome build keys to a non-supported value
@@ -469,7 +469,7 @@ def test_load_case_wrong_genome_build(scout_config, key):
 
 
 def test_load_case_missing_genome_build(scout_config):
-    """Test loading a case with without providing a genome buildt."""
+    """Test loading a case with without providing a genome build."""
 
     ## GIVEN a scout_config (dict) containing user case information
     ## WHEN deleting the genome_build key
@@ -482,7 +482,7 @@ def test_load_case_missing_genome_build(scout_config):
 
 @pytest.mark.parametrize("key", ["genome_build", "human_genome_build"])
 def test_load_case_int_genome_build(scout_config, key):
-    """Test loading a case with a genome ID as an ID [37,38]."""
+    """Test loading a case with a genome build as an int: 37 or 38."""
 
     ## GIVEN a scout_config (dict) containing user case information
     ## WHEN setting one of the genome build keys to an integer (either 37 or 38)
@@ -496,7 +496,7 @@ def test_load_case_int_genome_build(scout_config, key):
 
 @pytest.mark.parametrize("key", ["genome_build", "human_genome_build"])
 def test_load_case_str_genome_build(scout_config, key):
-    """Test loading a case with a genome ID as an ID [37,38]."""
+    """Test loading a case with a genome build as string: '37' or '38´."""
 
     ## GIVEN a scout_config (dict) containing user case information
     ## WHEN setting one of the genome build keys to a string (either "37" or "38")
