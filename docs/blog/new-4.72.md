@@ -25,14 +25,18 @@ bare metal, just remember to `pip install -U -r requirements.txt`.
 
 #### Custom images
 
-To allow the introduction of later Pydantic versions, some reserved keywords in key names had to be updated.
+In response to a request from the Clinical Genomics facility in Lund, we have made adjustments to the keywords used for linking custom images to either the case page or a variant page.
+Specifically, we have replaced the previous keywords 'case' and 'str' found in the case config file with more descriptive and user-friendly terms: 'case_images' and 'str_variants_images'.
 
-Custom images keys `case` and `str` in case config yaml file are renamed to `case_images` and `str_variants_images`.
+Compatibility implications:
+- Cases loaded with old keywords will keep displaying images as before
+- All new cases uploaded are expected to use the new keywords in their config files
+- Old cases configuration files will cease to work, and you'd need to switch to the new keywords in order to perform a case upload
 
-Compatibility implications if you:
-- have cases loaded with old keys in the database: all should just keep working as before
-- try to load cases with config files with pre v4.72 styles
-- need to reload a case using an old case config
+#### Genome build check
+
+We have updated the validation process for case configuration files to now require a mandatory entry for the genome build. You can specify the genome build for case analysis using either the 'genome_build' or 'human_genome_build' keyword,
+with the accepted values included in this list: 37, 38, '37', '38'. While 'GRCh37' and 'GRCh38' genome build values will be accepted, it's important to note that they will be automatically converted to their standard counterparts '37' or '38' when saving the case object into the database.
 
 #### Full RNA alignment view
 A new key at the sample level is available, `rna_alignment_path`. Any RNA alignment cram/bam file added will be visible
