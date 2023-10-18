@@ -452,3 +452,57 @@ def test_missing_mandatory_config_key(scout_config, key):
     ## THEN calling parse_case_config() will raise ConfigError
     with pytest.raises(ValueError):
         parse_case_config(scout_config)
+
+
+@pytest.mark.parametrize("key", ["genome_build", "human_genome_build"])
+def test_load_case_wrong_genome_build(scout_config, key):
+    """Test loading a case with a genome ID of wrong format."""
+
+    ## GIVEN a scout_config (dict) containing user case information
+    ## WHEN setting one of the genome build keys to a non-supported value
+    scout_config.pop(key, None)
+    scout_config[key] = "xyz"
+
+    ## THEN calling parse_case_config() will raise ConfigError
+    with pytest.raises(ValueError):
+        parse_case_config(scout_config)
+
+
+def test_load_case_missing_genome_build(scout_config):
+    """Test loading a case with without providing a genome buildt."""
+
+    ## GIVEN a scout_config (dict) containing user case information
+    ## WHEN deleting the genome_build key
+    scout_config.pop("human_genome_build")
+
+    ## THEN calling parse_case_config() will raise ConfigError
+    with pytest.raises(ValueError):
+        parse_case_config(scout_config)
+
+
+@pytest.mark.parametrize("key", ["genome_build", "human_genome_build"])
+def test_load_case_int_genome_build(scout_config, key):
+    """Test loading a case with a genome ID as an ID [37,38]."""
+
+    ## GIVEN a scout_config (dict) containing user case information
+    ## WHEN setting one of the genome build keys to an integer (either 37 or 38)
+    for num_build in [37, 38]:
+        scout_config.pop(key, None)
+        scout_config[key] = num_build
+
+        ## THEN calling parse_case_config() should return parsed data
+        assert parse_case_config(scout_config)
+
+
+@pytest.mark.parametrize("key", ["genome_build", "human_genome_build"])
+def test_load_case_str_genome_build(scout_config, key):
+    """Test loading a case with a genome ID as an ID [37,38]."""
+
+    ## GIVEN a scout_config (dict) containing user case information
+    ## WHEN setting one of the genome build keys to a string (either "37" or "38")
+    for str_build in ["37", "38"]:
+        scout_config.pop(key, None)
+        scout_config[key] = str_build
+
+        ## THEN calling parse_case_config() should return parsed data
+        assert parse_case_config(scout_config)
