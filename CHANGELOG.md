@@ -23,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parsing of disease-associated genes
 - Removed an annoying warning while updating database's disease terms
 - Displaying custom case images loaded with scout version <= 4.71
+- Use pydantic version >=2 in requirements.txt file
 ### Changed
 - Column width adjustment on caseS page
 - Use Python 3.11 in tests
