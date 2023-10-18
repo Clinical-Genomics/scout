@@ -103,6 +103,8 @@ nav:
       - Whats new in 4.20?: 'blog/new-4.20.md'
       - Whats new in 4.34?: 'blog/new-4.34.md'
       - Whats new in 4.67?: 'blog/new-4.67.md'
+      - Whats new in 4.72?: 'blog/new-4.72.md'
+
 
 not_in_nav: |
     admin-guide/reference-sets/genes_transcripts.md
