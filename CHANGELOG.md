@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.72.1]
 ### Fixed
 - Jinja filter that renders long integers
 - Case cache when looking for causatives in other cases causing the server to hang
