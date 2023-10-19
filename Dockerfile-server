@@ -57,12 +57,14 @@ ENV GUNICORN_WORKERS=1
 ENV GUNICORN_THREADS=1
 ENV GUNICORN_BIND="0.0.0.0:8000"
 ENV GUNICORN_TIMEOUT=400
+ENV GUNICORN_MAXREQUESTS=2000
 
 CMD gunicorn \
     --workers=$GUNICORN_WORKERS \
     --bind=$GUNICORN_BIND  \
     --threads=$GUNICORN_THREADS \
     --timeout=$GUNICORN_TIMEOUT \
+    --max-requests=$GUNICORN_MAXREQUESTS \
     --proxy-protocol \
     --forwarded-allow-ips="10.0.2.100,127.0.0.1" \
     --log-syslog \
