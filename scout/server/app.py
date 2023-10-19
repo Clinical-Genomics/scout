@@ -199,9 +199,10 @@ def register_filters(app):
     @app.template_filter()
     def human_longint(value: Union[int, str]) -> str:
         """Convert a long integers int or string representation into a human easily readable number."""
-        if value == "inf":
-            return value
-        return "{:,}".format(int(value)).replace(",", " ")
+        value = str(value)
+        if value.isnumeric():
+            return "{:,}".format(int(value)).replace(",", " ")
+        return value
 
     @app.template_filter()
     def human_decimal(number, ndigits=4):

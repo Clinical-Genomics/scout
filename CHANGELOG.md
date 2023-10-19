@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Jinja filter that renders long integers
+
 ## [4.72]
 ### Added
 - A GitHub action that checks for broken internal links in docs pages

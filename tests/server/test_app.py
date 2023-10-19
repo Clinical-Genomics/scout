@@ -1,4 +1,4 @@
-def test_app_human_longint_filter_inf(mock_app):
+def test_app_human_longint_filter_non_numeric_str(mock_app):
     """Test template filter human_longint when the provided string is 'inf'."""
     assert "human_longint" in mock_app.jinja_env.filters.keys()
     assert mock_app.jinja_env.filters["human_longint"]("inf") == "inf"
