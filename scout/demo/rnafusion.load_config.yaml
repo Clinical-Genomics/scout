@@ -12,6 +12,8 @@ samples:
     phenotype: affected
     sex: unknown
 
+vcf_fusion: scout/demo/fusion_data.vcf.gz
+
 gene_fusion_report: scout/demo/draw-fusions-example.pdf
 RNAfusion_report_research: scout/demo/rnafusion_report_example.html
 RNAfusion_inspector_research: scout/demo/rnafusion_inspector_example.html
