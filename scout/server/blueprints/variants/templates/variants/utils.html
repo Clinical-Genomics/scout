@@ -888,56 +888,29 @@
 {% endmacro %}
 
 
-{% macro fusion_filters(form, institute, case) %}
+{% macro fusion_filters(form, institute, case, filters) %}
 <input type="hidden" name="variant_type" value="{{ form.variant_type.data }}">
-<div class="row mb-3">
-  {{ variants_common_filters(form, "fusion") }}
-</div>
-<div class="row mb-3">
+<div class="row">
+  <div class="col-2">
+    {{ form.gene_panels.label(class="control-label", data_toggle="tooltip", data_placement="left", title="This list can be modified from the institute settings page. Latest panel version is used in variants filtering.") }}
+    {{ form.gene_panels(class="selectpicker", data_style="btn-secondary") }}
+  </div>
   <div class="col-3">
     {{ form.hgnc_symbols.label(class="control-label") }}
     {{ form.hgnc_symbols(class="form-control") }}
   </div>
   <div class="col-1 align-self-end">
-    <div class="d-flex btn-group">
+    <div class="btn-group d-flex">
       <a class="btn btn-secondary text-white" href="{{ url_for('variants.fusion_variants', institute_id=institute._id,
         case_name=case.display_name, variant_type=form.variant_type.data,
         gene_panels=['hpo']) }}">HPO gene list</a>
     </div>
   </div>
-  <div class="col-2">
-    {{ form.size.label(class="control-label") }}
-    {{ form.size(class="form-control", type="number") }}
-  </div>
-  <div class="col-2 d-flex align-items-end">
-    <div class="mb-2 form-check">
-      {{ form.size_shorter.label(class="form-check-label") }}
-      {{ form.size_shorter(class="form-check-input",type="checkbox") }}
-    </div>
-  </div>
-  <div class="col-1 d-flex align-items-end">
-    <div class="mb-2 form-check">
-      {{ form.decipher.label(class="form-check-label") }}
-      {{ form.decipher(class="form-check-input",type="checkbox") }}
-    </div>
-  </div>
-  <div class="col-2">
-    {{ form.clinsig.label(class="control-label") }}
-    {{ form.clinsig(class="selectpicker", data_style="btn-secondary") }}
-  </div>
-  <div class="col-1">
-    {{ form.gnomad_frequency.label(class="control-label") }}
-    {{ form.gnomad_frequency(class="form-control") }}
-  </div>
 </div>
-<div class="row mb-3">
-  <div class="col-6">
-    <div class="row">
-      <div class="col-3">
-        {{ form.chrom.label(class="control-label") }}
-        {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
-      </div>
-    </div>
+<div class="row">
+  <div class="col-2">
+    {{ form.chrom.label(class="control-label") }}
+    {{ form.chrom(class="selectpicker", data_style="btn-secondary", data_actions_box="true") }}
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.start) }}
@@ -945,40 +918,25 @@
   <div class="col-2">
     {{ wtf.form_field(form.end) }}
   </div>
-  <div class="col-1">
+  <div class="col-2">
     {{ wtf.form_field(form.cytoband_start) }}
   </div>
-  <div class="col-1">
+  <div class="col-2">
     {{ wtf.form_field(form.cytoband_end) }}
   </div>
 </div>
-<div class="row mb-3">
-  <div class="col-2">
-    <a class="btn btn-secondary btn-sm" data-bs-toggle="collapse" href="#stringcoords" aria-expanded="false" aria-controls="stringcoords">
-      String coordinates
-    </a>
-  </div>
-  <div id="stringcoords" class="collapse col-5 offset-1">
-    {{ wtf.form_field(form.chrom_pos) }}
-  </div>
+<div class="row" style="margin-top:20px;">
+    <div class="col-4">
+      {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
+    </div>
+    <div class="col-4">
+      {{ form.export(class="btn btn-warning form-control") }}
+    </div>
 </div>
-
-
-<div class="row">
-  <div class="col-4">
-    {{ form.filter_variants(class="btn btn-primary form-control", onclick="resetPage()") }}
-  </div>
-  <div class="col-4">
-    {{ form.clinical_filter(class="btn btn-secondary form-control", onclick="resetPage()") }}
-  </div>
-  <div class="col-4">
-    {{ form.export(class="btn btn-warning form-control") }}
-  </div>
-</div>
-<div class="row justify-content-between" style="margin-top:20px;">
-  <div class="col-1">
-    <a href="{{ url_for('variants.fusion_variants', institute_id=institute._id,
-      case_name=case.display_name, variant_type=form.variant_type.data) }}"
+<div class="row" style="margin-top:20px;">
+  <div class="col-2 text-start">
+    <a href="{{ url_for('variants.fusion_variants', institute_id=institute._id, case_name=case.display_name,
+      variant_type=form.variant_type.data) }}"
       class="btn btn-secondary" style="color: #ffffff !important;">
       Reset&nbsp;filters
     </a>
@@ -988,6 +946,8 @@
   </div>
 </div>
 {% endmacro %}
+
+
 
 {% macro modal_prompt_filter_name(form) %}
 <div class="modal fade" id="filterNameModal" tabindex="-1" role="dialog"
