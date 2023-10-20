@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - A gunicorn maxrequests paramenter for Docker server image
+###
+- When loading disease, fetch genes from the OMIM mim2genes.txt files instead of from the associated HPO terms
 
 ## [4.72.1]
 ### Fixed
