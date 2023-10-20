@@ -339,11 +339,7 @@ def hpo_phenotype_annotation_handle(request, hpo_phenotype_annotation_file):
 
 @pytest.fixture(scope="function")
 def hpo_database(
-    request,
-    gene_database,
-    genemap_file,
-    hpo_terms_file,
-    phenotype_to_genes_file,
+    request, gene_database, genemap_file, hpo_terms_file, phenotype_to_genes_file, mim2gene_file
 ):
     "Returns an adapter to a database populated with hpo terms"
     adapter = gene_database
