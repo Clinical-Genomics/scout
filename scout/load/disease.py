@@ -16,7 +16,6 @@ LOG = logging.getLogger(__name__)
 def load_disease_terms(
     adapter: MongoAdapter,
     genemap_lines: Iterable,
-    disease_2_genes_lines: Iterable,
     genes: Optional[dict] = None,
     hpo_annotation_lines: Optional[Iterable] = None,
 ):
@@ -39,17 +38,11 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
-    diseases_2_genes: dict = _set_disease_genes_info(
-        disease_genes=parse_mim2gene(lines=disease_2_genes_lines)
-    )
-
     disease_objs: List[dict] = []
     for disease_nr, disease_info in disease_terms.items():
         disease_id = f"OMIM:{disease_nr}"
         if disease_id not in disease_annotations:
             continue
-        if disease_nr in diseases_2_genes:
-            disease_info["genes"] = diseases_2_genes[disease_nr]
 
         _parse_disease_term_info(
             disease_info=disease_info,
@@ -88,21 +81,6 @@ def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
         else:
             hpo_term_to_symbol[hpo_id].add(hgnc_symbol)
     return hpo_term_to_symbol
-
-
-def _set_disease_genes_info(disease_genes: Iterable) -> Dict[int, List[int]]:
-    """Associate a disease number to a list of gene IDs."""
-    disease_nr_gene_ids: Dict[int, List[int]] = {}
-    for item in disease_genes:
-        if "mim_number" not in item or "entrez_gene_id" not in item:
-            continue
-        mim_number: int = int(item["mim_number"])
-        gene_id: int = int(item["entrez_gene_id"])
-        if mim_number not in disease_nr_gene_ids:
-            disease_nr_gene_ids[mim_number] = [gene_id]
-        else:
-            disease_nr_gene_ids[mim_number].append(gene_id)
-    return disease_nr_gene_ids
 
 
 def _parse_disease_term_info(

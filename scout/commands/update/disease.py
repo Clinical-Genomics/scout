@@ -88,7 +88,6 @@ def diseases(downloads_folder, api_key):
     load_disease_terms(
         adapter=adapter,
         genemap_lines=resources["genemap_lines"],
-        disease_2_genes_lines=resources["mim2genes_lines"],
         hpo_annotation_lines=resources["hpo_annotation_lines"],
     )
 

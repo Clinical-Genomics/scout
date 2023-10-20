@@ -3,7 +3,7 @@ from scout.load.hpo import load_hpo_terms
 from scout.utils.handle import get_file_handle
 
 
-def test_load_disease_terms(gene_database, genemap_file, mim2gene_file):
+def test_load_disease_terms(gene_database, genemap_file):
     adapter = gene_database
     alias_genes = adapter.genes_by_alias()
 
@@ -15,7 +15,6 @@ def test_load_disease_terms(gene_database, genemap_file, mim2gene_file):
         adapter=adapter,
         genemap_lines=get_file_handle(genemap_file),
         genes=alias_genes,
-        disease_2_genes_lines=get_file_handle(mim2gene_file),
     )
 
     # THEN make sure that the disease terms are in the database

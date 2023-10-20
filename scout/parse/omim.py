@@ -130,19 +130,18 @@ def parse_genemap2(lines):
     LOG.info("Parsing the omim genemap2")
     header = []
     for i, line in enumerate(lines):
-        line = line.strip()
+        line = line.rstrip()
         if line.startswith("#"):
             if i < 10:
                 if line.startswith("# Chromosome"):
                     header = line[2:].split("\t")
             continue
-        parsed_entry = parse_omim_line(line, header)
 
-        if len(parsed_entry.keys()) < 5:
+        if len(line) < 5:
             continue
 
+        parsed_entry = parse_omim_line(line, header)
         mim_number = int(parsed_entry["MIM Number"])
-
         parsed_entry["mim_number"] = mim_number
         parsed_entry["raw"] = line
 
@@ -155,9 +154,6 @@ def parse_genemap2(lines):
         if parsed_entry.get("Gene Symbols"):
             gene_symbols = [symbol.strip() for symbol in parsed_entry["Gene Symbols"].split(",")]
         parsed_entry["hgnc_symbols"] = gene_symbols
-
-        if parsed_entry.get("Entrez Gene ID"):
-            parsed_entry["entrez_gene_id"] = int(parsed_entry["Entrez Gene ID"].strip())
 
         if not hgnc_symbol and gene_symbols:
             hgnc_symbol = gene_symbols[0]
@@ -220,20 +216,18 @@ def parse_mim2gene(lines):
         if line.startswith("#"):
             continue
 
-        line = line.rstrip()
-        parsed_entry = parse_omim_line(line, header)
-        if "mim_number" not in parsed_entry or not parsed_entry["mim_number"]:
+        if not len(line) > 10:
             continue
 
+        line = line.rstrip()
+        parsed_entry = parse_omim_line(line, header)
         parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
         parsed_entry["raw"] = line
 
         if "hgnc_symbol" in parsed_entry:
             parsed_entry["hgnc_symbol"] = parsed_entry["hgnc_symbol"]
 
-        if parsed_entry.get(
-            "entrez_gene_id",
-        ):
+        if parsed_entry.get("entrez_gene_id"):
             parsed_entry["entrez_gene_id"] = int(parsed_entry["entrez_gene_id"])
 
         if parsed_entry.get("ensembl_gene_id"):
