@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Iterator, Optional, Union
+from typing import Optional, Union
 
 from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
@@ -132,7 +132,7 @@ class DiagnosisHandler(object):
         self,
         hgnc_id: Optional[int] = None,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
-    ) -> Iterator:
+    ) -> list:
         """Return all disease terms for a gene HGNC ID."""
         query = {}
         if hgnc_id:
