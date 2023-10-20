@@ -48,8 +48,8 @@
                       -
                     {% endfor %}
                   </td><!--end of inheritance-->
-                  <td><span class="text-body">{{ omim.genes | join(", ") }}</span></td>
-                  <td><span class="text-body">{{ omim.hpo_terms | join(", ") }}</span></td>
+                  <td><span class="text-body">{{ omim.genes | join(", ") or "-" }}</span></td>
+                  <td><span class="text-body">{{ omim.hpo_terms | join(", ") or "-" }}</span></td>
                 </tr>
               {% endfor %}
             </table>
