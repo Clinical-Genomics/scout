@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - A gunicorn maxrequests paramenter for Docker server image
+### Fixed
+- Huge memory leak caused by cases and variants pages pulling complete disease documents from DB
 
 ## [4.72.1]
 ### Fixed
