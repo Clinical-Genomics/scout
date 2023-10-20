@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 import pymongo
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP
+from scout.constants import ACMG_MAP, ID_PROJECTION
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -79,7 +79,11 @@ class CaseHandler(object):
         hpo_terms = []
         order = None
         if query_field == "similar_case":
-            case_obj = self.case(display_name=query_term, institute_id=institute_id)
+            case_obj = self.case(
+                display_name=query_term,
+                institute_id=institute_id,
+                projection=ID_PROJECTION,
+            )
             if case_obj is None:
                 query["_id"] = {"$in": []}  # No result should be returned by query
                 return
@@ -553,8 +557,14 @@ class CaseHandler(object):
         sanger_ordered_by_case = self.sanger_ordered(
             institute_id=institute_id
         )  # a list of dictionaries like this: [{'_id': 'internal_id', 'vars': ['a1d6df24404c007570021531b80b1e1e']}, ..]
+        CASE_VERIFICATION_MISSING_PROJECTION = {"_id": 1}
         for case_variants in sanger_ordered_by_case:
-            if self.case(case_id=case_variants["_id"]) is None:
+            if (
+                self.case(
+                    case_id=case_variants["_id"], projection=CASE_VERIFICATION_MISSING_PROJECTION
+                )
+                is None
+            ):
                 continue
             for variant_id in case_variants["vars"]:
                 var_obj = self.variant(case_id=case_variants["_id"], document_id=variant_id)
@@ -686,18 +696,17 @@ class CaseHandler(object):
         )
         return updated_case
 
-    def case(self, case_id=None, institute_id=None, display_name=None):
+    def case(
+        self,
+        case_id: str = None,
+        institute_id: str = None,
+        display_name: str = None,
+        projection: Dict = None,
+    ) -> Dict:
         """Fetches a single case from database
-
-        Use either the _id or combination of institute_id and display_name
-
-        Args:
-            case_id(str): _id for a caes
-            institute_id(str):
-            display_name(str)
-
-        Yields:
-            A single Case
+        Use either the _id or combination of institute_id and display_name.
+        Projection is a pymongo projection dict.
+        Yields a single Case, possibly a thin version case projected by the projection.
         """
         query = {}
         if case_id:
@@ -710,7 +719,7 @@ class CaseHandler(object):
             query["owner"] = institute_id
             query["display_name"] = display_name
 
-        return self.case_collection.find_one(query)
+        return self.case_collection.find_one(filter=query, projection=projection)
 
     def case_ind(self, ind_id):
         """Fetch cases based on an individual id.
@@ -942,7 +951,7 @@ class CaseHandler(object):
          Args:
              case_obj(Case)
         """
-        if self.case(case_obj["_id"]):
+        if self.case(case_obj["_id"], projection={"_id": 1}):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
         return self.case_collection.insert_one(case_obj)

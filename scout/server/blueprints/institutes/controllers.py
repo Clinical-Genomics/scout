@@ -537,7 +537,8 @@ def get_sanger_unevaluated(store, institute_id, user_id):
     for item in sanger_ordered_by_case:
         case_id = item["_id"]
         # Get the case to collect display name
-        case_obj = store.case(case_id=case_id)
+        CASE_SANGER_UNEVALUATED_PROJECTION = {"display_name": 1}
+        case_obj = store.case(case_id=case_id, projection=CASE_SANGER_UNEVALUATED_PROJECTION)
 
         if not case_obj:  # the case might have been removed
             continue
@@ -547,9 +548,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
         # List of variant document ids
         varid_list = item["vars"]
 
-        unevaluated_by_case = {}
-        unevaluated_by_case[case_display_name] = []
-
+        unevaluated_by_case = {case_display_name: []}
         for var_id in varid_list:
             # For each variant with sanger validation ordered
             variant_obj = store.variant(document_id=var_id, case_id=case_id)

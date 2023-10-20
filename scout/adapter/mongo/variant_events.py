@@ -1,5 +1,6 @@
 import logging
 from collections import Counter
+from typing import Any, Dict, List
 
 import pymongo
 
@@ -187,13 +188,10 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def sanger_ordered(self, institute_id=None, user_id=None, case_id=None):
+    def sanger_ordered(
+        self, institute_id: str = None, user_id: str = None, case_id: str = None
+    ) -> List[Dict[str, Any]]:
         """Get all variants with validations ever ordered.
-
-        Args:
-            institute_id(str) : The id of an institute
-            user_id(str) : The id of an user
-            case_id(str) : Id of a case
 
         Returns:
             sanger_ordered(list) : a list of dictionaries, each with "case_id" as keys
@@ -216,13 +214,10 @@ class VariantEventHandler(object):
         sanger_ordered = [item for item in results]
         return sanger_ordered
 
-    def validated(self, institute_id=None, user_id=None, case_id=None):
+    def validated(
+        self, institute_id: str = None, user_id: str = None, case_id: str = None
+    ) -> List[Dict[str, Any]]:
         """Get all variants that have been validated.
-
-        Args:
-            institute_id(str) : The id of an institute
-            user_id(str) : The id of an user
-            case_id(str) : Id of a case
 
         Returns:
             validated(list) : a list of dictionaries, each with "case_id" as keys

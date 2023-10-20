@@ -17,6 +17,9 @@ LOG = logging.getLogger(__name__)
 MATCHQ = "$match"
 CARRIER = r"[12]"  # same as re.compile()"1|2")
 
+CASE_VARIANT_GET_BUILD_PROJECTION = {"genome_build": 1}
+CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1}
+
 
 class VariantHandler(VariantLoader):
 
@@ -272,7 +275,9 @@ class VariantHandler(VariantLoader):
         variant_obj = self.variant_collection.find_one(query)
         if not variant_obj:
             return variant_obj
-        case_obj = self.case(case_id=variant_obj["case_id"])
+        case_obj = self.case(
+            case_id=variant_obj["case_id"], projection=CASE_VARIANT_GET_BUILD_PROJECTION
+        )
 
         if case_obj:
             variant_obj = self.add_gene_info(
@@ -372,7 +377,13 @@ class VariantHandler(VariantLoader):
             case_id = event["_id"]["case"]
             variant_id = event["_id"]["variant_id"]
             var_obj = self.variant(case_id=case_id, document_id=variant_id)
-            case_obj = self.case(case_id=case_id)
+            CASE_VERIFIED_PROJECTION = {
+                "display_name": 1,
+                "individuals": 1,
+                "status": 1,
+                "partial_causatives": 1,
+            }
+            case_obj = self.case(case_id=case_id, projection=CASE_VERIFIED_PROJECTION)
             if not case_obj or not var_obj:
                 continue  # Take into account that stuff might have been removed from database
             if var_obj.get("validation") is None or var_obj.get("validation") == "Not validated":
@@ -402,7 +413,9 @@ class VariantHandler(VariantLoader):
         causatives = []
 
         if case_id:
-            case_obj = self.case_collection.find_one({"_id": case_id})
+            case_obj = self.case_collection.find_one(
+                {"_id": case_id},
+            )
             causatives = [causative for causative in case_obj.get("causatives", [])]
 
         elif institute_id:
@@ -516,14 +529,14 @@ class VariantHandler(VariantLoader):
         )
         causative_ids = set()
         for case_event in causative_events:
-            case_obj = self.case(case_event.get("case"))
+            case_obj = self.case(case_event.get("case"), projection=CASE_CAUSATIVES_PROJECTION)
             if case_obj is None:
                 continue
 
             for var_id in case_obj.get("causatives", []):
                 causative_ids.add(var_id)
 
-            for var_id, _ in case_obj.get("patial_causatives", {}).items():
+            for var_id, _ in case_obj.get("partial_causatives", {}).items():
                 causative_ids.add(var_id)
 
         filters = {"_id": {"$in": list(causative_ids)}}
@@ -557,9 +570,10 @@ class VariantHandler(VariantLoader):
                 # exclude causatives from the same case
                 continue
 
-            other_case = self.case(var_event["case"])
+            CASE_MATCHING_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1}
+            other_case = self.case(var_event["case"], CASE_MATCHING_CAUSATIVES_PROJECTION)
             if other_case is None:
-                # Other variant belongs to a case that doesn't exist any more
+                # Other variant belongs to a case that   doesn't exist any more
                 continue
             other_link = var_event["link"]
             # link contains other variant ID
@@ -606,12 +620,21 @@ class VariantHandler(VariantLoader):
             }
         )
 
+        CASE_VARIANT_OTHER_CAUSATIVES_PROJECTION = {
+            "collaborators": 1,
+            "causatives": 1,
+            "display_name": 1,
+            "owner": 1,
+            "partial_causatives": 1,
+        }
         yielded_other_causative_ids = []
         for var_event in var_causative_events:
             if var_event["case"] == case_obj["_id"]:
                 # This is the variant the search started from, do not collect it
                 continue
-            other_case = self.case(var_event["case"])
+            other_case = self.case(
+                var_event["case"], projection=CASE_VARIANT_OTHER_CAUSATIVES_PROJECTION
+            )
             if other_case is None:
                 # Other variant belongs to a case that doesn't exist any more
                 continue
@@ -778,7 +801,7 @@ class VariantHandler(VariantLoader):
 
         # Collect the result in a dictionary
         variants = {}
-        case_obj = self.case(case_id=case_id)
+        case_obj = self.case(case_id=case_id, projection=CASE_VARIANT_GET_BUILD_PROJECTION)
 
         for var in self.variant_collection.find(query):
             variants[var["variant_id"]] = self.add_gene_info(
