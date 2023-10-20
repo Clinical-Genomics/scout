@@ -222,9 +222,10 @@ def parse_mim2gene(lines):
 
         line = line.rstrip()
         parsed_entry = parse_omim_line(line, header)
-        if "mim_number" not in parsed_entry:
+        if "mim_number" not in parsed_entry or not parsed_entry["mim_number"]:
             continue
-            parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
+
+        parsed_entry["mim_number"] = int(parsed_entry["mim_number"])
         parsed_entry["raw"] = line
 
         if "hgnc_symbol" in parsed_entry:

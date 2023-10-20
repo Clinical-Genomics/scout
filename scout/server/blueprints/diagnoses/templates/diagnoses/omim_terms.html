@@ -33,8 +33,8 @@
                 <th></th>
                 <th>Phenotype description</th>
                 <th>Inheritance</th>
-                <th>Number of associated genes</th>
-                <th>Number of associated HPO terms</th>
+                <th>Associated genes</th>
+                <th>Associated HPO terms</th>
               </thead>
               {% for omim in terms %}
                 <tr>
@@ -48,8 +48,8 @@
                       -
                     {% endfor %}
                   </td><!--end of inheritance-->
-                  <td><span class="text-body">{{ omim.genes|length }}</span></td>
-                  <td><span class="text-body">{{ omim.hpo_terms|length }}</span></td>
+                  <td><span class="text-body">{{ omim.genes | join(", ") }}</span></td>
+                  <td><span class="text-body">{{ omim.hpo_terms | join(", ") }}</span></td>
                 </tr>
               {% endfor %}
             </table>
