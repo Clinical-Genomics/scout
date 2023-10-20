@@ -82,11 +82,12 @@ class CaseHandler(object):
         """
         hpo_terms = []
         order = None
+        CASE_SIMILAR_PROJECTION = {"phenotype_terms": 1}
         if query_field == "similar_case":
             case_obj = self.case(
                 display_name=query_term,
                 institute_id=institute_id,
-                projection=ID_PROJECTION,
+                projection=CASE_SIMILAR_PROJECTION,
             )
             if case_obj is None:
                 query["_id"] = {"$in": []}  # No result should be returned by query
