@@ -179,7 +179,6 @@ def setup_scout(
     if resource_files.get("hpo_phenotype_annotation_path"):
         hpo_annotation_handle = get_file_handle(resource_files["hpo_phenotype_annotation_path"])
 
-    disease_2_genes_handle = None
     if resource_files.get("mim2gene_path"):
         disease_2_genes_lines = get_file_handle(resource_files["mim2gene_path"])
 
