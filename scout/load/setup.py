@@ -179,6 +179,10 @@ def setup_scout(
     if resource_files.get("hpo_phenotype_annotation_path"):
         hpo_annotation_handle = get_file_handle(resource_files["hpo_phenotype_annotation_path"])
 
+    disease_2_genes_handle = None
+    if resource_files.get("mim2gene_path"):
+        disease_2_genes_lines = get_file_handle(resource_files["mim2gene_path"])
+
     alias_genes = adapter.genes_by_alias()
     # Load HPO terms
     load_hpo_terms(
@@ -192,7 +196,7 @@ def setup_scout(
         adapter=adapter,
         genemap_lines=genemap_lines,
         genes=alias_genes,
-        hpo_disease_lines=hpo_to_genes_handle,
+        disease_2_genes_lines=disease_2_genes_lines,
         hpo_annotation_lines=hpo_annotation_handle,
     )
 

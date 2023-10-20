@@ -29,4 +29,5 @@ UPDATE_DISEASES_RESOURCES = {
     "genemap_lines": ["genemap2.txt", "genemap2_reduced.txt"],
     "hpo_gene_lines": ["phenotype_to_genes.txt", "phenotype_to_genes_reduced.txt"],
     "hpo_annotation_lines": ["phenotype.hpoa", "reduced.phenotype.hpoa"],
+    "mim2genes_lines": ["mim2genes.txt", "mim2gene_reduced.txt"],
 }

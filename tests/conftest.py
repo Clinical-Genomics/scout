@@ -354,7 +354,11 @@ def hpo_database(
         hpo_gene_lines=get_file_handle(phenotype_to_genes_file),
     )
     # Load diseases
-    load_disease_terms(adapter=gene_database, genemap_lines=get_file_handle(genemap_file))
+    load_disease_terms(
+        adapter=gene_database,
+        genemap_lines=get_file_handle(genemap_file),
+        disease_2_genes_lines=get_file_handle(mim2gene_file),
+    )
     return adapter
 
 
