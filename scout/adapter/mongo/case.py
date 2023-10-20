@@ -46,7 +46,10 @@ class CaseHandler(object):
             set_1 = set_1.union(set(hpo_term.get("all_ancestors", [])))
         # Need to control what cases to look for here
         # Fetch all cases with phenotypes
-        for case in self.cases(phenotype_terms=True, owner=owner):
+        CASES_BY_PHENOTYPE_PROJECTION = {"phenotype_terms": 1}
+        for case in self.cases(
+            phenotype_terms=True, owner=owner, projection=CASES_BY_PHENOTYPE_PROJECTION
+        ):
             set_2 = set()
             if case["_id"] == case_id:
                 continue

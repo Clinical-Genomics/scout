@@ -11,7 +11,13 @@ from pymongo.cursor import Cursor
 from werkzeug.datastructures import Headers
 
 from scout.adapter.mongo.base import MongoAdapter
-from scout.constants import CASE_SEARCH_TERMS, CASE_STATUSES, DATE_DAY_FORMATTER, PHENOTYPE_GROUPS
+from scout.constants import (
+    CASE_SEARCH_TERMS,
+    CASE_STATUSES,
+    DATE_DAY_FORMATTER,
+    ID_PROJECTION,
+    PHENOTYPE_GROUPS,
+)
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
@@ -186,7 +192,9 @@ def institutes():
                 "sanger_recipients": sanger_recipients,
                 "frequency_cutoff": ins_obj.get("frequency_cutoff", "None"),
                 "phenotype_groups": ins_obj.get("phenotype_groups", PHENOTYPE_GROUPS),
-                "case_count": sum(1 for i in store.cases(collaborator=ins_obj["_id"])),
+                "case_count": sum(
+                    1 for i in store.cases(collaborator=ins_obj["_id"], projection=ID_PROJECTION)
+                ),
             }
         )
     return institutes
@@ -431,6 +439,20 @@ def cases(store, request, institute_id):
     limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
     data["form"] = populate_case_filter_form(request.args)
 
+    ALL_CASES_PROJECTION = {
+        "analysis_date": 1,
+        "assignees": 1,
+        "case_id": 1,
+        "display_name": 1,
+        "individuals": 1,
+        "is_rerun": 1,
+        "is_research": 1,
+        "owner": 1,
+        "panels": 1,
+        "status": 1,
+        "track": 1,
+        "vcf_files": 1,
+    }
     prioritized_cases = store.prioritized_cases(institute_id=institute_id)
     all_cases = store.cases(
         collaborator=institute_id,
@@ -440,6 +462,7 @@ def cases(store, request, institute_id):
         has_rna_data=request.args.get("has_rna"),
         verification_pending=request.args.get("validation_ordered"),
         has_clinvar_submission=request.args.get("clinvar_submitted"),
+        projection=ALL_CASES_PROJECTION,
     )
     all_cases = _sort_cases(data, request, all_cases)
 
