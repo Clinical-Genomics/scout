@@ -7,7 +7,7 @@ from click import progressbar
 from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
-from scout.parse.omim import get_mim_phenotypes, parse_mim2gene
+from scout.parse.omim import get_mim_phenotypes
 from scout.utils.scout_requests import fetch_hpo_disease_annotation
 
 LOG = logging.getLogger(__name__)
