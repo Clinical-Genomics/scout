@@ -570,8 +570,7 @@ class VariantHandler(VariantLoader):
                 # exclude causatives from the same case
                 continue
 
-            CASE_MATCHING_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1}
-            other_case = self.case(var_event["case"], CASE_MATCHING_CAUSATIVES_PROJECTION)
+            other_case = self.case(var_event["case"], CASE_CAUSATIVES_PROJECTION)
             if other_case is None:
                 # Other variant belongs to a case that   doesn't exist any more
                 continue

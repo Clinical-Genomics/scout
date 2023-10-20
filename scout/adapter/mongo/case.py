@@ -144,7 +144,7 @@ class CaseHandler(object):
                     }
                 },
                 {"$match": {"lookup_variant.hgnc_ids": hgnc_id}},
-                {"$project": {"_id": 1}},
+                {"$project": ID_PROJECTION},
             ]
         )
         case_ids = [case["_id"] for case in cases_with_gene_doc]
@@ -557,14 +557,8 @@ class CaseHandler(object):
         sanger_ordered_by_case = self.sanger_ordered(
             institute_id=institute_id
         )  # a list of dictionaries like this: [{'_id': 'internal_id', 'vars': ['a1d6df24404c007570021531b80b1e1e']}, ..]
-        CASE_VERIFICATION_MISSING_PROJECTION = {"_id": 1}
         for case_variants in sanger_ordered_by_case:
-            if (
-                self.case(
-                    case_id=case_variants["_id"], projection=CASE_VERIFICATION_MISSING_PROJECTION
-                )
-                is None
-            ):
+            if self.case(case_id=case_variants["_id"], projection=ID_PROJECTION) is None:
                 continue
             for variant_id in case_variants["vars"]:
                 var_obj = self.variant(case_id=case_variants["_id"], document_id=variant_id)
@@ -606,7 +600,7 @@ class CaseHandler(object):
         return [
             case["_id"]
             for case in self.case_collection.find(
-                {"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1}
+                {"group": {"$elemMatch": {"$eq": group_id}}}, ID_PROJECTION
             )
         ]
 
@@ -951,7 +945,7 @@ class CaseHandler(object):
          Args:
              case_obj(Case)
         """
-        if self.case(case_obj["_id"], projection={"_id": 1}):
+        if self.case(case_obj["_id"], projection=ID_PROJECTION):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
         return self.case_collection.insert_one(case_obj)
