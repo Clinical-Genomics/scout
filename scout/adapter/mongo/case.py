@@ -467,10 +467,8 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        PROJECT_FILTER = {"custom_images": 0}
-
         if order:
-            return self.case_collection.find(query, PROJECT_EXCLUDE)
+            return self.case_collection.find(query)
 
         return self.case_collection.find(query, PROJECT_FILTER).sort("updated_at", -1)
 
