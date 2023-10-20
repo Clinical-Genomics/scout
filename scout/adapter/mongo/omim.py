@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Iterator, Optional
+from typing import Iterator, Optional, Union
 
 from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
@@ -30,7 +30,6 @@ class DiagnosisHandler(object):
         """
 
         query_dict = {}
-        search_term = None
         if query:
             query_dict = {
                 "$or": [
@@ -41,7 +40,9 @@ class DiagnosisHandler(object):
 
         limit = limit or int(10e10)
         res = (
-            self.disease_term_collection.find(query_dict).limit(limit).sort("disease_nr", ASCENDING)
+            self.disease_term_collection.find(query_dict, DISEASE_FILTER_PROJECT)
+            .limit(limit)
+            .sort("disease_nr", ASCENDING)
         )
         return res
 
@@ -74,7 +75,7 @@ class DiagnosisHandler(object):
     def case_omim_diagnoses(
         self,
         case_diagnoses,
-        filter_project: Optional[dict] = DISEASES_FILTER_PROJECT,
+        filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ):
         """Return all complete OMIM diagnoses for a case
 
@@ -86,10 +87,13 @@ class DiagnosisHandler(object):
 
         """
         omim_ids = [dia["disease_id"] for dia in case_diagnoses]
-        res = self.disease_term_collection.find({"_id": {"$in": omim_ids}}, filter_project).sort(
-            "disease_nr", ASCENDING
-        )
-        return res
+        query: dict = {"_id": {"$in": omim_ids}}
+        if filter_project:
+            return self.disease_term_collection.find(query, filter_project).sort(
+                "disease_nr", ASCENDING
+            )
+        else:
+            return self.disease_term_collection.find(query).sort("disease_nr", ASCENDING)
 
     def omim_to_genes(self, omim_obj):
         """Gets all genes associated to an OMIM term
@@ -109,7 +113,7 @@ class DiagnosisHandler(object):
     def disease_term(
         self,
         disease_identifier: Union[str, int],
-        filter_project: Optional[dict] = DISEASES_FILTER_PROJECT,
+        filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
         """Return a disease term."""
         query = {}
@@ -119,12 +123,15 @@ class DiagnosisHandler(object):
         except ValueError:
             query["_id"] = disease_identifier
 
-        return self.disease_term_collection.find_one(query, filter_project)
+        if filter_project:
+            return self.disease_term_collection.find_one(query, filter_project)
+        else:
+            return self.disease_term_collection.find_one(query)
 
     def disease_terms(
         self,
         hgnc_id: Optional[int] = None,
-        filter_project: Optional[dict] = DISEASES_FILTER_PROJECT,
+        filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> Iterator:
         """Return all disease terms for a gene HGNC ID."""
         query = {}
@@ -134,7 +141,10 @@ class DiagnosisHandler(object):
         else:
             LOG.info("Fetching all disease terms")
 
-        return list(self.disease_term_collection.find(query, filter_project))
+        if filter_project:
+            return list(self.disease_term_collection.find(query, filter_project))
+        else:
+            return list(self.disease_term_collection.find(query))
 
     def load_disease_term(self, disease_obj):
         """Load a disease term into the database
