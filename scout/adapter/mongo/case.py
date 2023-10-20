@@ -470,7 +470,7 @@ class CaseHandler(object):
         if order:
             return self.case_collection.find(query)
 
-        return self.case_collection.find(query, PROJECT_FILTER).sort("updated_at", -1)
+        return self.case_collection.find(query).sort("updated_at", -1)
 
     def rna_cases(self, owner):
         """Retrieve all cases with RNA-seq data for a given institute
