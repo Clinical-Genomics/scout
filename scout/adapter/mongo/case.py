@@ -7,6 +7,7 @@ from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
 import pymongo
+from bson import ObjectId
 
 from scout.build.case import build_case
 from scout.constants import ACMG_MAP, ID_PROJECTION
@@ -292,28 +293,29 @@ class CaseHandler(object):
 
     def cases(
         self,
-        owner=None,
-        collaborator=None,
-        query=None,
-        skip_assigned=False,
-        has_causatives=False,
-        reruns=False,
-        rerun_monitor=False,
-        finished=False,
-        research_requested=False,
-        is_research=False,
-        has_rna_data=False,
-        status=None,
-        phenotype_terms=False,
-        group=None,
-        pinned=False,
-        cohort=False,
-        name_query=None,
-        yield_query=False,
-        within_days=None,
-        assignee=None,
-        verification_pending=None,
-        has_clinvar_submission=None,
+        owner: str = None,
+        collaborator: str = None,
+        query: Dict[str, Any] = None,
+        skip_assigned: bool = False,
+        has_causatives: bool = False,
+        reruns: bool = False,
+        rerun_monitor: bool = False,
+        finished: bool = False,
+        research_requested: bool = False,
+        is_research: bool = False,
+        has_rna_data: bool = False,
+        status: Any = None,
+        phenotype_terms: bool = False,
+        group: ObjectId = None,
+        pinned: bool = False,
+        cohort: bool = False,
+        name_query: str = None,
+        yield_query: bool = False,
+        within_days: int = None,
+        assignee: str = None,
+        verification_pending: bool = None,
+        has_clinvar_submission: bool = None,
+        projection: Dict[str, Any] = None,
     ):
         """Fetches all cases from the backend.
 
@@ -341,6 +343,7 @@ class CaseHandler(object):
             assignee(str): id of an assignee
             verification_pending(bool): If search should be restricted to cases with verification_pending
             has_clinvar_submission(bool): If search should be limited to cases with a ClinVar submission
+            projection(dict): Sometimes only some values in each case are required. This saves memory.
 
         Returns:
             Cases ordered by date.
@@ -472,9 +475,9 @@ class CaseHandler(object):
             return query
 
         if order:
-            return self.case_collection.find(query)
+            return self.case_collection.find(query, projection)
 
-        return self.case_collection.find(query).sort("updated_at", -1)
+        return self.case_collection.find(query, projection).sort("updated_at", -1)
 
     def rna_cases(self, owner):
         """Retrieve all cases with RNA-seq data for a given institute
