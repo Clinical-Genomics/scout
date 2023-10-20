@@ -467,10 +467,12 @@ class CaseHandler(object):
         if yield_query:
             return query
 
-        if order:
-            return self.case_collection.find(query)
+        PROJECT_EXCLUDE = {"custom_images": 0}
 
-        return self.case_collection.find(query).sort("updated_at", -1)
+        if order:
+            return self.case_collection.find(query, PROJECT_EXCLUDE)
+
+        return self.case_collection.find(query, PROJECT_EXCLUDE).sort("updated_at", -1)
 
     def rna_cases(self, owner):
         """Retrieve all cases with RNA-seq data for a given institute
