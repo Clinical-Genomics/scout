@@ -21,6 +21,7 @@ from scout.constants import (
     CHROMOSOMES_38,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
+    EXPORTED_VARIANTS_LIMIT,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SPIDEX_HUMAN,
@@ -976,7 +977,7 @@ def download_str_variants(case_obj, variant_objs):
     ]
 
     export_lines = []
-    for variant in variant_objs:
+    for variant in variant_objs.limit(EXPORTED_VARIANTS_LIMIT):
         variant_line = []
         variant_line.append(str(variant.get("variant_rank", "")))  # index
         variant_line.append(variant.get("str_repid"))  # Repeat locus
@@ -1027,8 +1028,9 @@ def download_variants(store, case_obj, variant_objs):
     """
     document_header = variants_export_header(case_obj)
     export_lines = []
-    # Return max 500 variants
-    export_lines = variant_export_lines(store, case_obj, variant_objs.limit(500))
+    export_lines = variant_export_lines(
+        store, case_obj, variant_objs.limit(EXPORTED_VARIANTS_LIMIT)
+    )
 
     def generate(header, lines):
         yield header + "\n"
