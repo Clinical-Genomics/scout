@@ -146,10 +146,12 @@ def parse_genemap2(lines):
         parsed_entry["raw"] = line
 
         # This is the approved symbol for the entry
-        approved_gene_symbol = parsed_entry.get(
+        approved_gene_symbol_col = parsed_entry.get(
             "Approved Symbol", parsed_entry.get("Approved Gene Symbol")
         )
-        hgnc_symbol = approved_gene_symbol if approved_gene_symbol not in ["", None] else None
+        hgnc_symbol = (
+            approved_gene_symbol_col.strip() if approved_gene_symbol_col not in ["", None] else None
+        )
 
         # If no approved symbol could be found choose the first of
         # the gene symbols
