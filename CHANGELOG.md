@@ -4,6 +4,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- A gunicorn maxrequests paramenter for Docker server image
+### Fixed
+- Huge memory use caused by cases and variants pages pulling complete disease documents from DB
+
+## [4.72.1]
+### Fixed
+- Jinja filter that renders long integers
+- Case cache when looking for causatives in other cases causing the server to hang
+
 ## [4.72]
 ### Added
 - A GitHub action that checks for broken internal links in docs pages
