@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case cache when looking for causatives in other cases causing the server to hang
 ### Changed
 - STR export limit increased to 500, as for other variants
+- Prevent long number wrapping and use thin spaces for separation, as per standards from SI, NIST, IUPAC, BIPM.
 
 ## [4.72]
 ### Added
