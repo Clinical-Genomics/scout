@@ -1,11 +1,8 @@
 import datetime
 import logging
-from pprint import pprint as pp
 
 import pymongo
 import pytest
-
-from scout.constants import VERBS_MAP
 
 logger = logging.getLogger(__name__)
 
