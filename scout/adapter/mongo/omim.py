@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Optional
+from typing import Iterable, List, Optional, Union
+
 from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
@@ -14,14 +15,11 @@ DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 
-    def query_omim(self, query: str = None, limit: int = None):
+    def query_omim(self, query: str = None, limit: int = None) -> Iterable:
         """Return all OMIM terms
 
         If a query is sent omim_id will try to match with regex on term or
         description.
-
-        Returns:
-            result(pymongo.Cursor): A cursor with OMIM terms
         """
 
         query_dict = {}
@@ -41,14 +39,8 @@ class DiagnosisHandler(object):
         )
         return res
 
-    def convert_diagnoses_format(self, case_obj):
-        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a list of OMIM terms dictionaries
-        Args:
-            case_obj(dict)
-
-        Returns:
-            updated_case(dict)
-        """
+    def convert_diagnoses_format(self, case_obj: dict) -> dict:
+        """Convert case OMIM diagnoses from a list of integers (OMIM number) to a list of OMIM terms dictionaries."""
         updated_diagnoses = []
         for disease_nr in case_obj.get("diagnosis_phenotypes", []):
             disease_term = self.disease_term(disease_identifier=disease_nr)
@@ -69,18 +61,11 @@ class DiagnosisHandler(object):
 
     def case_omim_diagnoses(
         self,
-        case_diagnoses,
-        filter_project: [dict] = DISEASE_FILTER_PROJECT,
-    ):
-        """Return all complete OMIM diagnoses for a case
+        case_diagnoses: List[dict],
+        filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
+    ) -> Iterable:
+        """Return all complete OMIM diagnoses for a case."""
 
-        Args:
-            case_diagnoses(list) list of case diagnoses dictionaries
-
-        Returns:
-            result(pymongo.Cursor): A cursor with OMIM terms
-
-        """
         omim_ids = [dia["disease_id"] for dia in case_diagnoses]
         query: dict = {"_id": {"$in": omim_ids}}
 
@@ -88,16 +73,8 @@ class DiagnosisHandler(object):
             "disease_nr", ASCENDING
         )
 
-    def omim_to_genes(self, omim_obj):
-        """Gets all genes associated to an OMIM term
-
-        Args:
-            omim_obj(dict): an OMIM object
-
-        Returns:
-            gene_objs(list): a list of gene objects
-
-        """
+    def omim_to_genes(self, omim_obj: dict) -> List[dict]:
+        """Gets all genes associated to an OMIM term."""
         gene_objs = []
         if omim_obj:
             gene_objs = [self.hgnc_gene_caption(hgnc_id) for hgnc_id in omim_obj.get("genes", [])]
@@ -105,7 +82,7 @@ class DiagnosisHandler(object):
 
     def disease_term(
         self,
-        disease_identifier: [str, int],
+        disease_identifier: Union[str, int],
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
         """Return a disease term after filtering out associated genes and HPO terms (using filter project)."""
@@ -133,12 +110,8 @@ class DiagnosisHandler(object):
 
         return list(self.disease_term_collection.find(query, filter_project))
 
-    def load_disease_term(self, disease_obj):
-        """Load a disease term into the database
-
-        Args:
-            disease_obj(dict)
-        """
+    def load_disease_term(self, disease_obj: dict):
+        """Load a disease term into the database-"""
         try:
             self.disease_term_collection.insert_one(disease_obj)
         except DuplicateKeyError:
