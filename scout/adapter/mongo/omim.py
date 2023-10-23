@@ -15,15 +15,11 @@ DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 
-    def query_omim(self, query=None, limit=None):
+    def query_omim(self, query: str = None, limit: int = None):
         """Return all OMIM terms
 
         If a query is sent omim_id will try to match with regex on term or
         description.
-
-        Args:
-            query(str): Part of a OMIM term or description
-            limit(int): the number of desired results
 
         Returns:
             result(pymongo.Cursor): A cursor with OMIM terms
@@ -115,7 +111,7 @@ class DiagnosisHandler(object):
         disease_identifier: Union[str, int],
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
-        """Return a disease term."""
+        """Return a disease term after filtering out associated genes and HPO terms (using filter project)."""
         query = {}
         try:
             disease_identifier = int(disease_identifier)
@@ -143,8 +139,8 @@ class DiagnosisHandler(object):
 
         if filter_project:
             return list(self.disease_term_collection.find(query, filter_project))
-        else:
-            return list(self.disease_term_collection.find(query))
+
+        return list(self.disease_term_collection.find(query))
 
     def load_disease_term(self, disease_obj):
         """Load a disease term into the database
