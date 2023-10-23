@@ -442,11 +442,13 @@ def cases(store, request, institute_id):
     ALL_CASES_PROJECTION = {
         "analysis_date": 1,
         "assignees": 1,
+        "beacon": 1,
         "case_id": 1,
         "display_name": 1,
         "individuals": 1,
         "is_rerun": 1,
         "is_research": 1,
+        "mme_submission": 1,
         "owner": 1,
         "panels": 1,
         "status": 1,
