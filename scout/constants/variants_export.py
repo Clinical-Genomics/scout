@@ -68,3 +68,6 @@ VERIFIED_VARIANTS_HEADER = [
     "AD alternative",
     "Genotype quality",
 ]
+
+# Maximum number of exported variants
+EXPORTED_VARIANTS_LIMIT = 500
