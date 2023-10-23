@@ -84,12 +84,10 @@ class DiagnosisHandler(object):
         """
         omim_ids = [dia["disease_id"] for dia in case_diagnoses]
         query: dict = {"_id": {"$in": omim_ids}}
-        if filter_project:
-            return self.disease_term_collection.find(query, filter_project).sort(
-                "disease_nr", ASCENDING
-            )
-        else:
-            return self.disease_term_collection.find(query).sort("disease_nr", ASCENDING)
+
+        return self.disease_term_collection.find(query, filter_project).sort(
+            "disease_nr", ASCENDING
+        )
 
     def omim_to_genes(self, omim_obj):
         """Gets all genes associated to an OMIM term
@@ -119,17 +117,14 @@ class DiagnosisHandler(object):
         except ValueError:
             query["_id"] = disease_identifier
 
-        if filter_project:
-            return self.disease_term_collection.find_one(query, filter_project)
-        else:
-            return self.disease_term_collection.find_one(query)
+        return self.disease_term_collection.find_one(query, filter_project)
 
     def disease_terms(
         self,
         hgnc_id: Optional[int] = None,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> list:
-        """Return all disease terms for a gene HGNC ID."""
+        """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project."""
         query = {}
         if hgnc_id:
             LOG.debug("Fetching all diseases for gene %s", hgnc_id)
@@ -137,10 +132,7 @@ class DiagnosisHandler(object):
         else:
             LOG.info("Fetching all disease terms")
 
-        if filter_project:
-            return list(self.disease_term_collection.find(query, filter_project))
-
-        return list(self.disease_term_collection.find(query))
+        return list(self.disease_term_collection.find(query, filter_project))
 
     def load_disease_term(self, disease_obj):
         """Load a disease term into the database
