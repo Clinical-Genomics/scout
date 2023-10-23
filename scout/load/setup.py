@@ -192,7 +192,6 @@ def setup_scout(
         adapter=adapter,
         genemap_lines=genemap_lines,
         genes=alias_genes,
-        hpo_disease_lines=hpo_to_genes_handle,
         hpo_annotation_lines=hpo_annotation_handle,
     )
 
