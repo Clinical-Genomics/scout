@@ -108,9 +108,9 @@
       {{ variant.sub_category|upper }}</span>
     </td>
     <td>{{ variant.chromosome if variant.chromosome == variant.end_chrom else variant.chromosome+'-'+variant.end_chrom }}</td>
-    <td class="col-2">{{ variant.position|human_longint }}</td>
-    <td class="col-2">{{ 'inf' if variant.end == 100000000000 else variant.end|human_longint }}</td>
-    <td class="col-2">{{ '-' if variant.length == 100000000000 else variant.length|human_longint }}</td>
+    <td class="col-2"><span style="white-space: nowrap;">{{ variant.position|human_longint|safe }}</span></td>
+    <td class="col-2"><span style="white-space: nowrap;">{{ 'inf' if variant.end == 100000000000 else variant.end|human_longint|safe }}</span></td>
+    <td class="col-2"><span style="white-space: nowrap;">{{ '-' if variant.length == 100000000000 else variant.length|human_longint|safe }}</span></td>
     <td>
       {% if variant.gnomad_frequency %}
         {{ variant.gnomad_frequency|human_decimal }}
