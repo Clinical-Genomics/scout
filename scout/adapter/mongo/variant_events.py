@@ -216,7 +216,7 @@ class VariantEventHandler(object):
 
     def validated(
         self, institute_id: str = None, user_id: str = None, case_id: str = None
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, List]]:
         """Get all variants that have been validated.
 
         Returns:
