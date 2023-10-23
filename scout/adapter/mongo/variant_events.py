@@ -190,7 +190,7 @@ class VariantEventHandler(object):
 
     def sanger_ordered(
         self, institute_id: str = None, user_id: str = None, case_id: str = None
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Dict[str, List]]:
         """Get all variants with validations ever ordered.
 
         Returns:
