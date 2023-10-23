@@ -3,20 +3,18 @@ from scout.load.hpo import load_hpo_terms
 from scout.utils.handle import get_file_handle
 
 
-def test_load_disease_terms(gene_database, genemap_file, hpo_disease_handle):
+def test_load_disease_terms(gene_database, genemap_file):
     adapter = gene_database
     alias_genes = adapter.genes_by_alias()
 
     # GIVEN a populated database with genes and no disease terms
     assert len([term for term in adapter.disease_terms()]) == 0
-    genemap_handle = get_file_handle(genemap_file)
 
     # WHEN loading the disease terms
     load_disease_terms(
         adapter=adapter,
-        genemap_lines=genemap_handle,
+        genemap_lines=get_file_handle(genemap_file),
         genes=alias_genes,
-        hpo_disease_lines=hpo_disease_handle,
     )
 
     # THEN make sure that the disease terms are in the database

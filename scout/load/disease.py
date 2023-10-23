@@ -8,7 +8,7 @@ from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.omim import get_mim_phenotypes
-from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_hpo_to_genes_to_disease
+from scout.utils.scout_requests import fetch_hpo_disease_annotation
 
 LOG = logging.getLogger(__name__)
 
@@ -17,7 +17,6 @@ def load_disease_terms(
     adapter: MongoAdapter,
     genemap_lines: Iterable,
     genes: Optional[dict] = None,
-    hpo_disease_lines: Optional[Iterable] = None,
     hpo_annotation_lines: Optional[Iterable] = None,
 ):
     """Load the diseases into the database."""
@@ -35,10 +34,6 @@ def load_disease_terms(
     # Fetch the disease terms from omim
     disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
 
-    if not hpo_disease_lines:
-        hpo_disease_lines = fetch_hpo_to_genes_to_disease()
-    hpo_term_to_symbol = _get_hpo_term_to_symbol(hpo_disease_lines)
-
     if not hpo_annotation_lines:
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
@@ -50,11 +45,11 @@ def load_disease_terms(
         disease_id = f"OMIM:{disease_nr}"
         if disease_id not in disease_annotations:
             continue
+
         _parse_disease_term_info(
             disease_info=disease_info,
             disease_annotations=disease_annotations,
             disease_id=disease_id,
-            hpo_term_to_symbol=hpo_term_to_symbol,
         )
         disease_objs.append(build_disease_term(disease_info=disease_info, alias_genes=genes))
 
@@ -91,10 +86,9 @@ def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
 
 
 def _parse_disease_term_info(
-    disease_info: Dict,
+    disease_info: dict,
     disease_annotations: Dict[str, Any],
     disease_id: str,
-    hpo_term_to_symbol: Dict[Any, set],
 ):
     """
     Starting from the OMIM disease terms (genemap2), update with HPO terms from
@@ -105,12 +99,3 @@ def _parse_disease_term_info(
         disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
     else:
         disease_info["hpo_terms"] = set(disease_annotations[disease_id]["hpo_terms"])
-
-    for hpo_term in disease_info["hpo_terms"]:
-        if hpo_term not in hpo_term_to_symbol:
-            continue
-
-        if disease_info["hgnc_symbols"]:
-            disease_info["hgnc_symbols"].update(hpo_term_to_symbol[hpo_term])
-        else:
-            disease_info["hgnc_symbols"] = hpo_term_to_symbol[hpo_term]
