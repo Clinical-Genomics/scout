@@ -201,7 +201,7 @@ def register_filters(app):
         """Convert a long integers int or string representation into a human easily readable number."""
         value = str(value)
         if value.isnumeric():
-            return "{:,}".format(int(value)).replace(",", " ")
+            return "{:,}".format(int(value)).replace(",", "&thinsp;")
         return value
 
     @app.template_filter()
