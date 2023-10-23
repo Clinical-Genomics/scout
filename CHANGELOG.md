@@ -4,9 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.72.2]
 ### Changed
 - A gunicorn maxrequests paramenter for Docker server image
+- STR export limit increased to 500, as for other variants
+- Prevent long number wrapping and use thin spaces for separation, as per standards from SI, NIST, IUPAC, BIPM.
 ### Fixed
 - Huge memory use caused by cases and variants pages pulling complete disease documents from DB
 - Do not include genes fetched from HPO terms when loading diseases
@@ -15,9 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Jinja filter that renders long integers
 - Case cache when looking for causatives in other cases causing the server to hang
-### Changed
-- STR export limit increased to 500, as for other variants
-- Prevent long number wrapping and use thin spaces for separation, as per standards from SI, NIST, IUPAC, BIPM.
 
 ## [4.72]
 ### Added
