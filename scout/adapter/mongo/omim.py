@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import List
 
 from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
-from scout.models.disease_term import DiseaseTerm
 
 LOG = logging.getLogger(__name__)
 
