@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.72.2]
 ### Changed
-- A gunicorn maxrequests paramenter for Docker server image
+- A gunicorn maxrequests parameter for Docker server image
 - STR export limit increased to 500, as for other variants
 - Prevent long number wrapping and use thin spaces for separation, as per standards from SI, NIST, IUPAC, BIPM.
 ### Fixed
