@@ -297,9 +297,9 @@ class CaseHandler(object):
 
     def cases(
         self,
-        owner: str = None,
-        collaborator: str = None,
-        query: Dict[str, Any] = None,
+        owner: Optional[str] = None,
+        collaborator: Optional[str] = None,
+        query: Optional[Dict[str, Any]] = None,
         skip_assigned: bool = False,
         has_causatives: bool = False,
         reruns: bool = False,
@@ -310,17 +310,17 @@ class CaseHandler(object):
         has_rna_data: bool = False,
         status: Any = None,
         phenotype_terms: bool = False,
-        group: ObjectId = None,
+        group: Optional[ObjectId] = None,
         pinned: bool = False,
         cohort: bool = False,
-        name_query: str = None,
+        name_query: Optional[str] = None,
         yield_query: bool = False,
-        within_days: int = None,
-        assignee: str = None,
+        within_days: Optional[int] = None,
+        assignee: Optional[str] = None,
         verification_pending: bool = None,
         has_clinvar_submission: bool = None,
-        projection: Dict[str, Any] = None,
-    ):
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> Any:
         """Fetches all cases from the backend.
 
         Args:
@@ -699,10 +699,10 @@ class CaseHandler(object):
 
     def case(
         self,
-        case_id: str = None,
-        institute_id: str = None,
-        display_name: str = None,
-        projection: Dict = None,
+        case_id: Optional[str] = None,
+        institute_id: Optional[str] = None,
+        display_name: Optional[str] = None,
+        projection: Optional[Dict] = None,
     ) -> Dict:
         """Fetches a single case from database
         Use either the _id or combination of institute_id and display_name.
