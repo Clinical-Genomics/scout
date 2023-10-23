@@ -104,7 +104,9 @@ def test_case_omim_diagnoses(adapter, case_obj, test_omim_term):
 
     adapter.case_collection.insert_one(case_obj)
 
-    case_omim_diagnoses = adapter.case_omim_diagnoses(case_obj["diagnosis_phenotypes"])
+    case_omim_diagnoses = adapter.case_omim_diagnoses(
+        case_diagnoses=case_obj["diagnosis_phenotypes"], filter_project=None
+    )
     assert list(case_omim_diagnoses)[0] == test_omim_term
 
 
