@@ -70,8 +70,7 @@ class DiagnosisHandler(object):
     def case_omim_diagnoses(
         self,
         case_diagnoses,
-        filter_project: 
-      [dict] = DISEASE_FILTER_PROJECT,
+        filter_project: [dict] = DISEASE_FILTER_PROJECT,
     ):
         """Return all complete OMIM diagnoses for a case
 
@@ -106,8 +105,7 @@ class DiagnosisHandler(object):
 
     def disease_term(
         self,
-        disease_identifier: 
-      [str, int],
+        disease_identifier: [str, int],
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
         """Return a disease term after filtering out associated genes and HPO terms (using filter project)."""
