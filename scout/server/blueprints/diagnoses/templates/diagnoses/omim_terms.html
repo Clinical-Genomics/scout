@@ -33,6 +33,7 @@
                 <th></th>
                 <th>Phenotype description</th>
                 <th>Inheritance</th>
+                <th>Associated genes</th>
                 <th>Associated HPO terms</th>
               </thead>
               {% for omim in terms %}
@@ -47,13 +48,25 @@
                       -
                     {% endfor %}
                   </td><!--end of inheritance-->
-                  <td><span class="text-body">
+                  <td>
+                    {% for gene in omim.genes %}
+                    <span class="text-body">
+                      <a href="{{ url_for('genes.gene', hgnc_id=gene) }}" target="_blank" rel="noopener" >{{gene}}</a>
+                    </span>
+                    {% else %}
+                      -
+                    {% endfor %}
+                  </td>
+
+                  <td>
+                    <span class="text-body">
                     {% for term in omim.hpo_terms %}
-                      <a class="badge bg-secondary text-white" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener"  >{{term}}</a>
+                      <a class="badge bg-secondary text-white" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" >{{term}}</a>
                     {% else %}
                      -
                     {% endfor %}
-                  </span></td>
+                    </span>
+                  </td>
                 </tr>
               {% endfor %}
             </table>
