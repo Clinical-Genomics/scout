@@ -26,5 +26,5 @@ def disease_terms(store):
         data(dict): dict with key "terms" set to an array of all disease terms
     """
 
-    data = {"terms": store.disease_terms()}
+    data = {"terms": store.disease_terms(filter_project=None)}
     return data
