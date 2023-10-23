@@ -76,7 +76,6 @@ def diseases(downloads_folder, api_key):
 
         try:
             mim_files = fetch_mim_files(api_key, genemap2=True)
-            resources["mim2genes_lines"] = mim_files["mim2genes"]
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
         except Exception as err:

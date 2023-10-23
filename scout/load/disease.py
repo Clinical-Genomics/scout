@@ -38,6 +38,8 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
+    LOG.info("building disease objects")
+
     disease_objs: List[dict] = []
     for disease_nr, disease_info in disease_terms.items():
         disease_id = f"OMIM:{disease_nr}"
