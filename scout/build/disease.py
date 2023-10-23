@@ -24,6 +24,8 @@ def build_disease_term(disease_info: dict, alias_genes: dict = {}) -> dict:
     hgnc_symbols_not_found = set()
     hgnc_ids = set()
     for hgnc_symbol in disease_info.get("hgnc_symbols", []):
+        if hgnc_symbol is None:
+            continue
         if hgnc_symbol in alias_genes:
             # If the symbol identifies a unique gene we add that
             if alias_genes[hgnc_symbol]["true"]:
