@@ -155,7 +155,7 @@ def parse_genemap2(lines):
 
         # If no approved symbol could be found choose the first of
         # the gene symbols
-        gene_symbols_col: str = parsed_entry.get(
+        gene_symbols_col = parsed_entry.get(
             "Gene Symbols", parsed_entry.get("Gene/Locus And Other Related Symbols")
         )
         gene_symbols = [symbol.strip() for symbol in gene_symbols_col.split(",")]
