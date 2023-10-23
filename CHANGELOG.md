@@ -14,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Jinja filter that renders long integers
 - Case cache when looking for causatives in other cases causing the server to hang
+### Changed
+- STR export limit increased to 500, as for other variants
 
 ## [4.72]
 ### Added
