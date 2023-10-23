@@ -31,5 +31,5 @@ def omim_diagnoses():
 def api_diagnoses():
     """Return JSON data about OMIM diseases in the database."""
 
-    data = controllers.disease_terms(store=store)
+    data = controllers.disease_terms(store)
     return jsonify(data)
