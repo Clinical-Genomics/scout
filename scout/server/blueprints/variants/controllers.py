@@ -936,7 +936,7 @@ def download_str_variants(case_obj, variant_objs):
     ]
 
     export_lines = []
-    for variant in variant_objs:
+    for variant in variant_objs.limit(500):
         variant_line = []
         variant_line.append(str(variant.get("variant_rank", "")))  # index
         variant_line.append(variant.get("str_repid"))  # Repeat locus
