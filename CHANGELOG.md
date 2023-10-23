@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A gunicorn maxrequests paramenter for Docker server image
 ### Fixed
 - Huge memory use caused by cases and variants pages pulling complete disease documents from DB
+- Do not include genes fetched from HPO terms when loading diseases
 
 ## [4.72.1]
 ### Fixed

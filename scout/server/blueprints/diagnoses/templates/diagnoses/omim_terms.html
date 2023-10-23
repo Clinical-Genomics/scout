@@ -33,12 +33,12 @@
                 <th></th>
                 <th>Phenotype description</th>
                 <th>Inheritance</th>
-                <th>Number of associated genes</th>
-                <th>Number of associated HPO terms</th>
+                <th>Associated genes</th>
+                <th>Associated HPO terms</th>
               </thead>
               {% for omim in terms %}
                 <tr>
-                  <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank">{{ omim.disease_nr }}</a></td>
+                  <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank" rel=noopener >{{ omim.disease_nr }}</a></td>
                   <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}"><span class="fa fa-link"></span></a></td>
                   <td><span class="text-body">{{ omim.description }}</span></td>
                   <td><!-- inheritance-->
@@ -48,8 +48,25 @@
                       -
                     {% endfor %}
                   </td><!--end of inheritance-->
-                  <td><span class="text-body">{{ omim.genes|length }}</span></td>
-                  <td><span class="text-body">{{ omim.hpo_terms|length }}</span></td>
+                  <td>
+                    {% for gene in omim.genes %}
+                    <span class="text-body">
+                      <a href="{{ url_for('genes.gene', hgnc_id=gene) }}" target="_blank" rel="noopener" >{{gene}}</a>
+                    </span>
+                    {% else %}
+                      -
+                    {% endfor %}
+                  </td>
+
+                  <td>
+                    <span class="text-body">
+                    {% for term in omim.hpo_terms %}
+                      <a class="badge bg-secondary text-white" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" >{{term}}</a>
+                    {% else %}
+                     -
+                    {% endfor %}
+                    </span>
+                  </td>
                 </tr>
               {% endfor %}
             </table>
