@@ -10,6 +10,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - STR export limit increased to 500, as for other variants
 - Prevent long number wrapping and use thin spaces for separation, as per standards from SI, NIST, IUPAC, BIPM.
 - Speed up case retrieval and lower memory use by projecting case queries
+- Make relatedness check fails stand out a little more to new users
+- Speed up case retrieval and lower memory use by projecting case queries
+- Speed up variant pages by projecting only the necessary keys in disease collection query
 ### Fixed
 - Huge memory use caused by cases and variants pages pulling complete disease documents from DB
 - Do not include genes fetched from HPO terms when loading diseases
