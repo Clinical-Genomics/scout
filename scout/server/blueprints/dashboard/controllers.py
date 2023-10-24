@@ -162,7 +162,16 @@ def get_general_case_info(adapter, institute_id=None, slice_query=None):
     # Potentially sensitive slice queries are assumed allowed if we have got this far
     name_query = slice_query
 
-    cases = adapter.cases(owner=institute_id, name_query=name_query)
+    CASE_GENERAL_INFO_PROJECTION = {
+        "phenotype_terms": 1,
+        "causatives": 1,
+        "suspects": 1,
+        "cohorts": 1,
+        "individuals": 1,
+    }
+    cases = adapter.cases(
+        owner=institute_id, name_query=name_query, projection=CASE_GENERAL_INFO_PROJECTION
+    )
 
     phenotype_cases = 0
     causative_cases = 0

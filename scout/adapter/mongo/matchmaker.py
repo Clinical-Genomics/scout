@@ -25,7 +25,10 @@ class MMEHandler(object):
             if event.get("verb") != "mme_add":
                 continue
             # Check that the cases patient's submission are still actual
-            case_obj = self.case(case_id=event.get("case"))
+            CASE_MME_SUBMISSIONS_PROJECTION = {"mme_submission": 1}
+            case_obj = self.case(
+                case_id=event.get("case"), projection=CASE_MME_SUBMISSIONS_PROJECTION
+            )
             if case_obj is None:
                 continue
             # Check that the case as an associated MME submission and that the user is the actual patients' contact

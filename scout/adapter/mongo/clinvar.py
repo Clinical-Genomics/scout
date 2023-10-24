@@ -268,7 +268,10 @@ class ClinVarHandler(object):
                 for var_data_id in list(result["variant_data"]):
                     # get case_id from variant id (caseID_variant_ID)
                     case_id = var_data_id.rsplit("_", 1)[0]
-                    case_obj = self.case(case_id=case_id)
+                    CASE_CLINVAR_SUMBMISSION_PROJECTION = {"display_name": 1}
+                    case_obj = self.case(
+                        case_id=case_id, projection=CASE_CLINVAR_SUMBMISSION_PROJECTION
+                    )
                     cases[case_id] = case_obj.get("display_name")
 
             submission["cases"] = cases
