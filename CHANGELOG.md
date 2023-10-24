@@ -7,11 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - A gunicorn maxrequests paramenter for Docker server image
+- Make relatedness check fails stand out a little more to new users
 ### Fixed
 - Huge memory use caused by cases and variants pages pulling complete disease documents from DB
 - Do not include genes fetched from HPO terms when loading diseases
 - Consider the renamed fields `Approved Symbol` -> `Approved Gene Symbol` and `Gene Symbols` -> `Gene/Locus And Other Related Symbols` when parsing OMIM terms from genemap2.txt file
 - Speed up case retrieval and lower memory use by projecting case queries
+- Speed up variant pages by projecting only the necessary key in disease collection query
 
 ## [4.72.1]
 ### Fixed
