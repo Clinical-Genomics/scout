@@ -9,11 +9,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A gunicorn maxrequests parameter for Docker server image - default to 1200
 - STR export limit increased to 500, as for other variants
 - Prevent long number wrapping and use thin spaces for separation, as per standards from SI, NIST, IUPAC, BIPM.
+- Speed up case retrieval and lower memory use by projecting case queries
 ### Fixed
 - Huge memory use caused by cases and variants pages pulling complete disease documents from DB
 - Do not include genes fetched from HPO terms when loading diseases
 - Consider the renamed fields `Approved Symbol` -> `Approved Gene Symbol` and `Gene Symbols` -> `Gene/Locus And Other Related Symbols` when parsing OMIM terms from genemap2.txt file
-- Speed up case retrieval and lower memory use by projecting case queries
 
 ## [4.72.1]
 ### Fixed
