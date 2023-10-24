@@ -20,6 +20,9 @@ def individuals(institute, causatives, case_id):
     adapter = store
     individuals = []
 
+    CASE_VIEW_INDIVIDUAL_PROJECTION = {
+        "individuals": 1,
+    }
     if case_id:
         case = adapter.case(case_id=case_id)
         if case:
@@ -30,7 +33,11 @@ def individuals(institute, causatives, case_id):
     else:
         cases = [
             case_obj
-            for case_obj in adapter.cases(collaborator=institute, has_causatives=causatives)
+            for case_obj in adapter.cases(
+                collaborator=institute,
+                has_causatives=causatives,
+                projection=CASE_VIEW_INDIVIDUAL_PROJECTION,
+            )
         ]
         if len(cases) == 0:
             LOG.info("Could not find cases that match criteria")
