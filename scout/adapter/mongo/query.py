@@ -364,7 +364,8 @@ class QueryHandler(object):
             case_id(str): _id of a case
             gt_selected(dict or None): dict if user specified a genotype value in genotypes form field, else None
         """
-        case_obj = self.case(case_id=case_id)
+        CASE_AFFECTED_INDS_PROJECTION = {"individuals": 1}
+        case_obj = self.case(case_id=case_id, projection=CASE_AFFECTED_INDS_PROJECTION)
         case_inds = case_obj.get("individuals", [])
 
         gt_query = gt_query or {"$nin": ["0/0", "./.", "./0", "0/."]}

@@ -131,3 +131,5 @@ INDEXES = {
         ),
     ],
 }
+
+ID_PROJECTION = {"_id": 1}
