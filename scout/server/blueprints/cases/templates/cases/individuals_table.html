@@ -165,7 +165,7 @@
                 {% if ind.confirmed_parent == True %}
                   <i class="fa fa-check"></i>
                 {% elif ind.confirmed_parent == False %}
-                  <span class="fa fa-exclamation-circle bg-danger" data-bs-toggle='tooltip' title="The individual failed family relatedness check as per the given pedigree. Parenthood could not be confirmed. If this is unexpected, also consider possible sample mixup or errors in ordering."></span>
+                  <span class="fa fa-exclamation-circle text-danger" data-bs-toggle='tooltip' title="The individual failed family relatedness check as per the given pedigree. Parenthood could not be confirmed. If this is unexpected, also consider possible sample mixup or errors in ordering."></span>
                 {% else %}
                   N/A
                 {% endif %}
