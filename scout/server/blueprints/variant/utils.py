@@ -257,12 +257,11 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
                 variant_obj["disease_associated_transcripts"].append(transcript_str)
 
             # Add the associated disease terms
-            disease_terms = store.disease_terms(hgnc_id)
-            variant_gene["disease_terms"] = disease_terms
+            disease_terms = store.disease_terms(hgnc_id, filter_project={"inheritance": 1})
 
             all_models = all_models.union(set(variant_gene["manual_inheritance"]))
             omim_models = set()
-            for disease_term in variant_gene.get("disease_terms", []):
+            for disease_term in disease_terms:
                 omim_models.update(disease_term.get("inheritance", []))
             variant_gene["omim_inheritance"] = list(omim_models)
 
