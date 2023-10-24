@@ -54,7 +54,7 @@ from .gene_tags import (
     VALID_MODELS,
 )
 from .igv_tracks import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS, USER_DEFAULT_TRACKS
-from .indexes import INDEXES
+from .indexes import ID_PROJECTION, INDEXES
 from .phenotype import (
     COHORT_TAGS,
     HPO_URL,

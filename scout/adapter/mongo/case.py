@@ -7,9 +7,10 @@ from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
 import pymongo
+from bson import ObjectId
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP
+from scout.constants import ACMG_MAP, ID_PROJECTION
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -45,7 +46,10 @@ class CaseHandler(object):
             set_1 = set_1.union(set(hpo_term.get("all_ancestors", [])))
         # Need to control what cases to look for here
         # Fetch all cases with phenotypes
-        for case in self.cases(phenotype_terms=True, owner=owner):
+        CASES_BY_PHENOTYPE_PROJECTION = {"phenotype_terms": 1}
+        for case in self.cases(
+            phenotype_terms=True, owner=owner, projection=CASES_BY_PHENOTYPE_PROJECTION
+        ):
             set_2 = set()
             if case["_id"] == case_id:
                 continue
@@ -78,8 +82,13 @@ class CaseHandler(object):
         """
         hpo_terms = []
         order = None
+        CASE_SIMILAR_PROJECTION = {"phenotype_terms": 1}
         if query_field == "similar_case":
-            case_obj = self.case(display_name=query_term, institute_id=institute_id)
+            case_obj = self.case(
+                display_name=query_term,
+                institute_id=institute_id,
+                projection=CASE_SIMILAR_PROJECTION,
+            )
             if case_obj is None:
                 query["_id"] = {"$in": []}  # No result should be returned by query
                 return
@@ -140,7 +149,7 @@ class CaseHandler(object):
                     }
                 },
                 {"$match": {"lookup_variant.hgnc_ids": hgnc_id}},
-                {"$project": {"_id": 1}},
+                {"$project": ID_PROJECTION},
             ]
         )
         case_ids = [case["_id"] for case in cases_with_gene_doc]
@@ -288,29 +297,30 @@ class CaseHandler(object):
 
     def cases(
         self,
-        owner=None,
-        collaborator=None,
-        query=None,
-        skip_assigned=False,
-        has_causatives=False,
-        reruns=False,
-        rerun_monitor=False,
-        finished=False,
-        research_requested=False,
-        is_research=False,
-        has_rna_data=False,
-        status=None,
-        phenotype_terms=False,
-        group=None,
-        pinned=False,
-        cohort=False,
-        name_query=None,
-        yield_query=False,
-        within_days=None,
-        assignee=None,
-        verification_pending=None,
-        has_clinvar_submission=None,
-    ):
+        owner: Optional[str] = None,
+        collaborator: Optional[str] = None,
+        query: Optional[Dict[str, Any]] = None,
+        skip_assigned: bool = False,
+        has_causatives: bool = False,
+        reruns: bool = False,
+        rerun_monitor: bool = False,
+        finished: bool = False,
+        research_requested: bool = False,
+        is_research: bool = False,
+        has_rna_data: bool = False,
+        status: Any = None,
+        phenotype_terms: bool = False,
+        group: Optional[ObjectId] = None,
+        pinned: bool = False,
+        cohort: bool = False,
+        name_query: Optional[str] = None,
+        yield_query: bool = False,
+        within_days: Optional[int] = None,
+        assignee: Optional[str] = None,
+        verification_pending: bool = None,
+        has_clinvar_submission: bool = None,
+        projection: Optional[Dict[str, Any]] = None,
+    ) -> Any:
         """Fetches all cases from the backend.
 
         Args:
@@ -337,6 +347,7 @@ class CaseHandler(object):
             assignee(str): id of an assignee
             verification_pending(bool): If search should be restricted to cases with verification_pending
             has_clinvar_submission(bool): If search should be limited to cases with a ClinVar submission
+            projection(dict): Sometimes only some values in each case are required. This saves memory.
 
         Returns:
             Cases ordered by date.
@@ -468,9 +479,9 @@ class CaseHandler(object):
             return query
 
         if order:
-            return self.case_collection.find(query)
+            return self.case_collection.find(query, projection)
 
-        return self.case_collection.find(query).sort("updated_at", -1)
+        return self.case_collection.find(query, projection).sort("updated_at", -1)
 
     def rna_cases(self, owner):
         """Retrieve all cases with RNA-seq data for a given institute
@@ -554,7 +565,7 @@ class CaseHandler(object):
             institute_id=institute_id
         )  # a list of dictionaries like this: [{'_id': 'internal_id', 'vars': ['a1d6df24404c007570021531b80b1e1e']}, ..]
         for case_variants in sanger_ordered_by_case:
-            if self.case(case_id=case_variants["_id"]) is None:
+            if self.case(case_id=case_variants["_id"], projection=ID_PROJECTION) is None:
                 continue
             for variant_id in case_variants["vars"]:
                 var_obj = self.variant(case_id=case_variants["_id"], document_id=variant_id)
@@ -596,7 +607,7 @@ class CaseHandler(object):
         return [
             case["_id"]
             for case in self.case_collection.find(
-                {"group": {"$elemMatch": {"$eq": group_id}}}, {"_id": 1}
+                {"group": {"$elemMatch": {"$eq": group_id}}}, ID_PROJECTION
             )
         ]
 
@@ -686,18 +697,17 @@ class CaseHandler(object):
         )
         return updated_case
 
-    def case(self, case_id=None, institute_id=None, display_name=None):
+    def case(
+        self,
+        case_id: Optional[str] = None,
+        institute_id: Optional[str] = None,
+        display_name: Optional[str] = None,
+        projection: Optional[Dict] = None,
+    ) -> Dict:
         """Fetches a single case from database
-
-        Use either the _id or combination of institute_id and display_name
-
-        Args:
-            case_id(str): _id for a caes
-            institute_id(str):
-            display_name(str)
-
-        Yields:
-            A single Case
+        Use either the _id or combination of institute_id and display_name.
+        Projection is a pymongo projection dict.
+        Yields a single Case, possibly a thin version case projected by the projection.
         """
         query = {}
         if case_id:
@@ -710,7 +720,7 @@ class CaseHandler(object):
             query["owner"] = institute_id
             query["display_name"] = display_name
 
-        return self.case_collection.find_one(query)
+        return self.case_collection.find_one(filter=query, projection=projection)
 
     def case_ind(self, ind_id):
         """Fetch cases based on an individual id.
@@ -943,7 +953,7 @@ class CaseHandler(object):
          Args:
              case_obj(Case)
         """
-        if self.case(case_obj["_id"]):
+        if self.case(case_obj["_id"], projection=ID_PROJECTION):
             raise IntegrityError("Case %s already exists in database" % case_obj["_id"])
 
         return self.case_collection.insert_one(case_obj)
