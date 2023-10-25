@@ -1386,13 +1386,13 @@
     {% if variant.category in ['cancer_sv', 'sv'] %}
       chr {{ variant.end_chrom }}
     {% else %}
-      {{ variant.reference }}
+      {{ variant.reference|truncate(20, True) }}
     {% endif %}
   </td>
   <td>{% if variant.category in ['cancer_sv', 'sv'] %}
     end {{ variant.end }}
   {% else %}
-    {{ variant.alternative }}
+    {{ variant.alternative|truncate(20, True) }}
   {% endif %}
   </td>
 
