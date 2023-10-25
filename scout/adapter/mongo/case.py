@@ -915,7 +915,6 @@ class CaseHandler(object):
                     custom_images=self._get_variants_custom_images(
                         variant_category=category, case=case_obj
                     ),
-                    custom_images=custom_images,
                     threads=threads,
                     cyvcf2threads=cyvcf2threads,
                 )
