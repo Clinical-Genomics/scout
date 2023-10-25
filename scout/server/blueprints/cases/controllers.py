@@ -587,15 +587,9 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                 if not var_obj:
                     continue
                 if case_key == "partial_causatives":
-                    logging.debug("Decorate variant %s", var_obj)
                     var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
                 evaluated_variants_by_type[eval_category].append(
                     _get_decorated_var(var_obj=var_obj)
-                )
-                logging.debug(
-                    "Decorated variants in this category %s now %s",
-                    eval_category,
-                    evaluated_variants_by_type[eval_category],
                 )
 
     # Collect all evaluated variants except causative, partial causative and suspected variants
