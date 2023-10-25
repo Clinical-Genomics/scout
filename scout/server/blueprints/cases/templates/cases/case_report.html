@@ -341,9 +341,6 @@
   <div class="card-body">
     {% set duplicated_variants = [] %}
     {% if variants.suspects_detailed %}
-      {% if cancer %}
-        {{ somatic_variant_table(variants.suspects_detailed) }}
-      {% endif %}
       {% for pinned in variants.suspects_detailed|sort(attribute='variant_rank') %}
         {% if pinned['_id'] not in printed_vars %}
           {% do printed_vars.append(pinned['_id']) %}
@@ -1315,41 +1312,6 @@
     {% endfor %}
   </tbody>
 </table>
-{% endmacro %}
-
-{% macro somatic_variant_table(variants) %}
-  <div class="card" style="border-width: 5px; display: block;">
-    <div class="card-header">Summary table</div>
-    <div class="card-body">
-      <div class="row d-flex align-items-center">
-       <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent">
-        <thead>
-          <tr class="table-secondary">
-            <th>Gene Symbol</th>
-            <th>Transcript</th>
-            <th>HGVS c.</th>
-            <th>HGVS p.</th>
-            <th>Tumor VAF%</th>
-            <th>ACMG</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for acmg in ["P","LP", "VUS", "LB", "B", ] %}
-          {% for variant in variants|selectattr("acmg_classification.short", "equalto", acmg)|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol')%}
-            {{ variant_table_line(variant) }}
-          {% endfor %}
-        {% endfor %}
-        {% for variant in variants|selectattr("acmg_classification.short", "undefined")|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
-          {{ variant_table_line(variant) }}
-        {% endfor %}
-        {% for variant in variants|selectattr("first_rep_gene.hgnc_symbol", "undefined") %}
-          {{ alt_variant_line(variant) }}
-        {% endfor %}
-        </tbody>
-       </table>
-      </div>
-    </div>
-  </div>
 {% endmacro %}
 
 {% macro variant_table_line(variant) %}

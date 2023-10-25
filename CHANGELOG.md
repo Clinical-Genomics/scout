@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unrelease]
+### Fixed
+- Fix pinned somatic cancer variants causing case report page to crash
+
 ## [4.72.2]
 ### Changed
 - A gunicorn maxrequests parameter for Docker server image - default to 1200
