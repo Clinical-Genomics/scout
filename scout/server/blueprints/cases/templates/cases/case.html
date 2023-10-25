@@ -140,7 +140,7 @@
 
       <div class="row">
         {% if case.track == 'cancer' %}
-          <div class="col-sm-12 col-md-12 mt-3">{{ cancer_individuals_table(case, institute, tissue_types) }}</div>
+          <div class="col-sm-12 col-md-12 mt-3">{{ cancer_individuals_table(case, institute, tissue_types, gens_info) }}</div>
         {% else %}
           <div class="mt-3 col-sm-8 col-md-{{"8" if case.madeline_info and case.individuals|length > 1 else "12"}}">{{ individuals_table(case, institute, tissue_types, display_rerunner, gens_info) }}</div>
           {% if case.madeline_info and case.individuals|length > 1 %}
