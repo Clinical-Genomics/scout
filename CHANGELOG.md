@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Parallelize variant loading for each chromosome
+
 ## [4.72.2]
 ### Changed
 - A gunicorn maxrequests parameter for Docker server image - default to 1200
@@ -59,7 +63,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Deleted unused scout.build.phenotype module
 - Stricter validation of mandatory genome build key when loading a case. Allowed values are ['37','38',37,38]
 - Improved readability of variants length and coordinates on variantS pages
-
 
 ## [4.71]
 ### Added
@@ -128,7 +131,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed ClinVar API validation buttons in favour of direct API submission
 - Improved layout of Institute settings page
 - ClinVar API key and allowed submitters are set in the Institute settings page
-
 
 ## [4.68]
 ### Added
@@ -261,7 +263,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Import Phenopacket from JSON file or Phenopacket API backend server
 - Use the new case name option for GENS requests
 - Pre-validate refseq:HGVS items using VariantValidator in ClinVar submission form
-- Parallelize variant loading for each chromosome
 ### Fixed
 - Fallback for empty alignment index for REViewer service
 - Source link out for MIP 11.1 reference STR annotation
@@ -277,18 +278,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Updated ClinVar submission instructions
 
-
 ## [4.61.1]
 ### Fixed
 - Added `UMLS` as an option of `Condition ID type` in ClinVar Variant downloaded files
 - Missing value for `Condition ID type` in ClinVar Variant downloaded files
 - Possibility to open, close or delete a ClinVar submission even if it doesn't have an associated name
-- Missing value for `Condition ID type` in ClinVar Variant downloaded files
 - Save SV type, ref and alt n. copies to exported ClinVar files
 - Inner and outer start and stop SV coordinates not exported in ClinVar files
 - ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 - Align OMIM diagnoses with delete diagnosis button on case page
-- In ClinVar form, reset condition list and cust
 
 ## [4.61]
 ### Added

@@ -10,7 +10,7 @@ import pymongo
 from bson import ObjectId
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, CYVCF2_THREADS, 
+from scout.constants import ACMG_MAP, CYVCF2_THREADS, ID_PROJECTION
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -911,7 +911,7 @@ class CaseHandler(object):
                     variant_type=variant_type,
                     category=category,
                     build=genome_build,
-                    rank_threshold=case_obj.get("rank_score_threshold", 5),                 
+                    rank_threshold=case_obj.get("rank_score_threshold", 5),
                     custom_images=self._get_variants_custom_images(
                         variant_category=category, case=case_obj
                     ),
