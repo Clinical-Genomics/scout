@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [4.72.3]
+### Fixed
+- Whichever fix for the crashing case report
+
 ## [4.72.2]
 ### Changed
 - A gunicorn maxrequests parameter for Docker server image - default to 1200
