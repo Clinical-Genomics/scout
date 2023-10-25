@@ -581,16 +581,13 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
 
     # Collect causative, partial causative and suspected variants
     for eval_category, case_key in CASE_REPORT_VARIANT_TYPES.items():
-        if case_key in ["causatives", "suspects", "partial_causatives"]:
-            for var_id in case_obj.get(case_key, []):
-                var_obj = store.variant(document_id=var_id)
-                if not var_obj:
-                    continue
-                if case_key == "partial_causatives":
-                    var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
-                evaluated_variants_by_type[eval_category].append(
-                    _get_decorated_var(var_obj=var_obj)
-                )
+        for var_id in case_obj.get(case_key, []):
+            var_obj = store.variant(document_id=var_id)
+            if not var_obj:
+                continue
+            if case_key == "partial_causatives":
+                var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
+            evaluated_variants_by_type[eval_category].append(_get_decorated_var(var_obj=var_obj))
 
     # Collect all evaluated variants except causative, partial causative and suspected variants
     for var_obj in store.evaluated_variants(
