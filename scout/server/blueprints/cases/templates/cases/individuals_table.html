@@ -1,5 +1,5 @@
 
-{% macro cancer_individuals_table(case, institute, tissues) %}
+{% macro cancer_individuals_table(case, institute, tissues, gens_info=None) %}
 <form method="POST" action="{{ url_for('cases.update_cancer_sample', institute_id=institute._id, case_name=case.display_name) }}">
   <div class="card panel-default">
     <div class="table-responsive">
@@ -28,7 +28,9 @@
         <tbody>
           {% for ind in case.individuals %}
             <tr {% if ind.phenotype_human == 'tumor' %} class="bg-danger-light" {% endif %}>
-              <td>{{ ind.display_name }}</td>
+              <td>{{ ind.display_name }}{% if gens_info.display %}
+                  <a style="font-size: .8rem;" class="btn btn-secondary btn-sm float-end" target="_blank" href="http://{{gens_info.host}}/{{ind.display_name}}?&genome_build={{case.genome_build}}&case_id={{case._id}}&individual_id={{ind.individual_id}}">CN profile</a>
+                {% endif %}</td>
               {% if ind.phenotype_human == "normal" %}
                 <td>N/A</td>
               {% else %}
