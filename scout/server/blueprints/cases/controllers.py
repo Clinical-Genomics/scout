@@ -595,8 +595,14 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
     ):
         for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
             if var_obj.get(variant_key):
+                logging.debug("Decorate variant %s", var_obj)
                 evaluated_variants_by_type[eval_category].append(
                     _get_decorated_var(var_obj=var_obj)
+                )
+                logging.debug(
+                    "Decorated variants in this category %s now %s",
+                    eval_category,
+                    evaluated_variants_by_type[eval_category],
                 )
 
     data["variants"] = evaluated_variants_by_type
