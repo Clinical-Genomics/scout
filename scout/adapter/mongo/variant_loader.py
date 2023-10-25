@@ -355,6 +355,58 @@ class VariantLoader(object):
 
         return
 
+    def _load_variants_parallel(
+        self,
+        variant_type,
+        case_obj,
+        individual_positions,
+        rank_threshold,
+        institute_id,
+        build=None,
+        rank_results_header=None,
+        vep_header=None,
+        category="snv",
+        sample_info=None,
+        custom_images=None,
+        local_archive_info=None,
+    ):
+        chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        gene_to_panels = self.gene_to_panels(case_obj)
+        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+
+        if variant_file:
+            local_vcf_obj = VCF(variant_file, threads=cyvcf2threads)
+            variants = local_vcf_obj(chromosome)
+
+        nr_inserted_chr = Parallel(n_jobs=threads, prefer="threads")(
+            delayed(self._load_variants)(
+                variants=None,
+                variant_type=variant_type,
+                case_obj=case_obj,
+                individual_positions=individual_positions,
+                rank_threshold=rank_threshold,
+                institute_id=institute_id,
+                build=build,
+                rank_results_header=rank_results_header,
+                vep_header=vep_header,
+                category=category,
+                sample_info=sample_info,
+                custom_images=custom_images,
+                local_archive_info=local_archive_info,
+                variant_file=variant_file,
+                chromosome=chromosome,
+                genes=genes,
+                gene_to_panels=gene_to_panels,
+                hgncid_to_gene=hgncid_to_gene,
+                genomic_intervals=genomic_intervals,
+            )
+            for chromosome in chromosomes
+        )
+        nr_inserted = sum(nr_inserted_chr)
+        return nr_inserted
+
     def _load_variants(
         self,
         variants,
@@ -399,6 +451,7 @@ class VariantLoader(object):
         Returns:
             nr_inserted(int)
         """
+
         build = build or "37"
 
         if not genes:
@@ -732,63 +785,31 @@ class VariantLoader(object):
             rank_threshold = rank_threshold or 0
 
         try:
-            if region == "":
-                if threads > 1:
-                    chromosomes = (
-                        CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
-                    )
-                    genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-                    gene_to_panels = self.gene_to_panels(case_obj)
-                    hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-                    genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+            if threads > 1 and region == "":
+                nr_inserted = _load_variants_parallel(
+                    variant_type=variant_type,
+                    case_obj=case_obj,
+                    individual_positions=individual_positions,
+                    rank_threshold=rank_threshold,
+                    institute_id=institute_id,
+                    build=build,
+                    rank_results_header=rank_results_header,
+                    vep_header=vep_header,
+                    category=category,
+                    sample_info=sample_info,
+                    custom_images=custom_images,
+                    local_archive_info=local_archive_info,
+                    variant_file=variant_file,
+                )
 
-                    nr_inserted_chr = Parallel(n_jobs=threads, prefer="threads")(
-                        delayed(self._insert_counting)(
-                            variants=None,
-                            variant_type=variant_type,
-                            case_obj=case_obj,
-                            individual_positions=individual_positions,
-                            rank_threshold=rank_threshold,
-                            institute_id=institute_id,
-                            build=build,
-                            rank_results_header=rank_results_header,
-                            vep_header=vep_header,
-                            category=category,
-                            sample_info=sample_info,
-                            custom_images=custom_images,
-                            local_archive_info=local_archive_info,
-                            variant_file=variant_file,
-                            chromosome=chromosome,
-                            genes=genes,
-                            gene_to_panels=gene_to_panels,
-                            hgncid_to_gene=hgncid_to_gene,
-                            genomic_intervals=genomic_intervals,
-                        )
-                        for chromosome in chromosomes
-                    )
-                    nr_inserted = sum(nr_inserted_chr)
-                else:
-                    if cyvcf2threads > 1:
-                        vcf_obj = VCF(variant_file, threads=cyvcf2threads)
-                    variants = vcf_obj()
-                    nr_inserted = self._insert_counting(
-                        variants=variants,
-                        variant_type=variant_type,
-                        case_obj=case_obj,
-                        individual_positions=individual_positions,
-                        rank_threshold=rank_threshold,
-                        institute_id=institute_id,
-                        build=build,
-                        rank_results_header=rank_results_header,
-                        vep_header=vep_header,
-                        category=category,
-                        sample_info=sample_info,
-                        custom_images=custom_images,
-                        local_archive_info=local_archive_info,
-                    )
             else:
-                variants = vcf_obj(region)
-                nr_inserted = self._insert_counting(
+                if cyvcf2threads > 1 and region == "":
+                    vcf_obj = VCF(variant_file, threads=cyvcf2threads)
+                    variants = vcf_obj()
+                elif region != "":
+                    variants = vcf_obj(region)
+
+                nr_inserted = self._load_variants(
                     variants=variants,
                     variant_type=variant_type,
                     case_obj=case_obj,
@@ -810,54 +831,5 @@ class VariantLoader(object):
             raise error
 
         self.update_variant_rank(case_obj, variant_type, category=category)
-
-        return nr_inserted
-
-    def _insert_counting(
-        self,
-        variants,
-        variant_type,
-        case_obj,
-        individual_positions,
-        rank_threshold,
-        institute_id,
-        build,
-        rank_results_header,
-        vep_header,
-        category,
-        sample_info,
-        custom_images,
-        local_archive_info,
-        variant_file=None,
-        chromosome=None,
-        cyvcf2threads=CYVCF2_THREADS,
-        genes=None,
-        gene_to_panels=None,
-        hgncid_to_gene=None,
-        genomic_intervals=None,
-    ):
-        if variant_file:
-            local_vcf_obj = VCF(variant_file, threads=cyvcf2threads)
-            variants = local_vcf_obj(chromosome)
-
-        nr_inserted = self._load_variants(
-            variants=variants,
-            variant_type=variant_type,
-            case_obj=case_obj,
-            individual_positions=individual_positions,
-            rank_threshold=rank_threshold,
-            institute_id=institute_id,
-            build=build,
-            rank_results_header=rank_results_header,
-            vep_header=vep_header,
-            category=category,
-            sample_info=sample_info,
-            custom_images=custom_images,
-            local_archive_info=local_archive_info,
-            genes=genes,
-            gene_to_panels=gene_to_panels,
-            hgncid_to_gene=hgncid_to_gene,
-            genomic_intervals=genomic_intervals,
-        )
 
         return nr_inserted
