@@ -1,6 +1,6 @@
 import logging
 from collections import Counter
-from typing import Any, Dict, List
+from typing import Dict, List
 
 import pymongo
 

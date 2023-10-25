@@ -10,7 +10,7 @@ import pymongo
 from bson import ObjectId
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, CYVCF2_THREADS, ID_PROJECTION
+from scout.constants import ACMG_MAP, CYVCF2_THREADS, ID_PROJECTION, LOADER_THREADS
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
