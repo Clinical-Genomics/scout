@@ -580,22 +580,15 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
     evaluated_variants_by_type: Dict[str, list] = {vt: [] for vt in CASE_REPORT_VARIANT_TYPES}
 
     # Collect causative, partial causative and suspected variants
-    for eval_category, case_key in ["causatives", "suspects", "partial_causatives"]:
-        for var_id in case_obj.get(case_key, []):
-            var_obj = store.variant(document_id=var_id)
-            if not var_obj:
-                continue
-            if case_key == "partial_causatives":
-                var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
-            evaluated_variants_by_type[eval_category].append(_get_decorated_var(var_obj=var_obj))
-
-    # Collect all evaluated variants except causative, partial causative and suspected variants
-    for var_obj in store.evaluated_variants(
-        case_id=case_obj["_id"], institute_id=institute_obj["_id"]
-    ):
-        for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
-            if var_obj.get(variant_key):
-                logging.debug("Decorate variant %s", var_obj)
+    for eval_category, case_key in CASE_REPORT_VARIANT_TYPES.items():
+        if case_key in ["causatives", "suspects", "partial_causatives"]:
+            for var_id in case_obj.get(case_key, []):
+                var_obj = store.variant(document_id=var_id)
+                if not var_obj:
+                    continue
+                if case_key == "partial_causatives":
+                    logging.debug("Decorate variant %s", var_obj)
+                    var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
                 evaluated_variants_by_type[eval_category].append(
                     _get_decorated_var(var_obj=var_obj)
                 )
@@ -603,6 +596,16 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                     "Decorated variants in this category %s now %s",
                     eval_category,
                     evaluated_variants_by_type[eval_category],
+                )
+
+    # Collect all evaluated variants except causative, partial causative and suspected variants
+    for var_obj in store.evaluated_variants(
+        case_id=case_obj["_id"], institute_id=institute_obj["_id"]
+    ):
+        for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
+            if var_obj.get(variant_key):
+                evaluated_variants_by_type[eval_category].append(
+                    _get_decorated_var(var_obj=var_obj)
                 )
 
     data["variants"] = evaluated_variants_by_type

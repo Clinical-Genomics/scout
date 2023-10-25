@@ -1334,12 +1334,16 @@
           </tr>
         </thead>
         <tbody>
+
         {% for acmg in ["P","LP", "VUS", "LB", "B", ] %}
-          {% for variant in variants|selectattr("acmg_classification.short", "equalto", acmg)|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
+          {% for variant in variants|selectattr("acmg_classification", "defined")|selectattr("acmg_classification.short", "equalto", acmg)|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
             {{ variant_table_line(variant) }}
           {% endfor %}
         {% endfor %}
-        {% for variant in variants|selectattr("acmg_classification.short", "undefined")|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
+        {% for variant in variants|selectattr("acmg_classification", "defined")|selectattr("acmg_classification.short", "undefined")|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
+          {{ variant_table_line(variant) }}
+        {% endfor %}
+        {% for variant in variants|selectattr("acmg_classification", "undefined")|selectattr("first_rep_gene.hgnc_symbol", "defined")|sort(attribute='first_rep_gene.hgnc_symbol') %}
           {{ variant_table_line(variant) }}
         {% endfor %}
         {% for variant in variants|selectattr("first_rep_gene.hgnc_symbol", "undefined") %}
