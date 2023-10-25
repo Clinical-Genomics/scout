@@ -33,7 +33,6 @@ CUSTOM_CASE_REPORTS = {
     },
 }
 
-
 CASE_REPORT_VARIANT_TYPES = {
     "causatives_detailed": "causatives",
     "partial_causatives_detailed": "partial_causatives",
