@@ -8,6 +8,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Parallelize variant loading for each chromosome
 
+## [4.72.3]
+### Fixed
+- Somatic general case report small variant table can crash with unclassified variants
+
 ## [4.72.2]
 ### Changed
 - A gunicorn maxrequests parameter for Docker server image - default to 1200
