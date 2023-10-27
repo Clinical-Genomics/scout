@@ -4,9 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [Unreleased]
 ### Changed
 - Enable Gens CN profile button also in somatic case view
+- Automatic test mongod version increased to v7
+
 
 ## [4.72.3]
 ### Fixed
