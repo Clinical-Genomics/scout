@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Automatic test mongod version increased to v7
-
+- More long integers formatted with thin spaces, and copy to clipboard buttons added
 ## [4.72.3]
 ### Fixed
 - Somatic general case report small variant table can crash with unclassified variants
