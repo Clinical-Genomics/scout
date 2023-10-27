@@ -6,7 +6,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
+- Automatic test mongod version increased to v7
 - Parallelize variant loading for each chromosome
+
 
 ## [4.72.3]
 ### Fixed

@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         group: [1, 2, 3, 4, 5, 6]
-        mongodb-version: ['4.4']
+        mongodb-version: ['7']
     steps:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
