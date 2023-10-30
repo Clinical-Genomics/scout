@@ -363,14 +363,20 @@ class VariantLoader(object):
         rank_threshold,
         institute_id,
         build=None,
-        rank_results_header=None,
-        vep_header=None,
         category="snv",
-        sample_info=None,
-        custom_images=None,
-        local_archive_info=None,
+        **kwargs,
     ):
+        kwargs.setdefault("rank_results_header", None)
+        rank_results_header = kwargs.get("rank_results_header")
+        kwargs.setdefault("vep_header", None)
+        rank_results_header = kwargs.get("vep_header")
+        kwargs.setdefault("custom_images", None)
+        rank_results_header = kwargs.get("custom_images")
+        kwargs.setdefault("local_archive_info", None)
+
+        rank_results_header = kwargs.get("local_archive_info")
         chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+
         genes = [gene_obj for gene_obj in self.all_genes(build=build)]
         gene_to_panels = self.gene_to_panels(case_obj)
         hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
@@ -417,12 +423,9 @@ class VariantLoader(object):
         rank_threshold,
         institute_id,
         build=None,
-        rank_results_header=None,
-        vep_header=None,
         category="snv",
         sample_info=None,
-        custom_images=None,
-        local_archive_info=None,
+        **kwargs,
     ):
         """Perform the loading of variants
 
@@ -451,10 +454,29 @@ class VariantLoader(object):
 
         build = build or "37"
 
-        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-        gene_to_panels = self.gene_to_panels(case_obj)
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+        kwargs.setdefault("rank_results_header", None)
+        rank_results_header = kwargs.get("rank_results_header")
+
+        kwargs.setdefault("vep_header", None)
+        vep_header = kwargs.get("vep_header")
+
+        kwargs.setdefault("custom_images", None)
+        custom_images = kwargs.get("custom_images")
+
+        kwargs.setdefault("local_archive_info", None)
+        local_archive_info = kwargs.get("local_archive_info")
+
+        kwargs.setdefault("genes", [gene_obj for gene_obj in self.all_genes(build=build)])
+        genes = kwargs.get("genes")
+
+        kwargs.setdefault("gene_to_panels", self.gene_to_panels(case_obj))
+        gene_to_panels = kwargs.get("gene_to_panels")
+
+        kwargs.setdefault("hgncid_to_gene", self.hgncid_to_gene(genes=genes, build=build))
+        hgncid_to_gene = kwargs.get("hgncid_to_gene")
+
+        kwargs.setdefault("genomic_intervals", self.get_coding_intervals(genes=genes, build=build))
+        genomic_intervals = kwargs.get("genomic_intervals")
 
         LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
@@ -761,7 +783,7 @@ class VariantLoader(object):
                 else:
                     sample_info[ind["individual_id"]] = "control"
 
-        # Check if a region scould be uploaded
+        # Check if a region should be uploaded
         region = ""
         if gene_obj:
             chrom = gene_obj["chromosome"]
@@ -786,9 +808,9 @@ class VariantLoader(object):
                     rank_threshold=rank_threshold,
                     institute_id=institute_id,
                     build=build,
+                    category=category,
                     rank_results_header=rank_results_header,
                     vep_header=vep_header,
-                    category=category,
                     sample_info=sample_info,
                     custom_images=custom_images,
                     local_archive_info=local_archive_info,
