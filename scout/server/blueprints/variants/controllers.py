@@ -1483,7 +1483,6 @@ def persistent_filter_actions(
         form = FiltersFormClass(request_form)
         # Stash the filter to db to make available for this institute
         filter_obj = request_form
-        # TODO validate form!
         store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
 
     if bool(request_form.get("load_filter")):

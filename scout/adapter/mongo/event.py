@@ -94,7 +94,7 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
         variant: dict = None,
         content: dict = None,
         panel: str = None,
-        individual: List[dict] = [],
+        individuals: List[dict] = [],
         hpo_term: str = None,
     ):
         """Create a Event with the parameters given.
