@@ -8,11 +8,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Automatic test mongod version increased to v7
+- Refactored especially cancer filter for decimal place fields to allow unfreezing WTForms and upgrade to v3
 
 ## [4.72.3]
 ### Fixed
 - Somatic general case report small variant table can crash with unclassified variants
-
 
 ## [4.72.2]
 ### Changed
@@ -69,8 +69,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Deleted unused scout.build.phenotype module
 - Stricter validation of mandatory genome build key when loading a case. Allowed values are ['37','38',37,38]
 - Improved readability of variants length and coordinates on variantS pages
-- Refactored especially cancer filter for decimal place fields to allow unfreezing WTForms and upgrade to v3
-
 
 ## [4.71]
 ### Added

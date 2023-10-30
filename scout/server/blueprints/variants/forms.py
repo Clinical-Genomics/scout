@@ -79,7 +79,9 @@ class BetterDecimalField(DecimalField):
         if not valuelist:
             return
 
-        raw_decimal = valuelist[0].replace(",", ".")
+        raw_decimal = valuelist[0]
+        if type(raw_decimal) is str:
+            raw_decimal = valuelist[0].replace(",", ".")
         try:
             self.data = decimal.Decimal(raw_decimal)
         except (decimal.InvalidOperation, ValueError):
@@ -156,10 +158,12 @@ class CancerFiltersForm(VariantFiltersForm):
 
     depth = IntegerField("Depth >", validators=[validators.Optional()])
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
-    control_frequency = DecimalField(
+    control_frequency = BetterDecimalField(
         "Normal alt AF <", places=2, validators=[validators.Optional()]
     )
-    tumor_frequency = DecimalField("Tumor alt AF >", places=2, validators=[validators.Optional()])
+    tumor_frequency = BetterDecimalField(
+        "Tumor alt AF >", places=2, validators=[validators.Optional()]
+    )
     clinvar_tag = BooleanField("ClinVar hits")
     cosmic_tag = BooleanField("Cosmic hits")
     mvl_tag = BooleanField("Managed Variants hits")

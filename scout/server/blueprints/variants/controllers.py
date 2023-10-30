@@ -1492,6 +1492,11 @@ def persistent_filter_actions(
         if filter_obj is not None:
 
             def _coerce_formdata(filter: dict) -> MultiDict:
+                """According to wtforms docs https://wtforms.readthedocs.io/en/3.1.x/forms/#the-form-class,
+                formdata passed to Form init needs to be pre-coerced to types. Hence especially the replace
+                of locale specific chars in numbers on class process_formdata would not be enough for the
+                better_decimal form fields.
+                """
                 for filter_decimal_value_form_field in [
                     "cadd_score",
                     "revel",
