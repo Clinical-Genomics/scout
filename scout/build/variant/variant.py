@@ -215,6 +215,13 @@ def build_variant(
     variant_obj["tool_hits"] = variant.get("tool_hits")
     variant_obj["fusion_score"] = variant.get("fusion_score")
     variant_obj["rank_score"] = variant.get("fusion_score")
+    variant_obj["hgnc_id_a"] = int(variant.get("hgnc_id_a"))
+    variant_obj["hgnc_id_b"] = int(variant.get("hgnc_id_b"))
+    #variant_obj["hgnc_ids"] = [variant_obj["hgnc_id_a"], variant_obj["hgnc_id_b"]]
+    variant_obj["genes"] = [hgncid_to_gene.get(variant_obj["hgnc_id_a"])]
+    variant_obj["genes"].append(hgncid_to_gene.get(variant_obj["hgnc_id_b"]))
+    variant_obj["orientation"] = variant.get("orientation")
+
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")

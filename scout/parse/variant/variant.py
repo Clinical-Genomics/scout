@@ -427,6 +427,9 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["gene_b"] = call_safe(str, variant.INFO.get("GENEB", ""))
     parsed_variant["tool_hits"] = call_safe(str, variant.INFO.get("TOOL_HITS", 0))
     parsed_variant["fusion_score"] = call_safe(str, variant.INFO.get("SCORE", 0))
+    parsed_variant["hgnc_id_a"] = call_safe(str, variant.INFO.get("HGNC_IDA", ""))
+    parsed_variant["hgnc_id_b"] = call_safe(str, variant.INFO.get("HGNC_IDB", ""))
+    parsed_variant["orientation"] = call_safe(str, variant.INFO.get("ORIENTATION", ""))
 
 
 def set_str_source(parsed_variant: Dict[str, Any], variant: Variant):

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import fusion_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell, gene_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Fusion variants
@@ -57,11 +57,15 @@ onsubmit="return validateForm()">
         <thead class="table-light thead">
           <tr>
             <th style="width:3%"></th>
-            <th>Rank</th>
-            <th>Score</th>
-            <th>Callers</th>
-            <th>Gene A</th>
-            <th>Gene B</th>
+            <th style="width:8%" title="Beta version. Currently testing">Rank (beta)</th>
+            <th style="width:8%" title="HGNC symbols">Genes</th>
+            <th style="width:8%" title="Number of callers detecting a given event">Callers</th>
+            <th style="width:8%" title="Beta version. Currently testing">Score (beta)</th>
+            <th style="width:8%" title="Orientation">Orientation</th>
+            <th style="width:8%" title="Number of paired-ends that support the event">Read Depth</th>
+            <th style="width:8%" title="Number of split reads that support the event">Split Reads</th>
+            <th style="width:8%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
+            <th style="width:8%" title="test">test</th>
           </tr>
         </thead>
         <tbody>
@@ -95,11 +99,15 @@ onsubmit="return validateForm()">
     <td class="text-start">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
-    <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
+    <td>{{ gene_cell(variant) }}</td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.tool_hits|int }}</span></td>
-    <td>{{ variant.gene_a }}</td>
-    <td>{{ variant.gene_b }}</td>
+    <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
+    <td>{{ variant.orientation }}</td>
+    <td>{{ variant.samples[0].read_depth }}</td>
+    <td>{{ variant.samples[0].split_read }}</td>
+    <td>{{ variant.samples[0].ffpm }}</td>
+    <td>{{ variant.hgnc_id_b }}</td>
   </tr>
 {% endmacro %}
 

@@ -137,6 +137,8 @@ def parse_genotype(variant, ind, pos):
     gt_call["read_depth"] = get_read_depth(variant, pos, alt_depth, ref_depth)
     gt_call["alt_frequency"] = get_alt_frequency(variant, pos)
     gt_call["genotype_quality"] = int(variant.gt_quals[pos])
+    gt_call["ffpm"] = get_ffpm_info(variant, pos)
+    gt_call["split_read"] = split_read_alt
 
     return gt_call
 
@@ -181,6 +183,23 @@ def get_mei_reads(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ..
 
     return (spanning_ref, clip5_alt, clip3_alt)
 
+
+def get_ffpm_info(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ...]:
+    """Get FUSION caller read details from FORMAT tags.
+    Returns:
+        tuple(int, int, int) supporting_reads, split_reads, ffpm
+    """
+    ffpm = None
+
+    # Fusion fragments per million total RNA-seq fragments
+    if "FFPM" in variant.FORMAT:
+        try:
+            values = variant.format("FFPM")[pos]
+            ffpm = int(values[0])
+        except ValueError as _ignore_error:
+            pass
+
+    return ffpm
 
 def get_paired_ends(variant, pos):
     """Get paired ends"""
