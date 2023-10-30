@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
-{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variant/variant_details.html" import old_observations %}
-{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants %}
-{% from "variant/utils.html" import modal_causative, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
+{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants, variant_scripts %}
+{% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
-{% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
-{% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button, splice_junctions_button %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel %}
+{% from "variant/buttons.html" import dismiss_variant_button, splice_junctions_button, variant_tag_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}

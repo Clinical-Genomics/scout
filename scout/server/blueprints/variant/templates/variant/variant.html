@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% from "variant/buttons.html" import database_buttons %}
-{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
-{% from "variant/utils.html" import modal_causative, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
+{% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
-{% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
+{% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
-{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table, external_scripts, external_stylesheets %}
-{% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
+{% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts %}
+{% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 
 {% block title %}
@@ -390,6 +390,7 @@
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
+  {{ variant_scripts() }}
   <script>
     const flipArrowIcon = (element) => {
       const icon = element.firstChild

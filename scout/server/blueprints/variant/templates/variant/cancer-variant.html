@@ -4,8 +4,8 @@
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
 {% from "variant/buttons.html" import database_buttons, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
-{% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify  %}
-{% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
+{% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts  %}
+{% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 
@@ -286,6 +286,7 @@
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
+  {{ variant_scripts() }}
   <script>
     var triggerProtTabList = [].slice.call(document.querySelectorAll('#nav-proteins-tab'))
       triggerProtTabList.forEach(function (triggerEl) {
