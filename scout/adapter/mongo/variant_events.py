@@ -492,8 +492,8 @@ class VariantEventHandler(object):
         )
 
         LOG.debug(
-            "Creating variant event for marking variant {0}"
-            " causative in {0}".format(variant["display_name"], case["display_name"])
+            "Creating variant event for marking variant "
+            "{0} causative in {0}".format(variant["display_name"], case["display_name"])
         )
 
         self.create_event(
