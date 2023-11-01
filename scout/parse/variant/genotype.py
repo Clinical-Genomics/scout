@@ -201,6 +201,7 @@ def get_ffpm_info(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ..
 
     return ffpm
 
+
 def get_paired_ends(variant, pos):
     """Get paired ends"""
     # SV specific
