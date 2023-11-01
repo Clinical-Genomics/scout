@@ -6,13 +6,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [Unreleased]
+### Added
+- Shortcut button for HPO panel MEI variants from case page
 ### Changed
 - Automatic test mongod version increased to v7
 
 ## [4.72.3]
 ### Fixed
 - Somatic general case report small variant table can crash with unclassified variants
-
 
 ## [4.72.2]
 ### Changed
