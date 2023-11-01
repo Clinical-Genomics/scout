@@ -72,14 +72,14 @@ def export_managed_variants(
             continue
 
         # Add chromosome and position to prepare for sorting
-        variants.append((chrom_int, variant_obj["position"], variant_obj))
+        variants.append((chrom_int, managed_variant_obj["position"], managed_variant_obj))
 
     # Sort variants based on position
     variants.sort(key=lambda x: (x[0], x[1]))
 
     for variant in variants:
-        variant_obj = variant[2]
-        yield variant_obj
+        managed_variant_obj = variant[2]
+        yield managed_variant_obj
 
 
 def export_verified_variants(aggregate_variants, unique_callers):
