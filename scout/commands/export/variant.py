@@ -2,6 +2,7 @@ import datetime
 import json as json_lib
 import logging
 import os
+from datetime import datetime
 
 import click
 from flask.cli import with_appcontext
@@ -130,8 +131,8 @@ def managed_variants(collaborator: str, build: str, json: bool):
         return
 
     vcf_header = VCF_HEADER
+    vcf_header.insert(2, "##fileDate={}".format(datetime.now()))
 
-    # print header
     for line in vcf_header:
         click.echo(line)
 
@@ -178,7 +179,6 @@ def variants(collaborator: str, document_id: str, case_id: str, json: bool):
         for individual in case_obj["individuals"]:
             vcf_header[-1] = vcf_header[-1] + "\t" + individual["individual_id"]
 
-    # print header
     for line in vcf_header:
         click.echo(line)
 
