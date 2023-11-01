@@ -210,13 +210,15 @@ def build_variant(
     variant_obj["mei_polarity"] = variant.get("mei_polarity")
 
     ## Fusion variant specific
-    variant_obj["gene_a"] = variant.get("gene_a")
-    variant_obj["gene_b"] = variant.get("gene_b")
+    variant_obj["gene_symbol_a"] = variant.get("gene_a")
+    variant_obj["gene_symbol_b"] = variant.get("gene_b")
     variant_obj["tool_hits"] = variant.get("tool_hits")
     variant_obj["fusion_score"] = variant.get("fusion_score")
     variant_obj["rank_score"] = variant.get("fusion_score")
     variant_obj["hgnc_id_a"] = variant.get("hgnc_id_a")
     variant_obj["hgnc_id_b"] = variant.get("hgnc_id_b")
+    variant_obj["gene_a"] = hgncid_to_gene.get(variant_obj["hgnc_id_a"])
+    variant_obj["gene_b"] = hgncid_to_gene.get(variant_obj["hgnc_id_b"])
     #variant_obj["hgnc_ids"] = [variant_obj["hgnc_id_a"], variant_obj["hgnc_id_b"]]
     variant_obj["genes"] = [hgncid_to_gene.get(variant_obj["hgnc_id_a"])]
     variant_obj["genes"].append(hgncid_to_gene.get(variant_obj["hgnc_id_b"]))
