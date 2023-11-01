@@ -119,7 +119,7 @@ def verified(collaborator, test, outpath=None):
 )
 @json_option
 @with_appcontext
-def managed_variants(collaborator: str, build: str, json: bool):
+def managed(collaborator: str, build: str, json: bool):
     """Export causatives for a collaborator in .vcf format"""
     LOG.info("Running scout export managed variants")
     adapter = store
@@ -211,11 +211,11 @@ def get_vcf_entry(variant_obj, case_id=None):
     variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
         variant_obj["chromosome"],
         variant_obj["position"],
-        variant_obj["dbsnp_id"],
+        variant_obj.get("dbsnp_id", "."),
         variant_obj["reference"],
         variant_obj["alternative"],
-        variant_obj["quality"],
-        ";".join(variant_obj["filters"]),
+        variant_obj.get("quality", "."),
+        ";".join(variant_obj.get("filters", [])),
         info_field,
     )
 

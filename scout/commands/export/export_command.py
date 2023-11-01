@@ -22,7 +22,7 @@ from .hpo import hpo_genes
 from .mitochondrial_report import mt_report
 from .panel import panel_cmd
 from .transcript import transcripts
-from .variant import variants, verified
+from .variant import managed, variants, verified
 
 LOG = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ export.add_command(transcripts)
 export.add_command(exons)
 export.add_command(variants)
 export.add_command(verified)
+export.add_command(managed)
 export.add_command(hpo_genes)
 export.add_command(cases)
 export.add_command(mt_report)
