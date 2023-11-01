@@ -427,9 +427,20 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["gene_b"] = call_safe(str, variant.INFO.get("GENEB", ""))
     parsed_variant["tool_hits"] = call_safe(str, variant.INFO.get("TOOL_HITS", 0))
     parsed_variant["fusion_score"] = call_safe(str, variant.INFO.get("SCORE", 0))
-    parsed_variant["hgnc_id_a"] = call_safe(str, variant.INFO.get("HGNC_IDA", ""))
-    parsed_variant["hgnc_id_b"] = call_safe(str, variant.INFO.get("HGNC_IDB", ""))
+    parsed_variant["hgnc_id_a"] = call_safe(int, variant.INFO.get("HGNC_ID_A", None))
+    parsed_variant["hgnc_id_b"] = call_safe(int, variant.INFO.get("HGNC_ID_B", None))
     parsed_variant["orientation"] = call_safe(str, variant.INFO.get("ORIENTATION", ""))
+    parsed_variant["frame_status"] = call_safe(str, variant.INFO.get("FRAME_STATUS", ""))
+    parsed_variant["transcript_id_a"] = call_safe(str, variant.INFO.get("TRANSCRIPT_ID_A", ""))
+    parsed_variant["transcript_id_b"] = call_safe(str, variant.INFO.get("TRANSCRIPT_ID_B", ""))
+    parsed_variant["exon_number_a"] = call_safe(str, variant.INFO.get("EXON_NUMBER_A", ""))
+    parsed_variant["exon_number_b"] = call_safe(str, variant.INFO.get("EXON_NUMBER_B", ""))
+    parsed_variant["chr_a"] = call_safe(str, variant.INFO.get("CHRA", ""))
+    parsed_variant["chr_b"] = call_safe(str, variant.INFO.get("CHRB", ""))
+    parsed_variant["position_a"] = call_safe(str, variant.INFO.get("POSA", ""))
+    parsed_variant["position_b"] = call_safe(str, variant.INFO.get("POSB", ""))
+    parsed_variant["breakpoint_a"] = f"{parsed_variant['chr_a']}:{parsed_variant['position_a']}"
+    parsed_variant["breakpoint_b"] = f"{parsed_variant['chr_b']}:{parsed_variant['position_b']}"
 
 
 def set_str_source(parsed_variant: Dict[str, Any], variant: Variant):

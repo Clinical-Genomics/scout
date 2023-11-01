@@ -62,10 +62,13 @@ onsubmit="return validateForm()">
             <th style="width:8%" title="Number of callers detecting a given event">Callers</th>
             <th style="width:8%" title="Beta version. Currently testing">Score (beta)</th>
             <th style="width:8%" title="Orientation">Orientation</th>
-            <th style="width:8%" title="Number of paired-ends that support the event">Read Depth</th>
+            <th style="width:8%" title="Number of paired-ends that support the event">Junction Reads</th>
             <th style="width:8%" title="Number of split reads that support the event">Split Reads</th>
             <th style="width:8%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
-            <th style="width:8%" title="test">test</th>
+            <th style="width:8%" title="Frame status of the fusion">Frame Status</th>
+            <th title="Transcript ID (Exon Number)">Transcript ID (Exon Number)</th>
+            <th title="Breakpoints">Breakpoints</th>
+
           </tr>
         </thead>
         <tbody>
@@ -107,7 +110,19 @@ onsubmit="return validateForm()">
     <td>{{ variant.samples[0].read_depth }}</td>
     <td>{{ variant.samples[0].split_read }}</td>
     <td>{{ variant.samples[0].ffpm }}</td>
-    <td>{{ variant.hgnc_id_b }}</td>
+    <td>{{ variant.frame_status }}</td>
+    <td>
+      <div class="float-start">{{ variant.gene_a }}</div>
+      <div class="float-end"> ({{ variant.exon_number_a|int }})</div>
+      <div class="float-end">{{ variant.transcript_id_a }} </div><br>
+      <div class="float-start">{{ variant.gene_b }}</div>
+      <div class="float-end"> ({{ variant.exon_number_b|int }})</div>
+      <div class="float-end">{{ variant.transcript_id_b }} </div><br>
+    </td>
+      <td>
+      <div class="float-start">{{ variant.breakpoint_a }}</div>
+      <div class="float-end">{{ variant.breakpoint_b }} </div><br>
+    </td>
   </tr>
 {% endmacro %}
 

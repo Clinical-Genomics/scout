@@ -215,13 +215,19 @@ def build_variant(
     variant_obj["tool_hits"] = variant.get("tool_hits")
     variant_obj["fusion_score"] = variant.get("fusion_score")
     variant_obj["rank_score"] = variant.get("fusion_score")
-    variant_obj["hgnc_id_a"] = int(variant.get("hgnc_id_a"))
-    variant_obj["hgnc_id_b"] = int(variant.get("hgnc_id_b"))
+    variant_obj["hgnc_id_a"] = variant.get("hgnc_id_a")
+    variant_obj["hgnc_id_b"] = variant.get("hgnc_id_b")
     #variant_obj["hgnc_ids"] = [variant_obj["hgnc_id_a"], variant_obj["hgnc_id_b"]]
     variant_obj["genes"] = [hgncid_to_gene.get(variant_obj["hgnc_id_a"])]
     variant_obj["genes"].append(hgncid_to_gene.get(variant_obj["hgnc_id_b"]))
     variant_obj["orientation"] = variant.get("orientation")
-
+    variant_obj["frame_status"] = variant.get("frame_status")
+    variant_obj["transcript_id_a"] = variant.get("transcript_id_a")
+    variant_obj["transcript_id_b"] = variant.get("transcript_id_b")
+    variant_obj["exon_number_a"] = variant.get("exon_number_a")
+    variant_obj["exon_number_b"] = variant.get("exon_number_b")
+    variant_obj["breakpoint_a"] = variant.get("breakpoint_a")
+    variant_obj["breakpoint_b"] = variant.get("breakpoint_b")
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
