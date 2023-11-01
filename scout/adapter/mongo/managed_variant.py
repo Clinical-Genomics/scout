@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 from bson import ObjectId
+from pymongo.cursor import Cursor
 from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
@@ -92,16 +93,16 @@ class ManagedVariantHandler(object):
 
         return managed_variant_obj
 
-    def find_managed_variant(self, managed_variant_id):
+    def find_managed_variant(self, managed_variant_id: str) -> dict:
         """Fetch eg search for a managed variant.
 
         Arguments:
-            display_id(str): chrom_pos_ref_alt_category_build
+            managed_variant_id(str): chrom_pos_ref_alt_category_build
                 category: "snv", "cancer_snv" - "sv", "cancer_sv" possible but not expected
                 build: "37" or "38"
 
         Returns:
-            ManagedVariant
+            dict (compare scout.models.ManagedVariant)
         """
         managed_variant = self.managed_variant_collection.find_one(
             {"managed_variant_id": managed_variant_id}
@@ -113,12 +114,13 @@ class ManagedVariantHandler(object):
         """Fetch eg search for a managed variant with the encoded positional variant_id.
 
         Arguments:
-            display_id(str): chrom_pos_ref_alt_category_build
+            chromosome, position, reference, alternative, "clinical"
+            variant_id(str): md5(chrom_pos_ref_alt_category_type)
                 category: "snv", "cancer_snv" - "sv", "cancer_sv" possible but not expected
-                build: "37" or "38"
+                type: "clinical"
 
         Returns:
-            ManagedVariant
+            dict (compare scout.models.ManagedVariant)
         """
         managed_variant = self.managed_variant_collection.find_one({"variant_id": variant_id})
 
@@ -126,23 +128,22 @@ class ManagedVariantHandler(object):
 
     def managed_variants(
         self,
-        category=["snv", "sv", "cancer_snv", "cancer_sv"],
-        query_options=None,
-        build=None,
-    ):
+        category: list = ["snv", "sv", "cancer_snv", "cancer_sv"],
+        query_options: str = None,
+        build: str = None,
+        institute: str = None,
+    ) -> Cursor:
         """Return a cursor to all managed variants of a particular category and build.
-
-        Arguments:
-            category(str):
-            query_options(str):
-            build(str):
 
         Returns:
             managed_variants(pymongo.Cursor)
 
         """
-
         query = {"category": {"$in": category}}
+        if build:
+            query["build"] = build
+        if institute:
+            query["institute"] = institute
         query_with_options = self.add_options(query, query_options)
         return self.managed_variant_collection.find(query_with_options)
 
@@ -192,7 +193,9 @@ class ManagedVariantHandler(object):
 
         return query
 
-    def get_managed_variants(self, category=["snv"], build="37"):
+    def get_managed_variants(
+        self, category: list = ["snv"], build: str = "37", institute: str = None
+    ):
         """Return managed variant_ids. Limit by institute, category and build.
 
         Accepts:
@@ -207,7 +210,7 @@ class ManagedVariantHandler(object):
 
         return [
             managed_variant["variant_id"]
-            for managed_variant in self.managed_variants(category, build)
+            for managed_variant in self.managed_variants(category, build, institute)
         ]
 
     def delete_managed_variant(self, managed_variant_id):

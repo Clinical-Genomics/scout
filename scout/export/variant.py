@@ -2,17 +2,19 @@
 import logging
 import urllib.parse
 
+from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
+from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
 
 
-def export_variants(adapter, collaborator, document_id=None, case_id=None):
+def export_variants(
+    adapter: MongoAdapter, collaborator: str, document_id: str = None, case_id: str = None
+) -> dict:
     """Export causative variants for a collaborator
 
     Args:
-        adapter(MongoAdapter)
-        collaborator(str)
         document_id(str): Search for a specific variant
         case_id(str): Search causative variants for a case
 
@@ -40,7 +42,39 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
         # Add chromosome and position to prepare for sorting
         variants.append((chrom_int, variant_obj["position"], variant_obj))
 
-    # Sort varants based on position
+    # Sort variants based on position
+    variants.sort(key=lambda x: (x[0], x[1]))
+
+    for variant in variants:
+        variant_obj = variant[2]
+        yield variant_obj
+
+
+def export_managed_variants(
+    adapter: MongoAdapter,
+    institute: str = None,
+    build: str = None,
+    category: list = ["snv", "sv"],
+) -> ManagedVariant:
+    """Export managed variants, optionally for a given institute or variant category (["snv", "cancer_sv", ...])"""
+
+    # Store the variants in a list of tuples for sorting
+    variants = []
+
+    managed_variants = adapter.managed_variants(category=category, build=build, institute=institute)
+
+    for managed_variant_obj in managed_variants:
+        chrom = managed_variant_obj["chromosome"]
+        # Convert chromosome to integer for sorting
+        chrom_int = CHROMOSOME_INTEGERS.get(chrom)
+        if not chrom_int:
+            LOG.info("Unknown chromosome %s", chrom)
+            continue
+
+        # Add chromosome and position to prepare for sorting
+        variants.append((chrom_int, variant_obj["position"], variant_obj))
+
+    # Sort variants based on position
     variants.sort(key=lambda x: (x[0], x[1]))
 
     for variant in variants:

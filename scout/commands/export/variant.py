@@ -105,6 +105,41 @@ def verified(collaborator, test, outpath=None):
     return written_files
 
 
+@click.command("managed", short_help="Export managed variants")
+@click.option(
+    "-c",
+    "--collaborator",
+    help="Specify what collaborator to export variants from. Defaults to all variants.",
+)
+@click.option(
+    "-b",
+    "--build",
+    help="Specify what build to export variants from. Defaults to all variants.",
+)
+@json_option
+@with_appcontext
+def managed_variants(collaborator: str, build: str, json: bool):
+    """Export causatives for a collaborator in .vcf format"""
+    LOG.info("Running scout export managed variants")
+    adapter = store
+
+    variants = export_managed_variants(adapter, collaborator, build)
+
+    if json:
+        click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
+        return
+
+    vcf_header = VCF_HEADER
+
+    # print header
+    for line in vcf_header:
+        click.echo(line)
+
+    for variant_obj in variants:
+        variant_string = get_vcf_entry(variant_obj)
+        click.echo(variant_string)
+
+
 @click.command("variants", short_help="Export variants")
 @click.option(
     "-c",
