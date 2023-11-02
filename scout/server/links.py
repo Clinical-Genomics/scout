@@ -599,6 +599,9 @@ def gnomad_sv_link(variant_obj, build=37):
 
     if build == 37:
         url_template += "?dataset=gnomad_sv_r2_1"
+        return url_template
+
+    url_template += "?dataset=gnomad_sv_r4"
 
     return url_template
 
