@@ -556,6 +556,10 @@ def gnomad_link(variant_obj, build=37):
         "{this[position]}-{this[reference]}-{this[alternative]}"
     ).format(this=variant_obj)
 
+    if build == 37:
+        url_template += "?dataset=gnomad_r2_1"
+        return url_template
+
     if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
         url_template += "?dataset=gnomad_r3"
 
@@ -575,13 +579,13 @@ def spliceai_link(variant_obj, build=37):
 def gnomad_sv_link(variant_obj, build=37):
     """Compose link to gnomAD website for a structural variant.
 
-    GnomAD SVs are not yet public for hg38 or MT as 2023-02-01.
-
     Since we do not track the GnomAD variant ID we link to the region view instead.
     For balanced variants, we pick the region for the start position (the var is available in both).
+
+    MT SVs are not available for 38 yet.
     """
 
-    if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
+    if variant_obj["chromosome"] in ["M", "MT"] and build == 38:
         return "https://gnomad.broadinstitute.org/"
 
     url_template = (
@@ -593,7 +597,8 @@ def gnomad_sv_link(variant_obj, build=37):
     else:
         url_template += f"-{variant_obj['position']}"
 
-    url_template += "?dataset=gnomad_sv_r2_1"
+    if build == 37:
+        url_template += "?dataset=gnomad_sv_r2_1"
 
     return url_template
 
