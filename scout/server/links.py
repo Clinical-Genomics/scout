@@ -585,9 +585,6 @@ def gnomad_sv_link(variant_obj, build=37):
     MT SVs are not available for 38 yet.
     """
 
-    if variant_obj["chromosome"] in ["M", "MT"] and build == 38:
-        return "https://gnomad.broadinstitute.org/"
-
     url_template = (
         "https://gnomad.broadinstitute.org/region/{this[chromosome]}-{this[position]}"
     ).format(this=variant_obj)
@@ -597,7 +594,7 @@ def gnomad_sv_link(variant_obj, build=37):
     else:
         url_template += f"-{variant_obj['position']}"
 
-    if build == 37:
+    if build == 37 or variant_obj["chromosome"] in ["M", "MT"]:
         url_template += "?dataset=gnomad_sv_r2_1"
         return url_template
 
