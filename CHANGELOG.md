@@ -11,8 +11,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - GnomAD now defaults to hg38 - change build 37 links accordingly
 
-
-
 ## [4.72.3]
 ### Fixed
 - Somatic general case report small variant table can crash with unclassified variants
