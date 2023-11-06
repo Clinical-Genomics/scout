@@ -8,6 +8,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Parallelize variant loading for each chromosome
 
+## [Unreleased]
+### Added
+- Shortcut button for HPO panel MEI variants from case page
+
+
 ## [4.72.4]
 ### Changed
 - Automatic test mongod version increased to v7
