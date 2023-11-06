@@ -2,7 +2,6 @@ import datetime
 import json as json_lib
 import logging
 import os
-from datetime import datetime
 
 import click
 from flask.cli import with_appcontext
@@ -131,7 +130,7 @@ def managed(collaborator: str, build: str, json: bool):
         return
 
     vcf_header = VCF_HEADER
-    vcf_header.insert(2, "##fileDate={}".format(datetime.now()))
+    vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
 
     for line in vcf_header:
         click.echo(line)
