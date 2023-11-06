@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [Unreleased]
+### Changed
+- STRs visualization in case panel to emphasize abnormal repeat count and predicted outcome
 ### Added
 - Shortcut button for HPO panel MEI variants from case page
 
