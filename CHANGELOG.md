@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - STRs visualization in case panel to emphasize abnormal repeat count and predicted outcome
+- Removed cytoband column from STRs variant view on case report
 ### Added
 - Shortcut button for HPO panel MEI variants from case page
 
