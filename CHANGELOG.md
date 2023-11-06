@@ -6,9 +6,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
-- Automatic test mongod version increased to v7
 - Parallelize variant loading for each chromosome
 
+## [4.72.4]
+### Changed
+- Automatic test mongod version increased to v7
+### Fixed
+- GnomAD now defaults to hg38 - change build 37 links accordingly
 
 ## [4.72.3]
 ### Fixed
