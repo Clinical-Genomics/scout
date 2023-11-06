@@ -1233,19 +1233,27 @@
       <thead>
         <tr class="table-secondary">
           <th>Disease</th>
+          <th>Inheritance model</th>
           <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           {% if variant.str_disease %}
-            <td>{{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</td>
-          {% endif %}
-          {% if variant.str_source is defined %}
-            <td>{{ variant.str_source.display }}</td>
+            <td>{{ variant.str_disease }}</td>
           {% else %}
             <td>-</td>
           {% endif %}
+          <td>
+            {{ variant.str_inheritance_mode if variant.str_inheritance_mode else "-" }}
+          </td>
+          <td>
+            {% if variant.str_source.display %}
+              <a href="{{variant.str_source_link}}" target="_blank" rel=”noopener">{{ variant.str_source.display }}</a>
+            {% else %}
+              "-"
+            {% endif %}
+          </td>
           </tr>
       </tbody>
     </table>
