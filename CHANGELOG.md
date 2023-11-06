@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 
 ## [Unreleased]
+### Added
+- Shortcut button for HPO panel MEI variants from case page
 ### Changed
 - Enable Gens CN profile button also in somatic case view
 
@@ -15,7 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Automatic test mongod version increased to v7
 ### Fixed
 - GnomAD now defaults to hg38 - change build 37 links accordingly
-
 
 ## [4.72.3]
 ### Fixed
