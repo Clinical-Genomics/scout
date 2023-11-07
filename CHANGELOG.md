@@ -5,15 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
+### Added
+- Shortcut button for HPO panel MEI variants from case page
+- Export managed variants from CLI
 ### Fixed
 - OMIM table is scrollable if higher than 700px
 ### Changed
 - STRs visualization on case panel to emphasize abnormal repeat count and associated condition
 - Removed cytoband column from STRs variant view on case report
-### Added
-- Shortcut button for HPO panel MEI variants from case page
-### Changed
 - Enable Gens CN profile button also in somatic case view
+
 
 ## [4.72.4]
 ### Changed
