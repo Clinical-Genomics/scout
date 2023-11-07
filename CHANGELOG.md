@@ -11,6 +11,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - OMIM table is scrollable if higher than 700px
 
+## [Unreleased]
+### Changed
+- STRs visualization on case panel to emphasize abnormal repeat count and associated condition
+- Removed cytoband column from STRs variant view on case report
+### Added
+- Shortcut button for HPO panel MEI variants from case page
+
+
 ## [4.72.4]
 ### Changed
 - Automatic test mongod version increased to v7

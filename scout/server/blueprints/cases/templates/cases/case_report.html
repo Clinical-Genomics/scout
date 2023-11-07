@@ -1123,15 +1123,22 @@
         <tr class="table-secondary">
           <th>Variant type</th>
           <th>Estimated size</th>
+          <th>Reference size</th>
           <th>Coordinates</th>
-          <th>Cytoband</th>
           <th>Gene panels</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
+        {% if not variant.str_status or variant.str_status == 'normal' %}
+          <tr>
+        {% elif variant.str_status == 'full_mutation' %}
+          <tr class="table-danger">
+        {% elif variant.str_status == 'pre_mutation' %}
+          <tr class="bg-warning">
+        {% endif %}
           <td><span class="badge badge-info">{{variant.category | upper}}</span></td>
           <td>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
+          <td>{{ variant.str_ref }}</td>
           <td>
             {% if variant.chromosome == variant.end_chrom %}
               chr{{variant.chromosome}}:{{variant.position}}-{{variant.end}}
@@ -1139,11 +1146,6 @@
               chr{{variant.chromosome}}:{{variant.position}}/chr{{variant.end_chrom or variant.chromosome}}:{{variant.end}}
             {% endif %}
           </td>
-          {% if variant.cytoband_start and variant.cytoband_end %}
-            <td>{{variant.cytoband_start}}-{{variant.cytoband_end}}</td>
-          {% else %}
-            <td>-</td>
-          {% endif %}
           <td>
             {% if variant.panels %}
               {% if variant.panels|length <= 3 %}
@@ -1231,19 +1233,27 @@
       <thead>
         <tr class="table-secondary">
           <th>Disease</th>
+          <th>Inheritance model</th>
           <th>Source</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           {% if variant.str_disease %}
-            <td>{{ variant.str_disease }} ({{ variant.str_inheritance_mode }})</td>
-          {% endif %}
-          {% if variant.str_source is defined %}
-            <td>{{ variant.str_source.display }}</td>
+            <td>{{ variant.str_disease }}</td>
           {% else %}
             <td>-</td>
           {% endif %}
+          <td>
+            {{ variant.str_inheritance_mode if variant.str_inheritance_mode else "-" }}
+          </td>
+          <td>
+            {% if variant.str_source.display %}
+              <a href="{{variant.str_source_link}}" target="_blank" rel="noopener noreferrer">{{ variant.str_source.display }}</a>
+            {% else %}
+              "-"
+            {% endif %}
+          </td>
           </tr>
       </tbody>
     </table>
