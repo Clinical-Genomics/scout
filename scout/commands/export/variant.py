@@ -9,11 +9,11 @@ from xlsxwriter import Workbook
 
 from scout.constants import CALLERS, DATE_DAY_FORMATTER
 from scout.constants.variants_export import VCF_HEADER, VERIFIED_VARIANTS_HEADER
-from scout.export.variant import export_variants, export_verified_variants
+from scout.export.variant import export_managed_variants, export_variants, export_verified_variants
 from scout.server.extensions import store
 
 from .export_handler import bson_handler
-from .utils import json_option
+from .utils import build_option, json_option
 
 LOG = logging.getLogger(__name__)
 
@@ -105,6 +105,37 @@ def verified(collaborator, test, outpath=None):
     return written_files
 
 
+@click.command("managed", short_help="Export managed variants")
+@click.option(
+    "-c",
+    "--collaborator",
+    help="Specify what collaborator to export variants from. Defaults to all variants.",
+)
+@build_option
+@json_option
+@with_appcontext
+def managed(collaborator: str, build: str, json: bool):
+    """Export managed variants for a collaborator in VCF or JSON format"""
+    LOG.info("Running scout export managed variants")
+    adapter = store
+
+    variants = export_managed_variants(adapter, collaborator, build)
+
+    if json:
+        click.echo(json_lib.dumps([var for var in variants], default=bson_handler))
+        return
+
+    vcf_header = VCF_HEADER
+    vcf_header.insert(2, "##fileDate={}".format(datetime.datetime.now()))
+
+    for line in vcf_header:
+        click.echo(line)
+
+    for variant_obj in variants:
+        variant_string = get_vcf_entry(variant_obj)
+        click.echo(variant_string)
+
+
 @click.command("variants", short_help="Export variants")
 @click.option(
     "-c",
@@ -143,7 +174,6 @@ def variants(collaborator: str, document_id: str, case_id: str, json: bool):
         for individual in case_obj["individuals"]:
             vcf_header[-1] = vcf_header[-1] + "\t" + individual["individual_id"]
 
-    # print header
     for line in vcf_header:
         click.echo(line)
 
@@ -176,11 +206,11 @@ def get_vcf_entry(variant_obj, case_id=None):
     variant_string = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
         variant_obj["chromosome"],
         variant_obj["position"],
-        variant_obj.get("dbsnp_id"),
+        variant_obj.get("dbsnp_id", "."),
         variant_obj.get("reference"),
         variant_obj.get("alternative"),
-        variant_obj.get("quality"),
-        ";".join(variant_obj.get("filters")),
+        variant_obj.get("quality", "."),
+        ";".join(variant_obj.get("filters", [])),
         info_field,
     )
 
