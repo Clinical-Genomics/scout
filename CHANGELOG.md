@@ -4,17 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
-### Changed
-- Parallelize variant loading for each chromosome
-
 ## [Unreleased]
+### Fixed
+- OMIM table is scrollable if higher than 700px
 ### Changed
 - STRs visualization on case panel to emphasize abnormal repeat count and associated condition
 - Removed cytoband column from STRs variant view on case report
+- Parallelize variant loading for each chromosome
 ### Added
 - Shortcut button for HPO panel MEI variants from case page
-
 
 ## [4.72.4]
 ### Changed
