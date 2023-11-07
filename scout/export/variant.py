@@ -2,6 +2,8 @@
 import logging
 import urllib.parse
 
+from pymongo import ASCENDING
+
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
 from scout.models.managed_variant import ManagedVariant
@@ -58,28 +60,14 @@ def export_managed_variants(
 ) -> ManagedVariant:
     """Export managed variants, optionally for a given institute or variant category (["snv", "cancer_sv", ...])"""
 
-    # Store the variants in a list of tuples for sorting
-    variants = []
+    managed_variants = (
+        adapter.managed_variants(category=category, build=build, institute=institute)
+        .sort([("chromosome", ASCENDING), ("position", ASCENDING)])
+        .collation({"locale": "en_US", "numericOrdering": True})
+    )
 
-    managed_variants = adapter.managed_variants(category=category, build=build, institute=institute)
-
-    for managed_variant_obj in managed_variants:
-        chrom = managed_variant_obj["chromosome"]
-        # Convert chromosome to integer for sorting
-        chrom_int = CHROMOSOME_INTEGERS.get(chrom)
-        if not chrom_int:
-            LOG.info("Unknown chromosome %s", chrom)
-            continue
-
-        # Add chromosome and position to prepare for sorting
-        variants.append((chrom_int, managed_variant_obj["position"], managed_variant_obj))
-
-    # Sort variants based on position
-    variants.sort(key=lambda x: (x[0], x[1]))
-
-    for variant in variants:
-        managed_variant_obj = variant[2]
-        yield managed_variant_obj
+    for variant in managed_variants:
+        yield variant
 
 
 def export_verified_variants(aggregate_variants, unique_callers):

@@ -1,4 +1,5 @@
 from pymongo import ASCENDING, DESCENDING, TEXT, IndexModel
+from pymongo.collation import Collation
 
 INDEXES = {
     "disease_term": [
@@ -134,7 +135,12 @@ INDEXES = {
         IndexModel(
             [("managed_variant_id", ASCENDING)],
             name="managed_variant_id",
-        )
+        ),
+        IndexModel(
+            [("chromosome", ASCENDING), ("position", ASCENDING)],
+            name="chrom_pos",
+            collation=Collation(locale="en_US", numericOrdering=True),
+        ),
     ],
 }
 
