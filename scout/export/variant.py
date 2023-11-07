@@ -2,22 +2,26 @@
 import logging
 import urllib.parse
 
+from pymongo import ASCENDING
+
+from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import CHROMOSOME_INTEGERS
+from scout.models.managed_variant import ManagedVariant
 
 LOG = logging.getLogger(__name__)
 
 
-def export_variants(adapter, collaborator, document_id=None, case_id=None):
-    """Export causative variants for a collaborator
+def export_variants(
+    adapter: MongoAdapter, collaborator: str, document_id: str = None, case_id: str = None
+) -> dict:
+    """Export causative variants for a collaborator.
 
-    Args:
-        adapter(MongoAdapter)
-        collaborator(str)
-        document_id(str): Search for a specific variant
-        case_id(str): Search causative variants for a case
+    A collaborator institute is required to narrow the export.
+    Given a document_id, yields that particular document.
 
-    Yields:
-        variant_obj(scout.Models.Variant): Variants marked as causative ordered by position.
+    Given a case id, narrows causatives search to that collaborator and case.
+
+    Yields dict variant objects (scout.Models.Variant) sorted by chromosome and position.
     """
 
     # Store the variants in a list for sorting
@@ -40,12 +44,30 @@ def export_variants(adapter, collaborator, document_id=None, case_id=None):
         # Add chromosome and position to prepare for sorting
         variants.append((chrom_int, variant_obj["position"], variant_obj))
 
-    # Sort varants based on position
+    # Sort variants based on position
     variants.sort(key=lambda x: (x[0], x[1]))
 
     for variant in variants:
         variant_obj = variant[2]
         yield variant_obj
+
+
+def export_managed_variants(
+    adapter: MongoAdapter,
+    institute: str = None,
+    build: str = None,
+    category: list = ["snv", "sv"],
+) -> ManagedVariant:
+    """Export managed variants, optionally for a given institute or variant category (["snv", "cancer_sv", ...])"""
+
+    managed_variants = (
+        adapter.managed_variants(category=category, build=build, institute=institute)
+        .sort([("chromosome", ASCENDING), ("position", ASCENDING)])
+        .collation({"locale": "en_US", "numericOrdering": True})
+    )
+
+    for variant in managed_variants:
+        yield variant
 
 
 def export_verified_variants(aggregate_variants, unique_callers):
