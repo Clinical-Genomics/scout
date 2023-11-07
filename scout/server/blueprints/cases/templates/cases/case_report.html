@@ -1129,12 +1129,12 @@
         </tr>
       </thead>
       <tbody>
-        {% if variant.str_status == 'full_mutation' %}
+        {% if not variant.str_status or variant.str_status == 'normal' %}
+          <tr>
+        {% elif variant.str_status == 'full_mutation' %}
           <tr class="table-danger">
         {% elif variant.str_status == 'pre_mutation' %}
           <tr class="bg-warning">
-        {% else %}
-          <tr>
         {% endif %}
           <td><span class="badge badge-info">{{variant.category | upper}}</span></td>
           <td>{{ variant.alternative|replace("STR", "")|replace("<", "")|replace(">", "") }}</td>
