@@ -130,6 +130,12 @@ INDEXES = {
             name="collaborators_status_updated_at",
         ),
     ],
+    "managed_variant": [
+        IndexModel(
+            [("managed_variant_id", ASCENDING)],
+            name="managed_variant_id",
+        )
+    ],
 }
 
 ID_PROJECTION = {"_id": 1}

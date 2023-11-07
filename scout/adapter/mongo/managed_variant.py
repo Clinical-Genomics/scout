@@ -110,7 +110,7 @@ class ManagedVariantHandler(object):
 
         return managed_variant
 
-    def find_managed_variant_id(self, variant_id):
+    def find_managed_variant_id(self, variant_id: str) -> dict:
         """Fetch eg search for a managed variant with the encoded positional variant_id.
 
         Arguments:

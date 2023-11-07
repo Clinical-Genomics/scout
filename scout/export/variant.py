@@ -12,14 +12,14 @@ LOG = logging.getLogger(__name__)
 def export_variants(
     adapter: MongoAdapter, collaborator: str, document_id: str = None, case_id: str = None
 ) -> dict:
-    """Export causative variants for a collaborator
+    """Export causative variants for a collaborator.
 
-    Args:
-        document_id(str): Search for a specific variant
-        case_id(str): Search causative variants for a case
+    A collaborator institute is required to narrow the export.
+    Given a document_id, yields that particular document.
 
-    Yields:
-        variant_obj(scout.Models.Variant): Variants marked as causative ordered by position.
+    Given a case id, narrows causatives search to that collaborator and case.
+
+    Yields dict variant objects (scout.Models.Variant) sorted by chromosome and position.
     """
 
     # Store the variants in a list for sorting

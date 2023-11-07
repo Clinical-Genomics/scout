@@ -13,7 +13,7 @@ from scout.export.variant import export_managed_variants, export_variants, expor
 from scout.server.extensions import store
 
 from .export_handler import bson_handler
-from .utils import json_option
+from .utils import build_option, json_option
 
 LOG = logging.getLogger(__name__)
 
@@ -111,15 +111,11 @@ def verified(collaborator, test, outpath=None):
     "--collaborator",
     help="Specify what collaborator to export variants from. Defaults to all variants.",
 )
-@click.option(
-    "-b",
-    "--build",
-    help="Specify what build to export variants from. Defaults to all variants.",
-)
+@build_option
 @json_option
 @with_appcontext
 def managed(collaborator: str, build: str, json: bool):
-    """Export causatives for a collaborator in .vcf format"""
+    """Export managed variants for a collaborator in VCF or JSON format"""
     LOG.info("Running scout export managed variants")
     adapter = store
 
