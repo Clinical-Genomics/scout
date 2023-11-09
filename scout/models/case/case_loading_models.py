@@ -378,7 +378,6 @@ class CaseLoader(BaseModel):
     display_name: Optional[str] = Field(None, alias="family_name")
     exe_ver: Optional[str] = None
     family: Optional[str] = None
-    family_name: Optional[str] = None
     gene_fusion_report: Optional[str] = None
     gene_fusion_report_research: Optional[str] = None
     gene_panels: Optional[List[str]] = []
@@ -420,13 +419,6 @@ class CaseLoader(BaseModel):
     def set_case_id(cls, values) -> "CaseLoader":
         """Make sure case will have an _id."""
         values.update({"case_id": values.get("case_id", values.get("family"))})
-        return values
-
-    @model_validator(mode="before")
-    def set_display_name(cls, values) -> "CaseLoader":
-        """Set case's display name."""
-        if values.get("display_name") is None:
-            values.update({"display_name": values.get("family")})
         return values
 
     @model_validator(mode="before")
