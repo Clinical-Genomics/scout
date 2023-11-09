@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Fixed
 - OMIM table is scrollable if higher than 700px
+- Pinned variants validation badge is now red for false positives.
 - Case display name defaulting to case ID when `family_name` or `display_name` are missing from case upload config file
 ### Changed
 - STRs visualization on case panel to emphasize abnormal repeat count and associated condition
