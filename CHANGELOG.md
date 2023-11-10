@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [Unreleased]
+## [4.73]
 ### Fixed
 - OMIM table is scrollable if higher than 700px
 - Pinned variants validation badge is now red for false positives.
