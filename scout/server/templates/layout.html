@@ -17,8 +17,8 @@
 {% endblock head %}
 
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg nav-pills navbar-dark bg-primary sticky-top">
-      <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg nav-pills navbar-dark bg-primary sticky-top" >
+      <div class="container-fluid bg-primary rounded-bottom">
         <a class="navbar-brand" href="{{ url_for('cases.index') }}">
           <img src="{{ url_for('public.static', filename='scout-logo.png') }}" width="30" height="30" class="d-inline-block align-top text-white" alt="">Scout</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
