@@ -379,7 +379,7 @@ class CaseLoader(BaseModel):
     custom_images: Optional[Union[RawCustomImages, ParsedCustomImages]] = None
     default_panels: Optional[List[str]] = Field([], alias="default_gene_panels")
     delivery_report: Optional[str] = None
-    display_name: Optional[str] = Field(alias="family_name")
+    display_name: Optional[str] = Field(None, alias="family_name")
     exe_ver: Optional[str] = None
     family: Optional[str] = None
     gene_fusion_report: Optional[str] = None
