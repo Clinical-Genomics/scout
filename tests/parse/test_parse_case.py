@@ -81,6 +81,7 @@ def test_parse_case_parsing(scout_config, param_name):
     (
         [
             ("case_id", "family"),
+            ("display_name", "family_name"),
             ("default_panels", "default_gene_panels"),
             ("peddy_ped_check", "peddy_check"),
             ("peddy_sex_check", "peddy_sex"),
