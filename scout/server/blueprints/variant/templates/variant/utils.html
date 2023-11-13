@@ -316,16 +316,20 @@
   {% set align_start = variant.position - 500 if variant.position > 500 else 0 %}
   {% set align_end = variant.end + 500 %}
   {% set chrom = variant.chromosome %}
-    <div class="col-4 offset-1">
+    <div class="col-4 offset-1 ">
     {% if zoom == "start" %}
       {% set align_end = variant.position + 500 %}
-      {{variant.chromosome}}:{{variant.position}}
+      {{variant.chromosome}}:{{variant.position|human_longint|safe}}<button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+              style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{variant.chromosome}}:{{variant.position}}" title="Copy to clipboard">
+              </button>
     {% elif zoom == "end" %}
       {% set align_start = variant.end - 500 %}
       {% set chrom = variant.end_chrom %}
-      {{variant.end_chrom}}:{{variant.end}}
+      {{variant.end_chrom}}:{{variant.end|human_longint|safe}}<button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+              style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{variant.end_chrom}}:{{variant.end}}" title="Copy to clipboard">
+              </button>
     {% elif zoom == "length" %}
-      {{ '-' if variant.length == 100000000000 else variant.length }}
+      <span style="white-space: nowrap;">{{ '-' if variant.length == 100000000000 else variant.length|human_longint|safe }}</span>
     {% endif %}
     </div>
     <div class="col-3">

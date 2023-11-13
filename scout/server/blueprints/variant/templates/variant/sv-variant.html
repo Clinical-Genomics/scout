@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
-{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variant/variant_details.html" import old_observations %}
-{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants %}
-{% from "variant/utils.html" import modal_causative, overlapping_panel, genes_panel, transcripts_panel, sv_alignments, pin_button, causative_button, igv_track_selection %}
+{% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants, variant_scripts %}
+{% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 {% from "variant/gene_disease_relations.html" import omim_phenotypes %}
-{% from "variant/variant_details.html" import gtcall_panel, frequencies, observations_panel %}
-{% from "variant/buttons.html" import variant_tag_button, dismiss_variant_button, splice_junctions_button %}
+{% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel %}
+{% from "variant/buttons.html" import dismiss_variant_button, splice_junctions_button, variant_tag_button %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - {{ variant.display_name }}
@@ -215,8 +215,12 @@
         <li class="list-group-item">
           <span class="d-inline">Position</span>
           <span class="d-inline float-end">
-            {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
+             <button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+              style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}" title="Copy to clipboard">
+              </button>
+              {{ variant.chromosome }}:{{ variant.position }}{{ "-" if variant.end_chrom == variant.chromosome else " / " + variant.end_chrom+":" }}{{ variant.end }}
           </span>
+
         </li>
         <li class="list-group-item">
           <span class="d-inline">Cytoband</span>
@@ -416,62 +420,11 @@
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
+  {{ variant_scripts() }}
+
   <script>
-    var triggerGenesTabList = [].slice.call(document.querySelectorAll('#nav-genes-tab'))
-      triggerGenesTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
-
-    var triggerTransTabList = [].slice.call(document.querySelectorAll('#nav-transcripts-tab'))
-      triggerTransTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
-
-    function set_scrolly_table(table_id) {
-      if (document.getElementById(table_id).rows.length > 5) {
-        $('#' + table_id).DataTable({
-          scrollY: 350,
-          stripeClasses: [],
-          scrollCollapse: true,
-          paging: false,
-          searching: false,
-          ordering: true,
-          info: false})
-      }
-    }
-
     set_scrolly_table('overlapping_table')
     set_scrolly_table('genes_panel_table')
     set_scrolly_table('transcripts_panel_table')
-
-    // Tab hidden thead are not always drawn well, as they have no size. Force adjust and redraw on show.
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-      $($.fn.dataTable.tables(true)).DataTable()
-      .columns.adjust().draw();
-    });
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
-    })
-
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body'})
-    })
-
   </script>
 {% endblock %}
