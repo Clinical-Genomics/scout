@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% from "variant/buttons.html" import database_buttons %}
-{% from "utils.html" import comments_panel, activity_panel, pedigree_panel %}
+{% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
-{% from "variant/utils.html" import modal_causative, overlapping_panel, genes_panel, transcripts_panel, proteins_panel,  pin_button, causative_button %}
+{% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
-{% from "variant/gene_disease_relations.html" import omim_phenotypes, inheritance_panel, autozygosity_panel, genemodels_panel %}
+{% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
-{% from "variant/components.html" import alignments, panel_classify, compounds_panel, matching_variants, external_links, clinsig_table, external_scripts, external_stylesheets %}
-{% from "variant/sanger.html" import sanger_button, modal_sanger, modal_cancel_sanger %}
+{% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts %}
+{% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 
 {% block title %}
@@ -230,6 +230,8 @@
             <td>
               Position:
 	      <strong>{{ variant.chromosome }}:<span class="text-muted">{{ variant.position }}</span></strong>
+             <button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}" title="Copy to clipboard">
+              </button>
             </td>
             <td colspan=3>
               Change:
@@ -244,6 +246,9 @@
               {% else %}
                 <strong>{{ variant.alternative }}</strong>
               {% endif %}
+              <button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.reference }}>{{ variant.alternative }}" title="Copy to clipboard">
+              </button>
+
 	    </td>
           </tr>
           <tr>
@@ -385,6 +390,7 @@
 {% block scripts %}
   {{ super() }}
   {{ external_scripts() }}
+  {{ variant_scripts() }}
   <script>
     const flipArrowIcon = (element) => {
       const icon = element.firstChild
@@ -394,26 +400,6 @@
         icon.classList.replace('fa-angle-up', 'fa-angle-down')
       }
     }
-
-    var triggerGenesTabList = [].slice.call(document.querySelectorAll('#nav-genes-tab'))
-      triggerGenesTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
-
-    var triggerTransTabList = [].slice.call(document.querySelectorAll('#nav-transcripts-tab'))
-      triggerTransTabList.forEach(function (triggerEl) {
-        var tabTrigger = new bootstrap.Tab(triggerEl)
-
-        triggerEl.addEventListener('click', function (event) {
-        event.preventDefault()
-        tabTrigger.show()
-      })
-    })
 
     var triggerProtTabList = [].slice.call(document.querySelectorAll('#nav-proteins-tab'))
       triggerProtTabList.forEach(function (triggerEl) {
@@ -425,76 +411,9 @@
       })
     })
 
-    function set_scrolly_table(table_id) {
-      if (document.getElementById(table_id).rows.length > 5) {
-        $('#' + table_id).DataTable({
-          scrollY: 350,
-          stripeClasses: [],
-          scrollCollapse: true,
-          searching: false,
-          paging: false,
-          ordering: true,
-          info: false})
-      }
-    }
-
     set_scrolly_table('transcript_overview_table')
     set_scrolly_table('proteins_panel_table')
     set_scrolly_table('transcripts_panel_table')
-
-    // Tab hidden thead are not always drawn well, as they have no size. Force adjust and redraw on show.
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-      $($.fn.dataTable.tables(true)).DataTable()
-      .columns.adjust().draw();
-    });
-
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl, {container: 'body'})
-    })
-
-    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-      return new bootstrap.Popover(popoverTriggerEl, { sanitizeFn: function (content) {
-          return DOMPurify.sanitize(content)
-        },
-        container: 'body'})
-    })
-
-    $('select[multiple]').selectpicker({
-        width: '100%'
-      });
-
-    $('.js-copy').click(function() {
-      var text = $(this).attr('data-copy');
-      var el = $(this);
-      copyToClipboard(text, el);
-    });
-
-    // Code from https://codepen.io/nathanlong/pen/ZpAmjv
-    function copyToClipboard(text, el) {
-    var copyTest = document.queryCommandSupported('copy');
-    var elOriginalText = el.attr('data-original-title');
-
-    if (copyTest === true) {
-      var copyTextArea = document.createElement("textarea");
-      copyTextArea.value = text;
-      document.body.appendChild(copyTextArea);
-      copyTextArea.select();
-      try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'Copied!' : 'Whoops, not copied!';
-        el.attr('data-original-title', msg).tooltip('show');
-      } catch (err) {
-        console.log('Oops, unable to copy');
-      }
-      document.body.removeChild(copyTextArea);
-      el.attr('data-original-title', elOriginalText);
-    } else {
-      // Fallback if browser doesn't support .execCommand('copy')
-      window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
-    }
-  }
 
   </script>
 {% endblock %}
