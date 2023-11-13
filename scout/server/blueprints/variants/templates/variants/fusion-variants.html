@@ -58,17 +58,17 @@ onsubmit="return validateForm()">
           <tr>
             <th style="width:3%"></th>
             <th style="width:4%" title="Beta version. Currently testing">Rank (beta)</th>
-            <th style="width:10%" title="HGNC symbols">Fusion Genes</th>
+            <th style="width:6%" title="HGNC symbols">Fusion Genes</th>
             <th style="width:4%" title="Number of callers detecting a given event">Callers</th>
             <th style="width:4%" title="Beta version. Currently testing">Score (beta)</th>
-            <th style="width:4%" title="Orientation">Orientation</th>
             <th style="width:6%" title="Number of paired-ends that support the event">Junction Reads</th>
             <th style="width:6%" title="Number of split reads that support the event">Split Reads</th>
             <th style="width:6%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
             <th style="width:8%" title="Frame status of the fusion">Frame Status</th>
-            <th style="width:15%" title="Transcript ID (Exon Number)">Transcript ID (Exon Number)</th>
+            <th style="width:8%" title="Transcript ID">Transcript ID</th>
+            <th style="width:4%" title="Exon Number">Exon Number</th>
             <th style="width:4%" title="Breakpoints">Breakpoints</th>
-
+            <th style="width:4%" title="Orientation">Orientation</th>
           </tr>
         </thead>
         <tbody>
@@ -109,32 +109,32 @@ onsubmit="return validateForm()">
             <strong>{{ variant.gene_a.hgnc_symbol }}</strong>: {{ variant.gene_a.description }}
        </div>"
       href="{{ url_for('genes.gene', hgnc_id=variant.gene_a.hgnc_id) }}">{{ variant.gene_a.hgnc_symbol or variant.gene_a.hgnc_id }}
-      </a>
+      </a> <br>
       <a data-bs-toggle="tooltip" data-bs-html="true" title="
        <div>
             <strong>{{ variant.gene_b.hgnc_symbol }}</strong>: {{ variant.gene_b.description }}
        </div>"
-      href="{{ url_for('genes.gene', hgnc_id=variant.gene_b.hgnc_id) }}"> -- {{ variant.gene_b.hgnc_symbol or variant.gene_b.hgnc_id }}
+      href="{{ url_for('genes.gene', hgnc_id=variant.gene_b.hgnc_id) }}"> {{ variant.gene_b.hgnc_symbol or variant.gene_b.hgnc_id }}
       </a>
      </div>
     </td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.tool_hits|int }}</span></td>
     <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
-    <td>{{ variant.orientation }}</td>
     <td>{{ variant.samples[0].read_depth }}</td>
     <td>{{ variant.samples[0].split_read }}</td>
     <td>{{ variant.samples[0].ffpm }}</td>
     <td>{{ variant.frame_status }}</td>
     <td>
-      <div class="float-start">{{ variant.gene_a.hgnc_symbol or variant.gene_a.hgnc_id }}</div>
-      <div class="float-end">&nbsp;({{ variant.exon_number_a|int }})</div>
-      <div class="float-end">{{ variant.transcript_id_a }} </div><br>
-      <div class="float-start">{{ variant.gene_b.hgnc_symbol or variant.gene_b.hgnc_id }}</div>
-      <div class="float-end">&nbsp;({{ variant.exon_number_b|int }})</div>
-      <div class="float-end">{{ variant.transcript_id_b }} </div><br>
+      <div>{{ variant.transcript_id_a }} </div>
+      <div>{{ variant.transcript_id_b }} </div>
     </td>
-      <td> {{ variant.breakpoint_a }} <br> {{ variant.breakpoint_b }} </td>
+    <td>
+      <div>&nbsp;{{ variant.exon_number_a|int }}</div>
+      <div>&nbsp;{{ variant.exon_number_b|int }}</div>
+    </td>
+    <td> {{ variant.breakpoint_a }} <br> {{ variant.breakpoint_b }} </td>
+    <td>{{ variant.orientation }}</td>
   </tr>
 {% endmacro %}
 
