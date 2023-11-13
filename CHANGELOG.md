@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Shortcut button for HPO panel MEI variants from case page
 - Export managed variants from CLI
+- Support and view for fusion vcf
 
 ## [4.72.4]
 ### Changed
