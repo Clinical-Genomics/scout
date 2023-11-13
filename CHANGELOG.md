@@ -13,7 +13,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed cytoband column from STRs variant view on case report
 - More long integers formatted with thin spaces, and copy to clipboard buttons added
 - Parallelize variant loading for each chromosome
-- Parallelize variant loading for each chromosome
 ### Fixed
 - OMIM table is scrollable if higher than 700px
 - Pinned variants validation badge is now red for false positives.
