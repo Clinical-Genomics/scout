@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [Unreleased]
+## [4.73]
 ### Added
 - Shortcut button for HPO panel MEI variants from case page
 - Export managed variants from CLI
@@ -13,7 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed cytoband column from STRs variant view on case report
 - More long integers formatted with thin spaces, and copy to clipboard buttons added
 ### Fixed
-- OMIM table is scrollable if higher than 700px
+- OMIM table is scrollable if higher than 700px on SV page
 - Pinned variants validation badge is now red for false positives.
 - Case display name defaulting to case ID when `family_name` or `display_name` are missing from case upload config file
 - Expanded menu visible at screen sizes below 1000px now has background color
