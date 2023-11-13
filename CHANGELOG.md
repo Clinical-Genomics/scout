@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case display name defaulting to case ID when `family_name` or `display_name` are missing from case upload config file
 - Expanded menu visible at screen sizes below 1000px now has background color
 - The image in ClinVar howto-modal is now responsive
+- Clicking on a case in case groups when case was already removed from group in another browser tab
 ### Changed
 - STRs visualization on case panel to emphasize abnormal repeat count and associated condition
 - Removed cytoband column from STRs variant view on case report
