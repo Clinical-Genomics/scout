@@ -165,9 +165,9 @@
               <td>{{ obs.homozygote|default('N/A') }}</td>
               <td>{{ obs.total|default('N/A') }}</td>
             </tr>
+          {% if obs.cases %}
             <tr>
               <td colspan="4">
-                  {% if obs.cases %}
                     {% for data in obs.cases %}
                       {% if data.variant and data.variant.category == "snv"%}
                         <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
@@ -180,12 +180,13 @@
                     {% if obs.cases|length > 10 %}
                     + more
                     {% endif%}
-                  {% elif obs.observations == 1 %}
+                  {% if obs.observations == 1 %}
                     Observed only in this case
                   {% endif %}
               </td>
             </tr>
           {% endfor %}
+          {% endif %}
         </tbody>
       </table>
     </div>
