@@ -67,7 +67,7 @@ onsubmit="return validateForm()">
             <th style="width:6%" title="Fusion fragments per million total RNA-seq fragments">FFPM</th>
             <th style="width:8%" title="Frame status of the fusion">Frame Status</th>
             <th style="width:15%" title="Transcript ID (Exon Number)">Transcript ID (Exon Number)</th>
-            <th style="width:12%" title="Breakpoints">Breakpoints</th>
+            <th style="width:4%" title="Breakpoints">Breakpoints</th>
 
           </tr>
         </thead>
@@ -134,10 +134,7 @@ onsubmit="return validateForm()">
       <div class="float-end">&nbsp;({{ variant.exon_number_b|int }})</div>
       <div class="float-end">{{ variant.transcript_id_b }} </div><br>
     </td>
-      <td>
-      <div class="float-start">{{ variant.breakpoint_a }}</div>
-      <div class="float-end">{{ variant.breakpoint_b }} </div><br>
-    </td>
+      <td> {{ variant.breakpoint_a }} <br> {{ variant.breakpoint_b }} </td>
   </tr>
 {% endmacro %}
 
