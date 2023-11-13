@@ -669,7 +669,6 @@ def fusion_variants(institute_id, case_name):
         cytobands=cytobands,
         dismiss_variant_options={
             **DISMISS_VARIANT_OPTIONS,
-            **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         },
         expand_search=controllers.get_expand_search(request.form),
         filters=available_filters,
