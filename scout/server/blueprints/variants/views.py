@@ -23,10 +23,10 @@ from . import controllers
 from .forms import (
     CancerFiltersForm,
     FiltersForm,
+    FusionFiltersForm,
     MeiFiltersForm,
     StrFiltersForm,
     SvFiltersForm,
-    FusionFiltersForm,
 )
 
 LOG = logging.getLogger(__name__)

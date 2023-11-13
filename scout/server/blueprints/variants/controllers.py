@@ -43,7 +43,7 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm, FusionFiltersForm
+from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
 from .utils import update_case_panels
 
 LOG = logging.getLogger(__name__)
