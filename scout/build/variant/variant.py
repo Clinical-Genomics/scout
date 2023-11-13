@@ -214,7 +214,8 @@ def build_variant(
     variant_obj["gene_symbol_b"] = variant.get("gene_b")
     variant_obj["tool_hits"] = variant.get("tool_hits")
     variant_obj["fusion_score"] = variant.get("fusion_score")
-    variant_obj["rank_score"] = variant.get("fusion_score")
+    if variant.get("fusion_score"):
+        variant_obj["rank_score"] = variant.get("fusion_score")
     variant_obj["hgnc_id_a"] = variant.get("hgnc_id_a")
     variant_obj["hgnc_id_b"] = variant.get("hgnc_id_b")
     variant_obj["gene_a"] = hgncid_to_gene.get(variant_obj["hgnc_id_a"])
