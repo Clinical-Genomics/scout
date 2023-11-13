@@ -1071,8 +1071,10 @@ def remove_case_group(store, current_user, institute_id, case_name, case_group):
 
     current_group_ids = case_obj.get("group", [])
 
-    # STR OBJID mismatch?
-    current_group_ids.remove(ObjectId(case_group))
+    obj_id_group = ObjectId(case_group)
+    if obj_id_group not in current_group_ids:
+        return
+    current_group_ids.remove(obj_id_group)
     updated_case = store.update_case_group_ids(
         institute_obj, case_obj, user_obj, link, current_group_ids
     )

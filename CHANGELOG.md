@@ -4,11 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [Unreleased]
+### Added
+- Support and view for fusion vcf
+
+## [4.73]
 ### Added
 - Shortcut button for HPO panel MEI variants from case page
 - Export managed variants from CLI
-- Support and view for fusion vcf
 ### Changed
 - STRs visualization on case panel to emphasize abnormal repeat count and associated condition
 - Removed cytoband column from STRs variant view on case report
