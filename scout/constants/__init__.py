@@ -180,9 +180,9 @@ CALLERS = {
     ],
     "str": [{"id": "expansionhunter", "name": "ExpansionHunter"}],
     "fusion": [
-        {"id": "ARRIBA", "name": "Arriba"},
-        {"id": "STARFUSION", "name": "STARfusion"},
-        {"id": "FUSIONCATCHER", "name": "FusionCatcher"},
+        {"id": "arriba", "name": "Arriba"},
+        {"id": "starfusion", "name": "STARfusion"},
+        {"id": "fusioncatcher", "name": "FusionCatcher"},
     ],
 }
 
