@@ -7,7 +7,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Refactored especially cancer filter for decimal place fields to allow unfreezing WTForms and upgrade to v3
-=======
 ### Fixed
 -loqusdb table no longer has empty row below each loqusid
 
