@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from flask import current_app
 
@@ -80,6 +80,13 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["stripy_link"] = stripy_gene(hgnc_symbol)
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
+    gene_obj["decipher_link"] = decipher_gene(hgnc_symbol)
+
+
+def decipher_gene(hgnc_symbol: str) -> Optional[str]:
+    """Create link to Decipher gene."""
+    if hgnc_symbol:
+        return f"https://www.deciphergenomics.org/gene/{hgnc_symbol}/overview/clinical-info"
 
 
 def panelapp_gene(hgnc_symbol):
