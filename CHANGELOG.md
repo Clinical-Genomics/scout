@@ -7,7 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Parallelize variant loading for each chromosome
-
+### Fixed
+-loqusdb table no longer has empty row below each loqusid
 
 ## [4.73]
 ### Added
