@@ -79,7 +79,7 @@
                         {% if var.category == "snv" %} <!-- Share either gene names or variant details for SNVs -->
 
                           <!-- Share variant it is, could be a multi-gene variant, resulting into multiple gene submission-->
-                          ~ Variant {{count.value}} {% if var.genes|length > 1 %} ({{var.genes|length}}) {%endif%} ~ <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
+                          ~ Variant {{count.value}} {% if var.genes|length > 1 %} ({{var.genes|length}} genes) {%endif%} ~ <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
 
                           {% if var.genes|length > 1 %} <!-- Share single gene variants from a multi-gene variant -->
                             {% for gene in var.genes %}
