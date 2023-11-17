@@ -107,8 +107,7 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
         selected_gene: str = var.split("|")[1] if "|" in var else None
 
         if var_obj["category"] not in ["snv", "snv_research", "cancer", "cancer_research"]:
-            g_feature = {"gene": {"id": selected_gene}}
-            g_features.append(g_feature)
+            g_features.append({"gene": {"id": selected_gene}})
             continue
 
         # "snv", "snv_research", "cancer", "cancer_research" variants
@@ -124,9 +123,8 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
             if selected_gene and gene_symbol != selected_gene:
                 continue
 
-            g_feature = {"gene": {"id": gene_symbol}}
             if genes_only is True:  # Disclose only gene info
-                g_features.append(g_feature)
+                g_features.append(g_feature={"gene": {"id": gene_symbol}})
                 continue
 
             # share Variant-level information
@@ -150,8 +148,6 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
                     zygosity = zyg["genotype_call"].count("1") + zyg["genotype_call"].count("2")
             g_feature["zygosity"] = zygosity
             g_features.append(g_feature)
-
-        LOG.warning(g_features)
 
     return g_features
 
