@@ -123,8 +123,9 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
             if selected_gene and gene_symbol != selected_gene:
                 continue
 
+            g_feature = {"gene": {"id": gene_symbol}}
             if genes_only is True:  # Disclose only gene info
-                g_features.append({"gene": {"id": gene_symbol}})
+                g_features.append(g_feature)
                 continue
 
             # share Variant-level information
