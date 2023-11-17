@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - SNVs and Indels, MEI and str variants genes have links to Decipher
 ### Fixed
 -loqusdb table no longer has empty row below each loqusid
+- MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
 
 ## [4.73]
 ### Added

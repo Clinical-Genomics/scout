@@ -175,9 +175,11 @@ def parse_matches(patient_id, match_objs):
     parsed_matches = []
 
     for match_obj in match_objs:
-        # convert match date from millisecond to readable date
-        milliseconds_date = match_obj["created"]["$date"]
-        mdate = datetime.datetime.fromtimestamp(milliseconds_date / 1000.0)
+        match_date = match_obj["created"]["$date"]
+        try:  # Patientmatcher < 4.5 returns dates in milliseconds
+            mdate = datetime.datetime.fromtimestamp(match_date / 1000.0)
+        except TypeError:  # Patientmatcher >= 4.5 returns dates in isoformat
+            mdate = datetime.datetime.strptime(match_date, "%Y-%m-%dT%H:%M:%S.%fZ")
         match_type = "external"
         matching_patients = []
 
