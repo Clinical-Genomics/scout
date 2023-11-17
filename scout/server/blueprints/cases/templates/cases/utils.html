@@ -73,12 +73,22 @@
                   <li class="list-group-item">
                     Select <u><b>max 3</b></u> variants/genes from the pinned variants list (only gene names can be shared for SVs)<br>
                     <div style="max-height:200px; overflow-y: scroll;"">
+                      {% set count = namespace(value=0) %}
                       {% for var in suspects %}
+                        {% set count.value = count.value + 1 %}
                         {% if var.category == "snv" %} <!-- Share either gene names or variant details for SNVs -->
-                          <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
+                          <!-- Share multi-gene variant -->
+                          ~ Variant {{count.value}} ~ <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}">{{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
+
+                          {% if var.genes|length > 1 %}
+                            {% for gene in var.genes %}  <!-- Share single gene variants from a multi-gene variant -->
+                              ~ Variant {{count.value}} ~ <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}">{{ gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }}<span class="badge bg-success">SNV</span><br>
+                            {% endfor %}
+                          {% endif %}
+
                         {% elif var.category == "sv" %} <!-- Share only gene names from SVs -->
                           {% for gene in var.genes %}
-                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge bg-warning">SV</span><br>
+                            ~ Variant {{count.value}} ~  <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge bg-warning">SV</span><br>
                           {% endfor %}
                         {% endif %}
                       {% endfor %}

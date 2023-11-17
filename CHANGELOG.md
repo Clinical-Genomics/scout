@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
+### Changed
+- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 ### Fixed
 -loqusdb table no longer has empty row below each loqusid
 
