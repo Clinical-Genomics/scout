@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Fixed
 -loqusdb table no longer has empty row below each loqusid
+- MatchMaker submission details page crashing
 
 ## [4.73]
 ### Added
