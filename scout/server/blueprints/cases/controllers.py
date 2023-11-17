@@ -1191,7 +1191,7 @@ def matchmaker_add(request, institute_id, case_name):
         "patient_id": [],
         "server_responses": [],
     }
-    server_responses = []
+
     n_updated = 0
     for individual in case_obj.get("individuals"):
         if not individual["phenotype"] in [
