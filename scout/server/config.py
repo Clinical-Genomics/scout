@@ -52,9 +52,9 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # Matchmaker connection parameters
 # - Tested with PatientMatcher (https://github.com/Clinical-Genomics/patientMatcher) -
-# MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
-# MME_URL = "http://localhost:9020"
-# MME_TOKEN = "DEMO"
+MME_ACCEPTS = "application/vnd.ga4gh.matchmaker.v1.0+json"
+MME_URL = "http://localhost:8000"
+MME_TOKEN = "DEMO"
 
 # Beacon connection settings
 # - Tested with cgbeacon2 (https://github.com/Clinical-Genomics/cgbeacon2) -
