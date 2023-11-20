@@ -106,15 +106,15 @@ onsubmit="return validateForm()">
      <div class="align-items-center">
       <a data-bs-toggle="tooltip" data-bs-html="true" title="
        <div>
-            <strong>{{ variant.gene_a.hgnc_symbol }}</strong>: {{ variant.gene_a.description }}
+            <strong>{{ variant.gene_symbol_a }}</strong>: DESCRIPTION HERE
        </div>"
-      href="{{ url_for('genes.gene', hgnc_id=variant.gene_a.hgnc_id) }}">{{ variant.gene_a.hgnc_symbol or variant.gene_a.hgnc_id }}
+      href="{{ url_for('genes.gene', hgnc_id=variant.hgnc_id_a) }}">{{ variant.gene_symbol_a or variant.hgnc_id_a }}
       </a> <br>
       <a data-bs-toggle="tooltip" data-bs-html="true" title="
        <div>
-            <strong>{{ variant.gene_b.hgnc_symbol }}</strong>: {{ variant.gene_b.description }}
+            <strong>{{ variant.gene_symbol_b }}</strong>: DESCRIPTION HERE
        </div>"
-      href="{{ url_for('genes.gene', hgnc_id=variant.gene_b.hgnc_id) }}"> {{ variant.gene_b.hgnc_symbol or variant.gene_b.hgnc_id }}
+      href="{{ url_for('genes.gene', hgnc_id=variant.hgnc_id_b) }}">{{ variant.gene_symbol_b or variant.hgnc_id_b }}
       </a>
      </div>
     </td>
