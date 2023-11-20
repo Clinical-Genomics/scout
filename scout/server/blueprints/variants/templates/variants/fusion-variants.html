@@ -103,20 +103,22 @@ onsubmit="return validateForm()">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
     <td>
-     <div class="align-items-center">
-      <a data-bs-toggle="tooltip" data-bs-html="true" title="
-       <div>
-            <strong>{{ variant.gene_symbol_a }}</strong>: DESCRIPTION HERE
-       </div>"
-      href="{{ url_for('genes.gene', hgnc_id=variant.hgnc_id_a) }}">{{ variant.gene_symbol_a or variant.hgnc_id_a }}
-      </a> <br>
-      <a data-bs-toggle="tooltip" data-bs-html="true" title="
-       <div>
-            <strong>{{ variant.gene_symbol_b }}</strong>: DESCRIPTION HERE
-       </div>"
-      href="{{ url_for('genes.gene', hgnc_id=variant.hgnc_id_b) }}">{{ variant.gene_symbol_b or variant.hgnc_id_b }}
-      </a>
-     </div>
+      <div class="align-items-center">
+        {% if variant.genes %}
+          {% for gene in variant.genes %}
+             <a data-bs-toggle="tooltip" data-bs-html="true" title="
+               <div>
+                    <strong>{{ gene.hgnc_symbol or gene.hgnc_id }}</strong>:  {{ gene.description }}
+               </div>"
+              href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+              </a> <br>
+          {% endfor %}
+        {% else %}
+          {% for symbol in variant.hgnc_symbols %}
+            {{ symbol }} <br>
+          {% endfor %}
+        {% endif %}
+      </div>
     </td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.tool_hits|int }}</span></td>
@@ -126,12 +128,22 @@ onsubmit="return validateForm()">
     <td>{{ variant.samples[0].ffpm }}</td>
     <td>{{ variant.frame_status }}</td>
     <td>
-      <div>{{ variant.transcript_id_a }} </div>
-      <div>{{ variant.transcript_id_b }} </div>
+      {% if variant.genes %}
+        {% for gene in variant.genes %}
+          {% for transcript in gene.transcripts %}
+            <div>{{ transcript.transcript_id }} </div>
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
     </td>
     <td>
-      <div>&nbsp;{{ variant.exon_number_a|int }}</div>
-      <div>&nbsp;{{ variant.exon_number_b|int }}</div>
+      {% if variant.genes %}
+        {% for gene in variant.genes %}
+          {% for transcript in gene.transcripts %}
+            <div>{{ transcript.exon|int }} </div>
+          {% endfor %}
+        {% endfor %}
+      {% endif %}
     </td>
     <td> {{ variant.breakpoint_a }} <br> {{ variant.breakpoint_b }} </td>
     <td>{{ variant.orientation }}</td>

@@ -210,30 +210,13 @@ def build_variant(
     variant_obj["mei_polarity"] = variant.get("mei_polarity")
 
     ## Fusion variant specific
-    variant_obj["gene_symbol_a"] = variant.get("gene_a")
-    variant_obj["gene_symbol_b"] = variant.get("gene_b")
     variant_obj["tool_hits"] = variant.get("tool_hits")
     variant_obj["fusion_score"] = variant.get("fusion_score")
-    # if variant.get("fusion_score"):
-    #     variant_obj["rank_score"] = variant.get("fusion_score")
-    variant_obj["hgnc_id_a"] = variant.get("hgnc_id_a")
-    variant_obj["hgnc_id_b"] = variant.get("hgnc_id_b")
-    # variant_obj["gene_a"] = hgncid_to_gene.get(variant_obj["hgnc_id_a"])
-    # variant_obj["gene_b"] = hgncid_to_gene.get(variant_obj["hgnc_id_b"])
-    ## variant_obj["hgnc_ids"] = [variant_obj["gene_a"], variant_obj["gene_b"]]
-    ## variant_obj["hgnc_ids"] = None if any(_ is None for _ in variant_obj["hgnc_ids"]) else variant_obj["hgnc_ids"]
-    ## variant_obj["hgnc_symbols"] = [variant_obj["gene_symbol_a"], variant_obj["gene_symbol_b"]]
-    #variant_obj["hgnc_ids"] = [variant_obj["hgnc_id_a"], variant_obj["hgnc_id_b"]]
-    #variant_obj["genes"] = [hgncid_to_gene.get(variant_obj["hgnc_id_a"])]
-    #variant_obj["genes"].append(hgncid_to_gene.get(variant_obj["hgnc_id_b"]))
     variant_obj["orientation"] = variant.get("orientation")
     variant_obj["frame_status"] = variant.get("frame_status")
-    variant_obj["transcript_id_a"] = variant.get("transcript_id_a")
-    variant_obj["transcript_id_b"] = variant.get("transcript_id_b")
-    variant_obj["exon_number_a"] = variant.get("exon_number_a")
-    variant_obj["exon_number_b"] = variant.get("exon_number_b")
     variant_obj["breakpoint_a"] = variant.get("breakpoint_a")
     variant_obj["breakpoint_b"] = variant.get("breakpoint_b")
+    variant_obj["hgnc_symbols"] = variant.get("hgnc_symbols")
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
@@ -243,6 +226,7 @@ def build_variant(
 
     set_sample(variant_obj, variant.get("samples", []), sample_info)
     add_compounds(variant_obj, variant.get("compounds", []))
+
     add_genes(variant_obj, variant.get("genes", []), hgncid_to_gene)
 
     # Make gene searches more effective
@@ -423,7 +407,9 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
             hgnc_symbols.append(gene_obj["hgnc_symbol"])
         else:
             LOG.warning("missing HGNC symbol for: %s", hgnc_id)
-
+    # If fusion genes are not found, then do not overwrite
+    if variant_obj.get("category") is "fusion" and len(hgnc_symbols) != 2:
+        return
     variant_obj["hgnc_symbols"] = hgnc_symbols
 
 
