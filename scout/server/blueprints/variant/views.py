@@ -110,23 +110,6 @@ def sv_variant(institute_id, case_name, variant_id):
     return data
 
 
-@variant_bp.route("/<institute_id>/<case_name>/fusion/variants/<variant_id>")
-@templated("variant/fusion-variant.html")
-def fusion_variant(institute_id, case_name, variant_id):
-    """Display a fusion variant."""
-    data = variant_controller(
-        store=store, institute_id=institute_id, case_name=case_name, variant_id=variant_id
-    )
-
-    if data is None:
-        flash("An error occurred while retrieving variant object", "danger")
-        return redirect(
-            url_for("variants.fusion_variants", institute_id=institute_id, case_name=case_name)
-        )
-
-    return data
-
-
 @variant_bp.route("/<institute_id>/<case_name>/str/variant/<variant_id>", methods=["GET"])
 @templated("variant/str-variant-reviewer.html")
 def reviewer_aln(institute_id, case_name, variant_id):

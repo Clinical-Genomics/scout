@@ -626,7 +626,7 @@ def fusion_variants(institute_id, case_name):
             store,
             institute_obj,
             case_obj,
-            "variant.fusion_variant",
+            "variant.variant",
             request.form.getlist("dismiss"),
             request.form.getlist("dismiss_choices"),
         )
