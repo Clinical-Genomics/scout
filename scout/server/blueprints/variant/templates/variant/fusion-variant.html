@@ -33,7 +33,6 @@
     </a>
   </li>
   <li class="nav-item">
-    {% if variant.category == "fusion" %}
       <a class="nav-link text-nowrap" href="{{ url_for('variants.fusion_variants', institute_id=institute._id, case_name=case.display_name, variant_type='clinical', gene_panels=case.panels|selectattr('is_default')|map(attribute='panel_name')|list) }}">
         {{ variant.variant_type|capitalize }} fusion variants
       </a>
@@ -168,7 +167,7 @@
           Category
           <span class="badge rounded-pill bg-secondary float-end">{{ variant.sub_category|upper }}</span>
         </li>
-        {% if variant.category == "fusion" and variant.somatic_score %}
+        {% if variant.somatic_score %}
         <li class="list-group-item">
           Somatic score
           <span class="badge rounded-pill bg-secondary float-end">{{ variant.somatic_score }}</span>
