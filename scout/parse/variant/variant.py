@@ -427,7 +427,7 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
 def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     """Add Fusion information if present."""
 
-    def replace_nan(value: str, nan_value: str ="nan"):
+    def replace_nan(value: str, nan_value: str = "nan"):
         if value == "nan":
             return ""
         else:
@@ -440,18 +440,28 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["hgnc_id_a"] = call_safe(int, variant.INFO.get("HGNC_ID_A", 0))
     parsed_variant["hgnc_id_b"] = call_safe(int, variant.INFO.get("HGNC_ID_B", 0))
     parsed_variant["orientation"] = call_safe(str, variant.INFO.get("ORIENTATION", ""))
-    parsed_variant["frame_status"] = call_safe(str, replace_nan(variant.INFO.get("FRAME_STATUS", "")))
-    parsed_variant["transcript_id_a"] = call_safe(str, replace_nan(variant.INFO.get("TRANSCRIPT_ID_A", "")))
-    parsed_variant["transcript_id_b"] = call_safe(str, replace_nan(variant.INFO.get("TRANSCRIPT_ID_B", "")))
-    parsed_variant["exon_number_a"] = call_safe(str,call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_A", ""))))
-    parsed_variant["exon_number_b"] = call_safe(str,call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_B", ""))))
+    parsed_variant["frame_status"] = call_safe(
+        str, replace_nan(variant.INFO.get("FRAME_STATUS", ""))
+    )
+    parsed_variant["transcript_id_a"] = call_safe(
+        str, replace_nan(variant.INFO.get("TRANSCRIPT_ID_A", ""))
+    )
+    parsed_variant["transcript_id_b"] = call_safe(
+        str, replace_nan(variant.INFO.get("TRANSCRIPT_ID_B", ""))
+    )
+    parsed_variant["exon_number_a"] = call_safe(
+        str, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_A", "")))
+    )
+    parsed_variant["exon_number_b"] = call_safe(
+        str, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_B", "")))
+    )
     parsed_variant["chr_a"] = call_safe(str, variant.INFO.get("CHRA", ""))
     parsed_variant["chr_b"] = call_safe(str, variant.INFO.get("CHRB", ""))
     parsed_variant["position_a"] = call_safe(str, variant.INFO.get("POSA", ""))
     parsed_variant["position_b"] = call_safe(str, variant.INFO.get("POSB", ""))
     parsed_variant["breakpoint_a"] = f"{parsed_variant['chr_a']}:{parsed_variant['position_a']}"
     parsed_variant["breakpoint_b"] = f"{parsed_variant['chr_b']}:{parsed_variant['position_b']}"
-    parsed_variant["hgnc_symbols"] = [ parsed_variant["gene_a"], parsed_variant["gene_b"] ]
+    parsed_variant["hgnc_symbols"] = [parsed_variant["gene_a"], parsed_variant["gene_b"]]
 
 
 def add_gene_and_transcript_info_for_fusions(parsed_variant: Dict[str, Any], variant: Variant):
@@ -469,10 +479,10 @@ def add_gene_and_transcript_info_for_fusions(parsed_variant: Dict[str, Any], var
         for suffix in ["a", "b"]:
             parsed_transcripts.append(
                 {
-                    'transcript_id': parsed_variant[f"transcript_id_{suffix}"],
-                    'hgnc_id':  parsed_variant[f"hgnc_id_{suffix}"],
-                    'hgnc_symbol': parsed_variant[f"gene_{suffix}"],
-                    'exon':  parsed_variant[f"exon_number_{suffix}"],
+                    "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
+                    "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                    "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+                    "exon": parsed_variant[f"exon_number_{suffix}"],
                 }
             )
 
