@@ -8,8 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 ### Fixed
--loqusdb table no longer has empty row below each loqusid
+- loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
+- Links displayed as buttons does not change color when visited
 
 ## [4.73]
 ### Added
