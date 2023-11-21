@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+- SNVs and Indels, MEI and str variants genes have links to Decipher
 - Load and display fusion variants from VCF files as the other variant types
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
