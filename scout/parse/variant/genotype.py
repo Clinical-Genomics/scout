@@ -18,7 +18,7 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 import cyvcf2
 
@@ -184,22 +184,19 @@ def get_mei_reads(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ..
     return (spanning_ref, clip5_alt, clip3_alt)
 
 
-def get_ffpm_info(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Tuple[int, ...]:
+def get_ffpm_info(variant: cyvcf2.Variant, pos: Dict[str, int]) -> Optional[int]:
     """Get FUSION caller read details from FORMAT tags.
     Returns:
         tuple(int, int, int) supporting_reads, split_reads, ffpm
     """
-    ffpm = None
-
     # Fusion fragments per million total RNA-seq fragments
     if "FFPM" in variant.FORMAT:
         try:
             values = variant.format("FFPM")[pos]
-            ffpm = int(values[0])
+            return int(values[0])
         except ValueError as _ignore_error:
             pass
 
-    return ffpm
 
 
 def get_paired_ends(variant, pos):

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from cyvcf2 import Variant
 
@@ -464,7 +464,7 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["hgnc_symbols"] = [parsed_variant["gene_a"], parsed_variant["gene_b"]]
 
 
-def add_gene_and_transcript_info_for_fusions(parsed_variant: Dict[str, Any], variant: Variant):
+def add_gene_and_transcript_info_for_fusions(parsed_variant: Dict[str, Any], variant: Variant) -> List[Optional[Dict]]:
     """Add gene and transcript info for fusions. Return list of parsed
     transcripts for later use in parsing.
         Args:
@@ -474,18 +474,6 @@ def add_gene_and_transcript_info_for_fusions(parsed_variant: Dict[str, Any], var
             parsed_transcripts(list)
     """
     parsed_transcripts = []
-    # If fusions have transcript information about both  fusion partners
-    if parsed_variant["transcript_id_a"] and parsed_variant["transcript_id_b"]:
-        for suffix in ["a", "b"]:
-            parsed_transcripts.append(
-                {
-                    "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
-                    "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
-                    "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
-                    "exon": parsed_variant[f"exon_number_{suffix}"],
-                }
-            )
-
     genes = []
     for suffix in ["a", "b"]:
         genes.append(
@@ -495,6 +483,16 @@ def add_gene_and_transcript_info_for_fusions(parsed_variant: Dict[str, Any], var
                 "transcripts": [],
             }
         )
+        # If fusions have transcript information about both fusion partners
+        if parsed_variant["transcript_id_a"] and parsed_variant["transcript_id_b"]:
+            parsed_transcripts.append(
+                {
+                    "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
+                    "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                    "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+                    "exon": parsed_variant[f"exon_number_{suffix}"],
+                }
+            )
 
     # Add transcript info to genes if available
     if parsed_transcripts:

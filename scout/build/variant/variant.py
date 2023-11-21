@@ -210,13 +210,9 @@ def build_variant(
     variant_obj["mei_polarity"] = variant.get("mei_polarity")
 
     ## Fusion variant specific
-    variant_obj["tool_hits"] = variant.get("tool_hits")
-    variant_obj["fusion_score"] = variant.get("fusion_score")
-    variant_obj["orientation"] = variant.get("orientation")
-    variant_obj["frame_status"] = variant.get("frame_status")
-    variant_obj["breakpoint_a"] = variant.get("breakpoint_a")
-    variant_obj["breakpoint_b"] = variant.get("breakpoint_b")
-    variant_obj["hgnc_symbols"] = variant.get("hgnc_symbols")
+    FUSION_KEYS = ["tool_hits", "fusion_score", "orientation", "frame_status", "breakpoint_a", "breakpoint_b", "hgnc_symbols"]
+    for key in FUSION_KEYS:
+        variant_obj[key] = variant.get(key)
 
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
