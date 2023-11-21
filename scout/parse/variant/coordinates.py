@@ -140,7 +140,7 @@ def parse_coordinates(variant, category, build="37"):
     ref = variant.REF
     ref_len = len(ref)
 
-    if category in ["sv", "cancer_sv"]:
+    if category in ["sv", "cancer_sv", "fusion"]:
         svtype = variant.INFO.get("SVTYPE")
         if svtype:
             svtype = svtype.lower()
