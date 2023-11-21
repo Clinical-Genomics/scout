@@ -172,7 +172,7 @@ def parse_variant(
 
     ### Add gene and transcript information
     if parsed_variant.get("category") == "fusion":
-        parsed_transcripts = add_gene_and_transcript_info_for_fusions(parsed_variant, variant)
+        parsed_transcripts = add_gene_and_transcript_info_for_fusions(parsed_variant)
     else:
         parsed_transcripts = add_gene_and_transcript_info(parsed_variant, variant, vep_header)
 
@@ -427,9 +427,9 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
 def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     """Add Fusion information if present."""
 
-    def replace_nan(value: str, nan_value: str = "nan"):
-        if value == "nan":
-            return ""
+    def replace_nan(value: str, nan_value: str = "nan", replace_by: Any = "") -> str:
+        if value == nan_value:
+            return replace_by
         else:
             return value
 
@@ -464,14 +464,11 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["fusion_genes"] = [parsed_variant["gene_a"], parsed_variant["gene_b"]]
 
 
-def add_gene_and_transcript_info_for_fusions(
-    parsed_variant: Dict[str, Any], variant: Variant
-) -> List[Optional[Dict]]:
+def add_gene_and_transcript_info_for_fusions(parsed_variant: Dict[str, Any]) -> List[Optional[Dict]]:
     """Add gene and transcript info for fusions. Return list of parsed
     transcripts for later use in parsing.
         Args:
             parsed_variant(dict)
-            variant(cyvcf2.Variant)
         Return:
             parsed_transcripts(list)
     """
