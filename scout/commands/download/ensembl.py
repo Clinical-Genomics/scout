@@ -26,16 +26,10 @@ def print_ensembl(
     LOG.info("Fetching ensembl %s, build: %s", resource_type, ",".join(builds))
 
     for build in builds:
-        if resource_type == "genes":
-            file_name = f"ensembl_genes_{build}.txt"
-        elif resource_type == "transcripts":
-            file_name = f"ensembl_transcripts_{build}.txt"
-        else:
-            file_name = f"ensembl_exons_{build}.txt"
-
-        file_path = out_dir / file_name.format(build)
-
         ensembl_client = EnsemblBiomartHandler(build=build)
+
+        file_name: str = f"ensembl_{resource_type}_{build}.txt"
+        file_path = out_dir / file_name.format(build)
 
         LOG.info("Print ensembl info %s to %s", build, file_path)
         with file_path.open("w", encoding="utf-8") as outfile:
