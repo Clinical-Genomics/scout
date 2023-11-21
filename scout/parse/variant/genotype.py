@@ -18,7 +18,7 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
-from typing import Dict, Tuple, Optional
+from typing import Dict, Optional, Tuple
 
 import cyvcf2
 
