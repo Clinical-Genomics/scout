@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
+### Changed
+- Replace code download Ensembl genes, transcripts and exons with schug library
 ### Fixed
 -loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher

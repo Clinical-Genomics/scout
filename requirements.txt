@@ -23,6 +23,7 @@ click
 cryptography<3.4
 defusedxml
 svglib
+schug
 cairosvg
 importlib_resources
 
