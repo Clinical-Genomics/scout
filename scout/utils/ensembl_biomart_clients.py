@@ -1,6 +1,6 @@
 import logging
-
 from typing import Dict, Iterator
+
 from schug.load.biomart import EnsemblBiomartClient
 from schug.models.common import Build as SchugBuild
 
@@ -10,8 +10,8 @@ BUILD_37 = "GRCh37"
 BUILD_38 = "GRCh38"
 
 BUILDS: Dict(str, str) = {
-    "37" : BUILD_37,
-    "38" : BUILD_38,
+    "37": BUILD_37,
+    "38": BUILD_38,
 }
 
 CHROMOSOME_NAME_37: str = "Chromosome Name"
@@ -94,21 +94,21 @@ EXONS_FILE_HEADER: Dict[str, List[str]] = {
     ],
 }
 
+
 class EnsemblBiomartHandler:
     """A class that handles Ensembl genes, transcripts and exons downloads via schug."""
 
-    def __init__(self, build:str = "37"):
+    def __init__(self, build: str = "37"):
+        self.build: str = BUILDS[build]
 
-    def read_resource_lines(build: str, interval_type: IntervalType) -> Iterator[str]:
+    def read_resource_lines(self, interval_type: str) -> Iterator[str]:
         """Returns lines of a remote Ensembl Biomart resource (genes, transcripts or exons) in a given genome build."""
 
         shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
-            build=SchugBuild(build)
+            build=SchugBuild(self.build)
         )
         url: str = shug_client.build_url(xml=shug_client.xml)
-        response: requests.models.responses = requests.get(url, stream=True)
+
+        response = requests.get(url, stream=True)
+        LOG.warning(type(response))
         return response.iter_lines(decode_unicode=True)
-
-
-
-

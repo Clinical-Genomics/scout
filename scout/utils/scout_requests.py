@@ -10,7 +10,6 @@ from defusedxml import ElementTree
 from flask import flash
 
 from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL
-from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
 TIMEOUT = 20
@@ -317,112 +316,6 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
         mim_files[file_name] = fetch_resource(url)
 
     return mim_files
-
-
-def fetch_ensembl_biomart(attributes, filters, build=None):
-    """Fetch data from ensembl biomart
-
-    Args:
-        attributes(list): List of selected attributes
-        filters(dict): Select what filters to use
-        build(str): '37' or '38'
-
-    Returns:
-        client(EnsemblBiomartClient)
-    """
-    build = build or "37"
-
-    client = EnsemblBiomartClient(build=build, filters=filters, attributes=attributes)
-    LOG.info("Selecting attributes: %s", ", ".join(attributes))
-    LOG.info("Use filter: %s", filters)
-
-    return client
-
-
-def fetch_ensembl_genes(build=None, chromosomes=None):
-    """Fetch the ensembl genes
-
-    Args:
-        build(str): ['37', '38']
-        chromosomes(iterable(str))
-
-    Returns:
-        result(iterable): Ensembl formated gene lines
-    """
-    chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl genes")
-
-    attributes = [
-        "chromosome_name",
-        "start_position",
-        "end_position",
-        "ensembl_gene_id",
-        "hgnc_symbol",
-        "hgnc_id",
-    ]
-
-    filters = {"chromosome_name": chromosomes}
-
-    return fetch_ensembl_biomart(attributes, filters, build)
-
-
-def fetch_ensembl_transcripts(build=None, chromosomes=None):
-    """Fetch the ensembl genes
-
-    Args:
-        build(str): ['37', '38']
-        chromosomes(iterable(str))
-
-    Returns:
-        result(iterable): Ensembl formated transcript lines
-    """
-    chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl transcripts")
-
-    attributes = [
-        "chromosome_name",
-        "ensembl_gene_id",
-        "ensembl_transcript_id",
-        "transcript_start",
-        "transcript_end",
-        "refseq_mrna",
-        "refseq_mrna_predicted",
-        "refseq_ncrna",
-    ]
-
-    filters = {"chromosome_name": chromosomes}
-
-    return fetch_ensembl_biomart(attributes, filters, build)
-
-
-def fetch_ensembl_exons(build=None, chromosomes=None):
-    """Fetch the ensembl genes
-
-    Args:
-        build(str): ['37', '38']
-        chromosomes(iterable(str))
-    """
-    chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl exons")
-
-    attributes = [
-        "chromosome_name",
-        "ensembl_gene_id",
-        "ensembl_transcript_id",
-        "ensembl_exon_id",
-        "exon_chrom_start",
-        "exon_chrom_end",
-        "5_utr_start",
-        "5_utr_end",
-        "3_utr_start",
-        "3_utr_end",
-        "strand",
-        "rank",
-    ]
-
-    filters = {"chromosome_name": chromosomes}
-
-    return fetch_ensembl_biomart(attributes, filters, build)
 
 
 def fetch_hgnc():

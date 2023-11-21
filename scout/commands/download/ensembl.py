@@ -5,6 +5,8 @@ from typing import List, Optional
 
 import click
 
+from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
+
 LOG = logging.getLogger(__name__)
 
 
@@ -22,21 +24,22 @@ def print_ensembl(
         builds = [genome_build]
 
     LOG.info("Fetching ensembl %s, build: %s", resource_type, ",".join(builds))
-    if resource_type == "genes":
-        file_name = "ensembl_genes_{}.txt"
-        fetch_function = fetch_ensembl_genes
-    elif resource_type == "transcripts":
-        file_name = "ensembl_transcripts_{}.txt"
-        fetch_function = fetch_ensembl_transcripts
-    else:
-        file_name = "ensembl_exons_{}.txt"
-        fetch_function = fetch_ensembl_exons
 
     for build in builds:
+        if resource_type == "genes":
+            file_name = f"ensembl_genes_{build}.txt"
+        elif resource_type == "transcripts":
+            file_name = f"ensembl_transcripts_{build}.txt"
+        else:
+            file_name = f"ensembl_exons_{build}.txt"
+
         file_path = out_dir / file_name.format(build)
+
+        ensembl_client = EnsemblBiomartHandler(build=build)
+
         LOG.info("Print ensembl info %s to %s", build, file_path)
         with file_path.open("w", encoding="utf-8") as outfile:
-            for line in fetch_function(build=build):
+            for line in ensembl_client.read_resource_lines(resource_type):
                 outfile.write(line + "\n")
         LOG.info("Ensembl info saved")
 
