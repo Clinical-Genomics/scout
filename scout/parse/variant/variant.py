@@ -461,7 +461,7 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["position_b"] = call_safe(str, variant.INFO.get("POSB", ""))
     parsed_variant["breakpoint_a"] = f"{parsed_variant['chr_a']}:{parsed_variant['position_a']}"
     parsed_variant["breakpoint_b"] = f"{parsed_variant['chr_b']}:{parsed_variant['position_b']}"
-    parsed_variant["hgnc_symbols"] = [parsed_variant["gene_a"], parsed_variant["gene_b"]]
+    parsed_variant["fusion_genes"] = [parsed_variant["gene_a"], parsed_variant["gene_b"]]
 
 
 def add_gene_and_transcript_info_for_fusions(

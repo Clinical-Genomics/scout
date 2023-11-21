@@ -114,7 +114,7 @@ onsubmit="return validateForm()">
               </a> <br>
           {% endfor %}
         {% else %}
-          {% for symbol in variant.hgnc_symbols %}
+          {% for symbol in variant.fusion_genes %}
             {{ symbol }} <br>
           {% endfor %}
         {% endif %}

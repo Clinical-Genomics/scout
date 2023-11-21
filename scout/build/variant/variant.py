@@ -210,7 +210,7 @@ def build_variant(
     variant_obj["mei_polarity"] = variant.get("mei_polarity")
 
     ## Fusion variant specific
-    FUSION_KEYS = ["tool_hits", "fusion_score", "orientation", "frame_status", "breakpoint_a", "breakpoint_b", "hgnc_symbols"]
+    FUSION_KEYS = ["tool_hits", "fusion_score", "orientation", "frame_status", "breakpoint_a", "breakpoint_b", "fusion_genes"]
     for key in FUSION_KEYS:
         variant_obj[key] = variant.get(key)
 
