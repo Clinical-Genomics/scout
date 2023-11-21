@@ -403,9 +403,6 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
             hgnc_symbols.append(gene_obj["hgnc_symbol"])
         else:
             LOG.warning("missing HGNC symbol for: %s", hgnc_id)
-    # If fusion genes are not found, then do not overwrite
-    if variant_obj.get("category") == "fusion" and len(hgnc_symbols) != 2:
-        return
     variant_obj["hgnc_symbols"] = hgnc_symbols
 
 
