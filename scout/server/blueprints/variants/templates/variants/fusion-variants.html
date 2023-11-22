@@ -145,7 +145,7 @@ onsubmit="return validateForm()">
         {% endfor %}
       {% endif %}
     </td>
-    <td> {{ variant.breakpoint_a }} <br> {{ variant.breakpoint_b }} </td>
+    <td> {{ variant.chromosome }}:{{ variant.position }}  <br> {{ variant.end_chrom }}:{{ variant.end }} </td>
     <td>{{ variant.orientation }}</td>
   </tr>
 {% endmacro %}
