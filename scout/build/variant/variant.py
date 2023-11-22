@@ -214,6 +214,9 @@ def build_variant(
     for key in FUSION_KEYS:
         variant_obj[key] = variant.get(key)
 
+    if variant_obj["category"] == "fusion":
+        variant_obj["rank_score"] = variant_obj.get("fusion_score")
+
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
     variant_obj["hmtvar_variant_id"] = variant.get("hmtvar_variant_id")
