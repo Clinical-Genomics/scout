@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher
+- An `owner + case display name` index for cases database collection
 ### Changed
 - Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 ### Fixed
