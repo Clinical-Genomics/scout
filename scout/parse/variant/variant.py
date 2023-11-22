@@ -439,7 +439,9 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
     parsed_variant["fusion_score"] = call_safe(str, variant.INFO.get("SCORE", None))
     parsed_variant["hgnc_id_a"] = call_safe(int, variant.INFO.get("HGNC_ID_A", 0))
     parsed_variant["hgnc_id_b"] = call_safe(int, variant.INFO.get("HGNC_ID_B", 0))
-    parsed_variant["orientation"] = replace_nan(call_safe(str, variant.INFO.get("ORIENTATION", "")), nan_value="nan,nan")
+    parsed_variant["orientation"] = replace_nan(
+        call_safe(str, variant.INFO.get("ORIENTATION", "")), nan_value="nan,nan"
+    )
     parsed_variant["frame_status"] = call_safe(
         str, replace_nan(variant.INFO.get("FRAME_STATUS", ""))
     )
