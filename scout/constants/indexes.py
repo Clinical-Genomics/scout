@@ -130,6 +130,7 @@ INDEXES = {
             [("collaborators", ASCENDING), ("status", ASCENDING), ("updated_at", ASCENDING)],
             name="collaborators_status_updated_at",
         ),
+        IndexModel([("owner", ASCENDING), ("display_name", ASCENDING)], name="owner_display_name"),
     ],
     "managed_variant": [
         IndexModel(
