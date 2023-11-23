@@ -38,7 +38,7 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
-    # Update disease_terms with missing terms which have hpo annotations
+    # Update disease_terms with terms from disease_annotations if not already present
     for disease_id, content in disease_annotations.items():
         if disease_id not in disease_terms:
             disease_terms[disease_id] = {
