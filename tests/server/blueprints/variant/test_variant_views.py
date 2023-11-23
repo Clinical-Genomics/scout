@@ -53,7 +53,7 @@ def test_marrvel_link_38(app, case_obj):
 
     # GIVEN an initialized app
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # WHEN user clicks on MARRVEL link for a variant in build 38
         resp = client.get(
@@ -150,7 +150,7 @@ def test_fusion_variant(app, institute_obj, fusion_case_obj, one_fusion_variant)
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # GIVEN a RNA fusion case present in the database
         assert store.case_collection.insert_one(fusion_case_obj)
@@ -238,7 +238,7 @@ def test_edit_variants_comments(
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         ## GIVEN a variant with a specific comment
         store.create_event(
@@ -319,7 +319,7 @@ def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # GIVEN that the user wants to see only Genes and ClinVar SNVs tracks
         form_data = {
@@ -335,6 +335,6 @@ def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
         )
 
         # THEN the user object in the database should be updated with the right track info
-        user_obj = store.user(email=user_obj["email"])
+        store.user(email=user_obj["email"])
         for track in preferred_tracks:
             assert track in preferred_tracks
