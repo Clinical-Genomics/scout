@@ -1213,7 +1213,6 @@ def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     return (build_variant(variant, institute_obj) for variant in parsed_sv_variants)
 
 
-
 @pytest.fixture(scope="function")
 def fusion_variants(request) -> VCF:
     """Return a VCF object containing RNA fusion variants."""
