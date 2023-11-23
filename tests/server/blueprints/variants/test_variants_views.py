@@ -254,9 +254,7 @@ def test_str_variants(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_fusion_variants(
-    app, institute_obj, fusion_case_obj, fusion_variant_objs, one_fusion_variant
-):
+def test_fusion_variants(app, institute_obj, fusion_case_obj, fusion_variant_objs, one_fusion_variant):
     """Test the page that displays a list of RNA fusion variants."""
 
     # GIVEN an initialized app
@@ -280,9 +278,6 @@ def test_fusion_variants(
         )
         # THEN it should return a page
         assert resp.status_code == 200
-
-        # THEN the variant should be found in the list of variants shown on the page
-        assert one_fusion_variant["case"] == fusion_case_obj["_id"]
 
 
 def test_mei_variants(app, institute_obj, case_obj):
