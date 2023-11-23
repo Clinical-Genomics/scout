@@ -9,6 +9,8 @@ import yaml
 from cyvcf2 import VCF
 from flask import jsonify
 
+from typing import Iterable
+
 # Adapter stuff
 from mongomock import MongoClient
 from werkzeug.datastructures import MultiDict
@@ -26,6 +28,7 @@ from scout.demo import (
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
+    clinical_fusion_path,
     customannotation_snv_path,
     empty_sv_clinical_path,
     load_path,
@@ -514,7 +517,6 @@ def institute_obj(request, parsed_institute):
     # move institute created time 1 day back in time
     institute["created_at"] = datetime.datetime.now() - datetime.timedelta(days=1)
     return institute
-
 
 #############################################################
 ################# Managed variant fixtures ##################
@@ -1209,6 +1211,32 @@ def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     """Get a generator with parsed variants"""
     print("")
     return (build_variant(variant, institute_obj) for variant in parsed_sv_variants)
+
+@pytest.fixture(scope="function")
+def fusion_clinical_file(request) -> str:
+    """Get the path to a variant file"""
+    return clinical_fusion_path
+@pytest.fixture(scope="function")
+def fusion_variants(request, fusion_clinical_file) -> VCF:
+    """Return a VCF object containing RNA fusion variants."""
+    return VCF(fusion_clinical_file)
+
+@pytest.fixture(scope="function")
+def parsed_fusion_variants(request, fusion_variants, case_obj) -> Iterable:
+    """Get a generator with parsed fusion variants"""
+    individual_positions = {}
+    for i, ind in enumerate(fusion_variants.samples):
+        individual_positions[ind] = i
+
+    return (
+        parse_variant(variant, case_obj, individual_positions=individual_positions)
+        for variant in fusion_variants
+    )
+
+@pytest.fixture(scope="function")
+def fusion_variant_obj(request, parsed_fusion_variants, institute_obj) -> dict:
+    """Get a fusion variant.."""
+    return (build_variant(variant, institute_obj) for variant in parsed_fusion_variants)
 
 
 #############################################################
