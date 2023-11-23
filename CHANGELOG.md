@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher
 - An `owner + case display name` index for cases database collection
+- Test and fixtures for RNA fusion case page
 ### Changed
 - Refactored especially cancer filter for decimal place fields to allow unfreezing WTForms and upgrade to v3
 ### Fixed
