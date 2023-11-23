@@ -482,6 +482,8 @@ def fusion_case_obj(request, fusion_parsed_case) -> dict:
     case: dict = fusion_parsed_case
     case["_id"] = fusion_parsed_case["case_id"]
     case["status"] = "inactive"
+    case["phenotype_terms"] = []  # do not assign any phenotype
+    case["cohorts"] = []  # do not assign any cohort
     return case
 
 
