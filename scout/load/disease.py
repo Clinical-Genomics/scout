@@ -38,12 +38,21 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
+    # Update disease_terms with missing terms which have hpo annotations
+    for disease_id, content in disease_annotations.items():
+        if disease_id not in disease_terms:
+            disease_terms[disease_id] = {'mim_number': None,
+                                         'inheritance': set(),
+                                         'description': None,
+                                         'status': None,
+                                         'hgnc_symbols': set(),
+                                         }
     LOG.info("building disease objects")
 
     disease_objs: List[dict] = []
-    for disease_nr, disease_info in disease_terms.items():
-        disease_id = f"OMIM:{disease_nr}"
+    for disease_id, disease_info in disease_terms.items():
         if disease_id not in disease_annotations:
+            # Skip disease_term lacking hpo annotations
             continue
 
         _parse_disease_term_info(
@@ -51,7 +60,14 @@ def load_disease_terms(
             disease_annotations=disease_annotations,
             disease_id=disease_id,
         )
-        disease_objs.append(build_disease_term(disease_info=disease_info, alias_genes=genes))
+        disease_objs.append(
+            build_disease_term(
+                disease_annotations=disease_annotations,
+                disease_id=disease_id,
+                disease_info=disease_info,
+                alias_genes=genes
+            )
+        )
 
     LOG.info("Dropping disease terms")
     adapter.disease_term_collection.delete_many({})
@@ -65,7 +81,7 @@ def load_disease_terms(
             adapter.load_disease_term(disease_obj)
 
     LOG.info(f"Loading done. Nr of diseases loaded {nr_diseases}")
-    LOG.info("Time to load diseases: {0}".format(datetime.now() - start_time))
+    LOG.info(f"Time to load diseases: {datetime.now() - start_time}")
 
 
 def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
@@ -94,7 +110,6 @@ def _parse_disease_term_info(
     Starting from the OMIM disease terms (genemap2), update with HPO terms from
     HPO annotations, add any missing diseases from HPO annotations.
     """
-
     if "hpo_terms" in disease_info:
         disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
     else:
