@@ -327,7 +327,7 @@ def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
         }
 
         # WHEN sending a POST request to the update
-        resp = client.post(
+        client.post(
             url_for(
                 "variant.update_tracks_settings",
             ),
