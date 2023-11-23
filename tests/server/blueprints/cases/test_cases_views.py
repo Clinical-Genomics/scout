@@ -422,6 +422,29 @@ def test_case_sma(app, case_obj, institute_obj):
         # THEN it should return a page
         assert resp.status_code == 200
 
+def test_case_fusion(app, fusion_case_obj, institute_obj):
+    """Test the RNA fusion case page."""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+
+        # GIVEN a valid user, case and institute
+        client.get(url_for("auto_login"))
+
+        # WHEN accessing the RNA fusion case
+        resp = client.get(
+            url_for(
+                "cases.case",
+                institute_id=institute_obj["internal_id"],
+                case_name=fusion_case_obj["display_name"],
+            )
+        )
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+
+
 
 def test_update_individual(app, user_obj, institute_obj, case_obj, mocker, mock_redirect):
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)

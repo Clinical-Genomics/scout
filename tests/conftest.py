@@ -21,6 +21,7 @@ from scout.build.user import build_user
 from scout.build.variant import build_variant
 from scout.demo import (
     cancer_load_path,
+    rnafusion_load_path,
     cancer_snv_path,
     cancer_sv_path,
     clinical_snv_path,
@@ -394,26 +395,23 @@ def ped_lines(request):
     ]
     return case_lines
 
-
 @pytest.fixture(scope="function")
-def case_lines(request, scout_config):
-    """Get the lines for a case"""
+def parsed_case(request, scout_config) -> dict:
+    """Get a WES parsed case."""
     case = parse_case_config(scout_config)
     return case
 
 
 @pytest.fixture(scope="function")
-def parsed_case(request, scout_config):
-    """Get the lines for a case"""
-    case = parse_case_config(scout_config)
-    return case
-
-
-@pytest.fixture(scope="function")
-def cancer_parsed_case(request, cancer_scout_config):
-    """Get the lines for a cancer case"""
+def cancer_parsed_case(request, cancer_scout_config) -> dict:
+    """Get a cancer panel parsed case."""
     case = parse_case_config(cancer_scout_config)
     return case
+
+@pytest.fixture(scope="function")
+def fusion_parsed_case(request, fusion_scout_config) -> dict:
+    """Get a parsed RNA fusion case."""
+    return parse_case_config(fusion_scout_config)
 
 
 @pytest.fixture(scope="function")
@@ -473,6 +471,15 @@ def case_obj(request, parsed_case):
     case["phenotype_terms"] = []  # do not assign any phenotype
     case["cohorts"] = []  # do not assign any cohort
 
+    return case
+
+
+@pytest.fixture(scope="function")
+def fusion_case_obj(request, fusion_parsed_case) -> dict:
+    """Returns a DNA fusion case."""
+    case: dict =  fusion_parsed_case
+    case["_id"] = fusion_parsed_case["case_id"]
+    case["status"] = "inactive"
     return case
 
 
@@ -1347,7 +1354,7 @@ def ped_file(request):
 
 
 @pytest.fixture(scope="function")
-def scout_config(request, config_file):
+def scout_config(request, config_file) -> dict:
     """Return a dictionary with scout configs"""
     print("")
     in_handle = get_file_handle(config_file)
@@ -1356,9 +1363,16 @@ def scout_config(request, config_file):
 
 
 @pytest.fixture(scope="function")
-def cancer_scout_config(request):
+def cancer_scout_config(request) -> dict:
     """Return a dictionary with cancer case scout configs"""
     in_handle = get_file_handle(cancer_load_path)
+    data = yaml.safe_load(in_handle)
+    return data
+
+@pytest.fixture(scope="function")
+def fusion_scout_config(request) -> dict:
+    """Return a dictionary with fusion case scout configs"""
+    in_handle = get_file_handle(rnafusion_load_path)
     data = yaml.safe_load(in_handle)
     return data
 
