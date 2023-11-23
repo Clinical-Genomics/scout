@@ -206,6 +206,15 @@ class CancerSvFiltersForm(SvFiltersForm):
     somatic_score = IntegerField("Somatic score", validators=[validators.Optional()])
 
 
+class FusionFiltersForm(VariantFiltersForm):
+    """Extends FiltersForm for fusion variants"""
+
+    size = StringField("Length")
+    size_shorter = BooleanField("Length shorter than")
+    decipher = BooleanField("Decipher")
+    clinical_filter = SubmitField(label="Clinical filter")
+
+
 FILTERSFORMCLASS = {
     "snv": FiltersForm,
     "str": StrFiltersForm,
@@ -213,4 +222,5 @@ FILTERSFORMCLASS = {
     "cancer_sv": CancerSvFiltersForm,
     "cancer": CancerFiltersForm,
     "mei": MeiFiltersForm,
+    "fusion": FusionFiltersForm,
 }
