@@ -26,10 +26,12 @@ class DiagnosisHandler(object):
         if query:
             query_dict = {
                 "$and": [
-                    {"$or": [
-                        {"disease_nr": {"$regex": query, "$options": "i"}},
-                        {"description": {"$regex": query, "$options": "i"}},
-                    ]},
+                    {
+                        "$or": [
+                            {"disease_nr": {"$regex": query, "$options": "i"}},
+                            {"description": {"$regex": query, "$options": "i"}},
+                        ]
+                    },
                     {"source": "OMIM"},
                 ]
             }
