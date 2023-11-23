@@ -1213,35 +1213,36 @@ def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     return (build_variant(variant, institute_obj) for variant in parsed_sv_variants)
 
 
-@pytest.fixture(scope="function")
-def fusion_clinical_file(request) -> str:
-    """Get the path to a variant file"""
-    return clinical_fusion_path
-
 
 @pytest.fixture(scope="function")
-def fusion_variants(request, fusion_clinical_file) -> VCF:
+def fusion_variants(request) -> VCF:
     """Return a VCF object containing RNA fusion variants."""
-    return VCF(fusion_clinical_file)
+    return VCF(clinical_fusion_path)
 
 
 @pytest.fixture(scope="function")
-def parsed_fusion_variants(request, fusion_variants, case_obj) -> Iterable:
+def parsed_fusion_variants(request, fusion_variants, fusion_case_obj) -> Iterable:
     """Get a generator with parsed fusion variants"""
     individual_positions = {}
     for i, ind in enumerate(fusion_variants.samples):
         individual_positions[ind] = i
 
     return (
-        parse_variant(variant, case_obj, individual_positions=individual_positions)
+        parse_variant(variant, fusion_case_obj, individual_positions=individual_positions)
         for variant in fusion_variants
     )
 
 
 @pytest.fixture(scope="function")
-def fusion_variant_obj(request, parsed_fusion_variants, institute_obj) -> dict:
-    """Get a fusion variant.."""
+def fusion_variant_objs(request, parsed_fusion_variants, institute_obj) -> Iterable:
+    """Get an iterator containing fusion variants as they would be loaded in the database."""
     return (build_variant(variant, institute_obj) for variant in parsed_fusion_variants)
+
+
+@pytest.fixture(scope="function")
+def one_fusion_variant(institute_obj, parsed_fusion_variants) -> dict:
+    """Return one fusion variant as it would be loaded in the database."""
+    return build_variant(next(parsed_fusion_variants), institute_id=institute_obj["_id"])
 
 
 #############################################################
