@@ -43,7 +43,7 @@ from scout.server.utils import (
     user_institutes,
 )
 
-from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, SvFiltersForm
+from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
 from .utils import update_case_panels
 
 LOG = logging.getLogger(__name__)
@@ -300,6 +300,46 @@ def str_variants(
     )
 
     return return_view_data
+
+
+def fusion_variants(
+    store, institute_obj, case_obj, variants_query, variant_count, page=1, per_page=50
+):
+    """Pre-process list of fusion variants."""
+    skip_count = per_page * max(page - 1, 0)
+
+    more_variants = variant_count > (skip_count + per_page)
+    variants = []
+    genome_build = str(case_obj.get("genome_build", "38"))
+    if genome_build not in ["37", "38"]:
+        genome_build = "38"
+
+    case_dismissed_vars = store.case_dismissed_variants(institute_obj, case_obj)
+
+    for variant_obj in variants_query.skip(skip_count).limit(per_page):
+        # show previous classifications for research variants
+        clinical_var_obj = variant_obj
+        if variant_obj["variant_type"] == "research":
+            clinical_var_obj = store.variant(
+                case_id=case_obj["_id"],
+                simple_id=variant_obj["simple_id"],
+                variant_type="clinical",
+            )
+        if clinical_var_obj is not None:
+            variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
+
+        variants.append(
+            parse_variant(
+                store,
+                institute_obj,
+                case_obj,
+                variant_obj,
+                genome_build=genome_build,
+                case_dismissed_vars=case_dismissed_vars,
+            )
+        )
+
+    return {"variants": variants, "more_variants": more_variants}
 
 
 def get_manual_assessments(variant_obj):
@@ -1546,6 +1586,46 @@ def populate_sv_filters_form(store, institute_obj, case_obj, category, request_o
             form = SvFiltersForm(request_obj.args)
         elif category == "cancer_sv":
             form = CancerSvFiltersForm(request_obj.args)
+        variant_type = request_obj.args.get("variant_type", "clinical")
+        form.variant_type.data = variant_type
+        # set chromosome to all chromosomes
+        form.chrom.data = request_obj.args.get("chrom", "")
+        if form.gene_panels.data == [] and variant_type == "clinical":
+            form.gene_panels.data = case_default_panels(case_obj)
+
+    else:  # POST
+        form = populate_filters_form(
+            store, institute_obj, case_obj, user_obj, category, request_obj.form
+        )
+
+    populate_force_show_unaffected_vars(institute_obj, form)
+
+    # populate available panel choices
+    form.gene_panels.choices = gene_panel_choices(store, institute_obj, case_obj)
+
+    return form
+
+
+def populate_fusion_filters_form(store, institute_obj, case_obj, category, request_obj):
+    """Populate a filters form object of the type FusionFiltersForm
+
+    Accepts:
+        store(adapter.MongoAdapter)
+        institute_obj(dict)
+        case_obj(dict)
+        category(str)
+        request_obj(Flask.requests obj)
+
+    Returns:
+        form(FusionFiltersForm)
+    """
+
+    form = FusionFiltersForm(request_obj.args)
+    user_obj = store.user(current_user.email)
+
+    if request_obj.method == "GET":
+        if category == "fusion":
+            form = FusionFiltersForm(request_obj.args)
         variant_type = request_obj.args.get("variant_type", "clinical")
         form.variant_type.data = variant_type
         # set chromosome to all chromosomes

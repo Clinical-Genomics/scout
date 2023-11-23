@@ -887,6 +887,7 @@ class CaseHandler(object):
             },
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
             {"file_name": "vcf_mei", "variant_type": "clinical", "category": "mei"},
+            {"file_name": "vcf_fusion", "variant_type": "clinical", "category": "fusion"},
         ]
 
         try:

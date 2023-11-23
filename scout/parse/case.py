@@ -36,6 +36,7 @@ def parse_case_data(**kwargs):
         smn_tsv(str): Path to an SMN tsv file
         vcf_cancer(str): Path to a vcf file
         vcf_cancer_sv(str): Path to a vcf file
+        vcf_fusion(str): Path to a vcf file
         vcf_mei(str): Path to a vcf file
         vcf_snv(str): Path to a vcf file
         vcf_str(str): Path to a VCF file

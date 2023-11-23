@@ -58,6 +58,8 @@ VCF_FILE_PATH_CHECKS = [
     "vcf_cancer_research",
     "vcf_cancer_sv",
     "vcf_cancer_sv_research",
+    "vcf_fusion",
+    "vcf_fusion_research",
     "vcf_snv",
     "vcf_snv_research",
     "vcf_mei",
@@ -114,6 +116,8 @@ class VcfFiles(BaseModel):
     vcf_str: Optional[str] = None
     vcf_sv: Optional[str] = None
     vcf_sv_research: Optional[str] = None
+    vcf_fusion: Optional[str] = None
+    vcf_fusion_research: Optional[str] = None
 
     @model_validator(mode="before")
     def validate_file_path(cls, values: Dict) -> "VcfFiles":

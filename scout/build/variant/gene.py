@@ -50,6 +50,7 @@ def build_gene(gene, hgncid_to_gene=None):
 
     inheritance = set()
     hgnc_transcripts = []
+
     if hgnc_gene:
         # Set the hgnc symbol etc to the one internally in Scout
         gene_obj["hgnc_symbol"] = hgnc_gene["hgnc_symbol"]

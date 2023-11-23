@@ -183,6 +183,11 @@ CALLERS = {
         {"id": "manta", "name": "Manta"},
     ],
     "str": [{"id": "expansionhunter", "name": "ExpansionHunter"}],
+    "fusion": [
+        {"id": "arriba", "name": "Arriba"},
+        {"id": "starfusion", "name": "STARfusion"},
+        {"id": "fusioncatcher", "name": "FusionCatcher"},
+    ],
 }
 
 BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")
