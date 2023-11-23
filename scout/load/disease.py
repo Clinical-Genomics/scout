@@ -41,12 +41,13 @@ def load_disease_terms(
     # Update disease_terms with missing terms which have hpo annotations
     for disease_id, content in disease_annotations.items():
         if disease_id not in disease_terms:
-            disease_terms[disease_id] = {'mim_number': None,
-                                         'inheritance': set(),
-                                         'description': None,
-                                         'status': None,
-                                         'hgnc_symbols': set(),
-                                         }
+            disease_terms[disease_id] = {
+                "mim_number": None,
+                "inheritance": set(),
+                "description": None,
+                "status": None,
+                "hgnc_symbols": set(),
+            }
     LOG.info("building disease objects")
 
     disease_objs: List[dict] = []
@@ -65,7 +66,7 @@ def load_disease_terms(
                 disease_annotations=disease_annotations,
                 disease_id=disease_id,
                 disease_info=disease_info,
-                alias_genes=genes
+                alias_genes=genes,
             )
         )
 
