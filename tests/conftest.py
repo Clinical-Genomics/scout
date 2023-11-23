@@ -2,14 +2,13 @@
 import datetime
 import logging
 from pathlib import PosixPath
+from typing import Iterable
 
 import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
 from flask import jsonify
-
-from typing import Iterable
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -25,10 +24,10 @@ from scout.demo import (
     cancer_load_path,
     cancer_snv_path,
     cancer_sv_path,
+    clinical_fusion_path,
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
-    clinical_fusion_path,
     customannotation_snv_path,
     empty_sv_clinical_path,
     load_path,
