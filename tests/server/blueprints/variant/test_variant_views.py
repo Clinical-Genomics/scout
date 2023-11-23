@@ -158,10 +158,10 @@ def test_fusion_variant(app, institute_obj, fusion_case_obj, one_fusion_variant)
         # GIVEN that the case has a variant
         store.variant_collection.insert_one(one_fusion_variant)
 
-        # WHEN sending a request (GET) to the sv_variant page
+        # WHEN sending a request (GET) to the fusion variant page
         resp = client.get(
             url_for(
-                "variant.sv_variant",
+                "variant.variant",
                 institute_id=institute_obj["internal_id"],
                 case_name=fusion_case_obj["display_name"],
                 variant_id=one_fusion_variant["_id"],
