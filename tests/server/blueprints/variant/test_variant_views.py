@@ -53,7 +53,7 @@ def test_marrvel_link_38(app, case_obj):
 
     # GIVEN an initialized app
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # WHEN user clicks on MARRVEL link for a variant in build 38
         resp = client.get(
@@ -144,6 +144,33 @@ def test_sv_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
+def test_fusion_variant(app, institute_obj, fusion_case_obj, one_fusion_variant):
+    """Test the variant page when a fusion variant is requested."""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # GIVEN a RNA fusion case present in the database
+        assert store.case_collection.insert_one(fusion_case_obj)
+
+        # GIVEN that the case has a variant
+        store.variant_collection.insert_one(one_fusion_variant)
+
+        # WHEN sending a request (GET) to the fusion variant page
+        resp = client.get(
+            url_for(
+                "variant.variant",
+                institute_id=institute_obj["internal_id"],
+                case_name=fusion_case_obj["display_name"],
+                variant_id=one_fusion_variant["_id"],
+            )
+        )
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+
 def test_str_reviewer_variant(app, institute_obj, case_obj, str_variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -211,7 +238,7 @@ def test_edit_variants_comments(
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         ## GIVEN a variant with a specific comment
         store.create_event(
@@ -292,7 +319,7 @@ def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # GIVEN that the user wants to see only Genes and ClinVar SNVs tracks
         form_data = {
@@ -300,7 +327,7 @@ def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
         }
 
         # WHEN sending a POST request to the update
-        resp = client.post(
+        client.post(
             url_for(
                 "variant.update_tracks_settings",
             ),
@@ -308,6 +335,6 @@ def test_update_tracks_settings(app, user_obj, mocker, mock_redirect):
         )
 
         # THEN the user object in the database should be updated with the right track info
-        user_obj = store.user(email=user_obj["email"])
+        store.user(email=user_obj["email"])
         for track in preferred_tracks:
             assert track in preferred_tracks
