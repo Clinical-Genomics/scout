@@ -21,7 +21,6 @@ from scout.build.user import build_user
 from scout.build.variant import build_variant
 from scout.demo import (
     cancer_load_path,
-    rnafusion_load_path,
     cancer_snv_path,
     cancer_sv_path,
     clinical_snv_path,
@@ -32,6 +31,7 @@ from scout.demo import (
     load_path,
     panel_path,
     ped_path,
+    rnafusion_load_path,
     vep_97_annotated_path,
     vep_104_annotated_path,
 )
