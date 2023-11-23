@@ -395,6 +395,7 @@ def ped_lines(request):
     ]
     return case_lines
 
+
 @pytest.fixture(scope="function")
 def parsed_case(request, scout_config) -> dict:
     """Get a WES parsed case."""
@@ -407,6 +408,7 @@ def cancer_parsed_case(request, cancer_scout_config) -> dict:
     """Get a cancer panel parsed case."""
     case = parse_case_config(cancer_scout_config)
     return case
+
 
 @pytest.fixture(scope="function")
 def fusion_parsed_case(request, fusion_scout_config) -> dict:
@@ -477,7 +479,7 @@ def case_obj(request, parsed_case):
 @pytest.fixture(scope="function")
 def fusion_case_obj(request, fusion_parsed_case) -> dict:
     """Returns a DNA fusion case."""
-    case: dict =  fusion_parsed_case
+    case: dict = fusion_parsed_case
     case["_id"] = fusion_parsed_case["case_id"]
     case["status"] = "inactive"
     return case
@@ -1368,6 +1370,7 @@ def cancer_scout_config(request) -> dict:
     in_handle = get_file_handle(cancer_load_path)
     data = yaml.safe_load(in_handle)
     return data
+
 
 @pytest.fixture(scope="function")
 def fusion_scout_config(request) -> dict:
