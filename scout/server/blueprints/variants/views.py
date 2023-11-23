@@ -30,6 +30,9 @@ from .forms import (
 )
 
 LOG = logging.getLogger(__name__)
+
+VARIANT_PAGE = "variant.variant"
+
 variants_bp = Blueprint(
     "variants",
     __name__,
@@ -72,7 +75,7 @@ def variants(institute_id, case_name):
                 store,
                 institute_obj,
                 case_obj,
-                "variant.variant",
+                VARIANT_PAGE,
                 request.form.getlist("dismiss"),
                 request.form.getlist("dismiss_choices"),
             )
@@ -438,7 +441,7 @@ def cancer_variants(institute_id, case_name):
                 store,
                 institute_obj,
                 case_obj,
-                "variant.variant",
+                VARIANT_PAGE,
                 request.form.getlist("dismiss"),
                 request.form.getlist("dismiss_choices"),
             )
@@ -626,7 +629,7 @@ def fusion_variants(institute_id, case_name):
             store,
             institute_obj,
             case_obj,
-            "variant.variant",
+            VARIANT_PAGE,
             request.form.getlist("dismiss"),
             request.form.getlist("dismiss_choices"),
         )
