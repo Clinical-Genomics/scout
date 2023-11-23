@@ -144,6 +144,33 @@ def test_sv_variant(app, institute_obj, case_obj, variant_obj):
         assert resp.status_code == 200
 
 
+def test_fusion_variant(app, institute_obj, fusion_case_obj, one_fusion_variant):
+    """Test the variant page when a fusion variant is requested."""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+
+        # GIVEN a RNA fusion case present in the database
+        assert store.case_collection.insert_one(fusion_case_obj)
+
+        # GIVEN that the case has a variant
+        store.variant_collection.insert_one(one_fusion_variant)
+
+        # WHEN sending a request (GET) to the sv_variant page
+        resp = client.get(
+            url_for(
+                "variant.sv_variant",
+                institute_id=institute_obj["internal_id"],
+                case_name=fusion_case_obj["display_name"],
+                variant_id=one_fusion_variant["_id"],
+            )
+        )
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+
 def test_str_reviewer_variant(app, institute_obj, case_obj, str_variant_obj):
     # GIVEN an initialized app
     # GIVEN a valid user and institute
