@@ -1,0 +1,34 @@
+##fileformat=VCFv4.1
+##ALT=<ID=BND,Description="Break end">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of structural variant">
+##INFO=<ID=CHRA,Number=1,Type=String,Description="Chromosome A">
+##INFO=<ID=CHRB,Number=1,Type=String,Description="Chromosome B">
+##INFO=<ID=GENEA,Number=.,Type=String,Description="Gene A">
+##INFO=<ID=GENEB,Number=.,Type=String,Description="Gene B">
+##INFO=<ID=POSA,Number=.,Type=String,Description="Breakpoint position A">
+##INFO=<ID=POSB,Number=.,Type=String,Description="Breakpoint position B">
+##INFO=<ID=ORIENTATION,Number=.,Type=String,Description="Strand1 and strand2 directions">
+##INFO=<ID=FOUND_DB,Number=.,Type=String,Description="Databases in which the fusion has been found">
+##INFO=<ID=FOUND_IN,Number=.,Type=String,Description="Callers that have found the fusion">
+##INFO=<ID=TOOL_HITS,Number=.,Type=Integer,Description="Number of tools that found the fusion">
+##INFO=<ID=SCORE,Number=.,Type=Float,Description="Score from fusionreport">
+##INFO=<ID=FRAME_STATUS,Number=.,Type=String,Description="Frame status of the fusion">
+##INFO=<ID=TRANSCRIPT_ID_A,Number=.,Type=String,Description="Transcript id A ">
+##INFO=<ID=TRANSCRIPT_ID_B,Number=.,Type=String,Description="Transcript id B">
+##INFO=<ID=TRANSCRIPT_VERSION_A,Number=.,Type=Float,Description="Transcript version A">
+##INFO=<ID=TRANSCRIPT_VERSION_B,Number=.,Type=Float,Description="Transcript version B">
+##INFO=<ID=HGNC_ID_A,Number=.,Type=Float,Description="HGNC id A">
+##INFO=<ID=HGNC_ID_B,Number=.,Type=Float,Description="HGNC id A">
+##INFO=<ID=EXON_NUMBER_A,Number=.,Type=Float,Description="Exon number A">
+##INFO=<ID=EXON_NUMBER_B,Number=.,Type=Float,Description="Exon number B">
+##INFO=<ID=ANNOTATIONS,Number=.,Type=String,Description="Annotations from FusionInspector">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DV,Number=1,Type=Integer,Description="Number of paired-ends that support the event">
+##FORMAT=<ID=RV,Number=1,Type=Integer,Description="Number of split reads that support the event">
+##FORMAT=<ID=FFPM,Number=1,Type=Float,Description="Fusion fragments per million total RNA-seq fragments">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	888-88
+2	42295516	.	N	N]2:29223528]	.	PASS	SVTYPE=BND;CHRA=2;CHRB=2;GENEA=EML4;GENEB=ALK;POSA=42295516;POSB=29223528;ORIENTATION=+,-;FOUND_DB=COSMIC, Mitelman, FusionGDB, FusionGDB2;FOUND_IN=arriba,starfusion,fusioncatcher;TOOL_HITS=3;SCORE=0.688;FRAME_STATUS=INFRAME;TRANSCRIPT_ID_A=ENST00000401738;TRANSCRIPT_ID_B=ENST00000389048;TRANSCRIPT_VERSION_A=3;TRANSCRIPT_VERSION_B=8;HGNC_ID_A=1316;HGNC_ID_B=427;EXON_NUMBER_A=14;EXON_NUMBER_B=20	GT:DV:RV:FFPM	./1:4:0:8.0339
+1	151184317	.	N	[1:151173615[N	.	PASS	SVTYPE=BND;CHRA=1;CHRB=1;GENEA=VPS72;GENEB=TMOD4;HGNC_ID_A=11644;HGNC_ID_B=11874;ORIENTATION=-,-;FOUND_DB=[];FOUND_IN=fusioncatcher;TOOL_HITS=1;SCORE=0.062	GT:DV:RV:FFPM	./1:1:0:2613
+5	144159885	.	N	[7:135384461[N	.	PASS	SVTYPE=BND;CHRA=5;CHRB=7;GENEA=YIPF5;GENEB=CNOT4;HGNC_ID_A=0;HGNC_ID_B=0;ORIENTATION=-,-;FOUND_DB=[];FOUND_IN=fusioncatcher;TOOL_HITS=1;SCORE=0.062	GT:DV:RV:FFPM	./1:4:0:1
+16	18858170	.	N	N]16:22523820]	.	PASS	SVTYPE=BND;CHRA=16;CHRB=16;GENEA=SMG1;GENEB=NPIPB5;POSA=18858170;POSB=22523820;ORIENTATION=-,+;FOUND_DB=Mitelman;FOUND_IN=fusioncatcher;TOOL_HITS=1.0;SCORE=0.263;FRAME_STATUS=FRAMESHIFT;TRANSCRIPT_ID_A=ENST00000446231;TRANSCRIPT_ID_B=ENST00000424340;TRANSCRIPT_VERSION_A=7;TRANSCRIPT_VERSION_B=5;HGNC_ID_A=30045;HGNC_ID_B=37233;EXON_NUMBER_A=29;EXON_NUMBER_B=2;ANNOTATIONS=INTRACHROMOSOMAL[16:3.55Mb]	GT:DV:RV:FFPM	./1:2:0:0.0159
+3	18858170	.	N	N]3:22523820]	.	PASS	SVTYPE=BND;CHRA=0;CHRB=0;GENEA=MED30;GENEB=SLC30A8;POSA=0;POSB=0;ORIENTATION=nan,nan;FOUND_DB=;FOUND_IN=arriba;TOOL_HITS=1.0;SCORE=0.062;FRAME_STATUS=nan;TRANSCRIPT_ID_A=nan;TRANSCRIPT_ID_B=nan;TRANSCRIPT_VERSION_A=0;TRANSCRIPT_VERSION_B=0;HGNC_ID_A=23032;HGNC_ID_B=0;EXON_NUMBER_A=0;EXON_NUMBER_B=0;ANNOTATIONS=nan	GT:DV:RV:FFPM	./1:0:0:0.0

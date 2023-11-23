@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from cyvcf2 import Variant
 
@@ -47,7 +47,7 @@ def parse_variant(
         vep_header(list)
         individual_positions(dict): Explain what position each individual has
                                     in vcf
-        category(str): 'snv', 'sv', 'str', 'cancer' or 'cancer_sv'
+        category(str): 'snv', 'sv', 'str', 'cancer', 'cancer_sv' or 'fusion'
         local_archive_info(dict): date and total count for local obs
     Returns:
          parsed_variant(dict): Parsed variant
@@ -155,6 +155,9 @@ def parse_variant(
     # Add MEI info
     get_mei_info(variant, parsed_variant)
 
+    # Add Fusion info
+    set_fusion_info(variant, parsed_variant)
+
     ################# Add somatic info ##################
     parsed_variant["somatic_score"] = call_safe(int, variant.INFO.get("SOMATICSCORE"))
 
@@ -168,7 +171,10 @@ def parse_variant(
     parsed_variant["custom"] = parse_custom_data(variant.INFO.get("SCOUT_CUSTOM"))
 
     ### Add gene and transcript information
-    parsed_transcripts = add_gene_and_transcript_info(parsed_variant, variant, vep_header)
+    if parsed_variant.get("category") == "fusion":
+        parsed_transcripts = add_gene_and_transcript_info_for_fusions(parsed_variant)
+    else:
+        parsed_transcripts = add_gene_and_transcript_info(parsed_variant, variant, vep_header)
 
     ################# Add clinsig prediction #################
     set_clnsig(parsed_variant, variant, parsed_transcripts)
@@ -416,6 +422,89 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
 
     # str disease inheritance mode string annotation
     parsed_variant["str_inheritance_mode"] = call_safe(str, variant.INFO.get("InheritanceMode"))
+
+
+def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
+    """Add Fusion information if present."""
+
+    def replace_nan(value: str, nan_value: str = "nan", replace_by: Any = "") -> str:
+        if value == nan_value:
+            return replace_by
+        else:
+            return value
+
+    parsed_variant["gene_a"] = call_safe(str, variant.INFO.get("GENEA", ""))
+    parsed_variant["gene_b"] = call_safe(str, variant.INFO.get("GENEB", ""))
+    parsed_variant["tool_hits"] = call_safe(str, variant.INFO.get("TOOL_HITS", 0))
+    parsed_variant["fusion_score"] = call_safe(str, variant.INFO.get("SCORE", None))
+    parsed_variant["hgnc_id_a"] = call_safe(int, variant.INFO.get("HGNC_ID_A", 0))
+    parsed_variant["hgnc_id_b"] = call_safe(int, variant.INFO.get("HGNC_ID_B", 0))
+    parsed_variant["orientation"] = replace_nan(
+        call_safe(str, variant.INFO.get("ORIENTATION", "")), nan_value="nan,nan"
+    )
+    parsed_variant["frame_status"] = call_safe(
+        str, replace_nan(variant.INFO.get("FRAME_STATUS", ""))
+    )
+    parsed_variant["transcript_id_a"] = call_safe(
+        str, replace_nan(variant.INFO.get("TRANSCRIPT_ID_A", ""))
+    )
+    parsed_variant["transcript_id_b"] = call_safe(
+        str, replace_nan(variant.INFO.get("TRANSCRIPT_ID_B", ""))
+    )
+    parsed_variant["exon_number_a"] = call_safe(
+        str, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_A", "")))
+    )
+    parsed_variant["exon_number_b"] = call_safe(
+        str, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_B", "")))
+    )
+    parsed_variant["fusion_genes"] = [parsed_variant["gene_a"], parsed_variant["gene_b"]]
+
+
+def add_gene_and_transcript_info_for_fusions(
+    parsed_variant: Dict[str, Any]
+) -> List[Optional[Dict]]:
+    """Add gene and transcript info for fusions. Return list of parsed
+    transcripts for later use in parsing.
+        Args:
+            parsed_variant(dict)
+        Return:
+            parsed_transcripts(list)
+    """
+    parsed_transcripts = []
+    genes = []
+    for suffix in ["a", "b"]:
+        genes.append(
+            {
+                "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+                "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                "transcripts": [],
+            }
+        )
+        # If fusions have transcript information about both fusion partners
+        if parsed_variant["transcript_id_a"] and parsed_variant["transcript_id_b"]:
+            parsed_transcripts.append(
+                {
+                    "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
+                    "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                    "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+                    "exon": parsed_variant[f"exon_number_{suffix}"],
+                }
+            )
+
+    # Add transcript info to genes if available
+    if parsed_transcripts:
+        genes[0]["transcripts"] = [parsed_transcripts[0]]
+        genes[1]["transcripts"] = [parsed_transcripts[1]]
+
+    # Add hgnc_id to variant if available
+    hgnc_ids = []
+    if parsed_variant["hgnc_id_a"] and parsed_variant["hgnc_id_b"]:
+        hgnc_ids = [gene["hgnc_id"] for gene in genes]
+        parsed_variant["genes"] = genes
+
+    parsed_variant["hgnc_ids"] = hgnc_ids
+
+    return parsed_transcripts
 
 
 def set_str_source(parsed_variant: Dict[str, Any], variant: Variant):
