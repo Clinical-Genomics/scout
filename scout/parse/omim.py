@@ -388,7 +388,6 @@ def get_mim_phenotypes(genemap_lines: Iterable[str]) -> dict[str, Any]:
                 phenotype_entry["inheritance"] = phenotype_entry["inheritance"].union(
                     phenotype["inheritance"]
                 )
-                #: Only one on each row since gene based?
                 phenotype_entry["hgnc_symbols"].add(hgnc_symbol)
             else:
                 #: If not already present set hgnc value and add it to the phenotypes found
