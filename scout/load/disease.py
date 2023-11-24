@@ -38,7 +38,9 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
-    LOG.info(f"Before adding to terms: length of annotations: {len(disease_annotations)} and length of disease_terms: {len(disease_terms)}")
+    LOG.info(
+        f"Before adding to terms: length of annotations: {len(disease_annotations)} and length of disease_terms: {len(disease_terms)}"
+    )
 
     # Update disease_terms with terms from disease_annotations if not already present
     for disease_id, content in disease_annotations.items():
@@ -50,13 +52,13 @@ def load_disease_terms(
                 "status": None,
                 "hgnc_symbols": set(),
             }
-    LOG.info(f"AFTER adding to terms: length of annotations: {len(disease_annotations)} and length of disease_terms: {len(disease_terms)}")
+    LOG.info(
+        f"AFTER adding to terms: length of annotations: {len(disease_annotations)} and length of disease_terms: {len(disease_terms)}"
+    )
     LOG.info("building disease objects")
 
     disease_objs: List[dict] = []
     for disease_id, disease_info in disease_terms.items():
-
-
         _parse_disease_term_info(
             disease_info=disease_info,
             disease_annotations=disease_annotations,
@@ -113,7 +115,6 @@ def _parse_disease_term_info(
     HPO annotations, add any missing diseases from HPO annotations.
     """
     if "hpo_terms" not in disease_info:
-        disease_info["hpo_terms"]=set()
+        disease_info["hpo_terms"] = set()
     if disease_id in disease_annotations:
         disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
-
