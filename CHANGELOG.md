@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - An `owner + case display name` index for cases database collection
 - Test and fixtures for RNA fusion case page
 - Load and display fusion variants from VCF files as the other variant types
+- Option to update case document with path to mei variants (clinical and research)
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
