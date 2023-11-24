@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from scout.commands import cli
 import pytest
+
+from scout.commands import cli
 from scout.server.extensions import store
 
 
