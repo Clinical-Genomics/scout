@@ -1,9 +1,7 @@
 import logging
-from pprint import pprint as pp
 
 import click
 import pymongo
-from flask.cli import with_appcontext
 
 from scout.server.extensions import store
 
@@ -71,7 +69,6 @@ LOG = logging.getLogger(__name__)
     help="Remove all SVs and re upload from existing files",
 )
 @click.option("--rankscore-treshold", help="Set a new rank score treshold if desired")
-@click.option("--rankmodel-version", help="Update the rank model version")
 @click.option("--sv-rankmodel-version", help="Update the SV rank model version")
 @click.pass_context
 def case(
@@ -92,7 +89,6 @@ def case(
     vcf_mei_research,
     reupload_sv,
     rankscore_treshold,
-    rankmodel_version,
     sv_rankmodel_version,
 ):
     """
