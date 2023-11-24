@@ -381,9 +381,6 @@ def case(store, institute_obj, case_obj):
         case_obj["custom_images"] = case_obj["custom_images"].get(
             "case_images", case_obj["custom_images"].get("case", {})
         )
-        for img_section in case_obj["custom_images"].keys():
-            for img in case_obj["custom_images"][img_section]:
-                img["data"] = b64encode(img["data"]).decode("utf-8")
 
     # Limit secondary findings according to institute settings
     limit_genes = store.safe_genes_filter(institute_obj["_id"])

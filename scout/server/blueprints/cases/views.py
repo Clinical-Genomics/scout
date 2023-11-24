@@ -1025,7 +1025,7 @@ def host_chr_image(institute_id, case_name, individual, image):
 
 
 def host_image_aux(institute_id, case_name, individual, image, key):
-    """Auxilary function for generate absolute file paths"""
+    """Auxiliary function for generate absolute file paths"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     # Find path
     for ind in case_obj["individuals"]:
@@ -1041,6 +1041,19 @@ def host_image_aux(institute_id, case_name, individual, image, key):
                 # redirect to missing file icon upon error
                 LOG.warning("send_file() exception: {}".format(err))
                 return redirect("/public/static/file-earmark-x.svg")
+
+@cases_bp.route(
+    "/<institute_id>/<case_name>/<image_path>"
+)
+def host_custom_image_aux(institute_id: str, case_name:str, image_path:str):
+    """Adds absolute path to a custom image path and returns the image."""
+    institute_and_case(store, institute_id, case_name)
+    LOG.error("HERE BOTCHES")
+    try:
+        return send_file(os.path.abspath(image_path))
+    except Exception as ex:
+        flash(f"Image not found under provided path: {image_path}")
+
 
 
 def _generate_csv(header, lines):

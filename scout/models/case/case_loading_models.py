@@ -58,8 +58,6 @@ VCF_FILE_PATH_CHECKS = [
     "vcf_cancer_research",
     "vcf_cancer_sv",
     "vcf_cancer_sv_research",
-    "vcf_fusion",
-    "vcf_fusion_research",
     "vcf_snv",
     "vcf_snv_research",
     "vcf_mei",
@@ -116,8 +114,6 @@ class VcfFiles(BaseModel):
     vcf_str: Optional[str] = None
     vcf_sv: Optional[str] = None
     vcf_sv_research: Optional[str] = None
-    vcf_fusion: Optional[str] = None
-    vcf_fusion_research: Optional[str] = None
 
     @model_validator(mode="before")
     def validate_file_path(cls, values: Dict) -> "VcfFiles":
@@ -263,7 +259,6 @@ class SampleLoader(BaseModel):
 class Image(BaseModel):
     """A class representing an image either associated to a case or a str variant."""
 
-    data: Optional[bytes] = None
     description: Optional[str] = None
     height: Optional[int] = None
     format: Optional[str] = None
@@ -305,23 +300,11 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
         )
         return matches
 
-    def _set_image_content(image: Image) -> Optional[Image]:
-        """Sets the content (data) and the format of each custom image."""
-        if _is_string_path(image.path):
-            path = Path(image.path)
-            with open(path, "rb") as file_handle:
-                image.data = bytes(file_handle.read())
-                image.format = (
-                    "svg+xml" if image.path.endswith("svg") else image.path.split(".")[-1]
-                )
-        return image
-
     real_folder_images: List[Image] = []
     for image in images:
         if image.str_repid == "{REPID}":  # This will be more than one image in a folder
             for match in _glob_wildcard(path=image.path):
                 new_image: Dict = {
-                    "data": None,
                     "description": image.description.replace("{REPID}", match["repid"]),
                     "height": image.height,
                     "format": None,
@@ -333,8 +316,6 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
                 real_folder_images.append(Image(**new_image))
         else:
             real_folder_images.append(image)  # append other non-repid images
-
-    real_folder_images = [_set_image_content(image) for image in real_folder_images]
 
     return real_folder_images
 
