@@ -85,7 +85,6 @@
                             {% for gene in var.genes %}
                               <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> ~ Variant {{count.value}} (1 gene) ~
                               {{ gene.hgnc_symbol or gene.hgnc_id }}
-                                {{ gene.hgnc_symbol + ' ' + gene.hgvs_identifier|truncate(20,True) }}
                               <span class="badge bg-success">SNV</span><br>
                             {% endfor %}
                           {% endif %}
