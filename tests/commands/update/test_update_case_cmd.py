@@ -86,7 +86,7 @@ def test_update_case_change_collaborator(mock_app, case_obj):
     ],
 )
 def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
-    """Test the CLI function that updates the case document with paths to dofferent variant types."""
+    """Test the CLI function that updates the case document with paths to different variant types."""
 
     # GIVEN a new VCF variant path to save in case document
     vcf_path = str(custom_temp_file(".vcf.gz"))
