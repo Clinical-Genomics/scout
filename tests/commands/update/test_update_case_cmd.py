@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scout.commands import cli
+import pytest
 from scout.server.extensions import store
 
 
@@ -68,131 +69,46 @@ def test_update_case_change_collaborator(mock_app, case_obj):
     assert res["collaborators"] == ["cust000"]
 
 
-def test_update_case_change_vcf_path(mock_app, case_obj, variant_clinical_file):
-    """Tests the CLI that updates a case"""
+@pytest.mark.parametrize(
+    "vcf_key",
+    [
+        "vcf_snv",
+        "vcf_sv",
+        "vcf_cancer",
+        "vcf_cancer_sv",
+        "vcf_research",
+        "vcf_sv_research",
+        "vcf_cancer_research",
+        "vcf_cancer_sv_research",
+        "vcf_mei",
+        "vcf_mei_research",
+    ],
+)
+def test_update_case_vcf_path(mock_app, case_obj, vcf_key, custom_temp_file):
+    """Test the CLI function that updates the case document with paths to dofferent variant types."""
+
+    # GIVEN a new VCF variant path to save in case document
+    vcf_path = str(custom_temp_file(".vcf.gz"))
 
     ## GIVEN a CLI object
     runner = mock_app.test_cli_runner()
-    ## WHEN updating the VCF path
-    result = runner.invoke(cli, ["update", "case", case_obj["_id"], "--vcf", variant_clinical_file])
-
-    ## THEN assert it exits wothout problems
-    assert result.exit_code == 0
-    ## THEN assert the information is communicated
-    assert "INFO Case updated" in result.output
-    res = store.case_collection.find_one({"_id": case_obj["_id"]})
-    ## THEN assert that the file is set correct
-    assert res["vcf_files"]["vcf_snv"] == variant_clinical_file
-
-
-def test_update_case_change_vcf_sv_path(mock_app, case_obj, variant_clinical_file):
-    """Tests the CLI that updates a case"""
-
-    ## GIVEN a CLI object
-    runner = mock_app.test_cli_runner()
-
-    ## WHEN updating the sv vcf path
-    result = runner.invoke(
-        cli, ["update", "case", case_obj["_id"], "--vcf-sv", variant_clinical_file]
-    )
-    ## THEN assert it exits without problems
-    assert result.exit_code == 0
-    ## THEN assert the information is communicated
-    assert "INFO Case updated" in result.output
-
-    res = store.case_collection.find_one({"_id": case_obj["_id"]})
-    ## THEN assert that the file is set correct
-    assert res["vcf_files"]["vcf_sv"] == variant_clinical_file
-
-
-def test_update_case_change_vcf_cancer_path(mock_app, case_obj, variant_clinical_file):
-    """Tests the CLI that updates a case"""
-
-    ## GIVEN a CLI object
-    runner = mock_app.test_cli_runner()
-
-    ## WHEN updating the cancer vcf path
-    result = runner.invoke(
-        cli, ["update", "case", case_obj["_id"], "--vcf-cancer", variant_clinical_file]
-    )
+    ## WHEN updating the VCF path of a specific variant type
+    file_type_option = "--"
+    if vcf_key == "vcf_snv":
+        file_type_option += "vcf"
+    else:
+        file_type_option += vcf_key.replace("_", "-")
+    result = runner.invoke(cli, ["update", "case", case_obj["_id"], file_type_option, vcf_path])
 
     ## THEN assert it exits without problems
     assert result.exit_code == 0
+
     ## THEN assert the information is communicated
     assert "INFO Case updated" in result.output
 
     res = store.case_collection.find_one({"_id": case_obj["_id"]})
     ## THEN assert that the file is set correct
-    assert res["vcf_files"]["vcf_cancer"] == variant_clinical_file
-
-
-def test_update_case_change_vcf_research_path(mock_app, case_obj, variant_clinical_file):
-    """Tests the CLI that updates a case"""
-
-    ## GIVEN a CLI object
-    runner = mock_app.test_cli_runner()
-
-    ## WHEN updating the research vcf path
-    result = runner.invoke(
-        cli,
-        ["update", "case", case_obj["_id"], "--vcf-research", variant_clinical_file],
-    )
-    ## THEN assert it exits without problems
-    assert result.exit_code == 0
-    ## THEN assert the information is communicated
-    assert "INFO Case updated" in result.output
-
-    res = store.case_collection.find_one({"_id": case_obj["_id"]})
-    ## THEN assert that the file is set correct
-    assert res["vcf_files"]["vcf_research"] == variant_clinical_file
-
-
-def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_clinical_file):
-    """Tests the CLI that updates a case"""
-
-    ## GIVEN a CLI object
-    runner = mock_app.test_cli_runner()
-
-    ## WHEN updating the sv research vcf path
-    result = runner.invoke(
-        cli,
-        ["update", "case", case_obj["_id"], "--vcf-sv-research", variant_clinical_file],
-    )
-    ## THEN assert it exits without problems
-    assert result.exit_code == 0
-    ## THEN assert the information is communicated
-    assert "INFO Case updated" in result.output
-
-    res = store.case_collection.find_one({"_id": case_obj["_id"]})
-    ## THEN assert that the file is set correct
-    assert res["vcf_files"]["vcf_sv_research"] == variant_clinical_file
-
-
-def test_update_case_change_sv_vcf_research_path(mock_app, case_obj, variant_clinical_file):
-    """Tests the CLI that updates a case"""
-
-    ## GIVEN a CLI object
-    runner = mock_app.test_cli_runner()
-
-    ## WHEN updating the sv research vcf path
-    result = runner.invoke(
-        cli,
-        [
-            "update",
-            "case",
-            case_obj["_id"],
-            "--vcf-cancer-research",
-            variant_clinical_file,
-        ],
-    )
-    ## THEN assert it exits without problems
-    assert result.exit_code == 0
-    ## THEN assert the information is communicated
-    assert "INFO Case updated" in result.output
-
-    res = store.case_collection.find_one({"_id": case_obj["_id"]})
-    ## THEN assert that the file is set correct
-    assert res["vcf_files"]["vcf_cancer_research"] == variant_clinical_file
+    assert res["vcf_files"][vcf_key] == vcf_path
 
 
 def test_update_case_reupload_sv_research(mock_app, case_obj, sv_clinical_file):
