@@ -54,7 +54,7 @@ def build_variant(
         # the clinical variants have limited annotation fields.
         variant_type = str, # required, choices=('research', 'clinical'))
 
-        category = str, # choices=('sv', 'snv', 'str')
+        category = str, # choices=('sv', 'snv', 'str', 'fusion')
         sub_category = str, # choices=('snv', 'indel', 'del', 'ins', 'dup', 'inv', 'cnv', 'bnd')
         mate_id = str, # For SVs this identifies the other end
 
@@ -209,6 +209,14 @@ def build_variant(
     variant_obj["mei_name"] = variant.get("mei_name")
     variant_obj["mei_polarity"] = variant.get("mei_polarity")
 
+    ## Fusion variant specific
+    FUSION_KEYS = ["tool_hits", "fusion_score", "orientation", "frame_status", "fusion_genes"]
+    for key in FUSION_KEYS:
+        variant_obj[key] = variant.get(key)
+
+    if variant_obj["category"] == "fusion":
+        variant_obj["rank_score"] = variant_obj.get("fusion_score")
+
     ### Mitochondria Specific
     variant_obj["mitomap_associated_diseases"] = variant.get("mitomap_associated_diseases")
     variant_obj["hmtvar_variant_id"] = variant.get("hmtvar_variant_id")
@@ -217,6 +225,7 @@ def build_variant(
 
     set_sample(variant_obj, variant.get("samples", []), sample_info)
     add_compounds(variant_obj, variant.get("compounds", []))
+
     add_genes(variant_obj, variant.get("genes", []), hgncid_to_gene)
 
     # Make gene searches more effective
@@ -397,7 +406,6 @@ def add_hgnc_symbols(variant_obj, hgnc_id_list, hgncid_to_gene):
             hgnc_symbols.append(gene_obj["hgnc_symbol"])
         else:
             LOG.warning("missing HGNC symbol for: %s", hgnc_id)
-
     variant_obj["hgnc_symbols"] = hgnc_symbols
 
 
