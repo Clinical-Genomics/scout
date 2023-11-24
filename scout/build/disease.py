@@ -49,5 +49,4 @@ def build_disease_term(disease_id: str, disease_annotations: dict, disease_info:
     DiseaseTerm(**disease_obj)
 
     disease_obj["_id"] = disease_obj["disease_id"]
-    LOG.info(f"Combined object: {disease_obj}")
     return disease_obj
