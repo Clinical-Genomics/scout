@@ -121,7 +121,7 @@ def case(
             LOG.info("Adding collaborator %s", collaborator)
 
     for key_name, key in [
-        ("vcf", vcf),
+        ("vcf_snv", vcf),
         ("vcf_sv", vcf_sv),
         ("vcf_cancer", vcf_cancer),
         ("vcf_cancer_sv", vcf_cancer_sv),
