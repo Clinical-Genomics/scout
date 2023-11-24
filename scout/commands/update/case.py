@@ -56,6 +56,16 @@ LOG = logging.getLogger(__name__)
     help="path to research VCF with cancer structural variants to be added",
 )
 @click.option(
+    "--vcf-mei",
+    type=click.Path(exists=True),
+    help="path to clinical mei variants to be added",
+)
+@click.option(
+    "--vcf-mei-research",
+    type=click.Path(exists=True),
+    help="path to research mei variants to be added",
+)
+@click.option(
     "--reupload-sv",
     is_flag=True,
     help="Remove all SVs and re upload from existing files",
@@ -78,6 +88,8 @@ def case(
     vcf_sv_research,
     vcf_cancer_research,
     vcf_cancer_sv_research,
+    vcf_mei,
+    vcf_mei_research,
     reupload_sv,
     rankscore_treshold,
     rankmodel_version,
@@ -112,37 +124,22 @@ def case(
             case_obj["collaborators"].append(collaborator)
             LOG.info("Adding collaborator %s", collaborator)
 
-    if vcf:
-        LOG.info("Updating 'vcf_snv' to %s", vcf)
-        case_obj["vcf_files"]["vcf_snv"] = vcf
-        case_changed = True
-    if vcf_sv:
-        LOG.info("Updating 'vcf_sv' to %s", vcf_sv)
-        case_obj["vcf_files"]["vcf_sv"] = vcf_sv
-        case_changed = True
-    if vcf_cancer:
-        LOG.info("Updating 'vcf_cancer' to %s", vcf_cancer)
-        case_obj["vcf_files"]["vcf_cancer"] = vcf_cancer
-        case_changed = True
-    if vcf_cancer_sv:
-        LOG.info("Updating 'vcf_cancer_sv' to %s", vcf_cancer_sv)
-        case_obj["vcf_files"]["vcf_cancer_sv"] = vcf_cancer_sv
-        case_changed = True
-    if vcf_research:
-        LOG.info("Updating 'vcf_research' to %s", vcf_research)
-        case_obj["vcf_files"]["vcf_research"] = vcf_research
-        case_changed = True
-    if vcf_sv_research:
-        LOG.info("Updating 'vcf_sv_research' to %s", vcf_sv_research)
-        case_obj["vcf_files"]["vcf_sv_research"] = vcf_sv_research
-        case_changed = True
-    if vcf_cancer_research:
-        LOG.info("Updating 'vcf_cancer_research' to %s", vcf_cancer_research)
-        case_obj["vcf_files"]["vcf_cancer_research"] = vcf_cancer_research
-        case_changed = True
-    if vcf_cancer_sv_research:
-        LOG.info("Updating 'vcf_cancer_sv_research' to %s", vcf_cancer_sv_research)
-        case_obj["vcf_files"]["vcf_cancer_sv_research"] = vcf_cancer_sv_research
+    for key_name, key in [
+        ("vcf", vcf),
+        ("vcf_sv", vcf_sv),
+        ("vcf_cancer", vcf_cancer),
+        ("vcf_cancer_sv", vcf_cancer_sv),
+        ("vcf_research", vcf_research),
+        ("vcf_sv_research", vcf_sv_research),
+        ("vcf_cancer_research", vcf_cancer_research),
+        ("vcf_cancer_sv_research", vcf_cancer_sv_research),
+        ("vcf_mei", vcf_mei),
+        ("vcf_mei_research", vcf_mei_research),
+    ]:
+        if key is None:
+            continue
+        LOG.info(f"Updating '{key_name}' to {key}")
+        case_obj["vcf_files"][key_name] = key
         case_changed = True
 
     if case_changed:
