@@ -83,14 +83,9 @@
 
                           {% if var.genes|length > 1 %} <!-- Share single gene variants from a multi-gene variant -->
                             {% for gene in var.genes %}
-                              ~ Variant {{count.value}} (1 gene) ~ <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}">
-                              {% if gene.hgvs_identifier and gene.hgnc_symbol  %}
+                              <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> ~ Variant {{count.value}} (1 gene) ~
+                              {{ gene.hgnc_symbol or gene.hgnc_id }}
                                 {{ gene.hgnc_symbol + ' ' + gene.hgvs_identifier|truncate(20,True) }}
-                              {% elif gene.hgnc_symbol %}
-                                {{ gene.hgnc_symbol }}
-                              {% elif gene.hgvs_identifier and gene.hgnc_id %}
-                                {{  gene.hgnc_id|string + ' ' + gene.hgvs_identifier|truncate(20,True) }}
-                              {% endif %}
                               <span class="badge bg-success">SNV</span><br>
                             {% endfor %}
                           {% endif %}
