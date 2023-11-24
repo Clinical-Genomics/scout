@@ -91,7 +91,7 @@
 
                         {% elif var.category == "sv" %} <!-- Share only gene names from SVs -->
                           {% for gene in var.genes %}
-                            ~ Variant {{count.value}} ~  <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge bg-warning">SV</span><br>
+                            <input type="checkbox" name="selected_var" id="var_details" value="{{var._id}}|{{gene.hgnc_symbol or gene.hgnc_id}}"> ~ Variant {{count.value}} ~  {{gene.hgnc_symbol or gene.hgnc_id}} - {{ pretty_variant(var) }} <span class="badge bg-warning">SV</span><br>
                           {% endfor %}
                         {% endif %}
                       {% endfor %}
