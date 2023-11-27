@@ -2,19 +2,10 @@
 import logging
 
 from bson.objectid import ObjectId
+from scout.constants.variant_tags import VARIANTS_TARGET_FROM_CATEGORY
 from flask import url_for
 
 LOG = logging.getLogger(__name__)
-
-VARIANTS_TARGET_FROM_CATEGORY = {
-    "sv": "variants.sv_variants",
-    "cancer": "variants.cancer_variants",
-    "cancer_sv": "variants.cancer_sv_variants",
-    "mei": "variants.mei_variants",
-    "snv": "variants.variants",
-    "str": "variants.str_variants",
-    "fusion": "variants.fusion_variants",
-}
 
 
 class FilterHandler(object):
@@ -127,7 +118,6 @@ class FilterHandler(object):
              Returns:
                  filter_obj(ReturnDocument)
         """
-        filter_obj = None
         LOG.debug("Retrieve filter {}".format(filter_id))
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
         if filter_obj is None:
@@ -138,7 +128,7 @@ class FilterHandler(object):
             target = VARIANTS_TARGET_FROM_CATEGORY.get(category)
 
             case_name = case_obj.get("display_name")
-            link = url_for(target, case_name=case_name, **filter_obj)
+            link = url_for(target, case_name=case_name, institute_id=institute_obj.get("_id"))
 
         subject = filter_obj["display_name"]
 
