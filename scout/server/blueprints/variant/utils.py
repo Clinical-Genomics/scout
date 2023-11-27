@@ -1,4 +1,5 @@
 import logging
+from typing import Dict, List, Optional
 
 from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS
 from scout.server.links import add_gene_links, add_tx_links
@@ -266,6 +267,10 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
             variant_gene["omim_inheritance"] = list(omim_models)
 
             all_models = all_models.union(omim_models)
+
+            variant_gene["associated_gene_panels"] = _get_panel_names_associated_with_gene(
+                hgnc_id, gene_panels
+            )
 
     variant_obj["all_models"] = all_models
 
@@ -626,3 +631,20 @@ def callers(variant_obj):
             calls.add((caller["name"], variant_obj[caller["id"]]))
 
     return list(calls)
+
+
+def _get_panel_names_associated_with_gene(
+    hgnc_id: str, gene_panels: List[Dict]
+) -> List[Optional[str]]:
+    """Return info on which gene panels overlap with gene id
+
+    Return:
+        matching_panels: Subset of input gene panels where gene was found
+    """
+    matching_panels = []
+    for panel in gene_panels:
+        gene_ids = [gene["hgnc_id"] for gene in panel.get("genes", [])]
+        if hgnc_id in gene_ids:
+            matching_panels.append(panel["panel_name"])
+
+    return matching_panels
