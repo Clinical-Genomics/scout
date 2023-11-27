@@ -32,8 +32,12 @@ table.dataTable {margin-bottom: 0}
 	 top: 50px;
 }
 
-a:visited:not(.btn) {
-	color: var(--bs-purple);
+a:visited : not(class^='btn')
+  color: var(--bs-purple);
+}
+
+a:visited : not(class^='img')
+  color: var(--bs-purple);
 }
 
 a.dropdown-item:visited {
