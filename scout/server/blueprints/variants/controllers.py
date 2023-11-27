@@ -1536,7 +1536,7 @@ def persistent_filter_actions(
                 of locale specific chars in numbers on class process_formdata would not be enough for the
                 better_decimal form fields.
                 """
-                for filter_decimal_value_form_field in [
+                for decimal_value_form_field in [
                     "cadd_score",
                     "revel",
                     "gnomad_frequency",
