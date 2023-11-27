@@ -1543,7 +1543,7 @@ def persistent_filter_actions(
                     "control_frequency",
                     "tumor_frequency",
                 ]:
-                    if not decimal_value_form_field in filter:
+                    if decimal_value_form_field not in filter:
                         continue
 
                     if type(filter[decimal_value_form_field][0]) is not str:
