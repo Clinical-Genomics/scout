@@ -11,6 +11,7 @@ VARIANTS_TARGET_FROM_CATEGORY = {
     "sv": "variants.sv_variants",
     "cancer": "variants.cancer_variants",
     "cancer_sv": "variants.cancer_sv_variants",
+    "mei": "variants.mei_variants",
     "snv": "variants.variants",
     "str": "variants.str_variants",
     "fusion": "variants.fusion_variants",
