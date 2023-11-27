@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-import pymongo
 from bson.objectid import ObjectId
 from flask import url_for
 
