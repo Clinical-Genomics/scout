@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-import pymongo
 from bson.objectid import ObjectId
 from flask import url_for
 from werkzeug.datastructures import MultiDict
@@ -12,6 +11,7 @@ VARIANTS_TARGET_FROM_CATEGORY = {
     "sv": "variants.sv_variants",
     "cancer": "variants.cancer_variants",
     "cancer_sv": "variants.cancer_sv_variants",
+    "mei": "variants.mei_variants",
     "snv": "variants.variants",
     "str": "variants.str_variants",
     "fusion": "variants.fusion_variants",

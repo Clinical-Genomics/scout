@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Expanded menu visible at screen sizes below 1000px now has background color
 - The image in ClinVar howto-modal is now responsive
 - Clicking on a case in case groups when case was already removed from group in another browser tab
+- Page crashing when saving filters for mei variants
 
 ## [4.72.4]
 ### Changed
