@@ -21,7 +21,6 @@ def load_disease_terms(
 ):
     """Load the diseases into the database."""
     if not genemap_lines:
-
         LOG.warning("No OMIM (genemap2) information, skipping load disease terms")
         return
 
@@ -44,7 +43,7 @@ def load_disease_terms(
 
     # Update disease_terms with OMIM-terms from disease_annotations if not already present
     for disease_id, content in disease_annotations.items():
-        if disease_id not in disease_terms and content['source']=='OMIM':
+        if disease_id not in disease_terms and content["source"] == "OMIM":
             disease_terms[disease_id] = {
                 "mim_number": None,
                 "inheritance": set(),
