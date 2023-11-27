@@ -3,6 +3,7 @@ import logging
 
 from bson.objectid import ObjectId
 from flask import url_for
+from pymongo.cursor import CursorType
 from werkzeug.datastructures import MultiDict
 
 LOG = logging.getLogger(__name__)
@@ -232,7 +233,7 @@ class FilterHandler(object):
 
         return result
 
-    def filters(self, institute_id: str, category: str = "snv") -> pymongo.cursor.Cursor:
+    def filters(self, institute_id: str, category: str = "snv") -> CursorType:
         """Obtain a cursor for all filters available to an institute in a category.
 
         Arguments:

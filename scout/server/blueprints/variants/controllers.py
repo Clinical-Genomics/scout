@@ -1543,19 +1543,18 @@ def persistent_filter_actions(
                     "control_frequency",
                     "tumor_frequency",
                 ]:
-                    if (
-                        filter_decimal_value_form_field in filter
-                        and type(filter[filter_decimal_value_form_field][0]) is str
-                    ):
-                        try:
-                            raw_value = decimal.Decimal(
-                                filter[filter_decimal_value_form_field][0].replace(",", ".")
-                            )
-                        except (decimal.InvalidOperation, ValueError):
-                            raw_value = filter[filter_decimal_value_form_field][0]
-                            raise ValueError("Not a valid decimal value")
+                    if not decimal_value_form_field in filter:
+                        continue
 
-                        filter[filter_decimal_value_form_field] = [raw_value]
+                    if type(filter[decimal_value_form_field][0]) is not str:
+                        continue
+
+                    target_value = filter[decimal_value_form_field][0].replace(",", ".")
+                    if not target_value.isnumeric():
+                        continue
+
+                    raw_value = decimal.Decimal(target_value)
+                    filter[decimal_value_form_field] = [raw_value]
 
                 return MultiDict(filter)
 
