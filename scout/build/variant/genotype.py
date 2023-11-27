@@ -29,7 +29,6 @@ def build_genotype(gt_call):
         so=gt_call["so"],
         ffpm=gt_call["ffpm"],
         split_read=gt_call["split_read"],
-
     )
 
     return gt_obj
