@@ -1510,7 +1510,6 @@ def persistent_filter_actions(
 
     if bool(request_form.get("audit_filter")):
         filter_id = request_form.get("filters")
-        LOG.error(request_form)
         audit_for = dict(
             category=category, variant_type=request_form.get("variant_type", "clinical")
         )
