@@ -51,9 +51,6 @@ def load_disease_terms(
                 "status": None,
                 "hgnc_symbols": set(),
             }
-    LOG.info(
-        f"AFTER adding to terms: length of annotations: {len(disease_annotations)} and length of disease_terms: {len(disease_terms)}"
-    )
     LOG.info("building disease objects")
 
     disease_objs: List[dict] = []

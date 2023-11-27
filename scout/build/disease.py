@@ -13,7 +13,7 @@ def build_disease_term(disease_id: str, disease_annotations: dict, disease_info:
     disease_obj["source"] = disease_id.split(':')[0]
 
     if disease_nr:
-        disease_obj["disease_nr"] = disease_nr
+        disease_obj["disease_nr"] = int(disease_nr)
     for key in ["hpo_terms", "inheritance"]:
         if key in disease_info:
             disease_obj[key] = list(disease_info[key])
