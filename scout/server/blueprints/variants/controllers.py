@@ -27,6 +27,7 @@ from scout.constants import (
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
 )
+from scout.constants.variant_tags import VARIANTS_TARGET_FROM_CATEGORY
 from scout.constants.variants_export import CANCER_EXPORT_HEADER, EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
     callers,
@@ -42,7 +43,6 @@ from scout.server.utils import (
     institute_and_case,
     user_institutes,
 )
-from scout.constants.variant_tags import VARIANTS_TARGET_FROM_CATEGORY
 
 from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
 from .utils import update_case_panels

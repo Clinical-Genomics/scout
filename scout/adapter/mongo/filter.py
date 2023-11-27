@@ -2,8 +2,9 @@
 import logging
 
 from bson.objectid import ObjectId
-from scout.constants.variant_tags import VARIANTS_TARGET_FROM_CATEGORY
 from flask import url_for
+
+from scout.constants.variant_tags import VARIANTS_TARGET_FROM_CATEGORY
 
 LOG = logging.getLogger(__name__)
 
