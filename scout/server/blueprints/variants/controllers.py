@@ -1550,11 +1550,12 @@ def persistent_filter_actions(
                         continue
 
                     target_value = filter[decimal_value_form_field][0].replace(",", ".")
-                    if not target_value.replace(".", "").isnumeric():
+                    if not target_value.replace(".", "", 1).isnumeric():
                         flash(
                             f"Requested filter field {decimal_value_form_field} not numeric",
                             "warning",
                         )
+                        del filter[decimal_value_form_field]
                         continue
 
                     raw_value = decimal.Decimal(target_value)
