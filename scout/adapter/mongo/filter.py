@@ -138,7 +138,7 @@ class FilterHandler(object):
             target = VARIANTS_TARGET_FROM_CATEGORY.get(category)
 
             case_name = case_obj.get("display_name")
-            link = url_for(target, case_name=case_name, institute_id=institute_obj.get("_id"))
+            link = url_for(target, case_name=case_name, **filter_obj)
 
         subject = filter_obj["display_name"]
 
