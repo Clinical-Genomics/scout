@@ -20,8 +20,8 @@ def load_disease_terms(
     hpo_annotation_lines: Optional[Iterable] = None,
 ):
     """Load the diseases into the database."""
-
     if not genemap_lines:
+
         LOG.warning("No OMIM (genemap2) information, skipping load disease terms")
         return
 
@@ -42,9 +42,9 @@ def load_disease_terms(
         f"Before adding to terms: length of annotations: {len(disease_annotations)} and length of disease_terms: {len(disease_terms)}"
     )
 
-    # Update disease_terms with terms from disease_annotations if not already present
+    # Update disease_terms with OMIM-terms from disease_annotations if not already present
     for disease_id, content in disease_annotations.items():
-        if disease_id not in disease_terms:
+        if disease_id not in disease_terms and content['source']=='OMIM':
             disease_terms[disease_id] = {
                 "mim_number": None,
                 "inheritance": set(),

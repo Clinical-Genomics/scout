@@ -10,7 +10,7 @@ def build_disease_term(disease_id: str, disease_annotations: dict, disease_info:
     disease_obj = {}
     disease_obj["disease_id"] = disease_id
     disease_nr = disease_id.split(':')[1]
-    disease_obj["source"] = disease_id[0]
+    disease_obj["source"] = disease_id.split(':')[0]
 
     if disease_nr:
         disease_obj["disease_nr"] = disease_nr
