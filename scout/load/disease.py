@@ -45,9 +45,9 @@ def load_disease_terms(
     for disease_id, content in disease_annotations.items():
         if disease_id not in disease_terms and content["source"] == "OMIM":
             disease_terms[disease_id] = {
-                "mim_number": None,
+                "mim_number": content["disease_nr"],
                 "inheritance": set(),
-                "description": None,
+                "description": content["description"],
                 "status": None,
                 "hgnc_symbols": set(),
             }
@@ -62,8 +62,6 @@ def load_disease_terms(
         )
         disease_objs.append(
             build_disease_term(
-                disease_annotations=disease_annotations,
-                disease_id=disease_id,
                 disease_info=disease_info,
                 alias_genes=genes,
             )
