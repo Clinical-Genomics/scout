@@ -34,6 +34,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - The image in ClinVar howto-modal is now responsive
 - Clicking on a case in case groups when case was already removed from group in another browser tab
 - Page crashing when saving filters for mei variants
+- Link visited color of images
 
 ## [4.72.4]
 ### Changed
