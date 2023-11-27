@@ -2,7 +2,8 @@
 import logging
 import os
 from datetime import timedelta
-from typing import Union, Dict
+from typing import Dict, Union
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
@@ -31,9 +32,6 @@ from .blueprints import (
     variant,
     variants,
 )
-
-from urllib.parse import unquote, urlsplit, parse_qsl
-
 
 LOG = logging.getLogger(__name__)
 
