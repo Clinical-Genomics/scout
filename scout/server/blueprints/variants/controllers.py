@@ -26,8 +26,8 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
+    VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.constants.variant_tags import VARIANTS_TARGET_FROM_CATEGORY
 from scout.constants.variants_export import CANCER_EXPORT_HEADER, EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
     callers,
