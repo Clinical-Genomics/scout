@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to update case document with path to mei variants (clinical and research)
 ### Changed
 - Details on variant type and category for audit filters on case general report
+- Disease_terms are identified by a combination of mim_number and source (OMIM)
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
