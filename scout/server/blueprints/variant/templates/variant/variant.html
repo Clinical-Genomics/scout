@@ -393,7 +393,6 @@
   <script>
 
     {% if variant.custom_images %}
-    // display eventual case custom images
       {% for image in variant.custom_images %}
         fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
       {% endfor %}
