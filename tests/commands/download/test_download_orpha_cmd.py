@@ -10,6 +10,7 @@ import responses
 from scout.commands.download.orpha import orpha as orpha_cmd
 from scout.demo.resources import genes_to_orpha_reduced_path
 
+
 @responses.activate
 def test_download_orpha_cmd(empty_mock_app):
     """Test download orpha command"""
@@ -26,7 +27,6 @@ def test_download_orpha_cmd(empty_mock_app):
         body=content,
         status=200,
     )
-
 
     # GIVEN a temporary directory
     with tempfile.TemporaryDirectory() as dir_name:
