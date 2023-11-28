@@ -1043,15 +1043,12 @@ def host_image_aux(institute_id, case_name, individual, image, key):
                 return redirect("/public/static/file-earmark-x.svg")
 
 
-@cases_bp.route("/<institute_id>/<case_name>/<image_path>")
-def host_custom_image_aux(institute_id: str, case_name: str, image_path: str):
+@cases_bp.route("/<institute_id>/<case_name>/custom_images")
+def host_custom_image_aux(institute_id: str, case_name: str):
     """Adds absolute path to a custom image path and returns the image."""
     institute_and_case(store, institute_id, case_name)
-    LOG.error("HERE BOTCHES")
-    try:
-        return send_file(os.path.abspath(image_path))
-    except Exception as ex:
-        flash(f"Image not found under provided path: {image_path}")
+    abs_path: str = os.path.abspath(request.args.get("image_path"))
+    return send_file(abs_path)
 
 
 def _generate_csv(header, lines):

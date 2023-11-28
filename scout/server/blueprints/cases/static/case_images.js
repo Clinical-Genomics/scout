@@ -35,6 +35,24 @@ const CHROMSPECS_LIST =
        {name: 'X', length: 312, cent_start: 127, cent_length: 8 },
        {name: 'Y', length: 107, cent_start: 32, cent_length: 4 }]
 
+/**
+ * This function fetches an image from a server and displays it in a specified div
+ * @param {string} imageUrl - The URL of the image to fetch
+ * @param {string} divId - The ID of the div to display the image in
+ */
+  function fetchAndDisplayImage(imageUrl, divId) {
+		fetch(imageUrl)
+		 .then(response => response.blob())
+		 .then(blob => {
+				 console.log(blob); //log the blob and check its size;
+				 const img = document.createElement("img");
+    		 img.src = URL.createObjectURL(blob);
+    		 // Display the image in the specified div
+				 const div = document.getElementById(divId);
+				 div.appendChild(img);
+		})
+		.catch(error => console.error(error));
+}
 
 /**
  * Iterate case.individuals. If a path to a image directory
