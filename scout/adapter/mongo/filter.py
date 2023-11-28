@@ -6,17 +6,9 @@ from flask import url_for
 from pymongo.cursor import CursorType
 from werkzeug.datastructures import MultiDict
 
-LOG = logging.getLogger(__name__)
+from scout.constants import VARIANTS_TARGET_FROM_CATEGORY
 
-VARIANTS_TARGET_FROM_CATEGORY = {
-    "sv": "variants.sv_variants",
-    "cancer": "variants.cancer_variants",
-    "cancer_sv": "variants.cancer_sv_variants",
-    "mei": "variants.mei_variants",
-    "snv": "variants.variants",
-    "str": "variants.str_variants",
-    "fusion": "variants.fusion_variants",
-}
+LOG = logging.getLogger(__name__)
 
 
 class FilterHandler(object):
@@ -131,7 +123,6 @@ class FilterHandler(object):
              Returns:
                  filter_obj(ReturnDocument)
         """
-        filter_obj = None
         LOG.debug("Retrieve filter {}".format(filter_id))
         filter_obj = self.filter_collection.find_one({"_id": ObjectId(filter_id)})
         if filter_obj is None:
