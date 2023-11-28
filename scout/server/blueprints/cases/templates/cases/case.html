@@ -522,6 +522,7 @@
 {{ super() }}
 <script src="{{ url_for('cases.static', filename='edit_pedigree.js') }}"></script>
 <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
+<script src="{{ url_for('cases.static', filename='case_images.js') }}"></script>
 <script src="{{ url_for('static', filename='custom_images.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -703,6 +704,5 @@ $('#collapse-icon').addClass('fa-angle-double-left');
 $('[data-bs-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
-
 </script>
 {% endblock %}
