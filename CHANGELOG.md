@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - STRs visualization on case panel to emphasize abnormal repeat count and associated condition
 - Removed cytoband column from STRs variant view on case report
 - More long integers formatted with thin spaces, and copy to clipboard buttons added
+- Details on variant type and category for audit filters on case general report
 ### Fixed
 - OMIM table is scrollable if higher than 700px on SV page
 - Pinned variants validation badge is now red for false positives.
