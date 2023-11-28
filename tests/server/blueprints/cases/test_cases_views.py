@@ -361,7 +361,7 @@ def test_case_custom_images(app, institute_obj, case_obj):
         )
         # THEN it should display the two custom images section
         dta = resp.get_data()
-        for section_name in case_obj["custom_images"]:
+        for section_name in case_obj["custom_images"]["case_images"]:
             assert bytes(f"{section_name}-accordion", "utf-8") in dta
 
 
