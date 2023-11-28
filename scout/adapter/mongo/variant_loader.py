@@ -126,7 +126,7 @@ class VariantLoader(object):
             else:
                 variant_obj = self.variant_collection.find_one({"_id": compound["variant"]})
             if variant_obj:
-                # If the variant exosts we try to collect as much info as possible
+                # If the variant exists we try to collect as much info as possible
                 not_loaded = False
                 compound["rank_score"] = variant_obj["rank_score"]
                 compound["is_dismissed"] = len(variant_obj.get("dismiss_variant", [])) > 0
