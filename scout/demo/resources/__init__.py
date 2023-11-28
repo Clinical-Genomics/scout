@@ -23,6 +23,9 @@ exons38_reduced_path = str(files(BASE_PATH).joinpath("ensembl_exons_38_reduced.t
 mim2gene_reduced_path = str(files(BASE_PATH).joinpath("mim2gene_reduced.txt"))
 genemap2_reduced_path = str(files(BASE_PATH).joinpath("genemap2_reduced.txt"))
 
+# ORPHA paths
+genes_to_orpha_reduced_path = str(files(BASE_PATH).joinpath("genes_to_orpha_reduced.txt"))
+
 # HPO paths
 hpoterms_reduced_path = str(files(BASE_PATH).joinpath("reduced.hpo.obo"))
 hpo_phenotype_annotation_reduced_path = str(files(BASE_PATH).joinpath("reduced.phenotype.hpoa"))
