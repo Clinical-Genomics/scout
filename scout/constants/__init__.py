@@ -81,6 +81,7 @@ from .variant_tags import (
     VARIANT_CALL,
     VARIANT_FILTERS,
     VARIANT_GENOTYPES,
+    VARIANTS_TARGET_FROM_CATEGORY,
 )
 from .variants_export import (
     CANCER_EXPORT_HEADER,
