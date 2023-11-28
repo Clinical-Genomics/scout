@@ -697,6 +697,14 @@ def _compound_follow_filter_in_compound(compound, compound_var_obj, query_form):
                 compound["is_dismissed"] = True
                 return True
 
+            split_any_gene_items = [
+                possible_gene_item.split(":")[-1]
+                for possible_gene_item in compound_items
+                if ":" in possible_gene_item
+            ]
+            if split_any_gene_items:
+                compound_items = split_any_gene_items
+
             if set(compound_items).isdisjoint(set(query_form_items)):
                 compound["is_dismissed"] = True
                 return True
@@ -734,7 +742,6 @@ def _compound_follow_filter_clnsig(compound, compound_var_obj, query_form):
         str_re = re.compile("|".join(query_str_rank))
 
         compound_clnsig = compound_var_obj.get("clnsig")
-        LOG.debug("compound_var_obj %s", compound_var_obj)
         if compound_clnsig:
             for compound_clnsig_item in compound_clnsig:
                 clnsig_value = compound_clnsig_item.get("value")
@@ -849,7 +856,6 @@ def hide_compounds_query(store, variant_obj, query_form):
             if not compound_var_obj:
                 compound["is_dismissed"] = True
                 continue
-
             compound_follow_filter(compound, compound_var_obj, query_form)
 
 
