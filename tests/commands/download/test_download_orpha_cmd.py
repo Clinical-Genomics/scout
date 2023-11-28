@@ -1,6 +1,5 @@
 """Tests for download commands"""
 
-
 import os
 import pathlib
 import tempfile
