@@ -26,6 +26,7 @@ from scout.constants import (
     MOSAICISM_OPTIONS,
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
+    VARIANTS_TARGET_FROM_CATEGORY,
 )
 from scout.constants.variants_export import CANCER_EXPORT_HEADER, EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
@@ -1515,7 +1516,23 @@ def persistent_filter_actions(
 
     if bool(request_form.get("audit_filter")):
         filter_id = request_form.get("filters")
-        filter_obj = store.audit_filter(filter_id, institute_obj, case_obj, user_obj, category)
+        audit_for = dict(
+            category=category, variant_type=request_form.get("variant_type", "clinical")
+        )
+        link: str = url_for(
+            VARIANTS_TARGET_FROM_CATEGORY.get(category),
+            case_name=case_obj.get("display_name"),
+            institute_id=institute_obj.get("_id"),
+            **audit_for,
+        )
+        filter_obj = store.audit_filter(
+            filter_id=filter_id,
+            institute_obj=institute_obj,
+            case_obj=case_obj,
+            user_obj=user_obj,
+            category=category,
+            link=link,
+        )
         if filter_obj is not None:
             filter_obj = store.retrieve_filter(filter_id)
             form = FiltersFormClass(MultiDict(filter_obj))
