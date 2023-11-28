@@ -349,7 +349,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
     return hgnc_genes
 
 
-def get_mim_phenotypes(genemap_lines: Iterable[str]) -> dict[str, Any]:
+def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[str, Any]:
     """Get a dictionary with phenotypes
 
     Use the mim numbers for phenotypes as keys and phenotype information as
