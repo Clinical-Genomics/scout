@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
 - Links displayed as buttons does not change color when visited
+- Hide compounds with compounds follow filter for region or function would fail for variants in multiple genes
 
 ## [4.73]
 ### Added
