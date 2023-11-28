@@ -635,80 +635,80 @@
 
   });
 
-  function StopSpinner() {
-     // Avoid page spinner being stuck on file download
-    $(window).unbind('beforeunload');
-    return true;
-  }
-  function SidebarCollapse () {
-      $('.menu-collapsed').toggleClass('d-none');
-      $('.sidebar-submenu').toggleClass('d-none');
-      $('.submenu-icon').toggleClass('d-none');
-      $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
+function StopSpinner() {
+   // Avoid page spinner being stuck on file download
+  $(window).unbind('beforeunload');
+  return true;
+}
+function SidebarCollapse () {
+    $('.menu-collapsed').toggleClass('d-none');
+    $('.sidebar-submenu').toggleClass('d-none');
+    $('.submenu-icon').toggleClass('d-none');
+    $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
 
-      // Treating d-flex/d-none on separators with title
-      var SeparatorTitle = $('.sidebar-separator-title');
-      if ( SeparatorTitle.hasClass('d-flex') ) {
-          SeparatorTitle.removeClass('d-flex');
-      } else {
-          SeparatorTitle.addClass('d-flex');
-      }
-
-      // Collapse/Expand icon
-      $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
-  }
-
-  function dynamicGenesCheck(source){
-    if(source.name === "dynamicGene"){
-      if(source.checked === false){
-        var checkAllGenes = document.getElementById('checkAllGenes');
-        checkAllGenes.checked = source.checked;
-      }
-      return;
-    }
-    var checkboxes = document.getElementsByName('dynamicGene');
-    for(var i=0, n=checkboxes.length;i<n;i++) {
-      checkboxes[i].checked = source.checked;
-    }
-  }
-
-  function toggleClickableButtons(button, select_field) {
-      const selection = document.getElementById(select_field)
-
-      if (selection.value.length > 0) {
-         document.getElementById(button).classList.remove('btn-secondary');
-         document.getElementById(button).classList.remove('no-hover');
-         document.getElementById(button).classList.add('btn-secondary');
-      }
-      else {
-         document.getElementById(button).classList.remove('btn-secondary');
-         document.getElementById(button).classList.add('no-hover');
-         document.getElementById(button).classList.add('btn-secondary');
-      }
+    // Treating d-flex/d-none on separators with title
+    var SeparatorTitle = $('.sidebar-separator-title');
+    if ( SeparatorTitle.hasClass('d-flex') ) {
+        SeparatorTitle.removeClass('d-flex');
+    } else {
+        SeparatorTitle.addClass('d-flex');
     }
 
+    // Collapse/Expand icon
+    $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
+}
 
-  // Hide submenus
-  var bodyRowCollapsible = document.getElementById('body-row');
-  var bsCollapse = new bootstrap.Collapse(bodyRowCollapsible, {
-    toggle: false
-  })
+function dynamicGenesCheck(source){
+  if(source.name === "dynamicGene"){
+    if(source.checked === false){
+      var checkAllGenes = document.getElementById('checkAllGenes');
+      checkAllGenes.checked = source.checked;
+    }
+    return;
+  }
+  var checkboxes = document.getElementsByName('dynamicGene');
+  for(var i=0, n=checkboxes.length;i<n;i++) {
+    checkboxes[i].checked = source.checked;
+  }
+}
 
-  bodyRowCollapsible.addEventListener('shown.bs.collapse', function () {
-    $(this).parent().find(".fa fa-plus").removeClass("fa fa-plus").addClass("fa fa-minus");
-  });
+function toggleClickableButtons(button, select_field) {
+    const selection = document.getElementById(select_field)
 
-  bodyRowCollapsible.addEventListener('hidden.bs.collapse', function () {
-    $(this).parent().find(".fa fa-minus").removeClass("fa fa-minus").addClass("fa fa-plus");
-  });
+    if (selection.value.length > 0) {
+       document.getElementById(button).classList.remove('btn-secondary');
+       document.getElementById(button).classList.remove('no-hover');
+       document.getElementById(button).classList.add('btn-secondary');
+    }
+    else {
+       document.getElementById(button).classList.remove('btn-secondary');
+       document.getElementById(button).classList.add('no-hover');
+       document.getElementById(button).classList.add('btn-secondary');
+    }
+  }
 
-  // Collapse/Expand icon
-  $('#collapse-icon').addClass('fa-angle-double-left');
 
-  // Collapse click
-  $('[data-bs-toggle=sidebar-collapse]').click(function() {
-    SidebarCollapse();
-  });
+// Hide submenus
+var bodyRowCollapsible = document.getElementById('body-row');
+var bsCollapse = new bootstrap.Collapse(bodyRowCollapsible, {
+  toggle: false
+})
+
+bodyRowCollapsible.addEventListener('shown.bs.collapse', function () {
+  $(this).parent().find(".fa fa-plus").removeClass("fa fa-plus").addClass("fa fa-minus");
+});
+
+bodyRowCollapsible.addEventListener('hidden.bs.collapse', function () {
+  $(this).parent().find(".fa fa-minus").removeClass("fa fa-minus").addClass("fa fa-plus");
+});
+
+// Collapse/Expand icon
+$('#collapse-icon').addClass('fa-angle-double-left');
+
+// Collapse click
+$('[data-bs-toggle=sidebar-collapse]').click(function() {
+  SidebarCollapse();
+});
 
   window.onload = loadCustomImages;
   window.onresize = loadCustomImages;

@@ -44,7 +44,6 @@ const CHROMSPECS_LIST =
 		fetch(imageUrl)
 		 .then(response => response.blob())
 		 .then(blob => {
-				 console.log(blob); //log the blob and check its size;
 				 const img = document.createElement("img");
     		 img.src = URL.createObjectURL(blob);
     		 // Display the image in the specified div
