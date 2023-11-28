@@ -35,6 +35,7 @@ const CHROMSPECS_LIST =
        {name: 'X', length: 312, cent_start: 127, cent_length: 8 },
        {name: 'Y', length: 107, cent_start: 32, cent_length: 4 }]
 
+
 /**
  * Iterate case.individuals. If a path to a image directory
  * is set, get panels on the page and add image content
