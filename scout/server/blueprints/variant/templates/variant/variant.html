@@ -389,15 +389,13 @@
   {{ super() }}
   {{ external_scripts() }}
   {{ variant_scripts() }}
-  <script src="{{ url_for('cases.static', filename='case_images.js') }}"></script>
+  <script src="{{ url_for('static', filename='custom_images.js') }}"></script>
   <script>
 
     {% if variant.custom_images %}
     // display eventual case custom images
-      {% for image in images %}
-        {% for image in case.custom_images[section_name] %}
-          fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
-        {% endfor %}
+      {% for image in variant.custom_images %}
+        fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
       {% endfor %}
     {% endif %}
 
