@@ -450,8 +450,8 @@
           <div class="panel-body">
             {% for image in case.custom_images[section_name] %}
               <div class="pt-3" >
-                <h6 class="fw-bold">'{{ image.title }}</h6>
-                <div id="{{image.path}}"></div>
+                <h6 class="fw-bold">{{ image.title }}</h6>
+                <div id="{{image.path|safe}}"></div>
               </div>
             {% endfor %}
           </div>
@@ -538,7 +538,7 @@
        window.onload= add_image_panels();
       {% for section_name in case.custom_images %}
         {% for image in case.custom_images[section_name] %}
-          fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}")
+          fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
         {% endfor %}
       {% endfor %}
     {% endif %}
