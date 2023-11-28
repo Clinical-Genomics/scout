@@ -268,10 +268,6 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
 
             all_models = all_models.union(omim_models)
 
-            variant_gene["associated_gene_panels"] = _get_panel_names_associated_with_gene(
-                hgnc_id, gene_panels
-            )
-
     variant_obj["all_models"] = all_models
 
 
@@ -633,18 +629,19 @@ def callers(variant_obj):
     return list(calls)
 
 
-def _get_panel_names_associated_with_gene(
-    hgnc_id: str, gene_panels: List[Dict]
-) -> List[Optional[str]]:
-    """Return info on which gene panels overlap with gene id
-
-    Return:
-        matching_panels: Subset of input gene panels where gene was found
+def associate_variant_genes_with_case_panels(store, variant_obj) -> None:
     """
-    matching_panels = []
-    for panel in gene_panels:
-        gene_ids = [gene["hgnc_id"] for gene in panel.get("genes", [])]
-        if hgnc_id in gene_ids:
-            matching_panels.append(panel["panel_name"])
+    TBA
+    """
 
-    return matching_panels
+    genes = variant_obj.get("genes", [])
+    gene_panels = variant_obj.get("case_panels", [])
+
+    for gene in genes:
+        hgnc_id = gene["hgnc_id"]
+        matching_panels = []
+        for panel in gene_panels:
+            genes_on_panel = store.panel_to_genes(panel_id=panel["panel_id"], gene_format="hgnc_id")
+            if hgnc_id in genes_on_panel:
+                matching_panels.append(panel["panel_name"])
+        gene["associated_gene_panels"] = matching_panels
