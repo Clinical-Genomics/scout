@@ -211,13 +211,7 @@
     <div id="attached-images" class="card-body collapse" data-parent="#attached-img-panel">
      {% for image in images %}
        <h6 class="font-weight-bold">{{ image.title }}</h6>
-       <img src="data:image/{{image.format}};base64,{{image.data|safe}}"
-         class="pb-3"
-         alt="{{ image.description }}"
-         title="{{ image.description }}"
-         {% if image.width %} width="{{image.width}}"{% endif %}
-         {% if image.height %} height="{{image.height}}"{% endif %}
-       />
+       <div id="{{image.path|safe}}"></div>
      {% endfor %}
     </div>
   </div>
@@ -395,7 +389,18 @@
   {{ super() }}
   {{ external_scripts() }}
   {{ variant_scripts() }}
+  <script src="{{ url_for('cases.static', filename='case_images.js') }}"></script>
   <script>
+
+    {% if variant.custom_images %}
+    // display eventual case custom images
+      {% for image in images %}
+        {% for image in case.custom_images[section_name] %}
+          fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
+        {% endfor %}
+      {% endfor %}
+    {% endif %}
+
     const flipArrowIcon = (element) => {
       const icon = element.firstChild
       if (element.classList.contains('collapsed')) {

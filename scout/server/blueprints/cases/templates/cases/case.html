@@ -529,20 +529,14 @@
 <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-
 <script>
-
-  function loadCustomImages(){
-    // display eventual case custom images
-    {% if case.custom_images %}
-       window.onload= add_image_panels();
-      {% for section_name in case.custom_images %}
-        {% for image in case.custom_images[section_name] %}
-          fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
-        {% endfor %}
+  {% if case.custom_images %}
+    {% for section_name in case.custom_images %}
+      {% for image in case.custom_images[section_name] %}
+        fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
       {% endfor %}
-    {% endif %}
-  }
+    {% endfor %}
+  {% endif %}
 
   {% if chromograph.available %}
     window.onload= add_image_panels();
@@ -710,7 +704,5 @@ $('[data-bs-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
 
-  window.onload = loadCustomImages;
-  window.onresize = loadCustomImages;
 </script>
 {% endblock %}
