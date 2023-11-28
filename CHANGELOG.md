@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Test and fixtures for RNA fusion case page
 - Load and display fusion variants from VCF files as the other variant types
 - Option to update case document with path to mei variants (clinical and research)
+### Changed
+- Details on variant type and category for audit filters on case general report
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
@@ -31,6 +33,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Expanded menu visible at screen sizes below 1000px now has background color
 - The image in ClinVar howto-modal is now responsive
 - Clicking on a case in case groups when case was already removed from group in another browser tab
+- Page crashing when saving filters for mei variants
+- Link visited color of images
 
 ## [4.72.4]
 ### Changed
