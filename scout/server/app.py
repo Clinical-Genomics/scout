@@ -2,7 +2,8 @@
 import logging
 import os
 from datetime import timedelta
-from typing import Union
+from typing import Dict, Union
+from urllib.parse import parse_qsl, unquote, urlsplit
 
 import coloredlogs
 from flask import Flask, current_app, redirect, request, url_for
@@ -31,11 +32,6 @@ from .blueprints import (
     variant,
     variants,
 )
-
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urllib2 import unquote
 
 LOG = logging.getLogger(__name__)
 
@@ -241,6 +237,11 @@ def register_filters(app):
     def url_decode(string):
         """Decode a string with encoded hex values."""
         return unquote(string)
+
+    @app.template_filter()
+    def url_args(url: str) -> Dict[str, str]:
+        """Return all arguments and values present in a string URL."""
+        return dict(parse_qsl(urlsplit(url).query))
 
     @app.template_filter()
     def cosmic_prefix(cosmicId):
