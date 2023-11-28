@@ -319,6 +319,27 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
     return mim_files
 
 
+def fetch_orpha_files(genes_to_orpha=False, orpha_to_hpo=False):
+    """ Fetch the necessary files
+    https://github.com/Orphanet/Orphadata_aggregated/blob/master/Genes%20associated%20with%20rare%20diseases/en_product6.xml
+    https://www.orphadata.com/data/xml/en_product6.xml
+    Returns:
+        orpha_files(dict): A dictionary with selected files from orphadata
+    """
+    LOG.info("Fetching orpha files from github or orphadata")
+
+    gene_to_orpha_url = "https://www.orphadata.com/data/xml/en_product6.xml"
+    orpha_to_hpo_url = "https://www.orphadata.com/data/xml/en_product4.xml"
+
+    orpha_files = {}
+    if genes_to_orpha is True:
+        orpha_files["genes_to_orphacodes"] = fetch_resource( gene_to_orpha_url)
+    if orpha_to_hpo is True:
+        orpha_files["orphacodes_to_hpo"] = fetch_resource(orpha_to_hpo_url)
+
+    return orpha_files
+
+
 def fetch_ensembl_biomart(attributes, filters, build=None):
     """Fetch data from ensembl biomart
 
