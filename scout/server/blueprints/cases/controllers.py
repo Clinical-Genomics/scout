@@ -4,7 +4,6 @@ import itertools
 import json
 import logging
 import os
-from base64 import b64encode
 from typing import Dict, List, Set
 
 import query_phenomizer
