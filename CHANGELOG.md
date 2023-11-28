@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Added
+- Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene 
 - SNVs and Indels, MEI and str variants genes have links to Decipher
 - An `owner + case display name` index for cases database collection
 - Test and fixtures for RNA fusion case page
