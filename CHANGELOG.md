@@ -11,12 +11,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Test and fixtures for RNA fusion case page
 - Load and display fusion variants from VCF files as the other variant types
 - Option to update case document with path to mei variants (clinical and research)
-### Changed
+- Details on variant type and category for audit filters on case general report
 - Parallelize variant loading for each chromosome
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
 - Links displayed as buttons does not change color when visited
+- Hide compounds with compounds follow filter for region or function would fail for variants in multiple genes
 
 ## [4.73]
 ### Added
@@ -26,7 +27,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - STRs visualization on case panel to emphasize abnormal repeat count and associated condition
 - Removed cytoband column from STRs variant view on case report
 - More long integers formatted with thin spaces, and copy to clipboard buttons added
-- Details on variant type and category for audit filters on case general report
 ### Fixed
 - OMIM table is scrollable if higher than 700px on SV page
 - Pinned variants validation badge is now red for false positives.
