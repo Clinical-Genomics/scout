@@ -3,6 +3,7 @@ import datetime as dt
 import logging
 import math
 from copy import deepcopy
+from typing import Union, Optional, Dict
 
 import pymongo
 from bson import ObjectId
@@ -195,21 +196,25 @@ class PanelHandler:
         LOG.debug("Panel saved")
         return result.inserted_id
 
-    def panel(self, panel_id):
+    def panel(
+        self, panel_id: Union[str, ObjectId], projection: Optional[Dict] = None
+    ) -> Optional[Dict]:
         """Fetch a gene panel by '_id'.
 
         Args:
-            panel_id (str, ObjectId): str or ObjectId of document ObjectId
+            panel_id:   Can be an ObjectId or  str representation of objectId
+            projection: Pymongo projection dict
 
         Returns:
-            dict: panel object or `None` if panel not found
+            Dict: panel object
+            None: If panel not found
         """
         if not isinstance(panel_id, ObjectId):
             try:
                 panel_id = ObjectId(panel_id)
             except InvalidId as err:
                 LOG.error("Invalid panel id received: %s", err)
-        panel_obj = self.panel_collection.find_one({"_id": panel_id})
+        panel_obj = self.panel_collection.find_one({"_id": panel_id}, projection)
         return panel_obj
 
     def delete_panel(self, panel_obj):
