@@ -14,7 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Details on variant type and category for audit filters on case general report
 - Do not save custom images as binary data into case and variant database documents
-- Retrieve case and display case and variant custom images using image's saved path
+- Retrieve and display case and variant custom images using image's saved path
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
