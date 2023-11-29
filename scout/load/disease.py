@@ -44,7 +44,7 @@ def load_disease_terms(
                 "mim_number": content["disease_nr"],
                 "inheritance": set(),
                 "description": content["description"],
-                "hgnc_symbols": set(),
+                "hgnc_symbols": content["hgnc_symbols"],
             }
     LOG.info("building disease objects")
 
