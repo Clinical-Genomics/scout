@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to update case document with path to mei variants (clinical and research)
 ### Changed
 - Details on variant type and category for audit filters on case general report
+- Enable Gens CN profile button also in somatic case view
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
 ### Fixed
@@ -20,7 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
 - Links displayed as buttons does not change color when visited
 - Hide compounds with compounds follow filter for region or function would fail for variants in multiple genes
-- Updated FontAwesome version due to fix missing icons
+- Updated FontAwesome version to fix missing icons
 
 ## [4.73]
 ### Added
