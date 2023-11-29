@@ -16,7 +16,7 @@ def print_orpha(out_dir):
     Args:
         out_dir(Path)
     """
-    orpha_files = fetch_orpha_files(product6=True, product4=False)
+    orpha_files = fetch_orpha_files(product6=True)
     file_name = "orphadata_en_product6.xml"
     file_path = out_dir / file_name
     LOG.info(f"Print Orphadata to {file_path}")
