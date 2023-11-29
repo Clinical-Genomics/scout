@@ -16,12 +16,12 @@ def print_orpha(out_dir):
     Args:
         out_dir(Path)
     """
-    orpha_files = fetch_orpha_files(genes_to_orpha=True, orpha_to_hpo=False)
-    file_name = "genes_to_orpha.xml"
+    orpha_files = fetch_orpha_files(product6=True, product4=False)
+    file_name = "orphadata_en_product6.xml"
     file_path = out_dir / file_name
     LOG.info(f"Print Orphadata to {file_path}")
     with file_path.open("w", encoding="utf-8") as outfile:
-        for line in orpha_files["genes_to_orphacodes"]:
+        for line in orpha_files["orphadata_en_product6"]:
             outfile.write(line + "\n")
 
 

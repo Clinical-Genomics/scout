@@ -7,7 +7,7 @@ import tempfile
 import responses
 
 from scout.commands.download.orpha import orpha as orpha_cmd
-from scout.demo.resources import genes_to_orpha_reduced_path
+from scout.demo.resources import orphadata_en_product6_reduced_path
 
 
 @responses.activate
@@ -18,8 +18,8 @@ def test_download_orpha_cmd(empty_mock_app):
 
     # GIVEN a patched response from Orphadata to obtain genes_to_orpha file
     url = "https://www.orphadata.com/data/xml/en_product6.xml"
-    with open(genes_to_orpha_reduced_path, "r") as genes_to_orpha_file:
-        content = genes_to_orpha_file.read()
+    with open(orphadata_en_product6_reduced_path, "r") as orphadata_en_product6_file:
+        content = orphadata_en_product6_file.read()
     responses.add(
         responses.GET,
         url,
@@ -38,4 +38,4 @@ def test_download_orpha_cmd(empty_mock_app):
 
         # AND the directory should contain the expected file
         downloaded_files = os.listdir(dir_name)
-        assert "genes_to_orpha.xml" in downloaded_files
+        assert "orphadata_en_product6.xml" in downloaded_files
