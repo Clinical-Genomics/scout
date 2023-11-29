@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 from pprint import pprint as pp
 
 import pytest
@@ -366,3 +367,32 @@ def test_clinical_hgnc_ids(case_obj, real_panel_database):
     # THEN the clinical_hgnc_ids function should return a valid set of hgnc IDs for the case panel
     clinical_hgnc_ids = adapter.clinical_symbols(case_obj)
     assert len(clinical_hgnc_ids) > 0
+
+
+def test_panel_to_genes(adapter, testpanel_obj):
+    """Test function that converts gene panels to list of gene symbols/ids"""
+
+    adapter.panel_collection.insert_one(testpanel_obj)
+
+    # GIVEN a adapter with a gene panel
+    panel_obj = adapter.panel_collection.find_one()
+    assert panel_obj["genes"]
+
+    # WHEN converting gene panel to list of gene symbols
+    object_id = panel_obj["_id"]
+    assert isinstance(object_id, ObjectId)
+
+    # THEN return list of gene symbols from correct panel
+    gene_symbols = adapter.panel_to_genes(panel_id=panel_obj["_id"])
+    assert sorted(gene_symbols) == ["AAA", "BBB"]
+
+    # WHEN converting panel to list of hgnc ids
+    gene_symbols = adapter.panel_to_genes(panel_id=panel_obj["_id"], gene_format="hgnc_id")
+
+    # THEN return list of hgnc ids
+    assert sorted(gene_symbols) == [100, 222]
+
+    # WHEN converting panel to gene list by panel name
+    panel_name = testpanel_obj["panel_name"]
+    gene_symbols = adapter.panel_to_genes(panel_name=panel_name)
+    assert sorted(gene_symbols) == ["AAA", "BBB"]
