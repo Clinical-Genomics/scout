@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Details on variant type and category for audit filters on case general report
 - Enable Gens CN profile button also in somatic case view
+- Fix case of analysis typ check for Gens analysis button - only show for WGS
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
