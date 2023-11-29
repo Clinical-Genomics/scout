@@ -146,7 +146,7 @@
               <td>{{model.updated.strftime('%Y-%m-%d')}}</td>
               <td style="width:30%">{{model.admins|join(", ") or "-"}}</td>
               <td>
-                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><em class="fa fa-trash-o"></em></button>
+                <button type="button" class="btn btn-danger btn-sm removeModel" data-id="{{model._id}}" aria-hidden="true" data-bs-toggle="modal" data-bs-target="#deleteModal-{{model._id}}"><em class="far fa-trash"></em></button>
               </td>
               {% if model.admins|length == 0 or current_user.email in model.get("admins",[]) %}
                 <td>
