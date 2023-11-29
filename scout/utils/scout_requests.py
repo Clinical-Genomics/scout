@@ -334,7 +334,7 @@ def fetch_orpha_files(product4=False, product6=False):
     if product6 is True:
         orpha_files["orphadata_en_product6"] = fetch_resource(orphadata_en_product6_url)
     if product4 is True:
-        orpha_files["orphadata_en_product6"] = fetch_resource(orphadata_en_product4_url)
+        orpha_files["orphadata_en_product4"] = fetch_resource(orphadata_en_product4_url)
 
     return orpha_files
 
