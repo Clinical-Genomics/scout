@@ -3,7 +3,7 @@ import datetime as dt
 import logging
 import math
 from copy import deepcopy
-from typing import Union, Optional, Dict
+from typing import Dict, List, Optional, Union
 
 import pymongo
 from bson import ObjectId
@@ -202,7 +202,7 @@ class PanelHandler:
         """Fetch a gene panel by '_id'.
 
         Args:
-            panel_id:   Can be an ObjectId or  str representation of objectId
+            panel_id:   Can be an ObjectId or str representation of ObjectId
             projection: Pymongo projection dict
 
         Returns:
@@ -232,25 +232,26 @@ class PanelHandler:
         )
         return res
 
-    def gene_panel(self, panel_id, version=None):
+    def gene_panel(
+        self, panel_id: str, version: Optional[str] = None, projection: Optional[Dict] = None
+    ) -> Optional[Dict]:
         """Fetch a gene panel.
 
-        If no panel is sent return all panels
-
         Args:
-            panel_id (str): unique id for the panel
-            version (str): version of the panel. If 'None' latest version will be returned
+            panel_id:   unique id for the panel
+            version:    version of the panel. If 'None' latest version will be returned
 
         Returns:
             gene_panel: gene panel object
+            None:       If no panel matches query
         """
         query = {"panel_name": panel_id}
         if version:
             LOG.info("Fetch gene panel {0}, version {1} from database".format(panel_id, version))
             query["version"] = version
-            return self.panel_collection.find_one(query)
+            return self.panel_collection.find_one(query, projection)
 
-        res = self.panel_collection.find(query).sort("version", -1)
+        res = self.panel_collection.find(query, projection).sort("version", -1)
 
         for panel in res:
             return panel
@@ -350,23 +351,29 @@ class PanelHandler:
 
         return list(set(genes))
 
-    def panel_to_genes(self, panel_id=None, panel_name=None, gene_format="symbol") -> list:
+    def panel_to_genes(
+        self,
+        panel_id: Union[str, ObjectId, None] = None,
+        panel_name: str = Optional[None],
+        gene_format: str = "symbol",
+    ) -> List:
         """Return all hgnc_ids for a given gene panel
 
         Args:
-            panel_id(ObjectId): _id of a gene panel (to collect specific version of a panel)
-            panel_name(str): Name of a gene panel (to collect latest version of a panel)
-            gene_format(str): either "symbol" or "hgnc_id"
+            panel_id:       _id of a gene panel (to collect specific version of a panel)
+            panel_name:     Name of a gene panel (to collect latest version of a panel)
+            gene_format:    either "symbol" or "hgnc_id"
 
         Returns:
-            gene_list(list): a list of hgnc terms (either symbols or HGNC ids)
+            gene_list: a list of hgnc terms (either symbols or HGNC ids)
 
         """
+        genes_projection = {"genes": 1}
         panel_obj = None
         if panel_id:
-            panel_obj = self.panel(panel_id)
+            panel_obj = self.panel(panel_id, genes_projection)
         elif panel_name:
-            panel_obj = self.gene_panel(panel_name)
+            panel_obj = self.gene_panel(panel_name, version=None, projection=genes_projection)
 
         if panel_obj is None:
             return []
