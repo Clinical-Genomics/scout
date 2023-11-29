@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
 - Links displayed as buttons does not change color when visited
 - Hide compounds with compounds follow filter for region or function would fail for variants in multiple genes
+- Updated FontAwesome version due to fix missing icons
 
 ## [4.73]
 ### Added

@@ -402,7 +402,7 @@
               {% do already_displayed_variant_ids.append(variant._id) %}
               <div class="d-flex align-items-center">
                 <div class="col">
-                  <i class="fa fa-check-circle-o"></i>
+                  <i class="far fa-check-circle"></i>
                   {% if variant.category == "snv" %}
                     <a href="{{ url_for('variant.variant',
                                         institute_id=variant.institute,
