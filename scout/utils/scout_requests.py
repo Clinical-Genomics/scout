@@ -319,7 +319,7 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
     return mim_files
 
 
-def fetch_orpha_files( product6=False):
+def fetch_orpha_files(product6=False):
     """Fetch the necessary files
     https://www.orphadata.com/data/xml/en_product{nr}.xml
     Returns:
