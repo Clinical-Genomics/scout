@@ -359,7 +359,7 @@ def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[str, Any]:
         genemap_lines(iterable(str))
 
     Returns:
-        phenotypes_found(dict): A dictionary with mim_numbers as keys and
+        phenotypes_found(dict): A dictionary with OMIM terms as keys and
         dictionaries with phenotype information as values.
 
         {
