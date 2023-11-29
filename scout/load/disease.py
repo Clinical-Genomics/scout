@@ -37,11 +37,7 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
-    LOG.info(
-        f"Before adding to terms: length of annotations: {len(disease_annotations)} and length of disease_terms: {len(disease_terms)}"
-    )
-
-    # Update disease_terms with OMIM-terms from disease_annotations if not already present
+    # Update disease_terms with OMIM-terms parsed from phenotypes.hpoa file (OMIM terms with associated HPO terms)
     for disease_id, content in disease_annotations.items():
         if disease_id not in disease_terms and content["source"] == "OMIM":
             disease_terms[disease_id] = {
