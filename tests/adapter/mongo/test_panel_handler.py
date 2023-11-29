@@ -1,7 +1,7 @@
-from bson.objectid import ObjectId
 from pprint import pprint as pp
 
 import pytest
+from bson.objectid import ObjectId
 
 from scout.exceptions import IntegrityError
 

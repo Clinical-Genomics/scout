@@ -37,6 +37,7 @@ from scout.server.utils import (
 
 from .utils import (
     add_gene_info,
+    associate_variant_genes_with_case_panels,
     callers,
     clinsig_human,
     default_panels,
@@ -46,7 +47,6 @@ from .utils import (
     frequency,
     is_affected,
     predictions,
-    associate_variant_genes_with_case_panels,
 )
 
 LOG = logging.getLogger(__name__)
