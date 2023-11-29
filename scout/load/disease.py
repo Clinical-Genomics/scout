@@ -19,7 +19,7 @@ def load_disease_terms(
     genemap_lines: Iterable,
     genes: Optional[dict] = None,
     hpo_annotation_lines: Optional[Iterable] = None,
-    orphadata_en_product6_tree: Optional[Iterable]=None,
+    orphadata_en_product6_tree: Optional[Iterable] = None,
 ):
     """Load the diseases into the database."""
 
