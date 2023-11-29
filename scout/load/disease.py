@@ -19,7 +19,7 @@ def load_disease_terms(
     genemap_lines: Iterable,
     genes: Optional[dict] = None,
     hpo_annotation_lines: Optional[Iterable] = None,
-    orphadata_en_product6_lines:Optional[Iterable]=None,
+    orphadata_en_product6_tree: Optional[Iterable]=None,
 ):
     """Load the diseases into the database."""
 
@@ -40,9 +40,11 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
-    if not orphadata_en_product6_lines:
-        orphadata_en_product6_lines = fetch_orpha_files(product6=True)
-    orpha_annotations = parse_orpha_en_product6(orphadata_en_product6_lines)
+    if not orphadata_en_product6_tree:
+        # TODO: Verify the return of fetch_orpha_files to be a tree
+        #  Verify how fetch_function is set ut for other sources to return _lines
+        orphadata_en_product6_tree = fetch_orpha_files(product6=True)
+    orpha_annotations = parse_orpha_en_product6(orphadata_en_product6_tree)
 
     LOG.info("building disease objects")
 

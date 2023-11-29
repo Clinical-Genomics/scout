@@ -2,6 +2,8 @@ import logging
 import os
 
 import click
+import xml.etree.ElementTree as ET
+
 from flask.cli import current_app, with_appcontext
 
 from scout.constants import UPDATE_DISEASES_RESOURCES
@@ -33,14 +35,16 @@ def _fetch_downloaded_resources(resources, downloads_folder):
 
     """
     for resname, filenames in UPDATE_DISEASES_RESOURCES.items():
-        for filename in filenames:
+         for filename in filenames:
             resource_path = os.path.join(downloads_folder, filename)
             resource_exists = os.path.isfile(resource_path)
-            if resource_exists:
-                resources[resname] = get_file_handle(resource_path).readlines()
-        if resname not in resources:
-            LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
-            raise click.Abort()
+            if resource_exists and filename.find("xml") >= 0:
+                resources[resname] = ET.parse(f"{downloads_folder}/{filename}")
+            elif resource_exists:
+                 resources[resname] = get_file_handle(resource_path).readlines()
+            if resname not in resources:
+                LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
+                raise click.Abort()
 
 
 @click.command("diseases", short_help="Update disease terms")
@@ -66,7 +70,7 @@ def diseases(downloads_folder, api_key):
 
     if downloads_folder:
         api_key = None
-        # Fetch required resource lines after making sure that are present in downloads folder and that contain valid data
+        # Fetch required resource lines or a tree after making sure that are present in downloads folder and that contain valid data
         _fetch_downloaded_resources(resources, downloads_folder)
     else:
         # Download resources
@@ -76,10 +80,10 @@ def diseases(downloads_folder, api_key):
 
         try:
             mim_files = fetch_mim_files(api_key, genemap2=True)
-            orpha_files = fetch_orpha_files( product6=True)
+            orpha_files = fetch_orpha_files(product6=True)
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
-            resources["orphadata_en_product6_lines"] = orpha_files["orphadata_en_product6"]
+            resources["orphadata_en_product6_tree"] = orpha_files["orphadata_en_product6"]
         except Exception as err:
             LOG.warning(err)
             raise click.Abort()
@@ -90,7 +94,7 @@ def diseases(downloads_folder, api_key):
         adapter=adapter,
         genemap_lines=resources["genemap_lines"],
         hpo_annotation_lines=resources["hpo_annotation_lines"],
-        orphadata_en_product6_lines = resources["orphadata_en_product6_lines"]
+        orphadata_en_product6_tree=resources["orphadata_en_product6_tree"],
     )
 
     LOG.info("Successfully loaded all disease terms")

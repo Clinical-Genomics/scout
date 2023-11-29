@@ -29,5 +29,5 @@ UPDATE_DISEASES_RESOURCES = {
     "genemap_lines": ["genemap2.txt", "genemap2_reduced.txt"],
     "hpo_gene_lines": ["phenotype_to_genes.txt", "phenotype_to_genes_reduced.txt"],
     "hpo_annotation_lines": ["phenotype.hpoa", "reduced.phenotype.hpoa"],
-    "orphadata_en_product6_lines": ["orphadata_en_product6.xml", "orphadata_en_product6_reduced.xml"]
+    "orphadata_en_product6_tree": ["orphadata_en_product6.xml", "orphadata_en_product6_reduced.xml"]
 }
