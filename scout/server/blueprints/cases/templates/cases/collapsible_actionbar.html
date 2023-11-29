@@ -78,7 +78,7 @@
         </div>
         <div>
           <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}" download>
-                <span class="fa fa-file-pdf"></span></a>
+                <span class="far fa-file-pdf"></span></a>
         </div>
       </div>
     </div>
@@ -105,7 +105,7 @@
           <span class="menu-collapsed">mtDNA report</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="fa fa-file-excel-o"></span></a>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="far fa-file-excel"></span></a>
         </div>
       </div>
     </div>
@@ -144,7 +144,7 @@
           {% if report_data.pdf_export %}
             <div>
               <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
-                                case_name=case.display_name, report_type=report_key, report_format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+                                case_name=case.display_name, report_type=report_key, report_format='pdf') }}" download><span class="far fa-file-pdf"></span></a>
             </div>
           {% endif %}
         {% else %}
@@ -599,7 +599,7 @@
         </div>
         <div>
           <a href="{{ url_for('cases.custom_report', institute_id=institute,
-                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date(), format='pdf') }}" download><span class="far fa-file-pdf"></span></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
         <div><span class="fa fa-exclamation-circle ms-1" data-bs-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>
