@@ -251,7 +251,7 @@
        <li class="list-group-item">
           <span class="text-muted">[{{ case.genome_build }}]{{ variant.chromosome }}:g.{{ variant.position }}</span>
           {%- if variant.reference|length > 8 -%}
-             <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+             <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong><button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
               style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{variant.reference}}" title="Copy to clipboard">
             </button>
           {%- else -%}
@@ -259,7 +259,7 @@
           {%- endif -%}
             →
           {%- if variant.alternative|length > 8 -%}
-            <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-file-text btn-xs js-tooltip js-copy"
+            <strong>{{ variant.alternative[:1] }}..{{variant.alternative[-1:]}}</strong><button type="button" class="fa fa-copy btn-xs js-tooltip js-copy"
               style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{variant.alternative}}" title="Copy to clipboard">
               </button>
           {%- else -%}
