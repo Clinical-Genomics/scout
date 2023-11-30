@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [Unreleased]
+## Fixed
+- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
+
 ## [4.74]
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher

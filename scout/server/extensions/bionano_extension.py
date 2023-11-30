@@ -133,15 +133,13 @@ class BioNanoAccessAPI:
         self, project_uid: str, sample_uid: str
     ) -> Optional[List[Dict[str, str]]]:
         """Get FSHD report if available for the given project and sample."""
-        query = f"{self.url}/Bnx/api/2.0/getFSHDReport"
-        query_data = {"projectuid": project_uid, "sampleuid": sample_uid}
+        query = (
+            f"{self.url}/Bnx/api/2.0/getFSHDReport?projectuid={project_uid}&sampleuid={sample_uid}"
+        )
 
-        LOG.info("Get FSHD report from BioNano Access")
-        reports = self._post_json(query, query_data)
+        reports = self._get_json(query)
 
         return reports
-
-    #
 
     def _parse_fshd_report(self, report: Dict[str, str]) -> Optional[List[Dict[str, str]]]:
         """Parse BioNano FSHD report.
