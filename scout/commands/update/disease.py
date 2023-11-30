@@ -1,9 +1,8 @@
 import logging
 import os
+from xml.etree.ElementTree import parse
 
 import click
-import xml.etree.ElementTree as ET
-
 from flask.cli import current_app, with_appcontext
 
 from scout.constants import UPDATE_DISEASES_RESOURCES
@@ -43,7 +42,7 @@ def _fetch_downloaded_resources(resources, downloads_folder):
             resource_path = os.path.join(downloads_folder, filename)
             resource_exists = os.path.isfile(resource_path)
             if resource_exists and filename.find("xml") >= 0:
-                resources[resname] = ET.parse(f"{downloads_folder}/{filename}")
+                resources[resname] = parse(f"{downloads_folder}/{filename}")
             elif resource_exists:
                 resources[resname] = get_file_handle(resource_path).readlines()
             if resname not in resources:
