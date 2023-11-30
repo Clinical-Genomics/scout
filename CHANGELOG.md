@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
+### Changed
+- Parallelize variant loading for each chromosome
+
+## [4.74]
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher
 - An `owner + case display name` index for cases database collection
@@ -12,8 +16,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Load and display fusion variants from VCF files as the other variant types
 - Option to update case document with path to mei variants (clinical and research)
 - Details on variant type and category for audit filters on case general report
-- Enable Gens CN profile button also in somatic case view
-- Parallelize variant loading for each chromosome
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
