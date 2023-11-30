@@ -4,7 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [Unreleased]
+### Changed
+- Do not save custom images as binary data into case and variant database documents
+- Retrieve and display case and variant custom images using image's saved path
+
+
+## [4.74]
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher
 - An `owner + case display name` index for cases database collection
@@ -14,8 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Details on variant type and category for audit filters on case general report
 - Enable Gens CN profile button also in somatic case view
-- Do not save custom images as binary data into case and variant database documents
-- Retrieve and display case and variant custom images using image's saved path
+- Fix case of analysis type check for Gens analysis button - only show for WGS
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
