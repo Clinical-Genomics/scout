@@ -8,7 +8,7 @@ from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.omim import get_mim_phenotypes
-from scout.parse.orpha import parse_orpha_en_product6
+from scout.parse.orpha import get_orpha_phenotypes_product6
 from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
 
 LOG = logging.getLogger(__name__)
@@ -44,7 +44,7 @@ def load_disease_terms(
         # TODO: Verify the return of fetch_orpha_files to be a tree
         #  Verify how fetch_function is set ut for other sources to return _lines
         orphadata_en_product6_tree = fetch_orpha_files(product6=True)
-    orpha_annotations = parse_orpha_en_product6(orphadata_en_product6_tree)
+    orpha_annotations = get_orpha_phenotypes_product6(orphadata_en_product6_tree)
 
     LOG.info("building disease objects")
 
