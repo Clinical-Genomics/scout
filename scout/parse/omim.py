@@ -349,7 +349,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
     return hgnc_genes
 
 
-def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[int, Any]:
+def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[str, Any]:
     """Get a dictionary with phenotypes
 
     Use the mim numbers for phenotypes as keys and phenotype information as
@@ -359,7 +359,7 @@ def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[int, Any]:
         genemap_lines(iterable(str))
 
     Returns:
-        phenotypes_found(dict): A dictionary with mim_numbers as keys and
+        phenotypes_found(dict): A dictionary with OMIM terms as keys and
         dictionaries with phenotype information as values.
 
         {
@@ -379,15 +379,18 @@ def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[int, Any]:
     for entry in parse_genemap2(genemap_lines):
         hgnc_symbol = entry["hgnc_symbol"]
         for phenotype in entry["phenotypes"]:
+            #: For each phenotype extract mim
             mim_nr = phenotype["mim_number"]
-            if mim_nr in phenotypes_found:
-                phenotype_entry = phenotypes_found[mim_nr]
+            phenotype_id = f"OMIM:{mim_nr}"
+            if phenotype_id in phenotypes_found:
+                #: if mim is in found phenotypes, set this as the entry and union inheritance
+                phenotype_entry = phenotypes_found[f"OMIM:{mim_nr}"]
                 phenotype_entry["inheritance"] = phenotype_entry["inheritance"].union(
                     phenotype["inheritance"]
                 )
                 phenotype_entry["hgnc_symbols"].add(hgnc_symbol)
             else:
+                #: If not already present set hgnc value and add it to the phenotypes found
                 phenotype["hgnc_symbols"] = set([hgnc_symbol])
-                phenotypes_found[mim_nr] = phenotype
-
+                phenotypes_found[phenotype_id] = phenotype
     return phenotypes_found
