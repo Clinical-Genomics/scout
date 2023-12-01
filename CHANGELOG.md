@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
+## [Unreleased]
+### Changed
+- Parse and save into database also OMIM terms not associated to genes
 
 ## [4.74]
 ### Added

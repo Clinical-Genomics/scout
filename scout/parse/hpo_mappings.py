@@ -84,7 +84,7 @@ def parse_hpo_annotation_line(hpo_annotation_line: str) -> Optional[Dict[str, An
     hpo_info["disease_id"] = hpo_annotation_line[0]
     disease = hpo_info["disease_id"].split(":")
     hpo_info["source"] = disease[0]
-    # we only support OMIM diseases for now - HPOA also has ORPHA and DECIPHER
+    # we only support OMIM diseases for now - HPOA also has DECIPHER and ORPHA
     if hpo_info["source"] != "OMIM":
         return
     hpo_info["disease_nr"] = int(disease[1])
