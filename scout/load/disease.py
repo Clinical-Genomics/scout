@@ -45,14 +45,21 @@ def load_disease_terms(
         orphadata_en_product6_tree = fetch_orpha_files(product6=True)
     orpha_annotations = get_orpha_phenotypes_product6(orphadata_en_product6_tree)
 
-    # Update disease_terms with OMIM-terms parsed from phenotypes.hpoa file (OMIM terms with associated HPO terms)
+    # Update disease_terms with all OMIM and ORPHA disease-terms parsed from phenotypes.hpoa file
     for disease_id, content in disease_annotations.items():
-        if disease_id not in disease_terms and content["source"] == "OMIM":
+        if disease_id not in disease_terms:
             disease_terms[disease_id] = {
-                "mim_number": content["disease_nr"],
                 "inheritance": set(),
                 "description": content["description"],
                 "hgnc_symbols": content["hgnc_symbols"],
+            }
+    # Update disease_terms with all ORPHA disease-terms parsed from Orphadata_product6.xml
+    for disease_id, content in orpha_annotations.items():
+        if disease_id not in disease_terms:
+            disease_terms[disease_id] = {
+                "inheritance": set(),
+                "description": content["description"],
+                "hgnc_id": content["hgnc_id"],
             }
 
     LOG.info("building disease objects")
@@ -66,6 +73,7 @@ def load_disease_terms(
         )
         disease_objs.append(
             build_disease_term(
+                disease_id=disease_id,
                 disease_info=disease_info,
                 alias_genes=genes,
             )
