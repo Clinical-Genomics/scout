@@ -92,7 +92,7 @@ def test_get_mim_phenotypes(genemap_lines):
 
     assert len(phenotypes) == 2
 
-    term = phenotypes[615349]
+    term = phenotypes["OMIM:615349"]
 
     assert term["inheritance"] == set(["AR"])
     assert term["hgnc_symbols"] == set(["B3GALT6"])
