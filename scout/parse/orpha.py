@@ -36,25 +36,16 @@ def get_orpha_phenotypes_product6(tree: Any) -> Dict[str, Any]:
         description = disorder.find("Name").text
 
         phenotype["description"] = description
-        phenotype["hgnc"] = set()
+        phenotype["hgnc_id"] = set()
         phenotype["orpha_code"] = int(orpha_code)
 
-        LOG.info(f"Now listing {source}:{orpha_code}, aka {phenotype['description']}")
         #: For each disorder, find and extract gene information from hgnc to be added to phenotype
         for external_reference in disorder.iter("ExternalReference"):
             gene_source = external_reference.find("Source").text
+            # TODO: Verify which  <DisorderGeneAssociationType to include in disease_term genes[]
             if gene_source == "HGNC":
                 reference = external_reference.find("Reference").text
-                phenotype["hgnc"].add(reference)
+                phenotype["hgnc_id"].add(reference)
         orpha_phenotypes_found[phenotype_id] = phenotype
-
-        #: Verify that the number of expected and saved hgnc-genes match
-        nr_of_genes = int(disorder.find("DisorderGeneAssociationList").attrib["count"])
-        nr_of_genes_saved = len(phenotype["hgnc"])
-        if nr_of_genes != nr_of_genes_saved:
-            LOG.debug(
-                f"{phenotype_id} had a missmatch between the expected number of genes ({nr_of_genes})"
-                f" and the nr f HGNC id:s saved ({nr_of_genes_saved})"
-            )
 
     return orpha_phenotypes_found

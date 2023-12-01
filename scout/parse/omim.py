@@ -150,7 +150,9 @@ def parse_genemap2(lines):
             "Approved Symbol", parsed_entry.get("Approved Gene Symbol")
         )
         hgnc_symbol = (
-            approved_gene_symbol_col.strip() if approved_gene_symbol_col not in ["", None] else None
+            approved_gene_symbol_col.strip()
+            if approved_gene_symbol_col not in ["", None]
+            else None
         )
 
         # If no approved symbol could be found choose the first of
@@ -380,11 +382,11 @@ def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[str, Any]:
         hgnc_symbol = entry["hgnc_symbol"]
         for phenotype in entry["phenotypes"]:
             #: For each phenotype extract mim
-            mim_nr = phenotype["mim_number"]
-            phenotype_id = f"OMIM:{mim_nr}"
+            disease_nr = phenotype["mim_number"]
+            phenotype_id = f"OMIM:{disease_nr}"
             if phenotype_id in phenotypes_found:
                 #: if mim is in found phenotypes, set this as the entry and union inheritance
-                phenotype_entry = phenotypes_found[f"OMIM:{mim_nr}"]
+                phenotype_entry = phenotypes_found[phenotype_id]
                 phenotype_entry["inheritance"] = phenotype_entry["inheritance"].union(
                     phenotype["inheritance"]
                 )
