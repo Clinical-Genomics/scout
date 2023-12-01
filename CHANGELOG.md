@@ -3,8 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
-
 ## [Unreleased]
+### Changed
+- Parse and save into database also OMIM terms not associated to genes
+
+## [4.74]
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher
 - An `owner + case display name` index for cases database collection
@@ -13,12 +16,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to update case document with path to mei variants (clinical and research)
 ### Changed
 - Details on variant type and category for audit filters on case general report
+- Enable Gens CN profile button also in somatic case view
+- Fix case of analysis type check for Gens analysis button - only show for WGS
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
-- Links displayed as buttons does not change color when visited
+- Variant external links buttons style does not change color when visited
 - Hide compounds with compounds follow filter for region or function would fail for variants in multiple genes
-- Updated FontAwesome version due to fix missing icons
+- Updated FontAwesome version to fix missing icons
 
 ## [4.73]
 ### Added
