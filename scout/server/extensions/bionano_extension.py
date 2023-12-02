@@ -10,6 +10,8 @@ import json
 import logging
 from typing import Dict, Iterable, List, Optional, Tuple
 
+from flask import flash
+
 from scout.utils.convert import call_safe
 from scout.utils.scout_requests import get_request_json, post_data_request_json
 
@@ -188,10 +190,17 @@ class BioNanoAccessAPI:
 
         reports = self._get_fshd_reports(project_uid, sample_uid)
         if not reports:
+            flash("BioNano Access server could not find any FSHD reports for this sample.", "error")
             return None
 
         for report in reports:
+            if not report.get("job"):
+                continue
+
             report_sample_uid_dict = report.get("job").get("value").get("sampleuid")
             report_sample_uid = report_sample_uid_dict.get("value")
             if report_sample_uid == sample_uid:
                 return self._parse_fshd_report(report)
+
+        flash("BioNano Access server could not find an FSHD job for this sample.", "error")
+        return
