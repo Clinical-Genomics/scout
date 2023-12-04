@@ -246,10 +246,9 @@ def bionano_case(store, institute_obj, case_obj) -> Dict:
             )
             if not fshd_loci:
                 flash(
-                    f"Sample FSHD report configured for {individual['bionano_access'].get('project')} - {individual['bionano_access'].get('sample')} but could be retrieved. Check BioNano Access server ({current_app.config.get('BIONANO_ACCESS')}) manually if the error persists.",
+                    f"Sample FSHD report configured for {individual['bionano_access'].get('project')} - {individual['bionano_access'].get('sample')} but could not be retrieved or processed. Check BioNano Access server ({current_app.config.get('BIONANO_ACCESS')}) manually if the error persists.",
                     "danger",
                 )
-
         individual["fshd_loci"] = fshd_loci
 
     data = {

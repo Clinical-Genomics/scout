@@ -10,10 +10,16 @@ import json
 import logging
 from typing import Dict, Iterable, List, Optional, Tuple
 
+from flask import flash
+
 from scout.utils.convert import call_safe
 from scout.utils.scout_requests import get_request_json, post_data_request_json
 
 LOG = logging.getLogger(__name__)
+
+NO_BIONANO_FSHD_REPORT_FLASH_MESSAGE = (
+    "BioNano Access server could not find any FSHD reports for this sample."
+)
 
 
 class BioNanoAccessAPI:
@@ -133,15 +139,13 @@ class BioNanoAccessAPI:
         self, project_uid: str, sample_uid: str
     ) -> Optional[List[Dict[str, str]]]:
         """Get FSHD report if available for the given project and sample."""
-        query = f"{self.url}/Bnx/api/2.0/getFSHDReport"
-        query_data = {"projectuid": project_uid, "sampleuid": sample_uid}
+        query = (
+            f"{self.url}/Bnx/api/2.0/getFSHDReport?projectuid={project_uid}&sampleuid={sample_uid}"
+        )
 
-        LOG.info("Get FSHD report from BioNano Access")
-        reports = self._post_json(query, query_data)
+        reports = self._get_json(query)
 
         return reports
-
-    #
 
     def _parse_fshd_report(self, report: Dict[str, str]) -> Optional[List[Dict[str, str]]]:
         """Parse BioNano FSHD report.
@@ -190,10 +194,16 @@ class BioNanoAccessAPI:
 
         reports = self._get_fshd_reports(project_uid, sample_uid)
         if not reports:
+            flash(NO_BIONANO_FSHD_REPORT_FLASH_MESSAGE, "error")
             return None
 
         for report in reports:
+            if not report.get("job"):
+                continue
+
             report_sample_uid_dict = report.get("job").get("value").get("sampleuid")
             report_sample_uid = report_sample_uid_dict.get("value")
             if report_sample_uid == sample_uid:
                 return self._parse_fshd_report(report)
+
+        flash(NO_BIONANO_FSHD_REPORT_FLASH_MESSAGE, "error")
