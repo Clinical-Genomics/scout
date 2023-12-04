@@ -49,6 +49,7 @@ def _fetch_downloaded_resources(resources, downloads_folder):
                 LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
                 raise click.Abort()
 
+
 @click.command("diseases", short_help="Update disease terms")
 @click.option(
     "-f",
@@ -85,7 +86,9 @@ def diseases(downloads_folder, api_key):
             orpha_files = fetch_orpha_files(product6=True)
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
-            resources["orphadata_en_product6_tree"] = parse_xml_downloads(contents=orpha_files["orphadata_en_product6"])
+            resources["orphadata_en_product6_tree"] = parse_xml_downloads(
+                contents=orpha_files["orphadata_en_product6"]
+            )
         except Exception as err:
             LOG.warning(err)
             raise click.Abort()

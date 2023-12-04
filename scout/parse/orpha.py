@@ -2,7 +2,10 @@
 import logging
 from typing import Any, Dict
 from xml.etree.ElementTree import parse, fromstring
+
 LOG = logging.getLogger(__name__)
+
+
 def parse_xml_downloads(path=None, contents=None):
     """Get a element tree from .xml file by path or dict
 
@@ -13,12 +16,11 @@ def parse_xml_downloads(path=None, contents=None):
         element tree representation of file/download contents
 
     """
-    tree=None
+    tree = None
     if path:
-        tree=parse(path)
+        tree = parse(path)
     if contents:
-
-        tree= fromstring("\n".join([str(line) for line in contents]))
+        tree = fromstring("\n".join([str(line) for line in contents]))
     return tree
 
 
