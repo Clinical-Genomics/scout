@@ -125,7 +125,7 @@ def research(case_id, institute, force):
             case_obj["_id"], case_obj["owner"], "research", force_update_case=True
         )
 
-        if case_missing_all_files:
-            raise FileNotFoundError(
-                "At least one of the remaining cases where research is requested is missing all research files."
-            )
+    if case_missing_all_files:
+        raise FileNotFoundError(
+            "At least one of the remaining cases where research is requested is missing all research files."
+        )
