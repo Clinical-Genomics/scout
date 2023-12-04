@@ -1,12 +1,12 @@
 import logging
 import os
-from xml.etree.ElementTree import parse
 
 import click
 from flask.cli import current_app, with_appcontext
 
 from scout.constants import UPDATE_DISEASES_RESOURCES
 from scout.load.disease import load_disease_terms
+from scout.parse.orpha import parse_xml_downloads
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
@@ -42,13 +42,12 @@ def _fetch_downloaded_resources(resources, downloads_folder):
             resource_path = os.path.join(downloads_folder, filename)
             resource_exists = os.path.isfile(resource_path)
             if resource_exists and filename.find("xml") >= 0:
-                resources[resname] = parse(f"{downloads_folder}/{filename}")
+                resources[resname] = parse_xml_downloads(path=f"{downloads_folder}/{filename}")
             elif resource_exists:
                 resources[resname] = get_file_handle(resource_path).readlines()
             if resname not in resources:
                 LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
                 raise click.Abort()
-
 
 @click.command("diseases", short_help="Update disease terms")
 @click.option(
@@ -86,7 +85,7 @@ def diseases(downloads_folder, api_key):
             orpha_files = fetch_orpha_files(product6=True)
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
-            resources["orphadata_en_product6_tree"] = orpha_files["orphadata_en_product6"]
+            resources["orphadata_en_product6_tree"] = parse_xml_downloads(contents=orpha_files["orphadata_en_product6"])
         except Exception as err:
             LOG.warning(err)
             raise click.Abort()
