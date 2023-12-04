@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-from functools import partial
 from os import path
 from typing import Optional
 
