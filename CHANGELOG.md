@@ -9,7 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Update more FontAwesome icons to avoid Pro icons
 - BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
-- When loading research, test if files still exist before attempting to load
+- Test if files still exist before attempting to load research variants
 
 ## [4.74]
 ### Added
