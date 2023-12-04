@@ -51,7 +51,6 @@ def get_orpha_diseases_product6(tree: Any) -> Dict[str, Any]:
             inclusion_term = "Disease-causing"
 
             if inclusion_term in gene_association_type:
-
                 for external_reference in gene_association.iter("ExternalReference"):
                     gene_source = external_reference.find("Source").text
 

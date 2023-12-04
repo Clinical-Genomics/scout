@@ -66,7 +66,6 @@ def load_disease_terms(
 
     disease_objs: List[dict] = []
     for disease_id, disease_info in disease_terms.items():
-
         _parse_disease_term_info(
             disease_info=disease_info,
             disease_annotations=disease_annotations,
