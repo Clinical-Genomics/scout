@@ -6,14 +6,16 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 ### Changed
-- Parse and save into database also OMIM terms not associated to genes
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
-### Fixed
-- Update more FontAwesome icons to avoid Pro icons
-- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
-- Test if files still exist before attempting to load research variants
 
+## [4.74.1]
+### Changed
+- Parse and save into database also OMIM terms not associated to genes
+### Fixed
+- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
+- Update more FontAwesome icons to avoid Pro icons
+- Test if files still exist before attempting to load research variants
 
 ## [4.74]
 ### Added
