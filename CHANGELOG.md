@@ -3,17 +3,15 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
+
 ## [Unreleased]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
-### Fixed
-- Update more FontAwesome icons to avoid Pro icons
-
-
-## [Unreleased]
-### Changed
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
+### Fixed
+- Update more FontAwesome icons to avoid Pro icons
+- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 
 
 ## [4.74]
