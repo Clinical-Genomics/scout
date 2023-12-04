@@ -6,12 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
+- Parallelize variant loading for each chromosome
 ### Fixed
 - Update more FontAwesome icons to avoid Pro icons
+- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 
-## [Unreleased]
-### Changed
-- Parallelize variant loading for each chromosome
 
 ## [4.74]
 ### Added
