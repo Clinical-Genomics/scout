@@ -207,4 +207,3 @@ class BioNanoAccessAPI:
                 return self._parse_fshd_report(report)
 
         flash(NO_BIONANO_FSHD_REPORT_FLASH_MESSAGE, "error")
-        return
