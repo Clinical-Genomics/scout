@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from functools import partial
+from os import path
 from typing import Optional
 
 import click
@@ -96,7 +97,9 @@ def research(case_id, institute, force):
             if FILE_TYPE_MAP[file_type]["variant_type"] != "research":
                 continue
 
-            if case_obj["vcf_files"].get(file_type):
+            if case_obj["vcf_files"].get(file_type) and os.path.isfile(
+                case_obj["vcf_files"].get(file_type)
+            ):
                 files = True
                 upload_research_variants(
                     adapter=adapter,
