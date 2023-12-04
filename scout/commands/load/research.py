@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from functools import partial
+from os import path
 from typing import Optional
 
 import click
@@ -87,6 +87,7 @@ def research(case_id, institute, force):
 
     default_threshold = 8
     files = False
+    raise_file_not_found = False
     for case_obj in case_objs:
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
@@ -97,6 +98,9 @@ def research(case_id, institute, force):
                 continue
 
             if case_obj["vcf_files"].get(file_type):
+                if not path.isfile(case_obj["vcf_files"].get(file_type)):
+                    raise_file_not_found = True
+                    continue
                 files = True
                 upload_research_variants(
                     adapter=adapter,
@@ -107,7 +111,11 @@ def research(case_id, institute, force):
                 )
 
         if not files:
-            LOG.warning("No research files found for case %s", case_id)
+            LOG.warning(
+                "Research requested, but no research files found for case %s. Consider ordering a rerun.",
+                case_obj["_id"],
+            )
+            raise_file_not_found = True
             continue
         case_obj["is_research"] = True
         case_obj["research_requested"] = False
@@ -116,4 +124,9 @@ def research(case_id, institute, force):
         # Update case variants count
         adapter.case_variants_count(
             case_obj["_id"], case_obj["owner"], "research", force_update_case=True
+        )
+
+    if raise_file_not_found:
+        raise FileNotFoundError(
+            "At least one of the remaining cases where research is requested is missing all research files."
         )
