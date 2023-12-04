@@ -6,6 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
+### Fixed
+- Update more FontAwesome icons to avoid Pro icons
 
 ## [Unreleased]
 ### Changed
