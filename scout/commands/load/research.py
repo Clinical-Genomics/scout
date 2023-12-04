@@ -87,7 +87,7 @@ def research(case_id, institute, force):
 
     default_threshold = 8
     files = False
-    case_missing_all_files = False
+    raise_file_not_found = False
     for case_obj in case_objs:
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
@@ -97,9 +97,10 @@ def research(case_id, institute, force):
             if FILE_TYPE_MAP[file_type]["variant_type"] != "research":
                 continue
 
-            if case_obj["vcf_files"].get(file_type) and path.isfile(
-                case_obj["vcf_files"].get(file_type)
-            ):
+            if case_obj["vcf_files"].get(file_type):
+                if not path.isfile(case_obj["vcf_files"].get(file_type)):
+                    raise_file_not_found = True
+                    continue
                 files = True
                 upload_research_variants(
                     adapter=adapter,
@@ -114,7 +115,7 @@ def research(case_id, institute, force):
                 "Research requested, but no research files found for case %s. Consider ordering a rerun.",
                 case_id,
             )
-            case_missing_all_files = True
+            raise_file_not_found = True
             continue
         case_obj["is_research"] = True
         case_obj["research_requested"] = False
@@ -125,7 +126,7 @@ def research(case_id, institute, force):
             case_obj["_id"], case_obj["owner"], "research", force_update_case=True
         )
 
-    if case_missing_all_files:
+    if raise_file_not_found:
         raise FileNotFoundError(
             "At least one of the remaining cases where research is requested is missing all research files."
         )
