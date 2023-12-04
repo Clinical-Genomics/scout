@@ -17,6 +17,10 @@ from scout.utils.scout_requests import get_request_json, post_data_request_json
 
 LOG = logging.getLogger(__name__)
 
+NO_BIONANO_FSHD_REPORT_FLASH_MESSAGE = (
+    "BioNano Access server could not find any FSHD reports for this sample."
+)
+
 
 class BioNanoAccessAPI:
     """Use BioNano Access API to retrieve reports."""
@@ -190,7 +194,7 @@ class BioNanoAccessAPI:
 
         reports = self._get_fshd_reports(project_uid, sample_uid)
         if not reports:
-            flash("BioNano Access server could not find any FSHD reports for this sample.", "error")
+            flash(NO_BIONANO_FSHD_REPORT_FLASH_MESSAGE, "error")
             return None
 
         for report in reports:
@@ -202,5 +206,5 @@ class BioNanoAccessAPI:
             if report_sample_uid == sample_uid:
                 return self._parse_fshd_report(report)
 
-        flash("BioNano Access server could not find an FSHD job for this sample.", "error")
+        flash(NO_BIONANO_FSHD_REPORT_FLASH_MESSAGE, "error")
         return
