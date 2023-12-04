@@ -97,7 +97,7 @@ def research(case_id, institute, force):
             if FILE_TYPE_MAP[file_type]["variant_type"] != "research":
                 continue
 
-            if case_obj["vcf_files"].get(file_type) and os.path.isfile(
+            if case_obj["vcf_files"].get(file_type) and path.isfile(
                 case_obj["vcf_files"].get(file_type)
             ):
                 files = True
