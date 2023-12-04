@@ -149,7 +149,7 @@
                   <td>{{subm_variant.hgvs|truncate(25,true,'..') or '-'}}</td>
                   <td>{{subm_variant.clinsig}}</td>
                   <form id="delete_variant_{{subm_variant._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='variant_data') }}" method="POST">
-                    <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="far fa-trash fa-lg" aria-hidden="true"></span></button></td>
+                    <td><button type="submit" name="delete_object" value="{{subm_variant._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash fa-lg" aria-hidden="true"></span></button></td>
                   </form>
                 </tr>
                 <tr>
@@ -198,7 +198,7 @@
                     <td>{{loop.index}}</td>
                     <form id="rename_cd_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_rename_casedata', submission=subm_obj._id, case=case.case_id, old_name=case.individual_id) }}" method="POST">
                     <td>
-                      <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="far fa-pen-square" aria-hidden="true"></span></button>
+                      <input type="text" name="new_name" value="{{case.individual_id}}"><button name="rename_sample" type="submit" class="btn btn-primary btn-xs mb-1 mr-3"><span class="fa fa-pen-square" aria-hidden="true"></span></button>
                     </td>
                     </form>
                     <td><button id="{{case._id}}" type="button" class="btn btn-primary btn-xs cd_btn"><span class="fa fa-search-plus" aria-hidden="true"></span></button></td>
@@ -206,7 +206,7 @@
                     <td>{{var_key_name[case.linking_id]|truncate(25,true,'..')}}</td>
                     <td>{{case.allele_origin}}</td>
                     <form id="delete_casedata_{{case._id}}" action="{{ url_for('clinvar.clinvar_delete_object', submission=subm_obj._id, object_type='case_data') }}" method="POST">
-                      <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="far fa-trash fa-lg" aria-hidden="true"></span></button></td>
+                      <td><button type="submit" name="delete_object" value="{{case._id}}" class="btn btn-danger btn-xs"><span class="fa fa-trash fa-lg" aria-hidden="true"></span></button></td>
                     </form>
                   </tr>
                   <tr>
