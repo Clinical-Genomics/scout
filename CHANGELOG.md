@@ -6,12 +6,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
+- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 ### Fixed
 - Update more FontAwesome icons to avoid Pro icons
-
-## [Unreleased]
-### Changed
-- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
+- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 
 
 ## [4.74]
