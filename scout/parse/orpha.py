@@ -21,7 +21,6 @@ def get_orpha_diseases_product6(tree: Any) -> Dict[str, Any]:
         {
              'description': str, # Description of the phenotype
              'hgnc_ids': set(), # Associated hgnc symbols
-             'inheritance': set(),  # Associated phenotypes
              'orpha_code': int, # orpha code of phenotype
         }
     """
