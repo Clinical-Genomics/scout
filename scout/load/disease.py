@@ -8,7 +8,7 @@ from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.omim import get_mim_phenotypes
-from scout.parse.orpha import get_orpha_phenotypes_product6
+from scout.parse.orpha import get_orpha_diseases_product6
 from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
 
 LOG = logging.getLogger(__name__)
@@ -43,9 +43,9 @@ def load_disease_terms(
         # TODO: Verify the return of fetch_orpha_files to be a tree
         #  Verify how fetch_function is set ut for other sources to return _lines
         orphadata_en_product6_tree = fetch_orpha_files(product6=True)
-    orpha_annotations = get_orpha_phenotypes_product6(orphadata_en_product6_tree)
+    orpha_annotations = get_orpha_diseases_product6(orphadata_en_product6_tree)
 
-    # Update disease_terms with all OMIM and ORPHA disease-terms parsed from phenotypes.hpoa file
+    # Add missing OMIM and ORPHA disease-terms parsed from phenotypes.hpoa to disease_terms
     for disease_id, content in disease_annotations.items():
         if disease_id not in disease_terms:
             disease_terms[disease_id] = {
@@ -53,27 +53,26 @@ def load_disease_terms(
                 "description": content["description"],
                 "hgnc_symbols": content["hgnc_symbols"],
             }
-    # Update disease_terms with all ORPHA disease-terms parsed from Orphadata_product6.xml
+    # Add missing ORPHA disease-terms parsed from Orphadata_product6.xml to disease_terms
     for disease_id, content in orpha_annotations.items():
         if disease_id not in disease_terms:
             disease_terms[disease_id] = {
                 "inheritance": set(),
                 "description": content["description"],
-                "hgnc_id": content["hgnc_id"],
+                "hgnc_ids": content["hgnc_ids"],
             }
-            #LOG.info(f"Disease after added to terms from orpha {disease_terms[disease_id]}")
 
     LOG.info("building disease objects")
 
     disease_objs: List[dict] = []
     for disease_id, disease_info in disease_terms.items():
-        #LOG.info(f"Disease term beforew parse and build: {disease_id} and {disease_info}")
+
         _parse_disease_term_info(
             disease_info=disease_info,
             disease_annotations=disease_annotations,
             disease_id=disease_id,
         )
-        #LOG.info(f"Disease term AFTER parse and before build: {disease_id} and {disease_info}")
+
         disease_objs.append(
             build_disease_term(
                 disease_id=disease_id,
