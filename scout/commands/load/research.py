@@ -87,6 +87,7 @@ def research(case_id, institute, force):
 
     default_threshold = 8
     files = False
+    case_missing_all_files = False
     for case_obj in case_objs:
         if not (force or case_obj["research_requested"]):
             LOG.warning("research not requested, use '--force'")
@@ -113,6 +114,7 @@ def research(case_id, institute, force):
                 "Research requested, but no research files found for case %s. Consider ordering a rerun.",
                 case_id,
             )
+            case_missing_all_files = True
             continue
         case_obj["is_research"] = True
         case_obj["research_requested"] = False
@@ -122,3 +124,8 @@ def research(case_id, institute, force):
         adapter.case_variants_count(
             case_obj["_id"], case_obj["owner"], "research", force_update_case=True
         )
+
+        if case_missing_all_files:
+            raise FileNotFoundError(
+                "At least one of the remaining cases where research is requested is missing all research files."
+            )
