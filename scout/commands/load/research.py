@@ -110,7 +110,10 @@ def research(case_id, institute, force):
                 )
 
         if not files:
-            LOG.warning("No research files found for case %s", case_id)
+            LOG.warning(
+                "Research requested, but no research files found for case %s. Consider ordering a rerun.",
+                case_id,
+            )
             continue
         case_obj["is_research"] = True
         case_obj["research_requested"] = False
