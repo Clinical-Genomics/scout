@@ -9,6 +9,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Update more FontAwesome icons to avoid Pro icons
 
+## [Unreleased]
+## Fixed
+- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
+
 ## [4.74]
 ### Added
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene 
