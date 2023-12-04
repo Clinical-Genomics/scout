@@ -61,16 +61,19 @@ def load_disease_terms(
                 "description": content["description"],
                 "hgnc_id": content["hgnc_id"],
             }
+            #LOG.info(f"Disease after added to terms from orpha {disease_terms[disease_id]}")
 
     LOG.info("building disease objects")
 
     disease_objs: List[dict] = []
     for disease_id, disease_info in disease_terms.items():
+        #LOG.info(f"Disease term beforew parse and build: {disease_id} and {disease_info}")
         _parse_disease_term_info(
             disease_info=disease_info,
             disease_annotations=disease_annotations,
             disease_id=disease_id,
         )
+        #LOG.info(f"Disease term AFTER parse and before build: {disease_id} and {disease_info}")
         disease_objs.append(
             build_disease_term(
                 disease_id=disease_id,

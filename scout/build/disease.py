@@ -8,6 +8,7 @@ LOG = logging.getLogger(__name__)
 def build_disease_term(
     disease_id: str, disease_info: dict, alias_genes: dict = {}
 ) -> dict:
+    LOG.info(f"Disease term AFTER parse and AFTER build: {disease_id} and {disease_info}")
     """Build a disease term object."""
     disease_obj = {}
     disease_nr = disease_id.split(":")[1]
@@ -57,5 +58,6 @@ def build_disease_term(
     DiseaseTerm(**disease_obj)
 
     disease_obj["_id"] = disease_obj["disease_id"]
+    LOG.info(f"Disease object AFTER build: {disease_id} and {disease_obj}")
 
     return disease_obj

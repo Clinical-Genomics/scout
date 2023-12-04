@@ -39,13 +39,28 @@ def get_orpha_phenotypes_product6(tree: Any) -> Dict[str, Any]:
         phenotype["hgnc_id"] = set()
         phenotype["orpha_code"] = int(orpha_code)
 
-        #: For each disorder, find and extract gene information from hgnc to be added to phenotype
-        for external_reference in disorder.iter("ExternalReference"):
-            gene_source = external_reference.find("Source").text
-            # TODO: Verify which  <DisorderGeneAssociationType to include in disease_term genes[]
-            if gene_source == "HGNC":
-                reference = external_reference.find("Reference").text
-                phenotype["hgnc_id"].add(reference)
-        orpha_phenotypes_found[phenotype_id] = phenotype
+        gene_list= disorder.find("DisorderGeneAssociationList")
+        LOG.info(f"Genelist: {gene_list}")
+        for gene_association in gene_list:
+            #LOG.info(f"Geneassociation: {gene_association}")
+            gene_association_type=gene_association.find("DisorderGeneAssociationType").find("Name").text
+            #LOG.info(f"Geneassociation text: {gene_association_type}")
+            # TODO: create list of associations to include and replace string below
+            if gene_association_type=="Disease-causing germline mutation(s) in":
+               # LOG.info(f"Geneassociation text == chosen, loop genes inside")
+                # : For each gene association og selected type, find and extract gene information from hgnc to be
+                # added to phenotype
+                for external_reference in gene_association.iter("ExternalReference"):
+                   # LOG.info(f"Looping")
+                    gene_source = external_reference.find("Source").text
 
+                    if gene_source == "HGNC":
+                        LOG.info(f"Found HGNC")
+                        reference = external_reference.find("Reference").text
+                        LOG.info(f"Heres the HGNC-id: {reference}")
+                        phenotype["hgnc_id"].add(reference)
+                        break
+
+        orpha_phenotypes_found[phenotype_id] = phenotype
+    #LOG.info(orpha_phenotypes_found)
     return orpha_phenotypes_found
