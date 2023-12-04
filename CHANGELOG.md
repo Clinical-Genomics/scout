@@ -8,10 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse and save into database also OMIM terms not associated to genes
 ### Fixed
 - Update more FontAwesome icons to avoid Pro icons
-
-## [Unreleased]
-## Fixed
 - BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
+- Test if files still exist before attempting to load research variants
 
 ## [4.74]
 ### Added
