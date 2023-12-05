@@ -7,7 +7,10 @@ import tempfile
 import responses
 
 from scout.commands.download.orpha import orpha as orpha_cmd
-from scout.demo.resources import orphadata_en_product6_reduced_path, orphadata_en_product4_reduced_path
+from scout.demo.resources import (
+    orphadata_en_product6_reduced_path,
+    orphadata_en_product4_reduced_path,
+)
 
 
 @responses.activate

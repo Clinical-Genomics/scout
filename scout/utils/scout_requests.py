@@ -329,7 +329,6 @@ def fetch_orpha_files(product4=False, product6=False):
     orphadata_en_product4_url = "https://www.orphadata.com/data/xml/en_product4.xml"
     orphadata_en_product6_url = "https://www.orphadata.com/data/xml/en_product6.xml"
 
-
     orpha_files = {}
     if product4 is True:
         orpha_files["orphadata_en_product4"] = fetch_resource(orphadata_en_product4_url)
