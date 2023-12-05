@@ -352,7 +352,27 @@
         <div class="list-group-item">
           <strong>Gene panels:</strong><br>
           {% for panel in variant.case_panels|sort(attribute='panel_name', case_sensitive=False)|rejectattr('removed') %}
-            <a href="{{ url_for('panels.panel', panel_id=panel.panel_id) }}">{{ panel.panel_name}}</a>&nbsp;&nbsp;
+            <a
+              href="{{ url_for('panels.panel', panel_id=panel.panel_id) }}"
+              {#
+              Add hovertip listing occurence of each gene on selected panels, in the case
+              where variant covers multiple genes.
+              #}
+              {% if (variant.genes | length) > 1 %}
+              class="badge bg-secondary text-white"
+              data-bs-original-title="Genes on gene panel"
+              data-bs-toggle="popover"
+              data-bs-html="true"
+              data-bs-trigger="hover click"
+              data-bs-content="
+              {% for gene in variant.genes %}
+                {% if panel['panel_name'] in gene['associated_gene_panels'] %}
+                  {{ gene.common.hgnc_symbol if gene.common else gene.hgnc_id }}
+                {% endif%}
+              {%endfor%}
+              "
+              {% endif %}
+            >{{ panel.panel_name }}</a>&nbsp;&nbsp;
           {% endfor %}
         </div>
       </ul>

@@ -5,7 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
+### Added
+- Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
+- Tests for panel to genes
 ### Changed
+- Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
 

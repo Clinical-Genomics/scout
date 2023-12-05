@@ -36,6 +36,7 @@ from scout.server.utils import (
 
 from .utils import (
     add_gene_info,
+    associate_variant_genes_with_case_panels,
     callers,
     clinsig_human,
     default_panels,
@@ -222,12 +223,15 @@ def variant(
 
     # add default panels extra gene information
     panels = default_panels(store, case_obj)
+
     add_gene_info(store, variant_obj, gene_panels=panels, genome_build=genome_build)
 
     # Update some case panels info from db and populate it on variant to avoid showing removed panels
     update_case_panels(store, case_obj)
     # The hierarchical call order is relevant: cases are used to populate variants
     update_variant_case_panels(store, case_obj, variant_obj)
+
+    associate_variant_genes_with_case_panels(store, variant_obj)
 
     # Provide basic info on alignment files availability for this case
     case_has_alignments(case_obj)
