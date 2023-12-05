@@ -23,6 +23,7 @@ def test_download_orpha_cmd(empty_mock_app):
     url = "https://www.orphadata.com/data/xml/en_product4.xml"
     with open(orphadata_en_product4_reduced_path, "r") as orphadata_en_product4_file:
         content = orphadata_en_product4_file.read()
+
     responses.add(
         responses.GET,
         url,
