@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 import pytest
 from bson.objectid import ObjectId
 
@@ -67,7 +65,7 @@ def test_get_panel_multiple_versions(adapter, testpanel_obj):
     adapter.panel_collection.insert_one(testpanel_obj)
 
     res = adapter.gene_panels()
-    assert sum(1 for i in res) == 2
+    assert sum(1 for _ in res) == 2
     ## WHEN getting a panel
     res = adapter.gene_panel(panel_id=testpanel_obj["panel_name"])
     ## THEN assert that the last version is fetched
@@ -122,7 +120,7 @@ def test_add_pending_wrong_action(adapter, testpanel_obj, gene_obj):
     ## WHEN adding a pending action with invalid action
     with pytest.raises(ValueError):
         ## THEN assert that an error is raised
-        res = adapter.add_pending(panel_obj=panel_obj, hgnc_gene=hgnc_obj, action="hello")
+        adapter.add_pending(panel_obj=panel_obj, hgnc_gene=hgnc_obj, action="hello")
 
 
 def test_update_panel_panel_name(adapter, testpanel_obj):
@@ -131,7 +129,7 @@ def test_update_panel_panel_name(adapter, testpanel_obj):
     panel_obj = adapter.panel_collection.find_one()
     assert panel_obj
 
-    old_name = panel_obj["panel_name"]
+    panel_obj["panel_name"]
     new_name = "new name"
     ## WHEN updating the panel name
     panel_obj["panel_name"] = new_name
