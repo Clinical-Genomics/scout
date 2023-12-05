@@ -12,9 +12,19 @@ LOG = logging.getLogger(__name__)
 def print_omim(out_dir, api_key):
     """writes OMIM files to a directory
 
-    Args:
-        out_dir(Path)
-        api_key(str)
+
+
+
+
+
+
+
+    '
+
+
+        Args:
+            out_dir(Path)
+            api_key(str)
     """
     mim_files = fetch_mim_files(api_key, mim2genes=True, genemap2=True)
     file_name = "genemap2.txt"
