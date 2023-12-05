@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
+## [Unreleased]
+### Added
+- Download of Orphadata en_product6 and en_product4 from CLI
 
 ## [4.74.1]
 ### Changed
@@ -19,7 +22,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Test and fixtures for RNA fusion case page
 - Load and display fusion variants from VCF files as the other variant types
 - Option to update case document with path to mei variants (clinical and research)
-- Download of Orphadata en_product6 from CLI
 ### Changed
 - Details on variant type and category for audit filters on case general report
 - Enable Gens CN profile button also in somatic case view
