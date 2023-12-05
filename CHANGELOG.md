@@ -7,6 +7,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Download of Orphadata en_product6 and en_product4 from CLI
 
+## [unreleased]
+### Added
+- Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
+- Tests for panel to genes
+### Changed
+- Allow use of projections when retrieving gene panels
+
 ## [4.74.1]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
