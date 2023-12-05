@@ -45,9 +45,14 @@ def test_gene():
 
 
 @pytest.fixture
+def test_disease_id():
+    disease_id = "OMIM:615349"
+    return disease_id
+
+
+@pytest.fixture
 def test_disease():
     disease_info = {
-        "mim_number": 615349,
         "description": "EHLERS-DANLOS SYNDROME, PROGEROID TYPE, 2",
         "hgnc_symbols": set(["B3GALT6"]),
         "inheritance": set(["AR"]),
