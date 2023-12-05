@@ -371,7 +371,7 @@ class PanelHandler:
         genes_projection = {"genes": 1}
         panel_obj = None
         if panel_id:
-            panel_obj = self.panel(panel_id, genes_projection)
+            panel_obj = self.panel(panel_id, projection=genes_projection)
         elif panel_name:
             panel_obj = self.gene_panel(panel_name, version=None, projection=genes_projection)
 
