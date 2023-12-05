@@ -17,9 +17,6 @@ def print_omim(out_dir, api_key):
 
 
 
-
-
-
     Args:
         out_dir(Path)
         api_key(str)
