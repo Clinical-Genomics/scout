@@ -3,6 +3,7 @@ import datetime as dt
 import logging
 import math
 from copy import deepcopy
+from typing import Dict, List, Optional, Union
 
 import pymongo
 from bson import ObjectId
@@ -195,21 +196,19 @@ class PanelHandler:
         LOG.debug("Panel saved")
         return result.inserted_id
 
-    def panel(self, panel_id):
+    def panel(
+        self, panel_id: Union[str, ObjectId], projection: Optional[Dict] = None
+    ) -> Optional[Dict]:
         """Fetch a gene panel by '_id'.
 
-        Args:
-            panel_id (str, ObjectId): str or ObjectId of document ObjectId
-
-        Returns:
-            dict: panel object or `None` if panel not found
+        Returns a panel object or None if panel not found.
         """
         if not isinstance(panel_id, ObjectId):
             try:
                 panel_id = ObjectId(panel_id)
             except InvalidId as err:
                 LOG.error("Invalid panel id received: %s", err)
-        panel_obj = self.panel_collection.find_one({"_id": panel_id})
+        panel_obj = self.panel_collection.find_one({"_id": panel_id}, projection)
         return panel_obj
 
     def delete_panel(self, panel_obj):
@@ -227,25 +226,20 @@ class PanelHandler:
         )
         return res
 
-    def gene_panel(self, panel_id, version=None):
-        """Fetch a gene panel.
+    def gene_panel(
+        self, panel_id: str, version: Optional[str] = None, projection: Optional[Dict] = None
+    ) -> Optional[Dict]:
+        """Fetch gene panel.
 
-        If no panel is sent return all panels
-
-        Args:
-            panel_id (str): unique id for the panel
-            version (str): version of the panel. If 'None' latest version will be returned
-
-        Returns:
-            gene_panel: gene panel object
+        Returns the latest version if no version specified, or None if no panel matches query.
         """
         query = {"panel_name": panel_id}
         if version:
             LOG.info("Fetch gene panel {0}, version {1} from database".format(panel_id, version))
             query["version"] = version
-            return self.panel_collection.find_one(query)
+            return self.panel_collection.find_one(query, projection)
 
-        res = self.panel_collection.find(query).sort("version", -1)
+        res = self.panel_collection.find(query, projection).sort("version", -1)
 
         for panel in res:
             return panel
@@ -345,23 +339,24 @@ class PanelHandler:
 
         return list(set(genes))
 
-    def panel_to_genes(self, panel_id=None, panel_name=None, gene_format="symbol") -> list:
+    def panel_to_genes(
+        self,
+        panel_id: Union[str, ObjectId, None] = None,
+        panel_name: str = Optional[None],
+        gene_format: str = "symbol",
+    ) -> List[str]:
         """Return all hgnc_ids for a given gene panel
 
-        Args:
-            panel_id(ObjectId): _id of a gene panel (to collect specific version of a panel)
-            panel_name(str): Name of a gene panel (to collect latest version of a panel)
-            gene_format(str): either "symbol" or "hgnc_id"
+        Use panel_id to fetch specific version of a panel, or panel_name for the latest version.
 
-        Returns:
-            gene_list(list): a list of hgnc terms (either symbols or HGNC ids)
-
+        gene_format can be either "symbol" or "hgnc_id"
         """
+        genes_projection = {"genes": 1}
         panel_obj = None
         if panel_id:
-            panel_obj = self.panel(panel_id)
+            panel_obj = self.panel(panel_id, projection=genes_projection)
         elif panel_name:
-            panel_obj = self.gene_panel(panel_name)
+            panel_obj = self.gene_panel(panel_name, version=None, projection=genes_projection)
 
         if panel_obj is None:
             return []
