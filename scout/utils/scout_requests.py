@@ -1,5 +1,4 @@
 """Code for performing requests"""
-import json
 import logging
 import urllib.request
 import zlib
@@ -319,17 +318,21 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
     return mim_files
 
 
-def fetch_orpha_files(product6=False):
+def fetch_orpha_files(product4=False, product6=False):
     """Fetch the necessary files
     https://www.orphadata.com/data/xml/en_product{nr}.xml
     Returns:
         orpha_files(dict): A dictionary with selected files from orphadata
     """
-    LOG.info("Fetching orpha files from github or orphadata")
+    LOG.info("Fetching orpha files from orphadata")
 
+    orphadata_en_product4_url = "https://www.orphadata.com/data/xml/en_product4.xml"
     orphadata_en_product6_url = "https://www.orphadata.com/data/xml/en_product6.xml"
 
+
     orpha_files = {}
+    if product4 is True:
+        orpha_files["orphadata_en_product4"] = fetch_resource(orphadata_en_product4_url)
     if product6 is True:
         orpha_files["orphadata_en_product6"] = fetch_resource(orphadata_en_product6_url)
 
