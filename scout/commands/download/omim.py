@@ -19,12 +19,10 @@ def print_omim(out_dir, api_key):
 
 
 
-    '
 
-
-        Args:
-            out_dir(Path)
-            api_key(str)
+    Args:
+        out_dir(Path)
+        api_key(str)
     """
     mim_files = fetch_mim_files(api_key, mim2genes=True, genemap2=True)
     file_name = "genemap2.txt"
