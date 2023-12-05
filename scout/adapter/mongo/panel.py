@@ -201,13 +201,7 @@ class PanelHandler:
     ) -> Optional[Dict]:
         """Fetch a gene panel by '_id'.
 
-        Args:
-            panel_id:   Can be an ObjectId or str representation of ObjectId
-            projection: Pymongo projection dict
-
-        Returns:
-            Dict: panel object
-            None: If panel not found
+        Returns a panel object or None if panel not found.
         """
         if not isinstance(panel_id, ObjectId):
             try:
@@ -235,15 +229,9 @@ class PanelHandler:
     def gene_panel(
         self, panel_id: str, version: Optional[str] = None, projection: Optional[Dict] = None
     ) -> Optional[Dict]:
-        """Fetch a gene panel.
+        """Fetch gene panel.
 
-        Args:
-            panel_id:   unique id for the panel
-            version:    version of the panel. If 'None' latest version will be returned
-
-        Returns:
-            gene_panel: gene panel object
-            None:       If no panel matches query
+        Returns the latest version if no version specified, or None if no panel matches query.
         """
         query = {"panel_name": panel_id}
         if version:
@@ -356,17 +344,12 @@ class PanelHandler:
         panel_id: Union[str, ObjectId, None] = None,
         panel_name: str = Optional[None],
         gene_format: str = "symbol",
-    ) -> List:
+    ) -> List[str]:
         """Return all hgnc_ids for a given gene panel
 
-        Args:
-            panel_id:       _id of a gene panel (to collect specific version of a panel)
-            panel_name:     Name of a gene panel (to collect latest version of a panel)
-            gene_format:    either "symbol" or "hgnc_id"
+        Use panel_id to fetch specific version of a panel, or panel_name for the latest version.
 
-        Returns:
-            gene_list: a list of hgnc terms (either symbols or HGNC ids)
-
+        gene_format can be either "symbol" or "hgnc_id"
         """
         genes_projection = {"genes": 1}
         panel_obj = None
