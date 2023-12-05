@@ -10,7 +10,7 @@ from scout.utils.scout_requests import fetch_orpha_files
 LOG = logging.getLogger(__name__)
 
 
-def print_orpha(out_dir):
+def print_orpha(out_dir: str) -> None:
     """writes orpha files to a directory
 
     Args:
