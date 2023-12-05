@@ -10,12 +10,12 @@ from scout.utils.scout_requests import fetch_orpha_files
 LOG = logging.getLogger(__name__)
 
 
-def print_orpha(out_dir: str) -> None:
-    """writes orpha files to a directory
-
-    Args:
-        out_dir(Path)
+def print_orpha(out_dir: pathlib.Path) -> None:
+    """Downloads orphadata product4 (Orphacodes mapped to HPO)
+    and product6 (Orphacodes mapped to genes) and writes these as files in
+    the specified directory
     """
+
     orpha_files = fetch_orpha_files(product4=True, product6=True)
 
     for key, contents in orpha_files.items():
