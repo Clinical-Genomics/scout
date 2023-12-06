@@ -5,6 +5,7 @@ import pathlib
 import tempfile
 
 import responses
+from flask import app
 
 from scout.commands.download.orpha import orpha as orpha_cmd
 from scout.constants import ORPHA_URLS
@@ -15,7 +16,7 @@ from scout.demo.resources import (
 
 
 @responses.activate
-def test_download_orpha_cmd(empty_mock_app):
+def test_download_orpha_cmd(empty_mock_app: app.Flask) -> None:
     """Test download orpha command"""
 
     runner = empty_mock_app.test_cli_runner()
