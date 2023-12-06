@@ -470,7 +470,7 @@ def case_obj(request, parsed_case):
     case["synopsis"] = ""
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
-    case["custom_images"] = parsed_case["custom_images"]["case_images"]
+    case["custom_images"] = parsed_case["custom_images"]
     case["assignees"] = []
     case["phenotype_terms"] = []  # do not assign any phenotype
     case["cohorts"] = []  # do not assign any cohort
