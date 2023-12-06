@@ -2,13 +2,14 @@
 import logging
 import urllib.request
 import zlib
+from typing import Dict
 from urllib.error import HTTPError
 
 import requests
 from defusedxml import ElementTree
 from flask import flash
 
-from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL
+from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL, ORPHA_URLS
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
@@ -254,7 +255,10 @@ def fetch_hpo_disease_annotation():
 
 
 def fetch_hpo_files(
-    genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False, hpo_annotation=False
+    genes_to_phenotype=False,
+    phenotype_to_genes=False,
+    hpo_terms=False,
+    hpo_annotation=False,
 ):
     """
     Fetch the necessary HPO files from http://compbio.charite.de
@@ -318,22 +322,17 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
     return mim_files
 
 
-def fetch_orpha_files(product4=False, product6=False):
-    """Fetch the necessary files
+def fetch_orpha_files(orpha_to_hpo: bool = False, orpha_to_genes: bool = False) -> Dict:
+    """Fetch the requested files from orphadata
     https://www.orphadata.com/data/xml/en_product{nr}.xml
-    Returns:
-        orpha_files(dict): A dictionary with selected files from orphadata
     """
     LOG.info("Fetching orpha files from orphadata")
 
-    orphadata_en_product4_url = "https://www.orphadata.com/data/xml/en_product4.xml"
-    orphadata_en_product6_url = "https://www.orphadata.com/data/xml/en_product6.xml"
-
     orpha_files = {}
-    if product4 is True:
-        orpha_files["orphadata_en_product4"] = fetch_resource(orphadata_en_product4_url)
-    if product6 is True:
-        orpha_files["orphadata_en_product6"] = fetch_resource(orphadata_en_product6_url)
+    if orpha_to_genes is True:
+        orpha_files["orphadata_en_product4"] = fetch_resource(ORPHA_URLS["orpha_to_hpo"])
+    if orpha_to_hpo is True:
+        orpha_files["orphadata_en_product6"] = fetch_resource(ORPHA_URLS["orpha_to_genes"])
 
     return orpha_files
 

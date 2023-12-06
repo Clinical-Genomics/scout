@@ -16,7 +16,7 @@ def print_orpha(out_dir: pathlib.Path) -> None:
     the specified directory
     """
 
-    orpha_files = fetch_orpha_files(product4=True, product6=True)
+    orpha_files = fetch_orpha_files(orpha_to_hpo=True, orpha_to_genes=True)
 
     for key, contents in orpha_files.items():
         file_name = key + ".xml"
