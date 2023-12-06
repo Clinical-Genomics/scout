@@ -6,10 +6,12 @@ import os.path
 import shutil
 from io import BytesIO
 from operator import itemgetter
+from typing import Generator, Optional, Union
 
 from cairosvg import svg2png
 from flask import (
     Blueprint,
+    Response,
     abort,
     current_app,
     flash,
@@ -1044,11 +1046,23 @@ def host_image_aux(institute_id, case_name, individual, image, key):
 
 
 @cases_bp.route("/<institute_id>/<case_name>/custom_images")
-def host_custom_image_aux(institute_id: str, case_name: str):
+def host_custom_image_aux(institute_id: str, case_name: str) -> Optional[Response]:
     """Adds absolute path to a custom image path and returns the image."""
-    institute_and_case(store, institute_id, case_name)
-    abs_path: str = os.path.abspath(request.args.get("image_path"))
-    return send_file(abs_path)
+
+    def custom_images_paths(d: Union[dict, list]) -> Generator:
+        """returns all paths saved under custom images for a case - both case images and variant images."""
+        for v in d.values():
+            if isinstance(v, dict):
+                yield from custom_images_paths(v)
+            elif isinstance(v, list):
+                for image in v:
+                    yield image.get("path")
+
+    _, case_obj = institute_and_case(store, institute_id, case_name)
+    custom_images_values: list = list(custom_images_paths(case_obj.get("custom_images", {})))
+    if request.args.get("image_path") in custom_images_values:
+        abs_path: str = os.path.abspath(request.args.get("image_path"))
+        return send_file(abs_path)
 
 
 def _generate_csv(header, lines):
