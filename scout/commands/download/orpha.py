@@ -17,7 +17,7 @@ def print_orpha(out_dir: Path) -> None:
     the specified directory
     """
 
-    orpha_files: Dict = fetch_orpha_files()
+    orpha_files: Dict[str,str] = fetch_orpha_files()
 
     for key in orpha_files.keys():
         file_name: str = key + ".xml"
