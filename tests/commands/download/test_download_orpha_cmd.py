@@ -18,7 +18,7 @@ from scout.demo.resources import (
 
 
 @responses.activate
-def test_download_orpha_cmd(empty_mock_app: app.Flask) -> None:
+def test_download_orpha_cmd(empty_mock_app: app.Flask):
     """Test download orpha command"""
 
     runner: app.FlaskCliRunner = empty_mock_app.test_cli_runner()
