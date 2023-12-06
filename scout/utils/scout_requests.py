@@ -322,17 +322,16 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
     return mim_files
 
 
-def fetch_orpha_files(orpha_to_hpo: bool = False, orpha_to_genes: bool = False) -> Dict:
+def fetch_orpha_files() -> Dict:
     """Fetch the requested files from orphadata
     https://www.orphadata.com/data/xml/en_product{nr}.xml
     """
     LOG.info("Fetching orpha files from orphadata")
 
     orpha_files = {}
-    if orpha_to_genes is True:
-        orpha_files["orphadata_en_product4"] = fetch_resource(ORPHA_URLS["orpha_to_hpo"])
-    if orpha_to_hpo is True:
-        orpha_files["orphadata_en_product6"] = fetch_resource(ORPHA_URLS["orpha_to_genes"])
+
+    orpha_files["orphadata_en_product4"] = fetch_resource(ORPHA_URLS["orpha_to_hpo"])
+    orpha_files["orphadata_en_product6"] = fetch_resource(ORPHA_URLS["orpha_to_genes"])
 
     return orpha_files
 
