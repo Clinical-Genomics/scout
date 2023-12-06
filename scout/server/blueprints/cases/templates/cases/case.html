@@ -449,12 +449,9 @@
         <div id="collapse_{{ section_name }}" class="panel-collapse collapse ps-3">
           <div class="panel-body">
             {% for image in case.custom_images[section_name] %}
-              <div class="pt-3">
+              <div class="pt-3" >
                 <h6 class="fw-bold">{{ image.title }}</h6>
-                <img src="data:image/{{image.format}};base64,{{image.data|safe}}" alt="{{ image.description }}" title="{{ image.description }}"
-                    {% if image.width %}width="{{image.width}}"{% endif %}
-                    {% if image.height %}height="{{image.height}}"{% endif %}
-                />
+                <div id="{{image.path|safe}}"></div>
               </div>
             {% endfor %}
           </div>
@@ -526,14 +523,22 @@
 <script src="{{ url_for('cases.static', filename='edit_pedigree.js') }}"></script>
 <script src="{{ url_for('cases.static', filename='madeline.js') }}"></script>
 <script src="{{ url_for('cases.static', filename='case_images.js') }}"></script>
+<script src="{{ url_for('static', filename='custom_images.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js" integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-
 <script>
+  {% if case.custom_images %}
+    {% for section_name in case.custom_images %}
+      {% for image in case.custom_images[section_name] %}
+        fetchAndDisplayImage("{{url_for('cases.host_custom_image_aux', institute_id=institute._id, case_name=case.display_name, image_path=image.path|safe) }}", "{{image.path|safe}}", "{{image.width}}", "{{image.height}}")
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
+
   {% if chromograph.available %}
     window.onload= add_image_panels();
     window.onresize= function(){

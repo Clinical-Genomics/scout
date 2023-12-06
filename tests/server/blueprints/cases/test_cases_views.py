@@ -361,7 +361,7 @@ def test_case_custom_images(app, institute_obj, case_obj):
         )
         # THEN it should display the two custom images section
         dta = resp.get_data()
-        for section_name in case_obj["custom_images"]:
+        for section_name in case_obj["custom_images"]["case_images"]:
             assert bytes(f"{section_name}-accordion", "utf-8") in dta
 
 
@@ -961,3 +961,30 @@ def test_beacon_remove_variants(app, institute_obj, case_obj, mocker, mock_redir
             data=data,
         )
         assert resp.status_code == 302
+
+
+def test_host_custom_image_aux(app, institute_obj, case_obj):
+    """Test the endpoint that returns a custom image given its path."""
+
+    # GIVEN an app with an authenticated user
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # GIVEN a case with custom images
+        custom_image: dict = case_obj["custom_images"]["case_images"]["section_one"][0]
+        assert custom_image
+
+        # WHEN retrieving ae custom image using the host_custom_image_aux endpoint
+        resp = client.get(
+            url_for(
+                "cases.host_custom_image_aux",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                image_path=custom_image["path"],
+            )
+        )
+
+        # THEN it should return an image
+        assert resp.status_code == 200
+        assert resp.mimetype == "image/png"
