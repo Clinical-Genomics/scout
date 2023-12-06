@@ -8,14 +8,14 @@
 		 .then(response => response.blob())
 		 .then(blob => {
 				 const img = document.createElement("img");
-    		 img.src = URL.createObjectURL(blob);
+				 img.src = URL.createObjectURL(blob);
 				 if (width) {
 				 	img.style.width = width+'px';
 				 }
-				 if (height){
+				 if (height) {
 				 	img.style.height = height+'px';
 				 }
-    		 // Display the image in the specified div
+				 // Display the image in the specified div
 				 const div = document.getElementById(divId);
 				 div.appendChild(img);
 		})
