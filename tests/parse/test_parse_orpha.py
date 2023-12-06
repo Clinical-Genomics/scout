@@ -1,8 +1,6 @@
 from xml.etree.ElementTree import fromstring
 
-from scout.parse.orpha import (
-    get_orpha_diseases_product6,
-)
+from scout.parse.orpha import get_orpha_diseases_product6
 
 
 def test_get_orpha_diseases_product6():

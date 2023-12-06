@@ -8,8 +8,7 @@ from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.omim import get_mim_phenotypes
-from scout.parse.orpha import get_orpha_diseases_product6
-from scout.parse.orpha import parse_xml_downloads
+from scout.parse.orpha import get_orpha_diseases_product6, parse_xml_downloads
 from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
 
 LOG = logging.getLogger(__name__)

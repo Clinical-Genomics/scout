@@ -1,7 +1,6 @@
 """Code for handling downloading of orphadata files used by scout from CLI"""
 
 import logging
-
 from pathlib import Path
 from typing import Dict
 
