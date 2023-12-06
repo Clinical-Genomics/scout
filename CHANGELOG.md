@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [Unreleased]
+## [unreleased]
 ### Added
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
 - Tests for panel to genes
