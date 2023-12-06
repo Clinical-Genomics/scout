@@ -3,7 +3,9 @@
 import os
 import pathlib
 import tempfile
+from typing import List
 
+import click.testing
 import responses
 from flask import app
 
@@ -19,12 +21,12 @@ from scout.demo.resources import (
 def test_download_orpha_cmd(empty_mock_app: app.Flask) -> None:
     """Test download orpha command"""
 
-    runner = empty_mock_app.test_cli_runner()
+    runner: app.FlaskCliRunner = empty_mock_app.test_cli_runner()
 
     # GIVEN a patched response from Orphadata to obtain orphadata_en_product4 and orphadata_en_product6 files
 
     with open(orphadata_en_product4_reduced_path, "r") as orphadata_en_product4_file:
-        content = orphadata_en_product4_file.read()
+        content: str = orphadata_en_product4_file.read()
 
     responses.add(
         responses.GET,
@@ -34,7 +36,7 @@ def test_download_orpha_cmd(empty_mock_app: app.Flask) -> None:
     )
 
     with open(orphadata_en_product6_reduced_path, "r") as orphadata_en_product6_file:
-        content = orphadata_en_product6_file.read()
+        content: str = orphadata_en_product6_file.read()
 
     responses.add(
         responses.GET,
@@ -45,14 +47,14 @@ def test_download_orpha_cmd(empty_mock_app: app.Flask) -> None:
 
     # GIVEN a temporary directory
     with tempfile.TemporaryDirectory() as dir_name:
-        the_dir = pathlib.Path(dir_name)
+        the_dir: pathlib.Path = pathlib.Path(dir_name)
         # WHEN running the command
-        result = runner.invoke(orpha_cmd, ["-o", the_dir])
+        result: click.testing.Result = runner.invoke(orpha_cmd, ["-o", the_dir])
         # THEN command should run successfully
         assert result.exit_code == 0
         assert "Download ORPHA" in result.output
 
         # AND the directory should contain the expected file
-        downloaded_files = os.listdir(dir_name)
+        downloaded_files: List = os.listdir(dir_name)
         assert "orphadata_en_product4.xml" in downloaded_files
         assert "orphadata_en_product6.xml" in downloaded_files
