@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<JDBOR date="2023-12-04 08:08:30" version="1.3.29 / 4.1.7 [2023-08-02] (orientdb version)" copyright="Orphanet (c) 2023" dbserver="jdbc:sybase:Tds:canard.orpha.net:2020">
+  <Availability>
+    <Licence>
+      <FullName lang="en">Creative Commons Attribution 4.0 International</FullName>
+      <ShortIdentifier>CC-BY-4.0</ShortIdentifier>
+      <LegalCode>https://creativecommons.org/licenses/by/4.0/legalcode</LegalCode>
+    </Licence>
+  </Availability>
+  <HPODisorderSetStatusList count="4246">
+    <HPODisorderSetStatus id="1">
+      <Disorder id="2">
+        <OrphaCode>58</OrphaCode>
+        <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=58</ExpertLink>
+        <Name lang="en">Alexander disease</Name>
+        <DisorderType id="21394">
+          <Name lang="en">Disease</Name>
+        </DisorderType>
+        <DisorderGroup id="36547">
+          <Name lang="en">Disorder</Name>
+        </DisorderGroup>
+        <HPODisorderAssociationList count="61">
+          <HPODisorderAssociation id="554366">
+            <HPO id="4">
+              <HPOId>HP:0000256</HPOId>
+              <HPOTerm>Macrocephaly</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="554367">
+            <HPO id="18">
+              <HPOId>HP:0001249</HPOId>
+              <HPOTerm>Intellectual disability</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="554393">
+            <HPO id="25">
+              <HPOId>HP:0001288</HPOId>
+              <HPOTerm>Gait disturbance</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="554394">
+            <HPO id="27">
+              <HPOId>HP:0001337</HPOId>
+              <HPOTerm>Tremor</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="554395">
+            <HPO id="31">
+              <HPOId>HP:0001618</HPOId>
+              <HPOTerm>Dysphonia</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="554418">
+            <HPO id="38">
+              <HPOId>HP:0002072</HPOId>
+              <HPOTerm>Chorea</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28426">
+              <Name lang="en">Occasional (29-5%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="554419">
+            <HPO id="39">
+              <HPOId>HP:0002093</HPOId>
+              <HPOTerm>Respiratory insufficiency</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28426">
+              <Name lang="en">Occasional (29-5%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+         </HPODisorderAssociationList>
+      </Disorder>
+      <Source/>
+      <ValidationStatus>y</ValidationStatus>
+      <Online>y</Online>
+      <ValidationDate>2016-06-01 00:00:00.0</ValidationDate>
+    </HPODisorderSetStatus>
+    <HPODisorderSetStatus id="2">
+      <Disorder id="3">
+        <OrphaCode>61</OrphaCode>
+        <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=61</ExpertLink>
+        <Name lang="en">Alpha-mannosidosis</Name>
+        <DisorderType id="21394">
+          <Name lang="en">Disease</Name>
+        </DisorderType>
+        <DisorderGroup id="36547">
+          <Name lang="en">Disorder</Name>
+        </DisorderGroup>
+        <HPODisorderAssociationList count="42">
+          <HPODisorderAssociation id="325618">
+            <HPO id="79">
+              <HPOId>HP:0001263</HPOId>
+              <HPOTerm>Global developmental delay</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="325619">
+            <HPO id="82">
+              <HPOId>HP:0001744</HPOId>
+              <HPOTerm>Splenomegaly</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="325620">
+            <HPO id="84">
+              <HPOId>HP:0002240</HPOId>
+              <HPOTerm>Hepatomegaly</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="325621">
+            <HPO id="86">
+              <HPOId>HP:0002652</HPOId>
+              <HPOTerm>Skeletal dysplasia</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="325632">
+            <HPO id="70">
+              <HPOId>HP:0000336</HPOId>
+              <HPOTerm>Prominent supraorbital ridges</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+           <HPODisorderAssociation id="325636">
+            <HPO id="77">
+              <HPOId>HP:0000708</HPOId>
+              <HPOTerm>Atypical behavior</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="325644">
+            <HPO id="97">
+              <HPOId>HP:0011354</HPOId>
+              <HPOTerm>Generalized abnormality of skin</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="325645">
+            <HPO id="4">
+              <HPOId>HP:0000256</HPOId>
+              <HPOTerm>Macrocephaly</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28426">
+              <Name lang="en">Occasional (29-5%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+        </HPODisorderAssociationList>
+      </Disorder>
+      <Source/>
+      <ValidationStatus>y</ValidationStatus>
+      <Online>y</Online>
+      <ValidationDate>2016-06-01 00:00:00.0</ValidationDate>
+    </HPODisorderSetStatus>
+  </HPODisorderSetStatusList>
+</JDBOR>

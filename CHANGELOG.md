@@ -3,11 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
-
 ## [unreleased]
 ### Added
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
 - Tests for panel to genes
+- Download of Orphadata en_product6 and en_product4 from CLI
 ### Changed
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
