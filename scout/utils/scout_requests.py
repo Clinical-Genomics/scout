@@ -1,15 +1,15 @@
 """Code for performing requests"""
-import json
 import logging
 import urllib.request
 import zlib
+from typing import Dict
 from urllib.error import HTTPError
 
 import requests
 from defusedxml import ElementTree
 from flask import flash
 
-from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL
+from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL, ORPHA_URLS
 from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
 
 LOG = logging.getLogger(__name__)
@@ -255,7 +255,10 @@ def fetch_hpo_disease_annotation():
 
 
 def fetch_hpo_files(
-    genes_to_phenotype=False, phenotype_to_genes=False, hpo_terms=False, hpo_annotation=False
+    genes_to_phenotype=False,
+    phenotype_to_genes=False,
+    hpo_terms=False,
+    hpo_annotation=False,
 ):
     """
     Fetch the necessary HPO files from http://compbio.charite.de
@@ -317,6 +320,20 @@ def fetch_mim_files(api_key, mim2genes=False, mimtitles=False, morbidmap=False, 
         mim_files[file_name] = fetch_resource(url)
 
     return mim_files
+
+
+def fetch_orpha_files() -> Dict:
+    """Fetch the requested files from orphadata
+    https://www.orphadata.com/data/xml/en_product{nr}.xml
+    """
+    LOG.info("Fetching orpha files from orphadata")
+
+    orpha_files = {}
+
+    orpha_files["orphadata_en_product4"] = fetch_resource(ORPHA_URLS["orpha_to_hpo"])
+    orpha_files["orphadata_en_product6"] = fetch_resource(ORPHA_URLS["orpha_to_genes"])
+
+    return orpha_files
 
 
 def fetch_ensembl_biomart(attributes, filters, build=None):
