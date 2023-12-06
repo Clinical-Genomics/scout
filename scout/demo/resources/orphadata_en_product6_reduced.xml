@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<JDBOR date="2023-06-22 14:14:43" version="1.3.25 / 4.1.7 [2023-04-17] (orientdb version)" copyright="Orphanet (c) 2023" dbserver="jdbc:sybase:Tds:canard.orpha.net:2020">
+  <Availability>
+    <Licence>
+      <FullName lang="en">Creative Commons Attribution 4.0 International</FullName>
+      <ShortIdentifier>CC-BY-4.0</ShortIdentifier>
+      <LegalCode>https://creativecommons.org/licenses/by/4.0/legalcode</LegalCode>
+    </Licence>
+  </Availability>
+  <DisorderList>
+    <Disorder id="17601">
+      <OrphaCode>166024</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=166024</ExpertLink>
+      <Name lang="en">Multiple epiphyseal dysplasia, Al-Gazali type</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <DisorderGeneAssociationList count="1">
+        <DisorderGeneAssociation>
+          <SourceOfValidation>22587682[PMID]</SourceOfValidation>
+          <Gene id="20160">
+            <Name lang="en">kinesin family member 7</Name>
+            <Symbol>KIF7</Symbol>
+            <SynonymList count="1">
+              <Synonym lang="en">JBTS12</Synonym>
+            </SynonymList>
+            <GeneType id="25993">
+              <Name lang="en">gene with protein product</Name>
+            </GeneType>
+            <ExternalReferenceList count="6">
+              <ExternalReference id="57240">
+                <Source>Ensembl</Source>
+                <Reference>ENSG00000166813</Reference>
+              </ExternalReference>
+              <ExternalReference id="51758">
+                <Source>Genatlas</Source>
+                <Reference>KIF7</Reference>
+              </ExternalReference>
+              <ExternalReference id="51756">
+                <Source>HGNC</Source>
+                <Reference>30497</Reference>
+              </ExternalReference>
+              <ExternalReference id="51757">
+                <Source>OMIM</Source>
+                <Reference>611254</Reference>
+              </ExternalReference>
+              <ExternalReference id="97306">
+                <Source>Reactome</Source>
+                <Reference>Q2M1P5</Reference>
+              </ExternalReference>
+              <ExternalReference id="51759">
+                <Source>SwissProt</Source>
+                <Reference>Q2M1P5</Reference>
+              </ExternalReference>
+            </ExternalReferenceList>
+            <LocusList count="1">
+              <Locus id="16859">
+                <GeneLocus>15q26.1</GeneLocus>
+                <LocusKey>1</LocusKey>
+              </Locus>
+            </LocusList>
+          </Gene>
+          <DisorderGeneAssociationType id="17949">
+            <Name lang="en">Disease-causing germline mutation(s) in</Name>
+          </DisorderGeneAssociationType>
+          <DisorderGeneAssociationStatus id="17991">
+            <Name lang="en">Assessed</Name>
+          </DisorderGeneAssociationStatus>
+        </DisorderGeneAssociation>
+      </DisorderGeneAssociationList>
+    </Disorder>
+    <Disorder id="5">
+      <OrphaCode>93</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=93</ExpertLink>
+      <Name lang="en">Aspartylglucosaminuria</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <DisorderGeneAssociationList count="1">
+        <DisorderGeneAssociation>
+          <SourceOfValidation>11309371[PMID]</SourceOfValidation>
+          <Gene id="15470">
+            <Name lang="en">aspartylglucosaminidase</Name>
+            <Symbol>AGA</Symbol>
+            <SynonymList count="3">
+              <Synonym lang="en">ASRG</Synonym>
+              <Synonym lang="en">N(4)-(beta-N-acetylglucosaminyl)-L-asparaginase</Synonym>
+              <Synonym lang="en">glycosylasparaginase</Synonym>
+            </SynonymList>
+            <GeneType id="25993">
+              <Name lang="en">gene with protein product</Name>
+            </GeneType>
+            <ExternalReferenceList count="6">
+              <ExternalReference id="126323">
+                <Source>Reactome</Source>
+                <Reference>P20933</Reference>
+              </ExternalReference>
+              <ExternalReference id="56681">
+                <Source>Ensembl</Source>
+                <Reference>ENSG00000038002</Reference>
+              </ExternalReference>
+              <ExternalReference id="26679">
+                <Source>Genatlas</Source>
+                <Reference>AGA</Reference>
+              </ExternalReference>
+              <ExternalReference id="26681">
+                <Source>HGNC</Source>
+                <Reference>318</Reference>
+              </ExternalReference>
+              <ExternalReference id="44364">
+                <Source>OMIM</Source>
+                <Reference>613228</Reference>
+              </ExternalReference>
+              <ExternalReference id="32441">
+                <Source>SwissProt</Source>
+                <Reference>P20933</Reference>
+              </ExternalReference>
+            </ExternalReferenceList>
+            <LocusList count="1">
+              <Locus id="26631">
+                <GeneLocus>4q34.3</GeneLocus>
+                <LocusKey>1</LocusKey>
+              </Locus>
+            </LocusList>
+          </Gene>
+          <DisorderGeneAssociationType id="17949">
+            <Name lang="en">Disease-causing germline mutation(s) in</Name>
+          </DisorderGeneAssociationType>
+          <DisorderGeneAssociationStatus id="17991">
+            <Name lang="en">Assessed</Name>
+          </DisorderGeneAssociationStatus>
+        </DisorderGeneAssociation>
+      </DisorderGeneAssociationList>
+    </Disorder>
+    <Disorder id="17604">
+      <OrphaCode>166035</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=166035</ExpertLink>
+      <Name lang="en">Brachydactyly-short stature-retinitis pigmentosa syndrome</Name>
+      <DisorderType id="21401">
+        <Name lang="en">Malformation syndrome</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <DisorderGeneAssociationList count="1">
+        <DisorderGeneAssociation>
+          <SourceOfValidation>28285769[PMID]</SourceOfValidation>
+          <Gene id="26792">
+            <Name lang="en">CWC27 spliceosome associated cyclophilin</Name>
+            <Symbol>CWC27</Symbol>
+            <SynonymList count="2">
+              <Synonym lang="en">NY-CO-10</Synonym>
+              <Synonym lang="en">SDCCAG-10</Synonym>
+            </SynonymList>
+            <GeneType id="25993">
+              <Name lang="en">gene with protein product</Name>
+            </GeneType>
+            <ExternalReferenceList count="4">
+              <ExternalReference id="189468">
+                <Source>HGNC</Source>
+                <Reference>10664</Reference>
+              </ExternalReference>
+              <ExternalReference id="200768">
+                <Source>SwissProt</Source>
+                <Reference>Q6UX04</Reference>
+              </ExternalReference>
+              <ExternalReference id="191319">
+                <Source>Ensembl</Source>
+                <Reference>ENSG00000153015</Reference>
+              </ExternalReference>
+              <ExternalReference id="191320">
+                <Source>OMIM</Source>
+                <Reference>617170</Reference>
+              </ExternalReference>
+            </ExternalReferenceList>
+            <LocusList count="1">
+              <Locus id="80511">
+                <GeneLocus>5q12.3</GeneLocus>
+                <LocusKey>1</LocusKey>
+              </Locus>
+            </LocusList>
+          </Gene>
+          <DisorderGeneAssociationType id="17949">
+            <Name lang="en">Disease-causing germline mutation(s) in</Name>
+          </DisorderGeneAssociationType>
+          <DisorderGeneAssociationStatus id="17991">
+            <Name lang="en">Assessed</Name>
+          </DisorderGeneAssociationStatus>
+        </DisorderGeneAssociation>
+      </DisorderGeneAssociationList>
+    </Disorder>
+    <Disorder id="6">
+      <OrphaCode>585</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=585</ExpertLink>
+      <Name lang="en">Multiple sulfatase deficiency</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <DisorderGeneAssociationList count="1">
+        <DisorderGeneAssociation>
+          <SourceOfValidation>17657823[PMID]</SourceOfValidation>
+          <Gene id="15570">
+            <Name lang="en">sulfatase modifying factor 1</Name>
+            <Symbol>SUMF1</Symbol>
+            <SynonymList count="2">
+              <Synonym lang="en">FGE</Synonym>
+              <Synonym lang="en">UNQ3037</Synonym>
+            </SynonymList>
+            <GeneType id="25993">
+              <Name lang="en">gene with protein product</Name>
+            </GeneType>
+            <ExternalReferenceList count="6">
+              <ExternalReference id="56683">
+                <Source>Ensembl</Source>
+                <Reference>ENSG00000144455</Reference>
+              </ExternalReference>
+              <ExternalReference id="27163">
+                <Source>Genatlas</Source>
+                <Reference>SUMF1</Reference>
+              </ExternalReference>
+              <ExternalReference id="27161">
+                <Source>HGNC</Source>
+                <Reference>20376</Reference>
+              </ExternalReference>
+              <ExternalReference id="27160">
+                <Source>OMIM</Source>
+                <Reference>607939</Reference>
+              </ExternalReference>
+              <ExternalReference id="82828">
+                <Source>Reactome</Source>
+                <Reference>Q8NBK3</Reference>
+              </ExternalReference>
+              <ExternalReference id="32541">
+                <Source>SwissProt</Source>
+                <Reference>Q8NBK3</Reference>
+              </ExternalReference>
+            </ExternalReferenceList>
+            <LocusList count="1">
+              <Locus id="7659">
+                <GeneLocus>3p26.1</GeneLocus>
+                <LocusKey>1</LocusKey>
+              </Locus>
+            </LocusList>
+          </Gene>
+          <DisorderGeneAssociationType id="17949">
+            <Name lang="en">Disease-causing germline mutation(s) in</Name>
+          </DisorderGeneAssociationType>
+          <DisorderGeneAssociationStatus id="17991">
+            <Name lang="en">Assessed</Name>
+          </DisorderGeneAssociationStatus>
+        </DisorderGeneAssociation>
+      </DisorderGeneAssociationList>
+    </Disorder>
+  </DisorderList>
+</JDBOR>
