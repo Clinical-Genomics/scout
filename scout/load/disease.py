@@ -41,7 +41,7 @@ def load_disease_terms(
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
     if not orphadata_en_product6_tree:
-        orphadata_en_product6_lines = fetch_orpha_files(product6=True)["orphadata_en_product6"]
+        orphadata_en_product6_lines = fetch_orpha_files()["orphadata_en_product6"]
         orphadata_en_product6_tree = parse_xml_downloads(contents=orphadata_en_product6_lines)
     orpha_annotations = get_orpha_diseases_product6(orphadata_en_product6_tree)
 

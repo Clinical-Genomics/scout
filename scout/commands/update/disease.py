@@ -83,7 +83,7 @@ def diseases(downloads_folder, api_key):
 
         try:
             mim_files = fetch_mim_files(api_key, genemap2=True)
-            orpha_files = fetch_orpha_files(product6=True)
+            orpha_files = fetch_orpha_files()
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
             resources["orphadata_en_product6_tree"] = parse_xml_downloads(

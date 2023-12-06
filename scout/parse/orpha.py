@@ -1,16 +1,14 @@
 """Code for parsing ORPHA formatted files"""
 import logging
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, List
 from xml.etree.ElementTree import fromstring, parse
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_xml_downloads(path=None, contents=None):
+def parse_xml_downloads(path: Path = None, contents: List = None):
     """Get a element tree from .xml file by path or dict
-
-    Args:
-        Path for .xml file or dict downloaded from Orphadata
 
     Returns:
         element tree representation of file/download contents
@@ -43,7 +41,7 @@ def get_orpha_diseases_product6(tree: Any) -> Dict[str, Any]:
              'orpha_code': int, # orpha code of phenotype
         }
     """
-    LOG.info(f"Parsing Orphadata en_product6")
+    LOG.info("Parsing Orphadata en_product6")
 
     orpha_phenotypes_found = {}
 
