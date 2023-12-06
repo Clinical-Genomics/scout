@@ -30,7 +30,7 @@ def print_orpha(out_dir: Path) -> None:
 
 @click.command("orpha", help="Download files from Orphadata")
 @click.option("-o", "--out-dir", default="./", show_default=True)
-def orpha(out_dir: str):
+def orpha(out_dir: str) -> None:
     """Download the ORPHA codes with gene and HPO annotations"""
     out_dir: Path = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
