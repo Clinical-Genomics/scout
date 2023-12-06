@@ -1,5 +1,7 @@
 import logging
+from typing import Dict, List, Optional
 
+from scout.adapter import MongoAdapter
 from scout.constants import ACMG_COMPLETE_MAP, CALLERS, CLINSIG_MAP, SO_TERMS
 from scout.server.links import add_gene_links, add_tx_links
 
@@ -626,3 +628,19 @@ def callers(variant_obj):
             calls.add((caller["name"], variant_obj[caller["id"]]))
 
     return list(calls)
+
+
+def associate_variant_genes_with_case_panels(store: MongoAdapter, variant_obj: Dict) -> None:
+    """Add associated gene panels to each gene in variant object"""
+
+    genes = variant_obj.get("genes", [])
+    gene_panels = variant_obj.get("case_panels", [])
+
+    for gene in genes:
+        hgnc_id = gene["hgnc_id"]
+        matching_panels = []
+        for panel in gene_panels:
+            genes_on_panel = store.panel_to_genes(panel_id=panel["panel_id"], gene_format="hgnc_id")
+            if hgnc_id in genes_on_panel:
+                matching_panels.append(panel["panel_name"])
+        gene["associated_gene_panels"] = matching_panels

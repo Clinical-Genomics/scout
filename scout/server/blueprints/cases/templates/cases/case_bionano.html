@@ -86,9 +86,9 @@
           {% for ind in case.individuals %}
             {% if "fshd_loci" in ind and ind.fshd_loci is not none %}
               {% for d4z4 in ind.fshd_loci %}
-                <tr {% if d4z4.chromosome == 4 and d4z4.count < 11 and d4z4.haplotype == "4qA" %}
+                <tr {% if d4z4.chromosome == 4 and d4z4.count is number and d4z4.count < 11 and d4z4.haplotype == "4qA" %}
                       class="bg-danger text-white"
-                    {% elif d4z4.chromosome == 4 and d4z4.count < 11 %}
+                    {% elif d4z4.chromosome == 4 and d4z4.count is number and d4z4.count < 11 %}
                       class="bg-warning text-white"
                     {% endif %}>
                   {% if loop.index == 1 %}

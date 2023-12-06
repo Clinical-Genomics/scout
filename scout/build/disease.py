@@ -5,9 +5,8 @@ from scout.models.disease_term import DiseaseTerm
 LOG = logging.getLogger(__name__)
 
 
-def build_disease_term(
-    disease_id: str, disease_info: dict, alias_genes: dict = {}
-) -> dict:
+def build_disease_term(disease_info: dict, alias_genes: dict = {}) -> dict:
+
     """Build a disease term object."""
     disease_obj = {}
     disease_nr = disease_id.split(":")[1]

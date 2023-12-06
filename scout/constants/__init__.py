@@ -59,6 +59,7 @@ from .phenotype import (
     COHORT_TAGS,
     HPO_URL,
     HPOTERMS_URL,
+    ORPHA_URLS,
     PHENOTYPE_GROUPS,
     UPDATE_DISEASES_RESOURCES,
 )

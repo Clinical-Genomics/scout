@@ -3,6 +3,11 @@ HPOTERMS_URL = (
     "https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/hp.obo"
 )
 
+ORPHA_URLS = {
+    "orpha_to_genes": "https://www.orphadata.com/data/xml/en_product4.xml",
+    "orpha_to_hpo": "https://www.orphadata.com/data/xml/en_product6.xml",
+}
+
 PHENOTYPE_GROUPS = {
     "HP:0001298": {"name": "Encephalopathy", "abbr": "ENC"},
     "HP:0012759": {"name": "Neurodevelopmental abnormality", "abbr": "NDEV"},

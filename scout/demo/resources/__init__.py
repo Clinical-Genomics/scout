@@ -24,6 +24,9 @@ mim2gene_reduced_path = str(files(BASE_PATH).joinpath("mim2gene_reduced.txt"))
 genemap2_reduced_path = str(files(BASE_PATH).joinpath("genemap2_reduced.txt"))
 
 # ORPHA paths
+orphadata_en_product4_reduced_path = str(
+    files(BASE_PATH).joinpath("orphadata_en_product4_reduced.xml")
+)
 orphadata_en_product6_reduced_path = str(
     files(BASE_PATH).joinpath("orphadata_en_product6_reduced.xml")
 )
