@@ -7,6 +7,7 @@ import tempfile
 import responses
 
 from scout.commands.download.orpha import orpha as orpha_cmd
+from scout.constants import ORPHA_URLS
 from scout.demo.resources import (
     orphadata_en_product4_reduced_path,
     orphadata_en_product6_reduced_path,
@@ -19,25 +20,24 @@ def test_download_orpha_cmd(empty_mock_app):
 
     runner = empty_mock_app.test_cli_runner()
 
-    # GIVEN a patched response from Orphadata to obtain orphadata_en_product6 file
-    url = "https://www.orphadata.com/data/xml/en_product4.xml"
+    # GIVEN a patched response from Orphadata to obtain orphadata_en_product4 and orphadata_en_product6 files
+
     with open(orphadata_en_product4_reduced_path, "r") as orphadata_en_product4_file:
         content = orphadata_en_product4_file.read()
 
     responses.add(
         responses.GET,
-        url,
+        ORPHA_URLS["orpha_to_hpo"],
         body=content,
         status=200,
     )
 
-    url = "https://www.orphadata.com/data/xml/en_product6.xml"
     with open(orphadata_en_product6_reduced_path, "r") as orphadata_en_product6_file:
         content = orphadata_en_product6_file.read()
 
     responses.add(
         responses.GET,
-        url,
+        ORPHA_URLS["orpha_to_genes"],
         body=content,
         status=200,
     )
