@@ -52,6 +52,8 @@ from scout.demo.resources import (
     hpo_phenotype_annotation_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
+    orphadata_en_product4_reduced_path,
+    orphadata_en_product6_reduced_path,
     phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
 )
@@ -61,7 +63,11 @@ from scout.load.hpo import load_hpo_terms
 from scout.load.transcript import load_transcripts
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case_config
-from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
+from scout.parse.ensembl import (
+    parse_ensembl_exons,
+    parse_ensembl_transcripts,
+    parse_transcripts,
+)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.panel import parse_gene_panel
@@ -381,6 +387,23 @@ def test_omim_term(request):
         "HPO_terms": ["HP:00022027", "HP:0008672"],
     }
     return omim_term
+
+
+#############################################################
+################# ORPHA terms fixtures ######################
+#############################################################
+@pytest.fixture
+def orphadata_en_product4_file(request):
+    """Get the path to the orphadata_en_product6 file"""
+    print("")
+    return orphadata_en_product4_reduced_path
+
+
+@pytest.fixture
+def orphadata_en_product6_file(request):
+    """Get the path to the orphadata_en_product6 file"""
+    print("")
+    return orphadata_en_product6_reduced_path
 
 
 #############################################################
