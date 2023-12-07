@@ -19,7 +19,7 @@ def load_disease_terms(
     genemap_lines: Iterable,
     genes: Optional[dict] = None,
     hpo_annotation_lines: Optional[Iterable] = None,
-    orphadata_en_product6_lines: List = None,
+    orphadata_en_product6_lines: Optional[List] = None,
 ):
     """Load the diseases into the database."""
     if not genemap_lines:
@@ -33,7 +33,7 @@ def load_disease_terms(
         genes = adapter.genes_by_alias()
 
     # Fetch the disease terms from omim
-    disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
+    genemap_disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
 
     if not hpo_annotation_lines:
         hpo_annotation_lines = fetch_hpo_disease_annotation()
@@ -41,36 +41,18 @@ def load_disease_terms(
 
     if not orphadata_en_product6_lines:
         orphadata_en_product6_lines = fetch_orpha_files()["orphadata_en_product6"]
-
     orpha_annotations = get_orpha_diseases_product6(orphadata_en_product6_lines)
 
-    # Add missing OMIM and ORPHA disease-terms parsed from phenotypes.hpoa to disease_terms
-    for disease_id, content in disease_annotations.items():
-        if disease_id not in disease_terms:
-            disease_terms[disease_id] = {
-                "inheritance": set(),
-                "description": content["description"],
-                "hgnc_symbols": content["hgnc_symbols"],
-            }
-    # Add missing ORPHA disease-terms parsed from Orphadata_product6.xml to disease_terms
-    for disease_id, content in orpha_annotations.items():
-        if disease_id not in disease_terms:
-            disease_terms[disease_id] = {
-                "inheritance": set(),
-                "description": content["description"],
-                "hgnc_ids": content["hgnc_ids"],
-            }
+    disease_terms = combine_disease_sources(
+        genemap_disease_terms=genemap_disease_terms,
+        disease_annotations=disease_annotations,
+        orpha_annotations=orpha_annotations,
+    )
 
     LOG.info("building disease objects")
 
     disease_objs: List[dict] = []
     for disease_id, disease_info in disease_terms.items():
-        _parse_disease_term_info(
-            disease_info=disease_info,
-            disease_annotations=disease_annotations,
-            disease_id=disease_id,
-        )
-
         disease_objs.append(
             build_disease_term(
                 disease_id=disease_id,
@@ -111,16 +93,40 @@ def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
     return hpo_term_to_symbol
 
 
-def _parse_disease_term_info(
-    disease_info: dict,
-    disease_annotations: Dict[str, Any],
-    disease_id: str,
-):
-    """
-    Starting from the OMIM disease terms (genemap2), update with HPO terms from
-    HPO annotations, add any missing diseases from HPO annotations.
-    """
-    if "hpo_terms" not in disease_info:
-        disease_info["hpo_terms"] = set()
-    if disease_id in disease_annotations:
-        disease_info["hpo_terms"].update(disease_annotations[disease_id]["hpo_terms"])
+def combine_disease_sources(
+    genemap_disease_terms: Dict, disease_annotations: Dict, orpha_annotations: Dict
+) -> Dict:
+    """Pool disease terms and linked HPO terms and genes from OMIM and ORPHAdata files"""
+    # Add OMIM disease terms from genemap
+    combined_disease_terms = genemap_disease_terms
+
+    # If missing, add properties to be updated from other files
+    for disease_id, content in combined_disease_terms.items():
+        if "hpo_terms" not in content:
+            content["hpo_terms"] = set()
+        if "hgnc_symbols" not in content:
+            content["hgnc_symbols"] = set()
+
+    # Add missing OMIM and ORPHA disease-terms parsed from phenotypes.hpoa
+    for disease_id, content in disease_annotations.items():
+        if disease_id not in combined_disease_terms:
+            combined_disease_terms[disease_id] = {
+                "inheritance": set(),
+                "description": content["description"],
+                "hgnc_symbols": content["hgnc_symbols"],
+                "hpo_terms": content["hpo_terms"],
+            }
+        else:
+            combined_disease_terms[disease_id]["hgnc_symbols"].update(content["hgnc_symbols"])
+            combined_disease_terms[disease_id]["hpo_terms"].update(content["hpo_terms"])
+
+    # Add missing ORPHA disease-terms parsed from Orphadata_product6.xml to disease_terms
+    for disease_id, content in orpha_annotations.items():
+        if disease_id not in combined_disease_terms:
+            combined_disease_terms[disease_id] = {
+                "inheritance": set(),
+                "description": content["description"],
+                "hgnc_ids": content["hgnc_ids"],
+            }
+
+    return combined_disease_terms
