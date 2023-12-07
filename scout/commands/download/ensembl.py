@@ -1,6 +1,7 @@
 """Code for handling downloading of ensembl files used by scout from CLI"""
 import logging
 import pathlib
+from os.path import isfile
 from typing import List, Optional
 
 import click
@@ -29,13 +30,16 @@ def print_ensembl(
         ensembl_client = EnsemblBiomartHandler(build=build)
 
         file_name: str = f"ensembl_{resource_type}_{build}.txt"
-        file_path = out_dir / file_name.format(build)
+        save_path = out_dir / file_name.format(build)
 
-        LOG.info("Print ensembl info %s to %s", build, file_path)
-        with file_path.open("w", encoding="utf-8") as outfile:
-            for line in ensembl_client.read_resource_lines(resource_type):
-                outfile.write(line + "\n")
-        LOG.info("Ensembl info saved")
+        LOG.info("Print ensembl info %s to %s", build, save_path)
+        ensembl_client.download_resource(interval_type=resource_type, save_path=save_path)
+        if isfile(save_path):
+            LOG.info(f"{file_name} info saved to disk")
+        else:
+            raise FileNotFoundError(
+                f"{file_name} resource could not be downloaded from Ensembl Biomart"
+            )
 
 
 @click.command("ensembl", help="Download files with ensembl info")

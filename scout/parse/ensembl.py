@@ -112,7 +112,7 @@ def parse_ensembl_genes(lines):
     """
     LOG.info("Parsing ensembl genes from file")
     header = []
-    for index, line in enumerate(lines):
+    for index, line in enumerate(lines[:-1]):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
@@ -136,7 +136,7 @@ def parse_ensembl_transcripts(lines):
     """
     header = []
     LOG.info("Parsing ensembl transcripts from file")
-    for index, line in enumerate(lines):
+    for index, line in enumerate(lines[:-1]):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
@@ -157,7 +157,7 @@ def parse_ensembl_exons(lines):
         ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    for index, line in enumerate(lines):
+    for index, line in enumerate(lines[:-1]):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
