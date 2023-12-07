@@ -1,7 +1,8 @@
 """Code for parsing ORPHA formatted files"""
 import logging
 from typing import Any, Dict, List
-from xml.etree.ElementTree import Element, fromstring
+from xml.etree.ElementTree import Element
+from defusedxml.ElementTree import fromstring
 
 LOG = logging.getLogger(__name__)
 
