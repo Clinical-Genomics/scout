@@ -23,7 +23,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update more FontAwesome icons to avoid Pro icons
 - Test if files still exist before attempting to load research variants
 
-
 ## [4.74]
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher
