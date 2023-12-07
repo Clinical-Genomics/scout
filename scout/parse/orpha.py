@@ -1,28 +1,20 @@
 """Code for parsing ORPHA formatted files"""
 import logging
-from pathlib import Path
 from typing import Any, Dict, List
-from xml.etree.ElementTree import fromstring, parse
+from xml.etree.ElementTree import Element, fromstring
 
 LOG = logging.getLogger(__name__)
 
 
-def parse_xml_downloads(path: Path = None, contents: List = None):
-    """Get a element tree from .xml file by path or dict
+def parse_orpha_downloads(lines: List) -> Element:
+    """Combine lines of xml file to an element tree"""
 
-    Returns:
-        element tree representation of file/download contents
-
-    """
-    tree = None
-    if path:
-        tree = parse(path)
-    if contents:
-        tree = fromstring("\n".join([str(line) for line in contents]))
+    tree = fromstring("\n".join([str(line) for line in lines]))
+    LOG.info(f"My tree is a {type(tree)}")
     return tree
 
 
-def get_orpha_diseases_product6(tree: Any) -> Dict[str, Any]:
+def get_orpha_diseases_product6(lines: List) -> Dict[str, Any]:
     """Get a dictionary with phenotypes
 
     Uses the orpha numbers as keys and phenotype information as
@@ -42,6 +34,8 @@ def get_orpha_diseases_product6(tree: Any) -> Dict[str, Any]:
         }
     """
     LOG.info("Parsing Orphadata en_product6")
+
+    tree: Element = parse_orpha_downloads(lines=lines)
 
     orpha_phenotypes_found = {}
 
