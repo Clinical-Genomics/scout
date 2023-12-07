@@ -1,6 +1,4 @@
-from scout.demo.resources import (
-    orphadata_en_product6_reduced_path,
-)
+from scout.demo.resources import orphadata_en_product6_reduced_path
 from scout.parse.orpha import get_orpha_diseases_product6
 from scout.utils.handle import get_file_handle
 
