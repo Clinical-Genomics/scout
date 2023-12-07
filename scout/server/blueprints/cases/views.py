@@ -26,6 +26,7 @@ from flask import (
 from flask_login import current_user
 
 from scout.constants import DATE_DAY_FORMATTER
+from scout.server.blueprints.variants.controllers import activate_case
 from scout.server.extensions import beacon, phenopacketapi, store
 from scout.server.utils import (
     html_to_pdf_file,
@@ -94,6 +95,9 @@ def sma(institute_id, case_name):
     """Visualize case SMA data - SMN CN calls"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.sma_case(store, institute_obj, case_obj)
+
+    activate_case(store, institute_obj, case_obj, current_user)
+
     return dict(format="html", **data)
 
 
@@ -103,6 +107,9 @@ def bionano(institute_id, case_name):
     """Visualize case BioNano data - FSHD calls"""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     data = controllers.bionano_case(store, institute_obj, case_obj)
+
+    activate_case(store, institute_obj, case_obj, current_user)
+
     return dict(format="html", **data)
 
 
