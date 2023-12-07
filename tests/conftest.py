@@ -1252,77 +1252,66 @@ def one_fusion_variant(institute_obj, parsed_fusion_variants) -> dict:
 @pytest.fixture
 def config_file(request):
     """Get the path to a config file"""
-    print("")
     return load_path
 
 
 @pytest.fixture
 def panel_1_file(request):
     """Get the path to a config file"""
-    print("")
     return panel_path
 
 
 @pytest.fixture
 def hgnc_file(request):
     """Get the path to a hgnc file"""
-    print("")
     return hgnc_reduced_path
 
 
 @pytest.fixture
 def transcripts_file(request):
     """Get the path to a ensembl transcripts file"""
-    print("")
     return transcripts37_reduced_path
 
 
 @pytest.fixture
 def exons_file(request):
     """Get the path to a ensembl exons file"""
-    print("")
     return exons37_reduced_path
 
 
 @pytest.fixture
 def exons_38_file(request):
     """Get the path to a ensembl exons file build 38"""
-    print("")
     return exons38_reduced_path
 
 
 @pytest.fixture
 def genes37_file(request):
     """Get the path to a ensembl genes file"""
-    print("")
     return genes37_reduced_path
 
 
 @pytest.fixture
 def exac_file(request):
-    """Get the path to a exac genes file"""
-    print("")
+    """Get the path to an exac genes file"""
     return exac_reduced_path
 
 
 @pytest.fixture
 def mim2gene_file(request):
     """Get the path to the mim2genes file"""
-    print("")
     return mim2gene_reduced_path
 
 
 @pytest.fixture
 def genemap_file(request):
     """Get the path to the mim2genes file"""
-    print("")
     return genemap2_reduced_path
 
 
 @pytest.fixture(scope="function")
 def variant_clinical_file(request):
     """Get the path to a variant file"""
-    print("")
     return clinical_snv_path
 
 
@@ -1351,49 +1340,42 @@ def vep_94_manta_annotated_SV_variants_file(request):
 @pytest.fixture(scope="function")
 def cancer_snv_file(request):
     """Get the path to a variant file"""
-    print("")
     return cancer_snv_path
 
 
 @pytest.fixture(scope="function")
 def sv_clinical_file(request):
     """Get the path to a variant file"""
-    print("")
     return clinical_sv_path
 
 
 @pytest.fixture(scope="function")
 def str_clinical_file(request):
     """Get the path to a variant file"""
-    print("")
     return clinical_str_path
 
 
 @pytest.fixture(scope="function")
 def empty_sv_clinical_file(request):
     """Get the path to a variant file without variants"""
-    print("")
     return empty_sv_clinical_path
 
 
 @pytest.fixture(scope="function")
 def customannotation_snv_file(request):
     """Get the path to a variant file with custom annotations"""
-    print("")
     return customannotation_snv_path
 
 
 @pytest.fixture(scope="function")
 def ped_file(request):
     """Get the path to a ped file"""
-    print("")
     return ped_path
 
 
 @pytest.fixture(scope="function")
 def scout_config(request, config_file) -> dict:
     """Return a dictionary with scout configs"""
-    print("")
     in_handle = get_file_handle(config_file)
     data = yaml.safe_load(in_handle)
     return data
@@ -1435,77 +1417,66 @@ def minimal_config(request, scout_config):
 @pytest.fixture
 def panel_handle(request, panel_1_file):
     """Get a file handle to a gene panel file"""
-    print("")
     return get_file_handle(panel_1_file)
 
 
 @pytest.fixture
 def hgnc_handle(request, hgnc_file):
     """Get a file handle to a hgnc file"""
-    print("")
     return get_file_handle(hgnc_file)
 
 
 @pytest.fixture
 def hgnc_genes(request, hgnc_handle):
     """Get a dictionary with hgnc genes"""
-    print("")
     return parse_hgnc_genes(hgnc_handle)
 
 
 @pytest.fixture
 def genes37_handle(request, genes37_file):
     """Get a file handle to a ensembl gene file"""
-    print("")
     return get_file_handle(genes37_file)
 
 
 @pytest.fixture
 def transcripts_handle(request, transcripts_file):
     """Get a file handle to a ensembl transcripts file"""
-    print("")
     return get_file_handle(transcripts_file)
 
 
 @pytest.fixture
 def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
-    print("")
     return parse_ensembl_transcripts(transcripts_handle)
 
 
 @pytest.fixture
 def exons_handle(request, exons_file):
     """Get a file handle to a ensembl exons file"""
-    print("")
     return get_file_handle(exons_file)
 
 
 @pytest.fixture
 def exons_38_handle(request, exons_38_file):
     """Get a file handle to a ensembl exons file"""
-    print("")
     return get_file_handle(exons_38_file)
 
 
 @pytest.fixture
 def exons(request, exons_handle):
     """Get the parsed ensembl transcripts"""
-    print("")
     return parse_ensembl_exons(exons_handle)
 
 
 @pytest.fixture
 def exons_38(request, exons_38_handle):
     """Get the parsed ensembl transcripts"""
-    print("")
     return parse_ensembl_exons(exons_38_handle)
 
 
 @pytest.fixture
 def parsed_transcripts(request, transcripts_handle, ensembl_genes):
     """Get the parsed ensembl transcripts"""
-    print("")
     transcripts = parse_transcripts(transcripts_handle)
     for tx_id in transcripts:
         tx_info = transcripts[tx_id]

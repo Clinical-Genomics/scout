@@ -5,9 +5,9 @@ LOG = logging.getLogger(__name__)
 
 
 def parse_ensembl_line(line, header):
-    """Parse an ensembl formated line
+    """Parse an ensembl formatted line
 
-    This parser should be able to handle any ensembl formated line in tsv format, regardless if
+    This parser should be able to handle any ensembl formatted line in tsv format, regardless if
     it is exons, transcripts or genes.
 
     Args:
@@ -106,13 +106,13 @@ def parse_ensembl_genes(lines):
     'Gene ID' 'Chromosome' 'Gene Start' 'Gene End' 'HGNC symbol'
 
     Args:
-        lines(iterable(str)): An iterable with ensembl formated genes
+        lines(iterable(str)): An iterable with ensembl formatted genes
     Yields:
         ensembl_gene(dict): A dictionary with the relevant information
     """
     LOG.info("Parsing ensembl genes from file")
     header = []
-    for index, line in enumerate(lines[:-1]):
+    for index, line in enumerate(lines):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
@@ -123,20 +123,20 @@ def parse_ensembl_genes(lines):
 
 
 def parse_ensembl_transcripts(lines):
-    """Parse lines with ensembl formated transcripts
+    """Parse lines with ensembl formatted transcripts
 
     This is designed to take a biomart dump with transcripts from ensembl.
     Mandatory columns are:
     'Gene ID' 'Transcript ID' 'Transcript Start' 'Transcript End' 'RefSeq mRNA'
 
     Args:
-        lines(iterable(str)): An iterable with ensembl formated genes
+        lines(iterable(str)): An iterable with ensembl formatted genes
     Yields:
         ensembl_transcript(dict): A dictionary with the relevant information
     """
     header = []
     LOG.info("Parsing ensembl transcripts from file")
-    for index, line in enumerate(lines[:-1]):
+    for index, line in enumerate(lines):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
@@ -146,18 +146,18 @@ def parse_ensembl_transcripts(lines):
 
 
 def parse_ensembl_exons(lines):
-    """Parse lines with ensembl formated exons
+    """Parse lines with ensembl formatted exons
 
     This is designed to take a biomart dump with exons from ensembl.
     Check documentation for spec for download
 
     Args:
-        lines(iterable(str)): An iterable with ensembl formated exons
+        lines(iterable(str)): An iterable with ensembl formatted exons
     Yields:
         ensembl_gene(dict): A dictionary with the relevant information
     """
     header = []
-    for index, line in enumerate(lines[:-1]):
+    for index, line in enumerate(lines):
         # File allways start with a header line
         if index == 0:
             header = line.rstrip().split("\t")
@@ -220,7 +220,7 @@ def parse_ensembl_exons(lines):
 
 
 def update_gene_info(ensembl_info, word, value):
-    """Extract gene info from Ensembl formated line"""
+    """Extract gene info from Ensembl formatted line"""
     if "gene" in word:
         if "id" in word:
             ensembl_info["ensembl_gene_id"] = value
@@ -232,7 +232,7 @@ def update_gene_info(ensembl_info, word, value):
 
 
 def update_transcript_info(ensembl_info, word, value):
-    """Extract transcript info from Ensembl formated line"""
+    """Extract transcript info from Ensembl formatted line"""
     if "transcript" in word:
         if "id" in word:
             ensembl_info["ensembl_transcript_id"] = value
@@ -244,7 +244,7 @@ def update_transcript_info(ensembl_info, word, value):
 
 
 def update_exon_info(ensembl_info, word, value):
-    """Extract exon info from Ensembl formated line"""
+    """Extract exon info from Ensembl formatted line"""
     if "exon" in word:
         if "start" in word:
             ensembl_info["exon_start"] = int(value)
@@ -258,7 +258,7 @@ def update_exon_info(ensembl_info, word, value):
 
 
 def update_utr_info(ensembl_info, word, value):
-    """Extract UTR info from Ensembl formated line"""
+    """Extract UTR info from Ensembl formatted line"""
     if "utr" in word:
         if "start" in word:
             if "5" in word:
@@ -274,7 +274,7 @@ def update_utr_info(ensembl_info, word, value):
 
 
 def update_refseq_info(ensembl_info, word, value):
-    """Extract RefSeq info from Ensembl formated line"""
+    """Extract RefSeq info from Ensembl formatted line"""
     if "refseq" in word:
         if "mrna" in word:
             if "predicted" in word:

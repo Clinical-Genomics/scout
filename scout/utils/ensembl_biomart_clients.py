@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 from typing import Callable, Dict
 
@@ -35,3 +36,11 @@ class EnsemblBiomartHandler:
         with requests.get(url, stream=True) as r:
             with open(save_path, "wb") as f:
                 shutil.copyfileobj(r.raw, f)
+
+        # Remove the last line of the file, which contains the string `[success]`
+        with open(save_path, "r+") as f:
+            current_position = previous_position = f.tell()
+            while f.readline():
+                previous_position = current_position
+                current_position = f.tell()
+            f.truncate(previous_position)
