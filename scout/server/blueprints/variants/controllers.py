@@ -1555,7 +1555,7 @@ def persistent_filter_actions(
 
             def _coerce_formdata(filter: dict) -> MultiDict:
                 """According to wtforms docs https://wtforms.readthedocs.io/en/3.1.x/forms/#the-form-class,
-                formdata passed to Form init needs to be pre-coerced to types. Hence especially the replace
+                formdata passed to Form init needs to be pre-coerced to types. Hence especially the replacement
                 of locale specific chars in numbers on class process_formdata would not be enough for the
                 better_decimal form fields.
                 """
@@ -1587,7 +1587,6 @@ def persistent_filter_actions(
                 return MultiDict(filter)
 
             form = FiltersFormClass(_coerce_formdata(filter_obj))
-            LOG.info("Filter formdata: %s Form: %s", filter_obj, form.data)
         else:
             flash("Requested filter was not found", "warning")
 
