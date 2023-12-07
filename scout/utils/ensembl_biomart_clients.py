@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Dict, Iterator, List
+from typing import Callable, Dict, Iterator
 
 import requests
 from schug.load.biomart import EnsemblBiomartClient
@@ -8,13 +8,7 @@ from schug.models.common import Build as SchugBuild
 
 LOG = logging.getLogger(__name__)
 
-BUILD_37 = "GRCh37"
-BUILD_38 = "GRCh38"
-
-BUILDS: Dict[str, str] = {
-    "37": BUILD_37,
-    "38": BUILD_38,
-}
+BUILDS: Dict[str, str] = {"37": "GRCh37", "38": "GRCh38"}
 
 ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {
     "genes": fetch_ensembl_genes,
