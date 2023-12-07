@@ -32,8 +32,12 @@ table.dataTable {margin-bottom: 0}
 	 top: 50px;
 }
 
-a:visited:not(.btn) {
+a:visited {
 	color: var(--bs-purple);
+}
+
+a.btn:visited {
+  color: inherit;
 }
 
 a.dropdown-item:visited {

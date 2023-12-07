@@ -3,16 +3,42 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
+## [unreleased]
+### Added
+- Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
+- Tests for panel to genes
+- Download of Orphadata en_product6 and en_product4 from CLI
+### Changed
+- Allow use of projections when retrieving gene panels
+- Do not save custom images as binary data into case and variant database documents
+- Retrieve and display case and variant custom images using image's saved path
+- Replace code download Ensembl genes, transcripts and exons with schug library
 
-## [Unreleased]
+## [4.74.1]
+### Changed
+- Parse and save into database also OMIM terms not associated to genes
+### Fixed
+- BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
+- Update more FontAwesome icons to avoid Pro icons
+- Test if files still exist before attempting to load research variants
+
+## [4.74]
 ### Added
 - SNVs and Indels, MEI and str variants genes have links to Decipher
+- An `owner + case display name` index for cases database collection
+- Test and fixtures for RNA fusion case page
+- Load and display fusion variants from VCF files as the other variant types
+- Option to update case document with path to mei variants (clinical and research)
 ### Changed
-- Replace code download Ensembl genes, transcripts and exons with schug library
+- Details on variant type and category for audit filters on case general report
+- Enable Gens CN profile button also in somatic case view
+- Fix case of analysis type check for Gens analysis button - only show for WGS
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
-- Links displayed as buttons does not change color when visited
+- Variant external links buttons style does not change color when visited
+- Hide compounds with compounds follow filter for region or function would fail for variants in multiple genes
+- Updated FontAwesome version to fix missing icons
 
 ## [4.73]
 ### Added
@@ -29,6 +55,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Expanded menu visible at screen sizes below 1000px now has background color
 - The image in ClinVar howto-modal is now responsive
 - Clicking on a case in case groups when case was already removed from group in another browser tab
+- Page crashing when saving filters for mei variants
+- Link visited color of images
 
 ## [4.72.4]
 ### Changed

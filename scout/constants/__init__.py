@@ -59,6 +59,7 @@ from .phenotype import (
     COHORT_TAGS,
     HPO_URL,
     HPOTERMS_URL,
+    ORPHA_URLS,
     PHENOTYPE_GROUPS,
     UPDATE_DISEASES_RESOURCES,
 )
@@ -81,6 +82,7 @@ from .variant_tags import (
     VARIANT_CALL,
     VARIANT_FILTERS,
     VARIANT_GENOTYPES,
+    VARIANTS_TARGET_FROM_CATEGORY,
 )
 from .variants_export import (
     CANCER_EXPORT_HEADER,
@@ -179,6 +181,11 @@ CALLERS = {
         {"id": "manta", "name": "Manta"},
     ],
     "str": [{"id": "expansionhunter", "name": "ExpansionHunter"}],
+    "fusion": [
+        {"id": "arriba", "name": "Arriba"},
+        {"id": "starfusion", "name": "STARfusion"},
+        {"id": "fusioncatcher", "name": "FusionCatcher"},
+    ],
 }
 
 BND_ALT_PATTERN = re.compile(r".*[\],\[](.*?):(.*?)[\],\[]")

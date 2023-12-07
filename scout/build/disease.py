@@ -12,8 +12,8 @@ def build_disease_term(disease_info: dict, alias_genes: dict = {}) -> dict:
     disease_nr = disease_info.get("mim_number")
     if disease_nr:
         disease_obj["disease_nr"] = disease_nr
-        disease_obj["disease_id"] = "{0}:{1}".format("OMIM", disease_nr)
-    disease_obj["source"] = "OMIM"
+        disease_obj["disease_id"] = f"OMIM:{disease_nr}"
+        disease_obj["source"] = "OMIM"
     for key in ["hpo_terms", "inheritance"]:
         if key in disease_info:
             disease_obj[key] = list(disease_info[key])
@@ -47,5 +47,4 @@ def build_disease_term(disease_info: dict, alias_genes: dict = {}) -> dict:
     DiseaseTerm(**disease_obj)
 
     disease_obj["_id"] = disease_obj["disease_id"]
-
     return disease_obj

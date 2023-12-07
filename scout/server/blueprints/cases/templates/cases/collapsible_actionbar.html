@@ -78,7 +78,7 @@
         </div>
         <div>
           <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}" download>
-                <span class="fa fa-file-pdf-o"></span></a>
+                <span class="far fa-file-pdf"></span></a>
         </div>
       </div>
     </div>
@@ -105,7 +105,7 @@
           <span class="menu-collapsed">mtDNA report</span>
         </div>
         <div>
-          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="fa fa-file-excel-o"></span></a>
+          <a href="{{ url_for('cases.mt_report', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><span class="far fa-file-excel"></span></a>
         </div>
       </div>
     </div>
@@ -144,7 +144,7 @@
           {% if report_data.pdf_export %}
             <div>
               <a href="{{ url_for('cases.custom_report', institute_id=institute._id,
-                                case_name=case.display_name, report_type=report_key, report_format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+                                case_name=case.display_name, report_type=report_key, report_format='pdf') }}" download><span class="far fa-file-pdf"></span></a>
             </div>
           {% endif %}
         {% else %}
@@ -158,7 +158,7 @@
 {% macro analysis_date(case) %}
 <div href="#" class="bg-dark list-group-item text-white">
   <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fa fa-clock-o fa-fw me-3"></span>
+    <span class="far fa-clock fa-fw me-3"></span>
     <span class="menu-collapsed">{{ case.analysis_date.date() }}</span>
   </div>
 </div>
@@ -267,7 +267,7 @@
   {% if case.research_requested %}
     <span class="d-flex align-items-center">
       <em class="text-white mt-1 ms-3">Research pending</em>
-      <button type="button" class="btn btn-danger btn-xs ms-3" data-bs-toggle="modal" data-bs-target="#cancel-research-modal"><span class="fa fa-hand-paper-o text-white"></span></button>
+      <button type="button" class="btn btn-danger btn-xs ms-3" data-bs-toggle="modal" data-bs-target="#cancel-research-modal"><span class="far fa-hand-paper text-white"></span></button>
     </span>
   {% else %}
     <div id='submenu2' class="collapse">
@@ -325,7 +325,7 @@
 {% macro share_case(institute, case, collaborators) %}
 <a href="#submenu4" data-bs-toggle="collapse" aria-controls="submenu4" aria-expanded="false" class="bg-dark list-group-item list-group-item-action flex-column align-items-start">
   <div class="d-flex w-100 justify-content-start align-items-center">
-    <span class="fa fa-handshake-o fa-fw me-3"></span>
+    <span class="fa fa-handshake fa-fw me-3"></span>
     <span class="menu-collapsed">Share case</span>
     <span class="submenu-icon ms-auto"></span>
   </div>
@@ -411,7 +411,7 @@
   <form method="POST"
             action="{{ url_for('cases.check_case', case_name=case.display_name, institute_id=institute._id) }}">
         <button name="action" value="DELETE" class="btn btn-success form-control">
-          <span class="fa fa-check-square-o"></span>
+          <span class="far fa-check-square"></span>
           Decipher Checked
         </button>
       </form>
@@ -599,7 +599,7 @@
         </div>
         <div>
           <a href="{{ url_for('cases.custom_report', institute_id=institute,
-                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date(), format='pdf') }}" download><span class="fa fa-file-pdf-o"></span></a>
+                            case_name=case.display_name, report_type='delivery_report', date=analysis.date.date(), format='pdf') }}" download><span class="far fa-file-pdf"></span></a>
         </div>
       {% elif analysis.delivery_report == case.delivery_report %}
         <div><span class="fa fa-exclamation-circle ms-1" data-bs-toggle="tooltip" title="A delivery report had been registered for the analysis but has been replaced."></span></div>

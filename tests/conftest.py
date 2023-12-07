@@ -2,6 +2,7 @@
 import datetime
 import logging
 from pathlib import PosixPath
+from typing import Iterable
 
 import pymongo
 import pytest
@@ -23,6 +24,7 @@ from scout.demo import (
     cancer_load_path,
     cancer_snv_path,
     cancer_sv_path,
+    clinical_fusion_path,
     clinical_snv_path,
     clinical_str_path,
     clinical_sv_path,
@@ -31,6 +33,7 @@ from scout.demo import (
     load_path,
     panel_path,
     ped_path,
+    rnafusion_load_path,
     vep_97_annotated_path,
     vep_104_annotated_path,
 )
@@ -396,24 +399,23 @@ def ped_lines(request):
 
 
 @pytest.fixture(scope="function")
-def case_lines(request, scout_config):
-    """Get the lines for a case"""
+def parsed_case(request, scout_config) -> dict:
+    """Get a WES parsed case."""
     case = parse_case_config(scout_config)
     return case
 
 
 @pytest.fixture(scope="function")
-def parsed_case(request, scout_config):
-    """Get the lines for a case"""
-    case = parse_case_config(scout_config)
-    return case
-
-
-@pytest.fixture(scope="function")
-def cancer_parsed_case(request, cancer_scout_config):
-    """Get the lines for a cancer case"""
+def cancer_parsed_case(request, cancer_scout_config) -> dict:
+    """Get a cancer panel parsed case."""
     case = parse_case_config(cancer_scout_config)
     return case
+
+
+@pytest.fixture(scope="function")
+def fusion_parsed_case(request, fusion_scout_config) -> dict:
+    """Get a parsed RNA fusion case."""
+    return parse_case_config(fusion_scout_config)
 
 
 @pytest.fixture(scope="function")
@@ -468,11 +470,22 @@ def case_obj(request, parsed_case):
     case["synopsis"] = ""
     case["updated_at"] = parsed_case["analysis_date"]
     case["delivery_report"] = parsed_case["delivery_report"]
-    case["custom_images"] = parsed_case["custom_images"]["case_images"]
+    case["custom_images"] = parsed_case["custom_images"]
     case["assignees"] = []
     case["phenotype_terms"] = []  # do not assign any phenotype
     case["cohorts"] = []  # do not assign any cohort
 
+    return case
+
+
+@pytest.fixture(scope="function")
+def fusion_case_obj(request, fusion_parsed_case) -> dict:
+    """Returns a DNA fusion case."""
+    case: dict = fusion_parsed_case
+    case["_id"] = fusion_parsed_case["case_id"]
+    case["status"] = "inactive"
+    case["phenotype_terms"] = []  # do not assign any phenotype
+    case["cohorts"] = []  # do not assign any cohort
     return case
 
 
@@ -1200,6 +1213,37 @@ def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     return (build_variant(variant, institute_obj) for variant in parsed_sv_variants)
 
 
+@pytest.fixture(scope="function")
+def fusion_variants(request) -> VCF:
+    """Return a VCF object containing RNA fusion variants."""
+    return VCF(clinical_fusion_path)
+
+
+@pytest.fixture(scope="function")
+def parsed_fusion_variants(request, fusion_variants, fusion_case_obj) -> Iterable:
+    """Get a generator with parsed fusion variants"""
+    individual_positions = {}
+    for i, ind in enumerate(fusion_variants.samples):
+        individual_positions[ind] = i
+
+    return (
+        parse_variant(variant, fusion_case_obj, individual_positions=individual_positions)
+        for variant in fusion_variants
+    )
+
+
+@pytest.fixture(scope="function")
+def fusion_variant_objs(request, parsed_fusion_variants, institute_obj) -> Iterable:
+    """Get an iterator containing fusion variants as they would be loaded in the database."""
+    return (build_variant(variant, institute_obj) for variant in parsed_fusion_variants)
+
+
+@pytest.fixture(scope="function")
+def one_fusion_variant(institute_obj, parsed_fusion_variants) -> dict:
+    """Return one fusion variant as it would be loaded in the database."""
+    return build_variant(next(parsed_fusion_variants), institute_id=institute_obj["_id"])
+
+
 #############################################################
 ##################### File fixtures #####################
 #############################################################
@@ -1347,7 +1391,7 @@ def ped_file(request):
 
 
 @pytest.fixture(scope="function")
-def scout_config(request, config_file):
+def scout_config(request, config_file) -> dict:
     """Return a dictionary with scout configs"""
     print("")
     in_handle = get_file_handle(config_file)
@@ -1356,9 +1400,17 @@ def scout_config(request, config_file):
 
 
 @pytest.fixture(scope="function")
-def cancer_scout_config(request):
+def cancer_scout_config(request) -> dict:
     """Return a dictionary with cancer case scout configs"""
     in_handle = get_file_handle(cancer_load_path)
+    data = yaml.safe_load(in_handle)
+    return data
+
+
+@pytest.fixture(scope="function")
+def fusion_scout_config(request) -> dict:
+    """Return a dictionary with fusion case scout configs"""
+    in_handle = get_file_handle(rnafusion_load_path)
     data = yaml.safe_load(in_handle)
     return data
 

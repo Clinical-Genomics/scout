@@ -261,9 +261,11 @@
                 </tr>
               </thead>
               <tbody>
+                 {% set audit_query = namespace() %}
                  {% for audit in audits %}
+                  {% set audit_query = audit.link|url_args %}
                   <tr>
-                    <td><strong>{{ audit.subject }}</strong> was marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.</td>
+                    <td><strong>{{ audit.subject }} ({{audit_query.variant_type if audit_query.variant_type else "type unavailable -"}} {{ audit_query.category if audit_query.category else "category unavailable"}})</strong> was marked checked by {{ audit.user_name }} on {{audit.created_at.strftime('%Y-%m-%d')}}.</td>
                   </tr>
                  {%  endfor %}
               </tbody>

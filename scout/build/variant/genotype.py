@@ -27,6 +27,8 @@ def build_genotype(gt_call):
         alt_frequency=gt_call["alt_frequency"] or -1,
         genotype_quality=gt_call["genotype_quality"],
         so=gt_call["so"],
+        ffpm=gt_call["ffpm"],
+        split_read=gt_call["split_read"],
     )
 
     return gt_obj
