@@ -8,7 +8,6 @@ from flask.cli import with_appcontext
 from scout.load import load_exons
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
-from scout.utils.scout_requests import fetch_ensembl_exons
 
 LOG = logging.getLogger(__name__)
 

@@ -4,7 +4,6 @@ from click import progressbar
 
 from scout.build.genes.transcript import build_transcript
 from scout.parse.ensembl import parse_transcripts
-from scout.utils.scout_requests import fetch_ensembl_transcripts
 
 LOG = logging.getLogger(__name__)
 

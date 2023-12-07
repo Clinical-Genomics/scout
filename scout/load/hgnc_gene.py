@@ -5,12 +5,8 @@ from pprint import pprint as pp
 from click import progressbar
 
 from scout.build import build_hgnc_gene
-from scout.load.transcript import load_transcripts
 from scout.utils.link import link_genes
 from scout.utils.scout_requests import (
-    fetch_ensembl_exons,
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
     fetch_exac_constraint,
     fetch_hgnc,
     fetch_hpo_files,

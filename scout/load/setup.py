@@ -27,8 +27,6 @@ from scout.parse.panel import parse_gene_panel
 from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
     fetch_exac_constraint,
     fetch_genes_to_hpo_to_disease,
     fetch_hgnc,

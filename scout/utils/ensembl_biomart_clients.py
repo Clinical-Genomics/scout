@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Iterator
+from typing import Dict, Iterator, List
 
 from schug.load.biomart import EnsemblBiomartClient
 from schug.models.common import Build as SchugBuild
@@ -9,7 +9,7 @@ LOG = logging.getLogger(__name__)
 BUILD_37 = "GRCh37"
 BUILD_38 = "GRCh38"
 
-BUILDS: Dict(str, str) = {
+BUILDS: Dict[str, str] = {
     "37": BUILD_37,
     "38": BUILD_38,
 }
