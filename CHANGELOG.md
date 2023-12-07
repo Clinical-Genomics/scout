@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
+- Cases are activated by viewing FSHD and SMA reports
 - Replace code download Ensembl genes, transcripts and exons with schug library
 
 ## [4.74.1]
