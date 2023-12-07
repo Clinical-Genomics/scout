@@ -13,11 +13,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
+- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
+- Parallelize variant loading for each chromosome
 
 ## [4.74.1]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
-- Parallelize variant loading for each chromosome
 ### Fixed
 - BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 - Update more FontAwesome icons to avoid Pro icons
