@@ -34,7 +34,7 @@ def test_print_ensembl_genes(mocker, genes37_handle):
     mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=genes37_handle)
 
     # GIVEN a temporary directory where the ensembl genes will be saved
-    dir_name: str = tempfile.TemporaryDirectory()
+    dir_name = tempfile.TemporaryDirectory()
     save_path = pathlib.Path(dir_name.name)
 
     # GIVEN the genes file that will be downloaded from Ensembl
@@ -54,7 +54,7 @@ def test_print_ensembl_transcripts(mocker, transcripts_handle):
     mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=transcripts_handle)
 
     # GIVEN a temporary directory where the ensembl genes will be saved
-    dir_name: str = tempfile.TemporaryDirectory()
+    dir_name = tempfile.TemporaryDirectory()
     save_path = pathlib.Path(dir_name.name)
 
     # GIVEN the transcripts file that will be downloaded from Ensembl
@@ -74,7 +74,7 @@ def test_print_ensembl_exons(mocker, exons_handle):
     mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=exons_handle)
 
     # GIVEN a temporary directory where the ensembl genes will be saved
-    dir_name: str = tempfile.TemporaryDirectory()
+    dir_name = tempfile.TemporaryDirectory()
     save_path = pathlib.Path(dir_name.name)
 
     # GIVEN the transcripts file that will be downloaded from Ensembl
@@ -91,7 +91,7 @@ def test_print_ensembl_unknown_resource(mocker, transcripts_handle):
     """Test print ensembl function"""
 
     # GIVEN a temporary directory to save resource to
-    dir_name: str = tempfile.TemporaryDirectory()
+    dir_name = tempfile.TemporaryDirectory()
     save_path = pathlib.Path(dir_name.name)
 
     # WHEN print_ensembl is invoked with resource_type not in ["genes","transcripts","exons"]

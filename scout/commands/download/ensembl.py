@@ -1,7 +1,6 @@
 """Code for handling downloading of ensembl files used by scout from CLI"""
 import logging
 import pathlib
-from os.path import isfile
 from typing import List, Optional
 
 import click
@@ -12,7 +11,7 @@ LOG = logging.getLogger(__name__)
 
 
 def print_ensembl(
-    out_dir: click.Path, resource_type: List[str], genome_build: Optional[str] = None
+    out_dir: pathlib.Path, resource_type: List[str], genome_build: Optional[str] = None
 ):
     """Fetch and print Ensembl info to file. If no genome build is used both builds will be fetched."""
 
