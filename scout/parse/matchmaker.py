@@ -100,17 +100,17 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
 
     for var in candidate_vars:
         vari_id = var.split("|")[0]
-        gene_symbol = None
         var_obj = store.sample_variant(vari_id, sample_name)
         if var_obj is None:
             continue
-        if "|" in var:  # Share a gene symbol from a SV
-            gene_symbol = var.split("|")[1]
-            g_feature = {"gene": {"id": gene_symbol}}
-            g_features.append(g_feature)
+
+        selected_gene: str = var.split("|")[1] if "|" in var else None
+
+        if var_obj["category"] not in ["snv", "snv_research", "cancer", "cancer_research"]:
+            g_features.append({"gene": {"id": selected_gene}})
             continue
 
-        # SNV variant
+        # "snv", "snv_research", "cancer", "cancer_research" variants
         hgnc_genes = var_obj.get("hgnc_ids")
         if not hgnc_genes:
             continue
@@ -118,7 +118,12 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
             gene_caption = store.hgnc_gene_caption(hgnc_id, case_obj["genome_build"])
             if not gene_caption:
                 continue
-            g_feature = {"gene": {"id": gene_caption.get("hgnc_symbol")}}
+
+            gene_symbol: str = gene_caption.get("hgnc_symbol")
+            if selected_gene and gene_symbol != selected_gene:
+                continue
+
+            g_feature = {"gene": {"id": gene_symbol}}
             if genes_only is True:  # Disclose only gene info
                 g_features.append(g_feature)
                 continue
@@ -133,6 +138,7 @@ def genomic_features(store, case_obj, sample_name, candidate_vars, genes_only):
                 "alternateBases": var_obj["alternative"],
                 "shareVariantLevelData": True,
             }
+
             zygosity = None
             # collect zygosity for the given sample
             zygosities = var_obj[
