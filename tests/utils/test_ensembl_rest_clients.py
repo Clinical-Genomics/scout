@@ -1,7 +1,5 @@
 """Tests for ensembl rest api"""
 
-from urllib.parse import quote
-
 import responses
 from requests.exceptions import HTTPError, MissingSchema
 
