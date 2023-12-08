@@ -52,8 +52,6 @@ from scout.demo.resources import (
     hpo_phenotype_annotation_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
-    orphadata_en_product4_reduced_path,
-    orphadata_en_product6_reduced_path,
     phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
 )
@@ -387,23 +385,6 @@ def test_omim_term(request):
         "HPO_terms": ["HP:00022027", "HP:0008672"],
     }
     return omim_term
-
-
-#############################################################
-################# ORPHA terms fixtures ######################
-#############################################################
-@pytest.fixture
-def orphadata_en_product4_file(request):
-    """Get the path to the orphadata_en_product6 file"""
-    print("")
-    return orphadata_en_product4_reduced_path
-
-
-@pytest.fixture
-def orphadata_en_product6_file(request):
-    """Get the path to the orphadata_en_product6 file"""
-    print("")
-    return orphadata_en_product6_reduced_path
 
 
 #############################################################
