@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+from pathlib import PosixPath
+from typing import Iterable
 
 import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
 from flask import jsonify
-from pathlib import PosixPath
-from typing import Iterable
 
 # Adapter stuff
 from mongomock import MongoClient
@@ -63,7 +63,11 @@ from scout.load.hpo import load_hpo_terms
 from scout.load.transcript import load_transcripts
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case_config
-from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
+from scout.parse.ensembl import (
+    parse_ensembl_exons,
+    parse_ensembl_transcripts,
+    parse_transcripts,
+)
 from scout.parse.exac import parse_exac_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.panel import parse_gene_panel
