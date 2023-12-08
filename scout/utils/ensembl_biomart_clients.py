@@ -32,6 +32,7 @@ class EnsemblBiomartHandler:
         """Fetches genes, transcripts or exons from a remote Ensembl biomart in the right genome build and saves them to file."""
 
         def yield_resource_lines(iterable) -> str:
+            """Removes the last element from an iterator."""
             it = iter(iterable)
             current = next(it)
             for i in it:
