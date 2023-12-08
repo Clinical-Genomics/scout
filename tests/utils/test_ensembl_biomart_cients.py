@@ -14,8 +14,6 @@ from schug.models.common import Build
 from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.handle import get_file_handle
 
-MOCKED_RESPONSE = "requests.get"
-
 SCHUG_BUILD_GENES_PATHS = [
     (Build.build_37, GENES_37_FILE_PATH),
     (Build.build_38, GENES_38_FILE_PATH),
