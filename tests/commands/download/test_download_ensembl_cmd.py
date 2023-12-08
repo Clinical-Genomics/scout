@@ -81,7 +81,7 @@ def test_print_ensembl_exons(mocker, exons_handle):
     build = "37"
     exons_file_name: str = "ensembl_exons_{}.txt".format(build)
 
-    # THEN the transcripts file should contain lines
+    # THEN the exons file should contain lines
     print_ensembl(save_path, resource_type="exons", genome_build=build)
     exons_file = open(save_path / exons_file_name)
     assert exons_file.readlines()
@@ -90,8 +90,11 @@ def test_print_ensembl_exons(mocker, exons_handle):
 def test_print_ensembl_unknown_resource(mocker, transcripts_handle):
     """Test print ensembl function"""
 
+    # GIVEN a temporary directory to save resource to
     dir_name: str = tempfile.TemporaryDirectory()
     save_path = pathlib.Path(dir_name.name)
 
+    # WHEN print_ensembl is invoked with resource_type not in ["genes","transcripts","exons"]
+    # THEN it should raise error
     with pytest.raises(SyntaxError):
         print_ensembl(save_path, resource_type="unknown", genome_build="37")
