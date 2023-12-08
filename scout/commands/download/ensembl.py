@@ -30,16 +30,15 @@ def print_ensembl(
         ensembl_client = EnsemblBiomartHandler(build=build)
 
         file_name: str = f"ensembl_{resource_type}_{build}.txt"
-        save_path = out_dir / file_name.format(build)
+        file_path = out_dir / file_name
 
-        LOG.info("Print ensembl info %s to %s", build, save_path)
-        ensembl_client.download_resource(interval_type=resource_type, save_path=save_path)
-        if isfile(save_path):
-            LOG.info(f"{file_name} info saved to disk")
-        else:
-            raise FileNotFoundError(
-                f"{file_name} resource could not be downloaded from Ensembl Biomart"
-            )
+        LOG.info("Print ensembl info %s to %s", build, file_path)
+
+        with file_path.open("w", encoding="utf-8") as outfile:
+            for line in ensembl_client.stream_resource(interval_type=resource_type):
+                outfile.write(line + "\n")
+
+        LOG.info(f"{file_name} file saved to disk")
 
 
 @click.command("ensembl", help="Download files with ensembl info")

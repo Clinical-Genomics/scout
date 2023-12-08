@@ -68,7 +68,7 @@ def parse_transcripts(transcript_lines):
     parsed_transcripts = {}
     # Loop over the parsed transcripts
     for tx in transcripts:
-        tx_id = tx["ensembl_transcript_id"]
+        tx_id = tx.get("ensembl_transcript_id")
         ens_gene_id = tx["ensembl_gene_id"]
 
         # Check if the transcript has been added

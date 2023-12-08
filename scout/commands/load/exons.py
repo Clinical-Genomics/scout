@@ -1,12 +1,12 @@
 import logging
 from datetime import datetime
-from pprint import pprint as pp
 
 import click
 from flask.cli import with_appcontext
 
 from scout.load import load_exons
 from scout.server.extensions import store
+from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.handle import get_file_handle
 
 LOG = logging.getLogger(__name__)
@@ -42,7 +42,8 @@ def exons(build, exons_file):
             pass
         ensembl_exons = get_file_handle(exons_file)
     else:
-        ensembl_exons = fetch_ensembl_exons(build=build)
+        ensembl_client = EnsemblBiomartHandler(build=build)
+        ensembl_exons = ensembl_client.stream_resource(interval_type="exons")
         nr_exons = 1360000
 
     try:

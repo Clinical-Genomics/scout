@@ -4,6 +4,7 @@ from click import progressbar
 
 from scout.build.genes.transcript import build_transcript
 from scout.parse.ensembl import parse_transcripts
+from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 
 LOG = logging.getLogger(__name__)
 
@@ -28,7 +29,8 @@ def load_transcripts(adapter, transcripts_lines=None, build="37", ensembl_genes=
     ensembl_genes = ensembl_genes or adapter.ensembl_genes(build)
 
     if transcripts_lines is None:
-        transcripts_lines = fetch_ensembl_transcripts(build=build)
+        ensembl_client = EnsemblBiomartHandler(build=build)
+        transcripts_lines = ensembl_client.stream_resource(interval_type="transcripts")
 
     # Map with all transcripts enstid -> parsed transcript
     transcripts_dict = parse_transcripts(transcripts_lines)

@@ -1,7 +1,5 @@
 import logging
-import os
-import shutil
-from typing import Callable, Dict
+from typing import Callable, Dict, Iterator
 
 import requests
 from schug.load.biomart import EnsemblBiomartClient
@@ -25,22 +23,22 @@ class EnsemblBiomartHandler:
     def __init__(self, build: str = "37"):
         self.build: str = BUILDS[build]
 
-    def download_resource(self, interval_type: str, save_path: str) -> None:
+    def stream_resource(self, interval_type: str) -> Iterator[str]:
         """Fetches genes, transcripts or exons from a remote Ensembl biomart in the right genome build and saves them to file."""
+
+        def yield_resource_lines(iterable) -> str:
+            it = iter(iterable)
+            current = next(it)
+            for i in it:
+                yield current
+                current = i
 
         shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
             build=SchugBuild(self.build)
         )
+
         url: str = shug_client.build_url(xml=shug_client.xml)
-
-        with requests.get(url, stream=True) as r:
-            with open(save_path, "wb") as f:
-                shutil.copyfileobj(r.raw, f)
-
-        # Remove the last line of the file, which contains the string `[success]`
-        with open(save_path, "r+") as f:
-            current_position = previous_position = f.tell()
-            while f.readline():
-                previous_position = current_position
-                current_position = f.tell()
-            f.truncate(previous_position)
+        response: requests.models.responses = requests.get(url, stream=True)
+        response_lines: Iterator = response.iter_lines(decode_unicode=True)
+        # return all lines except the last, which contains the "[success]" string
+        return yield_resource_lines(response_lines)
