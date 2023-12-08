@@ -2,11 +2,13 @@
 
 import pathlib
 import tempfile
+from typing import Iterator
 
 import pytest
 
 from scout.commands.download.ensembl import ensembl as ensembl_cmd
 from scout.commands.download.ensembl import print_ensembl
+from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 
 
 def test_download_ensembl_cmd(mocker, empty_mock_app):
@@ -25,72 +27,71 @@ def test_download_ensembl_cmd(mocker, empty_mock_app):
         assert "Download ensembl results" in result.output
 
 
-def test_print_ensembl_genes(mocker, transcripts_handle):
-    """Test print ensembl function"""
-    # GIVEN a temporary directory and some exac lines
+def test_print_ensembl_genes(mocker, genes37_handle):
+    """Test print ensembl genes function."""
+
+    # GIVEN a patched call to schug
+    mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=genes37_handle)
+
+    # GIVEN a temporary directory where the ensembl genes will be saved
+    dir_name: str = tempfile.TemporaryDirectory()
+    save_path = pathlib.Path(dir_name.name)
+
+    # GIVEN the genes file that will be downloaded from Ensembl
     build = "37"
-    tx_file_name = "ensembl_genes_{}.txt".format(build)
-    tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
-    dir_name = tempfile.TemporaryDirectory()
-    the_dir = pathlib.Path(dir_name.name)
-    # WHEN fetching and printing the exac data
-    print_ensembl(the_dir, resource_type="genes", genome_build=build)
-    i = 0
-    for i, line in enumerate(open(the_dir / tx_file_name)):
-        if len(line) > 10 and i > 0:
-            assert line.split("\t")[1].startswith("ENSG")
-    # THEN check some lines where produced
-    assert i > 0
+    genes_file_name: str = "ensembl_genes_{}.txt".format(build)
+
+    # THEN the genes file should contain lines
+    print_ensembl(save_path, resource_type="genes", genome_build=build)
+    genes_file = open(save_path / genes_file_name)
+    assert genes_file.readlines()
 
 
 def test_print_ensembl_transcripts(mocker, transcripts_handle):
-    """Test print ensembl function"""
-    # GIVEN a temporary directory and some exac lines
+    """Test print ensembl transcripts function."""
+
+    # GIVEN a patched call to schug
+    mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=transcripts_handle)
+
+    # GIVEN a temporary directory where the ensembl genes will be saved
+    dir_name: str = tempfile.TemporaryDirectory()
+    save_path = pathlib.Path(dir_name.name)
+
+    # GIVEN the transcripts file that will be downloaded from Ensembl
     build = "37"
-    tx_file_name = "ensembl_transcripts_{}.txt".format(build)
-    tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
-    dir_name = tempfile.TemporaryDirectory()
-    the_dir = pathlib.Path(dir_name.name)
-    # WHEN fetching and printing the exac data
-    print_ensembl(the_dir, resource_type="transcripts", genome_build=build)
-    i = 0
-    for i, line in enumerate(open(the_dir / tx_file_name)):
-        if len(line) > 10 and i > 0:
-            assert line.split("\t")[1].startswith("ENSG")
-    # THEN check some lines where produced
-    assert i > 0
+    tx_file_name: str = "ensembl_transcripts_{}.txt".format(build)
+
+    # THEN the transcripts file should contain lines
+    print_ensembl(save_path, resource_type="transcripts", genome_build=build)
+    tx_file = open(save_path / tx_file_name)
+    assert tx_file.readlines()
 
 
-def test_print_ensembl_exons(mocker, transcripts_handle):
-    """Test print ensembl function"""
-    # GIVEN a temporary directory and some exac lines
+def test_print_ensembl_exons(mocker, exons_handle):
+    """Test print ensembl exons function."""
+
+    # GIVEN a patched call to schug
+    mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=exons_handle)
+
+    # GIVEN a temporary directory where the ensembl genes will be saved
+    dir_name: str = tempfile.TemporaryDirectory()
+    save_path = pathlib.Path(dir_name.name)
+
+    # GIVEN the transcripts file that will be downloaded from Ensembl
     build = "37"
-    tx_file_name = "ensembl_exons_{}.txt".format(build)
-    tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
-    dir_name = tempfile.TemporaryDirectory()
-    the_dir = pathlib.Path(dir_name.name)
-    # WHEN fetching and printing the exac data
-    print_ensembl(the_dir, resource_type="exons", genome_build=build)
-    i = 0
-    for i, line in enumerate(open(the_dir / tx_file_name)):
-        if len(line) > 10 and i > 0:
-            assert line.split("\t")[1].startswith("ENSG")
-    # THEN check some lines where produced
-    assert i > 0
+    exons_file_name: str = "ensembl_exons_{}.txt".format(build)
+
+    # THEN the transcripts file should contain lines
+    print_ensembl(save_path, resource_type="exons", genome_build=build)
+    exons_file = open(save_path / exons_file_name)
+    assert exons_file.readlines()
 
 
 def test_print_ensembl_unknown_resource(mocker, transcripts_handle):
     """Test print ensembl function"""
-    # GIVEN a temporary directory and some exac lines
-    build = "37"
-    tx_file_name = "ensembl_exons_{}.txt".format(build)
-    tx_lines = [line.strip() for line in transcripts_handle]
-    mocker.patch("scout.utils.scout_requests.fetch_ensembl_biomart", return_value=tx_lines)
-    dir_name = tempfile.TemporaryDirectory()
-    the_dir = pathlib.Path(dir_name.name)
-    # WHEN fetching and printing the exac data
+
+    dir_name: str = tempfile.TemporaryDirectory()
+    save_path = pathlib.Path(dir_name.name)
+
     with pytest.raises(SyntaxError):
-        print_ensembl(the_dir, resource_type="unknown", genome_build=build)
+        print_ensembl(save_path, resource_type="unknown", genome_build="37")
