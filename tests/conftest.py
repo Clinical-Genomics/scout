@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-from pathlib import PosixPath
-from typing import Iterable
 
 import pymongo
 import pytest
 import yaml
 from cyvcf2 import VCF
 from flask import jsonify
+from pathlib import PosixPath
+from typing import Iterable
 
 # Adapter stuff
 from mongomock import MongoClient
