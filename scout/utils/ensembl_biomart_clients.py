@@ -23,6 +23,11 @@ class EnsemblBiomartHandler:
     def __init__(self, build: str = "37"):
         self.build: str = BUILDS[build]
 
+    def biomart_get(self, url: str) -> Iterator:
+        """Sends a request to Ensembl Biomart and returns the resource lines."""
+        response: requests.models.responses = requests.get(url, stream=True)
+        return response.iter_lines(decode_unicode=True)
+
     def stream_resource(self, interval_type: str) -> Iterator[str]:
         """Fetches genes, transcripts or exons from a remote Ensembl biomart in the right genome build and saves them to file."""
 
@@ -38,7 +43,6 @@ class EnsemblBiomartHandler:
         )
 
         url: str = shug_client.build_url(xml=shug_client.xml)
-        response: requests.models.responses = requests.get(url, stream=True)
-        response_lines: Iterator = response.iter_lines(decode_unicode=True)
+
         # return all lines except the last, which contains the "[success]" string
-        return yield_resource_lines(response_lines)
+        return yield_resource_lines(self.biomart_get(url))
