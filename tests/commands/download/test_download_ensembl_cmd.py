@@ -2,7 +2,6 @@
 
 import pathlib
 import tempfile
-from typing import Iterator
 
 import pytest
 
@@ -31,7 +30,8 @@ def test_print_ensembl_genes(mocker, genes37_handle):
     """Test print ensembl genes function."""
 
     # GIVEN a patched call to schug
-    mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=genes37_handle)
+    # GIVEN a patched response from Ensembl Biomart, via schug
+    mocker.patch.object(EnsemblBiomartHandler, "biomart_get", return_value=genes37_handle)
 
     # GIVEN a temporary directory where the ensembl genes will be saved
     dir_name = tempfile.TemporaryDirectory()
@@ -51,7 +51,7 @@ def test_print_ensembl_transcripts(mocker, transcripts_handle):
     """Test print ensembl transcripts function."""
 
     # GIVEN a patched call to schug
-    mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=transcripts_handle)
+    mocker.patch.object(EnsemblBiomartHandler, "biomart_get", return_value=transcripts_handle)
 
     # GIVEN a temporary directory where the ensembl genes will be saved
     dir_name = tempfile.TemporaryDirectory()
@@ -71,7 +71,7 @@ def test_print_ensembl_exons(mocker, exons_handle):
     """Test print ensembl exons function."""
 
     # GIVEN a patched call to schug
-    mocker.patch.object(EnsemblBiomartHandler, "stream_resource", return_value=exons_handle)
+    mocker.patch.object(EnsemblBiomartHandler, "biomart_get", return_value=exons_handle)
 
     # GIVEN a temporary directory where the ensembl genes will be saved
     dir_name = tempfile.TemporaryDirectory()
