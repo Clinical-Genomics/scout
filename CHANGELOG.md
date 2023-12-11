@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
+### Fixed
+- Removed some extra characters from top of general report left over from FontAwsome fix
 
 ## [4.74.1]
 ### Changed
