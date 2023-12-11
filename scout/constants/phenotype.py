@@ -38,4 +38,8 @@ UPDATE_DISEASES_RESOURCES = {
         "orphadata_en_product6.xml",
         "orphadata_en_product6_reduced.xml",
     ],
+    "orphadata_en_product4_lines": [
+        "orphadata_en_product4.xml",
+        "orphadata_en_product4_reduced.xml",
+    ],
 }

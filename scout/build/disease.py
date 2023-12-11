@@ -26,6 +26,7 @@ def build_disease_term(disease_id: str, disease_info: Dict, alias_genes: Dict) -
     hgnc_symbols_not_found = set()
     hgnc_ids = set()
     if "hgnc_ids" in disease_info:
+        LOG.info(f"I had hgnc_id {disease_id}")
         hgnc_ids = hgnc_ids.union(disease_info["hgnc_ids"])
 
     if "hgnc_symbols" in disease_info:

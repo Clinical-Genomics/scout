@@ -12,7 +12,8 @@ def test_load_disease_terms(gene_database, genemap_handle, orphadata_en_product6
         adapter=adapter,
         genemap_lines=genemap_handle,
         genes=alias_genes,
-        orphadata_en_product6_lines=orphadata_en_product6_lines,
+        orpha_to_genes_lines=orphadata_en_product6_lines,
+        orpha_to_hpo_lines=orphadata_en_product4_lines,
     )
 
     # THEN make sure that the disease terms are in the database

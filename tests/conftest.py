@@ -379,7 +379,7 @@ def disease_database(
     load_disease_terms(
         adapter=gene_database,
         genemap_lines=get_file_handle(genemap_file),
-        orphadata_en_product6_lines=get_file_handle(orphadata_en_product6_reduced_path),
+        orpha_to_genes_lines=get_file_handle(orphadata_en_product6_reduced_path),
     )
     return adapter
 

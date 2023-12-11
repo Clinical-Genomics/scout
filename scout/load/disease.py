@@ -8,7 +8,11 @@ from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
 from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
 from scout.parse.omim import get_mim_phenotypes
-from scout.parse.orpha import get_orpha_diseases_product6
+from scout.parse.orpha import (
+    get_orpha_to_genes_information,
+    get_orpha_to_hpo_information,
+    get_orpha_disease_terms,
+)
 from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
 
 LOG = logging.getLogger(__name__)
@@ -19,7 +23,8 @@ def load_disease_terms(
     genemap_lines: Iterable,
     genes: Optional[dict] = None,
     hpo_annotation_lines: Optional[Iterable] = None,
-    orphadata_en_product6_lines: Optional[List] = None,
+    orpha_to_hpo_lines: Optional[List] = None,
+    orpha_to_genes_lines: Optional[List] = None,
 ):
     """Load the diseases into the database."""
     if not genemap_lines:
@@ -39,10 +44,14 @@ def load_disease_terms(
         hpo_annotation_lines = fetch_hpo_disease_annotation()
     disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
 
-    if not orphadata_en_product6_lines:
-        orphadata_en_product6_lines = fetch_orpha_files()["orphadata_en_product6"]
-    orpha_annotations = get_orpha_diseases_product6(orphadata_en_product6_lines)
-
+    if not orpha_to_genes_lines or not orpha_to_genes_lines:
+        orpha_files = fetch_orpha_files()
+        orpha_to_hpo_lines = orpha_files["orphadata_en_product4"]
+        orpha_to_genes_lines = orpha_files["orphadata_en_product6"]
+    orpha_annotations = get_orpha_disease_terms(
+        orpha_to_hpo_lines=orpha_to_hpo_lines, orpha_to_genes_lines=orpha_to_genes_lines
+    )
+    LOG.info(f"Orpha disease has kgnh-id:s")
     disease_terms = combine_disease_sources(
         genemap_disease_terms=genemap_disease_terms,
         disease_annotations=disease_annotations,
@@ -106,6 +115,8 @@ def combine_disease_sources(
             content["hpo_terms"] = set()
         if "hgnc_symbols" not in content:
             content["hgnc_symbols"] = set()
+        if "hpo_terms" not in content:
+            content["hpo_terms"] = set()
 
     # Add missing OMIM and ORPHA disease-terms parsed from phenotypes.hpoa
     for disease_id, content in disease_annotations.items():
@@ -127,6 +138,7 @@ def combine_disease_sources(
                 "inheritance": set(),
                 "description": content["description"],
                 "hgnc_ids": content["hgnc_ids"],
+                "hpo_terms": content["hpo_terms"],
             }
 
     return combined_disease_terms
