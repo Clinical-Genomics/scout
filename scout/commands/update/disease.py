@@ -42,9 +42,9 @@ def _fetch_downloaded_resources(resources, downloads_folder):
             resource_exists = os.path.isfile(resource_path)
             if resource_exists:
                 resources[resname] = get_file_handle(resource_path).readlines()
-            if resname not in resources:
-                LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
-                raise click.Abort()
+        if resname not in resources:
+            LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
+            raise click.Abort()
 
 
 @click.command("diseases", short_help="Update disease terms")

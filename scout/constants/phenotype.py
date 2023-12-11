@@ -4,8 +4,8 @@ HPOTERMS_URL = (
 )
 
 ORPHA_URLS = {
-    "orpha_to_genes": "https://www.orphadata.com/data/xml/en_product4.xml",
-    "orpha_to_hpo": "https://www.orphadata.com/data/xml/en_product6.xml",
+    "orpha_to_hpo": "https://www.orphadata.com/data/xml/en_product4.xml",
+    "orpha_to_genes": "https://www.orphadata.com/data/xml/en_product6.xml",
 }
 
 PHENOTYPE_GROUPS = {

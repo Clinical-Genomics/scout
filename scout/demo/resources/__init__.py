@@ -53,4 +53,6 @@ demo_files = {
     "transcripts37_path": transcripts37_reduced_path,
     "transcripts38_path": transcripts38_reduced_path,
     "panel_path": transcripts38_reduced_path,
+    "orphadata_en_product6_path": orphadata_en_product6_reduced_path,
+    "orphadata_en_product4_path": orphadata_en_product4_reduced_path,
 }
