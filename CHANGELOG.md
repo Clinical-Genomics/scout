@@ -15,6 +15,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cases are activated by viewing FSHD and SMA reports
 - Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 - Parallelize variant loading for each chromosome
+### Fixed
+- Removed some extra characters from top of general report left over from FontAwsome fix
+
 
 ## [4.74.1]
 ### Changed
