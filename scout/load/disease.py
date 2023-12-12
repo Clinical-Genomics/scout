@@ -6,10 +6,8 @@ from click import progressbar
 
 from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
+from scout.parse.disease_terms import get_all_disease_terms
 from scout.parse.hpo_mappings import parse_hpo_to_genes
-from scout.parse.disease_terms import (
-    get_all_disease_terms,
-)
 
 LOG = logging.getLogger(__name__)
 

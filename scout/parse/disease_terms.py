@@ -1,9 +1,10 @@
 """Code for parsing disease terms from OMIM and ORPHA data"""
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
+from scout.parse.hpo_mappings import parse_hpo_annotations
+from scout.parse.omim import get_mim_phenotypes
 from scout.parse.orpha import get_orpha_to_genes_information, get_orpha_to_hpo_information
 from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
-from scout.parse.omim import get_mim_phenotypes
-from scout.parse.hpo_mappings import parse_hpo_annotations
 
 
 def get_all_disease_terms(
