@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cases are activated by viewing FSHD and SMA reports
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
+- Alamut link for MT variants in build 38
 
 ## [4.74.1]
 ### Changed
