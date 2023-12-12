@@ -60,36 +60,6 @@
             </HPOFrequency>
             <DiagnosticCriteria/>
           </HPODisorderAssociation>
-          <HPODisorderAssociation id="554395">
-            <HPO id="31">
-              <HPOId>HP:0001618</HPOId>
-              <HPOTerm>Dysphonia</HPOTerm>
-            </HPO>
-            <HPOFrequency id="28419">
-              <Name lang="en">Frequent (79-30%)</Name>
-            </HPOFrequency>
-            <DiagnosticCriteria/>
-          </HPODisorderAssociation>
-          <HPODisorderAssociation id="554418">
-            <HPO id="38">
-              <HPOId>HP:0002072</HPOId>
-              <HPOTerm>Chorea</HPOTerm>
-            </HPO>
-            <HPOFrequency id="28426">
-              <Name lang="en">Occasional (29-5%)</Name>
-            </HPOFrequency>
-            <DiagnosticCriteria/>
-          </HPODisorderAssociation>
-          <HPODisorderAssociation id="554419">
-            <HPO id="39">
-              <HPOId>HP:0002093</HPOId>
-              <HPOTerm>Respiratory insufficiency</HPOTerm>
-            </HPO>
-            <HPOFrequency id="28426">
-              <Name lang="en">Occasional (29-5%)</Name>
-            </HPOFrequency>
-            <DiagnosticCriteria/>
-          </HPODisorderAssociation>
          </HPODisorderAssociationList>
       </Disorder>
       <Source/>

@@ -29,12 +29,11 @@ def get_orpha_to_genes_information(lines: List) -> Dict[str, Any]:
 
         source = "ORPHA"
         orpha_code = disorder.find("OrphaCode").text
-        disease_id = f"({source}:{orpha_code}"
+        disease_id = f"{source}:{orpha_code}"
         description = disorder.find("Name").text
 
         disease["description"] = description
         disease["hgnc_ids"] = set()
-        # disease["orpha_code"] = int(orpha_code)
 
         gene_list = disorder.find("DisorderGeneAssociationList")
 
