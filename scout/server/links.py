@@ -764,7 +764,7 @@ def alamut_link(
     search_verb = "search" if alamut_key else "show"
     alamut_key_arg = f"apikey={alamut_key}&" if alamut_key else ""
     alamut_inst_arg = f"institution={alamut_institution}&" if alamut_institution else ""
-    chromosome = variant.get("chromosome")
+    chromosome = variant_obj.get("chromosome")
 
     build = build or 37
     build_str = ""
