@@ -58,5 +58,5 @@ SECONDARY_CRITERIA = [
     "ffpm",
     "junction_reads",
     "split_reads",
-    "callers",
+    "fusion_caller",
 ]

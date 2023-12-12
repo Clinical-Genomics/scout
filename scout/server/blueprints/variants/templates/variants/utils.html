@@ -926,6 +926,10 @@
   </div>
 <div class="row">
   <div class="col-2">
+    {{form.fusion_caller.label(class ="control-label")}}
+    {{form.fusion_caller( class ="selectpicker", data_style="btn-secondary", data_actions_box="true")}}
+  </div>
+  <div class="col-2">
     {{ wtf.form_field(form.fusion_score) }}
   </div>
   <div class="col-2">

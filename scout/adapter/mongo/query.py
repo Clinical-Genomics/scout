@@ -770,6 +770,12 @@ class QueryHandler(object):
                 mongo_secondary_query.append(
                     {"samples.0.split_read": {"$gte": float(query.get("split_reads"))}}
                 )
+            if criterion == "fusion_caller":
+                fusion_caller_query = []
+                for caller in query.get("fusion_caller", []):
+                    fusion_caller_query.append({caller: {"$exists": True}})
+                    fusion_caller_query.append({caller: "Pass"})
+                mongo_secondary_query.append({"$or": fusion_caller_query})
 
         return mongo_secondary_query
 
