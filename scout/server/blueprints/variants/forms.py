@@ -213,6 +213,19 @@ class FusionFiltersForm(VariantFiltersForm):
     size_shorter = BooleanField("Length shorter than")
     decipher = BooleanField("Decipher")
     clinical_filter = SubmitField(label="Clinical filter")
+    fusion_score = BetterDecimalField(
+        "Fusion score >=", places=2, validators=[validators.Optional()]
+    )
+    ffpm = BetterDecimalField(
+        "FFPM >=", places=2, validators=[validators.Optional()]
+    )
+    junction_reads = BetterDecimalField(
+        "Junction reads >=", places=2, validators=[validators.Optional()]
+    )
+    split_reads = BetterDecimalField(
+        "Split reads >=", places=2, validators=[validators.Optional()]
+    )
+
 
 
 FILTERSFORMCLASS = {

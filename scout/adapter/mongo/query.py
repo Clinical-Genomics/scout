@@ -756,6 +756,23 @@ class QueryHandler(object):
                 mongo_secondary_query.append({"cosmic_ids": {"$exists": True}})
                 mongo_secondary_query.append({"cosmic_ids": {"$ne": None}})
 
+            if criterion == "fusion_score":
+                mongo_secondary_query.append(
+                    {"fusion_score": {"$gte": float(query.get("fusion_score"))}}
+                )
+            if criterion == "ffpm":
+                mongo_secondary_query.append(
+                    {"samples.0.ffpm": {"$gte": float(query.get("ffpm"))}}
+                )
+            if criterion == "junction_reads":
+                mongo_secondary_query.append(
+                    {"samples.0.read_depth": {"$gte": float(query.get("junction_reads"))}}
+                )
+            if criterion == "split_reads":
+                mongo_secondary_query.append(
+                    {"samples.0.split_read": {"$gte": float(query.get("split_reads"))}}
+                )
+
         return mongo_secondary_query
 
 
