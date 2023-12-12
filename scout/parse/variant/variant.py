@@ -433,15 +433,15 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
         else:
             return value
 
+    def set_found_db(found_db_info: Optional[str]) -> Optional[List[str]]:
+        """Set the found_db value according to the value found in the VCF."""
+        if found_db_info not in [None, "[]", ""]:
+            return found_db_info.split(",")
+
     parsed_variant["gene_a"] = call_safe(str, variant.INFO.get("GENEA", ""))
     parsed_variant["gene_b"] = call_safe(str, variant.INFO.get("GENEB", ""))
     parsed_variant["tool_hits"] = call_safe(str, variant.INFO.get("TOOL_HITS", 0))
-    parsed_variant["found_db"] = call_safe(str, variant.INFO.get("FOUND_DB"))
-    parsed_variant["found_db"] = (
-        parsed_variant["found_db"].split(",")
-        if parsed_variant["found_db"] not in (None, "[]", "")
-        else None
-    )
+    parsed_variant["found_db"] = set_found_db(call_safe(str, variant.INFO.get("FOUND_DB")))
     parsed_variant["fusion_score"] = call_safe(str, variant.INFO.get("SCORE", None))
     parsed_variant["hgnc_id_a"] = call_safe(int, variant.INFO.get("HGNC_ID_A", 0))
     parsed_variant["hgnc_id_b"] = call_safe(int, variant.INFO.get("HGNC_ID_B", 0))
