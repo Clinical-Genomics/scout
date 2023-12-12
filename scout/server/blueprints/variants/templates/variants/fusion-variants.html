@@ -59,7 +59,8 @@ onsubmit="return validateForm()">
             <th style="width:3%"></th>
             <th style="width:4%" title="Beta version. Currently testing">Rank (beta)</th>
             <th style="width:6%" title="Genes">Fusion Genes</th>
-            <th style="width:4%" title="Number of callers detecting a given event">Callers</th>
+            <th style="width:4%" title="Number of callers detecting a given event">Nr. callers</th>
+            <th style="width:4%" title="Database hits">Database hits</th>
             <th style="width:4%" title="Beta version. Currently testing">Score (beta)</th>
             <th style="width:6%" title="Number of paired-ends that support the event">Junction Reads</th>
             <th style="width:6%" title="Number of split reads that support the event">Split Reads</th>
@@ -122,6 +123,7 @@ onsubmit="return validateForm()">
     </td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.tool_hits|int }}</span></td>
+    <td>{{variant.found_db|join(", ") if variant.found_db else "-"}}</td>
     <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
     <td>{{ variant.samples[0].read_depth }}</td>
     <td>{{ variant.samples[0].split_read }}</td>
