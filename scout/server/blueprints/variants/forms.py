@@ -42,6 +42,7 @@ SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
 FUSION_CALLER_CHOICES = [(term.get("id"), term.get("name")) for term in CALLERS.get("fusion")]
 
+
 class NonValidatingSelectMultipleField(SelectMultipleField):
     """Necessary to skip validation of dynamic multiple selects in form"""
 
