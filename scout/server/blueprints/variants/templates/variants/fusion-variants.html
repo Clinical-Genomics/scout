@@ -123,7 +123,7 @@ onsubmit="return validateForm()">
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.tool_hits|int }}</span></td>
     <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
-    <td>{{ variant.samples[0].read_depth }}</td>
+    <td>{{ variant.samples[0].read_depth if variant.samples[0].read_depth != -1 else 0 }}</td>
     <td>{{ variant.samples[0].split_read }}</td>
     <td>{{ variant.samples[0].ffpm }}</td>
     <td>{{ variant.frame_status }}</td>
