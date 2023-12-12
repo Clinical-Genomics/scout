@@ -773,7 +773,6 @@ class QueryHandler(object):
             if criterion == "fusion_caller":
                 fusion_caller_query = []
                 for caller in query.get("fusion_caller", []):
-                    fusion_caller_query.append({caller: {"$exists": True}})
                     fusion_caller_query.append({caller: "Pass"})
                 mongo_secondary_query.append({"$or": fusion_caller_query})
 
