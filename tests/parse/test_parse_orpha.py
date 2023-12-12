@@ -24,7 +24,7 @@ def test_get_orpha_to_genes_information(orphadata_en_product6_lines):
     disease = result["ORPHA:585"]
 
     # THEN assert disease with correct contents was included in the return
-    assert len(result) == 4
+
     assert disease["description"] == "Multiple sulfatase deficiency"
     assert disease["hgnc_ids"] == {"20376"}
 

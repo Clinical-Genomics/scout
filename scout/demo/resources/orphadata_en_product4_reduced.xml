@@ -166,5 +166,60 @@
       <Online>y</Online>
       <ValidationDate>2016-06-01 00:00:00.0</ValidationDate>
     </HPODisorderSetStatus>
+	  <HPODisorderSetStatus id="4">
+		  <Disorder id="6">
+        <OrphaCode>585</OrphaCode>
+        <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=585</ExpertLink>
+        <Name lang="en">Multiple sulfatase deficiency</Name>
+        <DisorderType id="21394">
+          <Name lang="en">Disease</Name>
+        </DisorderType>
+        <DisorderGroup id="36547">
+          <Name lang="en">Disorder</Name>
+        </DisorderGroup>
+        <HPODisorderAssociationList count="30">
+          <HPODisorderAssociation id="148">
+            <HPO id="3">
+              <HPOId>HP:0000238</HPOId>
+              <HPOTerm>Hydrocephalus</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="149">
+            <HPO id="123">
+              <HPOId>HP:0000252</HPOId>
+              <HPOTerm>Microcephaly</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28426">
+              <Name lang="en">Occasional (29-5%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="150">
+            <HPO id="4">
+              <HPOId>HP:0000256</HPOId>
+              <HPOTerm>Macrocephaly</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="151">
+            <HPO id="67">
+              <HPOId>HP:0000280</HPOId>
+              <HPOTerm>Coarse facial features</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28419">
+              <Name lang="en">Frequent (79-30%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+		</HPODisorderAssociationList>
+		  </Disorder>
+	  </HPODisorderSetStatus>
   </HPODisorderSetStatusList>
 </JDBOR>
