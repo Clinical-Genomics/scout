@@ -761,9 +761,7 @@ class QueryHandler(object):
                     {"fusion_score": {"$gte": float(query.get("fusion_score"))}}
                 )
             if criterion == "ffpm":
-                mongo_secondary_query.append(
-                    {"samples.0.ffpm": {"$gte": float(query.get("ffpm"))}}
-                )
+                mongo_secondary_query.append({"samples.0.ffpm": {"$gte": float(query.get("ffpm"))}})
             if criterion == "junction_reads":
                 mongo_secondary_query.append(
                     {"samples.0.read_depth": {"$gte": float(query.get("junction_reads"))}}

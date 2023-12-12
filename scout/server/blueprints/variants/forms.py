@@ -216,16 +216,11 @@ class FusionFiltersForm(VariantFiltersForm):
     fusion_score = BetterDecimalField(
         "Fusion score >=", places=2, validators=[validators.Optional()]
     )
-    ffpm = BetterDecimalField(
-        "FFPM >=", places=2, validators=[validators.Optional()]
-    )
+    ffpm = BetterDecimalField("FFPM >=", places=2, validators=[validators.Optional()])
     junction_reads = BetterDecimalField(
         "Junction reads >=", places=2, validators=[validators.Optional()]
     )
-    split_reads = BetterDecimalField(
-        "Split reads >=", places=2, validators=[validators.Optional()]
-    )
-
+    split_reads = BetterDecimalField("Split reads >=", places=2, validators=[validators.Optional()])
 
 
 FILTERSFORMCLASS = {
