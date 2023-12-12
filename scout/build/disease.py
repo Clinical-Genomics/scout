@@ -26,17 +26,14 @@ def build_disease_term(disease_id: str, disease_info: Dict, alias_genes: Dict) -
     hgnc_symbols_not_found = set()
     hgnc_ids = set()
     if "hgnc_ids" in disease_info:
-        LOG.info(f"I had hgnc_id {disease_id}")
         hgnc_ids = hgnc_ids.union(disease_info["hgnc_ids"])
 
     if "hgnc_symbols" in disease_info:
         for hgnc_symbol in disease_info.get("hgnc_symbols", []):
             if hgnc_symbol is None:
-                LOG.info(f"I did not have hgnc_symbol {disease_id}")
                 continue
 
             if hgnc_symbol in alias_genes:
-                # If the symbol identifies a unique gene we add that
                 if alias_genes[hgnc_symbol]["true"]:
                     hgnc_ids.add(alias_genes[hgnc_symbol]["true"])
                 else:

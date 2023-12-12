@@ -1,19 +1,15 @@
 import logging
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional
 
 from click import progressbar
 
 from scout.adapter import MongoAdapter
 from scout.build.disease import build_disease_term
-from scout.parse.hpo_mappings import parse_hpo_annotations, parse_hpo_to_genes
-from scout.parse.omim import get_mim_phenotypes
-from scout.parse.orpha import (
-    get_orpha_to_genes_information,
-    get_orpha_to_hpo_information,
-    get_orpha_disease_terms,
+from scout.parse.hpo_mappings import parse_hpo_to_genes
+from scout.parse.disease_terms import (
+    get_all_disease_terms,
 )
-from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
 
 LOG = logging.getLogger(__name__)
 
@@ -37,25 +33,11 @@ def load_disease_terms(
     if not genes:
         genes = adapter.genes_by_alias()
 
-    # Fetch the disease terms from omim
-    genemap_disease_terms = get_mim_phenotypes(genemap_lines=genemap_lines)
-
-    if not hpo_annotation_lines:
-        hpo_annotation_lines = fetch_hpo_disease_annotation()
-    disease_annotations = parse_hpo_annotations(hpo_annotation_lines)
-
-    if not orpha_to_genes_lines or not orpha_to_genes_lines:
-        orpha_files = fetch_orpha_files()
-        orpha_to_hpo_lines = orpha_files["orphadata_en_product4"]
-        orpha_to_genes_lines = orpha_files["orphadata_en_product6"]
-    orpha_annotations = get_orpha_disease_terms(
-        orpha_to_hpo_lines=orpha_to_hpo_lines, orpha_to_genes_lines=orpha_to_genes_lines
-    )
-    LOG.info(f"Orpha disease has kgnh-id:s")
-    disease_terms = combine_disease_sources(
-        genemap_disease_terms=genemap_disease_terms,
-        disease_annotations=disease_annotations,
-        orpha_annotations=orpha_annotations,
+    disease_terms = get_all_disease_terms(
+        genemap_lines=genemap_lines,
+        hpo_annotation_lines=hpo_annotation_lines,
+        orpha_to_hpo_lines=orpha_to_hpo_lines,
+        orpha_to_genes_lines=orpha_to_genes_lines,
     )
 
     LOG.info("building disease objects")
@@ -100,45 +82,3 @@ def _get_hpo_term_to_symbol(hpo_disease_lines: Iterable[str]) -> Dict:
         else:
             hpo_term_to_symbol[hpo_id].add(hgnc_symbol)
     return hpo_term_to_symbol
-
-
-def combine_disease_sources(
-    genemap_disease_terms: Dict, disease_annotations: Dict, orpha_annotations: Dict
-) -> Dict:
-    """Pool disease terms and linked HPO terms and genes from OMIM and ORPHAdata files"""
-    # Add OMIM disease terms from genemap
-    combined_disease_terms = genemap_disease_terms
-
-    # If missing, add properties to be updated from other files
-    for disease_id, content in combined_disease_terms.items():
-        if "hpo_terms" not in content:
-            content["hpo_terms"] = set()
-        if "hgnc_symbols" not in content:
-            content["hgnc_symbols"] = set()
-        if "hpo_terms" not in content:
-            content["hpo_terms"] = set()
-
-    # Add missing OMIM and ORPHA disease-terms parsed from phenotypes.hpoa
-    for disease_id, content in disease_annotations.items():
-        if disease_id not in combined_disease_terms:
-            combined_disease_terms[disease_id] = {
-                "inheritance": set(),
-                "description": content["description"],
-                "hgnc_symbols": content["hgnc_symbols"],
-                "hpo_terms": content["hpo_terms"],
-            }
-        else:
-            combined_disease_terms[disease_id]["hgnc_symbols"].update(content["hgnc_symbols"])
-            combined_disease_terms[disease_id]["hpo_terms"].update(content["hpo_terms"])
-
-    # Add missing ORPHA disease-terms parsed from Orphadata_product6.xml to disease_terms
-    for disease_id, content in orpha_annotations.items():
-        if disease_id not in combined_disease_terms:
-            combined_disease_terms[disease_id] = {
-                "inheritance": set(),
-                "description": content["description"],
-                "hgnc_ids": content["hgnc_ids"],
-                "hpo_terms": content["hpo_terms"],
-            }
-
-    return combined_disease_terms
