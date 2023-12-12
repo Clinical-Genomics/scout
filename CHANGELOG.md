@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cases are activated by viewing FSHD and SMA reports
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
+- Display 0 instead of -1 for read junctions in fusion view
 
 ## [4.74.1]
 ### Changed
