@@ -379,6 +379,7 @@ def disease_database(
     load_disease_terms(
         adapter=gene_database,
         genemap_lines=get_file_handle(genemap_file),
+        orpha_to_hpo_lines=get_file_handle(orphadata_en_product4_reduced_path),
         orpha_to_genes_lines=get_file_handle(orphadata_en_product6_reduced_path),
     )
     return adapter
@@ -1581,6 +1582,19 @@ def orphadata_en_product6_lines(request, orphadata_en_product6_file) -> List:
     """Get the lines of the orphadata_en_product6_file"""
     orphadata_en_product6_lines = get_file_handle(orphadata_en_product6_file)
     return orphadata_en_product6_lines
+
+
+@pytest.fixture
+def orphadata_en_product4_file(request) -> str:
+    """Get the path to the orphadata_en_product6 file"""
+    return orphadata_en_product4_reduced_path
+
+
+@pytest.fixture
+def orphadata_en_product4_lines(request, orphadata_en_product4_file) -> List:
+    """Get the lines of the orphadata_en_product6_file"""
+    orphadata_en_product4_lines = get_file_handle(orphadata_en_product4_file)
+    return orphadata_en_product4_lines
 
 
 #############################################################

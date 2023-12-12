@@ -1,7 +1,12 @@
 from scout.load.disease import load_disease_terms
 
 
-def test_load_disease_terms(gene_database, genemap_handle, orphadata_en_product6_lines):
+def test_load_disease_terms(
+    gene_database,
+    genemap_handle,
+    orphadata_en_product4_lines,
+    orphadata_en_product6_lines,
+):
     adapter = gene_database
     alias_genes = adapter.genes_by_alias()
     # GIVEN a populated database with genes and no disease terms

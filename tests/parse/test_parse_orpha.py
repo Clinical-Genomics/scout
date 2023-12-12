@@ -1,14 +1,11 @@
-from scout.demo.resources import orphadata_en_product6_reduced_path
-from scout.parse.orpha import get_orpha_diseases_product6
-from scout.utils.handle import get_file_handle
+from scout.parse.orpha import get_orpha_to_genes_information
 
 
-def test_get_orpha_diseases_product6():
+def test_get_orpha_to_genes_information(orphadata_en_product6_lines):
     # GIVEN lines from a read file
-    lines = get_file_handle(orphadata_en_product6_reduced_path)
 
     # WHEN parsing the tree
-    result = get_orpha_diseases_product6(lines=lines)
+    result = get_orpha_to_genes_information(lines=orphadata_en_product6_lines)
     disease = result["ORPHA:585"]
 
     # THEN assert disease with correct contents was returned
