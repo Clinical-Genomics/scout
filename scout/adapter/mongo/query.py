@@ -2,9 +2,14 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-from scout.constants import (CLINSIG_MAP, FUNDAMENTAL_CRITERIA,
-                             PRIMARY_CRITERIA, SECONDARY_CRITERIA,
-                             SPIDEX_HUMAN, TRUSTED_REVSTAT_LEVEL)
+from scout.constants import (
+    CLINSIG_MAP,
+    FUNDAMENTAL_CRITERIA,
+    PRIMARY_CRITERIA,
+    SECONDARY_CRITERIA,
+    SPIDEX_HUMAN,
+    TRUSTED_REVSTAT_LEVEL,
+)
 
 LOG = logging.getLogger(__name__)
 
