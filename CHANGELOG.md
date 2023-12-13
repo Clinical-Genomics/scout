@@ -26,6 +26,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 - Update more FontAwesome icons to avoid Pro icons
 - Test if files still exist before attempting to load research variants
+- Parsing of genotypes error, resulting in -1 values when alt or ref read depths are 0
 
 ## [4.74]
 ### Added

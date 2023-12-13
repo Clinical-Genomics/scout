@@ -18,11 +18,13 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
+import logging
 from typing import Dict, Optional, Tuple
 
 import cyvcf2
 
 GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
+LOG = logging.getLogger(__name__)
 
 
 def parse_genotypes(variant, individuals, individual_positions):
@@ -324,14 +326,14 @@ def get_ref_depth(
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth == -1:
-        if any([paired_end_ref, split_read_ref]):
+        if all(v is None for v in [paired_end_ref, split_read_ref]) is False:
             ref_depth = 0
             if paired_end_ref:
                 ref_depth += paired_end_ref
             if split_read_ref:
                 ref_depth += split_read_ref
 
-        if any([spanning_ref, flanking_ref, inrepeat_ref]):
+        if all(v is None for v in [spanning_ref, flanking_ref, inrepeat_ref]) is False:
             ref_depth = 0
             if spanning_ref:
                 ref_depth += spanning_ref
@@ -362,21 +364,21 @@ def get_alt_depth(
         if "VD" in variant.FORMAT:
             alt_depth = int(variant.format("VD")[pos][0])
 
-        if any([paired_end_alt, split_read_alt]):
+        if all(v is None for v in [paired_end_alt, split_read_alt]) is False:
             alt_depth = 0
             if paired_end_alt:
                 alt_depth += paired_end_alt
             if split_read_alt:
                 alt_depth += split_read_alt
 
-        if any([clip5_alt, clip3_alt]):
+        if all(v is None for v in [clip5_alt, clip3_alt]) is False:
             alt_depth = 0
             if clip5_alt:
                 alt_depth += clip5_alt
             if clip3_alt:
                 alt_depth += clip3_alt
 
-        if any([spanning_alt, flanking_alt, inrepeat_alt]):
+        if all(v is None for v in [spanning_alt, flanking_alt, inrepeat_alt]) is False:
             alt_depth = 0
             if spanning_alt:
                 alt_depth += spanning_alt
