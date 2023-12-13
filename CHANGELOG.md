@@ -8,19 +8,21 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
 - Tests for panel to genes
 - Download of Orphadata en_product6 and en_product4 from CLI
+- Parse and save `database_found` key/values for RNA fusion variants
 ### Changed
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
+- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
+- Do not save fusion variants-specific key/values in other types of variants
 - Display 0 instead of -1 for read junctions in fusion view
 
 ## [4.74.1]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
-- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 ### Fixed
 - BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 - Update more FontAwesome icons to avoid Pro icons
