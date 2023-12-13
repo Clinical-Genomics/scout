@@ -4,34 +4,17 @@ import logging
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
-from wtforms import (
-    BooleanField,
-    DecimalField,
-    Field,
-    HiddenField,
-    IntegerField,
-    SelectField,
-    SelectMultipleField,
-    StringField,
-    SubmitField,
-    validators,
-)
+from wtforms import (BooleanField, DecimalField, Field, HiddenField,
+                     IntegerField, SelectField, SelectMultipleField,
+                     StringField, SubmitField, validators)
 from wtforms.widgets import TextInput
 
-from scout.constants import (
-    CALLERS,
-    CLINICAL_FILTER_BASE,
-    CLINICAL_FILTER_BASE_CANCER,
-    CLINICAL_FILTER_BASE_MEI,
-    CLINICAL_FILTER_BASE_SV,
-    CLINSIG_MAP,
-    FEATURE_TYPES,
-    GENETIC_MODELS,
-    SO_TERMS,
-    SPIDEX_LEVELS,
-    SV_TYPES,
-    VARIANT_GENOTYPES,
-)
+from scout.constants import (CALLERS, CLINICAL_FILTER_BASE,
+                             CLINICAL_FILTER_BASE_CANCER,
+                             CLINICAL_FILTER_BASE_MEI, CLINICAL_FILTER_BASE_SV,
+                             CLINSIG_MAP, FEATURE_TYPES, GENETIC_MODELS,
+                             SO_TERMS, SPIDEX_LEVELS, SV_TYPES,
+                             VARIANT_GENOTYPES)
 
 LOG = logging.getLogger(__name__)
 
@@ -219,10 +202,10 @@ class FusionFiltersForm(VariantFiltersForm):
         "Fusion score >=", places=2, validators=[validators.Optional()]
     )
     ffpm = BetterDecimalField("FFPM >=", places=2, validators=[validators.Optional()])
-    junction_reads = BetterDecimalField(
-        "Junction reads >=", places=2, validators=[validators.Optional()]
+    junction_reads = IntegerField(
+        "Junction reads >=", validators=[validators.Optional()]
     )
-    split_reads = BetterDecimalField("Split reads >=", places=2, validators=[validators.Optional()])
+    split_reads = IntegerField("Split reads >=", validators=[validators.Optional()])
     fusion_caller = SelectMultipleField("Fusion Caller", choices=FUSION_CALLER_CHOICES, default=[])
 
 

@@ -2,14 +2,9 @@ import logging
 import re
 from datetime import datetime, timedelta
 
-from scout.constants import (
-    CLINSIG_MAP,
-    FUNDAMENTAL_CRITERIA,
-    PRIMARY_CRITERIA,
-    SECONDARY_CRITERIA,
-    SPIDEX_HUMAN,
-    TRUSTED_REVSTAT_LEVEL,
-)
+from scout.constants import (CLINSIG_MAP, FUNDAMENTAL_CRITERIA,
+                             PRIMARY_CRITERIA, SECONDARY_CRITERIA,
+                             SPIDEX_HUMAN, TRUSTED_REVSTAT_LEVEL)
 
 LOG = logging.getLogger(__name__)
 
@@ -764,11 +759,11 @@ class QueryHandler(object):
                 mongo_secondary_query.append({"samples.0.ffpm": {"$gte": float(query.get("ffpm"))}})
             if criterion == "junction_reads":
                 mongo_secondary_query.append(
-                    {"samples.0.read_depth": {"$gte": float(query.get("junction_reads"))}}
+                    {"samples.0.read_depth": {"$gte": int(query.get("junction_reads"))}}
                 )
             if criterion == "split_reads":
                 mongo_secondary_query.append(
-                    {"samples.0.split_read": {"$gte": float(query.get("split_reads"))}}
+                    {"samples.0.split_read": {"$gte": int(query.get("split_reads"))}}
                 )
             if criterion == "fusion_caller":
                 fusion_caller_query = []
