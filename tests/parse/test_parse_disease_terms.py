@@ -9,14 +9,57 @@ from scout.parse.disease_terms import (
 )
 
 
+def test_get_all_disease_terms(
+    orphadata_en_product6_lines,
+    orphadata_en_product4_lines,
+    genemap_handle,
+    hpo_phenotype_annotation_handle,
+    test_orpha_disease_terms,
+    test_omim_disease_terms,
+):
+    #: GIVEN lines from the disease sourcefiles
+    #: WHEN the disease are compiled
+    result = get_all_disease_terms(
+        hpo_annotation_lines=hpo_phenotype_annotation_handle,
+        genemap_lines=genemap_handle,
+        orpha_to_genes_lines=orphadata_en_product6_lines,
+        orpha_to_hpo_lines=orphadata_en_product4_lines,
+    )
+    #: THEN assert correct contents are present
+    for key in test_omim_disease_terms:
+        assert key in result
+        assert test_omim_disease_terms[key]["hpo_terms"].issubset(result[key]["hpo_terms"])
+        assert test_omim_disease_terms[key]["hgnc_symbols"].issubset(result[key]["hgnc_symbols"])
+        assert test_omim_disease_terms[key]["hgnc_ids"].issubset(result[key]["hgnc_ids"])
+    for key in test_orpha_disease_terms:
+        assert key in result
+        assert test_orpha_disease_terms[key]["hpo_terms"].issubset(result[key]["hpo_terms"])
+        assert test_orpha_disease_terms[key]["hgnc_ids"].issubset(result[key]["hgnc_ids"])
+
+
+def test_parse_disease_terms(test_omim_disease_terms, test_orpha_disease_terms):
+    #: GIVEN a Dict of ORPHA and OMIM disease with gene and hpo information
+    #: WHEN the terms are combined
+    result = parse_disease_terms(
+        omim_disease_terms=test_omim_disease_terms, orpha_disease_terms=test_orpha_disease_terms
+    )
+    #: THEN assert the information from both sources are retained
+    for key in test_omim_disease_terms:
+        assert key in result
+        assert test_omim_disease_terms[key]["hpo_terms"].issubset(result[key]["hpo_terms"])
+        assert test_omim_disease_terms[key]["hgnc_symbols"].issubset(result[key]["hgnc_symbols"])
+        assert test_omim_disease_terms[key]["hgnc_ids"].issubset(result[key]["hgnc_ids"])
+    for key in test_orpha_disease_terms:
+        assert key in result
+        assert test_orpha_disease_terms[key]["hpo_terms"].issubset(result[key]["hpo_terms"])
+        assert test_orpha_disease_terms[key]["hgnc_ids"].issubset(result[key]["hgnc_ids"])
+
+
 @pytest.mark.parametrize(
     "hpo_annotation_fixture_name, gene_annotation_fixture_name",
     [
-        (
-            "test_orpha_hpo_annotations",
-            "test_orpha_disease",
-        ),
-        ("test_parsed_hpo_annotations", "test_genemap_disease"),
+        ("test_orpha_hpo_annotations", "test_orpha_diseases"),
+        ("test_parsed_hpo_annotations", "test_genemap_diseases"),
     ],
 )
 def test_combine_disease_information(

@@ -406,8 +406,8 @@ def test_parsed_hpo_annotations(request):
 
 
 @pytest.fixture(scope="function")
-def test_genemap_disease(request):
-    test_genemap_disease = {
+def test_genemap_diseases(request):
+    test_genemap_diseases = {
         "OMIM:614116": {
             "mim_number": 614116,
             "inheritance": {"AD"},
@@ -431,7 +431,7 @@ def test_genemap_disease(request):
         },
     }
 
-    return test_genemap_disease
+    return test_genemap_diseases
 
 
 @pytest.fixture(scope="function")
@@ -469,14 +469,86 @@ def test_orpha_hpo_annotations(request):
 
 
 @pytest.fixture(scope="function")
-def test_orpha_disease(request):
-    orpha_disease = {
+def test_orpha_diseases(request):
+    orpha_diseases = {
         "ORPHA:585": {"description": "Multiple sulfatase deficiency", "hgnc_ids": {"20376"}},
         "ORPHA:118": {"description": "Beta-mannosidosis", "hgnc_ids": {"6831"}},
         "ORPHA:166063": {"description": "Pontocerebellar hypoplasia type 4", "hgnc_ids": {"27561"}},
     }
 
+    return orpha_diseases
+
+
+@pytest.fixture(scope="function")
+def test_orpha_disease_terms(request):
+    orpha_disease = {
+        "ORPHA:585": {
+            "description": "Multiple sulfatase deficiency",
+            "hgnc_ids": {"20376"},
+            "hpo_terms": {"HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"},
+        },
+        "ORPHA:118": {
+            "description": "Beta-mannosidosis",
+            "hgnc_ids": {"6831"},
+            "hpo_terms": {
+                "HP:0000365",
+                "HP:0001249",
+            },
+        },
+    }
+
     return orpha_disease
+
+
+@pytest.fixture(scope="function")
+def test_omim_disease_terms(request):
+    omim_disease = {
+        "OMIM:614116": {
+            "mim_number": 614116,
+            "inheritance": {"AD"},
+            "description": "Neuropathy hereditary sensory type IE",
+            "status": "established",
+            "hgnc_symbols": {"DNMT1"},
+            "hpo_terms": {
+                "HP:0000741",
+                "HP:0000737",
+                "HP:0000407",
+                "HP:0001251",
+                "HP:0100710",
+                "HP:0011462",
+                "HP:0000726",
+                "HP:0003676",
+                "HP:0001265",
+                "HP:0001262",
+                "HP:0002460",
+                "HP:0002354",
+                "HP:0000006",
+                "HP:0000365",
+                "HP:0002059",
+            },
+            "hgnc_ids": set(),
+        },
+        "OMIM:604121": {
+            "mim_number": 604121,
+            "inheritance": {"AD"},
+            "description": "Cerebellar ataxia deafness and narcolepsy autosomal dominant",
+            "status": "established",
+            "hgnc_symbols": {"DNMT1"},
+            "hpo_terms": set(),
+            "hgnc_ids": set(),
+        },
+        "OMIM:615286": {
+            "mim_number": 615286,
+            "inheritance": {"AR"},
+            "description": "Mental retardation autosomal recessive 36",
+            "status": "established",
+            "hgnc_symbols": {"ADAT3"},
+            "hpo_terms": set(),
+            "hgnc_ids": set(),
+        },
+    }
+
+    return omim_disease
 
 
 @pytest.fixture(scope="function")

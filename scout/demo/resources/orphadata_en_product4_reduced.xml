@@ -221,5 +221,44 @@
 		</HPODisorderAssociationList>
 		  </Disorder>
 	  </HPODisorderSetStatus>
+	  <HPODisorderSetStatus id="5">
+      <Disorder id="7">
+        <OrphaCode>118</OrphaCode>
+        <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=118</ExpertLink>
+        <Name lang="en">Beta-mannosidosis</Name>
+        <DisorderType id="21394">
+          <Name lang="en">Disease</Name>
+        </DisorderType>
+        <DisorderGroup id="36547">
+          <Name lang="en">Disorder</Name>
+        </DisorderGroup>
+        <HPODisorderAssociationList count="6">
+          <HPODisorderAssociation id="178">
+            <HPO id="71">
+              <HPOId>HP:0000365</HPOId>
+              <HPOTerm>Hearing impairment</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+          <HPODisorderAssociation id="179">
+            <HPO id="18">
+              <HPOId>HP:0001249</HPOId>
+              <HPOTerm>Intellectual disability</HPOTerm>
+            </HPO>
+            <HPOFrequency id="28412">
+              <Name lang="en">Very frequent (99-80%)</Name>
+            </HPOFrequency>
+            <DiagnosticCriteria/>
+          </HPODisorderAssociation>
+	  </HPODisorderAssociationList>
+      </Disorder>
+      <Source/>
+      <ValidationStatus>y</ValidationStatus>
+      <Online>y</Online>
+      <ValidationDate>2016-06-01 00:00:00.0</ValidationDate>
+    </HPODisorderSetStatus>
   </HPODisorderSetStatusList>
 </JDBOR>
