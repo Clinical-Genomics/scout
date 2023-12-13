@@ -8,7 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
 - Tests for panel to genes
 - Download of Orphadata en_product6 and en_product4 from CLI
-- Added fusion filters
+- Added fusion_score, ffpm, split_reads and fusion_caller to the list of filters on RNA fusion variants page
 ### Changed
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
