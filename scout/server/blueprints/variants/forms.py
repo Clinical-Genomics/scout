@@ -78,13 +78,17 @@ class BetterDecimalField(DecimalField):
     """
 
     def process_formdata(self, valuelist):
-        if valuelist:
+        if not valuelist:
+            return
+
+        raw_decimal = valuelist[0]
+        if type(raw_decimal) is str:
             raw_decimal = valuelist[0].replace(",", ".")
-            try:
-                self.data = decimal.Decimal(raw_decimal)
-            except (decimal.InvalidOperation, ValueError):
-                self.data = None
-                raise ValueError(self.gettext("Not a valid decimal value"))
+        try:
+            self.data = decimal.Decimal(raw_decimal)
+        except (decimal.InvalidOperation, ValueError):
+            self.data = None
+            raise ValueError(self.gettext("Not a valid decimal value"))
 
 
 class VariantFiltersForm(FlaskForm):

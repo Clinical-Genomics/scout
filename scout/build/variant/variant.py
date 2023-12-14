@@ -213,7 +213,14 @@ def build_variant(
     if variant_obj["category"] == "fusion":
         variant_obj["rank_score"] = variant_obj.get("fusion_score")
 
-        FUSION_KEYS = ["tool_hits", "fusion_score", "orientation", "frame_status", "fusion_genes", "found_db"]
+        FUSION_KEYS = [
+            "tool_hits",
+            "fusion_score",
+            "orientation",
+            "frame_status",
+            "fusion_genes",
+            "found_db",
+        ]
         for key in FUSION_KEYS:
             variant_obj[key] = variant.get(key)
 
