@@ -3,6 +3,8 @@ import logging
 
 from bson.objectid import ObjectId
 from flask import url_for
+from pymongo.cursor import CursorType
+from werkzeug.datastructures import MultiDict
 
 from scout.constants import VARIANTS_TARGET_FROM_CATEGORY
 
@@ -12,7 +14,7 @@ LOG = logging.getLogger(__name__)
 class FilterHandler(object):
     """Class to handle persistent variant filters in the mongo adapter"""
 
-    def retrieve_filter(self, filter_id):
+    def retrieve_filter(self, filter_id: str) -> dict:
         """Retrieve a known stored filter object from the db
 
         Arguments:
@@ -30,16 +32,18 @@ class FilterHandler(object):
         return filter_obj
 
     def stash_filter(
-        self, filter_obj, institute_obj, case_obj, user_obj, category="snv", link=None
-    ):
+        self,
+        filter_obj: MultiDict,
+        institute_obj: dict,
+        case_obj: dict,
+        user_obj: dict,
+        category: str = "snv",
+        link: str = None,
+    ) -> str:
         """Store away filter settings for later use.
 
         Arguments:
-            filter_obj(MultiDict)
-            institute_obj(dict)
-            user_obj(dict)
-            case_obj(dict)
-            category(str): in ['cancer', 'snv', 'str', 'sv']
+            category(str): in ['cancer', 'snv', 'str', 'sv', ...]
 
         Returns:
             filter_id(str) - a unique id that can be cast to ObjectId
@@ -220,15 +224,12 @@ class FilterHandler(object):
 
         return result
 
-    def filters(self, institute_id, category="snv"):
+    def filters(self, institute_id: str, category: str = "snv") -> CursorType:
         """Obtain a cursor for all filters available to an institute in a category.
 
         Arguments:
-            institute_id(str)
-            category(str): in ['cancer', 'snv', 'str', 'sv']
+            category(str): in ['cancer', 'snv', 'str', 'sv', ...]
 
-        Returns:
-            filters(pymongo.Cursor)
         """
         filters_res = self.filter_collection.find(
             {"institute_id": institute_id, "category": category}
