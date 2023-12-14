@@ -1,6 +1,149 @@
-"""Fixtures for coordinates"""
-
 import pytest
+
+
+"""Disease terms fixtures"""
+
+TEST_OMIM_DISEASES = {
+    "OMIM:614116": {
+        "mim_number": 614116,
+        "inheritance": {"AD"},
+        "description": "Neuropathy hereditary sensory type IE",
+        "status": "established",
+        "hgnc_symbols": {"DNMT1"},
+        "hpo_terms": {
+            "HP:0000741",
+            "HP:0000737",
+            "HP:0000407",
+            "HP:0001251",
+            "HP:0100710",
+            "HP:0011462",
+            "HP:0000726",
+            "HP:0003676",
+            "HP:0001265",
+            "HP:0001262",
+            "HP:0002460",
+            "HP:0002354",
+            "HP:0000006",
+            "HP:0000365",
+            "HP:0002059",
+        },
+        "hgnc_ids": set(),
+    },
+    "OMIM:604121": {
+        "mim_number": 604121,
+        "inheritance": {"AD"},
+        "description": "Cerebellar ataxia deafness and narcolepsy autosomal dominant",
+        "status": "established",
+        "hgnc_symbols": {"DNMT1"},
+        "hpo_terms": set(),
+        "hgnc_ids": set(),
+    },
+    "OMIM:615286": {
+        "mim_number": 615286,
+        "inheritance": {"AR"},
+        "description": "Mental retardation autosomal recessive 36",
+        "status": "established",
+        "hgnc_symbols": {"ADAT3"},
+        "hpo_terms": set(),
+        "hgnc_ids": set(),
+    },
+}
+
+TEST_ORPHA_DISEASES = {
+    "ORPHA:585": {
+        "description": "Multiple sulfatase deficiency",
+        "hgnc_ids": {"20376"},
+        "hpo_terms": {"HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"},
+    },
+    "ORPHA:118": {
+        "description": "Beta-mannosidosis",
+        "hgnc_ids": {"6831"},
+        "hpo_terms": {
+            "HP:0000365",
+            "HP:0001249",
+        },
+    },
+}
+
+
+@pytest.fixture(scope="function")
+def test_parsed_hpo_annotations(request):
+    test_parsed_hpo_annotations = {}
+    for key, content in TEST_OMIM_DISEASES.items():
+        test_parsed_hpo_annotations[key] = {
+            "disease_nr": content["mim_number"],
+            "source": "OMIM",
+            "description": content["description"],
+            "hgnc_symbols": {},
+            "hpo_terms": content["hpo_terms"],
+        }
+    test_parsed_hpo_annotations.update(
+        {
+            "OMIM:612201": {
+                "disease_nr": 612201,
+                "source": "OMIM",
+                "description": "Atrial fibrillation, familial, 6",
+                "frequency": "6/11",
+                "hgnc_symbols": set(),
+                "hpo_terms": {"HP:0001712", "HP:0012664", "HP:0000006", "HP:0005110", "HP:0011462"},
+            }
+        },
+    )
+    return test_parsed_hpo_annotations
+
+
+@pytest.fixture(scope="function")
+def test_genemap_diseases(request):
+    test_genemap_diseases = {}
+    for key, content in TEST_OMIM_DISEASES.items():
+        test_genemap_diseases[key] = {
+            "inheritance": content["inheritance"],
+            "description": content["description"],
+            "hgnc_symbols": content["hgnc_symbols"],
+        }
+
+    return test_genemap_diseases
+
+
+@pytest.fixture(scope="function")
+def test_orpha_hpo_annotations(request):
+    test_orpha_hpo_annotations = {}
+    for key, content in TEST_ORPHA_DISEASES.items():
+        test_orpha_hpo_annotations[key] = {
+            "description": content["description"],
+            "hgnc_ids": content["hgnc_ids"],
+            "hpo_terms": content["hpo_terms"],
+        }
+
+    return test_orpha_hpo_annotations
+
+
+@pytest.fixture(scope="function")
+def test_orpha_diseases(request):
+    orpha_diseases = {}
+    for key, content in TEST_ORPHA_DISEASES.items():
+        orpha_diseases[key] = {
+            "description": content["description"],
+            "hgnc_ids": content["hgnc_ids"],
+        }
+
+    return orpha_diseases
+
+
+@pytest.fixture(scope="function")
+def test_orpha_disease_terms(request):
+    orpha_disease_terms = TEST_ORPHA_DISEASES
+
+    return orpha_disease_terms
+
+
+@pytest.fixture(scope="function")
+def test_omim_disease_terms(request):
+    test_omim_diseases = TEST_OMIM_DISEASES
+    return test_omim_diseases
+
+
+"""Fixtures for coordinates"""
 
 
 class CyvcfVariant:

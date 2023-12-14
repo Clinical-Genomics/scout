@@ -54,8 +54,10 @@ def test_disease_id():
 def test_disease():
     disease_info = {
         "description": "EHLERS-DANLOS SYNDROME, PROGEROID TYPE, 2",
-        "hgnc_symbols": set(["B3GALT6"]),
-        "inheritance": set(["AR"]),
+        "hgnc_symbols": {"B3GALT6"},
+        "hgnc_ids": {17978},
+        "hpo_terms": {"HP:0008807", "HP:0010575"},
+        "inheritance": {"AR"},
     }
     return disease_info
 

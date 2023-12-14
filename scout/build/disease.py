@@ -21,7 +21,8 @@ def build_disease_term(disease_id: str, disease_info: Dict, alias_genes: Dict) -
         if key in disease_info:
             disease_obj[key] = list(disease_info[key])
 
-    disease_obj["description"] = disease_info.get("description", "-")
+    if disease_info.get("description"):
+        disease_obj["description"] = disease_info["description"]
 
     translate_hgnc_symbols_to_ids(disease_info=disease_info, alias_genes=alias_genes)
 
