@@ -13,12 +13,11 @@ BEACON_LINK_TEMPLATE = (
 )
 
 
-def add_gene_links(gene_obj, build=37):
+def add_gene_links(gene_obj: dict, build: int = 37, institute: dict = None) -> dict:
     """Update a gene object with links
 
     Args:
-        gene_obj(dict)
-        build(int)
+        institute(scout.models.Institute)
 
     Returns:
         gene_obj(dict): gene_obj updated with many links
@@ -81,6 +80,9 @@ def add_gene_links(gene_obj, build=37):
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
     gene_obj["decipher_link"] = decipher_gene(hgnc_symbol)
+    gene_obj["alamut_link"] = alamut_link(institute, gene_obj, build)
+
+    gene_obj
 
 
 def decipher_gene(hgnc_symbol: str) -> Optional[str]:
@@ -443,11 +445,10 @@ def iarctp53(hgnc_symbol):
 ############# Variant links ####################
 
 
-def get_variant_links(institute_obj, variant_obj, build=None):
-    """Update a variant object with links
+def get_variant_links(variant_obj, build=None):
+    """Return links for a variant object
 
     Args:
-        institute_obj(scout.models.Institute)
         variant_obj(scout.models.Variant)
         build(int)
 
@@ -469,7 +470,6 @@ def get_variant_links(institute_obj, variant_obj, build=None):
         ucsc_link=ucsc_link(variant_obj, build),
         decipher_link=decipher_link(variant_obj, build),
         ensembl_link=ensembl_link(variant_obj, build),
-        alamut_link=alamut_link(institute_obj, variant_obj, build),
         mitomap_link=mitomap_link(variant_obj),
         hmtvar_link=hmtvar_link(variant_obj),
         spidex_human=spidex_human(variant_obj),
@@ -738,10 +738,14 @@ def mutantp53(hgnc_id, protein_variant):
 
 def alamut_link(
     institute_obj,
-    variant_obj,
+    gene_obj,
     build=None,
 ):
     """Compose a link which open up variants in the Alamut software
+    Alamut links require some settings from the institute object.
+    The link is rendered on the gene side as Alamut has issues with GATK style genome coordinates for indels.
+
+    Instead we use transcript coordinates, and utilise the "canonical" transcript for each gene, as well as the HGVS c string.
 
     Args:
         institute_obj(scout.models.Institute)
@@ -756,12 +760,18 @@ def alamut_link(
     if build == 38:
         build_str = "(GRCh38)"
 
-    if current_app.config.get("HIDE_ALAMUT_LINK"):
-        return False
+    if not institute_obj:
+        return
+
+    # if variant_obj["sub_category"] == "indel":
+    #    url_template = (
+    #        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request=g.{this[chromosome]}{build_str}:"
+    #        "{this[position]}:ins"
+    #    )
 
     url_template = (
-        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[chromosome]}{build_str}:"
-        "{this[position]}{this[reference]}>{this[alternative]}"
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[canonical_transcript]}{build_str}:"
+        "{this[hgvs_identifier]}"
     )
     alamut_key = institute_obj.get("alamut_key")
     alamut_institution = institute_obj.get("alamut_institution")
@@ -774,7 +784,7 @@ def alamut_link(
         search_verb=search_verb,
         alamut_key_arg=alamut_key_arg,
         alamut_inst_arg=alamut_inst_arg,
-        this=variant_obj,
+        this=gene_obj,
         build_str=build_str,
     )
 

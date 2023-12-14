@@ -240,7 +240,7 @@
 {% endmacro %}
 
 
-{% macro external_links(case, variant, cancer, str) %}
+{% macro external_links(case, variant, cancer, str, config) %}
   <div class="panel panel-default">
     {% for gene in variant.genes %}
       <div class="panel-heading">
@@ -266,8 +266,8 @@
           <a href="{{ gene.expression_atlas_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Expr. Atlas</a>
           <a href="{{ gene.clingen_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">ClinGen</a>
           <a href="{{ gene.gencc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GenCC</a>
-          {% if variant.alamut_link %}
-            <a href="{{ variant.alamut_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Alamut</a>
+          {% if gene.alamut_link %}
+            <a href="{{ gene.alamut_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Alamut</a>
           {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Protein Paint</a>
           {% if variant.is_mitochondrial %}

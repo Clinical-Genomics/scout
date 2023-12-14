@@ -105,7 +105,7 @@ ACCEPT_LANGUAGES = ["en", "sv"]
 # FEATURE FLAGS
 SHOW_CAUSATIVES = True
 SHOW_OBSERVED_VARIANT_ARCHIVE = True
-HIDE_ALAMUT_LINK = True
+HIDE_ALAMUT_LINK = False
 
 # URL of a general web page where users can place orders for analyses or reruns
 RERUN_URL = "https://clinical.scilifelab.se/"
