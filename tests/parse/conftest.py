@@ -1,6 +1,5 @@
 import pytest
 
-
 """Disease terms fixtures"""
 
 TEST_OMIM_DISEASES = {
