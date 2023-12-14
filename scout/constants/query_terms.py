@@ -54,4 +54,9 @@ SECONDARY_CRITERIA = [
     "clinvar_tag",
     "cosmic_tag",
     "tumor_frequency",
+    "fusion_score",
+    "ffpm",
+    "junction_reads",
+    "split_reads",
+    "fusion_caller",
 ]
