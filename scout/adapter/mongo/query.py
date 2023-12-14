@@ -756,6 +756,26 @@ class QueryHandler(object):
                 mongo_secondary_query.append({"cosmic_ids": {"$exists": True}})
                 mongo_secondary_query.append({"cosmic_ids": {"$ne": None}})
 
+            if criterion == "fusion_score":
+                mongo_secondary_query.append(
+                    {"fusion_score": {"$gte": float(query.get("fusion_score"))}}
+                )
+            if criterion == "ffpm":
+                mongo_secondary_query.append({"samples.0.ffpm": {"$gte": float(query.get("ffpm"))}})
+            if criterion == "junction_reads":
+                mongo_secondary_query.append(
+                    {"samples.0.read_depth": {"$gte": int(query.get("junction_reads"))}}
+                )
+            if criterion == "split_reads":
+                mongo_secondary_query.append(
+                    {"samples.0.split_read": {"$gte": int(query.get("split_reads"))}}
+                )
+            if criterion == "fusion_caller":
+                fusion_caller_query = []
+                for caller in query.get("fusion_caller", []):
+                    fusion_caller_query.append({caller: "Pass"})
+                mongo_secondary_query.append({"$or": fusion_caller_query})
+
         return mongo_secondary_query
 
 

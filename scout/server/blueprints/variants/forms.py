@@ -19,6 +19,7 @@ from wtforms import (
 from wtforms.widgets import TextInput
 
 from scout.constants import (
+    CALLERS,
     CLINICAL_FILTER_BASE,
     CLINICAL_FILTER_BASE_CANCER,
     CLINICAL_FILTER_BASE_MEI,
@@ -39,6 +40,7 @@ FUNC_ANNOTATIONS = [(term, term.replace("_", " ")) for term in SO_TERMS]
 REGION_ANNOTATIONS = [(term, term.replace("_", " ")) for term in FEATURE_TYPES]
 SV_TYPE_CHOICES = [(term, term.replace("_", " ").upper()) for term in SV_TYPES]
 SPIDEX_CHOICES = [(term, term.replace("_", " ")) for term in SPIDEX_LEVELS]
+FUSION_CALLER_CHOICES = [(term.get("id"), term.get("name")) for term in CALLERS.get("fusion")]
 
 
 class NonValidatingSelectMultipleField(SelectMultipleField):
@@ -213,6 +215,13 @@ class FusionFiltersForm(VariantFiltersForm):
     size_shorter = BooleanField("Length shorter than")
     decipher = BooleanField("Decipher")
     clinical_filter = SubmitField(label="Clinical filter")
+    fusion_score = BetterDecimalField(
+        "Fusion score >=", places=2, validators=[validators.Optional()]
+    )
+    ffpm = BetterDecimalField("FFPM >=", places=2, validators=[validators.Optional()])
+    junction_reads = IntegerField("Junction reads >=", validators=[validators.Optional()])
+    split_reads = IntegerField("Split reads >=", validators=[validators.Optional()])
+    fusion_caller = SelectMultipleField("Fusion Caller", choices=FUSION_CALLER_CHOICES, default=[])
 
 
 FILTERSFORMCLASS = {

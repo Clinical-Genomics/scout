@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Tests for panel to genes
 - Download of Orphadata en_product6 and en_product4 from CLI
 - Parse and save `database_found` key/values for RNA fusion variants
+- Added fusion_score, ffpm, split_reads, junction_reads and fusion_caller to the list of filters on RNA fusion variants page
 ### Changed
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
@@ -28,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 - Update more FontAwesome icons to avoid Pro icons
 - Test if files still exist before attempting to load research variants
+- Parsing of genotypes error, resulting in -1 values when alt or ref read depths are 0
 
 ## [4.74]
 ### Added
