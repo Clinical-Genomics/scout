@@ -5,7 +5,7 @@ Flask-Bootstrap
 Flask-CORS
 path.py
 Flask-Markdown
-WTForms<3
+WTForms
 Flask-WTF
 Flask-Mail
 coloredlogs<=14.0
