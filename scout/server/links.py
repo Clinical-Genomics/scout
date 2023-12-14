@@ -770,7 +770,7 @@ def alamut_link(
     build_str = ""
     if build == 38:
         build_str = "(GRCh38)"
-        chromosome.replace("M", "MT")
+        chromosome = chromosome.replace("M", "MT")
 
     return url_template.format(
         search_verb=search_verb,
