@@ -132,7 +132,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Stricter validation of mandatory genome build key when loading a case. Allowed values are ['37','38',37,38]
 - Improved readability of variants length and coordinates on variantS pages
 
-
 ## [4.71]
 ### Added
 - Added Balsamic keys for SweGen and loqusdb local archive frequecies, SNV and SV
