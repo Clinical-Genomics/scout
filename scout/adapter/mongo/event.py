@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import List
 
 import pymongo
 from bson import ObjectId
@@ -82,19 +83,19 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
     def create_event(
         self,
-        institute,
-        case,
-        user,
-        link,
-        category,
-        verb,
-        subject,
-        level="specific",
-        variant=None,
-        content=None,
-        panel=None,
-        individuals=[],
-        hpo_term=None,
+        institute: dict,
+        case: dict,
+        user: dict,
+        link: str,
+        category: str,
+        verb: str,
+        subject: str,
+        level: str = "specific",
+        variant: dict = None,
+        content: dict = None,
+        panel: str = None,
+        individuals: List[dict] = [],
+        hpo_term: str = None,
     ):
         """Create a Event with the parameters given.
 
