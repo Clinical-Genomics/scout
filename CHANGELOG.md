@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Download of Orphadata en_product6 and en_product4 from CLI
 - Parse and save `database_found` key/values for RNA fusion variants
 - Added fusion_score, ffpm, split_reads, junction_reads and fusion_caller to the list of filters on RNA fusion variants page
-- Renamed the get_mei_info to set_mei_info function to be consistent with the other functions
+- Renamed the `get_mei_info` to `set_mei_info` function to be consistent with the other functions
 - Fixed removing None key/values from parsed variants
 ### Changed
 - Allow use of projections when retrieving gene panels
@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
 - Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
+- Avoid category-specific info being saved in all variant types upon loading
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
 - Do not save fusion variants-specific key/values in other types of variants

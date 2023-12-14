@@ -145,14 +145,12 @@ def parse_variant(
 
     # STR variant info
     set_str_info(variant, parsed_variant)
-
     # STR source dict with display string, source type and entry id
     set_str_source(parsed_variant, variant)
-
     parsed_variant["str_swegen_mean"] = call_safe(float, variant.INFO.get("SweGenMean"))
     parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
 
-    # Add MEI info
+    # MEI variant info
     set_mei_info(variant, parsed_variant)
 
     # Add Fusion info
