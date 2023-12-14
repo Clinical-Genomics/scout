@@ -11,6 +11,7 @@ from markupsafe import Markup
 from pymongo.cursor import CursorType
 from pymongo.errors import DocumentTooLarge
 from werkzeug.datastructures import Headers, ImmutableMultiDict, MultiDict
+from wtforms import DecimalField
 
 from scout.adapter import MongoAdapter
 from scout.constants import (
@@ -37,6 +38,7 @@ from scout.server.blueprints.variant.utils import (
     update_representative_gene,
     update_variant_case_panels,
 )
+from scout.server.blueprints.variants.forms import BetterDecimalField
 from scout.server.links import add_gene_links, cosmic_links, str_source_link
 from scout.server.utils import (
     case_has_alignments,
@@ -1558,15 +1560,21 @@ def persistent_filter_actions(
                 formdata passed to Form init needs to be pre-coerced to types. Hence especially the replacement
                 of locale specific chars in numbers on class process_formdata would not be enough for the
                 better_decimal form fields.
+
+                Check all filters in the current FiltersFormClass by making an instance, finding any BetterDecimalField
+                or DecimalFields. Replace "," with "." in any string value, and check that the remaining string will
+                convert to a number before finally instantiating the form with values.
                 """
-                for decimal_value_form_field in [
-                    "cadd_score",
-                    "revel",
-                    "gnomad_frequency",
-                    "control_frequency",
-                    "tumor_frequency",
-                ]:
+
+                test_form = FiltersFormClass()
+                for decimal_value_form_field in dir(FiltersFormClass):
                     if decimal_value_form_field not in filter:
+                        continue
+
+                    if not isinstance(
+                        test_form[decimal_value_form_field],
+                        (BetterDecimalField, DecimalField),
+                    ):
                         continue
 
                     if type(filter[decimal_value_form_field][0]) is not str:
