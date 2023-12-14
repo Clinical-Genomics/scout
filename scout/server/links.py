@@ -755,19 +755,9 @@ def alamut_link(
     Returns:
         url_template(str): link to Alamut browser
     """
-    build = build or 37
-    build_str = ""
-    if build == 38:
-        build_str = "(GRCh38)"
 
     if not institute_obj:
         return
-
-    # if variant_obj["sub_category"] == "indel":
-    #    url_template = (
-    #        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request=g.{this[chromosome]}{build_str}:"
-    #        "{this[position]}:ins"
-    #    )
 
     url_template = (
         "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[canonical_transcript]}{build_str}:"
@@ -775,10 +765,16 @@ def alamut_link(
     )
     alamut_key = institute_obj.get("alamut_key")
     alamut_institution = institute_obj.get("alamut_institution")
-    # Alamut Visual Plus API has a different search verb
     search_verb = "search" if alamut_key else "show"
     alamut_key_arg = f"apikey={alamut_key}&" if alamut_key else ""
     alamut_inst_arg = f"institution={alamut_institution}&" if alamut_institution else ""
+    chromosome = variant_obj.get("chromosome")
+
+    build = build or 37
+    build_str = ""
+    if build == 38:
+        build_str = "(GRCh38)"
+        chromosome = chromosome.replace("M", "MT")
 
     return url_template.format(
         search_verb=search_verb,

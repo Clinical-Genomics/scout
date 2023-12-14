@@ -689,11 +689,11 @@
       </div>
       <div class="col-2">
         {{ form.tumor_frequency.label(class="control-label") }}
-        {{ form.tumor_frequency(class="form-control") }}
+        {{ form.tumor_frequency(class="form-control", step="0.01", min="0", max=1) }}
       </div>
       <div class="col-2">
         {{ form.control_frequency.label(class="control-label") }}
-        {{ form.control_frequency(class="form-control") }}
+        {{ form.control_frequency(class="form-control", step="0.01", min="0", max=1) }}
       </div>
     </div>
     <div class="form" id="chromosome_search">
@@ -923,6 +923,23 @@
   </div>
   <div class="col-2">
     {{ wtf.form_field(form.cytoband_end) }}
+  </div>
+<div class="row">
+  <div class="col-2">
+    {{form.fusion_caller.label(class ="control-label")}}
+    {{form.fusion_caller( class ="selectpicker", data_style="btn-secondary", data_actions_box="true")}}
+  </div>
+  <div class="col-2">
+    {{ wtf.form_field(form.fusion_score) }}
+  </div>
+  <div class="col-2">
+    {{ wtf.form_field(form.ffpm) }}
+  </div>
+  <div class="col-2">
+    {{ wtf.form_field(form.junction_reads) }}
+  </div>
+  <div class="col-2">
+    {{ wtf.form_field(form.split_reads) }}
   </div>
 </div>
 <div class="row" style="margin-top:20px;">

@@ -3,6 +3,7 @@ import logging
 from flask_wtf import FlaskForm
 from wtforms import (
     BooleanField,
+    DateField,
     HiddenField,
     IntegerField,
     RadioField,
@@ -13,7 +14,6 @@ from wtforms import (
     validators,
     widgets,
 )
-from wtforms.ext.dateutil.fields import DateField
 
 from scout.constants import (
     AFFECTED_STATUS,

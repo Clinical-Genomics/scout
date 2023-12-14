@@ -8,22 +8,29 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
 - Tests for panel to genes
 - Download of Orphadata en_product6 and en_product4 from CLI
+- Parse and save `database_found` key/values for RNA fusion variants
+- Added fusion_score, ffpm, split_reads, junction_reads and fusion_caller to the list of filters on RNA fusion variants page
 ### Changed
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
+- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 - Thaw WTForms - explicitly coerce form decimal field entries when filters fetched from db
 - Alamut links now appear on the gene level, using transcript and hgvs notation. Less precise, but better for indels.
+### Fixed
+- Removed some extra characters from top of general report left over from FontAwsome fix
+- Do not save fusion variants-specific key/values in other types of variants
+- Alamut link for MT variants in build 38
 
 ## [4.74.1]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
-- Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
 ### Fixed
 - BioNano API FSHD report requests are GET in Access 1.8, were POST in 1.7
 - Update more FontAwesome icons to avoid Pro icons
 - Test if files still exist before attempting to load research variants
+- Parsing of genotypes error, resulting in -1 values when alt or ref read depths are 0
 
 ## [4.74]
 ### Added
@@ -126,7 +133,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Deleted unused scout.build.phenotype module
 - Stricter validation of mandatory genome build key when loading a case. Allowed values are ['37','38',37,38]
 - Improved readability of variants length and coordinates on variantS pages
-
 
 ## [4.71]
 ### Added
