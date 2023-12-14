@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
 - Do not save fusion variants-specific key/values in other types of variants
+- Alamut link for MT variants in build 38
 - Display 0 instead of -1 for read junctions in fusion view
 
 ## [4.74.1]
