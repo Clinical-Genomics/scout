@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Download of Orphadata en_product6 and en_product4 from CLI
 - Parse and save `database_found` key/values for RNA fusion variants
 - Added fusion_score, ffpm, split_reads, junction_reads and fusion_caller to the list of filters on RNA fusion variants page
+- Renamed the get_mei_info to set_mei_info function to be consistent with the other functions
+- Fixed removing None key/values from parsed variants
 ### Changed
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents

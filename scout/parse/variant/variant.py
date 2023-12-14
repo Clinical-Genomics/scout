@@ -153,7 +153,7 @@ def parse_variant(
     parsed_variant["str_swegen_std"] = call_safe(float, variant.INFO.get("SweGenStd"))
 
     # Add MEI info
-    get_mei_info(variant, parsed_variant)
+    set_mei_info(variant, parsed_variant)
 
     # Add Fusion info
     set_fusion_info(variant, parsed_variant)
@@ -294,7 +294,7 @@ def get_variant_alternative(variant, category):
         return "."
 
 
-def get_mei_info(variant: Variant, parsed_variant: Dict[str, Any]):
+def set_mei_info(variant: Variant, parsed_variant: Dict[str, Any]):
     """
     ################# Add MEI info ##################
     """
