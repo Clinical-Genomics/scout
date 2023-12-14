@@ -1,10 +1,13 @@
 """Code for parsing disease terms from OMIM and ORPHA data"""
+import logging
 from typing import Any, Dict, List
 
 from scout.parse.hpo_mappings import parse_hpo_annotations
 from scout.parse.omim import get_mim_phenotypes
 from scout.parse.orpha import get_orpha_to_genes_information, get_orpha_to_hpo_information
 from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
+
+LOG = logging.getLogger(__name__)
 
 
 def get_all_disease_terms(
@@ -14,6 +17,7 @@ def get_all_disease_terms(
     orpha_disease_terms: Dict = get_orpha_disease_terms(
         orpha_to_hpo_lines=orpha_to_hpo_lines, orpha_to_genes_lines=orpha_to_genes_lines
     )
+
     #: Collect OMIM and ORPHA disease terms including gene and hpo annotations
     omim_disease_terms: Dict = get_omim_disease_terms(
         genemap_lines=genemap_lines, hpo_annotation_lines=hpo_annotation_lines
@@ -29,6 +33,7 @@ def get_all_disease_terms(
 
 def parse_disease_terms(omim_disease_terms: Dict, orpha_disease_terms: Dict) -> Dict:
     """Pool disease terms and linked HPO terms and genes from OMIM and ORPHAdata files"""
+    LOG.info(f"Consolidating OMIM and ORPHA disease terms ")
 
     combined_disease_terms = omim_disease_terms.copy()
 
@@ -38,15 +43,23 @@ def parse_disease_terms(omim_disease_terms: Dict, orpha_disease_terms: Dict) -> 
             combined_disease_terms[disease_id] = {
                 "inheritance": set(),
                 "description": orpha_disease_content["description"],
-                "hgnc_ids": orpha_disease_content["hgnc_ids"],
+                "hgnc_ids": orpha_disease_content.get("hgnc_ids", set()),
                 "hpo_terms": orpha_disease_content.get("hpo_terms", set()),
             }
+        else:
+            combined_disease_terms[disease_id]["hpo_terms"].update(
+                orpha_disease_content.get("hpo_terms", set())
+            )
+            combined_disease_terms[disease_id]["hgnc_ids"].update(
+                orpha_disease_content.get("hgnc_ids", set())
+            )
 
     return combined_disease_terms
 
 
 def combine_disease_information(hpo_annotations, gene_annotations):
     """Annotate disease terms with both gene and hpo information"""
+    LOG.info(f"Consolidating gene and HPO information for disease terms")
     disease_terms = gene_annotations.copy()
     # If missing, add disease properties to be updated from other files
     for disease_id, disease_content in disease_terms.items():
@@ -59,6 +72,7 @@ def combine_disease_information(hpo_annotations, gene_annotations):
         if "hpo_terms" not in disease_content:
             disease_content["hpo_terms"] = set()
 
+    #: Add or update diseases to include information from both sources
     for disease_id, hpo_annotation in hpo_annotations.items():
         if disease_id not in disease_terms:
             disease_terms[disease_id] = {
