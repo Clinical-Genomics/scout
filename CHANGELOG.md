@@ -13,6 +13,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not save custom images as binary data into case and variant database documents
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
+- Thaw WTForms - explicitly coerce form decimal field entries when filters fetched from db
+- Alamut links now appear on the gene level, using transcript and hgvs notation. Less precise, but better for indels.
 
 ## [4.74.1]
 ### Changed
