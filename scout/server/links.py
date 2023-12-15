@@ -1,4 +1,5 @@
 from typing import List, Optional
+from urllib.parse import quote
 
 from flask import current_app
 
@@ -78,7 +79,8 @@ def add_gene_links(gene_obj: dict, build: int = 37, institute: dict = None):
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
     gene_obj["decipher_link"] = decipher_gene(hgnc_symbol)
-    gene_obj["alamut_link"] = alamut_gene_link(institute, gene_obj, build)
+    if institute:
+        gene_obj["alamut_link"] = alamut_gene_link(institute, gene_obj, build)
 
 
 def decipher_gene(hgnc_symbol: str) -> Optional[str]:
@@ -815,7 +817,7 @@ def alamut_gene_link(
 
     url_template = (
         "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[canonical_transcript]}{build_str}:"
-        "{this[hgvs_identifier]}"
+        "{hgvs_identifier}"
     )
 
     build = build or 37
@@ -829,6 +831,7 @@ def alamut_gene_link(
         alamut_inst_arg=alamut_inst_arg,
         this=gene_obj,
         build_str=build_str,
+        hgvs_identifier=quote(gene_obj["hgvs_identifier"]),
     )
 
 
