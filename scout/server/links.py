@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from urllib.parse import quote
 
 from flask import current_app
@@ -835,7 +835,7 @@ def alamut_gene_link(
     )
 
 
-def _get_alamut_config(institute_obj: dict) -> tuple[str, ...]:
+def _get_alamut_config(institute_obj: dict) -> Tuple[str, ...]:
     """
     Prepare Alamut connection string specifics from institute level configuration.
 
