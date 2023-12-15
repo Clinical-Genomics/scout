@@ -13,14 +13,12 @@ BEACON_LINK_TEMPLATE = (
 )
 
 
-def add_gene_links(gene_obj: dict, build: int = 37, institute: dict = None) -> dict:
+def add_gene_links(gene_obj: dict, build: int = 37, institute: dict = None):
     """Update a gene object with links
 
     Args:
+        gene_obj (scout.models.variant.Gene)
         institute(scout.models.Institute)
-
-    Returns:
-        gene_obj(dict): gene_obj updated with many links
     """
     try:
         build = int(build)
@@ -81,8 +79,6 @@ def add_gene_links(gene_obj: dict, build: int = 37, institute: dict = None) -> d
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
     gene_obj["decipher_link"] = decipher_gene(hgnc_symbol)
     gene_obj["alamut_link"] = alamut_gene_link(institute, gene_obj, build)
-
-    gene_obj
 
 
 def decipher_gene(hgnc_symbol: str) -> Optional[str]:
