@@ -80,7 +80,7 @@ def add_gene_links(gene_obj: dict, build: int = 37, institute: dict = None) -> d
     gene_obj["gnomad_str_link"] = gnomad_str_gene(hgnc_symbol)
     gene_obj["panelapp_link"] = panelapp_gene(hgnc_symbol)
     gene_obj["decipher_link"] = decipher_gene(hgnc_symbol)
-    gene_obj["alamut_link"] = alamut_link(institute, gene_obj, build)
+    gene_obj["alamut_link"] = alamut_gene_link(institute, gene_obj, build)
 
     gene_obj
 
@@ -445,7 +445,7 @@ def iarctp53(hgnc_symbol):
 ############# Variant links ####################
 
 
-def get_variant_links(variant_obj, build=None):
+def get_variant_links(institute_obj: dict, variant_obj: dict, build: int = None):
     """Return links for a variant object
 
     Args:
@@ -459,6 +459,7 @@ def get_variant_links(variant_obj, build=None):
         build = int(build)
     except (ValueError, TypeError) as err:
         build = 37
+
     links = dict(
         thousandg_link=thousandg_link(variant_obj, build),
         exac_link=exac_link(variant_obj),
@@ -476,6 +477,7 @@ def get_variant_links(variant_obj, build=None):
         spliceai_link=spliceai_link(variant_obj, build),
         str_source_link=str_source_link(variant_obj),
         snp_links=snp_links(variant_obj),
+        alamut_link=alamut_variant_link(institute_obj, variant_obj, build),
     )
     return links
 
@@ -736,16 +738,17 @@ def mutantp53(hgnc_id, protein_variant):
     return url_template.format(protein_variant)
 
 
-def alamut_link(
+def alamut_variant_link(
     institute_obj,
-    gene_obj,
+    variant_obj,
     build=None,
 ):
     """Compose a link which open up variants in the Alamut software
     Alamut links require some settings from the institute object.
-    The link is rendered on the gene side as Alamut has issues with GATK style genome coordinates for indels.
+    This link is rendered on the variant side. Alamut has issues with GATK style genome coordinates for indels, but
+    it can sometimes be good to be able to link to a given genome coordinate, e.g. for non coding variantion.
 
-    Instead we use transcript coordinates, and utilise the "canonical" transcript for each gene, as well as the HGVS c string.
+    We use variant coordinates, effectively making a build dependent g. string.
 
     Args:
         institute_obj(scout.models.Institute)
@@ -756,18 +759,18 @@ def alamut_link(
         url_template(str): link to Alamut browser
     """
 
+    if current_app.config.get("HIDE_ALAMUT_LINK"):
+        return False
+
     if not institute_obj:
         return
 
+    (alamut_key, search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
+
     url_template = (
-        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[canonical_transcript]}{build_str}:"
-        "{this[hgvs_identifier]}"
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={chromosome}{build_str}:"
+        "{this[position]}{this[reference]}>{this[alternative]}"
     )
-    alamut_key = institute_obj.get("alamut_key")
-    alamut_institution = institute_obj.get("alamut_institution")
-    search_verb = "search" if alamut_key else "show"
-    alamut_key_arg = f"apikey={alamut_key}&" if alamut_key else ""
-    alamut_inst_arg = f"institution={alamut_institution}&" if alamut_institution else ""
     chromosome = variant_obj.get("chromosome")
 
     build = build or 37
@@ -780,9 +783,75 @@ def alamut_link(
         search_verb=search_verb,
         alamut_key_arg=alamut_key_arg,
         alamut_inst_arg=alamut_inst_arg,
+        chromosome=chromosome,
+        this=variant_obj,
+        build_str=build_str,
+    )
+
+
+def alamut_gene_link(
+    institute_obj,
+    gene_obj,
+    build=None,
+):
+    """Compose a link which open up variants in the Alamut software.
+    Alamut links require some settings from the institute object.
+    The link is rendered on the gene side as Alamut has issues with GATK style genome coordinates for indels.
+
+    We utilise the "canonical" transcript for each gene, as well as the HGVS c. string.
+
+    Args:
+        institute_obj(scout.models.Institute)
+        variant_obj(scout.models.Variant):
+        build(str): "37" or "38"
+
+    Returns:
+        url_template(str): link to Alamut browser
+    """
+
+    if current_app.config.get("HIDE_ALAMUT_LINK"):
+        return False
+
+    if not institute_obj:
+        return False
+
+    (alamut_key, search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
+
+    url_template = (
+        "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[canonical_transcript]}{build_str}:"
+        "{this[hgvs_identifier]}"
+    )
+
+    build = build or 37
+    build_str = ""
+    if build == 38:
+        build_str = "(GRCh38)"
+
+    return url_template.format(
+        search_verb=search_verb,
+        alamut_key_arg=alamut_key_arg,
+        alamut_inst_arg=alamut_inst_arg,
         this=gene_obj,
         build_str=build_str,
     )
+
+
+def _get_alamut_config(institute_obj: dict) -> tuple[str, ...]:
+    """
+    Prepare Alamut connection string specifics from institute level configuration.
+
+    Args:
+        institute_obj:   scout.models.Institute
+    """
+
+    alamut_key = institute_obj.get("alamut_key")
+    search_verb = "search" if alamut_key else "show"
+    alamut_key_arg = f"apikey={alamut_key}&" if alamut_key else ""
+
+    alamut_institution = institute_obj.get("alamut_institution")
+    alamut_inst_arg = f"institution={alamut_institution}&" if alamut_institution else ""
+
+    return (alamut_key, search_verb, alamut_key_arg, alamut_inst_arg)
 
 
 def mitomap_link(variant_obj):
