@@ -155,7 +155,7 @@ class VariantHandler(VariantLoader):
         category="snv",
         nr_of_variants=10,
         skip=0,
-        sort_key="rank_score",
+        sort_key="variant_rank",
         build="37",
     ):
         """Returns variants specified in question for a specific case.
@@ -169,7 +169,7 @@ class VariantHandler(VariantLoader):
             category(str): 'sv', 'str', 'snv', 'cancer' or 'cancer_sv'
             nr_of_variants(int): if -1 return all variants
             skip(int): How many variants to skip
-            sort_key: ['rank_score', 'variant_rank', 'position']
+            sort_key: ['variant_rank', 'rank_score', 'position']
             build(str): genome build
         Returns:
              pymongo.cursor
