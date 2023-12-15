@@ -80,7 +80,7 @@
           {% endif %}
           {% if variant.alamut_link %}
             <div>
-              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant">Alamut</a>
+              <a href="{{ variant.alamut_link }}" class="btn btn-sm btn-secondary" role="button" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with genome g. coordinate">Alamut</a>
             </div>
           {% endif %}
           {% if config.SQLALCHEMY_DATABASE_URI %}
@@ -267,7 +267,7 @@
           <a href="{{ gene.clingen_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">ClinGen</a>
           <a href="{{ gene.gencc_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">GenCC</a>
           {% if gene.alamut_link %}
-            <a href="{{ gene.alamut_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Alamut</a>
+            <a href="{{ gene.alamut_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank" data-bs-toggle="tooltip" title="Alamut Visual (Plus) - Open variant - with gene transcript c. coordinate">Alamut</a>
           {% endif %}
           <a href="{{ gene.ppaint_link }}" class="btn btn-secondary text-white" rel="noopener" referrerpolicy="no-referrer" target="_blank">Protein Paint</a>
           {% if variant.is_mitochondrial %}
