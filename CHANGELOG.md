@@ -16,6 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
 - Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
+- Remove unused functions and their tests
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
 - Do not save fusion variants-specific key/values in other types of variants
