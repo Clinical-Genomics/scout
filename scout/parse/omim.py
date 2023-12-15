@@ -393,4 +393,5 @@ def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[str, Any]:
                 #: If not already present set hgnc value and add it to the phenotypes found
                 phenotype["hgnc_symbols"] = set([hgnc_symbol])
                 phenotypes_found[phenotype_id] = phenotype
+
     return phenotypes_found

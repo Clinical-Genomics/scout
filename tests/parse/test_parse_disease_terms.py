@@ -1,7 +1,7 @@
 import pytest
 
 from scout.parse.disease_terms import (
-    combine_disease_information,
+    consolidate_gene_and_hpo_annotation,
     get_all_disease_terms,
     get_omim_disease_terms,
     get_orpha_disease_terms,
@@ -62,14 +62,14 @@ def test_parse_disease_terms(test_omim_disease_terms, test_orpha_disease_terms):
         ("test_parsed_hpo_annotations", "test_genemap_diseases"),
     ],
 )
-def test_combine_disease_information(
+def test_consolidate_gene_and_hpo_annotation(
     hpo_annotation_fixture_name, gene_annotation_fixture_name, request
 ):
     #: GIVEN disease annotated with genes and disease annotated with genes
     hpo_annotations = request.getfixturevalue(hpo_annotation_fixture_name)
     gene_annotations = request.getfixturevalue(gene_annotation_fixture_name)
     #: WHEN combining this information
-    result = combine_disease_information(
+    result = consolidate_gene_and_hpo_annotation(
         hpo_annotations=hpo_annotations, gene_annotations=gene_annotations
     )
     #: THEN assert all original diseases are present and contains gene and hpo information from the original source

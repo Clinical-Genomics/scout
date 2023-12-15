@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Set
+from typing import Dict
 
 from scout.models.disease_term import DiseaseTerm
 

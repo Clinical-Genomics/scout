@@ -4,10 +4,8 @@ import pytest
 
 TEST_OMIM_DISEASES = {
     "OMIM:614116": {
-        "mim_number": 614116,
         "inheritance": {"AD"},
         "description": "Neuropathy hereditary sensory type IE",
-        "status": "established",
         "hgnc_symbols": {"DNMT1"},
         "hpo_terms": {
             "HP:0000741",
@@ -29,19 +27,15 @@ TEST_OMIM_DISEASES = {
         "hgnc_ids": set(),
     },
     "OMIM:604121": {
-        "mim_number": 604121,
         "inheritance": {"AD"},
         "description": "Cerebellar ataxia deafness and narcolepsy autosomal dominant",
-        "status": "established",
         "hgnc_symbols": {"DNMT1"},
         "hpo_terms": set(),
         "hgnc_ids": set(),
     },
     "OMIM:615286": {
-        "mim_number": 615286,
         "inheritance": {"AR"},
         "description": "Mental retardation autosomal recessive 36",
-        "status": "established",
         "hgnc_symbols": {"ADAT3"},
         "hpo_terms": set(),
         "hgnc_ids": set(),
@@ -70,20 +64,15 @@ def test_parsed_hpo_annotations(request):
     test_parsed_hpo_annotations = {}
     for key, content in TEST_OMIM_DISEASES.items():
         test_parsed_hpo_annotations[key] = {
-            "disease_nr": content["mim_number"],
             "source": "OMIM",
             "description": content["description"],
-            "hgnc_symbols": {},
             "hpo_terms": content["hpo_terms"],
         }
     test_parsed_hpo_annotations.update(
         {
             "OMIM:612201": {
-                "disease_nr": 612201,
                 "source": "OMIM",
                 "description": "Atrial fibrillation, familial, 6",
-                "frequency": "6/11",
-                "hgnc_symbols": set(),
                 "hpo_terms": {"HP:0001712", "HP:0012664", "HP:0000006", "HP:0005110", "HP:0011462"},
             }
         },

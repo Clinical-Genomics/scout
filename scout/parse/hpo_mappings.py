@@ -30,23 +30,7 @@ def parse_hpo_to_genes(lines):
 
 def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]:
     """Parse HPO annotation files.
-
-    Returns only HPO info that can then be merged with a fundamental OMIM or other existing disease annotation,
-    and onto which phenotype-to-gene mappings can be filled in.
-
-    Args:
-        hpo_annotation_lines:
-            Lines from a phenotype.hpoa file from HPO.org of the format:
-
-            #description: "HPO annotations for rare diseases [8120: OMIM; 47: DECIPHER; 4264 ORPHANET]"
-            #version: 2023-04-05
-            #tracker: https://github.com/obophenotype/human-phenotype-ontology/issues
-            #hpo-version: http://purl.obolibrary.org/obo/hp/releases/2023-04-05/hp.json
-            database_id	disease_name	qualifier	hpo_id	reference	evidence	onset	frequency	sex	modifier	aspect	biocuration
-            OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0011097	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
-            OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0002187	PMID:31675180	PCS		1/1			P	HPO:probinson[2021-06-21]
-            OMIM:619340	Developmental and epileptic encephalopathy 96		HP:0001518	PMID:31675180	PCS		1/2			P	HPO:probinson[2021-06-21]
-
+    Returns HPO info, description and disease coding system
     """
     diseases = {}
     for index, line in enumerate(hpo_annotation_lines):
@@ -60,15 +44,12 @@ def parse_hpo_annotations(hpo_annotation_lines: Iterable[str]) -> Dict[str, Any]
         disease_id = disease["disease_id"]
         if disease_id not in diseases:
             diseases[disease_id] = {
-                "disease_nr": disease["disease_nr"],
                 "source": disease["source"],
                 "description": disease["description"],
-                "frequency": disease["frequency"],
-                "hgnc_symbols": set(),
                 "hpo_terms": set(),
             }
 
-        if "hpo_terms" in disease and disease["hpo_terms"]:
+        if "hpo_terms" in disease:
             diseases[disease_id]["hpo_terms"].add(disease["hpo_terms"])
 
     return diseases
@@ -87,7 +68,6 @@ def parse_hpo_annotation_line(hpo_annotation_line: str) -> Optional[Dict[str, An
     # we only support OMIM and ORPHA diseases for now - HPOA also has DECIPHER
     if hpo_info["source"] not in ["OMIM", "ORPHA"]:
         return
-    hpo_info["disease_nr"] = int(disease[1])
 
     hpo_info["description"] = hpo_annotation_line[1]
 
@@ -96,7 +76,6 @@ def parse_hpo_annotation_line(hpo_annotation_line: str) -> Optional[Dict[str, An
         return
 
     hpo_info["hpo_terms"] = hpo_annotation_line[3]
-    hpo_info["frequency"] = hpo_annotation_line[7]
 
     hpo_info["hgnc_symbol"] = None
 

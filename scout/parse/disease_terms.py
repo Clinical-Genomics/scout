@@ -1,6 +1,6 @@
 """Code for parsing disease terms from OMIM and ORPHA data"""
 import logging
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from scout.parse.hpo_mappings import parse_hpo_annotations
 from scout.parse.omim import get_mim_phenotypes
@@ -11,8 +11,11 @@ LOG = logging.getLogger(__name__)
 
 
 def get_all_disease_terms(
-    orpha_to_hpo_lines, orpha_to_genes_lines, hpo_annotation_lines, genemap_lines
-):
+    orpha_to_hpo_lines: List,
+    orpha_to_genes_lines: List,
+    hpo_annotation_lines: List,
+    genemap_lines: List,
+) -> Dict:
     #: Collect ORPHA terms including gene and disease annotations from Orphadata
     orpha_disease_terms: Dict = get_orpha_disease_terms(
         orpha_to_hpo_lines=orpha_to_hpo_lines, orpha_to_genes_lines=orpha_to_genes_lines
@@ -57,10 +60,10 @@ def parse_disease_terms(omim_disease_terms: Dict, orpha_disease_terms: Dict) -> 
     return combined_disease_terms
 
 
-def combine_disease_information(hpo_annotations, gene_annotations):
+def consolidate_gene_and_hpo_annotation(hpo_annotations: Dict, gene_annotations: Dict) -> Dict:
     """Annotate disease terms with both gene and hpo information"""
     LOG.info("Consolidating gene and HPO information for disease terms")
-    disease_terms = gene_annotations.copy()
+    disease_terms: Dict = gene_annotations.copy()
     # If missing, add disease properties to be updated from other files
     for disease_id, disease_content in disease_terms.items():
         if "hpo_terms" not in disease_content:
@@ -100,14 +103,16 @@ def get_omim_disease_terms(genemap_lines: List = None, hpo_annotation_lines: Lis
     omim_hpo_annotations: Dict = parse_hpo_annotations(hpo_annotation_lines)
 
     # Combine information
-    omim_disease_terms = combine_disease_information(
+    omim_disease_terms: Dict = consolidate_gene_and_hpo_annotation(
         hpo_annotations=omim_hpo_annotations, gene_annotations=genemap_disease
     )
 
     return omim_disease_terms
 
 
-def get_orpha_disease_terms(orpha_to_genes_lines: List = None, orpha_to_hpo_lines: List = None):
+def get_orpha_disease_terms(
+    orpha_to_genes_lines: List = None, orpha_to_hpo_lines: List = None
+) -> Dict:
     """Extract disease-gene and disease-hpo information from ORPHA downloads and combine in disease_terms"""
     #: Fetch information from Orphadata if missing
     if not orpha_to_genes_lines or not orpha_to_hpo_lines:
@@ -118,11 +123,11 @@ def get_orpha_disease_terms(orpha_to_genes_lines: List = None, orpha_to_hpo_line
             orpha_to_genes_lines: List = orpha_files["orphadata_en_product6"]
 
     #: Extract information of genes and hpo relations of orphacodes
-    orpha_disease = get_orpha_to_genes_information(lines=orpha_to_genes_lines)
-    orpha_hpo_annotations = get_orpha_to_hpo_information(lines=orpha_to_hpo_lines)
+    orpha_disease: Dict = get_orpha_to_genes_information(lines=orpha_to_genes_lines)
+    orpha_hpo_annotations: Dict = get_orpha_to_hpo_information(lines=orpha_to_hpo_lines)
 
     #: Combine information
-    orpha_disease_terms = combine_disease_information(
+    orpha_disease_terms: Dict = consolidate_gene_and_hpo_annotation(
         gene_annotations=orpha_disease, hpo_annotations=orpha_hpo_annotations
     )
     return orpha_disease_terms

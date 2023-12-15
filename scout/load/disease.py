@@ -14,9 +14,9 @@ LOG = logging.getLogger(__name__)
 
 def load_disease_terms(
     adapter: MongoAdapter,
-    genemap_lines: Iterable,
+    genemap_lines: List,
     genes: Optional[dict] = None,
-    hpo_annotation_lines: Optional[Iterable] = None,
+    hpo_annotation_lines: Optional[List] = None,
     orpha_to_hpo_lines: Optional[List] = None,
     orpha_to_genes_lines: Optional[List] = None,
 ):
@@ -31,6 +31,7 @@ def load_disease_terms(
     if not genes:
         genes = adapter.genes_by_alias()
 
+    # Combine disease information
     disease_terms = get_all_disease_terms(
         genemap_lines=genemap_lines,
         hpo_annotation_lines=hpo_annotation_lines,
