@@ -763,7 +763,7 @@ def alamut_variant_link(
     if not institute_obj:
         return
 
-    (alamut_key, search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
+    (search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
 
     url_template = (
         "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={chromosome}{build_str}:"
@@ -813,7 +813,7 @@ def alamut_gene_link(
     if not institute_obj:
         return False
 
-    (alamut_key, search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
+    (search_verb, alamut_key_arg, alamut_inst_arg) = _get_alamut_config(institute_obj)
 
     url_template = (
         "http://localhost:10000/{search_verb}?{alamut_key_arg}{alamut_inst_arg}request={this[canonical_transcript]}{build_str}:"
@@ -850,7 +850,7 @@ def _get_alamut_config(institute_obj: dict) -> Tuple[str, ...]:
     alamut_institution = institute_obj.get("alamut_institution")
     alamut_inst_arg = f"institution={alamut_institution}&" if alamut_institution else ""
 
-    return (alamut_key, search_verb, alamut_key_arg, alamut_inst_arg)
+    return (search_verb, alamut_key_arg, alamut_inst_arg)
 
 
 def mitomap_link(variant_obj):
