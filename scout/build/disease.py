@@ -13,7 +13,7 @@ def build_disease_term(disease_id: str, disease_info: Dict, alias_genes: Dict) -
     disease_nr = disease_id.split(":")[1]
     disease_source = disease_id.split(":")[0]
 
-    disease_obj["disease_nr"] = disease_nr
+    disease_obj["disease_nr"] = int(disease_nr)
     disease_obj["disease_id"] = disease_id
     disease_obj["source"] = disease_source
 
