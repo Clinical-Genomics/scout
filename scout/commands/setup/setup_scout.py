@@ -100,6 +100,22 @@ def abort_if_false(ctx, param, value):
         "phenotype.hpoa"
     ),
 )
+@click.option(
+    "--orpha_to_hpo",
+    type=click.Path(exists=True),
+    help=(
+        "Path to file mapping ORPHA codes to HPO terms. This is the file called "
+        "orphadata_en_product4.xml"
+    ),
+)
+@click.option(
+    "--orpha_to_genes",
+    type=click.Path(exists=True),
+    help=(
+        "Path to file mapping ORPHA codes to genes. This is the file called "
+        "orphadata_en_product6.xml"
+    ),
+)
 @with_appcontext
 @click.pass_context
 def database(
