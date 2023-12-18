@@ -440,9 +440,9 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
 
     parsed_variant["gene_a"] = call_safe(str, variant.INFO.get("GENEA", ""))
     parsed_variant["gene_b"] = call_safe(str, variant.INFO.get("GENEB", ""))
-    parsed_variant["tool_hits"] = call_safe(str, variant.INFO.get("TOOL_HITS", 0))
+    parsed_variant["tool_hits"] = call_safe(int, variant.INFO.get("TOOL_HITS", 0))
     parsed_variant["found_db"] = set_found_db(call_safe(str, variant.INFO.get("FOUND_DB")))
-    parsed_variant["fusion_score"] = call_safe(str, variant.INFO.get("SCORE", None))
+    parsed_variant["fusion_score"] = call_safe(float, variant.INFO.get("SCORE", None))
     parsed_variant["hgnc_id_a"] = call_safe(int, variant.INFO.get("HGNC_ID_A", 0))
     parsed_variant["hgnc_id_b"] = call_safe(int, variant.INFO.get("HGNC_ID_B", 0))
     parsed_variant["orientation"] = replace_nan(
@@ -458,10 +458,10 @@ def set_fusion_info(variant: Variant, parsed_variant: Dict[str, Any]):
         str, replace_nan(variant.INFO.get("TRANSCRIPT_ID_B", ""))
     )
     parsed_variant["exon_number_a"] = call_safe(
-        str, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_A", "")))
+        int, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_A", "")))
     )
     parsed_variant["exon_number_b"] = call_safe(
-        str, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_B", "")))
+        int, call_safe(int, replace_nan(variant.INFO.get("EXON_NUMBER_B", "")))
     )
     parsed_variant["fusion_genes"] = [parsed_variant["gene_a"], parsed_variant["gene_b"]]
 
