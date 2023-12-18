@@ -825,13 +825,17 @@ def alamut_gene_link(
     if build == 38:
         build_str = "(GRCh38)"
 
+    hgvs_raw = gene_obj.get("hgvs_identifier")
+    if not hgvs_raw:
+        return False
+
     return url_template.format(
         search_verb=search_verb,
         alamut_key_arg=alamut_key_arg,
         alamut_inst_arg=alamut_inst_arg,
         this=gene_obj,
         build_str=build_str,
-        hgvs_identifier=quote(gene_obj["hgvs_identifier"]),
+        hgvs_identifier=quote(hgvs_raw),
     )
 
 
