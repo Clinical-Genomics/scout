@@ -1,4 +1,3 @@
-import pytest
 from cyvcf2 import VCF
 
 from scout.parse.variant.genotype import (
