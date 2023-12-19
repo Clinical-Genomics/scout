@@ -2,6 +2,7 @@ from cyvcf2 import VCF
 
 from scout.parse.variant.genotype import (
     GENOTYPE_MAP,
+    get_alt_depth,
     get_ref_depth,
     parse_genotype,
     parse_genotypes,
