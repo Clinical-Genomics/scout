@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pytest
 
 from scout.parse.disease_terms import (

@@ -1,3 +1,4 @@
+from typing import List
 from xml.etree.ElementTree import Element
 
 from scout.parse.orpha import (
@@ -5,7 +6,6 @@ from scout.parse.orpha import (
     get_orpha_to_hpo_information,
     parse_orpha_downloads,
 )
-from typing import List
 
 
 def test_parse_orpha_downloads(orphadata_en_product6_lines: List[str]):
