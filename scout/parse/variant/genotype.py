@@ -339,7 +339,7 @@ def get_ref_depth(
         ref_depth = 0
         for item in list:
             if item:
-                alt_depth += item
+                ref_depth += item
 
     if spanning_mei_ref:
         ref_depth += spanning_mei_ref
