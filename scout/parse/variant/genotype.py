@@ -336,7 +336,7 @@ def get_ref_depth(
     for list in REF_ITEMS_LIST:
         if all(item is None for item in list):
             continue
-        alt_depth = 0
+        ref_depth = 0
         for item in list:
             if item:
                 alt_depth += item
