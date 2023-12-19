@@ -139,6 +139,7 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
 
         # Add the transcript links
         add_tx_links(transcript, genome_build, hgnc_symbol)
+
         # If the transcript has a ref seq identifier we add that
         # to the variants transcript
         refseq_id = hgnc_transcript.get("refseq_id")
@@ -251,7 +252,8 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
 
             variant_gene["common"] = hgnc_gene
 
-            add_gene_links(variant_gene, genome_build)
+            institute = store.institute(variant_obj["institute"])
+            add_gene_links(variant_gene, genome_build, institute=institute)
 
             # Add disease associated transcripts from panel to variant
             for refseq_id in panel_info.get("disease_associated_transcripts", []):
