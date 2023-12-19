@@ -54,7 +54,7 @@ def gene(store, hgnc_id):
             res["entrez_id"] = record.get("entrez_id")
             res["pli_score"] = record.get("pli_score")
 
-            add_gene_links(record, int(build))
+            add_gene_links(record, build=int(build))
 
             res["omim_id"] = record.get("omim_id")
             res["incomplete_penetrance"] = record.get("incomplete_penetrance", False)
