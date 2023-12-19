@@ -76,6 +76,8 @@ def call_safe(fun, unknown_var):
     Args: unknown_var: Object
           fun: Function
     Returns: Object"""
+    if unknown_var is None:
+        return None
     try:
         return fun(unknown_var)
     except ValueError:
