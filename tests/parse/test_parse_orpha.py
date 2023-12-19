@@ -5,9 +5,11 @@ from scout.parse.orpha import (
     get_orpha_to_hpo_information,
     parse_orpha_downloads,
 )
+from typing import List
 
 
 def test_parse_orpha_downloads(orphadata_en_product6_lines: List[str]):
+    """Test the parsing of orphadata file contents and assert it has the correct type and root element"""
     # GIVEN lines from a read file
     # WHEN parsing the lines into an element tree
     result = parse_orpha_downloads(orphadata_en_product6_lines)
@@ -18,6 +20,7 @@ def test_parse_orpha_downloads(orphadata_en_product6_lines: List[str]):
 
 
 def test_get_orpha_to_genes_information(orphadata_en_product6_lines: List[str]):
+    """Test the extraction of disease related genes from orphadata file contents"""
     # GIVEN lines from a read file
     # WHEN extracting the orpha to gene information
     result = get_orpha_to_genes_information(lines=orphadata_en_product6_lines)
@@ -30,6 +33,7 @@ def test_get_orpha_to_genes_information(orphadata_en_product6_lines: List[str]):
 
 
 def test_get_orpha_to_hpo_information(orphadata_en_product4_lines: List[str]):
+    """Test the extraction of disease related hpo-terms from orphadata file contents"""
     # GIVEN lines from a read file
     # WHEN parsing the tree
     result = get_orpha_to_hpo_information(lines=orphadata_en_product4_lines)
