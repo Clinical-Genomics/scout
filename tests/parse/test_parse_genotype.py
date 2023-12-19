@@ -92,7 +92,7 @@ def test_get_alt_depth_zeroes(one_cyvcf2_fusion_variant: "Cyvcf2Variant"):
     # GIVEN a sample at a given position in the VCF
     position = 0
     # GIVEN a variant which has alt_depth == -1 for that individual
-    one_cyvcf2_fusion_variant.gt_alt_depths[position] == -1
+    assert one_cyvcf2_fusion_variant.gt_alt_depths[position] == -1
 
     # WHEN alt depth is computed using get_alt_depth function with null parameters
     alt_depth: int = get_alt_depth(
