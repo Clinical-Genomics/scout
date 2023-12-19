@@ -360,7 +360,7 @@ def get_alt_depth(
     """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
     if alt_depth != -1:
-        return
+        return alt_depth
 
     if "VD" in variant.FORMAT:
         alt_depth = int(variant.format("VD")[pos][0])
