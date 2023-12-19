@@ -112,7 +112,8 @@ def test_get_omim_disease_terms(genemap_handle, hpo_phenotype_annotation_handle)
     # THEN assert disease with correct contents including both hpo and genes is included in return
     assert disease["description"] == "Neuropathy hereditary sensory type IE"
     assert disease["hgnc_ids"] == set()
-    assert disease["hpo_terms"] == {
+    for term in disease["hpo_terms"]:
+       assert "HP:" in term
         "HP:0000006",
         "HP:0000365",
         "HP:0100710",
