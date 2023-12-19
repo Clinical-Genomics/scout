@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import quote
 
 from flask import current_app
@@ -14,7 +14,9 @@ BEACON_LINK_TEMPLATE = (
 )
 
 
-def add_gene_links(gene_obj: dict, build: int = 37, institute: dict = None):
+def add_gene_links(
+    gene_obj: Dict[str, Any], build: int = 37, institute: Optional[Dict[str, Any]] = None
+):
     """Update a gene object with links
 
     Args:
@@ -737,10 +739,10 @@ def mutantp53(hgnc_id, protein_variant):
 
 
 def alamut_variant_link(
-    institute_obj,
-    variant_obj,
-    build=None,
-):
+    institute_obj: Dict[str, Any],
+    variant_obj: Dict[str, Any],
+    build: Optional[int] = None,
+) -> str:
     """Compose a link which open up variants in the Alamut software
     Alamut links require some settings from the institute object.
     This link is rendered on the variant side. Alamut has issues with GATK style genome coordinates for indels, but
@@ -751,7 +753,6 @@ def alamut_variant_link(
     Args:
         institute_obj(scout.models.Institute)
         variant_obj(scout.models.Variant):
-        build(str): "37" or "38"
 
     Returns:
         url_template(str): link to Alamut browser
@@ -788,9 +789,9 @@ def alamut_variant_link(
 
 
 def alamut_gene_link(
-    institute_obj,
-    gene_obj,
-    build=None,
+    institute_obj: Dict[str, Any],
+    gene_obj: Dict[str, Any],
+    build: Optional[int] = None,
 ):
     """Compose a link which open up variants in the Alamut software.
     Alamut links require some settings from the institute object.
@@ -801,7 +802,6 @@ def alamut_gene_link(
     Args:
         institute_obj(scout.models.Institute)
         variant_obj(scout.models.Variant):
-        build(str): "37" or "38"
 
     Returns:
         url_template(str): link to Alamut browser
