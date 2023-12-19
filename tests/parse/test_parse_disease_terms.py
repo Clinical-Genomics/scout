@@ -19,7 +19,7 @@ def test_get_all_disease_terms(
 ):
     #: GIVEN lines from the disease sourcefiles
     #: WHEN the disease are compiled
-    result = get_all_disease_terms(
+    result: Dict[str, dict] = get_all_disease_terms(
         hpo_annotation_lines=hpo_phenotype_annotation_handle,
         genemap_lines=genemap_handle,
         orpha_to_genes_lines=orphadata_en_product6_lines,
