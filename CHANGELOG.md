@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
 - Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
+- Alamut links now appear on the gene level, using transcript and hgvs notation. Less precise, but better for indels.
 - Parallelize variant loading for each chromosome
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
