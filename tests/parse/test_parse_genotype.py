@@ -86,24 +86,25 @@ def test_get_ref_depth_zeroes(one_variant: "Cyvcf2Variant"):
     assert ref_depth == 0
 
 
-def test_get_alt_depth_zeroes(one_variant: "Cyvcf2Variant"):
+def test_get_alt_depth_zeroes(one_cyvcf2_fusion_variant: "Cyvcf2Variant"):
     """Make sure get_alt_depth returns 0 when provided parameters are all 0."""
 
     # GIVEN a sample at a given position 2 in the VCF
     position = 0
     # GIVEN a variant which has alt_depth == 0 for that individual
-    assert one_variant.gt_alt_depths[position] == 0
+    one_cyvcf2_fusion_variant.gt_alt_depths[position] == -1
 
     # WHEN alt depth is computed using get_alt_depth function with null parameters
     alt_depth: int = get_alt_depth(
-        variant=one_variant,
+        variant=one_cyvcf2_fusion_variant,
         pos=position,
-        paired_end_ref=0,
-        split_read_ref=0,
-        spanning_ref=0,
-        flanking_ref=0,
-        inrepeat_ref=0,
-        spanning_mei_ref=0,
+        paired_end_alt=0,
+        split_read_alt=0,
+        spanning_alt=0,
+        flanking_alt=0,
+        inrepeat_alt=0,
+        clip5_alt=0,
+        clip3_alt=0,
     )
     # THEN it should return 0
     assert alt_depth == 0
