@@ -372,7 +372,7 @@ def get_alt_depth(
     ]
 
     for list in ALT_ITEMS_LIST:
-        if all(item is None for item in list) is True:
+        if all(item is None for item in list):
             continue
         alt_depth = 0
         for item in list:
