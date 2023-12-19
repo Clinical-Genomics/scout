@@ -40,7 +40,7 @@ def test_get_all_disease_terms(
 def test_parse_disease_terms(test_omim_disease_terms, test_orpha_disease_terms):
     #: GIVEN a Dict of ORPHA and OMIM disease with gene and hpo information
     #: WHEN the terms are combined
-    result = parse_disease_terms(
+    result: Dict[str, dict] = parse_disease_terms(
         omim_disease_terms=test_omim_disease_terms, orpha_disease_terms=test_orpha_disease_terms
     )
     #: THEN assert the information from both sources are retained
