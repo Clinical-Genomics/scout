@@ -21,7 +21,7 @@ def test_build_disease_term(adapter, test_disease_id, test_disease):
     assert isinstance(disease_obj, dict)
 
 
-@pytest.mark.parametrize("key", ["description"])
+@pytest.mark.parametrize("key", ["source", "description"])
 def test_build_disease_missing_key(key, test_disease_id, test_disease):
     ## GIVEN a dictionary with disease information and genes
     alias_genes = {}

@@ -1570,26 +1570,26 @@ def genemap_handle(request, genemap_file):
 
 @pytest.fixture
 def orphadata_en_product6_file(request) -> str:
-    """Get the path to the orphadata_en_product6 file"""
+    """Get the path to the orphadata_en_product6 file, which contains orpha_to_genes_lines."""
     return orphadata_en_product6_reduced_path
 
 
 @pytest.fixture
-def orphadata_en_product6_lines(request, orphadata_en_product6_file) -> List:
-    """Get the lines of the orphadata_en_product6_file"""
+def orphadata_en_product6_lines(request, orphadata_en_product6_file:str) -> List:
+    """Get the lines of the orphadata_en_product6_file, which contain orpha_to_genes info."""
     orphadata_en_product6_lines = get_file_handle(orphadata_en_product6_file)
     return orphadata_en_product6_lines
 
 
 @pytest.fixture
 def orphadata_en_product4_file(request) -> str:
-    """Get the path to the orphadata_en_product6 file"""
+    """Get the path to the orphadata_en_product4 file, which contains orpha_to_hpo_lines."""
     return orphadata_en_product4_reduced_path
 
 
 @pytest.fixture
-def orphadata_en_product4_lines(request, orphadata_en_product4_file) -> List:
-    """Get the lines of the orphadata_en_product6_file"""
+def orphadata_en_product4_lines(request, orphadata_en_product4_file: str) -> List[str]:
+    """Get the lines of the orphadata_en_product4_file, which contain orpha_to_hpo info."""
     orphadata_en_product4_lines = get_file_handle(orphadata_en_product4_file)
     return orphadata_en_product4_lines
 

@@ -15,7 +15,7 @@ def parse_orpha_downloads(lines: List) -> Element:
     return tree
 
 
-def get_orpha_to_genes_information(lines: List) -> Dict[str, Any]:
+def get_orpha_to_genes_information(lines: List[str]) -> Dict[str, dict]:
     """Get a dictionary with diseases, ORPHA:nr as keys and gene information as values"""
     LOG.info("Parsing Orphadata en_product6")
 
@@ -57,7 +57,7 @@ def get_orpha_to_genes_information(lines: List) -> Dict[str, Any]:
     return orpha_diseases_found
 
 
-def get_orpha_to_hpo_information(lines: List) -> Dict[str, Any]:
+def get_orpha_to_hpo_information(lines: List[str]) -> Dict[str, Any]:
     """Get a dictionary with diseases, ORPHA:nr as keys and related hpo terms as values"""
     LOG.info("Parsing Orphadata en_product4")
 
