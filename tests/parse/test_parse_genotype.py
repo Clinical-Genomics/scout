@@ -94,7 +94,7 @@ def test_get_alt_depth_zeroes(one_variant: "Cyvcf2Variant"):
     assert one_variant.gt_alt_depths[position] == 0
 
     # WHEN alt depth is computed using get_alt_depth function with null parameters
-    alt_depth: int = get_ref_depth(
+    alt_depth: int = get_alt_depth(
         variant=one_variant,
         pos=position,
         paired_end_ref=0,
