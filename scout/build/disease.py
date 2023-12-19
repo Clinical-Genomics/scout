@@ -44,6 +44,7 @@ def translate_hgnc_symbols_to_ids(disease_info: dict, alias_genes: dict) -> None
         if hgnc_symbol is None:
             continue
         if hgnc_symbol in alias_genes:
+            # If the symbol identifies a unique gene we add that
             if alias_genes[hgnc_symbol]["true"]:
                 hgnc_ids.add(alias_genes[hgnc_symbol]["true"])
             else:
