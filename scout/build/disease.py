@@ -6,7 +6,7 @@ from scout.models.disease_term import DiseaseTerm
 LOG = logging.getLogger(__name__)
 
 
-def build_disease_term(disease_id: str, disease_info: Dict, alias_genes: Dict) -> Dict:
+def build_disease_term(disease_id: str, disease_info: dict, alias_genes: dict) -> dict:
     """Build a disease term object."""
 
     disease_obj = {}
@@ -34,14 +34,13 @@ def build_disease_term(disease_id: str, disease_info: Dict, alias_genes: Dict) -
     return disease_obj
 
 
-def translate_hgnc_symbols_to_ids(disease_info: Dict, alias_genes: Dict) -> None:
+def translate_hgnc_symbols_to_ids(disease_info: dict, alias_genes: dict) -> None:
     """Translates hgnc symbols to hgnc id:s and adds them to disease[hgnc_ids]."""
     hgnc_ids = disease_info.get("hgnc_ids", set())
     hgnc_symbols_not_found = set()
 
     #: If the symbol is present in alias_genes, add the corresponding id
     for hgnc_symbol in disease_info.get("hgnc_symbols", []):
-        # LOG.info(f"Symbol: {hgnc_symbol} alias genes {alias_genes}")
         if hgnc_symbol is None:
             continue
         if hgnc_symbol in alias_genes:

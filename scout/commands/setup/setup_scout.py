@@ -101,7 +101,7 @@ def abort_if_false(ctx, param, value):
     ),
 )
 @click.option(
-    "--orpha_to_hpo",
+    "--orpha-to-hpo",
     type=click.Path(exists=True),
     help=(
         "Path to file mapping ORPHA codes to HPO terms. This is the file called "
@@ -109,7 +109,7 @@ def abort_if_false(ctx, param, value):
     ),
 )
 @click.option(
-    "--orpha_to_genes",
+    "--orpha-to-genes",
     type=click.Path(exists=True),
     help=(
         "Path to file mapping ORPHA codes to genes. This is the file called "

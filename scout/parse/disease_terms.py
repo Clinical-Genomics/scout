@@ -17,12 +17,12 @@ def get_all_disease_terms(
     genemap_lines: List,
 ) -> Dict:
     #: Collect ORPHA terms including gene and disease annotations from Orphadata
-    orpha_disease_terms: Dict = get_orpha_disease_terms(
+    orpha_disease_terms: Dict[str, dict] = get_orpha_disease_terms(
         orpha_to_hpo_lines=orpha_to_hpo_lines, orpha_to_genes_lines=orpha_to_genes_lines
     )
 
     #: Collect OMIM and ORPHA disease terms including gene and hpo annotations
-    omim_disease_terms: Dict = get_omim_disease_terms(
+    omim_disease_terms: Dict[str, dict] = get_omim_disease_terms(
         genemap_lines=genemap_lines, hpo_annotation_lines=hpo_annotation_lines
     )
 
@@ -34,7 +34,7 @@ def get_all_disease_terms(
     return all_disease_terms
 
 
-def parse_disease_terms(omim_disease_terms: Dict, orpha_disease_terms: Dict) -> Dict:
+def parse_disease_terms(omim_disease_terms: Dict[str, dict], orpha_disease_terms: Dict[str, dict]) -> Dict[str, dict]:
     """Pool disease terms and linked HPO terms and genes from OMIM and ORPHAdata files"""
     LOG.info("Consolidating OMIM and ORPHA disease terms")
 
@@ -60,7 +60,7 @@ def parse_disease_terms(omim_disease_terms: Dict, orpha_disease_terms: Dict) -> 
     return combined_disease_terms
 
 
-def consolidate_gene_and_hpo_annotation(hpo_annotations: Dict, gene_annotations: Dict) -> Dict:
+def consolidate_gene_and_hpo_annotation(hpo_annotations: Dict[str, dict], gene_annotations: Dict[str, dict]) -> Dict[str, dict]:
     """Annotate disease terms with both gene and hpo information"""
     LOG.info("Consolidating gene and HPO information for disease terms")
     disease_terms: Dict = gene_annotations.copy()
