@@ -66,7 +66,7 @@ def test_parse_cnvnator():
 def test_get_ref_depth_zeroes(one_variant: "Cyvcf2Variant"):
     """Make sure get_ref_depth returns 0 when provided parameters are all 0."""
 
-    # GIVEN a sample at a given position 2 in the VCF
+    # GIVEN a sample at a given position in the VCF
     position = 2
     # GIVEN a variant which has ref_depth == 0 for that individual
     assert one_variant.gt_ref_depths[position] == 0
@@ -89,9 +89,9 @@ def test_get_ref_depth_zeroes(one_variant: "Cyvcf2Variant"):
 def test_get_alt_depth_zeroes(one_cyvcf2_fusion_variant: "Cyvcf2Variant"):
     """Make sure get_alt_depth returns 0 when provided parameters are all 0."""
 
-    # GIVEN a sample at a given position 2 in the VCF
+    # GIVEN a sample at a given position in the VCF
     position = 0
-    # GIVEN a variant which has alt_depth == 0 for that individual
+    # GIVEN a variant which has alt_depth == -1 for that individual
     one_cyvcf2_fusion_variant.gt_alt_depths[position] == -1
 
     # WHEN alt depth is computed using get_alt_depth function with null parameters
