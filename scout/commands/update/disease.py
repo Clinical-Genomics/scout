@@ -42,18 +42,9 @@ def _fetch_downloaded_resources(resources, downloads_folder):
             resource_exists = os.path.isfile(resource_path)
             if resource_exists:
                 resources[resname] = get_file_handle(resource_path).readlines()
-                _check_resources({resname: resources[resname]})
         if resname not in resources:
-            if resname in [
-                "hpo_annotation_lines",
-                "hpo_gene_lines",
-                "orphadata_en_product4_lines",
-                "orphadata_en_product6_lines",
-            ]:
-                resources[resname] = None
-            else:
-                LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
-                raise click.Abort()
+            LOG.error(f"Resource file '{resname}' was not found in provided downloads folder.")
+            raise click.Abort()
 
 
 @click.command("diseases", short_help="Update disease terms")
@@ -98,7 +89,7 @@ def diseases(downloads_folder, api_key):
             LOG.warning(err)
             raise click.Abort()
 
-        _check_resources(resources)
+    _check_resources(resources)
 
     load_disease_terms(
         adapter=adapter,
