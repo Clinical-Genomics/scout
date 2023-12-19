@@ -326,7 +326,7 @@ def get_ref_depth(
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
     if ref_depth != -1:
-        return
+        return ref_depth
 
     REF_ITEMS_LIST: List[tuple] = [
         (paired_end_ref, split_read_ref),
