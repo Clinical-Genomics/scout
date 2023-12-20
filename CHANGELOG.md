@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not save fusion variants-specific key/values in other types of variants
 - Alamut link for MT variants in build 38
 - Convert RNA fusions variants `tool_hits` and `fusion_score` keys from string to numbers
+- Fix genotype reference and alternative sequencing depths defaulting to -1 when values are 0
 
 
 ## [4.74.1]
