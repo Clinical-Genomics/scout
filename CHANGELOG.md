@@ -3,7 +3,12 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
+
 ## [unreleased]
+### Fixed
+- command line crashing with error when updating a user that doesn't exist
+
+## [4.75]
 ### Added
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene
 - Tests for panel to genes
@@ -18,14 +23,15 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Retrieve and display case and variant custom images using image's saved path
 - Cases are activated by viewing FSHD and SMA reports
 - Split multi-gene SNV variants into single genes when submitting to Matchmaker Exchange
-- Alamut links now appear on the gene level, using transcript and hgvs notation. Less precise, but better for indels.
-- Replace the code that downloads Ensembl genes, transcripts and exons with schug library
+- Alamut links also on the gene level, using transcript and HGVS: better for indels. Keep variant link for missing HGVS
+- Thaw WTForms - explicitly coerce form decimal field entries when filters fetched from db
 ### Fixed
 - Removed some extra characters from top of general report left over from FontAwsome fix
 - Do not save fusion variants-specific key/values in other types of variants
 - Alamut link for MT variants in build 38
 - Convert RNA fusions variants `tool_hits` and `fusion_score` keys from string to numbers
 - Fix genotype reference and alternative sequencing depths defaulting to -1 when values are 0
+- DecimalFields were limited to two decimal places for several forms - lifting restrictions on AF, CADD etc.
 
 
 ## [4.74.1]
