@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Replace the code that downloads Ensembl genes, transcripts and exons with schug library
 ### Fixed
 - command line crashing with error when updating a user that doesn't exist
 
