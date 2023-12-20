@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- command line crashing with error when updating a user that doesn't exist
+
 ## [4.75]
 ### Added
 - Hovertip to gene panel names with associated genes in variant view, when variant covers more than one gene

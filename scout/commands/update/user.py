@@ -31,7 +31,7 @@ def user(user_id, update_role, add_institute, remove_admin, remove_institute):
 
     if not user_obj:
         LOG.warning("User %s could not be found", user_id)
-        click.Abort()
+        raise click.Abort()
 
     existing_roles = set(user_obj.get("roles", []))
     if update_role:
@@ -69,4 +69,4 @@ def user(user_id, update_role, add_institute, remove_admin, remove_institute):
 
     user_obj["institutes"] = list(existing_institutes)
 
-    updated_user = adapter.update_user(user_obj)
+    adapter.update_user(user_obj)
