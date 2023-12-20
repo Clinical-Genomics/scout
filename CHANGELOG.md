@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Removed a redundant variant index
 ### Fixed
 - command line crashing with error when updating a user that doesn't exist
 
