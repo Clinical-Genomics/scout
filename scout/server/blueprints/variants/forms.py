@@ -102,15 +102,15 @@ class VariantFiltersForm(FlaskForm):
     genetic_models = SelectMultipleField(choices=GENETIC_MODELS)
     genotypes = NonValidatingSelectField(choices=VARIANT_GENOTYPES)
 
-    cadd_score = BetterDecimalField("CADD", places=2, validators=[validators.Optional()])
-    revel = BetterDecimalField("REVEL", places=2, validators=[validators.Optional()])
+    cadd_score = BetterDecimalField("CADD", validators=[validators.Optional()])
+    revel = BetterDecimalField("REVEL", validators=[validators.Optional()])
 
     compound_rank_score = IntegerField("Compound rank score")
     compound_follow_filter = BooleanField("Compounds follow filter")
     cadd_inclusive = BooleanField("CADD inclusive")
     clinsig = NonValidatingSelectMultipleField("ClinVar CLINSIG", choices=CLINSIG_OPTIONS)
 
-    gnomad_frequency = BetterDecimalField("gnomadAF", places=2, validators=[validators.Optional()])
+    gnomad_frequency = BetterDecimalField("gnomadAF", validators=[validators.Optional()])
     local_obs = IntegerField("Local obs. (archive)", validators=[validators.Optional()])
 
     filters = NonValidatingSelectField(choices=[], validators=[validators.Optional()])
@@ -160,12 +160,8 @@ class CancerFiltersForm(VariantFiltersForm):
 
     depth = IntegerField("Depth >", validators=[validators.Optional()])
     alt_count = IntegerField("Min alt count", validators=[validators.Optional()])
-    control_frequency = BetterDecimalField(
-        "Normal alt AF <", places=2, validators=[validators.Optional()]
-    )
-    tumor_frequency = BetterDecimalField(
-        "Tumor alt AF >", places=2, validators=[validators.Optional()]
-    )
+    control_frequency = BetterDecimalField("Normal alt AF <", validators=[validators.Optional()])
+    tumor_frequency = BetterDecimalField("Tumor alt AF >", validators=[validators.Optional()])
     clinvar_tag = BooleanField("ClinVar hits")
     cosmic_tag = BooleanField("Cosmic hits")
     mvl_tag = BooleanField("Managed Variants hits")
@@ -179,7 +175,7 @@ class MeiFiltersForm(VariantFiltersForm):
 
     mei_name = StringField("Element")
     clinical_filter = SubmitField(label="Clinical filter")
-    swegen_freq = BetterDecimalField("SweGen(Max) AF", places=2, validators=[validators.Optional()])
+    swegen_freq = BetterDecimalField("SweGen(Max) AF", validators=[validators.Optional()])
 
     # polymorphic constant base for clinical filter
     clinical_filter_base = CLINICAL_FILTER_BASE_MEI
@@ -219,10 +215,8 @@ class FusionFiltersForm(VariantFiltersForm):
     size_shorter = BooleanField("Length shorter than")
     decipher = BooleanField("Decipher")
     clinical_filter = SubmitField(label="Clinical filter")
-    fusion_score = BetterDecimalField(
-        "Fusion score >=", places=2, validators=[validators.Optional()]
-    )
-    ffpm = BetterDecimalField("FFPM >=", places=2, validators=[validators.Optional()])
+    fusion_score = BetterDecimalField("Fusion score >=", validators=[validators.Optional()])
+    ffpm = BetterDecimalField("FFPM >=", validators=[validators.Optional()])
     junction_reads = IntegerField("Junction reads >=", validators=[validators.Optional()])
     split_reads = IntegerField("Split reads >=", validators=[validators.Optional()])
     fusion_caller = SelectMultipleField("Fusion Caller", choices=FUSION_CALLER_CHOICES, default=[])
