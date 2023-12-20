@@ -18,11 +18,13 @@ Uses 'DV' to describe number of paired ends that supports the event and
 
 """
 
-from typing import Dict, Optional, Tuple
+import logging
+from typing import Dict, List, Optional, Tuple
 
 import cyvcf2
 
 GENOTYPE_MAP = {0: "0", 1: "1", -1: "."}
+LOG = logging.getLogger(__name__)
 
 
 def parse_genotypes(variant, individuals, individual_positions):
@@ -323,25 +325,24 @@ def get_ref_depth(
 ):
     """Get reference read depth"""
     ref_depth = int(variant.gt_ref_depths[pos])
-    if ref_depth == -1:
-        if any([paired_end_ref, split_read_ref]):
-            ref_depth = 0
-            if paired_end_ref:
-                ref_depth += paired_end_ref
-            if split_read_ref:
-                ref_depth += split_read_ref
+    if ref_depth != -1:
+        return ref_depth
 
-        if any([spanning_ref, flanking_ref, inrepeat_ref]):
-            ref_depth = 0
-            if spanning_ref:
-                ref_depth += spanning_ref
-            if flanking_ref:
-                ref_depth += flanking_ref
-            if inrepeat_ref:
-                ref_depth += inrepeat_ref
+    REF_ITEMS_LIST: List[tuple] = [
+        (paired_end_ref, split_read_ref),
+        (spanning_ref, flanking_ref, inrepeat_ref),
+    ]
 
-        if spanning_mei_ref:
-            ref_depth += spanning_mei_ref
+    for list in REF_ITEMS_LIST:
+        if all(item is None for item in list):
+            continue
+        ref_depth = 0
+        for item in list:
+            if item:
+                ref_depth += item
+
+    if spanning_mei_ref:
+        ref_depth += spanning_mei_ref
     return ref_depth
 
 
@@ -358,32 +359,26 @@ def get_alt_depth(
 ):
     """Get alternative read depth"""
     alt_depth = int(variant.gt_alt_depths[pos])
-    if alt_depth == -1:
-        if "VD" in variant.FORMAT:
-            alt_depth = int(variant.format("VD")[pos][0])
+    if alt_depth != -1:
+        return alt_depth
 
-        if any([paired_end_alt, split_read_alt]):
-            alt_depth = 0
-            if paired_end_alt:
-                alt_depth += paired_end_alt
-            if split_read_alt:
-                alt_depth += split_read_alt
+    if "VD" in variant.FORMAT:
+        alt_depth = int(variant.format("VD")[pos][0])
 
-        if any([clip5_alt, clip3_alt]):
-            alt_depth = 0
-            if clip5_alt:
-                alt_depth += clip5_alt
-            if clip3_alt:
-                alt_depth += clip3_alt
+    ALT_ITEMS_LIST: List[tuple] = [
+        (paired_end_alt, split_read_alt),
+        (clip5_alt, clip3_alt),
+        (spanning_alt, flanking_alt, inrepeat_alt),
+    ]
 
-        if any([spanning_alt, flanking_alt, inrepeat_alt]):
-            alt_depth = 0
-            if spanning_alt:
-                alt_depth += spanning_alt
-            if flanking_alt:
-                alt_depth += flanking_alt
-            if inrepeat_alt:
-                alt_depth += inrepeat_alt
+    for list in ALT_ITEMS_LIST:
+        if all(item is None for item in list):
+            continue
+        alt_depth = 0
+        for item in list:
+            if item:
+                alt_depth += item
+
     return alt_depth
 
 
