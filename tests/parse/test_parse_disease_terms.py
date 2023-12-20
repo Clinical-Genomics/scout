@@ -19,6 +19,8 @@ def test_get_all_disease_terms(
     test_orpha_disease_terms,
     test_omim_disease_terms,
 ):
+    """Tests function for creating a single dict containing disease_terms with hpo and gene annotations from read
+    orphadata and omim files"""
     #: GIVEN lines from the disease sourcefiles
     #: WHEN the disease are compiled
     result: Dict[str, dict] = get_all_disease_terms(
@@ -40,6 +42,7 @@ def test_get_all_disease_terms(
 
 
 def test_parse_disease_terms(test_omim_disease_terms, test_orpha_disease_terms):
+    """Tests the function combining orpha and omim disease_terms, verifying none of the contents are lost"""
     #: GIVEN a Dict of ORPHA and OMIM disease with gene and hpo information
     #: WHEN the terms are combined
     result: Dict[str, dict] = parse_disease_terms(
@@ -67,6 +70,7 @@ def test_parse_disease_terms(test_omim_disease_terms, test_orpha_disease_terms):
 def test_consolidate_gene_and_hpo_annotation(
     hpo_annotation_fixture_name, gene_annotation_fixture_name, request
 ):
+    """Tests function combining hpo and gene information into disease_terms"""
     #: GIVEN disease annotated with genes and disease annotated with genes
     hpo_annotations = request.getfixturevalue(hpo_annotation_fixture_name)
     gene_annotations = request.getfixturevalue(gene_annotation_fixture_name)
@@ -85,6 +89,7 @@ def test_consolidate_gene_and_hpo_annotation(
 
 
 def test_get_orpha_disease_terms(orphadata_en_product6_lines, orphadata_en_product4_lines):
+    """Tests function creating orpha disease_terms with gene and hpo annotations"""
     #: GIVEN lines from files containing orpha to genes end orpha to hpo mappings
     #: WHEN combining the information into disease terms
     result = get_orpha_disease_terms(
@@ -101,6 +106,7 @@ def test_get_orpha_disease_terms(orphadata_en_product6_lines, orphadata_en_produ
 
 
 def test_get_omim_disease_terms(genemap_handle, hpo_phenotype_annotation_handle):
+    """Tests function creating omim and orpha disease_terms with gene and hpo annotations"""
     #: GIVEN lines from genemap and hpo mappings
     #: WHEN combining the information into disease terms
     result = get_omim_disease_terms(
