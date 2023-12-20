@@ -15,28 +15,34 @@ DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 
-    def query_omim(self, query: str = None, limit: int = None) -> Iterable:
-        """Return all OMIM terms
+    def query_omim(self, query: str = None, source: str = None, limit: int = None) -> Iterable:
+        """Return all disease_terms
 
-        If a query is sent omim_id will try to match with regex on term or
-        description.
+        If a query is sent it will try to match with regex on term or
+        description. If source is sent it will be used to limit the results
         """
 
         query_dict = {}
         if query:
             query_dict = {
-                "$and": [
-                    {
-                        "$or": [
-                            {"disease_nr": {"$regex": query, "$options": "i"}},
-                            {"description": {"$regex": query, "$options": "i"}},
-                        ]
-                    },
-                    {"source": "OMIM"},
+                "$or": [
+                    {"disease_nr": {"$regex": query, "$options": "i"}},
+                    {"description": {"$regex": query, "$options": "i"}},
                 ]
             }
+            # If source is specified, add this restriction to the query
+            if source:
+                query_dict = {
+                    "$and": [
+                        query_dict,
+                        {"source": source},
+                    ]
+                }
+        elif source:
+            query_dict = {"source": source}
 
         limit = limit or int(10e10)
+
         res = (
             self.disease_term_collection.find(query_dict, DISEASE_FILTER_PROJECT)
             .limit(limit)

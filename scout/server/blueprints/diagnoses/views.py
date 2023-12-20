@@ -18,7 +18,7 @@ def omim_diagnosis(omim_nr):
 
 
 @omim_bp.route("/diagnoses", methods=["GET"])
-@templated("diagnoses/omim_terms.html")
+@templated("diagnoses/diagnoses.html")
 def omim_diagnoses():
     """Display all OMIM diagnoses available in database"""
 
