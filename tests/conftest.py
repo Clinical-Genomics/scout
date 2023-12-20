@@ -1241,6 +1241,12 @@ def fusion_variants(request) -> VCF:
 
 
 @pytest.fixture(scope="function")
+def one_cyvcf2_fusion_variant(request, fusion_variants) -> "Cyvcf2Variant":
+    "Return one fusion variant."
+    return next(fusion_variants)
+
+
+@pytest.fixture(scope="function")
 def parsed_fusion_variants(request, fusion_variants, fusion_case_obj) -> Iterable:
     """Get a generator with parsed fusion variants"""
     individual_positions = {}
