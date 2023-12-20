@@ -44,7 +44,7 @@ from .index import IndexHandler
 from .institute import InstituteHandler
 from .managed_variant import ManagedVariantHandler
 from .matchmaker import MMEHandler
-from .omim import DiagnosisHandler
+from .disease_terms import DiagnosisHandler
 from .panel import PanelHandler
 from .phenomodel import PhenoModelHandler
 from .query import QueryHandler
