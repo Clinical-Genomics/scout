@@ -113,20 +113,4 @@ def test_get_omim_disease_terms(genemap_handle, hpo_phenotype_annotation_handle)
     assert disease["description"] == "Neuropathy hereditary sensory type IE"
     assert disease["hgnc_ids"] == set()
     for term in disease["hpo_terms"]:
-       assert "HP:" in term
-        "HP:0000006",
-        "HP:0000365",
-        "HP:0100710",
-        "HP:0000737",
-        "HP:0011462",
-        "HP:0002460",
-        "HP:0000726",
-        "HP:0001262",
-        "HP:0002354",
-        "HP:0002059",
-        "HP:0003676",
-        "HP:0000407",
-        "HP:0001265",
-        "HP:0001251",
-        "HP:0000741",
-    }
+        assert "HP:" in term
