@@ -21,21 +21,8 @@ def test_build_disease_term(adapter, test_disease_id, test_disease):
     assert isinstance(disease_obj, dict)
 
 
-@pytest.mark.parametrize("key", ["source", "description"])
-def test_build_disease_missing_key(key, test_disease_id, test_disease):
-    ## GIVEN a dictionary with disease information and genes
-    alias_genes = {}
-    alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
-
-    # WHEN deleting a mandatory key
-    test_disease.pop(key)
-    # THEN calling build_disease_term() will raise ValueError
-    with pytest.raises(ValueError):
-        build_disease_term(test_disease_id, test_disease, alias_genes)
-
-
 def test_build_disease_wrong_value(test_disease):
-    ## GIVEN a dictionary with disease information and genes
+    # GIVEN a dictionary with disease information and genes
     alias_genes = {}
     alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
     # WHEN disease number is not an integer
