@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Alamut link for MT variants in build 38
 - Convert RNA fusions variants `tool_hits` and `fusion_score` keys from string to numbers
 - Fix genotype reference and alternative sequencing depths defaulting to -1 when values are 0
+- DecimalFields were limited to two decimal places for several forms - lifting restrictions on AF, CADD etc.
 
 ## [4.74.1]
 ### Changed
