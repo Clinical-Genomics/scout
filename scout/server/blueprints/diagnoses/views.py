@@ -22,7 +22,7 @@ def omim_diagnosis(omim_nr):
 def omim_diagnoses():
     """Display all OMIM diagnoses available in database"""
 
-    data = controllers.disease_terms(store=store)
+    data = controllers.disease_stats(store)
     return data
 
 

@@ -121,6 +121,11 @@ class DiagnosisHandler(object):
 
         return list(self.disease_term_collection.find(query, filter_project))
 
+    def disease_stats(self):
+        """Return the count of disease_terms for each source in the db"""
+        query = {"$group": {"_id": "$source", "count": {"$sum": 1}}}
+        return list(self.disease_term_collection.aggregate([query]))
+
     def load_disease_term(self, disease_obj: dict):
         """Load a disease term into the database-"""
         try:

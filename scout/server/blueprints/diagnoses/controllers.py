@@ -28,3 +28,8 @@ def disease_terms(store):
 
     data = {"terms": store.disease_terms(filter_project=None)}
     return data
+
+
+def disease_stats(store):
+    data = {"counts": store.disease_stats()}
+    return data

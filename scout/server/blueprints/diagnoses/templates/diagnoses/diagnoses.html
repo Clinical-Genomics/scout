@@ -22,53 +22,35 @@
   <div class="row mt-3">
     <div class="col-md-12">
       <div class="card">
-        <div class="card-header">OMIM terms</div>
+        <div class="card-header"> Diagnoses in databasew</div>
         <div class="card-body">
-          {% if terms|length == 0 %}
-            The search didn't return any OMIM term
+          {% if counts |length == 0 %}
+            <thead>
+              <th>OMIM terms</th>
+              <th>ORPHA terms</th>
+            </thead>
+            <tr>
+              {%for codingsystem in counts%}
+                <td>
+                  {{counts.count}}
+                </td>
+              {% endfor%}
+            </tr>
+
           {% else %}
             <table id="diagnoses_table" class="table table-sm">
               <thead class="table-light thead">
-                <th>OMIM term</th>
-                <th></th>
-                <th>Phenotype description</th>
-                <th>Inheritance</th>
-                <th>Associated genes</th>
-                <th>Associated HPO terms</th>
-              </thead>
-              {% for omim in terms %}
-                <tr>
-                  <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank" rel=noopener >{{ omim.disease_nr }}</a></td>
-                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}"><span class="fa fa-link"></span></a></td>
-                  <td><span class="text-body">{{ omim.description }}</span></td>
-                  <td><!-- inheritance-->
-                    {% for model in omim.inheritance %}
-                      <span class="badge bg-info">{{model}}</span>
-                    {% else %}
-                      -
-                    {% endfor %}
-                  </td><!--end of inheritance-->
-                  <td>
-                    {% for gene in omim.genes %}
-                    <span class="text-body">
-                      <a href="{{ url_for('genes.gene', hgnc_id=gene) }}" target="_blank" rel="noopener" >{{gene}}</a>
-                    </span>
-                    {% else %}
-                      -
-                    {% endfor %}
-                  </td>
-
-                  <td>
-                    <span class="text-body">
-                    {% for term in omim.hpo_terms %}
-                      <a class="badge bg-secondary text-white" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" >{{term}}</a>
-                    {% else %}
-                     -
-                    {% endfor %}
-                    </span>
-                  </td>
-                </tr>
+              {% for codingsystem in counts %}
+                <th>{{codingsystem._id}}</th>
               {% endfor %}
+              </thead>
+              <tr>
+                {% for codingsystem in counts %}
+                  <td>
+                    {{codingsystem.count}}
+                  </td>
+                {% endfor %}
+              </tr>
             </table>
           {% endif %}
         </div><!--end of card body-->
