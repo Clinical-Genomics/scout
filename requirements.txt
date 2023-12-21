@@ -20,7 +20,7 @@ pdfkit
 phenopackets
 xlsxwriter
 click
-cryptography<3.4
+cryptography
 defusedxml
 svglib
 cairosvg
