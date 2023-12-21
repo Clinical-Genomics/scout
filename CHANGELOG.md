@@ -33,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fix genotype reference and alternative sequencing depths defaulting to -1 when values are 0
 - DecimalFields were limited to two decimal places for several forms - lifting restrictions on AF, CADD etc.
 
+
 ## [4.74.1]
 ### Changed
 - Parse and save into database also OMIM terms not associated to genes
