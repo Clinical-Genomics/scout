@@ -21,12 +21,11 @@ def test_build_disease_term(adapter, test_disease_id, test_disease):
     assert isinstance(disease_obj, dict)
 
 
-def test_build_disease_wrong_value(test_disease):
+def test_build_disease_wrong_value(test_disease, test_disease_id):
     # GIVEN a dictionary with disease information and genes
     alias_genes = {}
     alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
     # WHEN disease number is not an integer
-    test_disease_id = "OMIM.615349"
     # THEN calling build_disease_term() will raise ValueError
     with pytest.raises(IndexError):
         build_disease_term(test_disease_id, test_disease, alias_genes)
