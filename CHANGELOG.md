@@ -8,7 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Replace the code that downloads Ensembl genes, transcripts and exons with schug library
 ### Fixed
-- command line crashing with error when updating a user that doesn't exist
+- Command line crashing with error when updating a user that doesn't exist
+- Thaw coloredlogs - 15.0.1 restores errorhandler issue
 
 ## [4.75]
 ### Added
