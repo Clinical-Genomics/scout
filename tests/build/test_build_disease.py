@@ -21,7 +21,7 @@ def test_build_disease_term(adapter, test_disease_id, test_disease):
     assert isinstance(disease_obj, dict)
 
 
-def test_build_disease_wrong_value(test_disease, test_disease_id):
+def test_build_disease_wrong_value(test_disease):
     # GIVEN a dictionary with disease information and genes
     alias_genes = {}
     alias_genes["B3GALT6"] = {"true": 17978, "ids": [17978]}
