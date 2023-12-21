@@ -30,7 +30,6 @@ INDEXES = {
         ),
     ],
     "variant": [
-IndexModel(
         IndexModel(
             [
                 ("case_id", ASCENDING),
