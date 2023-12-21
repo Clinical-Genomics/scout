@@ -6,7 +6,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- command line crashing with error when updating a user that doesn't exist
+- Command line crashing with error when updating a user that doesn't exist
+- Thaw coloredlogs - 15.0.1 restores errorhandler issue
 
 ## [4.75]
 ### Added
@@ -32,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Convert RNA fusions variants `tool_hits` and `fusion_score` keys from string to numbers
 - Fix genotype reference and alternative sequencing depths defaulting to -1 when values are 0
 - DecimalFields were limited to two decimal places for several forms - lifting restrictions on AF, CADD etc.
+
 
 ## [4.74.1]
 ### Changed
