@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
 ### Fixed
 - Command line crashing with error when updating a user that doesn't exist
 - Thaw coloredlogs - 15.0.1 restores errorhandler issue
