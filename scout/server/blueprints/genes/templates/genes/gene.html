@@ -102,17 +102,22 @@
               </div>
         </div>
 
-        {% if record.phenotypes %}
+        {% if record.disease_terms %}
         <div class="col-md-4">
             <div class="panel panel-default">
               <div class="panel-heading">Phenotypes</div>
-
-            {% for phenotype in record.phenotypes %}
+            {% for disease in record.disease_terms %}
                 <li class="list-group-item">
-                    {{ phenotype.description }}
+                  {{ disease.description }}
+                  {% if disease.omim_link %}
                     <span class="float-end">
-                        <a target="_blank" href={{ record.omim_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ phenotype.mim_number }}</a>
+                      <a target="_blank" href={{ disease.omim_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ disease.disease_nr }}</a>
                     </span>
+                  {% else %}
+                    <span class="float-end">
+                      {{ disease.disease_nr }}
+                    </span>
+                  {% endif %}
                 </li>
             {% endfor %}
             </div>

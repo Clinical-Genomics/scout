@@ -65,8 +65,12 @@ def gene(store, hgnc_id):
                 )
                 add_tx_links(transcript, build, record["hgnc_symbol"])
 
-            for phenotype in record.get("phenotypes", []):
-                phenotype["omim_link"] = omim(phenotype.get("mim_number"))
+            record["disease_terms"] = store.disease_terms(hgnc_id=record["hgnc_id"])
+
+            for disease in record["disease_terms"]:
+                if disease["source"] == "OMIM":
+                    mim_number = disease["disease_nr"]
+                    disease["omim_link"] = omim(mim_number)
 
             if not res["record"]:
                 res["record"] = record
