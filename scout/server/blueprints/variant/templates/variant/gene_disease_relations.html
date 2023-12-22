@@ -14,21 +14,24 @@
           </thead>
           <tbody>
             {% for gene in variant.genes %}
-              {% if gene.common %}
-                {% for disease_term in gene.common.phenotypes %}
-                  <tr>
-                    <td>
-                        <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
-                          {{ gene.common.hgnc_symbol }}
-                        </a>
-                    </td>
-                    <td>
-                      <a href="http://omim.org/entry/{{ disease_term.mim_number|replace('OMIM:', '') }}" target="_blank">
-                        {{ disease_term.description }}
-                      </a>
-                    </td>
-                    <td>{{ disease_term.inheritance_models|join(', ') }}</td>
-                  </tr>
+              {% if gene.common and gene.disease_terms %}
+                {% for disease_term in gene.disease_terms %}
+                  {% if disease_term._id|replace('OMIM:', '') !=disease_term._id %}
+                    <tr>
+                      <td>
+                          <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
+                            {{ gene.common.hgnc_symbol }}
+                          </a>
+                      </td>
+                      <td>
+
+                          <a href="http://omim.org/entry/{{ disease_term._id|replace('OMIM:', '') }}" target="_blank">
+                            {{ disease_term.description }}
+                          </a>
+                      </td>
+                      <td>{{ disease_term.inheritance_models|join(', ') }}</td>
+                    </tr>
+                  {% endif %}
                 {% endfor %}
               {% endif %}
             {% endfor %}
