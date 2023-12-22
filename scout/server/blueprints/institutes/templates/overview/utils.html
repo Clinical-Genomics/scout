@@ -382,7 +382,7 @@
             </td>
             <td><!-- CADD score -->
               {% if variant.cadd_score %}
-                <span class="badge bg-secondary">{{ variant.cadd_score }}</span>
+                <span class="badge bg-secondary">{{ variant.cadd_score|round(2) }}</span>
               {% else %}
                 -
               {% endif %}
