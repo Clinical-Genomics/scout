@@ -310,7 +310,7 @@
           <th data-bs-toggle='tooltip' data-bs-container='body' title="score(model version)">Rank score</th>
           <th>Revel score</th>
           <th>Revel rank score</th>
-          <th>SpliceAI</th>
+          <th>SpliceAI DS max</th>
           <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
           <th>Inheritance</th>
           <th>ACMG</th>
@@ -419,7 +419,7 @@
               {% endif %}
             </td>
             <td><!-- SpliceAI -->
-            {{variant.spliceai_scores|join(', ')}}
+            {{ variant.spliceai_scores|list_remove_none|join(', ') }}
             </td>
             <td><!-- Zygosity -->
               {%- for sample in variant.samples -%}

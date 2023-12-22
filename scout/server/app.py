@@ -263,6 +263,11 @@ def register_filters(app):
         """Returns the elements that are common in 2 lists"""
         return list(set(list1) & set(list2))
 
+    @app.template_filter()
+    def list_remove_none(in_list:list) -> list:
+        """Returns a list after removing any None values from it."""
+        return [item for item in in_list if item is not None]
+
 
 def register_tests(app):
     @app.template_test("existing")
