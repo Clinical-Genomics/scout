@@ -87,10 +87,12 @@ class DiagnosisHandler(object):
 
     def disease_term(
         self,
-        disease_identifier: str,
+        disease_identifier: Union[str, int],
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
         """Return a disease term after filtering out associated genes and HPO terms (using filter project)."""
+        if type(disease_identifier == int):
+            disease_identifier = "OMIM:" + str(disease_identifier)
         query = {"disease_id": disease_identifier}
 
         return self.disease_term_collection.find_one(query, filter_project)
