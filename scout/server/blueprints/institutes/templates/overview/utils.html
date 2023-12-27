@@ -329,7 +329,7 @@
               {% endif %}
             </td>
             <td><!-- Variant link -->
-              {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant",  "mei": "variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
+              {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant",  "mei": "variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant", "fusion": "variant.variant"} %}
               {% for key, page in var_type_page.items() %}
                 {% if variant.category == key %}
                   <a target="_blank" rel="noopener noreferrer" href="{{ url_for(page,
