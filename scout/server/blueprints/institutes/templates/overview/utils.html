@@ -400,26 +400,20 @@
               {% endif %}
               </span>
             </td>
-            <td><!-- REVEL score -->
-              {% if variant.revel %}
-              <span class="badge rounded-pill bg-secondary">
-                {{variant.revel}}
-              </span>
+            <!-- Revel scores -->
+            {% for score in [variant.revel, variant.revel_score] %}
+            <td>
+              {% if score %}
+                <span class="badge rounded-pill bg-secondary">
+                  {{variant.revel}}
+                </span>
               {% else %}
-               -
+                -
               {% endif %}
             </td>
-            <td><!-- REVEL rank score -->
-              {% if variant.revel_score %}
-              <span class="badge rounded-pill bg-secondary">
-                {{variant.revel_score}}
-              </span>
-              {% else %}
-               -
-              {% endif %}
-            </td>
+            {% endfor %}
             <td><!-- SpliceAI -->
-            {{ variant.spliceai_scores|list_remove_none|join(', ') }}
+            {{ variant.spliceai_scores|list_remove_none|join(', ') if variant.spliceai_scores else "-" }}
             </td>
             <td><!-- Zygosity -->
               {%- for sample in variant.samples -%}
