@@ -101,10 +101,10 @@ class DiagnosisHandler(object):
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> list:
         """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project. By default do not return disease-associated genes and HPO terms."""
-        query = {}
+        query = {"source": "OMIM"}
         if hgnc_id:
             LOG.debug("Fetching all diseases for gene %s", hgnc_id)
-            query["genes"] = hgnc_id
+            query = {"$and": [{"source": "OMIM"}, {"genes": hgnc_id}]}
         else:
             LOG.info("Fetching all disease terms")
 
