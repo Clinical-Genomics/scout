@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Command line crashing with error when updating a user that doesn't exist
 - Thaw coloredlogs - 15.0.1 restores errorhandler issue
+- Empty cells for RNA fusion variants in Causatives and Verified variants pages
 
 ## [4.75]
 ### Added

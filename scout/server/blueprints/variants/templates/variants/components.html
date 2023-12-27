@@ -23,6 +23,25 @@
   </div>
 {% endmacro %}
 
+{% macro fusion_variant_gene_symbols_cell(variant) %}
+<div class="align-items-center">
+  {% if variant.genes %}
+    {% for gene in variant.genes %}
+       <a data-bs-toggle="tooltip" data-bs-html="true" title="
+         <div>
+              <strong>{{ gene.hgnc_symbol or gene.hgnc_id }}</strong>:  {{ gene.description }}
+         </div>"
+        href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
+        </a> <br>
+    {% endfor %}
+  {% else %}
+    {% for symbol in variant.fusion_genes %}
+      {{ symbol }} <br>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endmacro %}
+
 {% macro variant_funct_anno_cell(variant) %}
   <div class="d-flex justify-content-between align-items-center">
     <div>
