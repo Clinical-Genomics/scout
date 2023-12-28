@@ -237,7 +237,9 @@ def test_phenomodel_add_delete_subpanel(app, user_obj, institute_obj):
         assert updated_model["subpanels"] == {}
 
 
-def test_phenomodel_post_add_omim_checkbox_to_subpanel(app, user_obj, institute_obj, omim_checkbox):
+def test_phenomodel_post_add_omim_checkbox_to_subpanel(
+    app, user_obj, institute_obj, test_omim_term
+):
     """Test adding an OMIM checkbox to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
@@ -250,7 +252,7 @@ def test_phenomodel_post_add_omim_checkbox_to_subpanel(app, user_obj, institute_
     assert model_obj["subpanels"]["subpanel_x"]
 
     # GIVEN that database contains the HPO term to add to the subopanel
-    store.disease_term_collection.insert_one(omim_checkbox)
+    store.disease_term_collection.insert_one(test_omim_term)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -262,7 +264,7 @@ def test_phenomodel_post_add_omim_checkbox_to_subpanel(app, user_obj, institute_
             omim_subpanel_id="subpanel_x",
             omimHasTitle="on",
             omimTermTitle="Title for term",
-            omim_term=" | ".join([omim_checkbox["_id"], omim_checkbox["description"]]),
+            omim_term=" | ".join([test_omim_term["_id"], test_omim_term["description"]]),
             omim_custom_name="Alternative OMIM name",
             add_omim="",
         )
@@ -276,10 +278,10 @@ def test_phenomodel_post_add_omim_checkbox_to_subpanel(app, user_obj, institute_
         )
         # THEN the term should have been added to the subpanel checkboxe
         updated_model = store.phenomodel_collection.find_one()
-        checkbox = updated_model["subpanels"]["subpanel_x"]["checkboxes"]["OMIM:121210"]
-        assert checkbox["name"] == "OMIM:121210"
+        checkbox = updated_model["subpanels"]["subpanel_x"]["checkboxes"][test_omim_term["_id"]]
+        assert checkbox["name"] == test_omim_term["_id"]
         assert checkbox["checkbox_type"] == "omim"
-        assert checkbox["description"] == "Febrile seizures familial 1"
+        assert checkbox["description"] == test_omim_term["description"]
         assert checkbox["term_title"] == form_data["omimTermTitle"]
         assert checkbox["custom_name"] == form_data["omim_custom_name"]
 
