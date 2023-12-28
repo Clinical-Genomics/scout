@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from typing import List
+from typing import List, Optional
 import pymongo
 
 from scout.constants import PHENOTYPE_GROUPS
@@ -36,26 +36,26 @@ class InstituteHandler(object):
     def update_institute(
         self,
         internal_id: str,
-        sanger_recipient: str = None,
-        sanger_recipients: List[str] = None,
-        coverage_cutoff: int = None,
-        frequency_cutoff: float = None,
-        show_all_cases_categories: List[str] = None,
-        display_name: str = None,
-        remove_sanger: str = None,
-        phenotype_groups: List[str] = None,
-        gene_panels: dict = None,
-        gene_panels_matching: dict = None,
-        group_abbreviations: List[str] = None,
-        add_groups: bool = None,
-        sharing_institutes: List[str] = None,
-        cohorts: List[str] = None,
-        loqusdb_ids: List[str] = [],
-        alamut_key: str = None,
-        alamut_institution: str = None,
-        check_show_all_vars: str = None,
-        clinvar_key: str = None,
-        clinvar_submitters: List[str] = None,
+        sanger_recipient: Optional[str] = None,
+        sanger_recipients: Optional[List[str]] = None,
+        coverage_cutoff: Optional[int] = None,
+        frequency_cutoff: Optional[float] = None,
+        show_all_cases_categories: Optional[List[str]] = None,
+        display_name: Optional[str] = None,
+        remove_sanger: Optional[str] = None,
+        phenotype_groups: Optional[List[str]] = None,
+        gene_panels: Optional[dict] = None,
+        gene_panels_matching: Optional[dict] = None,
+        group_abbreviations: Optional[List[str]] = None,
+        add_groups: Optional[bool] = None,
+        sharing_institutes: Optional[List[str]] = None,
+        cohorts: Optional[List[str]] = None,
+        loqusdb_ids: Optional[List[str]] = [],
+        alamut_key: Optional[str] = None,
+        alamut_institution: Optional[str] = None,
+        check_show_all_vars: Optional[str] = None,
+        clinvar_key: Optional[str] = None,
+        clinvar_submitters: Optional[List[str]] = None,
     ) -> dict:
         """Update the information for an institute."""
 
