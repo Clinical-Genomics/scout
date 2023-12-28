@@ -458,25 +458,10 @@ def cases(store, request, institute_id):
         "track": 1,
         "vcf_files": 1,
     }
-    prioritized_cases = store.prioritized_cases(institute_id=institute_id)
-    all_cases = store.cases(
-        collaborator=institute_id,
-        name_query=name_query,
-        skip_assigned=request.args.get("skip_assigned"),
-        is_research=request.args.get("is_research"),
-        has_rna_data=request.args.get("has_rna"),
-        verification_pending=request.args.get("validation_ordered"),
-        has_clinvar_submission=request.args.get("clinvar_submitted"),
-        projection=ALL_CASES_PROJECTION,
-    )
-    all_cases = _sort_cases(data, request, all_cases)
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
     data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
-
-    case_groups = {status: [] for status in CASE_STATUSES}
-    nr_cases = 0
 
     # local function to add info to case obj
     def populate_case_obj(case_obj):
@@ -504,28 +489,48 @@ def cases(store, request, institute_id):
         case_obj["display_track"] = TRACKS[case_obj.get("track", "rare")]
         return case_obj
 
-    for nr_cases, case_obj in enumerate(all_cases.limit(limit), 1):
-        case_obj = populate_case_obj(case_obj)
-        case_groups[case_obj["status"]].append(case_obj)
+    case_groups = {status: [] for status in CASE_STATUSES}
+    found_cases = 0 # cases returned according to query limit param + institute's settings
 
-    if prioritized_cases:
-        extra_prioritized = 0
-        for case_obj in prioritized_cases:
-            if any(
-                group_obj.get("display_name") == case_obj.get("display_name")
-                for group_obj in case_groups[case_obj["status"]]
-            ):
-                continue
-            else:
-                extra_prioritized += 1
-                case_obj = populate_case_obj(case_obj)
-                case_groups[case_obj["status"]].append(case_obj)
-        # extra prioritized cases are potentially shown in addition to the case query limit
-        nr_cases += extra_prioritized
+    # In institute settings, retrieve all case status categories for which all cases should be displayed
+    status_show_all_cases: List[str] = institute_obj.get("show_all_cases_categories", ["prioritized"])
+    for status in status_show_all_cases:
+        cases_in_status = store.cases_by_status(institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION)
+        cases_in_status = _sort_cases(data, request, cases_in_status)
+        for case_obj in cases_in_status:
+            populate_case_obj(case_obj)
+            found_cases += 1
+            case_groups[status].append(case_obj)
+
+    # Retrieve cases for the remaining status categories
+    all_cases = store.cases(
+        collaborator=institute_id,
+        name_query=name_query,
+        skip_assigned=request.args.get("skip_assigned"),
+        is_research=request.args.get("is_research"),
+        has_rna_data=request.args.get("has_rna"),
+        verification_pending=request.args.get("validation_ordered"),
+        has_clinvar_submission=request.args.get("clinvar_submitted"),
+        projection=ALL_CASES_PROJECTION,
+    )
+    all_cases = _sort_cases(data, request, all_cases)
+
+    nr_cases = 0
+    for case_obj in all_cases:
+        if case_obj["status"] in status_show_all_cases:
+            continue
+        if nr_cases == limit+1:
+            break
+        populate_case_obj(case_obj)
+        case_groups[status].append(case_obj)
+        nr_cases +=1
+
+    nr_cases += found_cases
 
     data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
     data["found_cases"] = nr_cases
     data["limit"] = limit
+
     return data
 
 
