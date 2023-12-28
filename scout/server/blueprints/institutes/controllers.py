@@ -490,7 +490,7 @@ def cases(store, request, institute_id):
         return case_obj
 
     case_groups = {status: [] for status in CASE_STATUSES}
-    found_cases = 0  # cases returned according to query limit param + institute's settings
+    nr_cases_showall_statuses = 0  # Nr of cases for the case statuses where all cases should be shown
 
     # In institute settings, retrieve all case status categories for which all cases should be displayed
     status_show_all_cases: List[str] = institute_obj.get(
@@ -503,7 +503,7 @@ def cases(store, request, institute_id):
         cases_in_status = _sort_cases(data, request, cases_in_status)
         for case_obj in cases_in_status:
             populate_case_obj(case_obj)
-            found_cases += 1
+            nr_cases_showall_statuses += 1
             case_groups[status].append(case_obj)
 
     # Retrieve cases for the remaining status categories
@@ -529,7 +529,7 @@ def cases(store, request, institute_id):
         case_groups[status].append(case_obj)
         nr_cases += 1
 
-    nr_cases += found_cases
+    nr_cases += nr_cases_showall_statuses
 
     data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
     data["found_cases"] = nr_cases
