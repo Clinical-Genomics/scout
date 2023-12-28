@@ -582,15 +582,8 @@ class CaseHandler(object):
     def cases_by_status(
         self, status: str, institute_id: Optional[str] = None, projection: Optional[Dict] = None
     ):
-<<<<<<< HEAD
-        """retrieves all cases for an institute given their status."""
-=======
-        """Fetches any prioritized cases from the backend.
 
-        Args:
-            institute_id(str): id of an institute
-        """
->>>>>>> a94438f5a037d73bc79022cf907686202cdd82fa
+        """retrieves all cases for an institute given their status."""
         query = {}
 
         if institute_id:
