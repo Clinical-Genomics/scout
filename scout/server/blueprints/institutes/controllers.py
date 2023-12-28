@@ -20,7 +20,6 @@ from scout.constants import (
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
-from scout.models.case import STATUS
 
 from .forms import BeaconDatasetForm, CaseFilterForm
 
