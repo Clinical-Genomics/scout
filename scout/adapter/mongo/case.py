@@ -580,11 +580,7 @@ class CaseHandler(object):
         return sanger_missing_cases
 
     def cases_by_status(self, status:str, institute_id:Optional[str]=None, projection: Optional[Dict] = None):
-        """Fetches any prioritized cases from the backend.
-
-        Args:
-            institute_id(str): id of an institute
-        """
+        """retrieves all cases for an institute given their status."""
         query = {}
 
         if institute_id:
