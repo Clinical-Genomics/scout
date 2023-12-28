@@ -490,12 +490,16 @@ def cases(store, request, institute_id):
         return case_obj
 
     case_groups = {status: [] for status in CASE_STATUSES}
-    found_cases = 0 # cases returned according to query limit param + institute's settings
+    found_cases = 0  # cases returned according to query limit param + institute's settings
 
     # In institute settings, retrieve all case status categories for which all cases should be displayed
-    status_show_all_cases: List[str] = institute_obj.get("show_all_cases_categories", ["prioritized"])
+    status_show_all_cases: List[str] = institute_obj.get(
+        "show_all_cases_categories", ["prioritized"]
+    )
     for status in status_show_all_cases:
-        cases_in_status = store.cases_by_status(institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION)
+        cases_in_status = store.cases_by_status(
+            institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION
+        )
         cases_in_status = _sort_cases(data, request, cases_in_status)
         for case_obj in cases_in_status:
             populate_case_obj(case_obj)
@@ -519,11 +523,11 @@ def cases(store, request, institute_id):
     for case_obj in all_cases:
         if case_obj["status"] in status_show_all_cases:
             continue
-        if nr_cases == limit+1:
+        if nr_cases == limit + 1:
             break
         populate_case_obj(case_obj)
         case_groups[status].append(case_obj)
-        nr_cases +=1
+        nr_cases += 1
 
     nr_cases += found_cases
 
