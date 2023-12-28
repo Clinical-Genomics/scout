@@ -490,7 +490,9 @@ def cases(store, request, institute_id):
         return case_obj
 
     case_groups = {status: [] for status in CASE_STATUSES}
-    nr_cases_showall_statuses = 0  # Nr of cases for the case statuses where all cases should be shown
+    nr_cases_showall_statuses = (
+        0  # Nr of cases for the case statuses where all cases should be shown
+    )
 
     # In institute settings, retrieve all case status categories for which all cases should be displayed
     status_show_all_cases: List[str] = institute_obj.get(
