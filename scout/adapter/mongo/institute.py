@@ -35,27 +35,27 @@ class InstituteHandler(object):
 
     def update_institute(
         self,
-        internal_id:str,
-        sanger_recipient:str=None,
-        sanger_recipients:List[str]=None,
-        coverage_cutoff:int=None,
-        frequency_cutoff:float=None,
-        show_all_cases_categories:List[str]=None,
-        display_name:str=None,
-        remove_sanger:str=None,
-        phenotype_groups:List[str]=None,
-        gene_panels:dict=None,
-        gene_panels_matching:dict=None,
-        group_abbreviations:List[str]=None,
-        add_groups:bool=None,
-        sharing_institutes:List[str]=None,
-        cohorts:List[str]=None,
-        loqusdb_ids:List[str]=[],
-        alamut_key:str=None,
-        alamut_institution:str=None,
-        check_show_all_vars:str=None,
-        clinvar_key:str=None,
-        clinvar_submitters:List[str]=None,
+        internal_id: str,
+        sanger_recipient: str = None,
+        sanger_recipients: List[str] = None,
+        coverage_cutoff: int = None,
+        frequency_cutoff: float = None,
+        show_all_cases_categories: List[str] = None,
+        display_name: str = None,
+        remove_sanger: str = None,
+        phenotype_groups: List[str] = None,
+        gene_panels: dict = None,
+        gene_panels_matching: dict = None,
+        group_abbreviations: List[str] = None,
+        add_groups: bool = None,
+        sharing_institutes: List[str] = None,
+        cohorts: List[str] = None,
+        loqusdb_ids: List[str] = [],
+        alamut_key: str = None,
+        alamut_institution: str = None,
+        check_show_all_vars: str = None,
+        clinvar_key: str = None,
+        clinvar_submitters: List[str] = None,
     ) -> dict:
         """Update the information for an institute."""
 
@@ -99,7 +99,7 @@ class InstituteHandler(object):
             "loqusdb_id": loqusdb_ids,
             "sanger_recipients": sanger_recipients,
             "clinvar_submitters": clinvar_submitters,
-            "show_all_cases_categories": show_all_cases_categories
+            "show_all_cases_categories": show_all_cases_categories,
         }
         for key, value in GENERAL_SETTINGS.items():
             if value not in [None, ""]:

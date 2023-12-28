@@ -270,7 +270,9 @@ def populate_institute_form(form, institute_obj):
     form.institutes.choices = institutes_tuples
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
-    form.show_all_cases_categories.data = institute_obj.get("show_all_cases_categories") or ["prioritized"]
+    form.show_all_cases_categories.data = institute_obj.get("show_all_cases_categories") or [
+        "prioritized"
+    ]
 
     # collect all available default HPO terms and populate the pheno_groups form select with these values
     default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
@@ -321,7 +323,6 @@ def update_institute_settings(store, institute_obj, form):
     gene_panels_matching = {}
     group_abbreviations = []
     cohorts = []
-
 
     for email in form.getlist("sanger_emails"):
         sanger_recipients.append(email.strip())

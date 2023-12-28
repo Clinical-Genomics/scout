@@ -106,7 +106,10 @@ class InstituteForm(FlaskForm):
         choices=[],
     )
 
-    show_all_cases_categories = NonValidatingSelectMultipleField("Always display all cases from the following categories", choices=[(status, status) for status in STATUS])
+    show_all_cases_categories = NonValidatingSelectMultipleField(
+        "Always display all cases from the following categories",
+        choices=[(status, status) for status in STATUS],
+    )
 
     submit_btn = SubmitField("Save settings")
 
