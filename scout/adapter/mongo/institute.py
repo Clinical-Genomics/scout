@@ -56,7 +56,7 @@ class InstituteHandler(object):
         check_show_all_vars: Optional[str] = None,
         clinvar_key: Optional[str] = None,
         clinvar_submitters: Optional[List[str]] = None,
-    ) -> dict:
+    ) -> Union[dict, str]:
         """Update the information for an institute."""
 
         add_groups = add_groups or False
