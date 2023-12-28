@@ -529,10 +529,8 @@ def cases(store, request, institute_id):
         case_groups[status].append(case_obj)
         nr_cases += 1
 
-    nr_cases += nr_cases_showall_statuses
-
     data["cases"] = [(status, case_groups[status]) for status in CASE_STATUSES]
-    data["found_cases"] = nr_cases
+    data["found_cases"] = nr_cases + nr_cases_showall_statuses
     data["limit"] = limit
 
     return data
