@@ -14,7 +14,7 @@ from wtforms import (
 from wtforms.widgets import PasswordInput, TextInput
 
 from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS
-from scout.server.extensions import store
+from scout.models.case import STATUS
 
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
@@ -105,6 +105,8 @@ class InstituteForm(FlaskForm):
         ],
         choices=[],
     )
+
+    show_all_cases_categories = NonValidatingSelectMultipleField("Always display all cases from the following categories", choices=[(status, status) for status in STATUS])
 
     submit_btn = SubmitField("Save settings")
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-import re
 from typing import Dict, List, Optional, Tuple
 
 from flask import Response, current_app, flash, url_for
@@ -21,6 +20,7 @@ from scout.constants import (
 from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
+from scout.models.case import STATUS
 
 from .forms import BeaconDatasetForm, CaseFilterForm
 
@@ -270,6 +270,7 @@ def populate_institute_form(form, institute_obj):
     form.institutes.choices = institutes_tuples
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
+    form.show_all_cases_categories.data = institute_obj.get("show_all_cases_categories") or ["prioritized"]
 
     # collect all available default HPO terms and populate the pheno_groups form select with these values
     default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
@@ -321,6 +322,7 @@ def update_institute_settings(store, institute_obj, form):
     group_abbreviations = []
     cohorts = []
 
+
     for email in form.getlist("sanger_emails"):
         sanger_recipients.append(email.strip())
 
@@ -362,6 +364,7 @@ def update_institute_settings(store, institute_obj, form):
         sanger_recipients=sanger_recipients,
         coverage_cutoff=int(form.get("coverage_cutoff")),
         frequency_cutoff=float(form.get("frequency_cutoff")),
+        show_all_cases_categories=form.getlist("show_all_cases_categories"),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
         gene_panels=gene_panels,
