@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
-
 from typing import List, Optional
+
 import pymongo
 
 from scout.constants import PHENOTYPE_GROUPS
