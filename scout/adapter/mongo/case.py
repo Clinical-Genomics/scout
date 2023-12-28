@@ -582,7 +582,6 @@ class CaseHandler(object):
     def cases_by_status(
         self, status: str, institute_id: Optional[str] = None, projection: Optional[Dict] = None
     ):
-
         """retrieves all cases for an institute given their status."""
         query = {}
 
