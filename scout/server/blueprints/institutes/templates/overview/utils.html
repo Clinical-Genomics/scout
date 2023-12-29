@@ -81,6 +81,7 @@
             <!-- End of general settings -->
 
             <!-- Show cases settings -->
+            {% if "admin" in current_user.roles %}
             <div class="row mt-3 d-flex align-items-center">
               <fieldset>
                 <legend>Cases display settings</legend>
@@ -92,6 +93,7 @@
                 </div>
               </fieldset>
             </div>
+            {% endif %}
             <!-- End of show cases settings -->
 
             <!-- Phenotype groups settings -->
