@@ -273,13 +273,15 @@ class Image(BaseModel):
 
     @field_validator("path", mode="before")
     @classmethod
-    def check_image_format(cls, path: str) -> Optional[str]:
+    def check_image_path(cls, path: str) -> Optional[str]:
         """Make sure that the image is has standard format."""
         image_format: str = path.split(".")[-1]
         if image_format not in SUPPORTED_IMAGE_FORMATS:
             raise TypeError(
                 f"Custom images should be of type: {', '.join(SUPPORTED_IMAGE_FORMATS)}"
             )
+        if "{REPID}" not in path and _is_string_path(path) is False:
+            raise ValueError(f"Image path '{path}' is not valid.")
         return path
 
 
@@ -320,6 +322,7 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
                 real_folder_images.append(Image(**new_image))
         else:
             real_folder_images.append(image)  # append other non-repid images
+
 
     return real_folder_images
 
