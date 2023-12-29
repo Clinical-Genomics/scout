@@ -323,7 +323,6 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
         else:
             real_folder_images.append(image)  # append other non-repid images
 
-
     return real_folder_images
 
 
