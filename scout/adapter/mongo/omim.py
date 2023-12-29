@@ -75,7 +75,7 @@ class DiagnosisHandler(object):
         query: dict = {"_id": {"$in": omim_ids}}
 
         return self.disease_term_collection.find(query, filter_project).sort(
-            "disease_nr", ASCENDING
+            "disease_id", ASCENDING
         )
 
     def omim_to_genes(self, omim_obj: dict) -> List[dict]:
@@ -87,7 +87,7 @@ class DiagnosisHandler(object):
 
     def disease_term(
         self,
-        disease_identifier: Union[str, int],
+        disease_identifier: str,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
         """Return a disease term after filtering out associated genes and HPO terms (using filter project)."""
