@@ -526,7 +526,7 @@ def cases(store, request, institute_id):
         case_status = case_obj["status"]
         if case_status in status_show_all_cases:
             continue
-        if nr_cases == limit + 1:
+        if nr_cases == limit:
             break
         populate_case_obj(case_obj)
         case_groups[case_status].append(case_obj)
