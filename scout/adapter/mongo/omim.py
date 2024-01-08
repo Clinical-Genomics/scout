@@ -91,8 +91,7 @@ class DiagnosisHandler(object):
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
         """Return a disease term after filtering out associated genes and HPO terms (using filter project)."""
-        if type(disease_identifier) is int or "ORPHA" and "OMIM" not in disease_identifier:
-            disease_identifier = "OMIM:" + str(disease_identifier)
+
         query = {"disease_id": disease_identifier}
 
         return self.disease_term_collection.find_one(query, filter_project)

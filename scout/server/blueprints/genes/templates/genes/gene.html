@@ -111,11 +111,11 @@
                   {{ disease.description }}
                   {% if disease.omim_link %}
                     <span class="float-end">
-                      <a target="_blank" href={{ disease.omim_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ disease.disease_nr }}</a>
+                      <a target="_blank" href={{ disease.omim_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ disease.disease_id }}</a>
                     </span>
                   {% else %}
                     <span class="float-end">
-                      {{ disease.disease_nr }}
+                      {{ disease.disease_id }}
                     </span>
                   {% endif %}
                 </li>
