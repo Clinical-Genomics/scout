@@ -20,7 +20,7 @@ TEST_MODEL_NAME = "Test model"
 TEST_MODEL_DESC = "Test model description"
 
 
-def test_create_phenomodel(app, user_obj, institute_obj):
+def test_create_phenomodel(app, institute_obj):
     """Test the view showing the available phenotype models for an institute, after sending POST request with new phenotype model data"""
 
     # GIVEN an initialized app
@@ -45,7 +45,7 @@ def test_create_phenomodel(app, user_obj, institute_obj):
         assert store.phenomodel_collection.find_one()
 
 
-def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
+def test_remove_phenomodel(app, institute_obj, mocker, mock_redirect):
     """Testing the endpoint to remove an existing phenotype model for an institute"""
 
     mocker.patch(PHENOMODELS_REDIRECT_URL, return_value=mock_redirect)
@@ -72,7 +72,7 @@ def test_remove_phenomodel(app, user_obj, institute_obj, mocker, mock_redirect):
         assert store.phenomodel_collection.find_one() is None
 
 
-def test_phenomodel_get(app, user_obj, institute_obj):
+def test_phenomodel_get(app, institute_obj):
     """test the phenomodel page endpoint, GET request"""
 
     # GIVEN an institute with a phenotype model
@@ -95,7 +95,7 @@ def test_phenomodel_get(app, user_obj, institute_obj):
         assert TEST_MODEL_NAME in str(resp.data)
 
 
-def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
+def test_phenomodel_lock(app, institute_obj, mocker, mock_redirect):
     """Test the endpoint to lock a phenomodel and make it editable only by admins"""
 
     mocker.patch(PHENOMODELS_REDIRECT_URL, return_value=mock_redirect)
@@ -125,7 +125,7 @@ def test_phenomodel_lock(app, user_obj, institute_obj, mocker, mock_redirect):
         assert locked_model["admins"] == [current_user.email] + admins
 
 
-def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
+def test_phenomodel_unlock(app, institute_obj, mocker, mock_redirect):
     """Test the endpoint to unlock a phenomodel and make it editable only by all users"""
 
     mocker.patch(PHENOMODELS_REDIRECT_URL, return_value=mock_redirect)
@@ -159,7 +159,7 @@ def test_phenomodel_unlock(app, user_obj, institute_obj, mocker, mock_redirect):
         assert unlocked_model["admins"] == []
 
 
-def test_phenomodel_rename_model(app, user_obj, institute_obj):
+def test_phenomodel_rename_model(app, institute_obj):
     """Test the phenomodel endpoing, POST request for updating model info"""
 
     # GIVEN an institute with a phenotype model
@@ -189,7 +189,7 @@ def test_phenomodel_rename_model(app, user_obj, institute_obj):
     assert updated_model["name"] == "New model"
 
 
-def test_phenomodel_add_delete_subpanel(app, user_obj, institute_obj):
+def test_phenomodel_add_delete_subpanel(app, institute_obj):
     """Test the phenomodel endpoint, by sending requests for adding and deleting a subpanel"""
     # GIVEN an institute with a phenotype model having no subpanels
     store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
@@ -237,56 +237,7 @@ def test_phenomodel_add_delete_subpanel(app, user_obj, institute_obj):
         assert updated_model["subpanels"] == {}
 
 
-def test_phenomodel_post_add_omim_checkbox_to_subpanel(
-    app, user_obj, institute_obj, test_omim_term
-):
-    """Test adding an OMIM checkbox to a subpanel of a phenotype model via POST request"""
-
-    # GIVEN an institute with a phenotype model
-    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
-    model_obj = store.phenomodel_collection.find_one()
-    # containing a subpanel
-    model_obj["subpanels"] = {"subpanel_x": TEST_SUBPANEL}
-    store.update_phenomodel(model_obj["_id"], model_obj)
-    model_obj = store.phenomodel_collection.find_one()
-    assert model_obj["subpanels"]["subpanel_x"]
-
-    # GIVEN that database contains the HPO term to add to the subopanel
-    store.disease_term_collection.insert_one(test_omim_term)
-
-    # GIVEN an initialized app
-    # GIVEN a valid user and institute
-    with app.test_client() as client:
-        client.get(url_for("auto_login"))
-
-        # WHEN the user creates an OMIM checkbox using the endpoint
-        form_data = dict(
-            omim_subpanel_id="subpanel_x",
-            omimHasTitle="on",
-            omimTermTitle="Title for term",
-            omim_term=" | ".join([test_omim_term["_id"], test_omim_term["description"]]),
-            omim_custom_name="Alternative OMIM name",
-            add_omim="",
-        )
-        client.post(
-            url_for(
-                PHENOMODELS_CHECKBOX_EDIT_URL,
-                institute_id=institute_obj["internal_id"],
-                model_id=model_obj["_id"],
-            ),
-            data=form_data,
-        )
-        # THEN the term should have been added to the subpanel checkboxe
-        updated_model = store.phenomodel_collection.find_one()
-        checkbox = updated_model["subpanels"]["subpanel_x"]["checkboxes"][test_omim_term["_id"]]
-        assert checkbox["name"] == test_omim_term["_id"]
-        assert checkbox["checkbox_type"] == "omim"
-        assert checkbox["description"] == test_omim_term["description"]
-        assert checkbox["term_title"] == form_data["omimTermTitle"]
-        assert checkbox["custom_name"] == form_data["omim_custom_name"]
-
-
-def test_phenomodel_post_add_hpo_checkbox_to_subpanel(app, user_obj, institute_obj, hpo_checkboxes):
+def test_phenomodel_post_add_hpo_checkbox_to_subpanel(app, institute_obj, hpo_checkboxes):
     """Test adding an HPO checkbox with its children to a subpanel of a phenotype model via POST request"""
 
     # GIVEN an institute with a phenotype model
@@ -338,7 +289,7 @@ def test_phenomodel_post_add_hpo_checkbox_to_subpanel(app, user_obj, institute_o
         assert checkbox["children"] == [nested_hpo_term]
 
 
-def test_phenomodel_post_remove_subpanel_checkbox(app, user_obj, institute_obj):
+def test_phenomodel_post_remove_subpanel_checkbox(app, institute_obj):
     """Test removing a single checkbox from a phenotype model subpanel"""
 
     # GIVEN an institute with a phenotype model
