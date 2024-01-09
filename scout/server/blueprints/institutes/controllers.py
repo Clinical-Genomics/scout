@@ -313,7 +313,7 @@ def update_institute_settings(store, institute_obj, form):
 
     """
     sanger_recipients = []
-    clinvar_submitters = []
+    clinvar_submitters = None
     sharing_institutes = []
     phenotype_groups = []
     gene_panels = {}
@@ -324,8 +324,10 @@ def update_institute_settings(store, institute_obj, form):
     for email in form.getlist("sanger_emails"):
         sanger_recipients.append(email.strip())
 
-    for email in form.getlist("clinvar_emails"):
-        clinvar_submitters.append(email.strip())
+    if current_user.is_admin:
+        clinvar_submitters = []
+        for email in form.getlist("clinvar_emails"):
+            clinvar_submitters.append(email.strip())
 
     for inst in form.getlist("institutes"):
         sharing_institutes.append(inst)
