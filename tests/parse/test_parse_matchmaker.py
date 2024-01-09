@@ -1,4 +1,5 @@
 from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, parse_matches
+import pytest
 
 
 def test_parse_hpo_terms(case_obj, test_hpo_terms):
@@ -16,16 +17,17 @@ def test_parse_hpo_terms(case_obj, test_hpo_terms):
         assert feature["observed"] == "yes"
 
 
-def test_omim_terms(adapter, case_obj, test_omim_term):
+@pytest.mark.parametrize("key", [("disease_nr"), ("disease_id")])
+def test_omim_terms(adapter, case_obj, test_omim_term, key):
     """Test extracting and formatting OMIM terms from a case for a MatchMaker submission"""
 
     # GIVEN a database containing an OMIM term
     adapter.disease_term_collection.insert_one(test_omim_term)
 
     # GIVEN a case with OMIM terms
-    case_obj["diagnosis_phenotypes"] = [test_omim_term["disease_nr"]]
+    case_obj["diagnosis_phenotypes"] = [test_omim_term[key]]
 
-    # THEN the omim_terms function shuld extract OMIM terms with an ID and a label
+    # THEN the omim_terms function should extract OMIM terms with an ID and a label
     disorders = omim_terms(adapter, case_obj)
     assert disorders[0]["id"] == f"MIM:{test_omim_term['disease_nr']}"
     assert disorders[0]["label"] == test_omim_term["description"]
