@@ -335,39 +335,37 @@ def get_loqusdb_ids(form: MultiDict) -> Optional[List[str]]:
     return form.getlist("loqusdb_id")
 
 
-def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: MultiDict) -> Dict:
-    """Update institute settings with data collected from institute form."""
+def get_gene_panels(store: MongoAdapter, form: MultiDict, tag: str) -> Dict:
+    """
+    Return gene panel objects checked in the corresponding form multiselect.
 
-    phenotype_groups = []
-    gene_panels = {}
-    gene_panels_matching = {}
-    group_abbreviations = []
-    cohorts = []
-
-    sharing_institutes = []
-    for inst in form.getlist("institutes"):
-        sharing_institutes.append(inst)
-
-    for pheno_group in form.getlist("pheno_groups"):
-        phenotype_groups.append(pheno_group.split(" ,")[0])
-        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
-
-    if form.get("hpo_term") and form.get("pheno_abbrev"):
-        phenotype_groups.append(form["hpo_term"].split(" |")[0])
-        group_abbreviations.append(form["pheno_abbrev"])
-
-    for panel_name in form.getlist("gene_panels"):
+    tag as in the form e.g. "gene_panels" or "gene_panels_matching".
+    """
+    for panel_name in form.getlist(tag):
         panel_obj = store.gene_panel(panel_name)
         if panel_obj is None:
             continue
         gene_panels[panel_name] = panel_obj["display_name"]
 
-    for panel_name in form.getlist("gene_panels_matching"):
-        panel_obj = store.gene_panel(panel_name)
-        if panel_obj is None:
-            continue
-        gene_panels_matching[panel_name] = panel_obj["display_name"]
 
+def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: MultiDict) -> Dict:
+    """Update institute settings with data collected from institute form."""
+
+    sharing_institutes = []
+    for inst in form.getlist("institutes"):
+        sharing_institutes.append(inst)
+
+    phenotype_groups = []
+    for pheno_group in form.getlist("pheno_groups"):
+        phenotype_groups.append(pheno_group.split(" ,")[0])
+        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
+
+    group_abbreviations = []
+    if form.get("hpo_term") and form.get("pheno_abbrev"):
+        phenotype_groups.append(form["hpo_term"].split(" |")[0])
+        group_abbreviations.append(form["pheno_abbrev"])
+
+    cohorts = []
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
@@ -378,8 +376,8 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         frequency_cutoff=float(form.get("frequency_cutoff")),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
-        gene_panels=gene_panels,
-        gene_panels_matching=gene_panels_matching,
+        gene_panels=get_gene_panels(store, form, "gene_panels"),
+        gene_panels_matching=get_gene_panels(store, form, "gene_panels_matching"),
         group_abbreviations=group_abbreviations,
         add_groups=False,
         sharing_institutes=sharing_institutes,
