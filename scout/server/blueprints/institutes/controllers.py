@@ -384,7 +384,7 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         add_groups=False,
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
-        loqusdb_ids=get_locusdb_ids(form),
+        loqusdb_ids=get_loqusdb_ids(form),
         alamut_key=form.get("alamut_key"),
         alamut_institution=form.get("alamut_institution"),
         check_show_all_vars=form.get("check_show_all_vars"),
