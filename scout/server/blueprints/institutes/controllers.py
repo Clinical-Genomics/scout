@@ -359,11 +359,12 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         sharing_institutes.append(inst)
 
     phenotype_groups = []
+    group_abbreviations = []
+
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
         group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
 
-    group_abbreviations = []
     if form.get("hpo_term") and form.get("pheno_abbrev"):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
         group_abbreviations.append(form["pheno_abbrev"])
