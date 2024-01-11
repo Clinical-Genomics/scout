@@ -1,3 +1,5 @@
+import logging
+
 from flask import Blueprint, jsonify
 
 from scout.server.extensions import store
@@ -5,7 +7,17 @@ from scout.server.utils import public_endpoint, templated
 
 from . import controllers
 
-omim_bp = Blueprint("diagnoses", __name__, template_folder="templates")
+import logging
+
+LOG = logging.getLogger(__name__)
+
+omim_bp = Blueprint(
+    "diagnoses",
+    __name__,
+    template_folder="templates",
+    static_folder="static",
+    static_url_path="/diagnoses/static",
+)
 
 
 @omim_bp.route("/diagnoses/<omim_nr>", methods=["GET"])
