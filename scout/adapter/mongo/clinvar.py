@@ -362,28 +362,27 @@ class ClinVarHandler(object):
 
         return renamed_samples
 
-    def delete_clinvar_object(self, object_id, object_type, submission_id):
-        """Remove a variant object from clinvar database and update the relative submission object
+    def delete_clinvar_object(self, object_id: str, object_type: str, submission_id: str) -> dict:
+        """Remove a variant object from ClinVar database and update the relative submission object
 
         Args:
             object_id(str) : the id of an object to remove from clinvar_collection database collection (a variant of a case)
             object_type(str) : either 'variant_data' or 'case_data'. It's a key in the clinvar_submission object.
-            submission_id(str): the _id key of a clinvar submission
+            submission_id(str): the _id key of a ClinVar submission
 
         Returns:
-            updated_submission(obj): an updated clinvar submission
+            updated_submission(obj): an updated ClinVar submission
         """
         # If it's a variant object to be removed:
         #   remove reference to it in the submission object 'variant_data' list field
-        #   remove the variant object from clinvar collection
-        #   remove casedata object from clinvar collection
-        #   remove reference to it in the submission object 'caset_data' list field
+        #   remove the variant object from ClinVar collection
+        #   remove casedata object from ClinVar collection
+        #   remove reference to it in the submission object 'case_data' list field
 
         # if it's a casedata object to be removed:
-        #   remove reference to it in the submission object 'caset_data' list field
-        #   remove casedata object from clinvar collection
+        #   remove reference to it in the submission object 'case_data' list field
+        #   remove casedata object from ClinVar collection
 
-        result = ""
 
         if object_type == "variant_data":
             # pull out a variant from submission object
@@ -392,29 +391,28 @@ class ClinVarHandler(object):
             )
 
             variant_object = self.clinvar_collection.find_one({"_id": object_id})
-            linking_id = variant_object.get(
-                "linking_id"
-            )  # it's the original ID of the variant in scout, it's linking clinvar variants and casedata objects together
+            if variant_object:
+                linking_id = variant_object.get(
+                    "linking_id"
+                )  # it's the original ID of the variant in scout, it's linking clinvar variants and casedata objects together
 
-            # remove any object with that linking_id from clinvar_collection. This removes variant and casedata
-            result = self.clinvar_collection.delete_many({"linking_id": linking_id})
+                # remove any object with that linking_id from clinvar_collection. This removes variant and casedata
+                self.clinvar_collection.delete_many({"linking_id": linking_id})
 
         else:  # remove case_data but keep variant in submission
             # delete the object itself from clinvar_collection
-            result = self.clinvar_collection.delete_one({"_id": object_id})
+            self.clinvar_collection.delete_one({"_id": object_id})
 
-        # in any case remove reference to it in the submission object 'caset_data' list field
+        # in any case remove reference to it in the submission object 'case_data' list field
         self.clinvar_submission_collection.find_one_and_update(
             {"_id": ObjectId(submission_id)}, {"$pull": {"case_data": object_id}}
         )
 
-        updated_submission = self.clinvar_submission_collection.find_one_and_update(
+        return self.clinvar_submission_collection.find_one_and_update(
             {"_id": submission_id},
             {"$set": {"updated_at": datetime.now()}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-
-        return updated_submission
 
     def case_to_clinVars(self, case_id):
         """Get all variants included in clinvar submissions for a case
