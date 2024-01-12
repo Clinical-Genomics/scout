@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Pydantic validation of image paths provided in case load config file
 ### Changed
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 ### Fixed
