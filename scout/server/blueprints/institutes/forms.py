@@ -153,7 +153,7 @@ class CaseFilterForm(FlaskForm):
     """Takes care of cases filtering in cases page"""
 
     search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
-    search_term = StringField("Search cases")
+    search_term = StringField("Search cases", default="")
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
