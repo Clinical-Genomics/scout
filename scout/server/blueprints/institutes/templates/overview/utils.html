@@ -405,7 +405,7 @@
             <td>
               {% if score %}
                 <span class="badge rounded-pill bg-secondary">
-                  {{score}}
+                  {{score|round(2)}}
                 </span>
               {% else %}
                 -
