@@ -275,6 +275,19 @@ class PanelHandler:
 
         return self.panel_collection.find(query)
 
+    def gene_panels_dict(self, panel_names: List[str]) -> Dict[str, Dict]:
+        """
+        Return gene panel objects, by names list, as a dict keyed by panel name.
+        """
+        gene_panels = {}
+        for panel_name in panel_names:
+            panel_obj = self.gene_panel(panel_name)
+            if panel_obj is None:
+                continue
+            gene_panels[panel_name] = panel_obj["display_name"]
+
+        return gene_panels
+
     def hgnc_to_panels(self, hgnc_id):
         """Get a list of gene panel objects for a hgnc_id
 
