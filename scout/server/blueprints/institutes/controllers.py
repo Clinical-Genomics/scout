@@ -341,7 +341,7 @@ def get_gene_panels(store: MongoAdapter, form: MultiDict, tag: str) -> Dict:
 
     tag as in the form e.g. "gene_panels" or "gene_panels_matching".
     """
-    return store.get_panels_dict(panel_names=form.getlist(tag))
+    return store.gene_panels_dict(panel_names=form.getlist(tag))
 
 
 def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: MultiDict) -> Dict:
