@@ -16,13 +16,12 @@
   </li>
 {% endblock %}
 
-
 {% block content_main %}
 <div class="container-float">
   <div class="row mt-3">
     <div class="col-md-12">
       <div class="card">
-        <div class="card-header"> Diagnoses in database</div>
+        <div class="card-header">Summary</div>
         <div class="card-body">
           <table id="diagnoses_stats_table" class="table table-sm">
             {% if counts |length == 0 %}
@@ -53,69 +52,19 @@
     </div>
   </div>
 </div>
-<!--  <div class="row mt-3">-->
-<!--    <div class="col-md-12">-->
-<!--      <div class="card">-->
-<!--        <div class="card-header">OMIM terms</div>-->
-<!--        <div class="card-body">-->
-<!--          {% if terms|length == 0 %}-->
-<!--            The search didn't return any OMIM term-->
-<!--          {% else %}-->
-<!--            <table id="diagnoses_table" class="table table-sm">-->
-<!--              <thead class="table-light thead">-->
-<!--                <th>OMIM term</th>-->
-<!--                <th></th>-->
-<!--                <th>Phenotype description</th>-->
-<!--                <th>Inheritance</th>-->
-<!--                <th>Associated genes</th>-->
-<!--                <th>Associated HPO terms</th>-->
-<!--              </thead>-->
-<!--              {% for omim in terms %}-->
-<!--                <tr>-->
-<!--                  <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank" rel=noopener >{{ omim.disease_nr }}</a></td>-->
-<!--                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}"><span class="fa fa-link"></span></a></td>-->
-<!--                  <td><span class="text-body">{{ omim.description }}</span></td>-->
-<!--                  <td>&lt;!&ndash; inheritance&ndash;&gt;-->
-<!--                    {% for model in omim.inheritance %}-->
-<!--                      <span class="badge bg-info">{{model}}</span>-->
-<!--                    {% else %}-->
-<!--                      - -->
-<!--                    {% endfor %}-->
-<!--                  </td>&lt;!&ndash;end of inheritance&ndash;&gt;-->
-<!--                  <td>-->
-<!--                    {% for gene in omim.genes %}-->
-<!--                    <span class="text-body">-->
-<!--                      <a href="{{ url_for('genes.gene', hgnc_id=gene) }}" target="_blank" rel="noopener" >{{gene}}</a>-->
-<!--                    </span>-->
-<!--                    {% else %}-->
-<!--                      - -->
-<!--                    {% endfor %}-->
-<!--                  </td>-->
-
-<!--                  <td>-->
-<!--                    <span class="text-body">-->
-<!--                    {% for term in omim.hpo_terms %}-->
-<!--                      <a class="badge bg-secondary text-white" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" >{{term}}</a>-->
-<!--                    {% else %}-->
-<!--                     - -->
-<!--                    {% endfor %}-->
-<!--                    </span>-->
-<!--                  </td>-->
-<!--                </tr>-->
-<!--              {% endfor %}-->
-<!--            </table>-->
-<!--          {% endif %}-->
-<!--        </div>&lt;!&ndash;end of card body&ndash;&gt;-->
-<!--      </div>&lt;!&ndash;end of card&ndash;&gt;-->
-<!--    </div>-->
-<!--  </div>-->
 <div class="container-float">
   <div class="row mt-3">
     <div class="col-md-12">
       <div class="card">
         <div class="card-header"> Diagnoses in database</div>
         <div class="card-body">
-          <table id="diagnoses_table" class="table table-sm">
+          <div id="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden"></span>
+            </div>
+            Loading all diagnoses, this might take some time...
+          </div>
+          <table id="diagnoses_table" class="table table-sm invisible">
               <thead class="table-light thead">
                 <th>Diagnosis code</th>
                 <th></th>
@@ -156,19 +105,4 @@
 <script src="{{ url_for('diagnoses.static', filename='diagnoses.js') }}"></script>
 {{ super() }}
 {{ db_table_external_scripts() }}
-<!--<script>-->
-<!--  $(document).ready(function() {-->
-<!--    $('#diagnoses_table').DataTable( {-->
-<!--        paging: false,-->
-<!--        dom: 'fBrtip',-->
-<!--        buttons: [-->
-<!--          {-->
-<!--            extend: 'excelHtml5',-->
-<!--            title: 'omim_terms'-->
-<!--          },-->
-<!--          'copyHtml5'-->
-<!--        ]-->
-<!--    } );-->
-<!--} );-->
-<!--</script>-->
 {% endblock %}

@@ -13,27 +13,28 @@ async function fetchDiagnoses(url = null) {
         return (diagnosesArray)
     } catch (error) {
         console.log(error.message)
-        return (error)
+        return error
     }
 }
 
 function generateDiseaseTable(data, id) {
     const table = document.getElementById(id)
-
     const row = table.querySelector("#diagnosis-row")
     const tbody = table.querySelector("tbody")
-    table.classList.remove("d-none")
 
+    //Create a table row for each diagnosis and append to the table
     data.forEach(item => {
-        const newRow = generateAndAddDiseaseTableRow(item, row)
+        const newRow = generateDiseaseTableRow(item, row)
         tbody.append(newRow)
     })
 
+    //Replace visible content so diagnosis-table ius displayed
     row.remove()
-    //initialiseTable(data)
+    document.querySelector("#spinner-container").remove()
+    table.classList.remove("invisible")
 }
-function generateAndAddDiseaseTableRow(disease, rowTemplate) {
 
+function generateDiseaseTableRow(disease, rowTemplate) {
 
     const { disease_id, disease_nr, description, inheritance, genes, hpo_terms } = disease
     let newNode = rowTemplate.cloneNode(true)
@@ -105,20 +106,18 @@ function generateAndAddDiseaseTableRow(disease, rowTemplate) {
     return newNode
 }
 function displayErrorMsg(msg, id) {
-    const table = document.getElementById(id)
-    while (table.firstChild) {
-        table.removeChild(table.lastChild);
+    console.log("Reached Error-fnc")
+    //Empty spinner container
+    const spinnerContainer=document.querySelector(`#${id}`)
+    while (spinnerContainer.firstChild) {
+        spinnerContainer.removeChild(spinnerContainer.lastChild);
     }
-    let msgElement = document.createElement('td')
-    msgElement.textContent = msg
-    table.append(msgElement)
-    table.destroy()
-
-
+    //Replace contents with error-msg
+    spinnerContainer.textContent=msg
 }
 
 function initialiseTable(data) {
-	console.log("Istarted initialisxing")
+	//Diagnosis table is turned into a DataTable with copy-buttons, pagination and search bar
     $('#diagnoses_table').DataTable( {
         data:data,
         paging: true,
@@ -136,17 +135,14 @@ function initialiseTable(data) {
 document.addEventListener("DOMContentLoaded", async function () {
 //Runs after dom content has been loaded
     try {
+    //Fetch data and create table from results
         const data = await fetchDiagnoses(null)
 
         generateDiseaseTable(data, "diagnoses_table")
-
+        initialiseTable()
     } catch (error) {
-        console.log(error)
-
-        displayErrorMsg(error.message, "diagnoses_table")
-    } finally{
-    	initialiseTable()
+    		//Replace loading spinner with error message if loading fails
+        displayErrorMsg("Diagnoses could not be loaded, please try again later", "spinner-container")
     }
-
 })
 
