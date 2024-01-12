@@ -17,7 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Round CADD values with many decimals on causatives and validated variants pages
 - Dark-mode visibility of some fields on causatives and validated variants pages
 - Clinvar submitters would be cleared when unprivileged users saved institute settings page
-- Update more GnomAD links to v4 (v38 SNVs, MT vars, STRs)
+- Update more GnomAD links to GnomAD v4 (v38 SNVs, MT vars, STRs)
 
 ## [4.75]
 ### Added
