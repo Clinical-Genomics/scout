@@ -10,7 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Thaw coloredlogs - 15.0.1 restores errorhandler issue
 - Thaw crypography - current base image and library version allow Docker builds
 - Missing delete icons on phenomodels page
-
+- Missing cryptography lib error while running Scout container on an ARM processor
 
 ## [4.75]
 ### Added

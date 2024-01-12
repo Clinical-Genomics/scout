@@ -5,7 +5,7 @@ version: '3'
 services:
 
   mongodb:
-    image: mongo:4.4.9
+    image: mongo:7
     container_name: mongodb
     networks:
       - scout-net
@@ -16,6 +16,7 @@ services:
 
   scout-cli:
     build: .
+    platform: linux/amd64
     container_name: scout-cli
     command: bash -c "
       scout --host mongodb setup demo"
@@ -30,6 +31,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-server
+    platform: linux/amd64
     expose:
       - '8000'
     ports:
