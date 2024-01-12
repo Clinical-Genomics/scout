@@ -14,7 +14,6 @@ from wtforms import (
 from wtforms.widgets import PasswordInput, TextInput
 
 from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS
-from scout.server.extensions import store
 
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
