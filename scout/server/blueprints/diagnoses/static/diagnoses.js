@@ -1,21 +1,3 @@
-async function fetchDiagnoses(url = null) {
-    //fetches all disease_terms
-    const base_url = 'http://localhost:5000'
-    const myUrl = url || `${base_url}/api/v1/diagnoses`
-    try {
-        const response = await fetch(myUrl)
-        if (!response.ok) {
-            throw new Error("Could not fetch diagnoses");
-        }
-        const data = await response.json()
-        const diagnosesArray = data.terms
-
-        return (diagnosesArray)
-    } catch (error) {
-        console.log(error.message)
-        return error
-    }
-}
 
 function generateDiseaseTable(data, id) {
     const table = document.getElementById(id)
@@ -64,21 +46,19 @@ function generateDiseaseTableRow(disease, rowTemplate) {
             inheritanceContainerElement.append(newInheritance)
         });
     } else {
-        let newInheritance = inheritanceElement.cloneNode()
-        newInheritance.removeAttribute("id")
-        newInheritance.textContent = "-"
-        inheritanceContainerElement.append(newInheritance)
+
+        inheritanceContainerElement .textContent = "-"
     }
 
     //Add Genes
-    let genesElement = newNode.querySelector("#geneLink")
+    let genesElement = newNode.querySelector("#gene-link")
     let genesContainerElement = newNode.querySelector("#genes-container")
     if (genes.length > 0) {
         genes.forEach(element => {
             let newGenes = genesElement.cloneNode()
             newGenes.removeAttribute("id")
             let internalbaseurl = newGenes.getAttribute("href")
-            newGenes.setAttribute("href", internalbaseurl.slice(0,-1) + element)
+            newGenes.setAttribute("href", internalbaseurl.slice(0, -1) + element)
             newGenes.textContent = element
             genesContainerElement.append(newGenes)
         });
@@ -90,7 +70,7 @@ function generateDiseaseTableRow(disease, rowTemplate) {
     //Add hpo_terms
     let hpoElement = newNode.querySelector("#hpo-link")
     let hpoContainerElement = newNode.querySelector("#hpo-container")
-    let span= hpoContainerElement.querySelector("span")
+    //let span = hpoContainerElement.querySelector("span")
     if (hpo_terms.length > 0) {
         hpo_terms.forEach(element => {
             let newHpoLink = hpoElement.cloneNode()
@@ -101,48 +81,94 @@ function generateDiseaseTableRow(disease, rowTemplate) {
             hpoContainerElement.append(newHpoLink)
         });
     } else {
+        hpoContainerElement.querySelector("span").remove()
         hpoContainerElement.textContent = "-"
     }
     return newNode
 }
 function displayErrorMsg(msg, id) {
-    console.log("Reached Error-fnc")
-    //Empty spinner container
-    const spinnerContainer=document.querySelector(`#${id}`)
-    while (spinnerContainer.firstChild) {
-        spinnerContainer.removeChild(spinnerContainer.lastChild);
-    }
-    //Replace contents with error-msg
-    spinnerContainer.textContent=msg
+    //Replace spinner with error message
+    const spinnerContainer = document.querySelector(`#${id}`)
+    spinnerContainer.textContent = msg
 }
 
 function initialiseTable(data) {
-	//Diagnosis table is turned into a DataTable with copy-buttons, pagination and search bar
-    $('#diagnoses_table').DataTable( {
-        data:data,
+    //Diagnosis table is turned into a DataTable with copy-buttons, pagination and search bar
+    $('#diagnoses_table').DataTable({
+        data: data,
         paging: true,
         dom: 'fBrtip',
         buttons: [
-          {
-            extend: 'excelHtml5',
-            title: 'omim_terms'
-          },
-          'copyHtml5'
+            {
+                extend: 'excelHtml5',
+                title: 'omim_terms'
+            },
+            'copyHtml5'
         ]
-    } );
+    });
+    document.querySelector("#diagnoses_table_filter").classList.add("text-start")
+		document.querySelector("#diagnoses_table_wrapper > .dt-buttons").classList.add("m-2")
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
-//Runs after dom content has been loaded
-    try {
-    //Fetch data and create table from results
-        const data = await fetchDiagnoses(null)
+async function loadDiseases() {
+    document.getElementById("load-button").remove()
+    $('#load-container').html(
+        `<div id="spinner-container" >
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden"></span>
+            </div>
+            Loading all diagnoses, this might take some time...
+        </div>`);
 
-        generateDiseaseTable(data, "diagnoses_table")
+    console.log('click')
+    const baseUrl = window.location.origin
+    console.log(baseUrl)
+
+    try {
+        //Fetch data and create table from results
+        const response = await fetch(`${'http://localhost:5000'}/api/v1/diagnoses`)
+        if (!response.ok) {
+            throw new Error('Failed to fetch')
+        }
+        const { terms } = await response.json()
+
+
+        generateDiseaseTable(terms, "diagnoses_table")
         initialiseTable()
+
     } catch (error) {
-    		//Replace loading spinner with error message if loading fails
-        displayErrorMsg("Diagnoses could not be loaded, please try again later", "spinner-container")
+    console.log(error)
+
+        if (error.toString().includes('Failed to fetch')) {
+            //Replace loading spinner with error message if loading fails
+            displayErrorMsg("Diagnoses could not be loaded, please try again later", "spinner-container")
+        }
     }
-})
+}
+
+//document.addEventListener("DOMContentLoaded", async function () {
+//
+//    const baseUrl=window.location.origin
+//    console.log(baseUrl)
+//
+//    //Runs after dom content has been loaded
+//    try {
+//        //Fetch data and create table from results
+//        const response = await fetch(`${'http://localhost:5000'}/api/v1/diagnoses`)
+//        if (!response.ok) {
+//            throw new Error('Failed to fetch')
+//        }
+//        const {terms} = await response.json()
+//
+//
+//        generateDiseaseTable(terms, "diagnoses_table")
+//        initialiseTable()
+//    } catch (error) {
+//
+//        if (error.toString().includes('Failed to fetch')) {
+//            //Replace loading spinner with error message if loading fails
+//            displayErrorMsg("Diagnoses could not be loaded, please try again later", "spinner-container")
+//        }
+//    }
+//})
 

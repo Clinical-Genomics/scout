@@ -19,7 +19,7 @@
 {% block content_main %}
 <div class="container-float">
   <div class="row mt-3">
-    <div class="col-md-12">
+    <div class="col-lg-3">
       <div class="card">
         <div class="card-header">Summary</div>
         <div class="card-body">
@@ -50,20 +50,12 @@
         </div><!--end of card body-->
       </div><!--end of card-->
     </div>
-  </div>
-</div>
-<div class="container-float">
-  <div class="row mt-3">
-    <div class="col-md-12">
+
+    <div class="col-lg-9">
       <div class="card">
         <div class="card-header"> Diagnoses in database</div>
-        <div class="card-body">
-          <div id="spinner-container">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden"></span>
-            </div>
-            Loading all diagnoses, this might take some time...
-          </div>
+        <div id="diagnoses-card" class="card-body">
+          <div id="load-container"><button id="load-button" onClick="loadDiseases()">Load all diseases from database</button></div>
           <table id="diagnoses_table" class="table table-sm invisible">
               <thead class="table-light thead">
                 <th>Diagnosis code</th>
@@ -79,16 +71,16 @@
                   <td><a id="internal-link" href="{{ url_for('diagnoses.omim_diagnosis',omim_nr='')}}"><span class="fa fa-link"></span></a></td>
                   <td><span id="description" class="text-body"></span></td>
                   <td id="inheritance-container"><!-- inheritance-->
-                      <span id="inheritance" class="badge bg-info"></span>
+                      <span id="inheritance" class="badge bg-info m-1"></span>
                   </td><!--end of inheritance-->
                   <td id="genes-container">
                     <span class="text-body">
-                      <a id="geneLink" href="{{ url_for('genes.gene', hgnc_id='0') }}" target="_blank" rel="noopener" ></a>
+                      <a id="gene-link" class="badge text-primary m-1" href="{{ url_for('genes.gene', hgnc_id='0') }}" target="_blank" rel="noopener" ></a>
                     </span>
                   </td>
                   <td id="hpo-container">
                     <span class="text-body">
-                      <a id="hpo-link" class="badge bg-secondary text-white" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" ></a>
+                      <a id="hpo-link" class="badge bg-secondary text-white m-1" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" ></a>
                     </span>
                   </td>
                 </tr>
