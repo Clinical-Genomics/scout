@@ -383,7 +383,6 @@ class ClinVarHandler(object):
         #   remove reference to it in the submission object 'case_data' list field
         #   remove casedata object from ClinVar collection
 
-
         if object_type == "variant_data":
             # pull out a variant from submission object
             self.clinvar_submission_collection.find_one_and_update(
