@@ -308,6 +308,9 @@
           <th>Callers</th>
           <th>CADD score</th>
           <th data-bs-toggle='tooltip' data-bs-container='body' title="score(model version)">Rank score</th>
+          <th>Revel score</th>
+          <th>Revel rank score</th>
+          <th>SpliceAI DS max</th>
           <th data-bs-toggle='tooltip' data-bs-container='body' title="ref/alt-GQ">Zygosity</th>
           <th>Inheritance</th>
           <th>ACMG</th>
@@ -344,22 +347,22 @@
               </span>
             </td>
             <td><!-- HGVS[c] -->
+              <span class="text-muted">
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvs_identifier %}
-                <span class="text-muted">
-                  {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
-                </span>
+                {{variant.first_rep_gene.hgvs_identifier|truncate(15, True)}}
               {% else %}
                 -
               {% endif %}
+              </span>
             </td>
             <td><!-- HGVS[p] -->
+              <span class="text-muted">
               {% if variant.first_rep_gene and variant.first_rep_gene.hgvsp_identifier %}
-                <span class="text-muted">
                   {{variant.first_rep_gene.hgvsp_identifier|truncate(15, True)}}
-                </span>
               {% else %}
                 -
               {% endif %}
+              </span>
             </td>
             <td><!-- Functional Annotation -->
               {{ variant_funct_anno_cell(variant) }}
@@ -381,21 +384,40 @@
               </span>
             </td>
             <td><!-- CADD score -->
+              <span class="badge bg-secondary">
               {% if variant.cadd_score %}
-                <span class="badge bg-secondary">{{ variant.cadd_score }}</span>
+                {{ variant.cadd_score|round(2) }}
               {% else %}
                 -
               {% endif %}
+              </span>
             </td>
             <td><!-- Rank score -->
-              <a href="#"><span class="badge rounded-pill bg-secondary">
+              <span class="badge rounded-pill bg-secondary">
               {{ variant.rank_score }}
               {% if variant.category == 'sv' %}
                 (v. {{case.sv_rank_model_version or 'na'}})
               {% else %}
                 (v. {{case.rank_model_version or 'na'}})
               {% endif %}
-              </span></a>
+              </span>
+            </td>
+            <!-- Revel scores -->
+            {% for score in [variant.revel, variant.revel_score] %}
+            <td>
+              <span class="badge rounded-pill bg-secondary">
+              {% if score %}
+                {{score|round(2)}}
+              {% else %}
+                -
+              {% endif %}
+              </span>
+            </td>
+            {% endfor %}
+            <td><!-- SpliceAI -->
+              <span class="text-muted">
+              {{ variant.spliceai_scores|list_remove_none|join(', ') if variant.spliceai_scores else "-" }}
+              </span>
             </td>
             <td><!-- Zygosity -->
               {%- for sample in variant.samples -%}

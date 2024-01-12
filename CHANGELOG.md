@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Pydantic validation of image paths provided in case load config file
-### Changed
+- Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
 - Parallelize variant loading for each chromosome
 ### Fixed
 - Command line crashing with error when updating a user that doesn't exist
@@ -15,6 +15,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Thaw crypography - current base image and library version allow Docker builds
 - Missing delete icons on phenomodels page
 - Missing cryptography lib error while running Scout container on an ARM processor
+- Round CADD values with many decimals on causatives and validated variants pages
+- Dark-mode visibility of some fields on causatives and validated variants pages
+- Clinvar submitters would be cleared when unprivileged users saved institute settings page
 
 ## [4.75]
 ### Added
