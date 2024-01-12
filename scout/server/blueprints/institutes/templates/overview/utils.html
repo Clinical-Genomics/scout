@@ -415,7 +415,9 @@
             </td>
             {% endfor %}
             <td><!-- SpliceAI -->
-            {{ variant.spliceai_scores|list_remove_none|join(', ') if variant.spliceai_scores else "-" }}
+              <span class="text-muted">
+              {{ variant.spliceai_scores|list_remove_none|join(', ') if variant.spliceai_scores else "-" }}
+              </span>
             </td>
             <td><!-- Zygosity -->
               {%- for sample in variant.samples -%}
