@@ -16,6 +16,7 @@ from wtforms.widgets import PasswordInput, TextInput
 from scout.constants import CASE_SEARCH_TERMS, PHENOTYPE_GROUPS
 from scout.models.case import STATUS
 
+
 CASE_SEARCH_KEY = [(value["prefix"], value["label"]) for key, value in CASE_SEARCH_TERMS.items()]
 
 
@@ -158,7 +159,7 @@ class CaseFilterForm(FlaskForm):
     """Takes care of cases filtering in cases page"""
 
     search_type = SelectField("Search by", [validators.Optional()], choices=CASE_SEARCH_KEY)
-    search_term = StringField("Search cases")
+    search_term = StringField("Search cases", default="")
     search_limit = IntegerField("Limit", [validators.Optional()], default=100)
     skip_assigned = BooleanField("Hide assigned")
     is_research = BooleanField("Research only")
