@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-import re
 from typing import Dict, List, Optional, Tuple
 
 from flask import Response, current_app, flash, url_for
 from flask_login import current_user
 from pymongo import ASCENDING, DESCENDING
 from pymongo.cursor import Cursor
-from werkzeug.datastructures import Headers
+from werkzeug.datastructures import Headers, MultiDict
 
 from scout.adapter.mongo.base import MongoAdapter
 from scout.constants import (
@@ -300,35 +299,60 @@ def populate_institute_form(form, institute_obj):
     return default_phenotypes
 
 
-def update_institute_settings(store, institute_obj, form):
-    """Update institute settings with data collected from institute form
-
-    Args:
-        score(adapter.MongoAdapter)
-        institute_id(str)
-        form(dict)
-
-    Returns:
-        updated_institute(dict)
-
+def get_sanger_recipients(form: MultiDict) -> List[str]:
+    """
+    Return list of Sanger recipients from form multiselect.
     """
     sanger_recipients = []
-    clinvar_submitters = []
-    sharing_institutes = []
-    phenotype_groups = []
-    gene_panels = {}
-    gene_panels_matching = {}
-    group_abbreviations = []
-    cohorts = []
-
     for email in form.getlist("sanger_emails"):
         sanger_recipients.append(email.strip())
 
-    for email in form.getlist("clinvar_emails"):
-        clinvar_submitters.append(email.strip())
+    return sanger_recipients
 
+
+def get_clinvar_submitters(form: MultiDict) -> Optional[List[str]]:
+    """
+    Return list of ClinVar sumbitters from form multiselect.
+    This is not available on the form for unprivileged users, only admin.
+    """
+
+    clinvar_submitters = None
+    if current_user.is_admin:
+        clinvar_submitters = []
+        for email in form.getlist("clinvar_emails"):
+            clinvar_submitters.append(email.strip())
+    return clinvar_submitters
+
+
+def get_loqusdb_ids(form: MultiDict) -> Optional[List[str]]:
+    """
+    Return loqusdb ids from the form multiselect.
+    This is not available on the form for unprivileged users, only admin.
+    """
+    if current_user.is_admin is False:
+        return None
+
+    return form.getlist("loqusdb_id")
+
+
+def get_gene_panels(store: MongoAdapter, form: MultiDict, tag: str) -> Dict:
+    """
+    Return gene panel objects checked in the corresponding form multiselect.
+
+    tag as in the form e.g. "gene_panels" or "gene_panels_matching".
+    """
+    return store.gene_panels_dict(panel_names=form.getlist(tag))
+
+
+def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: MultiDict) -> Dict:
+    """Update institute settings with data collected from institute form."""
+
+    sharing_institutes = []
     for inst in form.getlist("institutes"):
         sharing_institutes.append(inst)
+
+    phenotype_groups = []
+    group_abbreviations = []
 
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
@@ -338,44 +362,29 @@ def update_institute_settings(store, institute_obj, form):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
         group_abbreviations.append(form["pheno_abbrev"])
 
-    for panel_name in form.getlist("gene_panels"):
-        panel_obj = store.gene_panel(panel_name)
-        if panel_obj is None:
-            continue
-        gene_panels[panel_name] = panel_obj["display_name"]
-
-    for panel_name in form.getlist("gene_panels_matching"):
-        panel_obj = store.gene_panel(panel_name)
-        if panel_obj is None:
-            continue
-        gene_panels_matching[panel_name] = panel_obj["display_name"]
-
+    cohorts = []
     for cohort in form.getlist("cohorts"):
         cohorts.append(cohort.strip())
 
-    loqusdb_ids = form.getlist("loqusdb_id")
-    if current_user.is_admin is False:
-        loqusdb_ids = None
-
     updated_institute = store.update_institute(
         internal_id=institute_obj["_id"],
-        sanger_recipients=sanger_recipients,
+        sanger_recipients=get_sanger_recipients(form),
         coverage_cutoff=int(form.get("coverage_cutoff")),
         frequency_cutoff=float(form.get("frequency_cutoff")),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
-        gene_panels=gene_panels,
-        gene_panels_matching=gene_panels_matching,
+        gene_panels=get_gene_panels(store, form, "gene_panels"),
+        gene_panels_matching=get_gene_panels(store, form, "gene_panels_matching"),
         group_abbreviations=group_abbreviations,
         add_groups=False,
         sharing_institutes=sharing_institutes,
         cohorts=cohorts,
-        loqusdb_ids=loqusdb_ids,
+        loqusdb_ids=get_loqusdb_ids(form),
         alamut_key=form.get("alamut_key"),
         alamut_institution=form.get("alamut_institution"),
         check_show_all_vars=form.get("check_show_all_vars"),
         clinvar_key=form.get("clinvar_key"),
-        clinvar_submitters=clinvar_submitters,
+        clinvar_submitters=get_clinvar_submitters(form),
     )
     return updated_institute
 
