@@ -17,7 +17,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Round CADD values with many decimals on causatives and validated variants pages
 - Dark-mode visibility of some fields on causatives and validated variants pages
 - Clinvar submitters would be cleared when unprivileged users saved institute settings page
+- Added a default empty string in cases search form to avoid None default value
+- Page crashing when user tries to remove the same variant from a ClinVar submission in different browser tabs
 - Update more GnomAD links to GnomAD v4 (v38 SNVs, MT vars, STRs)
+
 
 ## [4.75]
 ### Added
