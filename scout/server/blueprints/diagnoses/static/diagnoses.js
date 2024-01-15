@@ -84,6 +84,7 @@ function generateDiseaseTableRow(disease, rowTemplate) {
         hpoContainerElement.querySelector("span").remove()
         hpoContainerElement.textContent = "-"
     }
+
     return newNode
 }
 function displayErrorMsg(msg, id) {
@@ -145,30 +146,3 @@ async function loadDiseases() {
         }
     }
 }
-
-//document.addEventListener("DOMContentLoaded", async function () {
-//
-//    const baseUrl=window.location.origin
-//    console.log(baseUrl)
-//
-//    //Runs after dom content has been loaded
-//    try {
-//        //Fetch data and create table from results
-//        const response = await fetch(`${'http://localhost:5000'}/api/v1/diagnoses`)
-//        if (!response.ok) {
-//            throw new Error('Failed to fetch')
-//        }
-//        const {terms} = await response.json()
-//
-//
-//        generateDiseaseTable(terms, "diagnoses_table")
-//        initialiseTable()
-//    } catch (error) {
-//
-//        if (error.toString().includes('Failed to fetch')) {
-//            //Replace loading spinner with error message if loading fails
-//            displayErrorMsg("Diagnoses could not be loaded, please try again later", "spinner-container")
-//        }
-//    }
-//})
-
