@@ -1581,10 +1581,10 @@ def orphadata_en_product6_file(request) -> str:
 
 
 @pytest.fixture
-def orphadata_en_product6_lines(request, orphadata_en_product6_file: str) -> List:
+def orpha_to_genes_lines(request, orphadata_en_product6_file: str) -> List:
     """Get the lines of the orphadata_en_product6_file, which contain orpha_to_genes info."""
-    orphadata_en_product6_lines = get_file_handle(orphadata_en_product6_file)
-    return orphadata_en_product6_lines
+    orpha_to_genes_lines = get_file_handle(orphadata_en_product6_file)
+    return orpha_to_genes_lines
 
 
 @pytest.fixture
@@ -1594,10 +1594,10 @@ def orphadata_en_product4_file(request) -> str:
 
 
 @pytest.fixture
-def orphadata_en_product4_lines(request, orphadata_en_product4_file: str) -> List[str]:
+def orpha_to_hpo_lines(request, orphadata_en_product4_file: str) -> List[str]:
     """Get the lines of the orphadata_en_product4_file, which contain orpha_to_hpo info."""
-    orphadata_en_product4_lines = get_file_handle(orphadata_en_product4_file)
-    return orphadata_en_product4_lines
+    orpha_to_hpo_lines = get_file_handle(orphadata_en_product4_file)
+    return orpha_to_hpo_lines
 
 
 #############################################################

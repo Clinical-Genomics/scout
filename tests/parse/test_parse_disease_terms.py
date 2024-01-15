@@ -12,8 +12,8 @@ from scout.parse.disease_terms import (
 
 
 def test_get_all_disease_terms(
-    orphadata_en_product6_lines,
-    orphadata_en_product4_lines,
+    orpha_to_genes_lines,
+    orpha_to_hpo_lines,
     genemap_handle,
     hpo_phenotype_annotation_handle,
     test_orpha_disease_terms,
@@ -26,8 +26,8 @@ def test_get_all_disease_terms(
     result: Dict[str, dict] = get_all_disease_terms(
         hpo_annotation_lines=hpo_phenotype_annotation_handle,
         genemap_lines=genemap_handle,
-        orpha_to_genes_lines=orphadata_en_product6_lines,
-        orpha_to_hpo_lines=orphadata_en_product4_lines,
+        orpha_to_genes_lines=orpha_to_genes_lines,
+        orpha_to_hpo_lines=orpha_to_hpo_lines,
     )
     #: THEN assert correct contents are present
     for key in test_omim_disease_terms:
@@ -88,13 +88,13 @@ def test_consolidate_gene_and_hpo_annotation(
         assert gene_annotations[key]["hgnc_ids"] == result[key]["hgnc_ids"]
 
 
-def test_get_orpha_disease_terms(orphadata_en_product6_lines, orphadata_en_product4_lines):
+def test_get_orpha_disease_terms(orpha_to_genes_lines, orpha_to_hpo_lines):
     """Tests function creating orpha disease_terms with gene and hpo annotations"""
     #: GIVEN lines from files containing orpha to genes end orpha to hpo mappings
     #: WHEN combining the information into disease terms
     result = get_orpha_disease_terms(
-        orpha_to_genes_lines=orphadata_en_product6_lines,
-        orpha_to_hpo_lines=orphadata_en_product4_lines,
+        orpha_to_genes_lines=orpha_to_genes_lines,
+        orpha_to_hpo_lines=orpha_to_hpo_lines,
     )
     # THEN assert disase includes hpo and gene information
     disease = result["ORPHA:585"]

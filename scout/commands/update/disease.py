@@ -82,8 +82,8 @@ def diseases(downloads_folder, api_key):
             orpha_files = fetch_orpha_files()
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
-            resources["orphadata_en_product6_lines"] = orpha_files["orphadata_en_product6"]
-            resources["orphadata_en_product4_lines"] = orpha_files["orphadata_en_product4"]
+            resources["orpha_to_genes_lines"] = orpha_files["orphadata_en_product6"]
+            resources["orpha_to_hpo_lines"] = orpha_files["orphadata_en_product4"]
 
         except Exception as err:
             LOG.warning(err)
@@ -95,8 +95,8 @@ def diseases(downloads_folder, api_key):
         adapter=adapter,
         genemap_lines=resources["genemap_lines"],
         hpo_annotation_lines=resources["hpo_annotation_lines"],
-        orpha_to_genes_lines=resources["orphadata_en_product6_lines"],
-        orpha_to_hpo_lines=resources["orphadata_en_product4_lines"],
+        orpha_to_genes_lines=resources["orpha_to_genes_lines"],
+        orpha_to_hpo_lines=resources["orpha_to_hpo_lines"],
     )
 
     LOG.info("Successfully loaded all disease terms")
