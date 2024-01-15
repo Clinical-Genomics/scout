@@ -82,7 +82,7 @@ def abort_if_false(ctx, param, value):
 @click.option(
     "--hpoterms",
     type=click.Path(exists=True),
-    help=("Path to file with HPO terms. This is the " "file called hpo.obo"),
+    help="Path to file with HPO terms. This is the file called hpo.obo",
 )
 @click.option(
     "--hpo_to_genes",
@@ -96,8 +96,23 @@ def abort_if_false(ctx, param, value):
     "--hpo-phenotype-annotation",
     type=click.Path(exists=True),
     help=(
-        "Path to file with map from HPO disease (OMIM) to phenotype term with annotation. This is the file called "
-        "phenotype.hpoa"
+        "Path to file with map from HPO disease (OMIM and ORPHA) to phenotype term with annotation. This is the file  called phenotype.hpoa"
+    ),
+)
+@click.option(
+    "--orpha-to-hpo",
+    type=click.Path(exists=True),
+    help=(
+        "Path to file mapping ORPHA codes to HPO terms. This is the file called "
+        "orphadata_en_product4.xml"
+    ),
+)
+@click.option(
+    "--orpha-to-genes",
+    type=click.Path(exists=True),
+    help=(
+        "Path to file mapping ORPHA codes to genes. This is the file called "
+        "orphadata_en_product6.xml"
     ),
 )
 @with_appcontext
@@ -120,6 +135,8 @@ def database(
     hpoterms,
     hpo_to_genes,
     hpo_phenotype_annotation,
+    orpha_to_hpo,
+    orpha_to_genes,
     files,
 ):
     """Setup a scout database."""
@@ -137,6 +154,7 @@ def database(
 
     adapter = context.obj["adapter"]
 
+    # Populate resource_files with the paths specified for each resource
     resource_files = {
         "mim2gene_path": mim2gene,
         "genemap_path": genemap,
@@ -150,8 +168,12 @@ def database(
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
         "hpo_phenotype_annotation_path": hpo_phenotype_annotation,
+        "orpha_to_hpo_path": orpha_to_hpo,
+        "orpha_to_genes_path": orpha_to_genes,
     }
     LOG.info("Setting up database %s", context.obj["mongodb"])
+
+    # If a folder was supplied, populate resource_files with paths to the contents
     if files:
         for path in pathlib.Path(files).glob("**/*"):
             if path.stem == "mim2genes":
@@ -178,6 +200,10 @@ def database(
                 resource_files["hpo_to_genes_path"] = str(path.resolve())
             if path.stem == "phenotype":
                 resource_files["hpo_phenotype_annotation_path"] = str(path.resolve())
+            if path.stem == "orphadata_en_product4":
+                resource_files["orpha_to_hpo_path"] = str(path.resolve())
+            if path.stem == "orphadata_en_product6":
+                resource_files["orpha_to_genes_path"] = str(path.resolve())
 
     setup_scout(
         adapter=adapter,
