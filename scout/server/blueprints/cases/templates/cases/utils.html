@@ -553,17 +553,7 @@
                 </div>
               </div>
               <div class="col-5">
-              <form action="{{ url_for('cases.mark_validation',
-                                         institute_id=variant.institute,
-                                         case_name=case.display_name,
-                                         variant_id=variant._id) }}"
-                      method="POST" accept-charset="utf-8">
-                  <select class="form-control form-control-sm" onchange="this.form.submit()" name="type">
-                    {% for type in ('Not validated', 'True positive', 'False positive') %}
-                      <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
-                    {% endfor %}
-                  </select>
-                </form>
+              {{ validation_macro(variant, case) }}
               </div>
             <div class="col-2">
               {{ remove_form(url_for('cases.pin_variant',
@@ -582,6 +572,43 @@
     </div>
   </div>
 {% endmacro %}
+
+
+{% macro validation_macro(variant, case) %}
+ <form action="{{ url_for('cases.mark_validation', institute_id=variant.institute, case_name=case.display_name, variant_id=variant._id) }}" method="POST" accept-charset="utf-8" name="validation_form">
+  <select class="form-control form-control-sm" onchange="validate_action(this.value);" name="type">
+    {% for type in ('Not validated', 'True positive', 'False positive') %}
+      <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
+    {% endfor %}
+  </select>
+ </form>
+
+<div class="modal" tabindex="-1" id="validationModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Positive validation notification</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{ url_for('cases.mark_validation', institute_id=variant.institute, case_name=case.display_name, variant_id=variant._id) }}" method="POST" accept-charset="utf-8" name="validation_form">
+        <input type="hidden" name="type" value="True positive"/>
+        <div class="modal-body">
+          <p>The variant is being marked as a true positive.</p>
+          <input class="form-check-input" type="checkbox" value="" name="notify_user" checked>
+          <label class="form-check-label" for="flexCheckChecked">
+            Notify user which ordered verification
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Dismiss</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
 
 {% macro matching_causatives(other_causatives, institute, case, default=False) %}
     <div data-bs-toggle='tooltip' class="panel-heading" title="If there are any variants in this case
