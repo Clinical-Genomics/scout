@@ -11,10 +11,7 @@ from flask import app
 
 from scout.commands.download.orpha import orpha as orpha_cmd
 from scout.constants import ORPHA_URLS
-from scout.demo.resources import (
-    orpha_to_hpo_reduced_path,
-    orpha_to_genes_reduced_path,
-)
+from scout.demo.resources import orpha_to_genes_reduced_path, orpha_to_hpo_reduced_path
 
 
 @responses.activate

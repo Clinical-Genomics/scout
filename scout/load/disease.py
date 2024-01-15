@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 
 def load_disease_terms(
     adapter: MongoAdapter,
-    genemap_lines: List,
+    genemap_lines: List[str],
     genes: Optional[dict] = None,
     hpo_annotation_lines: Optional[List] = None,
     orpha_to_hpo_lines: Optional[List] = None,
