@@ -142,7 +142,7 @@ class VariantHandler(VariantLoader):
             variant_gene["common"] = hgnc_gene
             # Add the associated disease terms
             variant_gene["disease_terms"] = self.disease_terms(
-                hgnc_id, filter_project={"inheritance": 1, "description": 1}
+                hgnc_id, filter_project={"inheritance": 1, "description": 1, "source": 1}
             )
 
         return variant_obj
