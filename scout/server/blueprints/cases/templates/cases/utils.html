@@ -575,7 +575,7 @@
 
 
 {% macro validation_macro(variant, case) %}
- <form action="{{ url_for('cases.mark_validation', institute_id=variant.institute, case_name=case.display_name, variant_id=variant._id) }}" method="POST" accept-charset="utf-8" name="validation_form">
+ <form action="{{ url_for('cases.mark_validation', institute_id=variant.institute, case_name=case.display_name, variant_id=variant._id) }}" method="POST" accept-charset="utf-8" id="validation_form">
   <select class="form-control form-control-sm" onchange="validate_action(this.value);" name="type">
     {% for type in ('Not validated', 'True positive', 'False positive') %}
       <option value="{{ type }}" {% if type == variant.validation %}selected{% endif %}>{{ type }}</option>
@@ -590,7 +590,7 @@
         <h5 class="modal-title">Positive validation notification</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="{{ url_for('cases.mark_validation', institute_id=variant.institute, case_name=case.display_name, variant_id=variant._id) }}" method="POST" accept-charset="utf-8" name="validation_form">
+      <form action="{{ url_for('cases.mark_validation', institute_id=variant.institute, case_name=case.display_name, variant_id=variant._id) }}" method="POST" accept-charset="utf-8">
         <input type="hidden" name="type" value="True positive"/>
         <div class="modal-body">
           <p>The variant is being marked as a true positive.</p>
