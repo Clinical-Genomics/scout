@@ -111,13 +111,13 @@ def stripy_gene(hgnc_symbol):
 
 
 def gnomad_str_gene(hgnc_symbol):
-    link = "https://gnomad.broadinstitute.org/short-tandem-repeat/{}?dataset=gnomad_r3"
+    link = "https://gnomad.broadinstitute.org/short-tandem-repeat/{}?dataset=gnomad_r4"
 
     if not hgnc_symbol:
         return None
 
     if hgnc_symbol in SHALLOW_REFERENCE_STR_LOCI:
-        return "https://gnomad.broadinstitute.org/short-tandem-repeats?dataset=gnomad_r3"
+        return "https://gnomad.broadinstitute.org/short-tandem-repeats?dataset=gnomad_r4"
 
     return link.format(hgnc_symbol)
 
@@ -198,7 +198,7 @@ def gnomad(ensembl_id, build=37):
     if build == 37:
         link += "gnomad_r2_1"
     if build == 38:
-        link += "gnomad_r3"
+        link += "gnomad_r4"
 
     return link.format(ensembl_id)
 
@@ -570,7 +570,7 @@ def gnomad_link(variant_obj, build=37):
         return url_template
 
     if build == 38 or variant_obj["chromosome"] in ["M", "MT"]:
-        url_template += "?dataset=gnomad_r3"
+        url_template += "?dataset=gnomad_r4"
 
     return url_template
 
@@ -603,7 +603,7 @@ def gnomad_sv_link(variant_obj, build=37):
     else:
         url_template += f"-{variant_obj['position']}"
 
-    if build == 37 or variant_obj["chromosome"] in ["M", "MT"]:
+    if build == 37:
         url_template += "?dataset=gnomad_sv_r2_1"
         return url_template
 
