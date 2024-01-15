@@ -65,8 +65,7 @@ def gene(store, hgnc_id):
                 )
                 add_tx_links(transcript, build, record["hgnc_symbol"])
 
-            for phenotype in record.get("phenotypes", []):
-                phenotype["omim_link"] = omim(phenotype.get("mim_number"))
+            record["disease_terms"] = add_disease_information_to_gene(store, hgnc_id=hgnc_id)
 
             if not res["record"]:
                 res["record"] = record
@@ -76,6 +75,16 @@ def gene(store, hgnc_id):
         raise ValueError
 
     return res
+
+
+def add_disease_information_to_gene(store, hgnc_id: str):
+    disease_terms = store.disease_terms(hgnc_id)
+
+    for disease in disease_terms:
+        if disease["source"] == "OMIM":
+            mim_number = disease["disease_nr"]
+            disease["omim_link"] = omim(mim_number)
+    return disease_terms
 
 
 def genes_to_json(store, query, build):
