@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, List, Optional
 
 from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
