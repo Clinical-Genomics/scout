@@ -39,7 +39,7 @@
               {% for omim in terms %}
                 <tr>
                   <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank" rel=noopener >{{ omim.disease_nr }}</a></td>
-                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', omim_nr=omim.disease_nr) }}"><span class="fa fa-link"></span></a></td>
+                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', disease_id=omim.disease_id) }}"><span class="fa fa-link"></span></a></td>
                   <td><span class="text-body">{{ omim.description }}</span></td>
                   <td><!-- inheritance-->
                     {% for model in omim.inheritance %}
