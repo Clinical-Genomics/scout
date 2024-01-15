@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pydantic validation of image paths provided in case load config file
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
 ### Fixed
+- Disease_term identifiers are now prefixed with the name of the coding system
 - Command line crashing with error when updating a user that doesn't exist
 - Thaw coloredlogs - 15.0.1 restores errorhandler issue
 - Thaw crypography - current base image and library version allow Docker builds

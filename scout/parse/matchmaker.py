@@ -52,16 +52,21 @@ def omim_terms(store, case_obj):
     if case_disorders:
         for disorder in case_disorders:
             if isinstance(disorder, dict):
-                disorder = disorder.get("disease_nr")
-            omim_term = store.disease_term(disorder)
-            if omim_term is None:
+                disorder = disorder.get("disease_id")
+            # Historically diagnosis_phenotypes was saved as a list of id:s,
+            # at that time no other coding systems were present in the database
+            elif isinstance(disorder, int):
+                disorder = f"OMIM:{disorder}"
+            disease_term = store.disease_term(disorder)
+            if disease_term is None:
                 LOG.warning(f"Disease term {disorder} could not be found in database.")
                 continue
-            disorder_obj = {
-                "id": ":".join(["MIM", str(disorder)]),
-                "label": omim_term.get("description"),
-            }
-            disorders.append(disorder_obj)
+            if disease_term["source"] == "OMIM":
+                disorder_obj = {
+                    "id": disorder.replace("OMIM", "MIM"),
+                    "label": disease_term.get("description"),
+                }
+                disorders.append(disorder_obj)
     return disorders
 
 

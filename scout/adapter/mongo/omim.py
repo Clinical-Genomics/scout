@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, List, Optional
 
 from pymongo import ASCENDING, ReturnDocument
 from pymongo.errors import DuplicateKeyError
@@ -48,7 +48,7 @@ class DiagnosisHandler(object):
         """Convert case OMIM diagnoses from a list of integers (OMIM number) to a list of OMIM terms dictionaries."""
         updated_diagnoses = []
         for disease_nr in case_obj.get("diagnosis_phenotypes", []):
-            disease_term = self.disease_term(disease_identifier=disease_nr)
+            disease_term = self.disease_term(disease_identifier=f"OMIM:{disease_nr}")
             if disease_term is None:
                 continue
             updated_diagnoses.append(
@@ -75,7 +75,7 @@ class DiagnosisHandler(object):
         query: dict = {"_id": {"$in": omim_ids}}
 
         return self.disease_term_collection.find(query, filter_project).sort(
-            "disease_nr", ASCENDING
+            "disease_id", ASCENDING
         )
 
     def omim_to_genes(self, omim_obj: dict) -> List[dict]:
@@ -87,16 +87,12 @@ class DiagnosisHandler(object):
 
     def disease_term(
         self,
-        disease_identifier: Union[str, int],
+        disease_identifier: str,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> dict:
         """Return a disease term after filtering out associated genes and HPO terms (using filter project)."""
-        query = {}
-        try:
-            disease_identifier = int(disease_identifier)
-            query["disease_nr"] = disease_identifier
-        except ValueError:
-            query["_id"] = disease_identifier
+
+        query = {"disease_id": disease_identifier}
 
         return self.disease_term_collection.find_one(query, filter_project)
 
@@ -106,10 +102,10 @@ class DiagnosisHandler(object):
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> list:
         """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project. By default do not return disease-associated genes and HPO terms."""
-        query = {}
+        query = {"source": "OMIM"}
         if hgnc_id:
             LOG.debug("Fetching all diseases for gene %s", hgnc_id)
-            query["genes"] = hgnc_id
+            query = {"$and": [{"source": "OMIM"}, {"genes": hgnc_id}]}
         else:
             LOG.info("Fetching all disease terms")
 
