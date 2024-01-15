@@ -24,12 +24,8 @@ mim2gene_reduced_path = str(files(BASE_PATH).joinpath("mim2gene_reduced.txt"))
 genemap2_reduced_path = str(files(BASE_PATH).joinpath("genemap2_reduced.txt"))
 
 # ORPHA paths
-orphadata_en_product4_reduced_path = str(
-    files(BASE_PATH).joinpath("orphadata_en_product4_reduced.xml")
-)
-orphadata_en_product6_reduced_path = str(
-    files(BASE_PATH).joinpath("orphadata_en_product6_reduced.xml")
-)
+orpha_to_hpo_reduced_path = str(files(BASE_PATH).joinpath("orphadata_en_product4_reduced.xml"))
+orpha_to_genes_reduced_path = str(files(BASE_PATH).joinpath("orphadata_en_product6_reduced.xml"))
 
 # HPO paths
 hpoterms_reduced_path = str(files(BASE_PATH).joinpath("reduced.hpo.obo"))
@@ -53,4 +49,6 @@ demo_files = {
     "transcripts37_path": transcripts37_reduced_path,
     "transcripts38_path": transcripts38_reduced_path,
     "panel_path": transcripts38_reduced_path,
+    "orpha_to_genes_path": orpha_to_genes_reduced_path,
+    "orpha_to_hpo_path": orpha_to_hpo_reduced_path,
 }
