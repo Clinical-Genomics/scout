@@ -2,7 +2,7 @@
 import datetime
 import logging
 from pathlib import PosixPath
-from typing import Iterable
+from typing import Iterable, List
 
 import pymongo
 import pytest
@@ -52,6 +52,8 @@ from scout.demo.resources import (
     hpo_phenotype_annotation_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
+    orpha_to_genes_reduced_path,
+    orpha_to_hpo_reduced_path,
     phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
 )
@@ -357,7 +359,26 @@ def hpo_database(
         hpo_gene_lines=get_file_handle(phenotype_to_genes_file),
     )
     # Load diseases
-    load_disease_terms(adapter=gene_database, genemap_lines=get_file_handle(genemap_file))
+    # load_disease_terms(adapter=gene_database, genemap_lines=get_file_handle(genemap_file))
+    return adapter
+
+
+@pytest.fixture(scope="function")
+def disease_database(
+    request,
+    gene_database,
+    genemap_file,
+):
+    "Returns an adapter to a database populated with disease terms"
+    adapter = gene_database
+
+    # Load diseases
+    load_disease_terms(
+        adapter=gene_database,
+        genemap_lines=get_file_handle(genemap_file),
+        orpha_to_hpo_lines=get_file_handle(orpha_to_hpo_reduced_path),
+        orpha_to_genes_lines=get_file_handle(orpha_to_genes_reduced_path),
+    )
     return adapter
 
 
@@ -1251,7 +1272,7 @@ def one_fusion_variant(institute_obj, parsed_fusion_variants) -> dict:
 
 
 #############################################################
-##################### File fixtures #####################
+##################### File fixtures #########################
 #############################################################
 
 
@@ -1522,6 +1543,32 @@ def genemap_handle(request, genemap_file):
     """Get a file handle to a mim2genes file"""
 
     return get_file_handle(genemap_file)
+
+
+@pytest.fixture
+def orphadata_en_product6_file(request) -> str:
+    """Get the path to the orphadata_en_product6 file, which contains orpha_to_genes_lines."""
+    return orpha_to_genes_reduced_path
+
+
+@pytest.fixture
+def orpha_to_genes_lines(request, orphadata_en_product6_file: str) -> List:
+    """Get the lines of the orphadata_en_product6_file, which contain orpha_to_genes info."""
+    orpha_to_genes_lines = get_file_handle(orphadata_en_product6_file)
+    return orpha_to_genes_lines
+
+
+@pytest.fixture
+def orphadata_en_product4_file(request) -> str:
+    """Get the path to the orphadata_en_product4 file, which contains orpha_to_hpo_lines."""
+    return orpha_to_hpo_reduced_path
+
+
+@pytest.fixture
+def orpha_to_hpo_lines(request, orphadata_en_product4_file: str) -> List[str]:
+    """Get the lines of the orphadata_en_product4_file, which contain orpha_to_hpo info."""
+    orpha_to_hpo_lines = get_file_handle(orphadata_en_product4_file)
+    return orpha_to_hpo_lines
 
 
 #############################################################
