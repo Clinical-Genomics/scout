@@ -1,4 +1,4 @@
-{% from "variants/components.html" import variant_gene_symbols_cell, variant_funct_anno_cell %}
+{% from "variants/components.html" import variant_gene_symbols_cell, variant_funct_anno_cell, fusion_variant_gene_symbols_cell %}
 
 {% macro analysis_type(analysis_types) %}
   {% for analysis_type in analysis_types %}
@@ -324,9 +324,15 @@
           {% set case = variant["case_obj"] %}
           {% set analysis_types = [] %} <!-- this will be used later in Analysis type column -->
           <tr>
-            <td>{{ variant_gene_symbols_cell(variant) }}</td>
+            <td>
+              {% if variant.category == "fusion" %}
+                {{ fusion_variant_gene_symbols_cell(variant) }}
+              {% else %}
+                {{ variant_gene_symbols_cell(variant) }}
+              {% endif %}
+            </td>
             <td><!-- Variant link -->
-              {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant",  "mei": "variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant"} %}
+              {% set var_type_page = {"snv":"variant.variant", "str":"variant.variant",  "mei": "variant.variant", "cancer":"variant.cancer_variant", "sv":"variant.sv_variant", "cancer_sv": "variant.sv_variant", "fusion": "variant.variant"} %}
               {% for key, page in var_type_page.items() %}
                 {% if variant.category == key %}
                   <a target="_blank" rel="noopener noreferrer" href="{{ url_for(page,

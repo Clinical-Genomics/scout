@@ -68,7 +68,7 @@ def test_fetch_disease_term_by_number(adapter, test_omim_term):
 
     adapter.load_disease_term(test_omim_term)
     ## WHEN fetching a disease term
-    res = adapter.disease_term(test_omim_term["disease_nr"])
+    res = adapter.disease_term(test_omim_term["disease_id"])
 
     ## THEN assert the correct term was fetched
     assert res["_id"] == test_omim_term["_id"]
