@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "variants/utils.html" import fusion_filters, cell_rank, pagination_footer, pagination_hidden_div, dismiss_variants_block, filter_form_footer, filter_script_main, update_stash_filter_button_status %}
-{% from "variants/components.html" import external_scripts, external_stylesheets, frequency_cell_general, observed_cell_general, variant_gene_symbols_cell, variant_funct_anno_cell, variant_region_anno_cell, gene_cell %}
+{% from "variants/components.html" import external_scripts, external_stylesheets, fusion_variant_gene_symbols_cell %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }} - Fusion variants
@@ -104,22 +104,7 @@ onsubmit="return validateForm()">
       {{ cell_rank(variant, institute, case, form, manual_rank_options) }}
     </td>
     <td>
-      <div class="align-items-center">
-        {% if variant.genes %}
-          {% for gene in variant.genes %}
-             <a data-bs-toggle="tooltip" data-bs-html="true" title="
-               <div>
-                    <strong>{{ gene.hgnc_symbol or gene.hgnc_id }}</strong>:  {{ gene.description }}
-               </div>"
-              href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
-              </a> <br>
-          {% endfor %}
-        {% else %}
-          {% for symbol in variant.fusion_genes %}
-            {{ symbol }} <br>
-          {% endfor %}
-        {% endif %}
-      </div>
+      {{ fusion_variant_gene_symbols_cell(variant) }}
     </td>
     <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
       {{ variant.tool_hits|int }}</span></td>
@@ -151,7 +136,6 @@ onsubmit="return validateForm()">
     <td>{{ variant.orientation }}</td>
   </tr>
 {% endmacro %}
-
 
 {% block scripts %}
   {{ super() }}
