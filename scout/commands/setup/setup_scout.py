@@ -96,8 +96,7 @@ def abort_if_false(ctx, param, value):
     "--hpo-phenotype-annotation",
     type=click.Path(exists=True),
     help=(
-        "Path to file with map from HPO disease (OMIM and ORPHA) to phenotype term with annotation. This is the file "
-        "called phenotype.hpoa"
+        "Path to file with map from HPO disease (OMIM and ORPHA) to phenotype term with annotation. This is the file  called phenotype.hpoa"
     ),
 )
 @click.option(
