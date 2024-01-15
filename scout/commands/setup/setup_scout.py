@@ -168,8 +168,8 @@ def database(
         "hpoterms_path": hpoterms,
         "hpo_to_genes_path": hpo_to_genes,
         "hpo_phenotype_annotation_path": hpo_phenotype_annotation,
-        "orphadata_en_product4_path": orpha_to_hpo,
-        "orphadata_en_product6_path": orpha_to_genes,
+        "orpha_to_hpo_path": orpha_to_hpo,
+        "orpha_to_genes_path": orpha_to_genes,
     }
     LOG.info("Setting up database %s", context.obj["mongodb"])
 
@@ -201,9 +201,9 @@ def database(
             if path.stem == "phenotype":
                 resource_files["hpo_phenotype_annotation_path"] = str(path.resolve())
             if path.stem == "orphadata_en_product4":
-                resource_files["orphadata_en_product4_path"] = str(path.resolve())
+                resource_files["orpha_to_hpo_path"] = str(path.resolve())
             if path.stem == "orphadata_en_product6":
-                resource_files["orphadata_en_product4_path"] = str(path.resolve())
+                resource_files["orpha_to_genes_path"] = str(path.resolve())
 
     setup_scout(
         adapter=adapter,

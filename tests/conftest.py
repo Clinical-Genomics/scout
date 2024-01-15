@@ -52,8 +52,8 @@ from scout.demo.resources import (
     hpo_phenotype_annotation_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
-    orphadata_en_product4_reduced_path,
-    orphadata_en_product6_reduced_path,
+    orpha_to_hpo_reduced_path,
+    orpha_to_genes_reduced_path,
     phenotype_to_genes_reduced_path,
     transcripts37_reduced_path,
 )
@@ -376,8 +376,8 @@ def disease_database(
     load_disease_terms(
         adapter=gene_database,
         genemap_lines=get_file_handle(genemap_file),
-        orpha_to_hpo_lines=get_file_handle(orphadata_en_product4_reduced_path),
-        orpha_to_genes_lines=get_file_handle(orphadata_en_product6_reduced_path),
+        orpha_to_hpo_lines=get_file_handle(orpha_to_hpo_reduced_path),
+        orpha_to_genes_lines=get_file_handle(orpha_to_genes_reduced_path),
     )
     return adapter
 
@@ -1577,7 +1577,7 @@ def genemap_handle(request, genemap_file):
 @pytest.fixture
 def orphadata_en_product6_file(request) -> str:
     """Get the path to the orphadata_en_product6 file, which contains orpha_to_genes_lines."""
-    return orphadata_en_product6_reduced_path
+    return orpha_to_genes_reduced_path
 
 
 @pytest.fixture
@@ -1590,7 +1590,7 @@ def orpha_to_genes_lines(request, orphadata_en_product6_file: str) -> List:
 @pytest.fixture
 def orphadata_en_product4_file(request) -> str:
     """Get the path to the orphadata_en_product4 file, which contains orpha_to_hpo_lines."""
-    return orphadata_en_product4_reduced_path
+    return orpha_to_hpo_reduced_path
 
 
 @pytest.fixture

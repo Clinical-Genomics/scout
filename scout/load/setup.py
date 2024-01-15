@@ -180,12 +180,12 @@ def setup_scout(
         hpo_annotation_handle = get_file_handle(resource_files["hpo_phenotype_annotation_path"])
 
     orpha_to_hpo_handle = None
-    if resource_files.get("orphadata_en_product4_path"):
-        orpha_to_hpo_handle = get_file_handle(resource_files["orphadata_en_product4_path"])
+    if resource_files.get("orpha_to_genes_path"):
+        orpha_to_hpo_handle = get_file_handle(resource_files["orpha_to_hpo_path"])
 
     orpha_to_genes_handle = None
-    if resource_files.get("orphadata_en_product6_path"):
-        orpha_to_genes_handle = get_file_handle(resource_files["orphadata_en_product6_path"])
+    if resource_files.get("orpha_to_genes_path"):
+        orpha_to_genes_handle = get_file_handle(resource_files["orpha_to_genes_path"])
 
     alias_genes = adapter.genes_by_alias()
     # Load HPO terms
