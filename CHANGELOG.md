@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pydantic validation of image paths provided in case load config file
 ### Changed
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
+- Remove unused functions and tests
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 ### Fixed
 - Disease_term identifiers are now prefixed with the name of the coding system

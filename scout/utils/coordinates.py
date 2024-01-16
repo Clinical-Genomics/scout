@@ -23,23 +23,3 @@ def is_par(chromosome, position, build="37"):
         return True
 
     return False
-
-
-def check_coordinates(chromosome, pos, coordinates):
-    """Check if the variant is in the interval given by the coordinates
-
-    Args:
-        chromosome(str): Variant chromosome
-        pos(int): Variant position
-        coordinates(dict): Dictionary with the region of interest
-    """
-    chrom_match = CHR_PATTERN.match(chromosome)
-    chrom = chrom_match.group(2)
-
-    if chrom != coordinates["chrom"]:
-        return False
-
-    if pos >= coordinates["start"] and pos <= coordinates["end"]:
-        return True
-
-    return False

@@ -720,18 +720,6 @@ class CaseHandler(object):
 
         return self.case_collection.find_one(filter=query, projection=projection)
 
-    def case_ind(self, ind_id):
-        """Fetch cases based on an individual id.
-
-        Args:
-            ind_id(str)
-
-        Returns:
-            cases(pymongo.cursor): The cases with a matching ind_id
-        """
-
-        return self.case_collection.find({"individuals.display_name": ind_id})
-
     def delete_case(self, case_id=None, institute_id=None, display_name=None):
         """Delete a single case from database
 
