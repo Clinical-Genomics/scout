@@ -257,7 +257,7 @@
           <div class="alert alert-primary">
             The following variants were verified as true positives:&nbsp;
             {% for variant in sanger_positives %}
-              <a target="_blank" href="{{variant.link}}">{{variant.case_name}}/{{variant.subject}}</a>
+              <a target="_blank" rel="noopener" href="{{variant.link}}">{{variant.case_name}}/{{variant.subject}}</a>
               <button class="btn btn-link btn-sm" name="variant_link" value="{{variant.link}}" type="submit"><i class="fa fa-remove text-dark""></i></button>
               &emsp;&emsp;
             {% endfor %}
