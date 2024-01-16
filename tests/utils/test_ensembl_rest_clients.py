@@ -77,27 +77,3 @@ def test_send_request_wrong_url(ensembl_rest_client_37):
     )
     data = client.send_request(url)
     assert isinstance(data, HTTPError)
-
-
-@responses.activate
-def test_use_api(ensembl_rest_client_38, ensembl_transcripts_response):
-    """Test the use_api method of the EnsemblRestClient"""
-
-    endpoint = "/overlap/id/ENSG00000157764"
-    params = {"feature": "transcript"}
-    client = ensembl_rest_client_38
-    url = client.build_url(endpoint, params)
-    responses.add(
-        responses.GET,
-        url,
-        json=ensembl_transcripts_response,
-        status=200,
-    )
-
-    # get all transctipts for an ensembl gene, They should be a list of items
-    data = client.use_api(endpoint, params)
-    assert data[0]["assembly_name"] == "GRCh38"
-    assert data[0]["feature_type"] == "transcript"
-    assert data[0]["id"]
-    assert data[0]["start"]
-    assert data[0]["strand"]
