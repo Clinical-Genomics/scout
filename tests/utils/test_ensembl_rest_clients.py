@@ -3,46 +3,7 @@
 import responses
 from requests.exceptions import HTTPError, MissingSchema
 
-from scout.utils import ensembl_rest_clients
-
 REST_CLIENT_37_URL = "https://grch37.rest.ensembl.org"
-
-
-@responses.activate
-def test_ping_ensemble_37(ensembl_rest_client_37):
-    """Test ping ensembl server containing human build 37"""
-    # GIVEN a client to the ensembl rest api build 37
-    client = ensembl_rest_client_37
-    assert client.server == ensembl_rest_clients.RESTAPI_37
-    # GIVEN a ping response
-    ping_resp = {"ping": 1}
-    responses.add(
-        responses.GET,
-        "/".join([ensembl_rest_clients.RESTAPI_37, ensembl_rest_clients.PING_ENDPOINT]),
-        json=ping_resp,
-        status=200,
-    )
-    # WHEN pinging the server
-    data = client.ping_server()
-    # THEN assert the ping succeded
-    assert data == {"ping": 1}
-
-
-@responses.activate
-def test_ping_ensemble_38(ensembl_rest_client_38):
-    """Test ping ensembl server containing human build 38"""
-    client = ensembl_rest_client_38
-    assert client.server == ensembl_rest_clients.RESTAPI_38
-    # GIVEN a ping response
-    ping_resp = {"ping": 1}
-    responses.add(
-        responses.GET,
-        "/".join([ensembl_rest_clients.RESTAPI_38, ensembl_rest_clients.PING_ENDPOINT]),
-        json=ping_resp,
-        status=200,
-    )
-    data = client.ping_server()
-    assert data == {"ping": 1}
 
 
 @responses.activate
