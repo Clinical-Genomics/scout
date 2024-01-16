@@ -19,7 +19,7 @@ omim_bp = Blueprint(
 
 
 @omim_bp.route("/diagnoses/<disease_id>", methods=["GET"])
-@templated("diagnoses/omim_term.html")
+@templated("diagnoses/disease_term.html")
 def omim_diagnosis(disease_id):
     """Display information specific to one OMIM diagnosis"""
 

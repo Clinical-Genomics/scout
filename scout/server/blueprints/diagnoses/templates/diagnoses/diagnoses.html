@@ -55,8 +55,8 @@
       <div class="card">
         <div class="card-header"> Diagnoses in database</div>
         <div id="diagnoses-card" class="card-body">
-          <div id="load-container"><button id="load-button" onClick="loadDiseases()">Load all diseases from database</button></div>
-          <table id="diagnoses_table" class="table table-sm invisible">
+          <div id="load-container"><button id="load-button" class="btn btn-primary" onClick="loadDiseases()">Load all diseases from database</button></div>
+          <table id="diagnoses_table" class="table table-sm" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;" >
               <thead class="table-light thead">
                 <th>Diagnosis code</th>
                 <th></th>
@@ -68,7 +68,7 @@
               <tbody>
                 <tr id="diagnosis-row">
                   <td><a id="external-link" href="http://omim.org/entry/" target="_blank" rel=noopener ></a>
-                  <td><a id="internal-link" href="{{ url_for('diagnoses.omim_diagnosis',omim_nr='')}}"><span class="fa fa-link"></span></a></td>
+                  <td><a id="internal-link" href="{{ url_for('diagnoses.omim_diagnosis',disease_id='')}}"><span class="fa fa-link"></span></a></td>
                   <td><span id="description" class="text-body"></span></td>
                   <td id="inheritance-container"><!-- inheritance-->
                       <span id="inheritance" class="badge bg-info m-1"></span>

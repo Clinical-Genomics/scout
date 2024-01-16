@@ -13,7 +13,7 @@ function generateDiseaseTable(data, id) {
     //Replace visible content so diagnosis-table ius displayed
     row.remove()
     document.querySelector("#spinner-container").remove()
-    table.classList.remove("invisible")
+    table.removeAttribute("style")
 }
 
 function generateDiseaseTableRow(disease, rowTemplate) {
@@ -114,20 +114,19 @@ function initialiseTable(data) {
 async function loadDiseases() {
     document.getElementById("load-button").remove()
     $('#load-container').html(
-        `<div id="spinner-container" >
-            <div class="spinner-border text-primary" role="status">
+        `<div id="spinner-container" class="d-flex align-items-center">
+            <div class="spinner-border text-primary m-3" role="status">
                 <span class="visually-hidden"></span>
             </div>
-            Loading all diagnoses, this might take some time...
+           Loading all diagnoses, this might take some time...
         </div>`);
 
-    console.log('click')
     const baseUrl = window.location.origin
-    console.log(baseUrl)
+    debugger
 
     try {
         //Fetch data and create table from results
-        const response = await fetch(`${'http://localhost:5000'}/api/v1/diagnoses`)
+        const response = await fetch(`${baseUrl}/api/v1/diagnoses`)
         if (!response.ok) {
             throw new Error('Failed to fetch')
         }
