@@ -24,11 +24,6 @@ class PhenopacketAPI:
     def init_app(self, app):
         self.url = app.config.get("PHENOPACKET_API_URL")
 
-    def link_out(self):
-        """Generate a link for a UDNI tip2toe as a sample frontend where
-        phenopackets can be generated."""
-        return "https://udni-tip2toe.vercel.app"
-
     def phenopacket_from_case(self, case, export_ind_id=None):
         """Generate Phenopacket JSON for a Scout case.
         HPO terms associated with the first affected individual (or optionally a selected individual), and the IDs of that individual,

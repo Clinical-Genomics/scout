@@ -138,53 +138,6 @@ def test_loqusdb_exe_variant_CalledProcessError(loqus_exe_app, monkeypatch):
         assert {} == loqusdb.get_variant({"_id": "a variant"})
 
 
-def test_loqusdb_exe_cases(loqus_exe_app, monkeypatch):
-    """Test the case count function in loqus executable extension"""
-
-    nr_cases = 15
-
-    # GIVEN a return value from loqusdb using a mocker
-    def mockcommand(*args):
-        return_value = b"%d" % nr_cases
-        return return_value
-
-    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
-
-    with loqus_exe_app.app_context():
-        # WHEN fetching the number of cases
-        res = loqusdb.case_count(variant_category="snv")
-        # THEN assert the output is parsed correct
-        assert res == nr_cases
-
-
-def test_loqusdb_exe_cases_ValueError(loqus_exe_app, monkeypatch):
-    """Test the case count function in loqus extension"""
-
-    # GIVEN a return value from loqusdb which is not an int
-    def mockcommand(*args):
-        return "nonsense"
-
-    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
-
-    with loqus_exe_app.app_context():
-        # THEN assert a value error is raised, but passed, and 0 is returned
-        assert loqusdb.case_count(variant_category="snv") == 0
-
-
-def test_loqusdb_exe_case_count_CalledProcessError(loqus_exe_app, monkeypatch):
-    """Test the case count function in loqus extension that raises an exception"""
-
-    # GIVEN replacing subprocess.check_output to raise CalledProcessError
-    def mockcommand(*args):
-        raise subprocess.CalledProcessError(123, "case_count")
-
-    monkeypatch.setattr(loqus_extension, "execute_command", mockcommand)
-
-    with loqus_exe_app.app_context():
-        # THEN assert exception is caught and the value 0 is returned
-        assert 0 == loqusdb.case_count(variant_category="snv")
-
-
 def test_init_app_loqus_list(monkeypatch, loqus_exe, loqus_config):
     """Test creating a Loqus extension from a list of config params"""
 

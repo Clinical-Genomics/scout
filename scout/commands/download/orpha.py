@@ -33,6 +33,7 @@ def print_orpha(out_dir: Path) -> None:
 def orpha(out_dir: str) -> None:
     """Download the ORPHA codes with gene and HPO annotations"""
     out_dir: Path = Path(out_dir)
+
     out_dir.mkdir(parents=True, exist_ok=True)
     LOG.info(f"Download ORPHA resources to {out_dir}")
 

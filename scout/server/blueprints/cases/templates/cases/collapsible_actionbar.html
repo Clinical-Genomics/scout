@@ -182,16 +182,16 @@
 <div href="#" class="bg-dark list-group-item d-inline-block text-white">
   {% if case.bam_files %}
     <form action="{{url_for('alignviewers.igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
-      <button role="submit" class="btn btn-xs form-control btn-secondary">IGV viewer</button>
+      <button role="submit" class="btn btn-xs form-control btn-secondary">I<span class="menu-collapsed">GV viewer</span></button>
     </form>
   {% else %}
-    <span class="text-muted">BAM file(s) missing</span>
+    <span class="fa fa-times-circle fa-fw me-3"></span><span class="text-muted menu-collapsed">Alignment missing</span>
   {% endif %}
 </div>
 {% if has_rna_tracks %}
   <div href="#" class="bg-dark list-group-item d-inline-block text-white">
     <form action="{{url_for('alignviewers.sashimi_igv', institute_id=case['owner'], case_name=case['display_name']) }}" target="_blank" rel="noopener">
-      <button role="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Only available in build GRCh38" class="btn btn-xs form-control btn-secondary">RNA splicing</button>
+      <button role="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="Only available in build GRCh38" class="btn btn-xs form-control btn-secondary">R<span class="menu-collapsed">NA splicing</span></button>
     </form>
   </div>
 {% endif %}
@@ -265,8 +265,8 @@
 </a>
 <!-- Submenu content -->
   {% if case.research_requested %}
-    <span class="d-flex align-items-center">
-      <em class="text-white mt-1 ms-3">Research pending</em>
+    <span class="d-flex align-items-center"><span class="menu-collapsed">
+      <em class="text-white mt-1 ms-3">Research pending</em></span>
       <button type="button" class="btn btn-danger btn-xs ms-3" data-bs-toggle="modal" data-bs-target="#cancel-research-modal"><span class="far fa-hand-paper text-white"></span></button>
     </span>
   {% else %}
