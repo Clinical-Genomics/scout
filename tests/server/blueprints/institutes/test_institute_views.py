@@ -483,7 +483,7 @@ def test_institute_users(app, institute_obj, user_obj):
     # GIVEN a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         # WHEN accessing the cases page
         resp = client.get(
@@ -503,7 +503,7 @@ def test_filters(app, institute_obj, user_obj, case_obj, filter_obj):
     # GIVEN a valid user and institute
     with app.test_client() as client:
         # GIVEN that the user could be logged in
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
 
         category = "snv"
         filter_id = store.stash_filter(filter_obj, institute_obj, case_obj, user_obj, category)
@@ -517,3 +517,37 @@ def test_filters(app, institute_obj, user_obj, case_obj, filter_obj):
 
         # Containing the test user's name
         assert user_obj["name"] in str(resp.data)
+
+
+def test_dismiss_positive_verified_alert(app, user_obj, institute_obj, case_obj, variant_obj):
+    """Test the endpoint that removes the alert for a user to go check a variant that was verified as a true positive."""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # GIVEN a user with new true positive variants alert
+        validated_positive_variant_info = {
+            "link": "link_to_variant",
+            "subject": variant_obj["display_name"],
+            "case_name": case_obj["display_name"],
+        }
+        store.user_collection.find_one_and_update(
+            {"_id": user_obj["_id"]},
+            {"$set": {"validated_positive_variants": [validated_positive_variant_info]}},
+        )
+
+        # WHEN the alert is canceled using the dismiss_positive_verified_alert endpoint
+        data = {"variant_link": "link_to_variant"}
+        client.post(
+            url_for(
+                "overview.dismiss_positive_verified_alert",
+                institute_id=institute_obj["internal_id"],
+            ),
+            data=data,
+        )
+
+        # THEN the validated_positive_variants field in the user collection should be emptied
+        updated_user = store.user_collection.find_one({"_id": user_obj["_id"]})
+        assert not updated_user.get("validated_positive_variants")
