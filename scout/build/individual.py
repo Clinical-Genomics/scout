@@ -115,7 +115,6 @@ def build_individual(ind):
     ind_obj["mitodel_file"] = ind.get("mitodel_file")
 
     # Check if the analysis type is ok
-    # Can be anyone of ('wgs', 'wes', 'mixed', 'unknown')
     analysis_type = ind.get("analysis_type", "unknown")
     if not analysis_type in ANALYSIS_TYPES:
         raise PedigreeError("Analysis type %s not allowed", analysis_type)
