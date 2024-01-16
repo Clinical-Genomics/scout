@@ -263,6 +263,35 @@ def test_order_verification(adapter, institute_obj, case_obj, user_obj, variant_
         assert event_obj["category"] in ["case", "variant"]
 
 
+def test_sanger_ordered_by(adapter, institute_obj, case_obj, user_obj, variant_obj):
+    """Test the function that returns the _id of the user which has ordered a Sanger verification."""
+
+    # GIVEN a populated database with variants
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    adapter.variant_collection.insert_one(variant_obj)
+    variant = adapter.variant_collection.find_one()
+
+    link = "orderSangerlink"
+    # WHEN ordering sanger for a variant
+    adapter.order_verification(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        link=link,
+        variant=variant,
+    )
+
+    # Then the sanger_ordered_by function should return the user which ordered it
+    ordered_by = adapter.sanger_ordered_by(
+        institute_id=institute_obj["_id"],
+        case_id=case_obj["_id"],
+        variant_id=variant_obj["variant_id"],
+    )
+    assert ordered_by == user_obj["_id"]
+
+
 def test_cancel_verification(adapter, institute_obj, case_obj, user_obj, variant_obj):
     # GIVEN a populated database with a variant that has sanger ordered
     adapter.case_collection.insert_one(case_obj)
