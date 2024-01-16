@@ -383,7 +383,7 @@ def disease_database(
 
 
 #############################################################
-################# OMIM terms fixtures #######################
+################# disease terms fixtures #######################
 #############################################################
 
 
@@ -402,6 +402,21 @@ def test_omim_term(request):
         "HPO_terms": ["HP:00022027", "HP:0008672"],
     }
     return omim_term
+
+
+@pytest.fixture
+def test_orpha_term(request):
+    """Return a test ORPHA object"""
+    orpha_term = {
+        "_id": "ORPHA:585",
+        "disease_id": "ORPHA:585",
+        "disease_nr": 585,
+        "description": "Multiple sulfatase deficiency",
+        "source": "ORPHA",
+        "genes": ["20376"],
+        "hpo_terms": ["HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"],
+    }
+    return orpha_term
 
 
 #############################################################

@@ -124,3 +124,30 @@ def test_omim_genes(adapter, test_omim_term):
 
     # THEN it should return the right gene
     assert result[0]["hgnc_id"] == omim_gene_id
+
+
+def test_disease_stats(adapter, test_omim_term, test_orpha_term):
+    # GIVEN a database with disease_terms from two coding systems
+    adapter.disease_term_collection.insert_one(test_omim_term)
+    adapter.disease_term_collection.insert_one(test_orpha_term)
+
+    # WHEN the database is queried for the disease_term counts
+    result = list(adapter.disease_stats())
+
+    # THEN it should return the correct counts for each terminology
+
+    assert {"_id": "OMIM", "count": 1} in result
+    assert {"_id": "ORPHA", "count": 1} in result
+
+
+def test_query_omim(adapter, test_omim_term, test_orpha_term):
+    # GIVEN a database with disease_terms from two coding systems
+    adapter.disease_term_collection.insert_one(test_omim_term)
+    adapter.disease_term_collection.insert_one(test_orpha_term)
+
+    # WHEN the database is queried for the disease_term counts
+    result = list(adapter.query_omim(query="defi", source="OMIM"))
+
+    # THEN it should return the test_omim_term
+    assert len(result) == 1
+    assert result[0]["_id"] == test_omim_term["_id"]
