@@ -707,13 +707,13 @@ $('[data-bs-toggle=sidebar-collapse]').click(function() {
 
 // Allows a Sanger recipient to notify the user who ordered a Sanger verification that it was a true positive
 function validate_action(validated_option) {
-  if (validated_option != "True positive"){
-    document.getElementById('validation_form').submit();
-  }
   const sanger_recipients = {{ institute.sanger_recipients | tojson }};
-  if ( sanger_recipients.includes("{{current_user.email}}") ){
+  if ( sanger_recipients.includes("{{current_user.email}}") && validated_option == "True positive"){
     var myModal = new bootstrap.Modal(document.getElementById('validationModal'))
     myModal.show();
+  }
+  else{
+    document.getElementById('validation_form').submit();
   }
 }
 </script>
