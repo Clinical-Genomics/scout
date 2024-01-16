@@ -1,6 +1,6 @@
 import logging
 from collections import Counter
-from typing import Any, Dict, List
+from typing import Dict, List, Optional
 
 import pymongo
 
@@ -213,6 +213,22 @@ class VariantEventHandler(object):
 
         sanger_ordered = [item for item in results]
         return sanger_ordered
+
+    def sanger_ordered_by(self, institute_id: str, case_id: str, variant_id: str) -> Optional[str]:
+        """retrieve the id of a user which ordered the Sanger verification of a variant."""
+
+        query = {
+            "verb": "sanger",
+            "institute": institute_id,
+            "case": case_id,
+            "variant_id": variant_id,
+        }
+        projection = {"_id": 0, "user_id": 1}
+        result: dict = self.event_collection.find_one(
+            query, projection, sort=[("created_at", pymongo.DESCENDING)]
+        )
+        if result:
+            return result["user_id"]
 
     def validated(
         self, institute_id: str = None, user_id: str = None, case_id: str = None

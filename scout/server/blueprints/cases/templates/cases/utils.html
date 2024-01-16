@@ -583,7 +583,7 @@
   </select>
  </form>
 
-<div class="modal" tabindex="-1" id="validationModal">
+<div class="modal fade" tabindex="-1" id="validationModal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -594,8 +594,8 @@
         <input type="hidden" name="type" value="True positive"/>
         <div class="modal-body">
           <p>The variant is being marked as a true positive.</p>
-          <input class="form-check-input" type="checkbox" value="" name="notify_user" checked>
-          <label class="form-check-label" for="flexCheckChecked">
+          <input class="form-check-input" type="checkbox" value="yes" name="notify_user" id="notify_user" checked>
+          <label class="form-check-label" for="notify_user">
             Notify user which ordered verification
           </label>
         </div>

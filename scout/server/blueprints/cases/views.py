@@ -675,6 +675,20 @@ def mark_validation(institute_id, case_name, variant_id):
         variant_id=variant_id,
     )
     store.validate(institute_obj, case_obj, user_obj, link, variant_obj, validate_type)
+    if request.form.get("notify_user"):
+        sanger_by: str = store.sanger_ordered_by(
+            institute_id=institute_id, case_id=case_obj["_id"], variant_id=variant_obj["variant_id"]
+        )
+        if sanger_by:
+            variant_info: dict = {
+                "subject": variant_obj["display_name"],
+                "link": link,
+                "case_name": case_name,
+            }
+            store.update_users_verified_positives(
+                user_id=sanger_by, variant_info=variant_info, add=True
+            )
+
     return redirect(request.referrer or link)
 
 

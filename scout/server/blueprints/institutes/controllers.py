@@ -480,6 +480,8 @@ def cases(store, request, institute_id):
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
     data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
+    user_obj: dict = store.user(email=current_user.email)
+    data["sanger_positives"] = user_obj["validated_positive_variants"] or []
 
     case_groups = {status: [] for status in CASE_STATUSES}
     nr_cases = 0

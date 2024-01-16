@@ -5,6 +5,7 @@ import pymongo
 from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
+from typing import Optional
 
 LOG = logging.getLogger(__name__)
 
@@ -100,3 +101,16 @@ class UserHandler(object):
         LOG.info("Deleting user %s", email)
         result = self.user_collection.delete_one({"email": email})
         return result
+
+    def update_users_verified_positives(
+        self, user_id: str, variant_info: dict, add: bool = True
+    ) -> Optional[dict]:
+        """Update the list of links to the variants for which the user has ordered verification and turned out to be true positives."""
+        if add:
+            return self.user_collection.find_one_and_update(
+                {"_id": user_id}, {"$addToSet": {"validated_positive_variants": variant_info}}
+            )
+        else:
+            return self.user_collection.find_one_and_update(
+                {"_id": user_id}, {"$pull": {"validated_positive_variants": variant_info}}
+            )

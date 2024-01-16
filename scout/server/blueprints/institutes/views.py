@@ -248,3 +248,17 @@ def institute_users(institute_id):
         return redirect(request.referrer)
     data = controllers.institute(store, institute_id)
     return render_template("/overview/users.html", panel=2, **data)
+
+
+@blueprint.route("/overview/dismiss_positive_verified_alert", methods=["POST"])
+def dismiss_positive_verified_alert():
+    """Removes the alert for a user to go check a variant that was verified as a true positive."""
+    variant_link_to_remove = request.form.get("variant_link")
+    users_verified_positives: list = current_user.validated_positive_variants or []
+    for variant_info in users_verified_positives:
+        if variant_info["link"] == variant_link_to_remove:
+            store.update_users_verified_positives(
+                user_id=current_user._id, variant_info=variant_info, add=False
+            )
+            break
+    return redirect(request.referrer)

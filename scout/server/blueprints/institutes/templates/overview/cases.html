@@ -249,6 +249,24 @@
           </div>
         </div>
       {% endif %}
+
+      <!-- Eventual variants the user has ordered verification for and turned out to be true positives -->
+      {% if sanger_positives %}
+        <form action="{{url_for('overview.dismiss_positive_verified_alert')}}" method="POST">
+        <div class="row mt-3">
+          <div class="alert alert-primary">
+            The following variants were verified as true positives:&nbsp;
+            {% for variant in sanger_positives %}
+              <a target="_blank" href="{{variant.link}}">{{variant.case_name}}/{{variant.subject}}</a>
+              <button class="btn btn-link btn-sm" name="variant_link" value="{{variant.link}}" type="submit"><i class="fa fa-remove text-dark""></i></button>
+              &emsp;&emsp;
+            {% endfor %}
+          </div>
+        </div>
+        </form>
+      {% endif %}
+
+
       <div>
         {% set ordered_statuses = ['prioritized', 'inactive', 'active', 'archived', 'solved', 'ignored'] -%}
         {% for status in ordered_statuses %}
