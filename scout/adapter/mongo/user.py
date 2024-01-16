@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+from typing import Optional
 
 import pymongo
 from pymongo.errors import DuplicateKeyError
 
 from scout.exceptions import IntegrityError
-from typing import Optional
 
 LOG = logging.getLogger(__name__)
 
