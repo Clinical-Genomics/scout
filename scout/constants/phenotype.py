@@ -4,8 +4,8 @@ HPOTERMS_URL = (
 )
 
 ORPHA_URLS = {
-    "orpha_to_genes": "https://www.orphadata.com/data/xml/en_product4.xml",
-    "orpha_to_hpo": "https://www.orphadata.com/data/xml/en_product6.xml",
+    "orpha_to_hpo": "https://www.orphadata.com/data/xml/en_product4.xml",
+    "orpha_to_genes": "https://www.orphadata.com/data/xml/en_product6.xml",
 }
 
 PHENOTYPE_GROUPS = {
@@ -34,4 +34,12 @@ UPDATE_DISEASES_RESOURCES = {
     "genemap_lines": ["genemap2.txt", "genemap2_reduced.txt"],
     "hpo_gene_lines": ["phenotype_to_genes.txt", "phenotype_to_genes_reduced.txt"],
     "hpo_annotation_lines": ["phenotype.hpoa", "reduced.phenotype.hpoa"],
+    "orpha_to_genes_lines": [
+        "orphadata_en_product6.xml",
+        "orphadata_en_product6_reduced.xml",
+    ],
+    "orpha_to_hpo_lines": [
+        "orphadata_en_product4.xml",
+        "orphadata_en_product4_reduced.xml",
+    ],
 }
