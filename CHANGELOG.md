@@ -22,7 +22,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page crashing when user tries to remove the same variant from a ClinVar submission in different browser tabs
 - Update more GnomAD links to GnomAD v4 (v38 SNVs, MT vars, STRs)
 - Empty cells for RNA fusion variants in Causatives and Verified variants page
+- Submenu icons missing from collapsible actionbar
+- The collapsible actionbar had some non-collapsing overly long entries
 - Optimised indexes to address slow queries
+
 
 ## [4.75]
 ### Added

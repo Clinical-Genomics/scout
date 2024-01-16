@@ -334,6 +334,8 @@ body {
 /* Closed submenu icon */
 #sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
   content: " \f0d7";
+  font-family: "Font Awesome 5 Free", ui-monospace;
+  font-weight: 900;
   display: inline;
   text-align: right;
   padding-left: 10px;
@@ -341,6 +343,8 @@ body {
 /* Opened submenu icon */
 #sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
   content: " \f0da";
+  font-family: "Font Awesome 5 Free", ui-monospace;
+  font-weight: 900;
   display: inline;
   text-align: right;
   padding-left: 10px;
