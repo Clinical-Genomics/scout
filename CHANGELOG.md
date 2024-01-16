@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
 - Remove unused functions and tests
+- Analysis type and direct link from cases list for OGM cases
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 ### Fixed
 - Disease_term identifiers are now prefixed with the name of the coding system
@@ -28,7 +29,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Submenu icons missing from collapsible actionbar
 - The collapsible actionbar had some non-collapsing overly long entries
 - Cancer observations for SVs not appearing in the variant details view
-
 
 ## [4.75]
 ### Added
