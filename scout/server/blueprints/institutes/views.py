@@ -254,11 +254,12 @@ def institute_users(institute_id):
 def dismiss_positive_verified_alert():
     """Removes the alert for a user to go check a variant that was verified as a true positive."""
     variant_link_to_remove = request.form.get("variant_link")
-    users_verified_positives: list = current_user.validated_positive_variants or []
+    user_obj: dict = store.user(email=current_user.email)
+    users_verified_positives: list = user_obj.get("validated_positive_variants", [])
     for variant_info in users_verified_positives:
         if variant_info["link"] == variant_link_to_remove:
             store.update_users_verified_positives(
-                user_id=current_user._id, variant_info=variant_info, add=False
+                user_id=user_obj["_id"], variant_info=variant_info, add=False
             )
             break
     return redirect(request.referrer)
