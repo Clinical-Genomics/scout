@@ -401,24 +401,6 @@ class GeneHandler(object):
 
         return genes
 
-    def to_hgnc(self, hgnc_alias, build="37"):
-        """Check if a hgnc symbol is an alias
-
-        Return the correct hgnc symbol, if not existing return None
-
-        Args:
-            hgnc_alias(str)
-
-        Returns:
-            hgnc_symbol(str)
-        """
-        result = self.hgnc_genes(hgnc_symbol=hgnc_alias, build=str(build))
-        if result:
-            for gene in result:
-                return gene["hgnc_symbol"]
-        else:
-            return None
-
     def add_hgnc_id(self, genes):
         """Add the correct hgnc id to a set of genes with hgnc symbols
 
