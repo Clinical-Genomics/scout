@@ -20,7 +20,7 @@ from scout.exceptions import PedigreeError
 from scout.utils.date import get_date
 
 LOG = logging.getLogger(__name__)
-
+REPID = "{REPID}"
 
 SAMPLES_FILE_PATH_CHECKS = [
     "bam_file",
@@ -273,13 +273,15 @@ class Image(BaseModel):
 
     @field_validator("path", mode="before")
     @classmethod
-    def check_image_format(cls, path: str) -> Optional[str]:
+    def check_image_path(cls, path: str) -> Optional[str]:
         """Make sure that the image is has standard format."""
         image_format: str = path.split(".")[-1]
         if image_format not in SUPPORTED_IMAGE_FORMATS:
             raise TypeError(
                 f"Custom images should be of type: {', '.join(SUPPORTED_IMAGE_FORMATS)}"
             )
+        if REPID not in path and _is_string_path(path) is False:
+            raise ValueError(f"Image path '{path}' is not valid.")
         return path
 
 
@@ -306,15 +308,15 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
 
     real_folder_images: List[Image] = []
     for image in images:
-        if image.str_repid == "{REPID}":  # This will be more than one image in a folder
+        if image.str_repid == REPID:  # This will be more than one image in a folder
             for match in _glob_wildcard(path=image.path):
                 new_image: Dict = {
-                    "description": image.description.replace("{REPID}", match["repid"]),
+                    "description": image.description.replace(REPID, match["repid"]),
                     "height": image.height,
                     "format": None,
                     "path": str(match["path"]),
                     "str_repid": match["repid"],
-                    "title": image.title.replace("{REPID}", match["repid"]),
+                    "title": image.title.replace(REPID, match["repid"]),
                     "width": image.width,
                 }
                 real_folder_images.append(Image(**new_image))

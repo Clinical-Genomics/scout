@@ -8,7 +8,7 @@ Flask-Markdown
 WTForms
 Flask-WTF
 Flask-Mail
-coloredlogs<=14.0
+coloredlogs
 query_phenomizer
 Flask-Babel>=3
 livereload
@@ -20,7 +20,7 @@ pdfkit
 phenopackets
 xlsxwriter
 click
-cryptography<3.4
+cryptography
 defusedxml
 svglib
 cairosvg

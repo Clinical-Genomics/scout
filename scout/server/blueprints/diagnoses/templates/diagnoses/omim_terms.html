@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
+
+{% block css %}
+{{ super() }}
+  {{ db_table_external_stylesheets() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">OMIM terms</span>
+  </li>
+{% endblock %}
+
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">OMIM terms</div>
+        <div class="card-body">
+          {% if terms|length == 0 %}
+            The search didn't return any OMIM term
+          {% else %}
+            <table id="diagnoses_table" class="table table-sm">
+              <thead class="table-light thead">
+                <th>OMIM term</th>
+                <th></th>
+                <th>Phenotype description</th>
+                <th>Inheritance</th>
+                <th>Associated genes</th>
+                <th>Associated HPO terms</th>
+              </thead>
+              {% for omim in terms %}
+                <tr>
+                  <td><a href="http://omim.org/entry/{{omim.disease_nr}}" target="_blank" rel=noopener >{{ omim.disease_nr }}</a></td>
+                  <td><a href="{{ url_for('diagnoses.omim_diagnosis', disease_id=omim.disease_id) }}"><span class="fa fa-link"></span></a></td>
+                  <td><span class="text-body">{{ omim.description }}</span></td>
+                  <td><!-- inheritance-->
+                    {% for model in omim.inheritance %}
+                      <span class="badge bg-info">{{model}}</span>
+                    {% else %}
+                      -
+                    {% endfor %}
+                  </td><!--end of inheritance-->
+                  <td>
+                    {% for gene in omim.genes %}
+                    <span class="text-body">
+                      <a href="{{ url_for('genes.gene', hgnc_id=gene) }}" target="_blank" rel="noopener" >{{gene}}</a>
+                    </span>
+                    {% else %}
+                      -
+                    {% endfor %}
+                  </td>
+
+                  <td>
+                    <span class="text-body">
+                    {% for term in omim.hpo_terms %}
+                      <a class="badge bg-secondary text-white" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" >{{term}}</a>
+                    {% else %}
+                     -
+                    {% endfor %}
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% endif %}
+        </div><!--end of card body-->
+      </div><!--end of card-->
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ db_table_external_scripts() }}
+<script>
+  $(document).ready(function() {
+    $('#diagnoses_table').DataTable( {
+        paging: false,
+        dom: 'fBrtip',
+        buttons: [
+          {
+            extend: 'excelHtml5',
+            title: 'omim_terms'
+          },
+          'copyHtml5'
+        ]
+    } );
+} );
+</script>
+{% endblock %}
