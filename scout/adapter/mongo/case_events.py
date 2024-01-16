@@ -672,43 +672,6 @@ class CaseEventHandler(object):
         LOG.debug("Case updated")
         return updated_case
 
-    def mark_checked(self, institute, case, user, link, unmark=False):
-        """Mark a case as checked from an analysis point of view.
-
-        Args:
-            institute (dict): A Institute object
-            case (dict): Case object
-            user (dict): A User object
-            link (str): The url to be used in the event
-            unmark (bool): If case should ve unmarked
-
-        Return:
-            updated_case
-        """
-
-        LOG.info("Updating checked status of {}".format(case["display_name"]))
-
-        status = "not checked" if unmark else "checked"
-        self.create_event(
-            institute=institute,
-            case=case,
-            user=user,
-            link=link,
-            category="case",
-            verb="check_case",
-            subject=status,
-        )
-
-        LOG.info("Updating {0}'s checked status {1}".format(case["display_name"], status))
-        analysis_checked = False if unmark else True
-        updated_case = self.case_collection.find_one_and_update(
-            {"_id": case["_id"]},
-            {"$set": {"analysis_checked": analysis_checked}},
-            return_document=pymongo.ReturnDocument.AFTER,
-        )
-        LOG.debug("Case updated")
-        return updated_case
-
     def update_clinical_filter_hpo(
         self, institute_obj, case_obj, user_obj, link, hpo_clinical_filter
     ):

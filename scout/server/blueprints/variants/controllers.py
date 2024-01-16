@@ -1327,34 +1327,6 @@ def cancer_variants(store, institute_id, case_name, variants_query, variant_coun
     return data
 
 
-def get_clinvar_submission(store, institute_id, case_name, variant_id, submission_id):
-    """Collects all variants from the clinvar submission collection with a specific submission_id
-    Args:
-        store(scout.adapter.MongoAdapter)
-        institute_id(str): Institute ID
-        case_name(str): case ID
-        variant_id(str): variant._id
-        submission_id(str): clinvar submission id, i.e. SUB76578
-    Returns:
-        A dictionary with all the data to display the clinvar_update.html template page
-    """
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    pinned = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj.get("suspects", [])
-    ]
-    variant_obj = store.variant(variant_id)
-    clinvar_submission_objs = store.clinvars(submission_id=submission_id)
-    return dict(
-        today=str(date.today()),
-        institute=institute_obj,
-        case=case_obj,
-        variant=variant_obj,
-        pinned_vars=pinned,
-        clinvars=clinvar_submission_objs,
-    )
-
-
 def upload_panel(store, institute_id, case_name, stream):
     """Parse out HGNC symbols from a stream."""
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
