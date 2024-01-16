@@ -988,3 +988,36 @@ def test_host_custom_image_aux(app, institute_obj, case_obj):
         # THEN it should return an image
         assert resp.status_code == 200
         assert resp.mimetype == "image/png"
+
+
+def test_mark_validation(app, institute_obj, case_obj, variant_obj):
+    """Test the endpoint that allows to mark variant as sanger validated."""
+
+    # GIVEN an app with an authenticated user
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # GIVEN a variant without validation
+        one_variant = store.variant_collection.find_one({"_id": variant_obj["_id"]})
+        assert "validation" not in one_variant
+
+        # GIVEN a POST request to the mark_validation endpoint
+        validation_type = "True positive"
+        data = {
+            "type": validation_type,
+            "notify_user": "True",
+        }
+        client.post(
+            url_for(
+                "cases.mark_validation",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+                variant_id=variant_obj["_id"],
+            ),
+            data=data,
+        )
+
+        # THEN the variant should be set as validated
+        updated_variant = store.variant_collection.find_one({"_id": variant_obj["_id"]})
+        assert updated_variant["validation"] == validation_type
