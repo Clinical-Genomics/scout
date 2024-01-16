@@ -260,5 +260,69 @@
         </DisorderGeneAssociation>
       </DisorderGeneAssociationList>
     </Disorder>
+	      <Disorder id="7">
+      <OrphaCode>118</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=118</ExpertLink>
+      <Name lang="en">Beta-mannosidosis</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <DisorderGeneAssociationList count="1">
+        <DisorderGeneAssociation>
+          <SourceOfValidation>18980795[PMID]</SourceOfValidation>
+          <Gene id="16375">
+            <Name lang="en">mannosidase beta</Name>
+            <Symbol>MANBA</Symbol>
+            <SynonymList count="1">
+              <Synonym lang="en">beta-mannosidase A</Synonym>
+            </SynonymList>
+            <GeneType id="25993">
+              <Name lang="en">gene with protein product</Name>
+            </GeneType>
+            <ExternalReferenceList count="6">
+              <ExternalReference id="100307">
+                <Source>Reactome</Source>
+                <Reference>O00462</Reference>
+              </ExternalReference>
+              <ExternalReference id="31235">
+                <Source>Genatlas</Source>
+                <Reference>MANBA</Reference>
+              </ExternalReference>
+              <ExternalReference id="31013">
+                <Source>HGNC</Source>
+                <Reference>6831</Reference>
+              </ExternalReference>
+              <ExternalReference id="31012">
+                <Source>OMIM</Source>
+                <Reference>609489</Reference>
+              </ExternalReference>
+              <ExternalReference id="33439">
+                <Source>SwissProt</Source>
+                <Reference>O00462</Reference>
+              </ExternalReference>
+              <ExternalReference id="56684">
+                <Source>Ensembl</Source>
+                <Reference>ENSG00000109323</Reference>
+              </ExternalReference>
+            </ExternalReferenceList>
+            <LocusList count="1">
+              <Locus id="19189">
+                <GeneLocus>4q24</GeneLocus>
+                <LocusKey>1</LocusKey>
+              </Locus>
+            </LocusList>
+          </Gene>
+          <DisorderGeneAssociationType id="17949">
+            <Name lang="en">Disease-causing germline mutation(s) in</Name>
+          </DisorderGeneAssociationType>
+          <DisorderGeneAssociationStatus id="17991">
+            <Name lang="en">Assessed</Name>
+          </DisorderGeneAssociationStatus>
+        </DisorderGeneAssociation>
+      </DisorderGeneAssociationList>
+    </Disorder>
   </DisorderList>
 </JDBOR>
