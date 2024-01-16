@@ -288,18 +288,6 @@ class PanelHandler:
 
         return gene_panels
 
-    def hgnc_to_panels(self, hgnc_id):
-        """Get a list of gene panel objects for a hgnc_id
-
-        Args:
-            hgnc_id(int)
-
-        Returns:
-            hgnc_panels(dict): A dictionary with hgnc as keys and lists of
-                               gene panel objects as values
-        """
-        return self.panel_collection.find({"genes.hgnc_id": hgnc_id})
-
     def gene_to_panels(self, case_obj):
         """Fetch all gene panels and group them by gene
 
