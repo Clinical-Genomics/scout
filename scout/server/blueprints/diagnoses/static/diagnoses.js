@@ -1,3 +1,41 @@
+async function loadDiseases() {
+		//Remove load button
+    let button=document.getElementById("load-button")
+
+    button.remove()
+
+    //Add spinner to show loading is in progress
+    $('#load-container').html(
+        `<div id="spinner-container" class="d-flex align-items-center">
+            <div class="spinner-border text-primary m-3" role="status">
+                <span class="visually-hidden"></span>
+            </div>
+           Loading all diagnoses, this might take some time...
+        </div>`);
+
+    const baseUrl = window.location.origin
+
+    try {
+        //Fetch data and generate table with results
+        const response = await fetch(`${baseUrl}/api/v1/diagnoses`)
+        if (!response.ok) {
+            throw new Error('Failed to fetch')
+        }
+        const { terms } = await response.json()
+
+        generateDiseaseTable(terms, "diagnoses_table")
+        initialiseTable()
+
+    } catch (error) {
+
+        if (error.toString().includes('Failed to fetch')) {
+        		//Replace load button
+        		document.querySelector("#diagnoses-card").append(button)
+            //Replace loading spinner with error message if loading fails
+            displayErrorMsg("Diagnoses could not be loaded, please try again", "spinner-container")
+        }
+    }
+}
 
 function generateDiseaseTable(data, id) {
     const table = document.getElementById(id)
@@ -10,7 +48,7 @@ function generateDiseaseTable(data, id) {
         tbody.append(newRow)
     })
 
-    //Replace visible content so diagnosis-table ius displayed
+    //Replace invisible content so diagnosis-table is displayed
     row.remove()
     document.querySelector("#spinner-container").remove()
     table.removeAttribute("style")
@@ -18,13 +56,14 @@ function generateDiseaseTable(data, id) {
 
 function generateDiseaseTableRow(disease, rowTemplate) {
 
-    const { disease_id, disease_nr, description, inheritance, genes, hpo_terms } = disease
+    const { disease_id, disease_nr, description, inheritance, genes, hpo_terms, source } = disease
     let newNode = rowTemplate.cloneNode(true)
     newNode.removeAttribute("id")
 
     //Add diagnosis links
     let externalLinkElement = newNode.querySelector("#external-link")
-    externalLinkElement.setAttribute("href", `http://omim.org/entry/${disease_nr}`)
+
+    externalLinkElement.setAttribute("href", getExternalLink(source, disease_nr))
     externalLinkElement.textContent = `${disease_id}`
     let internalLinkElement = newNode.querySelector("#internal-link")
     let internalbaseurl = internalLinkElement.getAttribute("href")
@@ -33,7 +72,6 @@ function generateDiseaseTableRow(disease, rowTemplate) {
     //Add descritption
     let descriptionElement = newNode.querySelector("#description")
     descriptionElement.textContent = `${description}`
-
 
     //Add inheritance
     let inheritanceElement = newNode.querySelector("#inheritance")
@@ -51,39 +89,10 @@ function generateDiseaseTableRow(disease, rowTemplate) {
     }
 
     //Add Genes
-    let genesElement = newNode.querySelector("#gene-link")
-    let genesContainerElement = newNode.querySelector("#genes-container")
-    if (genes.length > 0) {
-        genes.forEach(element => {
-            let newGenes = genesElement.cloneNode()
-            newGenes.removeAttribute("id")
-            let internalbaseurl = newGenes.getAttribute("href")
-            newGenes.setAttribute("href", internalbaseurl.slice(0, -1) + element)
-            newGenes.textContent = element
-            genesContainerElement.append(newGenes)
-        });
-    } else {
-        genesContainerElement.querySelector("span").remove()
-        genesContainerElement.textContent = "-"
-    }
+    addHpoOrGeneLinks(newNode, "gene", genes)
 
     //Add hpo_terms
-    let hpoElement = newNode.querySelector("#hpo-link")
-    let hpoContainerElement = newNode.querySelector("#hpo-container")
-    //let span = hpoContainerElement.querySelector("span")
-    if (hpo_terms.length > 0) {
-        hpo_terms.forEach(element => {
-            let newHpoLink = hpoElement.cloneNode()
-            newHpoLink.removeAttribute("id")
-            let internalbaseurl = newHpoLink.getAttribute("href")
-            newHpoLink.setAttribute("href", internalbaseurl + element)
-            newHpoLink.textContent = element
-            hpoContainerElement.append(newHpoLink)
-        });
-    } else {
-        hpoContainerElement.querySelector("span").remove()
-        hpoContainerElement.textContent = "-"
-    }
+    addHpoOrGeneLinks(newNode, "hpo", hpo_terms)
 
     return newNode
 }
@@ -92,6 +101,36 @@ function displayErrorMsg(msg, id) {
     const spinnerContainer = document.querySelector(`#${id}`)
     spinnerContainer.textContent = msg
 }
+
+function addHpoOrGeneLinks(parentNode, target, data){
+let linkElement = parentNode.querySelector(`#${target}-link`)
+    let containerElement = parentNode.querySelector(`#${target}-container`)
+
+    if (data.length > 0) {
+        data.forEach(item => {
+            let newLinkElement = linkElement.cloneNode()
+            newLinkElement.removeAttribute("id")
+            let baseurl = newLinkElement.getAttribute("href")
+            newLinkElement.setAttribute("href", baseurl + item)
+            newLinkElement.textContent = item
+            containerElement.append(newLinkElement)
+        });
+    } else {
+        containerElement.querySelector("span").remove()
+        containerElement.textContent = "-"
+    }
+}
+
+function getExternalLink(source, disease_nr) {
+    let link = ''
+    if (source == "OMIM") {
+        link = `http://omim.org/entry/${disease_nr}`
+    } else if (source == "ORPHA") {
+        link = `http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert=${disease_nr}`
+    }
+    return link
+}
+
 
 function initialiseTable(data) {
     //Diagnosis table is turned into a DataTable with copy-buttons, pagination and search bar
@@ -111,37 +150,4 @@ function initialiseTable(data) {
 		document.querySelector("#diagnoses_table_wrapper > .dt-buttons").classList.add("m-2")
 }
 
-async function loadDiseases() {
-    document.getElementById("load-button").remove()
-    $('#load-container').html(
-        `<div id="spinner-container" class="d-flex align-items-center">
-            <div class="spinner-border text-primary m-3" role="status">
-                <span class="visually-hidden"></span>
-            </div>
-           Loading all diagnoses, this might take some time...
-        </div>`);
 
-    const baseUrl = window.location.origin
-    debugger
-
-    try {
-        //Fetch data and create table from results
-        const response = await fetch(`${baseUrl}/api/v1/diagnoses`)
-        if (!response.ok) {
-            throw new Error('Failed to fetch')
-        }
-        const { terms } = await response.json()
-
-
-        generateDiseaseTable(terms, "diagnoses_table")
-        initialiseTable()
-
-    } catch (error) {
-    console.log(error)
-
-        if (error.toString().includes('Failed to fetch')) {
-            //Replace loading spinner with error message if loading fails
-            displayErrorMsg("Diagnoses could not be loaded, please try again later", "spinner-container")
-        }
-    }
-}
