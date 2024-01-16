@@ -40,31 +40,6 @@ def post_request_json(url, data, headers=None, cookies=None):
     return json_response
 
 
-def post_data_request_json(url, data, headers=None, cookies=None):
-    """Send data via POST request and return response
-
-    Args:
-        url(str): url to send request to
-        data(dict): data to be sent
-        headers(dict): request headers
-        cookies(dict): cookies to pass with request
-
-    Returns:
-        json_response(dict)
-    """
-    json_response = {}
-    try:
-        LOG.debug(f"Sending POST request with data to {url}")
-        resp = requests.post(url, headers=headers, cookies=cookies, data=data)
-        json_response["content"] = resp.json()
-
-    except Exception as ex:
-        return {"message": f"An error occurred while sending a POST request to url {url} -> {ex}"}
-
-    json_response["status_code"] = resp.status_code
-    return json_response
-
-
 def get_request_json(url, headers=None, cookies=None):
     """Send GET request and return response's json data
     Args:

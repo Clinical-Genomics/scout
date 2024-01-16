@@ -9,7 +9,6 @@ LOG = logging.getLogger(__name__)
 HEADERS = {"Content-type": "application/json"}
 RESTAPI_37 = "https://grch37.rest.ensembl.org"
 RESTAPI_38 = "https://rest.ensembl.org"
-PING_ENDPOINT = "info/ping"
 
 
 class EnsemblRestApiClient:
@@ -26,42 +25,12 @@ class EnsemblRestApiClient:
         else:
             self.server = RESTAPI_37
 
-    def ping_server(self):
-        """ping ensembl
-
-        Returns:
-            data(dict): dictionary from json response
-        """
-        url = "/".join([self.server, PING_ENDPOINT])
-        data = self.send_request(url)
-        return data
-
     def build_url(self, endpoint, params=None):
         """Build an url to query ensembml"""
         if params:
             endpoint += "?" + urlencode(params)
 
         return "".join([self.server, endpoint])
-
-    def use_api(self, endpoint, params=None):
-        """Sends a request to the Ensembl REST API and returns response data from the service
-
-        Accepts:
-            endpoint(str): one of the GET endpoints defined for https://rest.ensembl.org/
-            params(dict): dictionary of request parameters
-
-        Returns:
-            data(dict): dictionary from json response
-        """
-        data = None
-        if endpoint is None:
-            LOG.info("Error: no endpoint specified for Ensembl REST API request.")
-            return data
-
-        url = self.build_url(endpoint, params)
-        LOG.info("Using Ensembl API with the following url:%s", url)
-        data = self.send_request(url)
-        return data
 
     @staticmethod
     def send_request(url):

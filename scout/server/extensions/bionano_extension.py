@@ -13,7 +13,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from flask import flash
 
 from scout.utils.convert import call_safe
-from scout.utils.scout_requests import get_request_json, post_data_request_json
+from scout.utils.scout_requests import get_request_json
 
 LOG = logging.getLogger(__name__)
 
@@ -78,15 +78,6 @@ class BioNanoAccessAPI:
 
     def _get_json(self, query: str) -> Optional[Iterable]:
         json_response = get_request_json(query, cookies=self._get_auth_cookies())
-
-        json_content = json_response.get("content")
-        if not json_content:
-            return None
-
-        return json_content
-
-    def _post_json(self, query: str, query_data: Dict[str, str]) -> Optional[Iterable]:
-        json_response = post_data_request_json(query, query_data, cookies=self._get_auth_cookies())
 
         json_content = json_response.get("content")
         if not json_content:
