@@ -8,7 +8,11 @@ from scout.constants import UPDATE_DISEASES_RESOURCES
 from scout.load.disease import load_disease_terms
 from scout.server.extensions import store
 from scout.utils.handle import get_file_handle
-from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_mim_files
+from scout.utils.scout_requests import (
+    fetch_hpo_disease_annotation,
+    fetch_mim_files,
+    fetch_orpha_files,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -66,18 +70,21 @@ def diseases(downloads_folder, api_key):
 
     if downloads_folder:
         api_key = None
-        # Fetch required resource lines after making sure that are present in downloads folder and that contain valid data
+        # Fetch required resource lines after making sure that are present in downloads folder and contain valid data
         _fetch_downloaded_resources(resources, downloads_folder)
     else:
         # Download resources
         if not api_key:
             LOG.warning("Please provide a omim api key to load the omim gene panel")
             raise click.Abort()
-
         try:
             mim_files = fetch_mim_files(api_key, genemap2=True)
+            orpha_files = fetch_orpha_files()
             resources["genemap_lines"] = mim_files["genemap2"]
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
+            resources["orpha_to_genes_lines"] = orpha_files["orphadata_en_product6"]
+            resources["orpha_to_hpo_lines"] = orpha_files["orphadata_en_product4"]
+
         except Exception as err:
             LOG.warning(err)
             raise click.Abort()
@@ -88,6 +95,8 @@ def diseases(downloads_folder, api_key):
         adapter=adapter,
         genemap_lines=resources["genemap_lines"],
         hpo_annotation_lines=resources["hpo_annotation_lines"],
+        orpha_to_genes_lines=resources["orpha_to_genes_lines"],
+        orpha_to_hpo_lines=resources["orpha_to_hpo_lines"],
     )
 
     LOG.info("Successfully loaded all disease terms")

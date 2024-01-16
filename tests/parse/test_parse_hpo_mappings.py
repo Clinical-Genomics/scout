@@ -14,7 +14,7 @@ def test_parse_hpo_to_genes(hpo_disease_handle):
 
 
 def test_parse_hpo_annotations(hpo_phenotype_annotation_handle):
-    """Test function that extracts disease mapping info from phenotype_to_genes.txt file"""
+    """Test function that extracts disease mapping info from phenotype.hpoa file"""
 
     # WHEN parsing phenotype_to_genes.txt using the parse_hpo_diseases function
     diseases = parse_hpo_annotations(hpo_phenotype_annotation_handle)
@@ -26,6 +26,6 @@ def test_parse_hpo_annotations(hpo_phenotype_annotation_handle):
     # and disease info as values
     one_disease = diseases[omim_ids[0]]
 
-    assert one_disease["disease_nr"]
+    assert one_disease["hpo_terms"]
     assert one_disease["source"] == "OMIM"
     assert one_disease["description"]

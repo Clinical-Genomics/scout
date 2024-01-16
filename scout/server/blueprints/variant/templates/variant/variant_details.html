@@ -180,7 +180,7 @@
                      {% if obs.cases|length > 10 %}
                        + more
                      {% endif %}
-                     {% if obs.observations == 1 %}  
+                     {% if obs.observations == 1 %}
                        Observed only in this case
                      {% endif %}
                </td>
@@ -216,7 +216,7 @@
             <td>{{ variant.local_obs_hom_old|default('N/A') }}</td>
             <td>{% if variant.local_obs_old_freq %} {{variant.local_obs_old_freq|round(6)}} {% elif variant.local_obs_old_nr_cases and variant.local_obs_old %} {{ (variant.local_obs_old/variant.local_obs_old_nr_cases)|round(5) }} {% elif variant.local_obs_old_nr_cases %} 0 / {{variant.local_obs_old_nr_cases}} {% else %} N/A {% endif %}</td>
           </tr>
-          {% if variant.category == "cancer" %}
+          {% if variant.category in ['cancer', 'cancer_sv'] %}
             <tr>
               <td>Cancer Germline</td>
               <td>{{ variant.local_obs_cancer_germline_old|default('N/A') }}</td>

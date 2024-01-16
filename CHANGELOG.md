@@ -7,7 +7,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Pydantic validation of image paths provided in case load config file
+### Changed
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
+- Remove unused functions and tests
+- Analysis type and direct link from cases list for OGM cases
 ### Fixed
 - Disease_term identifiers are now prefixed with the name of the coding system
 - Command line crashing with error when updating a user that doesn't exist
@@ -20,6 +23,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Clinvar submitters would be cleared when unprivileged users saved institute settings page
 - Added a default empty string in cases search form to avoid None default value
 - Page crashing when user tries to remove the same variant from a ClinVar submission in different browser tabs
+- Update more GnomAD links to GnomAD v4 (v38 SNVs, MT vars, STRs)
+- Empty cells for RNA fusion variants in Causatives and Verified variants page
+- Submenu icons missing from collapsible actionbar
+- The collapsible actionbar had some non-collapsing overly long entries
+- Cancer observations for SVs not appearing in the variant details view
 
 ## [4.75]
 ### Added
@@ -30,6 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added fusion_score, ffpm, split_reads, junction_reads and fusion_caller to the list of filters on RNA fusion variants page
 - Renamed the function `get_mei_info` to `set_mei_info` to be consistent with the other functions
 - Fixed removing None key/values from parsed variants
+- Orphacodes are included in the database disease_terms
 ### Changed
 - Allow use of projections when retrieving gene panels
 - Do not save custom images as binary data into case and variant database documents
