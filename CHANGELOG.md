@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Page crashing when user tries to remove the same variant from a ClinVar submission in different browser tabs
 - Update more GnomAD links to GnomAD v4 (v38 SNVs, MT vars, STRs)
 - Empty cells for RNA fusion variants in Causatives and Verified variants page
+- Cancer observations for SVs not appearing in the variants details view
 
 
 ## [4.75]
