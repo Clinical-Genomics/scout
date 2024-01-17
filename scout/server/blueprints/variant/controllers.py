@@ -459,7 +459,7 @@ def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
 def observations(store, loqusdb, variant_obj):
     """Query observations for a variant.
 
-    Check if variant_obj have been observed before ni the loqusdb instance.
+    Check if variant_obj have been observed before in the loqusdb instance.
     If not return empty dictionary.
 
     We need to add links to the variant in other cases where the variant has been observed.
