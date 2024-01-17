@@ -29,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Submenu icons missing from collapsible actionbar
 - The collapsible actionbar had some non-collapsing overly long entries
 - Cancer observations for SVs not appearing in the variant details view
+- Archived local observations not visible on cancer variantS page
 - Optimised indexes to address slow queries
 
 ## [4.75]
