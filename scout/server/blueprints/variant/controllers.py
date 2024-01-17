@@ -4,6 +4,7 @@ import os
 import requests
 from flask import Markup, current_app, flash, url_for
 from flask_login import current_user
+from typing import Dict, List
 
 from scout.adapter import MongoAdapter
 from scout.constants import (
@@ -411,7 +412,7 @@ def variant_rank_scores(store, case_obj, variant_obj):
     return rank_score_results
 
 
-def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
+def get_loqusdb_obs_cases(store: MongoAdapter, variant_obj: dict, category: str, obs_families:list =[]) -> List[dict]:
     """Get a list of cases where variant observations occurred.
     These are only the cases the user has access to.
 
