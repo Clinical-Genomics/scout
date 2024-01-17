@@ -18,6 +18,7 @@ from scout.adapter import MongoAdapter
 from scout.constants import (
     CANCER_PHENOTYPE_MAP,
     CASE_REPORT_VARIANT_TYPES,
+    CASE_TAGS,
     CUSTOM_CASE_REPORTS,
     DATE_DAY_FORMATTER,
     MITODEL_HEADER,
@@ -409,6 +410,7 @@ def case(store, institute_obj, case_obj):
         "hpo_groups": pheno_groups,
         "case_groups": case_groups,
         "case_group_label": case_group_label,
+        "case_tag_options": CASE_TAGS,
         "events": _get_events(store, institute_obj, case_obj),
         "suspects": suspects,
         "causatives": causatives,

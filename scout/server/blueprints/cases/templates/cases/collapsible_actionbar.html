@@ -517,7 +517,7 @@
 </div>
 {% endmacro %}
 
-{% macro solve_modal(institute, case) %}
+{% macro solve_modal(institute, case, case_tag_options) %}
 <div class="modal fade" id="solve_modal" tabindex="-1" role="dialog" aria-labelledby="solveCaseLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -533,11 +533,21 @@
         You will then have to request a FULL rerun to continue evaluating e.g. research variants.
         <br><br>Marking Solved directly does not store the Causative variant.
         Only use it for cases where the causation is not readily markable, such as UPD or SMN.
+        <br><br>Tag case status
+        Case status tags are used for statistics and follow up. Fill them as accurately as possible.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <form method="POST"
           action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
+
+          <select name="tags" multiple class="selectpicker" data-style="btn-secondary">
+            {% for tag, data in case_tag_options.items() %}
+              <option {% if 'tags' in case and tag~"" in case.tags %} selected {% endif %} value="{{ tag }}">
+                {{ data.label }}
+              </option>
+            {% endfor %}
+          </select>
           <button type="submit" class="btn btn-primary" value="solved" name="status">Solve</button>
         </form>
       </div>

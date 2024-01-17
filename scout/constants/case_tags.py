@@ -60,6 +60,39 @@ CANCER_PHENOTYPE_MAP = {1: "normal", 2: "tumor", 0: "unknown", -9: "unknown"}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
 
 CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived", "ignored")
+CASE_TAGS = {
+    "provisional": {
+        "label": "Provisional",
+        "description": "Variant flagged causative has provisional diagnostic status",
+    },
+    "diagnostic": {
+        "label": "Diagnostic",
+        "description": "Variant flagged causative has definitive diagnostic status",
+    },
+    "carrier": {
+        "label": "Carrier",
+        "description": "Assay performed to identify carrier status found variant present",
+    },
+    "medical attention": {
+        "label": "Medical attention",
+        "description": "Case, pinned or causative variant needs medical specialist attention - eg findings with unclear connection to phenotype",
+    },
+    "technical attention": {
+        "label": "Technical attention",
+        "description": "Case, pinned or causative variantneeds technical specialist attention - eg findings with unclear technical status",
+    },
+    "upd": {
+        "label": "UPD",
+        "description": "UniParental Disomy determined causative eg by Chromograph or Gens",
+    },
+    "smn": {"label": "SMN", "description": "SMN assay found causative eg by SMNCopyNumberCaller"},
+    "fshd": {"label": "FSHD", "description": "FSHD assay (OGM) found causative"},
+    "rna": {"label": "RNA", "description": "RNA assay with no markable variant found causative"},
+    "structural": {
+        "label": "Structural",
+        "description": "Structural variation with no or complex combination of called variant found causative, e.g. via Chromograph or Gens",
+    },
+}
 
 VERBS_MAP = {
     "assign": "was assigned to",

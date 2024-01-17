@@ -7,7 +7,6 @@
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
 {% from "cases/clinvar.html" import clinvar_vars %}
 
-
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
 {% endblock %}
@@ -226,7 +225,7 @@
       </div>
 
       {{ modal_synopsis() }}
-      {{ solve_modal(institute, case) }}
+      {{ solve_modal(institute, case, case_tag_options) }}
       {{ research_modal(institute, case) }}
       {{ reanalysis_modal(institute, case) }}
       {{ beacon_modal(institute, case) }}
