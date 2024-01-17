@@ -1,10 +1,10 @@
 import logging
 import os
+from typing import Dict, List
 
 import requests
 from flask import Markup, current_app, flash, url_for
 from flask_login import current_user
-from typing import Dict, List
 
 from scout.adapter import MongoAdapter
 from scout.constants import (
@@ -26,7 +26,7 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.utils import update_case_panels
-from scout.server.extensions import cloud_tracks, gens, LoqusDB
+from scout.server.extensions import LoqusDB, cloud_tracks, gens
 from scout.server.links import get_variant_links
 from scout.server.utils import (
     case_has_alignments,
@@ -412,18 +412,13 @@ def variant_rank_scores(store, case_obj, variant_obj):
     return rank_score_results
 
 
-def get_loqusdb_obs_cases(store: MongoAdapter, variant_obj: dict, category: str, obs_families:list =[]) -> List[dict]:
-    """Get a list of cases where variant observations occurred.
-    These are only the cases the user has access to.
-
-    Args:
-        store (scout.adapter.MongoAdapter)
-        variant_obj(scout.models.Variant) it's the variant the loqusdb stats are computer for
-        category(str)
-        obs_families(list). List of all cases in loqusdb where variant occurred
-
-    Returns:
-        obs_cases(list).
+def get_loqusdb_obs_cases(
+    store: MongoAdapter, variant_obj: dict, category: str, obs_families: list = []
+) -> List[dict]:
+    """Get a list of cases where variant observations occurred. These are only the cases the user has access to.
+    We need to add links to the variant in other cases where the variant has been observed.
+    First we need to make sure that the user has access to these cases. The user_institute_ids holds
+    information about what institutes the user has access to.
     """
     obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
