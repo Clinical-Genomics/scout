@@ -459,7 +459,7 @@ def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
 
 def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Dict[str, dict]:
     """Check if variant_obj have been observed before in the loqusdb instances available in the institute settings.
-       If not return empty dictionary.
+    If not return empty dictionary.
     """
     obs_data = {}
     institute_id = variant_obj["institute"]
