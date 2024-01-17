@@ -520,8 +520,6 @@ def observations(store, loqusdb, variant_obj):
             store, variant_obj, category, obs_data[loqus_id].get("families", [])
         )
 
-    flash(obs_data)
-
     return obs_data
 
 
