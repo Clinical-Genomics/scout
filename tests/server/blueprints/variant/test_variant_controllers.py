@@ -201,7 +201,7 @@ def test_observations_controller_non_existing(app, institute_obj, case_obj, loqu
     data = None
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        data = observations(store, loqusdb, case_obj, var_obj)
+        data = observations(store, loqusdb, var_obj)
 
     ## THEN assert that the number of cases is still returned
     assert data[loqus_id]["total"] == n_cases
@@ -244,7 +244,7 @@ def test_observations_controller_snv(app, institute_obj, loqusdburl):
     data = None
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
-        data = observations(store, loqusdb, case_obj, var_obj)
+        data = observations(store, loqusdb, var_obj)
 
     ## THEN loqus should return the occurrence from the first case
     assert case_obj["_id"] in data[loqus_id]["families"]
@@ -288,7 +288,7 @@ def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdbu
     with app.test_client() as client:
         resp = client.get(url_for("auto_login"))
         # THEN the observation of the original case should be found
-        data = observations(store, loqusdb, case_obj, sv_variant_obj)
+        data = observations(store, loqusdb, sv_variant_obj)
 
     ## THEN loqus should return the occurrence from the first case
     assert case_obj["_id"] in data[loqus_id]["families"]

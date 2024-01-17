@@ -456,7 +456,7 @@ def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
     return obs_cases
 
 
-def observations(store, loqusdb, case_obj, variant_obj):
+def observations(store, loqusdb, variant_obj):
     """Query observations for a variant.
 
     Check if variant_obj have been observed before ni the loqusdb instance.
