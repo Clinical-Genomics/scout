@@ -84,7 +84,7 @@ def cancer_variant(institute_id, case_name, variant_id):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
+        data["observations"] = observations(store, loqusdb, data["variant"])
 
     return data
 
@@ -105,7 +105,7 @@ def sv_variant(institute_id, case_name, variant_id):
 
     if current_app.config.get("LOQUSDB_SETTINGS"):
         LOG.debug("Fetching loqusdb information for %s", variant_id)
-        data["observations"] = observations(store, loqusdb, data["case"], data["variant"])
+        data["observations"] = observations(store, loqusdb, data["variant"])
 
     return data
 
