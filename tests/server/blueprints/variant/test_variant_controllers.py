@@ -198,15 +198,14 @@ def test_observations_controller_non_existing(app, institute_obj, case_obj, loqu
     ## WHEN updating the case_id for the variant
     var_obj["case_id"] = "internal_id2"
 
-    data = None
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
         data = observations(store, loqusdb, var_obj)
 
-    ## THEN assert that the number of cases is still returned
-    assert data[loqus_id]["total"] == n_cases
-    ## THEN assert the cases variable is in data but it's an empty list
-    assert data[loqus_id]["cases"] == []
+        ## THEN assert that the number of cases is still returned
+        assert data[loqus_id]["total"] == n_cases
+        ## THEN assert the cases variable is in data but it's an empty list
+        assert data[loqus_id]["cases"] == []
 
 
 @responses.activate
@@ -241,15 +240,14 @@ def test_observations_controller_snv(app, institute_obj, loqusdburl):
     ## WHEN updating the case_id for the variant
     var_obj["case_id"] = "internal_id2"
 
-    data = None
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
         data = observations(store, loqusdb, var_obj)
 
-    ## THEN loqus should return the occurrence from the first case
-    assert case_obj["_id"] in data[loqus_id]["families"]
-    assert data[loqus_id]["cases"][0]["case"] == case_obj
-    assert data[loqus_id]["cases"][0]["variant"]["_id"] == var_obj["_id"]
+        ## THEN loqus should return the occurrence from the first case
+        assert case_obj["_id"] in data[loqus_id]["families"]
+        assert data[loqus_id]["cases"][0]["case"] == case_obj
+        assert data[loqus_id]["cases"][0]["variant"]["_id"] == var_obj["_id"]
 
 
 @responses.activate
@@ -286,14 +284,14 @@ def test_observations_controller_sv(app, sv_variant_obj, institute_obj, loqusdbu
     sv_variant_obj["variant_id"] = "someOtherVarID"
 
     with app.test_client() as client:
-        resp = client.get(url_for("auto_login"))
+        client.get(url_for("auto_login"))
         # THEN the observation of the original case should be found
         data = observations(store, loqusdb, sv_variant_obj)
 
-    ## THEN loqus should return the occurrence from the first case
-    assert case_obj["_id"] in data[loqus_id]["families"]
-    assert data[loqus_id]["cases"][0]["case"] == case_obj
-    assert data[loqus_id]["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
+        ## THEN loqus should return the occurrence from the first case
+        assert case_obj["_id"] in data[loqus_id]["families"]
+        assert data[loqus_id]["cases"][0]["case"] == case_obj
+        assert data[loqus_id]["cases"][0]["variant"]["_id"] == sv_variant_obj["_id"]
 
 
 def test_case_matching_causatives(app, real_variant_database):
