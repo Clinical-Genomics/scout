@@ -110,7 +110,6 @@ class UserHandler(object):
             return self.user_collection.find_one_and_update(
                 {"_id": user_id}, {"$addToSet": {"validated_positive_variants": variant_info}}
             )
-        else:
-            return self.user_collection.find_one_and_update(
-                {"_id": user_id}, {"$pull": {"validated_positive_variants": variant_info}}
-            )
+        return self.user_collection.find_one_and_update(
+            {"_id": user_id}, {"$pull": {"validated_positive_variants": variant_info}}
+        )
