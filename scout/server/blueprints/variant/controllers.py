@@ -1,10 +1,12 @@
 import logging
 import os
+from typing import Dict, List
 
 import requests
 from flask import Markup, current_app, flash, url_for
 from flask_login import current_user
 
+from scout.adapter import MongoAdapter
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_CRITERIA,
@@ -24,7 +26,7 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.utils import update_case_panels
-from scout.server.extensions import cloud_tracks, gens
+from scout.server.extensions import LoqusDB, cloud_tracks, gens
 from scout.server.links import get_variant_links
 from scout.server.utils import (
     case_has_alignments,
@@ -410,18 +412,13 @@ def variant_rank_scores(store, case_obj, variant_obj):
     return rank_score_results
 
 
-def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
-    """Get a list of cases where variant observations occurred.
-    These are only the cases the user has access to.
-
-    Args:
-        store (scout.adapter.MongoAdapter)
-        variant_obj(scout.models.Variant) it's the variant the loqusdb stats are computer for
-        category(str)
-        obs_families(list). List of all cases in loqusdb where variant occurred
-
-    Returns:
-        obs_cases(list).
+def get_loqusdb_obs_cases(
+    store: MongoAdapter, variant_obj: dict, category: str, obs_families: list = []
+) -> List[dict]:
+    """Get a list of cases where variant observations occurred. These are only the cases the user has access to.
+    We need to add links to the variant in other cases where the variant has been observed.
+    First we need to make sure that the user has access to these cases. The user_institute_ids holds
+    information about what institutes the user has access to.
     """
     obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
@@ -456,27 +453,9 @@ def get_loqusdb_obs_cases(store, variant_obj, category, obs_families=[]):
     return obs_cases
 
 
-def observations(store, loqusdb, case_obj, variant_obj):
-    """Query observations for a variant.
-
-    Check if variant_obj have been observed before ni the loqusdb instance.
+def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Dict[str, dict]:
+    """Check if variant_obj have been observed before in the loqusdb instances available in the institute settings.
     If not return empty dictionary.
-
-    We need to add links to the variant in other cases where the variant has been observed.
-    First we need to make sure that the user has access to these cases. The user_institute_ids holds
-    information about what institutes the user has access to.
-
-    Loop over the case ids from loqusdb and check if they exist in the scout instance.
-    Also make sure that we do not link to the observation that is the current variant.
-
-    Args:
-        store (scout.adapter.MongoAdapter)
-        loqusdb (scout.server.extensions.LoqusDB)
-        case_obj (scout.models.Case)
-        variant_obj (scout.models.Variant)
-
-    Returns:
-        obs_data(dict) with loqusdb id as key and observations stats as value
     """
     obs_data = {}
     institute_id = variant_obj["institute"]
