@@ -60,8 +60,7 @@ def clinvar_submissions(institute_id):
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
-        "show_submit": institute_obj.get("clinvar_key")
-        and current_user.email in institute_obj.get("clinvar_submitters", []),
+        "show_submit": current_user.email in institute_obj.get("clinvar_submitters", []),
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 
