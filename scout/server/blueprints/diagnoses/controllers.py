@@ -12,7 +12,7 @@ def omim_entry(store, disease_id):
         omim_obj(obj): an OMIM term containing description and genes
     """
 
-    omim_obj = store.disease_term(disease_identifier=disease_id)
+    omim_obj = store.disease_term(disease_identifier=disease_id, filter_project={})
     omim_obj["genes_complete"] = store.omim_to_genes(omim_obj)
     omim_obj["hpo_complete"] = [store.hpo_term(hpo_id) for hpo_id in omim_obj.get("hpo_terms", [])]
     return omim_obj
