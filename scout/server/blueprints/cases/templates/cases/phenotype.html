@@ -62,8 +62,13 @@
     {% for diagnosis in case.diagnosis_phenotypes %}
       <div class="row">
         <div class="col-11">
-          {% if "OMIM" in diagnosis.disease_id and diagnosis.description %}
-            <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
+          {% if diagnosis.description %}
+            {% if "OMIM" in diagnosis.disease_id %}
+              {% set external_url ="http://omim.org/entry/" %}
+            {% elif "ORPHA" in diagnosis.disease_id %}
+              {% set external_url ="http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert=" %}
+            {% endif %}
+            <a href="{{external_url}}{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
               {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
             {% if diagnosis.disease_id in omim_terms %}

@@ -371,7 +371,9 @@ def case(store, institute_obj, case_obj):
         # Fetch complete OMIM diagnoses specific for this case
         omim_terms = {
             term["disease_id"]: term
-            for term in store.case_omim_diagnoses(case_obj.get("diagnosis_phenotypes"))
+            for term in store.case_omim_diagnoses(
+                case_obj.get("diagnosis_phenotypes"), filter_project={}
+            )
         }
 
     if case_obj.get("custom_images"):

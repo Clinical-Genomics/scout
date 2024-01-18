@@ -333,9 +333,6 @@ def case_diagnosis(institute_id, case_name):
     omim_id = request.form["omim_term"].split("|")[0]
     omim_inds = request.form.getlist("omim_inds")  # Individual-level phenotypes
 
-    if not "OMIM:" in omim_id:  # Could be an omim number provided by user
-        omim_id = ":".join(["OMIM", omim_id])
-
     store.diagnose(
         institute=institute_obj,
         case=case_obj,
