@@ -30,6 +30,6 @@ def disease_terms(store):
     return data
 
 
-def disease_stats(store):
-    data = {"counts": store.disease_stats()}
+def disease_terminology_count(store):
+    data = {"counts": store.disease_terminology_count()}
     return data
