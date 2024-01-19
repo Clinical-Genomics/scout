@@ -5,6 +5,8 @@ from tempfile import NamedTemporaryFile
 from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 from flask_login import current_user
 
+from typing import List
+
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, CLNSIG_TERMS
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
