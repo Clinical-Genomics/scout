@@ -12,6 +12,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Remove unused functions and tests
 - Analysis type and direct link from cases list for OGM cases
 - Removed unused `case_obj` parameter from server/blueprints/variant/controllers/observations function
+- Possibility to reset ClinVar submission ID
+- Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 ### Fixed
 - Disease_term identifiers are now prefixed with the name of the coding system
