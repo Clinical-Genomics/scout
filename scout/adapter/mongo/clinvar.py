@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-from bson import ObjectId
 from datetime import datetime
 
 import pymongo
+from bson import ObjectId
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
 
