@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused `case_obj` parameter from server/blueprints/variant/controllers/observations function
 - Possibility to reset ClinVar submission ID
 - Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
+- Ordered event verbs alphabetically and created ClinVar-related user events
 ### Fixed
 - Disease_term identifiers are now prefixed with the name of the coding system
 - Command line crashing with error when updating a user that doesn't exist
