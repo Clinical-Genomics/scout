@@ -57,7 +57,7 @@ def clinvar_save(institute_id, case_name):
                 institute= institute_obj,
                 case=case_obj,
                 user=user_obj,
-                link="link",
+                link=f"/{institute_id}/{case_name}/{variant_obj['_id']}",
                 category=category,
                 verb="clinvar_add",
                 variant=variant_obj,
