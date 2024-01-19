@@ -54,13 +54,14 @@ def clinvar_submissions(institute_id):
     """Handle clinVar submission objects and files"""
 
     institute_obj = institute_and_case(store, institute_id)
-
+    institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
     data = {
         "submissions": store.clinvar_submissions(institute_id),
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
-        "show_submit": current_user.email in institute_obj.get("clinvar_submitters", []),
+        "show_submit": current_user.email in institute_clinvar_submitters
+        or not institute_clinvar_submitters,
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 
