@@ -32,7 +32,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - The collapsible actionbar had some non-collapsing overly long entries
 - Cancer observations for SVs not appearing in the variant details view
 - Archived local observations not visible on cancer variantS page
+- Empty Population Frequency column in the Cancer SV Variants view
 - Optimised indexes to address slow queries
+
 
 ## [4.75]
 ### Added
