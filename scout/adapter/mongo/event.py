@@ -240,7 +240,6 @@ class EventHandler(CaseEventHandler, VariantEventHandler):
 
         return self.event_collection.find(query)
 
-
     def case_events_by_verb(self, category, institute, case, verb):
         """Return events with a specific verb for a case of an institute
         Args:
