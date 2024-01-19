@@ -47,6 +47,22 @@ def clinvar_save(institute_id, case_name):
             "An open ClinVar submission was updated correctly with submitted data",
             "success",
         )
+        # Create user-related events
+        institute_obj: dict = store.institute(institute_id=institute_id)
+        case_obj: dict = store.case(institute_id=institute_id, display_name=case_name)
+        variant_obj: dict = store.variant(document_id=variant_data.get("local_id"))
+        user_obj: dict = store.user(user_id=current_user._id)
+        for category in ["case", "variant"]:
+            store.create_event(
+                institute= institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link="link",
+                category=category,
+                verb="clinvar_add",
+                variant=variant_obj,
+                subject=variant_obj["display_name"],
+            )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
