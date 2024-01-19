@@ -54,7 +54,7 @@ def clinvar_save(institute_id, case_name):
         user_obj: dict = store.user(user_id=current_user._id)
         for category in ["case", "variant"]:
             store.create_event(
-                institute= institute_obj,
+                institute=institute_obj,
                 case=case_obj,
                 user=user_obj,
                 link="link",
