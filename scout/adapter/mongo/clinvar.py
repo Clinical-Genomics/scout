@@ -276,8 +276,9 @@ class ClinVarHandler(object):
                     cases[case_id] = case_obj.get("display_name")
 
                     # retrieve user which has added the variant to this submission
-                    var_info["added_by"] = self.clinvar_variant_submitter(institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"])
-
+                    var_info["added_by"] = self.clinvar_variant_submitter(
+                        institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"]
+                    )
 
             submission["cases"] = cases
 
@@ -452,7 +453,9 @@ class ClinVarHandler(object):
                 clinvar_case_ids.add(var["case_id"])
         return list(clinvar_case_ids)
 
-    def clinvar_variant_submitter(self, institute_id: str, case_id: str, variant_id: str) -> Optional[str]:
+    def clinvar_variant_submitter(
+        self, institute_id: str, case_id: str, variant_id: str
+    ) -> Optional[str]:
         """Return the name of the user which added a specific variant to a submission."""
         case_events_query = {
             "verb": "clinvar_add",
@@ -460,10 +463,11 @@ class ClinVarHandler(object):
             "case": case_id,
             "category": "variant",
         }
-        projection = {"_id": 0, "user_name": 1, "link":1 }
-        clinvar_vars_for_case: cursor.Cursor = self.event_collection.find(case_events_query, projection)
+        projection = {"_id": 0, "user_name": 1, "link": 1}
+        clinvar_vars_for_case: cursor.Cursor = self.event_collection.find(
+            case_events_query, projection
+        )
         for clinvar_var in clinvar_vars_for_case:
             if variant_id in clinvar_var["link"]:
                 return clinvar_var["user_name"]
                 break
-
