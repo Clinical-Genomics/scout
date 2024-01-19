@@ -52,23 +52,18 @@
 {% endmacro %}
 
 {% macro diagnosis_phenotypes(case, institute, omim_terms) %}
-  <!--Form to add OMIM terms -->
+  <!--Form to add disease terms -->
   <div class="col-6">
   {{ diagnosis_form(case, institute) }}
   </div>
-  <!--Display assigned OMIM terms -->
+  <!--Display assigned disease terms -->
   <div class="col-6">
   {% if "diagnosis_phenotypes" in case %}
     {% for diagnosis in case.diagnosis_phenotypes %}
       <div class="row">
         <div class="col-11">
           {% if diagnosis.description %}
-            {% if "OMIM" in diagnosis.disease_id %}
-              {% set external_url ="http://omim.org/entry/" %}
-            {% elif "ORPHA" in diagnosis.disease_id %}
-              {% set external_url ="http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert=" %}
-            {% endif %}
-            <a href="{{external_url}}{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
+            <a href="{{diagnosis.disease_link}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
               {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
             {% if diagnosis.disease_id in omim_terms %}
@@ -88,7 +83,7 @@
           {% endif %}
         </div>
 
-        <!--option to remove OMIM term for case-->
+        <!--option to remove disease term for case-->
         <div class="col-1">
           {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                 case_name=case.display_name, remove='yes'),

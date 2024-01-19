@@ -165,6 +165,13 @@ def genenames(hgnc_id):
     return link.format(hgnc_id)
 
 
+def omim(omim_id):
+    link = "https://www.omim.org/entry/{}"
+    if not omim_id:
+        return None
+    return link.format(omim_id)
+
+
 def disease_link(disease_id: str) -> str:
     source, disease_nr = disease_id.split(":")
     link = None

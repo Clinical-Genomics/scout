@@ -41,6 +41,7 @@ from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, pars
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, bionano_access, gens, matchmaker, rerunner, store
+from scout.server.links import disease_link
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
@@ -365,6 +366,7 @@ def case(store, institute_obj, case_obj):
     # If case diagnoses are a list of integers, convert into a list of dictionaries
     omim_terms = {}
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
+    LOG.info(case_diagnoses)
     if case_diagnoses:
         if isinstance(case_diagnoses[0], int):
             case_obj = store.convert_diagnoses_format(case_obj)
@@ -375,7 +377,10 @@ def case(store, institute_obj, case_obj):
                 case_obj.get("diagnosis_phenotypes"), filter_project={}
             )
         }
-
+        LOG.info(omim_terms)
+        for diagnose in case_diagnoses:
+            diagnose.update({"disease_link": disease_link(disease_id=diagnose["disease_id"])})
+        LOG.info(omim_terms)
     if case_obj.get("custom_images"):
         # re-encode images as base64
         case_obj["custom_images"] = case_obj["custom_images"].get(
