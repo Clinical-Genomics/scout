@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Analysis type and direct link from cases list for OGM cases
 - Removed unused `case_obj` parameter from server/blueprints/variant/controllers/observations function
 ### Fixed
+- All disease_terms have their genes in number format when added to the scout database
 - Disease_term identifiers are now prefixed with the name of the coding system
 - Command line crashing with error when updating a user that doesn't exist
 - Thaw coloredlogs - 15.0.1 restores errorhandler issue
