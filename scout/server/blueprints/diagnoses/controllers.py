@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
 
-def omim_entry(store, disease_id):
+LOG = logging.getLogger(__name__)
+
+
+def disease_entry(store, disease_id):
     """Retrieve specific info for an OMIM term at the gene level
 
     Args:
@@ -12,10 +16,12 @@ def omim_entry(store, disease_id):
         omim_obj(obj): an OMIM term containing description and genes
     """
 
-    omim_obj = store.disease_term(disease_identifier=disease_id, filter_project={})
-    omim_obj["genes_complete"] = store.omim_to_genes(omim_obj)
-    omim_obj["hpo_complete"] = [store.hpo_term(hpo_id) for hpo_id in omim_obj.get("hpo_terms", [])]
-    return omim_obj
+    disease_obj = store.disease_term(disease_identifier=disease_id, filter_project={})
+    disease_obj["genes_complete"] = store.omim_to_genes(disease_obj)
+    disease_obj["hpo_complete"] = [
+        store.hpo_term(hpo_id) for hpo_id in disease_obj.get("hpo_terms", [])
+    ]
+    return disease_obj
 
 
 def disease_terms(store):

@@ -13,7 +13,7 @@ omim_bp = Blueprint("diagnoses", __name__, template_folder="templates")
 def omim_diagnosis(disease_id):
     """Display information specific to one OMIM diagnosis"""
 
-    data = controllers.omim_entry(store, disease_id)
+    data = controllers.disease_entry(store, disease_id)
     return data
 
 
