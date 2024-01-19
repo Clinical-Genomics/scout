@@ -463,7 +463,7 @@ class ClinVarHandler(object):
             "category": "variant",
         }
         projection = {"_id": 0, "user_name": 1, "link": 1}
-        clinvar_vars_for_case: cursor.Cursor = self.event_collection.find(
+        clinvar_vars_for_case: pymongo.cursor.Cursor = self.event_collection.find(
             case_events_query, projection
         ).sort("created_at", -1)
 
