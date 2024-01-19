@@ -121,6 +121,8 @@
             <tbody>
               {% set var_key_name = {} %}
               {% for subm_variant in subm_obj.variant_data  %} <!-- loop over the submitted variants-->
+                {{subm_variant}}
+
                 <tr>
                   <td>{{loop.index}}</td>
                     {% if subm_variant.category == 'sv' %}
