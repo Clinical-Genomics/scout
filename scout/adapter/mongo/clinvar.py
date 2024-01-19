@@ -470,4 +470,3 @@ class ClinVarHandler(object):
         for clinvar_var in clinvar_vars_for_case:
             if variant_id in clinvar_var["link"]:
                 return clinvar_var["user_name"]
-                break
