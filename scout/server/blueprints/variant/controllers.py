@@ -1,7 +1,7 @@
 import logging
 import os
 from typing import Dict, List
-from scout.server.links import disease_link
+
 import requests
 from flask import Markup, current_app, flash, url_for
 from flask_login import current_user
@@ -27,7 +27,7 @@ from scout.server.blueprints.variant.utils import (
 )
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.extensions import LoqusDB, cloud_tracks, gens
-from scout.server.links import get_variant_links
+from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
