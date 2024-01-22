@@ -342,7 +342,7 @@ def variant(
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
 
-    for gene in variant_obj["genes"]:
+    for gene in variant_obj.get("genes", []):
         for disease in gene.get("disease_terms", []):
             disease["disease_link"] = disease_link(disease_id=disease["_id"])
 
