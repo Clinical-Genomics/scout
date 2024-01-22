@@ -45,12 +45,12 @@ TEST_OMIM_DISEASES = {
 TEST_ORPHA_DISEASES = {
     "ORPHA:585": {
         "description": "Multiple sulfatase deficiency",
-        "hgnc_ids": {"20376"},
+        "hgnc_ids": {20376},
         "hpo_terms": {"HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"},
     },
     "ORPHA:118": {
         "description": "Beta-mannosidosis",
-        "hgnc_ids": {"6831"},
+        "hgnc_ids": {6831},
         "hpo_terms": {
             "HP:0000365",
             "HP:0001249",
