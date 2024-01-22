@@ -29,7 +29,7 @@ def test_get_orpha_to_genes_information(orpha_to_genes_lines: List[str]):
     # THEN assert disease with correct contents was included in the return
 
     assert disease["description"] == "Multiple sulfatase deficiency"
-    assert disease["hgnc_ids"] == {"20376"}
+    assert disease["hgnc_ids"] == {20376}
 
 
 def test_get_orpha_to_hpo_information(orpha_to_hpo_lines: List[str]):

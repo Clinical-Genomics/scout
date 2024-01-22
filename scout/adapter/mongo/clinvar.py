@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
+from typing import Optional
 
 import pymongo
+from bson import ObjectId
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
 
@@ -12,26 +14,21 @@ LOG = logging.getLogger(__name__)
 class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
-    def create_submission(self, institute_id):
-        """Create an open clinvar submission for an institute
-        Args:
-             institute_id(str): an institute ID
-
-        returns:
-             submission(obj): an open clinvar submission object
-        """
+    def create_submission(self, institute_id: str, user_id: str) -> ObjectId:
+        """Create an open ClinVar submission for an institute."""
 
         submission_obj = {
             "status": "open",
             "created_at": datetime.now(),
             "institute_id": institute_id,
+            "created_by": user_id,
         }
-        LOG.info("Creating a new clinvar submission institute %s", institute_id)
+        LOG.info("Creating a new ClinVar submission for institute %s", institute_id)
         result = self.clinvar_submission_collection.insert_one(submission_obj)
         return result.inserted_id
 
     def delete_submission(self, submission_id):
-        """Deletes a Clinvar submission object, along with all associated clinvar objects (variants and casedata)
+        """Deletes a ClinVar submission object, along with all associated objects (variants and casedata)
 
         Args:
             submission_id(str): the ID of the submission to be deleted
@@ -68,15 +65,9 @@ class ClinVarHandler(object):
         # return deleted_count, deleted_submissions
         return deleted_objects, deleted_submissions
 
-    def get_open_clinvar_submission(self, institute_id):
-        """Retrieve the database id of an open clinvar submission for an institute,
-        if none is available then create a new submission and return it
-
-        Args:
-             institute_id(str): an institute ID
-
-        Returns:
-             submission(obj) : an open clinvar submission object
+    def get_open_clinvar_submission(self, institute_id: str, user_id: str) -> dict:
+        """Retrieve the database id of an open ClinVar submission for an institute,
+        if none is available then creates a new submission dictionary and returns it.
         """
 
         LOG.info("Retrieving an open clinvar submission for institute %s", institute_id)
@@ -85,7 +76,7 @@ class ClinVarHandler(object):
 
         # If there is no open submission for this institute, create one
         if submission is None:
-            submission_id = self.create_submission(institute_id)
+            submission_id = self.create_submission(institute_id, user_id)
             submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
 
         return submission
@@ -247,10 +238,12 @@ class ClinVarHandler(object):
         for result in results:
             submission = {}
             cases = {}
+            user: dict = self.user(user_id=result.get("created_by"))
             submission["_id"] = result.get("_id")
             submission["status"] = result.get("status")
             submission["institute_id"] = result.get("institute_id")
             submission["created_at"] = result.get("created_at")
+            submission["created_by"] = user["name"] if user else None
             submission["updated_at"] = result.get("updated_at")
 
             if "clinvar_subm_id" in result:
@@ -265,14 +258,19 @@ class ClinVarHandler(object):
                 )
 
                 # Loop over variants contained in a single ClinVar submission
-                for var_data_id in list(result["variant_data"]):
+                for var_info in submission["variant_data"]:
                     # get case_id from variant id (caseID_variant_ID)
-                    case_id = var_data_id.rsplit("_", 1)[0]
-                    CASE_CLINVAR_SUMBMISSION_PROJECTION = {"display_name": 1}
+                    case_id = var_info["_id"].rsplit("_", 1)[0]
+                    CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
                     case_obj = self.case(
-                        case_id=case_id, projection=CASE_CLINVAR_SUMBMISSION_PROJECTION
+                        case_id=case_id, projection=CASE_CLINVAR_SUBMISSION_PROJECTION
                     )
                     cases[case_id] = case_obj.get("display_name")
+
+                    # retrieve user responsible for adding the variant to the submission
+                    var_info["added_by"] = self.clinvar_variant_submitter(
+                        institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"]
+                    )
 
             submission["cases"] = cases
 
@@ -445,3 +443,22 @@ class ClinVarHandler(object):
             for var in subm.get("variant_data"):
                 clinvar_case_ids.add(var["case_id"])
         return list(clinvar_case_ids)
+
+    def clinvar_variant_submitter(
+        self, institute_id: str, case_id: str, variant_id: str
+    ) -> Optional[str]:
+        """Return the name of the user which added a specific variant to a submission."""
+        case_events_query = {
+            "verb": "clinvar_add",
+            "institute": institute_id,
+            "case": case_id,
+            "category": "variant",
+        }
+        projection = {"_id": 0, "user_name": 1, "link": 1}
+        clinvar_vars_for_case: pymongo.cursor.Cursor = self.event_collection.find(
+            case_events_query, projection
+        ).sort("created_at", -1)
+
+        for clinvar_var in clinvar_vars_for_case:
+            if variant_id in clinvar_var["link"]:
+                return clinvar_var["user_name"]

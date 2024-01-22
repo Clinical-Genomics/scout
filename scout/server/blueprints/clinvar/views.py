@@ -1,6 +1,7 @@
 import csv
 import logging
 from tempfile import NamedTemporaryFile
+from typing import List
 
 from flask import Blueprint, flash, redirect, render_template, request, send_file, url_for
 from flask_login import current_user
@@ -34,18 +35,10 @@ def clinvar_add_variant(institute_id, case_name):
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
 def clinvar_save(institute_id, case_name):
     """Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission"""
-    variant_data = controllers.parse_variant_form_fields(request.form)  # dictionary
-    casedata_list = controllers.parse_casedata_form_fields(request.form)  # a list of dictionaries
-
-    # retrieve or create an open ClinVar submission:
-    subm = store.get_open_clinvar_submission(institute_id)
-    # save submission objects in submission:
-    result = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
-    if result:
-        flash(
-            "An open ClinVar submission was updated correctly with submitted data",
-            "success",
-        )
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    controllers.add_variant_to_submission(
+        institute_obj=institute_obj, case_obj=case_obj, form=request.form
+    )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
@@ -54,14 +47,14 @@ def clinvar_submissions(institute_id):
     """Handle clinVar submission objects and files"""
 
     institute_obj = institute_and_case(store, institute_id)
-
+    institute_clinvar_submitters: List[str] = institute_obj.get("clinvar_submitters", [])
     data = {
         "submissions": store.clinvar_submissions(institute_id),
         "institute": institute_obj,
         "variant_header_fields": CLINVAR_HEADER,
         "casedata_header_fields": CASEDATA_HEADER,
-        "show_submit": institute_obj.get("clinvar_key")
-        and current_user.email in institute_obj.get("clinvar_submitters", []),
+        "show_submit": current_user.email in institute_clinvar_submitters
+        or not institute_clinvar_submitters,
     }
     return render_template("clinvar/clinvar_submissions.html", **data)
 
@@ -76,13 +69,13 @@ def clinvar_rename_casedata(submission, case, old_name):
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])
-def clinvar_delete_object(submission, object_type):
-    """Delete a single object (variant_data or case_data) associated with a clinvar submission"""
+def clinvar_delete_object(submission: str, object_type: str):
+    """Delete a single object (variant_data or case_data) associated with a ClinVar submission"""
 
-    store.delete_clinvar_object(
-        object_id=request.form.get("delete_object"),
+    controllers.remove_item_from_submission(
+        submission=submission,
         object_type=object_type,
-        submission_id=submission,
+        subm_variant_id=request.form.get("delete_object"),
     )
     return redirect(request.referrer)
 
