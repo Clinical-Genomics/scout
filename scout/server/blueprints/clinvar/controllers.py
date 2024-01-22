@@ -2,8 +2,11 @@ import csv
 import logging
 from datetime import datetime
 from tempfile import NamedTemporaryFile
+from typing import List, Optional
 
 from flask import flash
+from flask_login import current_user
+from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants.acmg import ACMG_MAP
 from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, SCOUT_CLINVAR_SV_TYPES_MAP
@@ -529,3 +532,64 @@ def _clinvar_submission_header(submission_objs, csv_type):
                 continue
             custom_header[key] = value
     return custom_header
+
+
+def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: ImmutableMultiDict):
+    """It is invoked by the 'clinvar_save' endpoint. Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission."""
+
+    variant_data: dict = parse_variant_form_fields(form)
+    casedata_list: List[dict] = parse_casedata_form_fields(form)
+    institute_id = institute_obj["_id"]
+
+    # retrieve or create an open ClinVar submission:
+    subm: dict = store.get_open_clinvar_submission(institute_id, current_user._id)
+    # save submission objects in submission:
+    result: Optional[dict] = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
+    if result:
+        flash(
+            "An open ClinVar submission was updated correctly with submitted data",
+            "success",
+        )
+        # Create user-related events
+        variant_obj: dict = store.variant(document_id=variant_data.get("local_id"))
+        user_obj: dict = store.user(user_id=current_user._id)
+        for category in ["case", "variant"]:
+            store.create_event(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=f"/{institute_id}/{case_obj['display_name']}/{variant_obj['_id']}",
+                category=category,
+                verb="clinvar_add",
+                variant=variant_obj,
+                subject=variant_obj["display_name"],
+            )
+
+
+def remove_item_from_submission(submission: str, object_type: str, subm_variant_id: str):
+    """It is invoked by the clinvar_delete_object endpoint. Removes a variant (+ casedata) or casedata info only from one ClinVar submission object."""
+
+    store.delete_clinvar_object(
+        object_id=subm_variant_id,
+        object_type=object_type,
+        submission_id=submission,
+    )
+
+    # If variant itself is removed, register event
+    if object_type == "variant_data":
+        variant_id: str = subm_variant_id.split("_")[-1]
+        variant_obj: dict = store.variant(document_id=variant_id)
+        institute_obj: dict = store.institute(institute_id=variant_obj["institute"])
+        case_obj: dict = store.case(case_id=variant_obj["case_id"])
+        user_obj: dict = store.user(user_id=current_user._id)
+        for category in ["case", "variant"]:
+            store.create_event(
+                institute=institute_obj,
+                case=case_obj,
+                user=user_obj,
+                link=f"/{variant_obj['_id']}/{case_obj['display_name']}/{variant_id}",
+                category=category,
+                verb="clinvar_remove",
+                variant=variant_obj,
+                subject=variant_obj["display_name"],
+            )
