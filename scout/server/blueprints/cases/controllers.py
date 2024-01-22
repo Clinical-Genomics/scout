@@ -366,7 +366,7 @@ def case(store, institute_obj, case_obj):
     # If case diagnoses are a list of integers, convert into a list of dictionaries
     omim_terms = {}
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
-    LOG.info(case_diagnoses)
+
     if case_diagnoses:
         if isinstance(case_diagnoses[0], int):
             case_obj = store.convert_diagnoses_format(case_obj)
@@ -377,10 +377,8 @@ def case(store, institute_obj, case_obj):
                 case_obj.get("diagnosis_phenotypes"), filter_project={}
             )
         }
-        LOG.info(omim_terms)
         for diagnose in case_diagnoses:
             diagnose.update({"disease_link": disease_link(disease_id=diagnose["disease_id"])})
-        LOG.info(omim_terms)
     if case_obj.get("custom_images"):
         # re-encode images as base64
         case_obj["custom_images"] = case_obj["custom_images"].get(
