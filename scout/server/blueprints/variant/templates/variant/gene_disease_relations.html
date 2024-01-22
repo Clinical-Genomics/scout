@@ -1,10 +1,10 @@
 
-{% macro omim_phenotypes(variant) %}
+{% macro orpha_omim_phenotypes(variant) %}
   <div class="card panel-default">
     <div class="panel-heading">Disease</div>
     <div class="card-body">
       <div class="table-responsive fixed-panel overflow-auto" style="max-height:700px;">
-        <table class="table table-bordered table-condensed table-sm">
+        <table class="table table-bordered table-condensed table-sm" aria-label="Table of ORPHA diagnoses">
           <thead class="thead table-light">
             <tr>
               <th>Gene</th>
@@ -37,7 +37,7 @@
             {% endfor %}
           </tbody>
         </table>
-        <table class="table table-bordered table-condensed table-sm">
+        <table class="table table-bordered table-condensed table-sm" aria-label="Table of ORPHA diagnoses">
           <thead class="thead table-light">
             <tr>
               <th>Gene</th>

@@ -4,7 +4,7 @@
 {% from "variants/utils.html" import compounds_table %}
 {% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
-{% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, omim_phenotypes %}
+{% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
 {% from "variant/components.html" import alignments, clinsig_table, compounds_panel, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts %}
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
@@ -102,7 +102,7 @@
         <div class="card panel-default">
           {{ comments_panel(institute, case, current_user, variant.comments, variant_id=variant._id) }}
         </div>
-        {{ omim_phenotypes(variant) }}
+        {{ orpha_omim_phenotypes(variant) }}
         {{ genemodels_panel(variant, inherit_palette) }}
         {{ inheritance_panel(variant) }}
 

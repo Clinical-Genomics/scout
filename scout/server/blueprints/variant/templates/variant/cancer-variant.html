@@ -6,7 +6,7 @@
 {% from "variant/buttons.html" import database_buttons, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
 {% from "variant/components.html" import alignments, compounds_panel, clinsig_table, external_links, external_scripts, external_stylesheets, matching_variants, panel_classify, variant_scripts  %}
 {% from "variant/sanger.html" import modal_cancel_sanger, modal_sanger, sanger_button %}
-{% from "variant/gene_disease_relations.html" import omim_phenotypes %}
+{% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
 
 {% block title %}
@@ -99,7 +99,7 @@
     </div>
 
     <div class="row">
-      <div class="col-3">{{ omim_phenotypes(variant) }}</div>
+      <div class="col-3">{{ orpha_omim_phenotypes(variant) }}</div>
       <div class="col-9">{{ transcripts_overview(variant) }}</div>
     </div>
 
