@@ -72,31 +72,11 @@ def clinvar_rename_casedata(submission, case, old_name):
 def clinvar_delete_object(submission: str, object_type: str):
     """Delete a single object (variant_data or case_data) associated with a ClinVar submission"""
 
-    subm_variant_id: str = request.form.get("delete_object")
-    store.delete_clinvar_object(
-        object_id=subm_variant_id,
+    controllers.remove_item_from_submission(
+        submission=submission,
         object_type=object_type,
-        submission_id=submission,
+        subm_variant_id=request.form.get("delete_object"),
     )
-
-    # If variant itself is removed, register event
-    if object_type == "variant_data":
-        variant_id: str = subm_variant_id.split("_")[-1]
-        variant_obj: dict = store.variant(document_id=variant_id)
-        institute_obj: dict = store.institute(institute_id=variant_obj["institute"])
-        case_obj: dict = store.case(case_id=variant_obj["case_id"])
-        for category in ["case", "variant"]:
-            store.create_event(
-                institute=institute_obj,
-                case=case_obj,
-                user=store.user(user_id=current_user._id),
-                link=f"/{variant_obj['_id']}/{case_obj['display_name']}/{variant_id}",
-                category=category,
-                verb="clinvar_remove",
-                variant=variant_obj,
-                subject=variant_obj["display_name"],
-            )
-
     return redirect(request.referrer)
 
 
