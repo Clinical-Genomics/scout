@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed unused `case_obj` parameter from server/blueprints/variant/controllers/observations function
 - Possibility to reset ClinVar submission ID
 - Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
+- Ordered event verbs alphabetically and created ClinVar-related user events
 - Replace the code that downloads Ensembl genes, transcripts and exons with schug library
 ### Fixed
 - All disease_terms have gene HGNC ids as integers when added to the scout database
