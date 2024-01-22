@@ -1,7 +1,7 @@
 import logging
 import os
 from typing import Dict, List
-
+from scout.server.links import disease_link
 import requests
 from flask import Markup, current_app, flash, url_for
 from flask_login import current_user
@@ -341,6 +341,10 @@ def variant(
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
+
+    for gene in variant_obj["genes"]:
+        for disease in gene["disease_terms"]:
+            disease["disease_link"] = disease_link(disease_id=disease["_id"])
 
     tx_overview(variant_obj)
 
