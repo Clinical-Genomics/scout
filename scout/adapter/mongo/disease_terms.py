@@ -127,6 +127,4 @@ class DiagnosisHandler(object):
         try:
             self.disease_term_collection.insert_one(disease_obj)
         except DuplicateKeyError:
-            raise IntegrityError(
-                "Disease term %s already exists in database".format(disease_obj["_id"])
-            )
+            raise IntegrityError(f"Disease term {disease_obj['_id']} already exists in database")
