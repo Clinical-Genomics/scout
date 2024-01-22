@@ -329,9 +329,10 @@ def update_clinvar_submission_status(request_obj, institute_id, submission_id):
 
     if update_status in ["open", "closed", "submitted"]:  # open or close a submission
         store.update_clinvar_submission_status(institute_id, submission_id, update_status)
-    if update_status == "register_id":  # register an official clinvar submission ID
+    if update_status == "register_id":  # register an official ClinVar submission ID
+        clinvar_id: str = request_obj.form.get("clinvar_id").replace(" ", "") or None
         store.update_clinvar_id(
-            clinvar_id=request_obj.form.get("clinvar_id"),
+            clinvar_id=clinvar_id if clinvar_id else None,
             submission_id=submission_id,
         )
     if update_status == "delete":  # delete a submission

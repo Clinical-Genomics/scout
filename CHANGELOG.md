@@ -7,11 +7,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Pydantic validation of image paths provided in case load config file
+- Info on the user which created a ClinVar submission, when available
 ### Changed
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
 - Remove unused functions and tests
 - Analysis type and direct link from cases list for OGM cases
 - Removed unused `case_obj` parameter from server/blueprints/variant/controllers/observations function
+- Possibility to reset ClinVar submission ID
+- Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
 ### Fixed
 - Disease_term identifiers are now prefixed with the name of the coding system
 - Command line crashing with error when updating a user that doesn't exist
@@ -30,6 +33,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - The collapsible actionbar had some non-collapsing overly long entries
 - Cancer observations for SVs not appearing in the variant details view
 - Archived local observations not visible on cancer variantS page
+- Empty Population Frequency column in the Cancer SV Variants view
 
 ## [4.75]
 ### Added

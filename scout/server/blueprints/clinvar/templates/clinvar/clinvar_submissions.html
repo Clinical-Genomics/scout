@@ -48,7 +48,7 @@
   <div class="accordion-item">
     <h2 class="accordion-header" id="header-{{subm_obj._id}}">
       <a class="accordion-button collapsed {% if subm_obj.status=='open' %} link-primary {% elif subm_obj.status=='submitted' %} link-success {% else %} link-secondary {% endif%}" type="button" data-bs-toggle="collapse" data-bs-target="#flush-{{subm_obj._id}}" aria-expanded="false" aria-controls="flush-{{subm_obj._id}}" style="text-decoration: none;">
-        Submission&nbsp;<strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created:&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
+        Submission&nbsp;<strong>{{subm_obj._id}} - ({{subm_obj.status|upper}})</strong>&nbsp;/&nbsp;Created {% if subm_obj.created_by %}&nbsp;by&nbsp;<strong>{{subm_obj.created_by}}</strong>{% endif %}&nbsp;on&nbsp;<strong>{{subm_obj.created_at.strftime('%Y-%m-%d')}}</strong>&nbsp;/&nbsp;Last updated:&nbsp;<strong>{{subm_obj.updated_at.strftime('%d-%m-%Y, %T')}}</strong>
       </a>
     </h2>
     <div id="flush-{{subm_obj._id}}" class="accordion-collapse collapse" aria-labelledby="header-{{subm_obj._id}}" data-bs-parent="#accordionFlushSubmissions">
@@ -87,7 +87,7 @@
             <tr>
               <form id="updateName_{{subm_obj._id}}" action="{{ url_for('clinvar.clinvar_update_submission', institute_id=institute._id, submission=subm_obj._id) }}" method="POST">
               <td style="width: 10%"><label for="clinvar_id">Submission ID</label></td>
-              <td style="width: 25%"> <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id }}" required></td>
+              <td style="width: 25%"> <input type="text" class="form-control" name="clinvar_id" pattern="SUB[0-9]+" placeholder="ex: SUB1234567" value="{{ subm_obj.clinvar_subm_id or ""}}"></td>
               <td style="width: 20%"><button type="submit" class="btn btn-sm btn-primary form-control" name="update_submission" value="register_id">Update ID manually</button></td>
               </form>
               {% if subm_obj.status == 'open' and show_submit  %}
@@ -245,7 +245,7 @@
       </div>
       <div class="modal-body">
         <label for="apiKey">Submitter's <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/" target="_blank" rel="noopener">API key</a></label>
-        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" value="{{institute.clinvar_key}}" required>
+        <input type="password" class="form-control" name="apiKey" id="apiKey" placeholder="64 alphanumeric characters" value="{{institute.clinvar_key or ''}}" required>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

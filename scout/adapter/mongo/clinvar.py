@@ -3,6 +3,7 @@ import logging
 from datetime import datetime
 
 import pymongo
+from bson import ObjectId
 from bson.objectid import ObjectId
 from pymongo import ReturnDocument
 
@@ -12,26 +13,21 @@ LOG = logging.getLogger(__name__)
 class ClinVarHandler(object):
     """Class to handle clinvar submissions for the mongo adapter"""
 
-    def create_submission(self, institute_id):
-        """Create an open clinvar submission for an institute
-        Args:
-             institute_id(str): an institute ID
-
-        returns:
-             submission(obj): an open clinvar submission object
-        """
+    def create_submission(self, institute_id: str, user_id: str) -> ObjectId:
+        """Create an open ClinVar submission for an institute."""
 
         submission_obj = {
             "status": "open",
             "created_at": datetime.now(),
             "institute_id": institute_id,
+            "created_by": user_id,
         }
-        LOG.info("Creating a new clinvar submission institute %s", institute_id)
+        LOG.info("Creating a new ClinVar submission for institute %s", institute_id)
         result = self.clinvar_submission_collection.insert_one(submission_obj)
         return result.inserted_id
 
     def delete_submission(self, submission_id):
-        """Deletes a Clinvar submission object, along with all associated clinvar objects (variants and casedata)
+        """Deletes a ClinVar submission object, along with all associated objects (variants and casedata)
 
         Args:
             submission_id(str): the ID of the submission to be deleted
@@ -68,15 +64,9 @@ class ClinVarHandler(object):
         # return deleted_count, deleted_submissions
         return deleted_objects, deleted_submissions
 
-    def get_open_clinvar_submission(self, institute_id):
-        """Retrieve the database id of an open clinvar submission for an institute,
-        if none is available then create a new submission and return it
-
-        Args:
-             institute_id(str): an institute ID
-
-        Returns:
-             submission(obj) : an open clinvar submission object
+    def get_open_clinvar_submission(self, institute_id: str, user_id: str) -> dict:
+        """Retrieve the database id of an open ClinVar submission for an institute,
+        if none is available then creates a new submission dictionary and returns it.
         """
 
         LOG.info("Retrieving an open clinvar submission for institute %s", institute_id)
@@ -85,7 +75,7 @@ class ClinVarHandler(object):
 
         # If there is no open submission for this institute, create one
         if submission is None:
-            submission_id = self.create_submission(institute_id)
+            submission_id = self.create_submission(institute_id, user_id)
             submission = self.clinvar_submission_collection.find_one({"_id": submission_id})
 
         return submission
@@ -247,10 +237,12 @@ class ClinVarHandler(object):
         for result in results:
             submission = {}
             cases = {}
+            user: dict = self.user(user_id=result.get("created_by"))
             submission["_id"] = result.get("_id")
             submission["status"] = result.get("status")
             submission["institute_id"] = result.get("institute_id")
             submission["created_at"] = result.get("created_at")
+            submission["created_by"] = user["name"] if user else None
             submission["updated_at"] = result.get("updated_at")
 
             if "clinvar_subm_id" in result:
