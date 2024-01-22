@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to reset ClinVar submission ID
 - Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
 ### Fixed
+- All disease_terms have gene HGNC ids as integers when added to the scout database
 - Disease_term identifiers are now prefixed with the name of the coding system
 - Command line crashing with error when updating a user that doesn't exist
 - Thaw coloredlogs - 15.0.1 restores errorhandler issue
