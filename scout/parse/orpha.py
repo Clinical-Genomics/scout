@@ -87,3 +87,35 @@ def get_orpha_to_hpo_information(lines: List[str]) -> Dict[str, Any]:
         orpha_diseases_found[disease_id] = disease
 
     return orpha_diseases_found
+
+
+def get_orpha_inheritance_information(lines: List[str]) -> Dict[str, dict]:
+    """Get a dictionary with diseases, ORPHA:nr as keys and inheritance information as values"""
+    LOG.info("Parsing Orphadata en_product9")
+
+    orpha_inheritance: Element = parse_orpha_downloads(lines=lines)
+    orpha_diseases_found = {}
+
+    # Collect inheritance information
+    for disorder in orpha_inheritance.iter("Disorder"):
+        LOG.info(f"Disorders looping: {disorder}")
+        disease = {}
+
+        source = "ORPHA"
+        orpha_code = disorder.find("OrphaCode").text
+        disease_id = f"{source}:{orpha_code}"
+        disease["inheritance"] = set()
+
+        inheritance_list = disorder.find("TypeOfInheritanceList")
+        nr = int(inheritance_list.attrib["count"])
+
+        #: Include all inheritances listed (expected one per orphacode)
+        if nr > 0:
+            for inheritance in inheritance_list:
+                LOG.info(inheritance)
+                inheritance_mode = inheritance.find("Name").text
+                disease["inheritance"].add(inheritance_mode)
+        #: TODO Add switch to match OMIM terminology
+        orpha_diseases_found[disease_id] = disease
+    LOG.info(orpha_diseases_found)
+    return orpha_diseases_found

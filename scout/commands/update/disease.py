@@ -84,6 +84,7 @@ def diseases(downloads_folder, api_key):
             resources["hpo_annotation_lines"] = fetch_hpo_disease_annotation()
             resources["orpha_to_genes_lines"] = orpha_files["orphadata_en_product6"]
             resources["orpha_to_hpo_lines"] = orpha_files["orphadata_en_product4"]
+            resources["orpha_inheritance_lines"] = orpha_files["en_product9_ages"]
 
         except Exception as err:
             LOG.warning(err)

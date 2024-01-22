@@ -306,6 +306,7 @@ def fetch_orpha_files() -> Dict:
 
     orpha_files["orphadata_en_product4"] = fetch_resource(ORPHA_URLS["orpha_to_hpo"])
     orpha_files["orphadata_en_product6"] = fetch_resource(ORPHA_URLS["orpha_to_genes"])
+    orpha_files["en_product9_ages"] = fetch_resource(ORPHA_URLS["orpha_inheritance"])
 
     return orpha_files
 
