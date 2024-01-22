@@ -49,8 +49,11 @@
           <div class="col-sm-4">
               <h4 class="">
                 Case: {{case.display_name}} <span class="badge bg-sm bg-secondary">{{case._id}}</span><br>
+              </h4>
+              <h4 class="h4 d-inline-block">
                 Status: {{case.status}}
               </h4>
+              {% for status_tag in case.tags %}<span class="badge bg-info align-top" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ case_tag_options[status_tag].description }}">{{ case_tag_options[status_tag].label }}</span>{% endfor %}
               <br>
               <form method="POST" action="{{ url_for('cases.status', institute_id=institute._id, case_name=case.display_name) }}">
                   Set:

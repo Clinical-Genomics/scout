@@ -149,23 +149,15 @@ class CaseEventHandler(object):
 
         return updated_case
 
-    def tag_case(self, institute: Dict, case: Dict, user: Dict, tags: List[str], link: str):
+    def tag_case(
+        self, institute: Dict, case: Dict, user: Dict, tags: List[str], link: str
+    ) -> Optional[dict]:
         """Update the status tags of a case.
 
         This function will create an Event to log that a user have updated the
         status of a case. Also the status of the case will be updated.
-        Status could be anyone of:
-            ("prioritized", "inactive", "active", "solved", "archived")
-
-        Args:
-            institute (dict): A Institute object
-            case (dict): A Case object
-            user (dict): A User object
-            tag (str): The new tags of the case
-            link (str): The url to be used in the event
-
-        Returns:
-            updated_case
+        Status tags could be any valid keys of the CASE_TAGS constant, eg
+            ("provisional", "diagnostic", "carrier", "upd", "medical attention")
         """
 
         for tag in tags:
@@ -187,7 +179,7 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Tagging {0} with {1}".format(case["display_name"], tag))
+        LOG.info("Tagging {0} with {1}".format(case["display_name"], tags))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"tags": tags}},

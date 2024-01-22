@@ -75,11 +75,11 @@ CASE_TAGS = {
     },
     "medical attention": {
         "label": "Medical attention",
-        "description": "Case, pinned or causative variant needs medical specialist attention - eg findings with unclear connection to phenotype",
+        "description": "Case needs medical specialist attention - eg findings with unclear connection to phenotype",
     },
     "technical attention": {
         "label": "Technical attention",
-        "description": "Case, pinned or causative variantneeds technical specialist attention - eg findings with unclear technical status",
+        "description": "Case needs technical specialist attention - eg findings with unclear technical status",
     },
     "upd": {
         "label": "UPD",
@@ -89,8 +89,8 @@ CASE_TAGS = {
     "fshd": {"label": "FSHD", "description": "FSHD assay (OGM) found causative"},
     "rna": {"label": "RNA", "description": "RNA assay with no markable variant found causative"},
     "structural": {
-        "label": "Structural",
-        "description": "Structural variation with no or complex combination of called variant found causative, e.g. via Chromograph or Gens",
+        "label": "Other structural",
+        "description": "Structural variation with no call or complex combination of called variants found causative, as evident via e.g. Chromograph or Gens",
     },
 }
 
@@ -134,6 +134,7 @@ VERBS_MAP = {
     "sanger": "ordered sanger sequencing for",
     "share": "shared case with",
     "status": "updated the status for",
+    "tag": "tagged the case for",
     "synopsis": "updated synopsis for",
     "unmark_causative": "unmarked causative for",
     "unmark_partial_causative": "unmarked partial causative for",

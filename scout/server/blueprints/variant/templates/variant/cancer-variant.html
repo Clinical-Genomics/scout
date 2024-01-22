@@ -152,7 +152,7 @@
       {{ modal_cancel_sanger(institute, case, variant, current_user) }}
     {% endif %}
 </div>
-{{ modal_causative(case, institute, variant) }}
+{{ modal_causative(case, institute, variant, case_tag_options) }}
 {% endblock %}
 
 {% macro panel_quality() %}
