@@ -540,7 +540,6 @@ def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: Immutab
     variant_data: dict = parse_variant_form_fields(form)
     casedata_list: List[dict] = parse_casedata_form_fields(form)
     institute_id = institute_obj["_id"]
-    case_name = case_obj["display_name"]
 
     # retrieve or create an open ClinVar submission:
     subm: dict = store.get_open_clinvar_submission(institute_id, current_user._id)
@@ -552,8 +551,6 @@ def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: Immutab
             "success",
         )
         # Create user-related events
-        institute_obj: dict = store.institute(institute_id=institute_id)
-        case_obj: dict = store.case(institute_id=institute_id, display_name=case_name)
         variant_obj: dict = store.variant(document_id=variant_data.get("local_id"))
         user_obj: dict = store.user(user_id=current_user._id)
         for category in ["case", "variant"]:
@@ -561,7 +558,7 @@ def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: Immutab
                 institute=institute_obj,
                 case=case_obj,
                 user=user_obj,
-                link=f"/{institute_id}/{case_name}/{variant_obj['_id']}",
+                link=f"/{institute_id}/{case_obj['display_name']}/{variant_obj['_id']}",
                 category=category,
                 verb="clinvar_add",
                 variant=variant_obj,
