@@ -343,7 +343,7 @@ def variant(
         }
 
     for gene in variant_obj["genes"]:
-        for disease in gene["disease_terms"]:
+        for disease in gene.get("disease_terms", []):
             disease["disease_link"] = disease_link(disease_id=disease["_id"])
 
     tx_overview(variant_obj)
