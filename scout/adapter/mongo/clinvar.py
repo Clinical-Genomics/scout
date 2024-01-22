@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import datetime
+from typing import Optional
 
 import pymongo
 from bson import ObjectId
@@ -257,14 +258,19 @@ class ClinVarHandler(object):
                 )
 
                 # Loop over variants contained in a single ClinVar submission
-                for var_data_id in list(result["variant_data"]):
+                for var_info in submission["variant_data"]:
                     # get case_id from variant id (caseID_variant_ID)
-                    case_id = var_data_id.rsplit("_", 1)[0]
-                    CASE_CLINVAR_SUMBMISSION_PROJECTION = {"display_name": 1}
+                    case_id = var_info["_id"].rsplit("_", 1)[0]
+                    CASE_CLINVAR_SUBMISSION_PROJECTION = {"display_name": 1}
                     case_obj = self.case(
-                        case_id=case_id, projection=CASE_CLINVAR_SUMBMISSION_PROJECTION
+                        case_id=case_id, projection=CASE_CLINVAR_SUBMISSION_PROJECTION
                     )
                     cases[case_id] = case_obj.get("display_name")
+
+                    # retrieve user responsible for adding the variant to the submission
+                    var_info["added_by"] = self.clinvar_variant_submitter(
+                        institute_id=institute_id, case_id=case_id, variant_id=var_info["local_id"]
+                    )
 
             submission["cases"] = cases
 
@@ -437,3 +443,22 @@ class ClinVarHandler(object):
             for var in subm.get("variant_data"):
                 clinvar_case_ids.add(var["case_id"])
         return list(clinvar_case_ids)
+
+    def clinvar_variant_submitter(
+        self, institute_id: str, case_id: str, variant_id: str
+    ) -> Optional[str]:
+        """Return the name of the user which added a specific variant to a submission."""
+        case_events_query = {
+            "verb": "clinvar_add",
+            "institute": institute_id,
+            "case": case_id,
+            "category": "variant",
+        }
+        projection = {"_id": 0, "user_name": 1, "link": 1}
+        clinvar_vars_for_case: pymongo.cursor.Cursor = self.event_collection.find(
+            case_events_query, projection
+        ).sort("created_at", -1)
+
+        for clinvar_var in clinvar_vars_for_case:
+            if variant_id in clinvar_var["link"]:
+                return clinvar_var["user_name"]
