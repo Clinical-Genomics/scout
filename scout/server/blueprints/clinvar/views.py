@@ -35,34 +35,10 @@ def clinvar_add_variant(institute_id, case_name):
 @clinvar_bp.route("/<institute_id>/<case_name>/clinvar/save", methods=["POST"])
 def clinvar_save(institute_id, case_name):
     """Adds one variant with eventual CaseData observations to an open (or new) ClinVar submission"""
-    variant_data = controllers.parse_variant_form_fields(request.form)  # dictionary
-    casedata_list = controllers.parse_casedata_form_fields(request.form)  # a list of dictionaries
-
-    # retrieve or create an open ClinVar submission:
-    subm = store.get_open_clinvar_submission(institute_id, current_user._id)
-    # save submission objects in submission:
-    result = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
-    if result:
-        flash(
-            "An open ClinVar submission was updated correctly with submitted data",
-            "success",
-        )
-        # Create user-related events
-        institute_obj: dict = store.institute(institute_id=institute_id)
-        case_obj: dict = store.case(institute_id=institute_id, display_name=case_name)
-        variant_obj: dict = store.variant(document_id=variant_data.get("local_id"))
-        user_obj: dict = store.user(user_id=current_user._id)
-        for category in ["case", "variant"]:
-            store.create_event(
-                institute=institute_obj,
-                case=case_obj,
-                user=user_obj,
-                link=f"/{institute_id}/{case_name}/{variant_obj['_id']}",
-                category=category,
-                verb="clinvar_add",
-                variant=variant_obj,
-                subject=variant_obj["display_name"],
-            )
+    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    controllers.add_variant_to_submission(
+        institute_obj=institute_obj, case_obj=case_obj, form=request.form
+    )
     return redirect(url_for("cases.case", institute_id=institute_id, case_name=case_name))
 
 
