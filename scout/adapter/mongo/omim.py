@@ -25,14 +25,9 @@ class DiagnosisHandler(object):
         query_dict = {}
         if query:
             query_dict = {
-                "$and": [
-                    {
-                        "$or": [
-                            {"disease_nr": {"$regex": query, "$options": "i"}},
-                            {"description": {"$regex": query, "$options": "i"}},
-                        ]
-                    },
-                    {"source": "OMIM"},
+                "$or": [
+                    {"disease_nr": {"$regex": query, "$options": "i"}},
+                    {"description": {"$regex": query, "$options": "i"}},
                 ]
             }
 
@@ -101,11 +96,12 @@ class DiagnosisHandler(object):
         hgnc_id: Optional[int] = None,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> list:
-        """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project. By default do not return disease-associated genes and HPO terms."""
-        query = {"source": "OMIM"}
+        """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project.
+        By default, do not return disease-associated genes and HPO terms."""
+        query = {}
         if hgnc_id:
             LOG.debug("Fetching all diseases for gene %s", hgnc_id)
-            query = {"$and": [{"source": "OMIM"}, {"genes": hgnc_id}]}
+            query = {"genes": hgnc_id}
         else:
             LOG.info("Fetching all disease terms")
 
