@@ -2,6 +2,8 @@
 
 import logging
 
+from scout.server.links import disease_link
+
 LOG = logging.getLogger(__name__)
 
 
@@ -21,6 +23,7 @@ def disease_entry(store, disease_id):
     disease_obj["hpo_complete"] = [
         store.hpo_term(hpo_id) for hpo_id in disease_obj.get("hpo_terms", [])
     ]
+    disease_obj["disease_link"] = disease_link(disease_id=disease_obj["disease_id"])
     return disease_obj
 
 

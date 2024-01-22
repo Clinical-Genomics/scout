@@ -21,11 +21,7 @@
     <div class="card-body">
       <ul class="list-group">
         <li class="list-group-item">
-          {% if source=="OMIM" %}
-            <a target="_blank" href="http://omim.org/entry/{{ disease_nr }}">{{disease_id}}</a>
-          {% elif source=="ORPHA" %}
-            <a target="_blank" href="http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={{ disease_nr }}">{{disease_id}}</a>
-          {% endif %}
+            <a target="_blank" href="{{ disease_link }}">{{disease_id}}</a>
         </li>
         <li class="list-group-item">
           description: <strong>{{description}}</strong>
