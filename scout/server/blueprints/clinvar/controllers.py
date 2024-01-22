@@ -567,7 +567,7 @@ def add_variant_to_submission(institute_obj: dict, case_obj: dict, form: Immutab
 
 
 def remove_item_from_submission(submission: str, object_type: str, subm_variant_id: str):
-    """It is invoked by the clinvar_delete_object endpoint. Removes a variant (+ cas data) or casedata info only from one ClinVar submission object."""
+    """It is invoked by the clinvar_delete_object endpoint. Removes a variant (+ casedata) or casedata info only from one ClinVar submission object."""
 
     store.delete_clinvar_object(
         object_id=subm_variant_id,
