@@ -63,7 +63,7 @@
       <div class="row">
         <div class="col-11">
           {% if diagnosis.description %}
-            <a href="{{diagnosis.disease_link}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
+            <a href="{{diagnosis.disease_link}}" target="_blank" rel="noopener" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
               {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
             {% if diagnosis.disease_id in omim_terms %}

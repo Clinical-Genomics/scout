@@ -19,13 +19,13 @@
                   {% if disease_term.source == 'OMIM' %}
                     <tr>
                       <td>
-                          <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
+                          <a href="http://omim.org/entry/{{ gene.common.omim_id }}" rel="noopener" target="_blank">
                             {{ gene.common.hgnc_symbol }}
                           </a>
                       </td>
                       <td>
 
-                          <a href="http://omim.org/entry/{{ disease_term._id|replace('OMIM:', '') }}" target="_blank">
+                          <a href="{{ disease_term.disease_link }}" rel="noopener" target="_blank">
                             {{ disease_term.description }}
                           </a>
                       </td>
@@ -52,13 +52,13 @@
                   {% if disease_term.source == 'ORPHA' %}
                     <tr>
                       <td>
-                          <a href="http://omim.org/entry/{{ gene.common.omim_id }}" target="_blank">
+                          <a href="http://omim.org/entry/{{ gene.common.omim_id }}" rel="noopener" target="_blank">
                             {{ gene.common.hgnc_symbol }}
                           </a>
                       </td>
                       <td>
 
-                          <a href="{{ disease_term.disease_link }}" target="_blank">
+                          <a href="{{ disease_term.disease_link }}" rel="noopener" target="_blank">
                             {{ disease_term.description }}
                           </a>
                       </td>
