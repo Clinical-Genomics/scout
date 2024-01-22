@@ -39,7 +39,7 @@ def clinvar_save(institute_id, case_name):
     casedata_list = controllers.parse_casedata_form_fields(request.form)  # a list of dictionaries
 
     # retrieve or create an open ClinVar submission:
-    subm = store.get_open_clinvar_submission(institute_id)
+    subm = store.get_open_clinvar_submission(institute_id, current_user._id)
     # save submission objects in submission:
     result = store.add_to_submission(subm["_id"], (variant_data, casedata_list))
     if result:
