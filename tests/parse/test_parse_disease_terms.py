@@ -101,7 +101,7 @@ def test_get_orpha_disease_terms(orpha_to_genes_lines, orpha_to_hpo_lines):
 
     # THEN assert disease with correct contents including both hpo and genes is included in return
     assert disease["description"] == "Multiple sulfatase deficiency"
-    assert disease["hgnc_ids"] == {"20376"}
+    assert disease["hgnc_ids"] == {20376}
     assert disease["hpo_terms"] == {"HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"}
 
 
