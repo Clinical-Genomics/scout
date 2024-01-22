@@ -93,7 +93,7 @@ def clinvar_rename_casedata(submission, case, old_name):
 
 
 @clinvar_bp.route("/<submission>/<object_type>", methods=["POST"])
-def clinvar_delete_object(submission, object_type):
+def clinvar_delete_object(submission: str, object_type: str):
     """Delete a single object (variant_data or case_data) associated with a ClinVar submission"""
 
     subm_variant_id: str = request.form.get("delete_object")

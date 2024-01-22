@@ -110,8 +110,8 @@ def test_clinvar_rename_casedata(app, institute_obj, case_obj, clinvar_form):
         assert casedata_document["individual_id"] == "new_name"
 
 
-def test_delete_clinvar_object(app, institute_obj, case_obj, clinvar_form):
-    """Testing the endpoint used to remove one ClinVar submission object (CaseData or Variant)"""
+def test_delete_clinvar_object_case_data(app, institute_obj, case_obj, clinvar_form):
+    """Testing the endpoint used to remove one ClinVar submission object (CaseData)."""
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -143,8 +143,48 @@ def test_delete_clinvar_object(app, institute_obj, case_obj, clinvar_form):
             data=data,
         )
 
-        # THEN the document should be removed from database, clinvar collection
+        # THEN the document should be removed from database, ClinVar collection
         assert store.clinvar_submission_collection.find_one({"csv_type": "casedata"}) is None
+
+
+def test_delete_clinvar_object_varant_data(app, institute_obj, case_obj, clinvar_form):
+    """ "Testing the endpoint used to remove one ClinVar submission object (CaseData)."""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+
+        subm_obj = store.clinvar_submission_collection.find_one()
+        # GIVEN a variant  that should be removed from the submission
+        variantdata_obj = store.clinvar_collection.find_one({"csv_type": "variant"})
+
+        data = {"delete_object": variantdata_obj["_id"]}
+        # WHEN form is submitted
+        client.post(
+            url_for(
+                "clinvar.clinvar_delete_object",
+                submission=subm_obj["_id"],
+                object_type="variant_data",
+            ),
+            data=data,
+        )
+
+        # THEN the document should be removed from database, ClinVar collection
+        assert store.clinvar_submission_collection.find_one({"csv_type": "variant"}) is None
+
+        # And a relative event should have been created
+        assert store.event_collection.find_one({"verb": "clinvar_remove"})
 
 
 def test_clinvar_update_submission(app, institute_obj, case_obj, clinvar_form):
