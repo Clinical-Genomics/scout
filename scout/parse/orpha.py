@@ -50,7 +50,7 @@ def get_orpha_to_genes_information(lines: List[str]) -> Dict[str, dict]:
 
                     if gene_source == "HGNC":
                         reference = external_reference.find("Reference").text
-                        disease["hgnc_ids"].add(reference)
+                        disease["hgnc_ids"].add(int(reference))
                         break
         orpha_diseases_found[disease_id] = disease
 
