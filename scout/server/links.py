@@ -178,7 +178,7 @@ def disease_link(disease_id: str) -> str:
     if source == "OMIM":
         link = f"https://www.omim.org/entry/{disease_nr}"
     elif source == "ORPHA":
-        link = f"http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={disease_nr}"
+        link = f"https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={disease_nr}"
 
     return link
 
