@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 
 
-def omim_entry(store, disease_id):
-    """Retrieve specific info for an OMIM term at the gene level
+def disease_entry(store, disease_id):
+    """Retrieve specific info for a disease term
 
     Args:
         store(obj): an adapter to the scout database
         disease_id(str): a disease_id
 
     Returns:
-        omim_obj(obj): an OMIM term containing description and genes
+        disease_obj(obj): a disease term containing description and genes
     """
 
-    omim_obj = store.disease_term(disease_identifier=disease_id)
-    omim_obj["genes_complete"] = store.omim_to_genes(omim_obj)
-    omim_obj["hpo_complete"] = [store.hpo_term(hpo_id) for hpo_id in omim_obj.get("hpo_terms", [])]
-    return omim_obj
+    disease_obj = store.disease_term(disease_identifier=disease_id)
+    disease_obj["genes_complete"] = store.disease_to_genes(disease_obj)
+    disease_obj["hpo_complete"] = [
+        store.hpo_term(hpo_id) for hpo_id in disease_obj.get("hpo_terms", [])
+    ]
+    return disease_obj
 
 
 def disease_terms(store):
@@ -27,9 +29,4 @@ def disease_terms(store):
     """
 
     data = {"terms": store.disease_terms(filter_project=None)}
-    return data
-
-
-def disease_terminology_count(store):
-    data = {"counts": store.disease_terminology_count()}
     return data

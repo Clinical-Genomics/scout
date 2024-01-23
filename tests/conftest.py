@@ -385,37 +385,164 @@ def disease_database(
 #############################################################
 ################# disease terms fixtures #######################
 #############################################################
+"""Disease terms fixtures"""
 
-
-@pytest.fixture
-def test_omim_term(request):
-    """Return a test OMIM object"""
-
-    omim_term = {
-        "_id": "OMIM:260005",
-        "disease_id": "OMIM:260005",
-        "disease_nr": 260005,
+TEST_OMIM_DISEASES = {
+    "OMIM:614116": {
+        "inheritance": {"AD"},
+        "description": "Neuropathy hereditary sensory type IE",
+        "hgnc_symbols": {"DNMT1"},
+        "hpo_terms": {
+            "HP:0000741",
+            "HP:0000737",
+            "HP:0000407",
+            "HP:0001251",
+            "HP:0100710",
+            "HP:0011462",
+            "HP:0000726",
+            "HP:0003676",
+            "HP:0001265",
+            "HP:0001262",
+            "HP:0002460",
+            "HP:0002354",
+            "HP:0000006",
+            "HP:0000365",
+            "HP:0002059",
+        },
+        "hgnc_ids": set(),
+    },
+    "OMIM:260005": {
         "description": "5-oxoprolinase deficiency",
-        "source": "OMIM",
-        "genes": [8149],
-        "inheritance": ["AR", "AD"],
-        "HPO_terms": ["HP:00022027", "HP:0008672"],
-    }
+        "hgnc_ids": {8149},
+        "inheritance": {"AR", "AD"},
+        "hpo_terms": {"HP:00022027", "HP:0008672"},
+    },
+}
+
+TEST_ORPHA_DISEASES = {
+    "ORPHA:585": {
+        "description": "Multiple sulfatase deficiency",
+        "hgnc_ids": {20376},
+        "hpo_terms": {"HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"},
+    },
+    "ORPHA:118": {
+        "description": "Beta-mannosidosis",
+        "hgnc_ids": {6831},
+        "hpo_terms": {
+            "HP:0000365",
+            "HP:0001249",
+        },
+    },
+}
+
+
+@pytest.fixture(scope="function")
+def test_parsed_hpo_annotations(request):
+    test_parsed_hpo_annotations = {}
+    for key, content in TEST_OMIM_DISEASES.items():
+        test_parsed_hpo_annotations[key] = {
+            "source": "OMIM",
+            "description": content["description"],
+            "hpo_terms": content["hpo_terms"],
+        }
+    test_parsed_hpo_annotations.update(
+        {
+            "OMIM:612201": {
+                "source": "OMIM",
+                "description": "Atrial fibrillation, familial, 6",
+                "hpo_terms": {"HP:0001712", "HP:0012664", "HP:0000006", "HP:0005110", "HP:0011462"},
+            }
+        },
+    )
+    return test_parsed_hpo_annotations
+
+
+@pytest.fixture(scope="function")
+def test_genemap_diseases(request):
+    test_genemap_diseases = {}
+    for key, content in TEST_OMIM_DISEASES.items():
+        test_genemap_diseases[key] = {
+            "inheritance": content["inheritance"],
+            "description": content["description"],
+            "hgnc_symbols": content["hgnc_symbols"],
+        }
+
+    return test_genemap_diseases
+
+
+@pytest.fixture(scope="function")
+def test_orpha_hpo_annotations(request):
+    test_orpha_hpo_annotations = {}
+    for key, content in TEST_ORPHA_DISEASES.items():
+        test_orpha_hpo_annotations[key] = {
+            "description": content["description"],
+            "hgnc_ids": content["hgnc_ids"],
+            "hpo_terms": content["hpo_terms"],
+        }
+
+    return test_orpha_hpo_annotations
+
+
+@pytest.fixture(scope="function")
+def test_orpha_diseases(request):
+    orpha_diseases = {}
+    for key, content in TEST_ORPHA_DISEASES.items():
+        orpha_diseases[key] = {
+            "description": content["description"],
+            "hgnc_ids": content["hgnc_ids"],
+        }
+
+    return orpha_diseases
+
+
+@pytest.fixture(scope="function")
+def test_orpha_disease_terms(request):
+    orpha_disease_terms = TEST_ORPHA_DISEASES
+
+    return orpha_disease_terms
+
+
+@pytest.fixture(scope="function")
+def test_omim_disease_terms(request):
+    test_omim_diseases = TEST_OMIM_DISEASES
+    return test_omim_diseases
+
+
+@pytest.fixture(scope="function")
+def test_omim_database_term(request):
+    """Return a test OMIM object"""
+    for key, content in TEST_OMIM_DISEASES.items():
+        if key == "OMIM:260005":
+            source, disease_nr = key.split(":")
+            omim_term = {
+                "_id": key,
+                "disease_id": key,
+                "disease_nr": disease_nr,
+                "description": content["description"],
+                "source": source,
+                "genes": list(content["hgnc_ids"]),
+                "hpo_terms": list(content["hpo_terms"]),
+            }
     return omim_term
 
 
 @pytest.fixture
-def test_orpha_term(request):
+def test_orpha_database_term(request):
     """Return a test ORPHA object"""
-    orpha_term = {
-        "_id": "ORPHA:585",
-        "disease_id": "ORPHA:585",
-        "disease_nr": 585,
-        "description": "Multiple sulfatase deficiency",
-        "source": "ORPHA",
-        "genes": ["20376"],
-        "hpo_terms": ["HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"],
-    }
+
+    for key, content in TEST_ORPHA_DISEASES.items():
+        if key == "ORPHA:585":
+            source, disease_nr = key.split(":")
+            orpha_term = {
+                "_id": key,
+                "disease_id": key,
+                "disease_nr": disease_nr,
+                "description": content["description"],
+                "source": source,
+                "genes": list(content["hgnc_ids"]),
+                "hpo_terms": list(content["hgnc_ids"]),
+            }
+
     return orpha_term
 
 
