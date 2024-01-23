@@ -98,6 +98,7 @@ def diseases(downloads_folder, api_key):
         hpo_annotation_lines=resources["hpo_annotation_lines"],
         orpha_to_genes_lines=resources["orpha_to_genes_lines"],
         orpha_to_hpo_lines=resources["orpha_to_hpo_lines"],
+        orpha_inheritance_lines=resources["orpha_inheritance_lines"],
     )
 
     LOG.info("Successfully loaded all disease terms")

@@ -5,6 +5,8 @@ from xml.etree.ElementTree import Element
 
 from defusedxml.ElementTree import fromstring
 
+from scout.constants import DISEASE_INHERITANCE_TERMS, INHERITANCE_TERMS_MAPPER
+
 LOG = logging.getLogger(__name__)
 
 
@@ -98,7 +100,6 @@ def get_orpha_inheritance_information(lines: List[str]) -> Dict[str, dict]:
 
     # Collect inheritance information
     for disorder in orpha_inheritance.iter("Disorder"):
-        LOG.info(f"Disorders looping: {disorder}")
         disease = {}
 
         source = "ORPHA"
@@ -109,13 +110,13 @@ def get_orpha_inheritance_information(lines: List[str]) -> Dict[str, dict]:
         inheritance_list = disorder.find("TypeOfInheritanceList")
         nr = int(inheritance_list.attrib["count"])
 
-        #: Include all inheritances listed (expected one per orphacode)
+        #: Include inheritance
         if nr > 0:
             for inheritance in inheritance_list:
-                LOG.info(inheritance)
                 inheritance_mode = inheritance.find("Name").text
-                disease["inheritance"].add(inheritance_mode)
-        #: TODO Add switch to match OMIM terminology
+                for term in DISEASE_INHERITANCE_TERMS:
+                    if term in inheritance_mode:
+                        disease["inheritance"].add(INHERITANCE_TERMS_MAPPER[term])
+
         orpha_diseases_found[disease_id] = disease
-    LOG.info(orpha_diseases_found)
     return orpha_diseases_found

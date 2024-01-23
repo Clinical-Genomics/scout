@@ -52,6 +52,7 @@ from scout.demo.resources import (
     hpo_phenotype_annotation_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
+    orpha_inheritance_reduced_path,
     orpha_to_genes_reduced_path,
     orpha_to_hpo_reduced_path,
     phenotype_to_genes_reduced_path,
@@ -378,6 +379,7 @@ def disease_database(
         genemap_lines=get_file_handle(genemap_file),
         orpha_to_hpo_lines=get_file_handle(orpha_to_hpo_reduced_path),
         orpha_to_genes_lines=get_file_handle(orpha_to_genes_reduced_path),
+        orpha_inheritance_lines=get_file_handle(orpha_inheritance_reduced_path),
     )
     return adapter
 

@@ -35,6 +35,13 @@ from .clinvar import (
     PHENO_DBS,
 )
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
+from .disease_parsing import (
+    DISEASE_INHERITANCE_TERMS,
+    ENTRY_PATTERN,
+    INHERITANCE_TERMS_MAPPER,
+    MIMNR_PATTERN,
+    OMIM_STATUS_MAP,
+)
 from .file_types import FILE_TYPE_MAP
 from .filters import (
     CLINICAL_FILTER_BASE,
