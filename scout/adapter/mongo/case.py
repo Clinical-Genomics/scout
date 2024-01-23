@@ -248,6 +248,9 @@ class CaseHandler(object):
         if query_field == "status":
             query["status"] = query_term
 
+        if query_field == "tags":
+            query["tags"] = query_term
+
         if query_field == "track":
             query["track"] = query_term
 
@@ -335,6 +338,7 @@ class CaseHandler(object):
             is_research(bool)
             has_rna_data(bool): if case has RNA-seq data associated
             status(str or dict expression)
+            tags(list(str)): search case tags
             group(ObjectId): fetch all cases in a named case group
             cohort(bool): Fetch all cases with cohort tags
             phenotype_terms(bool): Fetch all cases with phenotype

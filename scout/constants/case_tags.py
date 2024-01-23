@@ -73,11 +73,11 @@ CASE_TAGS = {
         "label": "Carrier",
         "description": "Assay performed to identify carrier status found variant present",
     },
-    "medical attention": {
+    "medical": {
         "label": "Medical attention",
         "description": "Case needs medical specialist attention - eg findings with unclear connection to phenotype",
     },
-    "technical attention": {
+    "technical": {
         "label": "Technical attention",
         "description": "Case needs technical specialist attention - eg findings with unclear technical status",
     },
@@ -255,6 +255,7 @@ CASE_SEARCH_TERMS = {
     },
     "panel": {"label": "Gene Panel", "prefix": "panel:", "placeholder": "example:NMD"},
     "status": {"label": "Case Status", "prefix": "status:", "placeholder": "example:active"},
+    "tags": {"label": "Tags", "prefix": "tags:", "placeholder": "example:medical"},
     "track": {"label": "Analysis Track", "prefix": "track:", "placeholder": "rare or cancer"},
     "pheno_group": {
         "label": "Phenotype Group",
