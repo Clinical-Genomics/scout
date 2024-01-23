@@ -7,7 +7,6 @@ from scout.server.utils import public_endpoint, templated
 
 from . import controllers
 
-LOG = logging.getLogger(__name__)
 
 omim_bp = Blueprint(
     "diagnoses",
