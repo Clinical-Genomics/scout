@@ -385,7 +385,6 @@ def disease_database(
 #############################################################
 ################# disease terms fixtures #######################
 #############################################################
-"""Disease terms fixtures"""
 
 TEST_OMIM_DISEASES = {
     "OMIM:614116": {
@@ -411,11 +410,19 @@ TEST_OMIM_DISEASES = {
         },
         "hgnc_ids": set(),
     },
+    "OMIM:604121": {
+        "inheritance": {"AD"},
+        "description": "Cerebellar ataxia deafness and narcolepsy autosomal dominant",
+        "hgnc_symbols": {"DNMT1"},
+        "hpo_terms": set(),
+        "hgnc_ids": set(),
+    },
     "OMIM:260005": {
-        "description": "5-oxoprolinase deficiency",
-        "hgnc_ids": {8149},
         "inheritance": {"AR", "AD"},
-        "hpo_terms": {"HP:00022027", "HP:0008672"},
+        "description": "5-oxoprolinase deficiency",
+        "hpo_terms": {"HP:0002027", "HP:0008672", "HP:0003137"},
+        "hgnc_ids": set(),
+        "hgnc_symbols": {"OPLAH"},
     },
 }
 
@@ -451,7 +458,7 @@ def test_parsed_hpo_annotations(request):
                 "source": "OMIM",
                 "description": "Atrial fibrillation, familial, 6",
                 "hpo_terms": {"HP:0001712", "HP:0012664", "HP:0000006", "HP:0005110", "HP:0011462"},
-            }
+            },
         },
     )
     return test_parsed_hpo_annotations
@@ -511,6 +518,7 @@ def test_omim_disease_terms(request):
 @pytest.fixture(scope="function")
 def test_omim_database_term(request):
     """Return a test OMIM object"""
+    omim_term = {}
     for key, content in TEST_OMIM_DISEASES.items():
         if key == "OMIM:260005":
             source, disease_nr = key.split(":")
@@ -520,7 +528,7 @@ def test_omim_database_term(request):
                 "disease_nr": disease_nr,
                 "description": content["description"],
                 "source": source,
-                "genes": list(content["hgnc_ids"]),
+                "genes": [8149],
                 "hpo_terms": list(content["hpo_terms"]),
             }
     return omim_term
@@ -529,7 +537,7 @@ def test_omim_database_term(request):
 @pytest.fixture
 def test_orpha_database_term(request):
     """Return a test ORPHA object"""
-
+    orpha_term = {}
     for key, content in TEST_ORPHA_DISEASES.items():
         if key == "ORPHA:585":
             source, disease_nr = key.split(":")
@@ -539,8 +547,8 @@ def test_orpha_database_term(request):
                 "disease_nr": disease_nr,
                 "description": content["description"],
                 "source": source,
-                "genes": list(content["hgnc_ids"]),
-                "hpo_terms": list(content["hgnc_ids"]),
+                "genes": [8149],
+                "hpo_terms": list(content["hpo_terms"]),
             }
 
     return orpha_term
