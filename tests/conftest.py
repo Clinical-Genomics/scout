@@ -445,6 +445,8 @@ TEST_ORPHA_DISEASES = {
 
 @pytest.fixture(scope="function")
 def test_parsed_hpo_annotations(request):
+    """Returns information for a sub set of omim diseases found in the demo resource-files
+    in the format expected after parsing of hpo information from omim-files"""
     test_parsed_hpo_annotations = {}
     for key, content in TEST_OMIM_DISEASES.items():
         test_parsed_hpo_annotations[key] = {
@@ -466,6 +468,8 @@ def test_parsed_hpo_annotations(request):
 
 @pytest.fixture(scope="function")
 def test_genemap_diseases(request):
+    """Returns information for a sub set of omim diseases found in the demo resource-files
+    in the format expected after parsing of gene information from omim-files"""
     test_genemap_diseases = {}
     for key, content in TEST_OMIM_DISEASES.items():
         test_genemap_diseases[key] = {
@@ -479,6 +483,8 @@ def test_genemap_diseases(request):
 
 @pytest.fixture(scope="function")
 def test_orpha_hpo_annotations(request):
+    """Returns information for a sub set of orpha diseases found in the demo resource-files
+    in the format expected after parsing of hpo information from orpha-files"""
     test_orpha_hpo_annotations = {}
     for key, content in TEST_ORPHA_DISEASES.items():
         test_orpha_hpo_annotations[key] = {
@@ -492,6 +498,8 @@ def test_orpha_hpo_annotations(request):
 
 @pytest.fixture(scope="function")
 def test_orpha_diseases(request):
+    """Returns information for a sub set of orpha diseases found in the demo resource-files
+    in the format expected after parsing of gene information from orpha-files"""
     orpha_diseases = {}
     for key, content in TEST_ORPHA_DISEASES.items():
         orpha_diseases[key] = {
@@ -504,6 +512,7 @@ def test_orpha_diseases(request):
 
 @pytest.fixture(scope="function")
 def test_orpha_disease_terms(request):
+    """Returns a set of orpha diseases found in the demo resource-files"""
     orpha_disease_terms = TEST_ORPHA_DISEASES
 
     return orpha_disease_terms
@@ -511,13 +520,14 @@ def test_orpha_disease_terms(request):
 
 @pytest.fixture(scope="function")
 def test_omim_disease_terms(request):
+    """Returns a sub set of omim diseases found in the demo resource-files"""
     test_omim_diseases = TEST_OMIM_DISEASES
     return test_omim_diseases
 
 
 @pytest.fixture(scope="function")
 def test_omim_database_term(request):
-    """Return a test OMIM object"""
+    """Return a test OMIM disease object formatted as expected in the scout-database"""
     omim_term = {}
     for key, content in TEST_OMIM_DISEASES.items():
         if key == "OMIM:260005":
@@ -536,7 +546,7 @@ def test_omim_database_term(request):
 
 @pytest.fixture
 def test_orpha_database_term(request):
-    """Return a test ORPHA object"""
+    """Return a test ORPHA object formatted as expected in the scout-database"""
     orpha_term = {}
     for key, content in TEST_ORPHA_DISEASES.items():
         if key == "ORPHA:585":
