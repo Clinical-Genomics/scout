@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% from "utils.html" import db_table_external_scripts, db_table_external_stylesheets %}
+
+{% block css %}
+{{ super() }}
+  {{ db_table_external_stylesheets() }}
+{% endblock %}
+
+{% block top_nav %}
+  {{ super() }}
+  <li class="nav-item">
+    <a class="nav-link" href="{{ url_for('cases.index') }}">Institutes</a>
+  </li>
+  <li class="nav-item active d-flex align-items-center">
+    <span class="navbar-text">Diagnoses</span>
+  </li>
+{% endblock %}
+
+{% block content_main %}
+<div class="container-float">
+  <div class="row my-3">
+    <div class="col-lg-3">
+      <div class="card">
+        <div class="card-header">Summary</div>
+        <div class="card-body">
+          <table id="diagnoses_stats_table" class="table table-sm" aria-label="Table containing the number of diseases from each disease coding system in the scout database">
+            {% if counts |length == 0 %}
+              <tr>
+                <td>
+                  No diagnoses found
+                </td>
+              </tr>
+            {% else %}
+              <thead class="table-light thead">
+                <th>Source</th>
+                <th>Quantity</th>
+              </thead>
+              {% for codingsystem in counts %}
+                <tr>
+                  <td>
+                    {{codingsystem._id}}
+                  </td>
+                  <td>
+                    {{codingsystem.count}}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endif %}
+          </table>
+        </div><!--end of card body-->
+      </div><!--end of card-->
+    </div>
+
+    <div class="col-lg-9">
+      <div class="card">
+        <div class="card-header"> Diagnoses in database</div>
+        <div id="diagnoses-card" class="card-body">
+          <div id="load-container"><button id="load-button" class="btn btn-primary my-2" onClick="loadDiseases()">Load all diseases from database</button></div>
+          <table id="diagnoses_table" class="table table-sm" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;" aria-label="Table containing all diagnoses in the scout database">
+              <thead class="table-light thead">
+                <th>Diagnosis code</th>
+                <th></th>
+                <th>Phenotype description</th>
+                <th>Inheritance</th>
+                <th>Associated genes</th>
+                <th>Associated HPO terms</th>
+              </thead>
+              <tbody>
+                <tr id="diagnosis-row">
+                  <td><a id="external-link" href="http://omim.org/entry/" target="_blank" rel=noopener ></a>
+                  <td><a id="internal-link" href="{{ url_for('diagnoses.diagnosis',disease_id='')}}"><span class="fa fa-link"></span></a></td>
+                  <td><span id="description" class="text-body"></span></td>
+                  <td id="inheritance-container"><!-- inheritance-->
+                      <span id="inheritance" class="badge bg-info m-1"></span>
+                  </td><!--end of inheritance-->
+                  <td id="gene-container">
+                    <span class="text-body">
+                      <a id="gene-link" class="badge link-primary m-1 fw-normal" href="{{ url_for('genes.gene', hgnc_id='0') }}" target="_blank" rel="noopener" ></a>
+                    </span>
+                  </td>
+                  <td id="hpo-container">
+                    <span class="text-body">
+                      <a id="hpo-link" class="badge bg-secondary text-white m-1" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" ></a>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </div><!--end of card body-->
+      </div><!--end of card-->
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('diagnoses.static', filename='diagnoses.js') }}"></script>
+{{ super() }}
+{{ db_table_external_scripts() }}
+{% endblock %}

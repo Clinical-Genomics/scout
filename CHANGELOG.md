@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Associate .d4 files to case individuals when loading a case via config file
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
 ### Changed
+- In diagnoses page the load of diseases are initiated by clicking a button
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
 - Remove unused functions and tests
 - Analysis type and direct link from cases list for OGM cases
@@ -39,6 +40,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer observations for SVs not appearing in the variant details view
 - Archived local observations not visible on cancer variantS page
 - Empty Population Frequency column in the Cancer SV Variants view
+- Capital letters in ClinVar events description shown on case page
 
 ## [4.75]
 ### Added
