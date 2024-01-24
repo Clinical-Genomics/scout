@@ -391,7 +391,7 @@ def test_remove_none_values():
 def test_parse_individual_files(scout_config, custom_temp_file):
     """Make sure the individual-specific config params are parsed correctly."""
 
-    # GIVEN the samples contained in the scout load config file
+    # GIVEN that the samples contained in the scout load config file have a path associated to each possible file
     for sample_config in scout_config["samples"]:
         sample_config["bam_path"] = str(custom_temp_file(".cram"))
         sample_config["rhocall_bed"] = str(custom_temp_file(".bed"))
@@ -400,10 +400,10 @@ def test_parse_individual_files(scout_config, custom_temp_file):
         sample_config["upd_regions_bed"] = str(custom_temp_file(".bed"))
         sample_config["upd_sites_bed"] = str(custom_temp_file(".bed"))
 
-    # THEN config dile should be parsed correctly
+    # THEN config file should be parsed correctly
     case_data = parse_case_config(scout_config)
 
-    # AND parsed case individuals should contain all files expected by the next loading step (build individual)
+    # AND parsed case individuals should contain all files key/values expected by the next loading step (build individual)
     for individual in case_data["individuals"]:
         for file_type in BUILD_INDIVIDUAL_FILES:
             assert individual.get(file_type)
