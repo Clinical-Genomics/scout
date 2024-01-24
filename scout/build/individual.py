@@ -5,6 +5,20 @@ from scout.constants import ANALYSIS_TYPES, REV_PHENOTYPE_MAP, REV_SEX_MAP
 from scout.exceptions import PedigreeError
 
 log = logging.getLogger(__name__)
+BUILD_INDIVIDUAL_FILES = [
+        "bam_file",
+        "d4_file",
+        "mt_bam",
+        "rhocall_bed",
+        "rhocall_wig",
+        "rna_alignment_path",
+        "rna_coverage_bigwig",
+        "splice_junctions_bed",
+        "tiddit_coverage_wig",
+        "upd_regions_bed",
+        "upd_sites_bed",
+        "vcf2cytosure",
+    ]
 
 
 def build_individual(ind):
@@ -82,21 +96,8 @@ def build_individual(ind):
         raise (PedigreeError("Unknown phenotype: %s" % phenotype))
 
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
-    ind_files = [
-        "bam_file",
-        "mt_bam",
-        "rhocall_bed",
-        "rhocall_wig",
-        "rna_alignment_path",
-        "rna_coverage_bigwig",
-        "splice_junctions_bed",
-        "tiddit_coverage_wig",
-        "upd_regions_bed",
-        "upd_sites_bed",
-        "vcf2cytosure",
-    ]
 
-    for ind_file in ind_files:
+    for ind_file in BUILD_INDIVIDUAL_FILES:
         file_path = ind.get(ind_file)
         if file_path and os.path.exists(file_path):
             ind_obj[ind_file] = os.path.abspath(file_path)
