@@ -525,7 +525,7 @@ def test_omim_database_term(request):
             omim_term = {
                 "_id": key,
                 "disease_id": key,
-                "disease_nr": disease_nr,
+                "disease_nr": int(disease_nr),
                 "description": content["description"],
                 "source": source,
                 "genes": [8149],
