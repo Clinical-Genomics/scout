@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to reset ClinVar submission ID
 - Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
 - Ordered event verbs alphabetically and created ClinVar-related user events
+- Removed the unused "no-variants" option from the load case command line
 - Parallelize variant loading for each chromosome
 ### Fixed
 - All disease_terms have gene HGNC ids as integers when added to the scout database
