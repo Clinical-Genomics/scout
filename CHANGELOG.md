@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Pydantic validation of image paths provided in case load config file
 - Info on the user which created a ClinVar submission, when available
+- Associate .d4 files to case individuals when loading a case via config file
 - Sanger recipient may send an alert to the user which ordered the verification when a variant is flagged as true positive
 ### Changed
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables

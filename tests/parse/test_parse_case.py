@@ -4,6 +4,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
+from scout.build.individual import BUILD_INDIVIDUAL_FILES
 from scout.constants import REV_SEX_MAP
 from scout.exceptions import PedigreeError
 from scout.parse.case import parse_case_config, parse_case_data, parse_ped, remove_none_values
@@ -387,61 +388,25 @@ def test_remove_none_values():
     assert {"a": "1", "b": 2} == remove_none_values(d)
 
 
-def test_parse_optional_igv_param(scout_config, custom_temp_file):
-    # GIVEN a dict contains optional igv params
-    # i.e. rhocall_wig
-    samples = scout_config["samples"]
+def test_parse_individual_files(scout_config, custom_temp_file):
+    """Make sure the individual-specific config params are parsed correctly."""
 
-    # WHEN optional parameters are added to config
-    for sample in samples:
-        sample["rhocall_bed"] = str(custom_temp_file(".bed"))
-        sample["rhocall_wig"] = str(custom_temp_file(".wig"))
-        sample["upd_regions_bed"] = str(custom_temp_file(".bed"))
-        sample["upd_sites_bed"] = str(custom_temp_file(".bed"))
-        sample["tiddit_coverage_wig"] = str(custom_temp_file(".wig"))
-    scout_config["samples"] = samples
+    # GIVEN that the samples contained in the scout load config file have a path associated to each possible file
+    for sample_config in scout_config["samples"]:
+        sample_config["bam_path"] = str(custom_temp_file(".cram"))
+        sample_config["rhocall_bed"] = str(custom_temp_file(".bed"))
+        sample_config["rhocall_wig"] = str(custom_temp_file(".wig"))
+        sample_config["tiddit_coverage_wig"] = str(custom_temp_file(".wig"))
+        sample_config["upd_regions_bed"] = str(custom_temp_file(".bed"))
+        sample_config["upd_sites_bed"] = str(custom_temp_file(".bed"))
 
-    # THEN parsing the config will add those to case data
+    # THEN config file should be parsed correctly
     case_data = parse_case_config(scout_config)
-    case_list = []
-    config_list = []
+
+    # AND parsed case individuals should contain all files key/values expected by the next loading step (build individual)
     for individual in case_data["individuals"]:
-        case_list.append(
-            (
-                individual["rhocall_wig"],
-                individual["rhocall_bed"],
-                individual["upd_regions_bed"],
-                individual["upd_sites_bed"],
-                individual["tiddit_coverage_wig"],
-            )
-        )
-
-    for sample in samples:
-        config_list.append(
-            (
-                sample["rhocall_wig"],
-                sample["rhocall_bed"],
-                sample["upd_regions_bed"],
-                sample["upd_sites_bed"],
-                sample["tiddit_coverage_wig"],
-            )
-        )
-
-    assert config_list == case_list
-
-
-def test_missing_optional_igv_param(scout_config):
-    # WHEN a dict is missing optinal wig param (later passed to igv.js)
-    # i.e. rhocall_wig
-    scout_config.pop("rhocall_bed", "ignore_return")
-    scout_config.pop("rhocall_wig", "ignore_return")
-    scout_config.pop("upd_regions_bed", "ignore_return")
-    scout_config.pop("upd_sites_bed", "ignore_return")
-    scout_config.pop("tiddit_coverage_wig", "ignore_return")
-
-    # THEN parsing the config will not raise an exception
-    case_data = parse_case_config(scout_config)
-    assert case_data
+        for file_type in BUILD_INDIVIDUAL_FILES:
+            assert individual.get(file_type)
 
 
 @pytest.mark.parametrize("key", ["owner", "family"])
