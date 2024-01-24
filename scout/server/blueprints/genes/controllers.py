@@ -78,7 +78,7 @@ def gene(store, hgnc_id):
 
 
 def add_disease_information_to_gene(store, hgnc_id: str):
-    disease_terms = store.disease_terms(hgnc_id)
+    disease_terms = store.disease_terms_by_gene(hgnc_id)
 
     for disease in disease_terms:
         if disease["source"] == "OMIM":
