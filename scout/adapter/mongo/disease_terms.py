@@ -15,7 +15,7 @@ DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 
-    def query_disease(self, query: str = None, source: str = None, limit: int = None) -> Iterable:
+    def query_disease(self, query: str = None, source: str = "OMIM", limit: int = None) -> Iterable:
         """Return all disease_terms
 
         If a query is sent it will try to match with regex on term or
