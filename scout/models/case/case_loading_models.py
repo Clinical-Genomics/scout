@@ -24,6 +24,7 @@ REPID = "{REPID}"
 
 SAMPLES_FILE_PATH_CHECKS = [
     "bam_file",
+    "d4_file",
     "mitodel_file",
     "rhocall_bed",
     "rhocall_wig",
