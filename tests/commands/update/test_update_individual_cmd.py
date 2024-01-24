@@ -101,7 +101,7 @@ def test_update_key_non_existent_path(mock_app, real_populated_database, case_ob
 def test_update_individuals_key_value(
     mock_app, real_populated_database, update_key, custom_temp_file
 ):
-    """Tests the CLI that updates a individual with an alignment path"""
+    """Tests the CLI that updates case individual's key/values."""
 
     # GIVEN a CLI object
     runner = mock_app.test_cli_runner()
