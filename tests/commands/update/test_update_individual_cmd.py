@@ -1,7 +1,8 @@
 """Tests for update individual command"""
-
+import pytest
 from click.testing import CliRunner
 
+from scout.commands.update.individual import UPDATE_DICT
 from scout.commands.update.individual import individual as ind_cmd
 
 
@@ -96,7 +97,10 @@ def test_update_key_non_existent_path(mock_app, real_populated_database, case_ob
     assert "The provided path was not found on the server, update key anyway?" in result.output
 
 
-def test_update_alignment_path(mock_app, real_populated_database, bam_path):
+@pytest.mark.parametrize("update_key", UPDATE_DICT)
+def test_update_individuals_key_value(
+    mock_app, real_populated_database, update_key, custom_temp_file
+):
     """Tests the CLI that updates a individual with an alignment path"""
 
     # GIVEN a CLI object
@@ -107,14 +111,25 @@ def test_update_alignment_path(mock_app, real_populated_database, bam_path):
     ind_info = existing_case["individuals"][0]
     ind_name = ind_info["display_name"]
 
+    # GIVEN a file to saved as a key for the individual
+    update_value = str(custom_temp_file(".xyz"))
+
     # WHEN updating a individual with a valid alignment path
     result = runner.invoke(
         ind_cmd,
-        ["--case-id", case_id, "--ind", ind_name, "bam_file", str(bam_path)],
+        ["--case-id", case_id, "--ind", ind_name, update_key, update_value],
     )
 
     # THEN the command should run with no errors
     assert result.exit_code == 0
-    # THEN assert that the new alignment path was added
+
+    # THEN assert that the individual is updated
     fetched_case = real_populated_database.case_collection.find_one()
-    assert fetched_case["individuals"][0]["bam_file"] == str(bam_path)
+    if "." in update_key:
+        update_key_values = update_key.split(".")
+        assert (
+            fetched_case["individuals"][0][update_key_values[0]][update_key_values[1]]
+            == update_value
+        )
+    else:
+        assert fetched_case["individuals"][0][update_key] == update_value
