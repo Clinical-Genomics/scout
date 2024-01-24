@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-def disease_entry(store, disease_id):
+def disease_entry(store, disease_id) -> dict:
     """Retrieve specific info for a disease term
 
     Args:

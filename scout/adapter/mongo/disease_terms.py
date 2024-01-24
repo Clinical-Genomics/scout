@@ -133,7 +133,7 @@ class DiagnosisHandler(object):
 
         return list(self.disease_term_collection.find(query, filter_project))
 
-    def disease_terminology_count(self):
+    def disease_terminology_count(self) -> list:
         """Return the count of disease_terms for each source in the db"""
         query = {"$group": {"_id": "$source", "count": {"$sum": 1}}}
         return list(self.disease_term_collection.aggregate([query]))
