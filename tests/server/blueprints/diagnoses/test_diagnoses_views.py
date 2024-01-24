@@ -14,7 +14,7 @@ def test_omim_diagnosis(app, test_omim_database_term):
     with app.test_client() as client:
         # WHEN accessing the page of one OMIM diagnosis
         resp = client.get(
-            url_for("diagnoses.omim_diagnosis", disease_id=test_omim_database_term["disease_id"])
+            url_for("diagnoses.diagnosis", disease_id=test_omim_database_term["disease_id"])
         )
 
         # THEN it should return a page
