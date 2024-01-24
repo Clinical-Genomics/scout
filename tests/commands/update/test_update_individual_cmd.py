@@ -111,10 +111,10 @@ def test_update_individuals_key_value(
     ind_info = existing_case["individuals"][0]
     ind_name = ind_info["display_name"]
 
-    # GIVEN a file to saved as a key for the individual
+    # GIVEN a value for the key to be updated
     update_value = str(custom_temp_file(".xyz"))
 
-    # WHEN updating a individual with a valid alignment path
+    # WHEN updating a individual with a valid key/value
     result = runner.invoke(
         ind_cmd,
         ["--case-id", case_id, "--ind", ind_name, update_key, update_value],
@@ -123,7 +123,7 @@ def test_update_individuals_key_value(
     # THEN the command should run with no errors
     assert result.exit_code == 0
 
-    # THEN assert that the individual is updated
+    # THEN the individual should be updated
     fetched_case = real_populated_database.case_collection.find_one()
     if "." in update_key:
         update_key_values = update_key.split(".")
