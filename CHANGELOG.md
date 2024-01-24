@@ -37,6 +37,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer observations for SVs not appearing in the variant details view
 - Archived local observations not visible on cancer variantS page
 - Empty Population Frequency column in the Cancer SV Variants view
+- Capital letters in ClinVar events description shown on case page
 
 ## [4.75]
 ### Added
