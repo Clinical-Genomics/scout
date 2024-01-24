@@ -170,6 +170,7 @@ class SampleLoader(BaseModel):
     chromograph_images: Optional[ChromographImages] = ChromographImages()
     confirmed_parent: Optional[bool] = None
     confirmed_sex: Optional[bool] = None
+    d4_file: Optional[str] = None
     display_name: Optional[str] = None
     father: Optional[str] = None
     individual_id: str = Field(alias="sample_id")
