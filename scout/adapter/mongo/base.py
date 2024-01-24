@@ -36,6 +36,7 @@ from .case import CaseHandler
 from .case_group import CaseGroupHandler
 from .clinvar import ClinVarHandler
 from .cytoband import CytobandHandler
+from .disease_terms import DiagnosisHandler
 from .event import EventHandler
 from .filter import FilterHandler
 from .hgnc import GeneHandler
@@ -44,7 +45,6 @@ from .index import IndexHandler
 from .institute import InstituteHandler
 from .managed_variant import ManagedVariantHandler
 from .matchmaker import MMEHandler
-from .omim import DiagnosisHandler
 from .panel import PanelHandler
 from .phenomodel import PhenoModelHandler
 from .query import QueryHandler
