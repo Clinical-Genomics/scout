@@ -5,24 +5,30 @@ from scout.server.utils import public_endpoint, templated
 
 from . import controllers
 
-omim_bp = Blueprint("diagnoses", __name__, template_folder="templates")
+omim_bp = Blueprint(
+    "diagnoses",
+    __name__,
+    template_folder="templates",
+    static_folder="static",
+    static_url_path="/diagnoses/static",
+)
 
 
 @omim_bp.route("/diagnoses/<disease_id>", methods=["GET"])
-@templated("diagnoses/omim_term.html")
-def omim_diagnosis(disease_id):
-    """Display information specific to one OMIM diagnosis"""
+@templated("diagnoses/disease_term.html")
+def diagnosis(disease_id):
+    """Display information specific to one diagnosis"""
 
-    data = controllers.omim_entry(store, disease_id)
+    data = controllers.disease_entry(store, disease_id)
     return data
 
 
 @omim_bp.route("/diagnoses", methods=["GET"])
-@templated("diagnoses/omim_terms.html")
-def omim_diagnoses():
-    """Display all OMIM diagnoses available in database"""
+@templated("diagnoses/diagnoses.html")
+def count_diagnoses():
+    """Display the diagnosis counts for each coding system available in database"""
 
-    data = controllers.disease_terms(store=store)
+    data = {"counts": store.disease_terminology_count()}
     return data
 
 

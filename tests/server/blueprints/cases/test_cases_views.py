@@ -740,7 +740,9 @@ def test_case_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
 
 
-def test_case_diagnosis(app, institute_obj, case_obj, test_omim_term, mocker, mock_redirect):
+def test_case_diagnosis(
+    app, institute_obj, case_obj, test_omim_database_term, mocker, mock_redirect
+):
     """Test the cases.case_diagnosis by adding and removing a diagnosis."""
 
     mocker.patch("scout.server.blueprints.cases.views.redirect", return_value=mock_redirect)
@@ -751,8 +753,8 @@ def test_case_diagnosis(app, institute_obj, case_obj, test_omim_term, mocker, mo
     assert not store.event_collection.find_one()
 
     # GIVEN a disease term present in the database
-    store.disease_term_collection.insert_one(test_omim_term)
-    disease_id = test_omim_term["_id"]
+    store.disease_term_collection.insert_one(test_omim_database_term)
+    disease_id = test_omim_database_term["_id"]
 
     # GIVEN an initialized app and a valid user and institute
     with app.test_client() as client:
@@ -896,11 +898,11 @@ def test_caselist(app, case_obj):
         assert case_obj["display_name"] in str(resp.data)
 
 
-def test_omimterms(app, test_omim_term):
+def test_omimterms(app, test_omim_database_term):
     """Test The API which returns all OMIM terms when queried from case page"""
 
     # GIVEN a database containing at least one OMIM term
-    store.disease_term_collection.insert_one(test_omim_term)
+    store.disease_term_collection.insert_one(test_omim_database_term)
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -915,7 +917,7 @@ def test_omimterms(app, test_omim_term):
         assert resp.status_code == 200
 
         # containing the OMIM term
-        assert test_omim_term["_id"] in str(resp.data)
+        assert test_omim_database_term["_id"] in str(resp.data)
         assert resp.mimetype == "application/json"
 
 
