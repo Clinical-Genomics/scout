@@ -58,7 +58,7 @@ INDEXES = {
                 ("case_id", ASCENDING),
                 ("category", ASCENDING),
             ],
-            name="caseid_variantid_caseid_category",
+            name="variantid_caseid_category",
             background=True,
         ),
         IndexModel(
