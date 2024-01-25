@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.76]
 ### Added
 - Pydantic validation of image paths provided in case load config file
 - Info on the user which created a ClinVar submission, when available
@@ -16,7 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Analysis type and direct link from cases list for OGM cases
 - Removed unused `case_obj` parameter from server/blueprints/variant/controllers/observations function
 - Possibility to reset ClinVar submission ID
-- Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
+- Allow ClinVar submissions with custom API key for users registered as ClinVar submitters or when institute doesn't have a preset list of ClinVar submitters
 - Ordered event verbs alphabetically and created ClinVar-related user events
 - Removed the unused "no-variants" option from the load case command line
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
