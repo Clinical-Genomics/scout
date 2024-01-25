@@ -606,6 +606,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     """Gather data to be visualized in a case report."""
 
     data = {"institute": institute_obj}
+    add_link_for_disease(store=store, case_obj=case_obj)
     data["case"] = case_obj
     data["cancer"] = case_obj.get("track") == "cancer"
 
@@ -1420,3 +1421,19 @@ def _matching_causatives(
             other_causatives_in_default_panels.append(causative)
 
     return other_causatives, other_causatives_in_default_panels
+
+
+def add_link_for_disease(store, case_obj):
+    """Updates the case with an external link for use in the frontend"""
+    case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
+
+    if case_diagnoses:
+        if isinstance(case_diagnoses[0], int):
+            #: If case diagnoses are saved as int, convert to new format
+            case_obj = store.convert_diagnoses_format(case_obj)
+            case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
+
+        for diagnosis in case_diagnoses:
+            #: Add link
+            diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
+    return case_obj
