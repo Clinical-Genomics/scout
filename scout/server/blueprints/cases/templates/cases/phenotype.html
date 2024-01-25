@@ -67,7 +67,7 @@
               {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
             {% if diagnosis.disease_id in omim_terms %}
-              <a class="text-white" target="_blank" href="{{url_for('diagnoses.omim_diagnosis', disease_id=diagnosis.disease_id)}}">
+              <a class="text-white" target="_blank" href="{{url_for('diagnoses.diagnosis', disease_id=diagnosis.disease_id)}}">
                 <span class="badge bg-secondary rounded-pill text-white">genes:{{omim_terms[diagnosis.disease_id].genes|length}}</span>
                 <span class="badge bg-info rounded-pill text-white">hpo:{{omim_terms[diagnosis.disease_id].hpo_terms|length}}</span>
               </a>
