@@ -87,7 +87,7 @@ def test_fetch_disease_term_by_hgnc_id(adapter, test_omim_database_term):
     assert len(res)
 
 
-def test_case_omim_diagnoses(adapter, case_obj, test_omim_database_term):
+def test_case_diseases(adapter, case_obj, test_omim_database_term):
     """Test search for all complete diagnoses for a case"""
 
     assert "description" in test_omim_database_term.keys()
@@ -104,10 +104,10 @@ def test_case_omim_diagnoses(adapter, case_obj, test_omim_database_term):
 
     adapter.case_collection.insert_one(case_obj)
 
-    case_omim_diagnoses = adapter.case_omim_diagnoses(
-        case_diagnoses=case_obj["diagnosis_phenotypes"], filter_project=None
+    case_diagnoses = adapter.case_diseases(
+        case_disease_list=case_obj["diagnosis_phenotypes"], filter_project=None
     )
-    assert list(case_omim_diagnoses)[0] == test_omim_database_term
+    assert list(case_diagnoses)[0] == test_omim_database_term
 
 
 def test_omim_genes(adapter, test_omim_database_term):
