@@ -376,8 +376,7 @@ def case(store, institute_obj, case_obj):
                 case_disease_list=case_obj.get("diagnosis_phenotypes"), filter_project=None
             )
         }
-        for diagnose in case_diagnoses:
-            diagnose.update({"disease_link": disease_link(disease_id=diagnose["disease_id"])})
+    add_link_for_disease(case_obj)
     if case_obj.get("custom_images"):
         # re-encode images as base64
         case_obj["custom_images"] = case_obj["custom_images"].get(
@@ -605,7 +604,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     """Gather data to be visualized in a case report."""
 
     data = {"institute": institute_obj}
-    add_link_for_disease(store=store, case_obj=case_obj)
+    add_link_for_disease(case_obj=case_obj)
     data["case"] = case_obj
     data["cancer"] = case_obj.get("track") == "cancer"
 
@@ -1422,17 +1421,13 @@ def _matching_causatives(
     return other_causatives, other_causatives_in_default_panels
 
 
-def add_link_for_disease(store, case_obj):
-    """Updates the case with an external link for use in the frontend"""
+def add_link_for_disease(case_obj: dict) -> dict:
+    """Updates the case diseases_phenotypes to include an external link for use in the frontend"""
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
 
     if case_diagnoses:
-        if isinstance(case_diagnoses[0], int):
-            #: If case diagnoses are saved as int, convert to new format
-            case_obj = store.convert_diagnoses_format(case_obj)
-            case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
-
-        for diagnosis in case_diagnoses:
-            #: Add link
-            diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
+        if isinstance(case_diagnoses[0], dict):
+            for diagnosis in case_diagnoses:
+                #: Add link
+                diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
     return case_obj
