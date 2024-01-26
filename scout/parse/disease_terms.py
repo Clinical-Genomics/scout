@@ -65,7 +65,9 @@ def parse_disease_terms(
             combined_disease_terms[disease_id]["hgnc_ids"].update(
                 orpha_disease_content.get("hgnc_ids", set())
             )
-    LOG.info(combined_disease_terms)
+            combined_disease_terms[disease_id]["inheritance"].update(
+                orpha_disease_content.get("inheritance", set())
+            )
     return combined_disease_terms
 
 
