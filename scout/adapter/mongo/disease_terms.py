@@ -129,7 +129,6 @@ class DiagnosisHandler(object):
         if source:
             query = {"$and": [{"source": source}, {"genes": hgnc_id}]}
         else:
-            LOG.debug(f"Fetching all diseases for gene { hgnc_id}")
             query = {"genes": hgnc_id}
 
         return list(self.disease_term_collection.find(query, filter_project))
