@@ -127,7 +127,6 @@ class DiagnosisHandler(object):
         """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project.
         By default, do not return disease-associated genes and HPO terms."""
         if source:
-            LOG.debug(f"Fetching all {source} diseases for gene { hgnc_id}")
             query = {"$and": [{"source": source}, {"genes": hgnc_id}]}
         else:
             LOG.debug(f"Fetching all diseases for gene { hgnc_id}")
