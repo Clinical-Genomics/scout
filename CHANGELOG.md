@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
+- Optimised indexes to address slow queries
 
 ## [4.76]
 ### Added
@@ -45,7 +46,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Archived local observations not visible on cancer variantS page
 - Empty Population Frequency column in the Cancer SV Variants view
 - Capital letters in ClinVar events description shown on case page
-- Optimised indexes to address slow queries
 
 ## [4.75]
 ### Added
