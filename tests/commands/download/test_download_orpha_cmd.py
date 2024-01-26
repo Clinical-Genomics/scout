@@ -11,7 +11,11 @@ from flask import app
 
 from scout.commands.download.orpha import orpha as orpha_cmd
 from scout.constants import ORPHA_URLS
-from scout.demo.resources import orpha_to_genes_reduced_path, orpha_to_hpo_reduced_path
+from scout.demo.resources import (
+    orpha_inheritance_reduced_path,
+    orpha_to_genes_reduced_path,
+    orpha_to_hpo_reduced_path,
+)
 
 
 @responses.activate
@@ -42,6 +46,16 @@ def test_download_orpha_cmd(empty_mock_app: app.Flask):
         status=200,
     )
 
+    with open(orpha_inheritance_reduced_path, "r") as en_product9_ages_file:
+        content: str = en_product9_ages_file.read()
+
+    responses.add(
+        responses.GET,
+        ORPHA_URLS["orpha_inheritance"],
+        body=content,
+        status=200,
+    )
+
     # GIVEN a temporary directory
     with tempfile.TemporaryDirectory() as dir_name:
         the_dir: pathlib.Path = pathlib.Path(dir_name)
@@ -57,3 +71,4 @@ def test_download_orpha_cmd(empty_mock_app: app.Flask):
         downloaded_files: List = os.listdir(dir_name)
         assert "orphadata_en_product4.xml" in downloaded_files
         assert "orphadata_en_product6.xml" in downloaded_files
+        assert "en_product9_ages.xml"
