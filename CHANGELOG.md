@@ -4,12 +4,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Option update path to .d4 files path for individuals of an existing case using the commands line
+- Sanger recipient may send an alert to the user which ordered the verification when a variant is flagged as true positive
+
 ## [4.76]
 ### Added
 - Pydantic validation of image paths provided in case load config file
 - Info on the user which created a ClinVar submission, when available
 - Associate .d4 files to case individuals when loading a case via config file
-- Sanger recipient may send an alert to the user which ordered the verification when a variant is flagged as true positive
 ### Changed
 - In diagnoses page the load of diseases are initiated by clicking a button
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables

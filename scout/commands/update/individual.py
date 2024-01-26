@@ -10,24 +10,25 @@ UPDATE_DICT = {
     "bam_file": "path",
     "bionano_access.sample": "str",
     "bionano_access.project": "str",
-    "mt_bam": "path",
-    "vcf2cytosure": "path",
-    "rhocall_bed": "path",
-    "rhocall_wig": "path",
-    "rna_alignment_path": "path",
-    "tiddit_coverage_wig": "path",
-    "upd_regions_bed": "path",
-    "upd_sites_bed": "path",
-    "splice_junctions_bed": "path",  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
-    "rna_coverage_bigwig": "path",  # Coverage islands generated from bam or cram files (RNA-seq analysis)
-    "reviewer.alignment": "path",
-    "reviewer.alignment_index": "path",
-    "reviewer.vcf": "path",
-    "reviewer.catalog": "path",
+    "d4_file": "path",
     "chromograph_images.autozygous": "str",
     "chromograph_images.coverage": "str",
     "chromograph_images.upd_regions": "str",
     "chromograph_images.upd_sites": "str",
+    "mt_bam": "path",
+    "reviewer.alignment": "path",
+    "reviewer.alignment_index": "path",
+    "reviewer.vcf": "path",
+    "reviewer.catalog": "path",
+    "rhocall_bed": "path",
+    "rhocall_wig": "path",
+    "rna_alignment_path": "path",
+    "rna_coverage_bigwig": "path",  # Coverage islands generated from bam or cram files (RNA-seq analysis)
+    "splice_junctions_bed": "path",  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
+    "tiddit_coverage_wig": "path",
+    "upd_regions_bed": "path",
+    "upd_sites_bed": "path",
+    "vcf2cytosure": "path",
 }
 UPDATE_KEYS = UPDATE_DICT.keys()
 
