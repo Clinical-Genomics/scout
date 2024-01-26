@@ -70,15 +70,15 @@ class DiagnosisHandler(object):
             return_document=ReturnDocument.AFTER,
         )
 
-    def case_omim_diagnoses(
+    def case_diseases(
         self,
-        case_diagnoses: List[dict],
+        case_disease_list: List[dict],
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> Iterable:
         """Return all complete OMIM diagnoses for a case."""
 
-        omim_ids = [dia["disease_id"] for dia in case_diagnoses]
-        query: dict = {"_id": {"$in": omim_ids}}
+        disease_ids = [dia["disease_id"] for dia in case_disease_list]
+        query: dict = {"_id": {"$in": disease_ids}}
 
         return self.disease_term_collection.find(query, filter_project).sort(
             "disease_id", ASCENDING

@@ -364,17 +364,16 @@ def case(store, institute_obj, case_obj):
     pheno_groups = institute_obj.get("phenotype_groups") or PHENOTYPE_GROUPS
 
     # If case diagnoses are a list of integers, convert into a list of dictionaries
-    omim_terms = {}
+    disease_terms = {}
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
-
     if case_diagnoses:
         if isinstance(case_diagnoses[0], int):
             case_obj = store.convert_diagnoses_format(case_obj)
         # Fetch complete OMIM diagnoses specific for this case
-        omim_terms = {
+        disease_terms = {
             term["disease_id"]: term
-            for term in store.case_omim_diagnoses(
-                case_obj.get("diagnosis_phenotypes"), filter_project={}
+            for term in store.case_diseases(
+                case_disease_list=case_obj.get("diagnosis_phenotypes"), filter_project=None
             )
         }
         for diagnose in case_diagnoses:
@@ -422,7 +421,7 @@ def case(store, institute_obj, case_obj):
         "has_rna_tracks": case_has_rna_tracks(case_obj),
         "collaborators": collab_ids,
         "cohort_tags": institute_obj.get("cohorts", []),
-        "omim_terms": omim_terms,
+        "disease_terms": disease_terms,
         "manual_rank_options": MANUAL_RANK_OPTIONS,
         "cancer_tier_options": CANCER_TIER_OPTIONS,
         "tissue_types": SAMPLE_SOURCE,
