@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Option update path to .d4 files path for individuals of an existing case using the commands line
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
+### Fixed
+- Missing number of phenotypes and genes from case diagnoses
 
 ## [4.76]
 ### Added
