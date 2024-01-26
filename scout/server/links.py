@@ -173,6 +173,7 @@ def omim(omim_id):
 
 
 def disease_link(disease_id: str) -> str:
+    """Returns a link for disease depending on the source of the term"""
     source, disease_nr = disease_id.split(":")
     link = None
     if source == "OMIM":

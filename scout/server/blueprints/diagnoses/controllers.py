@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import logging
-
 from scout.server.links import disease_link
-
-LOG = logging.getLogger(__name__)
 
 
 def disease_entry(store, disease_id) -> dict:
