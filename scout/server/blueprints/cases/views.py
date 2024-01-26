@@ -629,9 +629,10 @@ def hpoterms():
 @cases_bp.route("/api/v1/omim-terms")
 def omimterms():
     query = request.args.get("query")
+    source = request.args.get("source") or None
     if query is None:
         return abort(500)
-    terms = store.query_disease(query=query)
+    terms = store.query_disease(query=query, source=source)
     json_terms = [
         {"name": "{} | {}".format(term["_id"], term["description"]), "id": term["_id"]}
         for term in terms[:7]
