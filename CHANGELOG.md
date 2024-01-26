@@ -5,17 +5,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- Missing number of phenotypes and genes from case diagnoses
+
+## [4.76]
 ### Added
 - Pydantic validation of image paths provided in case load config file
 - Info on the user which created a ClinVar submission, when available
+- Associate .d4 files to case individuals when loading a case via config file
+- Option update path to .d4 files path for individuals of an existing case using the commands line
 ### Changed
+- In diagnoses page the load of diseases are initiated by clicking a button
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
 - Remove unused functions and tests
 - Analysis type and direct link from cases list for OGM cases
 - Removed unused `case_obj` parameter from server/blueprints/variant/controllers/observations function
 - Possibility to reset ClinVar submission ID
-- Allow any user with ClinVar submission clearance to submit variants, even if no ClinVar submission API key is saved in the institute settings
+- Allow ClinVar submissions with custom API key for users registered as ClinVar submitters or when institute doesn't have a preset list of ClinVar submitters
 - Ordered event verbs alphabetically and created ClinVar-related user events
+- Removed the unused "no-variants" option from the load case command line
 ### Fixed
 - All disease_terms have gene HGNC ids as integers when added to the scout database
 - Disease_term identifiers are now prefixed with the name of the coding system
@@ -36,6 +44,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer observations for SVs not appearing in the variant details view
 - Archived local observations not visible on cancer variantS page
 - Empty Population Frequency column in the Cancer SV Variants view
+- Capital letters in ClinVar events description shown on case page
 
 ## [4.75]
 ### Added

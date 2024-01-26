@@ -28,6 +28,7 @@ samples:
     mitodel_file: scout/demo/mitodel_test_files/hugelymodelbat_lanes_1_sorted_md_mitodel.txt
     mt_bam: scout/demo/reduced_mt.bam
     vcf2cytosure: scout/demo/ADM1059A2.test.cgh
+    d4_file: scout/demo/ADM1059A2.d4
     bionano_access:
         project: "230327_Hafdis1"
         sample: "2022-39905"
@@ -61,6 +62,7 @@ samples:
     rna_alignment_path: scout/demo/reduced_mt.bam
     rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
+    d4_file: scout/demo/ADM1059A1.d4
 
   - analysis_type: wes
     sample_id: ADM1059A3
@@ -78,6 +80,7 @@ samples:
     rna_alignment_path: scout/demo/reduced_mt.bam
     rna_coverage_bigwig: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered.bigWig
     splice_junctions_bed: scout/demo/ACC5963A1_lanes_1234_star_sorted_sj_filtered_sorted.bed.gz
+    d4_file: scout/demo/ADM1059A3.d4
 
 custom_images:
   str_variants_images:
