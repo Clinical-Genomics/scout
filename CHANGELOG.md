@@ -8,6 +8,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Option update path to .d4 files path for individuals of an existing case using the commands line
 - Sanger recipient may send an alert to the user which ordered the verification when a variant is flagged as true positive
+### Fixed
+- Missing number of phenotypes and genes from case diagnoses
 
 ## [4.76]
 ### Added
