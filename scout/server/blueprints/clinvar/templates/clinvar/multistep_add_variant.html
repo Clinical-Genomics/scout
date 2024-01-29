@@ -339,7 +339,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 // Validates fields for conditions associated to a variant
 function validateConditions(){
-  return $("#condition_tags option:selected").length == 0;
+  return $("#condition_tags option:selected").length > 0;
 }
 
 var current_fs, next_fs, previous_fs; //fieldsets
