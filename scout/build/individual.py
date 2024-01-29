@@ -92,7 +92,6 @@ def build_individual(ind: dict) -> dict:
         raise (PedigreeError("Unknown phenotype: %s" % phenotype))
 
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
-
     for ind_file in BUILD_INDIVIDUAL_FILES:
         file_path = ind.get(ind_file)
         if file_path and os.path.exists(file_path):
