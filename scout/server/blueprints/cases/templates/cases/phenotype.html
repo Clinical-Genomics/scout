@@ -52,33 +52,32 @@
 {% endmacro %}
 
 {% macro diagnosis_phenotypes(case, institute, disease_terms) %}
-  <!--Form to add OMIM terms -->
+  <!--Form to add disease terms -->
   <div class="col-6">
   {{ diagnosis_form(case, institute) }}
   </div>
-  <!--Display assigned OMIM terms -->
+  <!--Display assigned disease terms -->
   <div class="col-6">
   {% if "diagnosis_phenotypes" in case %}
     {% for diagnosis in case.diagnosis_phenotypes %}
       <div class="row">
         <div class="col-11">
-          <a href="http://omim.org/entry/{{diagnosis.disease_nr}}" target="_blank" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
-            {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
-          </a>
-          {% if diagnosis.disease_id in disease_terms %}
-            <a class="text-white" target="_blank" href="{{url_for('diagnoses.diagnosis', disease_id=diagnosis.disease_id)}}">
-              <span class="badge bg-secondary rounded-pill text-white">genes:{{disease_terms[diagnosis.disease_id].genes|length}}</span>
-              <span class="badge bg-info rounded-pill text-white">hpo:{{disease_terms[diagnosis.disease_id].hpo_terms|length}}</span>
+            <a href="{{diagnosis.disease_link}}" target="_blank" rel="noopener" class="text-dark" data-bs-toggle='tooltip' title="{{diagnosis.description}}">
+              {{ diagnosis.disease_id }} - {{ diagnosis.description|truncate(40, true) }}
             </a>
-          {% endif %}
-
+            {% if diagnosis.disease_id in disease_terms %}
+              <a class="text-white" target="_blank" href="{{url_for('diagnoses.diagnosis', disease_id=diagnosis.disease_id)}}">
+                <span class="badge bg-secondary rounded-pill text-white">genes:{{disease_terms[diagnosis.disease_id].genes|length}}</span>
+                <span class="badge bg-info rounded-pill text-white">hpo:{{disease_terms[diagnosis.disease_id].hpo_terms|length}}</span>
+              </a>
+            {% endif %}
           <!--display diseases at the individual level-->
           {% if diagnosis.individuals %}
             {{ feature_individuals(case, diagnosis) }}
           {% endif %}
         </div>
 
-        <!--option to remove OMIM term for case-->
+        <!--option to remove disease term for case-->
         <div class="col-1">
           {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                 case_name=case.display_name, remove='yes'),

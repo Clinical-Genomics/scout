@@ -197,8 +197,8 @@
                 <ul>
                   {% for dia in case.diagnosis_phenotypes %}
                     <li>
-                      {{dia.description}} (<a href="https://omim.org/entry/{{dia.disease_nr}}" target="_blank">{{dia.disease_id}})</a>
-                      {% for feature_ind in dia.individuals %} <!-- display eventual individual-level OMIM terms -->
+                      {{dia.description}} (<a href="{{dia.disease_link}}" target="_blank">{{dia.disease_id}})</a>
+                      {% for feature_ind in dia.individuals %} <!-- display eventual individual-level disease terms -->
                         {% for case_ind in case.individuals %}
                           {% if feature_ind.individual_name == case_ind.display_name %}
                             <span class="ml-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
@@ -209,7 +209,7 @@
                   {% endfor %}
                 </ul>
               {% else %}
-                No associated OMIM diagnoses.
+                No associated diagnoses.
               {% endif %}
 	        </td>
 	      </tr>
@@ -689,7 +689,7 @@
             <th>Description</th>
             <th>Region annotation</th>
             <th>Transcript - HGVS - Protein</th>
-            <th>OMIM phenotypes [inheritance]</th>
+            <th>Diagnoses [inheritance]</th>
           </tr>
         </thead>
         <tbody>
@@ -707,9 +707,9 @@
                   {{ variant_transcripts(gene) }}
                 </td>
                 <td>
-                  <ul>
+                  <ul class="p-0" style="list-style-type: none;">
                   {% for disease_term in gene.disease_terms %}
-                    <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                    <li class="d-flex align-items-baseline"><span class="badge badge-secondary m-1">{{ disease_term._id}}</span>&nbsp;<span>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</span></li>
                   {% endfor %}
                 </ul>
                 </td>
@@ -1060,7 +1060,7 @@
             <th>Description</th>
             <th>Region annotation</th>
             <th>Transcript - HGVS - Protein</th>
-            <th>OMIM phenotypes [inheritance]</th>
+            <th>Diagnoses [inheritance]</th>
           </tr>
         </thead>
         <tbody>
@@ -1079,7 +1079,7 @@
               <td>
                 <ul>
                 {% for disease_term in gene.disease_terms %}
-                  <li>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</li>
+                   <li class="d-flex align-items-baseline"><span class="badge badge-secondary m-1">{{ disease_term._id}}</span>&nbsp;<span>{{ disease_term.description }}&nbsp;{{ disease_term.inheritance }}</span></li>
                 {% endfor %}
                 </ul>
               </td>
@@ -1272,7 +1272,7 @@
 {% if variant.get('phenotypes') %}
   <div class="row mt-3">
     <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
-      OMIM terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
+      Disease terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
       HPO terms:&nbsp;
       {%- for hpo_term in variant['phenotypes'].get('phenotype_terms') -%}
         {{ hpo_term.phenotype_id}}({{hpo_term.feature}})&nbsp;

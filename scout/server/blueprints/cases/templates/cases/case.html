@@ -205,14 +205,15 @@
         </div> <!--end of <div class="row">-->
         </div>
 
-          <!-- OMIM diagnoses-related code-->
+          <!-- diagnoses-related code-->
         {% if not case.track == 'cancer' %}
         <div class="panel-default">
           <div class="row">
             <div class="col-sm-12 mb-3">
               <div class="card">
                 <div class="card-body">
-                  <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank" rel="noopener">OMIM</a>)</div>
+                  <div class="panel-heading"><span class="fa fa-user-md"></span>&nbsp;Diagnoses (<a href="https://www.omim.org/" target="_blank" rel="noopener">OMIM</a>,&nbsp;<a href="https://www.orpha.net/" target="_blank" rel="noopener">ORPHA</a>)
+                  </div>
                   <div class="row mt-1 mb-3">
                     {{ diagnosis_phenotypes(case, institute, disease_terms) }}
                   </div>
@@ -222,7 +223,7 @@
           </div>
         </div>
         {% endif %}
-        <!-- end of OMIM diagnoses-related code-->
+        <!-- end of diagnoses-related code-->
 
 
 

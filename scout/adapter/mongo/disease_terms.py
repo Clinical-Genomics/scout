@@ -15,7 +15,7 @@ DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 
-    def query_disease(self, query: str = None, source: str = "OMIM", limit: int = None) -> Iterable:
+    def query_disease(self, query: str = None, source: str = None, limit: int = None) -> Iterable:
         """Return all disease_terms
 
         If a query is sent it will try to match with regex on term or
@@ -104,10 +104,11 @@ class DiagnosisHandler(object):
 
     def disease_terms(
         self,
-        source: Optional[str] = "OMIM",
+        source: Optional[str] = None,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> list:
-        """Return all disease terms optionally from only one source and filtered the returned key/values using filter_project. By default do not return disease-associated genes and HPO terms."""
+        """Return all disease terms optionally from only one source and filtered the returned key/values
+        using filter_project. By default do not return disease-associated genes and HPO terms."""
         query = {}
         if source:
             LOG.debug(f"Fetching all {source} diseases")
@@ -120,13 +121,12 @@ class DiagnosisHandler(object):
     def disease_terms_by_gene(
         self,
         hgnc_id: [int],
-        source: Optional[str] = "OMIM",
+        source: Optional[str] = None,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> list:
-        """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project. By default do not return disease-associated genes and HPO terms."""
-
+        """Return all disease terms for a gene HGNC ID. Optionally filter the returned key/values using filter_project.
+        By default, do not return disease-associated genes and HPO terms."""
         if source:
-            LOG.debug("Fetching all diseases for gene %s", hgnc_id)
             query = {"$and": [{"source": source}, {"genes": hgnc_id}]}
         else:
             query = {"genes": hgnc_id}

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from scout.server.links import disease_link
+
 
 def disease_entry(store, disease_id) -> dict:
     """Retrieve specific info for a disease term
@@ -12,11 +14,12 @@ def disease_entry(store, disease_id) -> dict:
         disease_obj(obj): a disease term containing description and genes
     """
 
-    disease_obj = store.disease_term(disease_identifier=disease_id)
+    disease_obj = store.disease_term(disease_identifier=disease_id, filter_project={})
     disease_obj["genes_complete"] = store.disease_to_genes(disease_obj)
     disease_obj["hpo_complete"] = [
         store.hpo_term(hpo_id) for hpo_id in disease_obj.get("hpo_terms", [])
     ]
+    disease_obj["disease_link"] = disease_link(disease_id=disease_obj["disease_id"])
     return disease_obj
 
 
