@@ -1073,14 +1073,21 @@ class CaseHandler(object):
         # Remove non-mandatory key/values if they contain a null value
         unset_keys = {}
         for key in [
+            "collaborators",
             "custom_images",
             "cnv_report",
             "coverage_qc_report",
+            "delivery_report",
+            "family",
             "gene_fusion_report",
             "gene_fusion_report_research",
+            "lims_id",
             "mme_submission",
             "multiqc",
             "multiqc_rna",
+            "pipeline_version",
+            "phenotype_groups",
+            "phenotype_terms",
             "pipeline_version",
             "rank_model_version",
             "reference_info",
