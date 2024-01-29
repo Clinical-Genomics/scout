@@ -1430,4 +1430,3 @@ def add_link_for_disease(case_obj: dict):
             for diagnosis in case_diagnoses:
                 #: Add link
                 diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
-    return case_obj
