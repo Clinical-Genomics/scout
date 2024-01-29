@@ -27,7 +27,7 @@ from scout.server.blueprints.variant.utils import (
 )
 from scout.server.blueprints.variants.utils import update_case_panels
 from scout.server.extensions import LoqusDB, cloud_tracks, gens
-from scout.server.links import get_variant_links
+from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
@@ -341,6 +341,10 @@ def variant(
             **DISMISS_VARIANT_OPTIONS,
             **CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
         }
+
+    for gene in variant_obj.get("genes", []):
+        for disease in gene.get("disease_terms", []):
+            disease["disease_link"] = disease_link(disease_id=disease["_id"])
 
     tx_overview(variant_obj)
 

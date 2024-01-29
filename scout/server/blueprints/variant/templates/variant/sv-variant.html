@@ -4,7 +4,7 @@
 {% from "variant/components.html" import external_scripts, external_stylesheets, matching_variants, variant_scripts %}
 {% from "variant/utils.html" import causative_button, genes_panel, igv_track_selection, modal_causative, overlapping_panel, sv_alignments, pin_button, transcripts_panel %}
 {% from "variant/rank_score_results.html" import rankscore_panel %}
-{% from "variant/gene_disease_relations.html" import omim_phenotypes %}
+{% from "variant/gene_disease_relations.html" import orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel %}
 {% from "variant/buttons.html" import dismiss_variant_button, splice_junctions_button, variant_tag_button %}
 
@@ -113,7 +113,7 @@
        </div>
     </div>
     <div class="col-md-6">
-      {{ omim_phenotypes(variant) }}
+      {{ orpha_omim_phenotypes(variant) }}
     </div>
   </div>
 

@@ -41,6 +41,7 @@ from scout.parse.matchmaker import genomic_features, hpo_terms, omim_terms, pars
 from scout.server.blueprints.variant.controllers import variant as variant_decorator
 from scout.server.blueprints.variants.controllers import get_manual_assessments
 from scout.server.extensions import RerunnerError, bionano_access, gens, matchmaker, rerunner, store
+from scout.server.links import disease_link
 from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
@@ -375,7 +376,7 @@ def case(store, institute_obj, case_obj):
                 case_disease_list=case_obj.get("diagnosis_phenotypes"), filter_project=None
             )
         }
-
+    add_link_for_disease(case_obj)
     if case_obj.get("custom_images"):
         # re-encode images as base64
         case_obj["custom_images"] = case_obj["custom_images"].get(
@@ -603,6 +604,7 @@ def case_report_content(store: MongoAdapter, institute_obj: dict, case_obj: dict
     """Gather data to be visualized in a case report."""
 
     data = {"institute": institute_obj}
+    add_link_for_disease(case_obj=case_obj)
     data["case"] = case_obj
     data["cancer"] = case_obj.get("track") == "cancer"
 
@@ -1417,3 +1419,13 @@ def _matching_causatives(
             other_causatives_in_default_panels.append(causative)
 
     return other_causatives, other_causatives_in_default_panels
+
+
+def add_link_for_disease(case_obj: dict):
+    """Updates the case diseases_phenotypes to include an external link for use in the frontend"""
+    case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
+
+    if case_diagnoses and isinstance(case_diagnoses[0], dict):
+        for diagnosis in case_diagnoses:
+            #: Add link
+            diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})

@@ -5,12 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Orpha disease terms now include information on inheritance
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
 
+
 ## [4.76]
 ### Added
-- Orpha disease terms now include information on inheritance
+- Orphacodes are visible in phenotype tables
 - Pydantic validation of image paths provided in case load config file
 - Info on the user which created a ClinVar submission, when available
 - Associate .d4 files to case individuals when loading a case via config file
