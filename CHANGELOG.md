@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [4.76]
 ### Added
+- Orphacodes are visible in phenotype tables
 - Pydantic validation of image paths provided in case load config file
 - Info on the user which created a ClinVar submission, when available
 - Associate .d4 files to case individuals when loading a case via config file
