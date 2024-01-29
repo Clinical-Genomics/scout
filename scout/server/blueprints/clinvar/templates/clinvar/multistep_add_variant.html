@@ -362,6 +362,7 @@ $(".next").click(function(){
   // check to see if the validator for the specific step we are on passed or not.
   if(validationPassed == false){
     // do not proceed
+    alert("Please fill in required field");
     animating = false;
     return;
   }
