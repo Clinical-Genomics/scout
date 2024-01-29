@@ -256,9 +256,11 @@ def build_case(case_data, adapter):
     # phenotype groups
     if case_data.get("phenotype_groups"):
         phenotype_groups = []
-        institute_phenotype_groups = (
-            institute_obj.get("phenotype_groups").keys() + PHENOTYPE_GROUPS.keys()
-        )
+
+        institute_phenotype_groups = set(PHENOTYPE_GROUPS.keys())
+        if institute_obj.get("phenotype_groups"):
+            institute_phenotype_groups.update(institute_obj.get("phenotype_groups").keys())
+
         for phenotype in case_data["phenotype_groups"]:
             if phenotype not in institute_phenotype_groups:
                 LOG.warning(
