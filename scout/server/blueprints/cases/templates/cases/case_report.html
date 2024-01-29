@@ -318,7 +318,7 @@
 
 {% macro causatives_panel() %}
 <div class="card border-success mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-success text-white">
+  <div class="card-header bg-success text-white" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="causative_variants"><strong>Causative Variants</strong></a>
   </div>
   <div class="card-body">
@@ -337,7 +337,7 @@
 
 {% macro pinned_panel() %}
 <div class="card border-info mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-info text-white">
+  <div class="card-header bg-info text-white" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="pinned_variants"><strong>Pinned Variants</strong></a>
   </div>
   <div class="card-body">
@@ -367,7 +367,7 @@
 
 {% macro classified_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-warning text-black">
+  <div class="card-header bg-warning text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="acmg_variants"><strong>Other ACMG-classified Variants</strong></a>
   </div>
   <div class="card-body">
@@ -394,7 +394,7 @@
 
 {% macro tagged_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-warning text-black">
+  <div class="card-header bg-warning text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="manual_ranked_variants"><strong>Other Manual Ranked (Tagged) Variants</strong></a>
   </div>
   <div class="card-body">
@@ -445,7 +445,7 @@
 
 {% macro commented_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-warning text-black">
+  <div class="card-header bg-warning text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="commented_variants"><strong>Other Commented Variants</strong></a>
   </div>
   <div class="card-body">
@@ -481,7 +481,7 @@
 <!-- SNV -->
 {% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic content -->
   <div class="card" style="border-width: 5px; display: block;">
-    <div class="card-header">
+    <div class="card-header" >
       <div class="row d-flex align-items-center">
         # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>&nbsp;
           <span class="badge badge-pill badge-success">{{variant.category | upper}}</span>&nbsp;
@@ -742,7 +742,7 @@
 
 {% macro dismissed_panel() %}
   <div class="card border-danger mb-3" style="border-width: 5px; display: block;">
-    <div class="card-header bg-danger text-black">
+    <div class="card-header bg-danger text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
       <p id="dismissedDesc"><a id="dismissed_variants"><strong>Dismissed Variants</strong></a></p>
     </div>
     <div class="card-body">
