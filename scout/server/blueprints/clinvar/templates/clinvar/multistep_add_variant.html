@@ -337,6 +337,10 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
 })
 
+// Validates fields for conditions associated to a variant
+function validateConditions(){
+  return $("#condition_tags option:selected").length == 0;
+}
 
 var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
@@ -352,14 +356,12 @@ $(".next").click(function(){
 	var validationPassed = true;
 
   if(current_fs.data('step') == 6){
-    alert($("#condition_tags option:selected"));
-    validationPassed = $("#condition_tags option:selected").length >0 ;
+    validationPassed = validateConditions();
   }
 
   // check to see if the validator for the specific step we are on passed or not.
   if(validationPassed == false){
-    // do not proceed!
-    alert("Please fill in required fields");
+    // do not proceed
     animating = false;
     return;
   }
