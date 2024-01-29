@@ -261,6 +261,10 @@ def build_case(case_data, adapter):
             phenotype_obj = build_phenotype(phenotype, adapter)
             if phenotype_obj:
                 phenotype_groups.append(phenotype_obj)
+            else:
+                LOG.warning(
+                    f"Could not find phenotype group term '{phenotype}'. It is ignored and not added to case."
+                )
         if phenotype_groups:
             case_obj["phenotype_groups"] = phenotype_groups
 
