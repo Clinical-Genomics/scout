@@ -67,8 +67,7 @@ def test_download_orpha_cmd(empty_mock_app: app.Flask):
         assert "Download ORPHA" in result.output
 
         # AND the directory should contain the expected file
-
         downloaded_files: List = os.listdir(dir_name)
         assert "orphadata_en_product4.xml" in downloaded_files
         assert "orphadata_en_product6.xml" in downloaded_files
-        assert "en_product9_ages.xml"
+        assert "en_product9_ages.xml" in downloaded_files
