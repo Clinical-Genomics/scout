@@ -275,17 +275,6 @@ def build_case(case_data, adapter):
                 LOG.warning(
                     f"Could not find phenotype group term '{phenotype}' in term collection. It is not added to case."
                 )
-        if phenotype_groups:
-            case_obj["phenotype_groups"] = phenotype_groups
-
-            all_phenotype_groups = institute_phenotype_groups.union(
-                set(case_obj["phenotype_groups"])
-            )
-            if len(all_phenotype_groups) > len(institute_phenotype_groups):
-                LOG.warning("Updating institute object with new phenotype groups")
-                adapter.institute_collection.find_one_and_update(
-                    {"_id": institute_obj["_id"]}, {"$set": {"phenotype_groups": list(all_cohorts)}}
-                )
 
     # Files
     case_obj["madeline_info"] = case_data.get("madeline_info")
