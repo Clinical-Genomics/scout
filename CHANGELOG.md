@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Case loading accepts subject_id and phenotype_groups
+### Changed
+- CLI scout update individual accepts subject_id
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
 
