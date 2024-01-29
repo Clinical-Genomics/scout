@@ -6,19 +6,19 @@ from scout.exceptions import PedigreeError
 
 log = logging.getLogger(__name__)
 BUILD_INDIVIDUAL_FILES = [
-        "bam_file",
-        "d4_file",
-        "mt_bam",
-        "rhocall_bed",
-        "rhocall_wig",
-        "rna_alignment_path",
-        "rna_coverage_bigwig",
-        "splice_junctions_bed",
-        "tiddit_coverage_wig",
-        "upd_regions_bed",
-        "upd_sites_bed",
-        "vcf2cytosure",
-    ]
+    "bam_file",
+    "d4_file",
+    "mt_bam",
+    "rhocall_bed",
+    "rhocall_wig",
+    "rna_alignment_path",
+    "rna_coverage_bigwig",
+    "splice_junctions_bed",
+    "tiddit_coverage_wig",
+    "upd_regions_bed",
+    "upd_sites_bed",
+    "vcf2cytosure",
+]
 
 
 def build_individual(ind):
