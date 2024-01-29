@@ -1425,8 +1425,7 @@ def add_link_for_disease(case_obj: dict):
     """Updates the case diseases_phenotypes to include an external link for use in the frontend"""
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
 
-    if case_diagnoses:
-        if isinstance(case_diagnoses[0], dict):
-            for diagnosis in case_diagnoses:
-                #: Add link
-                diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
+    if case_diagnoses and isinstance(case_diagnoses[0], dict):
+        for diagnosis in case_diagnoses:
+            #: Add link
+            diagnosis.update({"disease_link": disease_link(disease_id=diagnosis["disease_id"])})
