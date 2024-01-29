@@ -164,7 +164,13 @@ def add_inheritance_information(orpha_disease, orpha_inheritance):
 
     LOG.info("Adding inheritance to ORPHA disease terms")
 
+    #: Update diseases already present with inheritance
     for disease_id, disease_information in orpha_disease.items():
         disease_information.update(orpha_inheritance.get(disease_id, set()))
+    #: Add disease information for missing diseases
+    for disease_id, disease_information in orpha_inheritance.items():
+        if disease_id not in orpha_disease:
+            orpha_disease[disease_id] = {}
+            orpha_disease[disease_id].update(disease_information)
 
     return orpha_disease

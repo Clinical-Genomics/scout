@@ -98,13 +98,15 @@ def get_orpha_inheritance_information(lines: List[str]) -> Dict[str, dict]:
     orpha_inheritance: Element = parse_orpha_downloads(lines=lines)
     orpha_diseases_found = {}
 
-    # Collect inheritance information
+    # Collect disease and inheritance information
     for disorder in orpha_inheritance.iter("Disorder"):
         disease = {}
 
         source = "ORPHA"
         orpha_code = disorder.find("OrphaCode").text
         disease_id = f"{source}:{orpha_code}"
+        description = disorder.find("Name").text
+        disease["description"] = description
         disease["inheritance"] = set()
 
         inheritance_list = disorder.find("TypeOfInheritanceList")
