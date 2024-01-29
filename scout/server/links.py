@@ -172,6 +172,18 @@ def omim(omim_id):
     return link.format(omim_id)
 
 
+def disease_link(disease_id: str) -> str:
+    """Returns a link for disease depending on the source of the term"""
+    source, disease_nr = disease_id.split(":")
+    link = None
+    if source == "OMIM":
+        link = f"https://www.omim.org/entry/{disease_nr}"
+    elif source == "ORPHA":
+        link = f"https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={disease_nr}"
+
+    return link
+
+
 def ensembl(ensembl_id, build=37):
     link = "http://grch37.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g={}"
     if build == 38:
