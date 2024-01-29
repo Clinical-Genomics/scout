@@ -1421,7 +1421,7 @@ def _matching_causatives(
     return other_causatives, other_causatives_in_default_panels
 
 
-def add_link_for_disease(case_obj: dict) -> dict:
+def add_link_for_disease(case_obj: dict):
     """Updates the case diseases_phenotypes to include an external link for use in the frontend"""
     case_diagnoses = case_obj.get("diagnosis_phenotypes", [])
 
