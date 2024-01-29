@@ -1038,6 +1038,8 @@ class CaseHandler(object):
                 "multiqc": case_obj.get("multiqc"),
                 "multiqc_rna": case_obj.get("multiqc_rna"),
                 "panels": case_obj.get("panels", []),
+                "phenotype_groups": case_obj.get("phenotype_groups"),
+                "phenotype_terms": case_obj.get("phenotype_terms"),
                 "rank_model_version": case_obj.get("rank_model_version"),
                 "rerun_requested": case_obj.get("rerun_requested", False),
                 "research_requested": case_obj.get("research_requested", False),
