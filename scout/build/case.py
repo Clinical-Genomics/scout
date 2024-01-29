@@ -275,6 +275,8 @@ def build_case(case_data, adapter):
                 LOG.warning(
                     f"Could not find phenotype group term '{phenotype}' in term collection. It is not added to case."
                 )
+        if phenotype_groups:
+            case_obj["phenotype_groups"] = phenotype_groups
 
     # Files
     case_obj["madeline_info"] = case_data.get("madeline_info")
