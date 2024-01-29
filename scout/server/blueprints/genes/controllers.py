@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import flash, redirect, url_for
 
-from scout.server.links import add_gene_links, add_tx_links, omim
+from scout.server.links import add_gene_links, add_tx_links, disease_link
 from scout.server.utils import document_generated
 
 
@@ -81,9 +81,8 @@ def add_disease_information_to_gene(store, hgnc_id: str):
     disease_terms = store.disease_terms_by_gene(hgnc_id)
 
     for disease in disease_terms:
-        if disease["source"] == "OMIM":
-            mim_number = disease["disease_nr"]
-            disease["omim_link"] = omim(mim_number)
+        disease_id = disease["disease_id"]
+        disease["disease_link"] = disease_link(disease_id=disease_id)
     return disease_terms
 
 
