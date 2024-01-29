@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- Introduce validation in ClinVar multistep form to make sure users provide at least one variant-associated condition
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
 

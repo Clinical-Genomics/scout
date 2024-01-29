@@ -33,7 +33,7 @@
                    <li>Observation Data</li>
               </ul>
               <!-- fieldsets -->
-              <fieldset>
+              <fieldset data-step="1">
                 <legend>ClinVar variant submission form</legend>
                 <p class="text-dark">
                 The form present on this page mirrors the fields on the ClinVar submission spreadsheets.<br>
@@ -43,7 +43,7 @@
                 <input type="button" name="next" class="next action-button" value="Start"/>
               </fieldset>
 
-              <fieldset>
+              <fieldset data-step="2">
                 <legend>Assertion criteria <span class="text-danger" data-bs-toggle='tooltip' title="The new ClinVar spreadsheet templates (versions L1.7 and 4.3) no longer include the following columns: Assertion method and Assertion method citation.
                   New files for assertion criteria will be uploaded on your landing page in the ClinVar Submission Portal, independent of a submission. For this reason Scout will collect this information but will not export it as columns in the submission Variant file."><strong>?</strong></span></legend>
 
@@ -75,7 +75,7 @@
                   {{variant_data.var_form.assertion_method_cit(class="bg-white")}}
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
-              <fieldset>
+              <fieldset data-step="3">
                   <legend>Variant Details</legend>
                   {{variant_data.var_form.gene_symbol.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Gene symbol should be provided only to indicate the gene-disease relationship supporting the variant interpretation. Gene symbol is not expected for SVs, except to make a statement that a specific gene within the variant has a relationship to the interpreted condition."><strong>?</strong></span>
                   {{variant_data.var_form.gene_symbol(class="bg-white")}}
@@ -186,7 +186,7 @@
                   <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
 
-              <fieldset>
+              <fieldset data-step="4">
                 <legend>Inheritance model</legend>
                 <h3 class="fs-subtitle">The mode of inheritance specific to the variant-disease pair, not generally for the disease</h3>
                 {{variant_data.var_form.inheritance_mode.label(class="fw-bold, text-dark")}}
@@ -196,7 +196,7 @@
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
 
-              <fieldset>
+              <fieldset data-step="5">
                 <legend>Clinical Significance</legend>
                 <h3 class="fs-subtitle">The interpretation, or clinical significance, of the variant for the submitted condition</h3>
 
@@ -221,7 +221,7 @@
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
 
-              <fieldset>
+              <fieldset data-step="6">
                 <legend>Associated Conditions</legend>
                 <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a>"</h3>
 
@@ -255,7 +255,7 @@
 
                   </div>
                   <div class="col-6">
-                    {{variant_data.var_form.omim_terms.label(class="fw-bold, text-dark")}}<br>
+                    {{ variant_data.var_form.omim_terms.label(class="fw-bold, text-dark" )}}<br>
                     <ul class="list-group">
                     {% for term in variant_data.var_form.omim_terms %}
                       <li class="list-group-item">{{ term.label }}</li>
@@ -279,7 +279,7 @@
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
 
-              <fieldset>
+              <fieldset data-step="7">
                 <legend>Observation Data</legend>
                 <h3 class="fs-subtitle">Information provided by filling in these fields will be used to create the CaseData.csv file. Observations from at least one individuals are required.</h3>
 
@@ -337,6 +337,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
 })
 
+
 var current_fs, next_fs, previous_fs; //fieldsets
 var left, opacity, scale; //fieldset properties which we will animate
 var animating; //flag to prevent quick multi-click glitches
@@ -346,6 +347,24 @@ $(".next").click(function(){
 	animating = true;
 
 	current_fs = $(this).parent();
+
+	// run the validations on the input for the current step
+	var validationPassed = true;
+
+  if(current_fs.data('step') == 6){
+    alert($("#condition_tags option:selected"));
+    validationPassed = $("#condition_tags option:selected").length >0 ;
+  }
+
+  // check to see if the validator for the specific step we are on passed or not.
+  if(validationPassed == false){
+    // do not proceed!
+    alert("Please fill in required fields");
+    animating = false;
+    return;
+  }
+
+
 	next_fs = $(this).parent().next();
 
 	//activate next step on progressbar using the index of next_fs
