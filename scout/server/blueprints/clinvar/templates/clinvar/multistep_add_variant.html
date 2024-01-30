@@ -440,7 +440,7 @@ $('#condition_tags').select2({
 // reset and modify conditions field's placeholder when condition ID type changes
 $(function(){
   $("#condition_type").change(function(){
-    $('#condition_tags').val(null).trigger('change'); // reset conditions multiselect
+    $('#condition_tags')[0].options.length = 0; // reset conditions multiselect
 
     // Change placeholder
     selectedCondId = $("#condition_type option:selected").text();
