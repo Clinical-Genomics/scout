@@ -7,6 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Possibility to submit to ClinVar variants associated with Orphanet conditions
+### Changed
+- Mitigate XSS vulnerabilities by setting Jinja autoescape to True
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
 
