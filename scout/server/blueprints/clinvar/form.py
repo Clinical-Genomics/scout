@@ -58,6 +58,7 @@ class ClinVarVariantForm(FlaskForm):
     last_evaluated = DateField("Date evaluated")
     hpo_terms = MultiCheckboxField("Case-associated HPO terms", choices=[])
     omim_terms = MultiCheckboxField("Case-associated OMIM terms", choices=[])
+    orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
     condition_comment = TextAreaField("Additional comments describing condition")
     condition_type = SelectField(
         "Condition ID type", choices=[(key, value) for key, value in PHENO_DBS.items()]
