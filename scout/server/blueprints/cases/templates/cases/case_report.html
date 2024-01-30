@@ -482,7 +482,7 @@
 {% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic content -->
   <div class="card" style="border-width: 5px; display: block;">
     <div class="card-header" >
-      <div class="row d-flex align-items-center">
+      <div class="rd-flex align-items-center ">
         # <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>&nbsp;
           <span class="badge badge-pill badge-success">{{variant.category | upper}}</span>&nbsp;
           {% if variant.sanger_ordered and variant.validation %}
@@ -918,7 +918,7 @@
 {% macro sv_variant_content(variant,index) %} <!--The entire description of a structural variant, dynamic contentc -->
 <div class="card" style="border-width: 5px; display: block;">
   <div class="card-header">
-    <div class="row d-flex align-items-center">
+    <div class="rd-flex align-items-center">
     # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
     &nbsp;<span class="badge badge-pill badge-warning">{{variant.sub_category|upper}}</span>
     </div>
@@ -1113,7 +1113,7 @@
 {% macro str_variant_content(variant,index) %}
 <div class="card" style="border-width: 5px; display: block;">
   <div class="card-header">
-    <div class="row d-flex align-items-center">
+    <div class="rd-flex align-items-center">
     # <a href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.str_repid}}:{{ variant.alternative|replace("<", "")|replace(">", "") }} - {{variant.str_display_ru or variant.str_ru}} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
     &nbsp;<span class="badge badge-pill badge-info">{{variant.category | upper}}</span>
     </div>
@@ -1270,7 +1270,7 @@
 
 {% macro variant_phenotypes(variant) %}
 {% if variant.get('phenotypes') %}
-  <div class="row mt-3">
+  <div class="mt-3">
     <h6 class="card-subtitle mb-2 text-muted"><span class="badge badge-warning">Partial causative</span>
       Disease terms: {{ variant['phenotypes'].get('diagnosis_phenotypes')|join(' ')}} -
       HPO terms:&nbsp;
