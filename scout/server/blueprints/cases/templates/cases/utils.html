@@ -386,13 +386,13 @@
             {% if variant._id %}
               {% do already_displayed_variant_ids.append( variant._id ) %}
               <div class="row">
-                <div class="col">
+                <div class="col-10">
                   {{ pretty_link_variant(variant, case) }}
                   {{ variant_validation_badge(variant) }}
                   {{ clinical_assessments_badge(variant) }}
                   {{ tumor_allele_freq(variant) }}
                 </div>
-                <div class="col-1">
+                <div class="col-2">
                   {{ remove_form(url_for('cases.mark_causative',
                                          institute_id=institute._id,
                                          case_name=case.display_name,
@@ -414,8 +414,8 @@
           <div class="list-group-item list-group-item-action">
             {% if variant._id %}
               {% do already_displayed_variant_ids.append(variant._id) %}
-              <div class="d-flex align-items-center">
-                <div class="col">
+              <div class="row">
+                <div class="col-10">
                   <i class="far fa-check-circle"></i>
                   {% if variant.category == "snv" %}
                     <a href="{{ url_for('variant.variant',
@@ -560,7 +560,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-5">
+              <div class="col-8">
               <form action="{{ url_for('cases.mark_validation',
                                          institute_id=variant.institute,
                                          case_name=case.display_name,
