@@ -6,6 +6,7 @@ from typing import Dict, Union
 from urllib.parse import parse_qsl, unquote, urlsplit
 
 import coloredlogs
+import jinja2
 from flask import Flask, current_app, redirect, request, url_for
 from flask_babel import Babel
 from flask_cors import CORS
@@ -51,6 +52,7 @@ def create_app(config_file=None, config=None):
 
     app = Flask(__name__)
     CORS(app)
+    jinja2.Environment(loader=jinja2.FileSystemLoader("."), autoescape=True)
     app.jinja_env.add_extension("jinja2.ext.do")
 
     app.config.from_pyfile("config.py")  # Load default config file
