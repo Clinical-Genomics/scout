@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Possibility to submit to ClinVar variants associated with Orphanet conditions
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
 
