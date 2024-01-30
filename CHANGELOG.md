@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Case loading accepts subject_id and phenotype_groups
 ### Changed
+- Possibility to submit to ClinVar variants associated with Orphanet conditions
 - CLI scout update individual accepts subject_id
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
