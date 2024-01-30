@@ -455,7 +455,7 @@ $(function(){
     // repopulate option values according to the selected condition ID
     choices = {};
     if ($('#condition_type').val() == 'OMIM'){
-      choices = {{ variant_data.var_form.omim_terms.choices|tuple_list_to_dict(0,1)|safe }};
+      choices = {{ variant_data.var_form.omim_terms.choices|tuple_list_to_dict(0,1)|safe}};
     }
     if ($('#condition_type').val() == 'Orphanet'){
       choices = {{ variant_data.var_form.orpha_terms.choices|tuple_list_to_dict(0,1)|safe }};
