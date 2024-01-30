@@ -46,16 +46,16 @@
               <div class="row ms-3">
                 <div class="col-6">
                   <!-- Phenotype could be specified using OMIM -->
-                  <h6>Diagnosis phenotype (OMIM):</h6>
+                  <h6>Diagnosis phenotype:</h6>
                   <select multiple="multiple" name="omim_select" id="omim_select" class="selectpicker" data-style="btn-secondary">
-                    {% for omim_term in case.diagnosis_phenotypes %}
-                      {% if omim_term is number %} <!-- Old way of saving OMIM terms in cases: list of diagnosis numbers -->
-                        <option value="{{omim_term}}">
-                          {{ omim_term }}
+                    {% for term in case.diagnosis_phenotypes %}
+                      {% if term is number %} <!-- Old way of saving OMIM terms in cases: list of diagnosis numbers -->
+                        <option value="{{term}}">
+                          {{ term }}
                         </option>
-                      {% elif 'disease_nr' in omim_term %}
-                        <option value="{{omim_term.disease_id}}"> <!-- New way of saving OMIM terms in cases: list of dicts -->
-                          {{ omim_term.description }} ({{omim_term.disease_id}})
+                      {% elif 'disease_nr' in term %}
+                        <option value="{{term.disease_id}}"> <!-- New way of saving OMIM terms in cases: list of dicts -->
+                          {{ term.description }} ({{term.disease_id}})
                         </option>
                       {% endif %}
                     {% endfor %}
