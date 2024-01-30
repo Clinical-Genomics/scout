@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Possibility to submit to ClinVar variants associated with Orphanet conditions
 - CLI scout update individual accepts subject_id
+### Changed
+- Introduce validation in ClinVar multistep form to make sure users provide at least one variant-associated condition
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
 
