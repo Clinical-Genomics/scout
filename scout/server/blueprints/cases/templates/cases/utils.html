@@ -448,17 +448,15 @@
                 </div>
                 <div class="col-8">
                   {% for term in variant_phenotypes.omim_terms %}
-                    <span class="badge badge-sm bg-secondary">
-                      {% if 'OMIM' in term %}
-                        <a class="text-white" target="_blank" href="http://omim.org/entry/{{term|replace('OMIM:','')}}">
-                          {{term}}
-                        </a>
-                      {% elif 'ORPHA' in term %}
-                        <a class="text-white" target="_blank" href="https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={{term}}">
-                          {{term}}
-                        </a>
-                      {% endif %}
-                    </span>
+                    {% if 'OMIM' in term %}
+                      <a class="btn btn-xs btn-secondary text-white" target="_blank" href="http://omim.org/entry/{{term|replace('OMIM:','')}}">
+                        {{term}}
+                      </a>
+                    {% elif 'ORPHA' in term %}
+                      <a class="btn btn-xs btn-secondary text-white" target="_blank" href="https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={{term}}">
+                        {{term}}
+                      </a>
+                    {% endif %}
                   {% else %}
                     N/A
                   {% endfor %}
