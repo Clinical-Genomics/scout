@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Possibility to submit to ClinVar variants associated with Orphanet conditions
 - Orpha disease terms now include information on inheritance
 ### Fixed
 - Missing number of phenotypes and genes from case diagnoses
