@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
+- Alignment of contents in the case report have been updated
 - Missing number of phenotypes and genes from case diagnoses
 
 ## [4.76]
