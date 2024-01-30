@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import Dict
 
 from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError
@@ -9,18 +10,14 @@ from . import build_individual
 LOG = logging.getLogger(__name__)
 
 
-def build_phenotype(phenotype_id, adapter):
+def build_phenotype(phenotype_id: str, adapter) -> Dict[str, str]:
     """Build a small phenotype object
 
         Build a dictionary with phenotype_id and description
-
     Args:
-        phenotype_id (str): The phenotype id
-        adapter (scout.adapter.MongoAdapter)
+        adapter: MongoAdapter (importing it for typing is a bit tricky here)
 
     Returns:
-        phenotype_obj (dict):
-
         dict(
             phenotype_id = str,
             feature = str, # description of phenotype
@@ -31,7 +28,7 @@ def build_phenotype(phenotype_id, adapter):
     if phenotype:
         phenotype_obj["phenotype_id"] = phenotype["hpo_id"]
         phenotype_obj["feature"] = phenotype["description"]
-    return phenotype
+    return phenotype_obj
 
 
 def _populate_pipeline_info(case_obj, case_data):
