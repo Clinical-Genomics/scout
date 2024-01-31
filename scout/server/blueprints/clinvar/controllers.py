@@ -73,7 +73,10 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
         var_form.gene_symbol.data = ",".join(variant_obj.get("hgnc_symbols", []))
     var_form.last_evaluated.data = datetime.now()
     var_form.hpo_terms.choices = [
-        (hpo.get("phenotype_id").replace("HP:",""), " - ".join([hpo.get("phenotype_id"), hpo.get("feature")]))
+        (
+            hpo.get("phenotype_id").replace("HP:", ""),
+            " - ".join([hpo.get("phenotype_id"), hpo.get("feature")]),
+        )
         for hpo in case_obj.get("phenotype_terms", [])
     ]
     var_form.omim_terms.choices = [
