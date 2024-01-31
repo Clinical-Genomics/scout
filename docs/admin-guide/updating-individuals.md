@@ -9,12 +9,21 @@ Usage: scout update individual [OPTIONS] [KEY] [VALUE]
 
   Update information on individual level in Scout
 
+  UPDATE_DICT holds keys and type of value. If the value type is "path", and
+  most are, a check for file existence is performed.
+
+  If the key contains a dot (only one needed currently), keys for a dict type
+  value is assumed: e.g. "reviewer.alignment" -> ind["reviewer"]["alignment"]
+  (path value required)
+
 Options:
   -c, --case-id TEXT  Case id  [required]
   -n, --ind TEXT      Individual display name
+  --help              Show this message and exit.
 ```
 And the tracks that can be updated are the following:
 - bam_file
+- d4_file
 - rna_alignment_path
 - mt_bam
 - vcf2cytosure
@@ -23,11 +32,19 @@ And the tracks that can be updated are the following:
 - tiddit_coverage_wig
 - upd_regions_bed
 - upd_sites_bed
-- splice_junctions_bed
 - rna_coverage_bigwig
+- splice_junctions_bed
+
+Additional sample descriptors:
+- subject_id
+
+Additional non-track individual data
+- bionano_access
+- chromograph_images
+- reviewer
 
 
-## Description of custom individual tracks:
+## Description of custom individual tracks
 
 ### DNA-sequencing alignment files
 The following files are used by the [igv.js](https://github.com/igvteam/igv.js/wiki/Alignment-Track) integrated browser to display sequence variation alignments. The igv.js browser can be opened by clicking on the relative link (button) present on variants page. The link is displayed only if at least one individual of the case contains one bam_file or mt_bam track saved.
@@ -68,3 +85,47 @@ A link to the splice junction view is present on variants pages of cases with at
 | vcf2cytosure | path to vcf2cytosure file  |
 
 [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure) is a tool that converts a VCF with structural variations to the “.CGH” format used by the commercial [CytoSure Interpret Software](https://www.ogt.com/products/product-search/cytosure-interpret-software/) by OGT (Oxford Gene Technology). Once the individual is updated with this track, vcf2cytosure files will be available for download from the individuals table present on Scout's case page.
+
+## Sample identifiers
+
+| key name      |                         key value                         |
+| ------------- |:---------------------------------------------------------:|
+| subject_id    | Individual id for matching multiomics data and statistics |
+
+Subject ids are unique identifiers (eg as produced by a hospital LIMS) denoting individuals, who may have multiple samples in Scout.
+Useful for individual level statistics and connecting multiomics data or multiple analyses and cases including the same individual, potentially
+with different samples.
+
+## Additional individual data - structured dictionary input
+
+If the key contains a dot (only one needed currently), keys for a dict type
+value is assumed: e.g. `"reviewer.alignment"` -> `ind["reviewer"]["alignment"]`.
+
+### BioNano Access
+| key name | key value |
+| --- |:---------:|
+| bionano_access.sample |    str    |
+| bionano_access.project    |    str    |
+
+See [BioNano Access Integration](../admin-guide/bionano_access_integration.md).
+
+### Chromograph
+| key name                     |   key value    |
+|------------------------------|:--------------:|
+|chromograph_images.autozygous |    Path to     |
+|chromograph_images.coverage"|      Path      |
+|chromograph_images.upd_regions"|      Path      |
+|chromograph_images.upd_sites"|          Path            |
+See e.g. [User guide - Cases - Cytogenomics](../user-guide/cases.md#Cytogenomics) for a description of Chromograph.
+
+### Scout REViewer Service
+
+| key name                 | key value |
+|--------------------------|:---------:|
+| reviewer.alignment       |   Path    |
+| reviewer.alignment_index |  Path    |
+| reviewer.vcf             |  Path    |
+| reviewer.catalog         |  Path    |
+
+See [Admin guide - Scout REViewer Service](reviewer_service.md) for details on SRS.
+
