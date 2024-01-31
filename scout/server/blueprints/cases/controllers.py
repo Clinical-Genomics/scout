@@ -329,7 +329,7 @@ def case(store, institute_obj, case_obj):
     case_obj["panels"] = sorted(case_obj.get("panels", []), key=lambda d: d["display_name"])
 
     for hpo_term in itertools.chain(
-        case_obj.get("phenotype_groups", []), case_obj.get("phenotype_terms", [])
+        case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
     ):
         hpo_term["hpo_link"] = "http://hpo.jax.org/app/browse/term/{}".format(
             hpo_term["phenotype_id"]
