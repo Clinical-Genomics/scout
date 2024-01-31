@@ -81,6 +81,7 @@ Below are available configuration parameters for a Scout case. Names marked with
     - **smn2_cn** _Int_ Copynumber.
     - **smn2delta78_cn** _Int_ Copynumber.
     - **splice_junctions_bed** _String_ Path to indexed junctions .bed.gz file
+    - **subject_id** _String_ Individual identifier - multiple samples could belong to the same individual
     - **tiddit_coverage_wig** _String_ Path to WIG file to view alignments [Reference][tiddit].
     - **tissue_type** _String_ Sample tissue origin i.e. blood, muscle.
     - **tmb** _Int_ Tumor mutational burden [0, 1000] (tumor case only).
