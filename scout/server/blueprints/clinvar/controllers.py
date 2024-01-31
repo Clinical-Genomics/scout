@@ -236,16 +236,12 @@ def _parse_tx_hgvs(clinvar_var, form):
     clinvar_var["hgvs"] = tx_hgvs.split(":")[1]
 
 
-def _set_conditions(clinvar_var, form):
-    """Set condition_id_type and condition_id_value for a clinvar variant
+def _set_conditions(clinvar_var: dict, form: ImmutableMultiDict):
+    """Set condition_id_type and condition_id_values for a ClinVar variant."""
 
-    Args:
-        clinvar_var(dict): scout.models.clinvar.clinvar_variant
-        form(werkzeug.datastructures.ImmutableMultiDic)
-    """
-    condition_db = form.get("condition_type")
+    condition_db: str = form.get("condition_type")
     clinvar_var["condition_id_type"] = condition_db
-    condition_prefix = CONDITION_PREFIX[condition_db]
+    condition_prefix: str = CONDITION_PREFIX[condition_db]
     clinvar_var["condition_id_value"] = ";".join(
         [f"{condition_prefix}{condition_id}" for condition_id in form.getlist("conditions")]
     )
