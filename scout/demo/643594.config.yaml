@@ -11,6 +11,8 @@ synopsis:
 phenotype_terms:
   - HP:0001298
   - HP:0001250
+phenotype_groups:
+  - HP:0001250
 cohorts:
   - pedhep
   - mito
@@ -21,6 +23,7 @@ samples:
     father: ADM1059A1
     mother: ADM1059A3
     sample_name: NA12882
+    subject_id: subj_ADM1059A2
     phenotype: affected
     sex: male
     expected_coverage: 30

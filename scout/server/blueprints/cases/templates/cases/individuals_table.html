@@ -124,7 +124,7 @@
                 <label for="{{ ind.display_name }}-check">
                   <div class="form-check form-check-inline">
                     <input id="{{ ind.display_name }}-check" class="sample-selection form-check-input" type="checkbox" name="{{ ind.display_name }}-check" value="{{ ind.display_name }}" hidden checked onclick="$(this)." />
-                    {{ ind.display_name }}
+                    <span data-bs-toggle='tooltip' title="Sample {{ ind.display_name }} internal ID {{ ind.individual_id }}{% if ind.subject_id %}, for individual with subject ID {{ ind.subject_id }}{% endif %}.">{{ ind.display_name }}</span>
                   </div>
                 </label>
                 {% if gens_info.display %}

@@ -325,6 +325,7 @@ def remove_none_recursive_aux(dictionary, new_dict):
                 "default_gene_panels",
                 "gene_panels",
                 "synopsis",
+                "phenotype_groups",
                 "phenotype_terms",
                 "panel",
             ]

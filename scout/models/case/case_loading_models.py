@@ -196,6 +196,7 @@ class SampleLoader(BaseModel):
     smn2delta78_cn: Optional[int] = None
     smn_27134_cn: Optional[int] = None
     splice_junctions_bed: Optional[str] = None
+    subject_id: Optional[str] = None
     tiddit_coverage_wig: Optional[str] = None
     tissue_type: Optional[str] = None
     tmb: Optional[str] = None
@@ -384,6 +385,7 @@ class CaseLoader(BaseModel):
     peddy_ped: Optional[str] = None  # Soon to be deprecated
     peddy_ped_check: Optional[str] = Field(None, alias="peddy_check")  # Soon to be deprecated
     peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")  # Soon to be deprecated
+    phenotype_groups: Optional[List[str]] = None
     phenotype_terms: Optional[List[str]] = None
     rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
