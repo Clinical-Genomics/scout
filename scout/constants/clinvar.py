@@ -180,7 +180,7 @@ COLLECTION_METHOD = [
 
 # Database that describe a condition with associated eventual prefix
 CONDITION_PREFIX = {
-    "HPO": "HPO",
+    "HPO": "HP:",
     "MedGen": "",
     "MeSH": "",
     "MONDO": "MONDO:",
