@@ -1,7 +1,7 @@
 ## Institutes
 
-Institutes are objects that group users and cases. Users belong to a institute and in this way permissions to view cases can be handled.
-Cases are always "owned" by an institute and thereby grants acces for all users within that institute to view and work with a case.
+Institutes are objects that group users and cases. Users belong to an institute and in this way permissions to view cases can be handled.
+Cases are always "owned" by an institute and thereby grants access for all users within that institute to view and work with a case.
 Cases can be shared with other institutes.
 
 Institutes have a unique internal id and a display name that is what the users see when browsing.

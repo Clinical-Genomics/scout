@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Case loading accepts subject_id and phenotype_groups
+- Case loading via .yaml config file accepts subject_id and phenotype_groups (Scout default and/or institute-level defined HPO terms)
 - Possibility to submit to ClinVar variants associated with Orphanet conditions
 - Option update path to .d4 files path for individuals of an existing case using the commands line
 ### Changed
