@@ -23,7 +23,7 @@ Users can also update some settings for their institute, eg phenotype groups on 
 Phenotype groups is a feature on institute level. Each institute can have their own set of phenotype groups.
 There is a default set of phenotype groups that all institutes will have access to, those are described in
 `scout.constants.phenotype`.
-To overwrite or add phenotype groups use cli function `scout update groups`.
+To overwrite or add phenotype groups use the CLI function `scout update groups`.
 If specifying groups in a file, use a `csv` file where column one holds HPO-ids on the format `HP:0000001`.
 A second column is optional and can include abbreviations for the phenotype groups.
 

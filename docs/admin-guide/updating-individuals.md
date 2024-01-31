@@ -49,8 +49,8 @@ Additional non-track individual data
 ### DNA-sequencing alignment files
 The following files are used by the [igv.js](https://github.com/igvteam/igv.js/wiki/Alignment-Track) integrated browser to display sequence variation alignments. The igv.js browser can be opened by clicking on the relative link (button) present on variants page. The link is displayed only if at least one individual of the case contains one bam_file or mt_bam track saved.
 
-| key name            | key value     |
-| --------------------|:-------------:|
+| key name            | key value                                                   |
+| --------------------|:------------------------------------------------------------|
 | bam_file            | path to a bam/cram alignment file                           |
 | mt_bam              | path to a downsampled mitochondrial bam/cram alignment file |
 | rhocall_bed         | path to rhocall output bed file                             |
@@ -59,37 +59,38 @@ The following files are used by the [igv.js](https://github.com/igvteam/igv.js/w
 | upd_regions_bed     | path to upd_regions_bed                                     |
 | upd_sites_bed       | path to vcf2cytosure file                                   |
 
-rhocall_bed and rhocall_wig files are both obtained from [rhocall](https://github.com/dnil/rhocall), a software that calls and annotates autozygosity from VCF files.
+`rhocall_bed` and `rhocall_wig` files are both obtained from [rhocall](https://github.com/dnil/rhocall),
+a software that calls and annotates autozygosity from VCF files.
 
-tiddit_coverage_wig files are obtained from [tiddit](https://github.com/SciLifeLab/TIDDIT), a software in turn is used to call structural variants.
+`tiddit_coverage_wig` files are obtained from [tiddit](https://github.com/SciLifeLab/TIDDIT), a software which in turn is used to call structural variants.
 
-upd_regions_bed and upd_sites_bed files are created from VCF files using the [upd tool](https://github.com/bjhall/upd).
+`upd_regions_bed` and `upd_sites_bed` files are created from VCF files using the [upd tool](https://github.com/bjhall/upd).
 
 
 ### RNA-sequencing splice junctions files
 These files are both required by the integrated [splice junction track](https://github.com/igvteam/igv.js/wiki/Splice-Junctions) view of igv.js.
 
-| key name             | key value     |
-| -------------------- |:-------------:|
+| key name             | key value                                                      |
+| -------------------- |:---------------------------------------------------------------|
 | splice_junctions_bed | path to An indexed junctions .bed.gz file obtained             |
 | rna_coverage_bigwig  | path to coverage islands file generated from bam or cram files |
 
-splice_junctions_bed is obtained from from STAR v2 aligner *.SJ.out.tab file and rna_coverage_bigwig contains coverage islands obtained from RNA-seq bam or cram alignments
+`splice_junctions_bed` is obtained from from STAR v2 aligner `*.SJ.out.tab` file and `rna_coverage_bigwig` contains coverage islands obtained from RNA-seq bam or cram alignments
 
 A link to the splice junction view is present on variants pages of cases with at least one individual with these files.
 
 ### vcf2cytosure file
 
-| key name      | key value     |
-| ------------- |:-------------:|
-| vcf2cytosure | path to vcf2cytosure file  |
+| key name      | key value                 |
+|:--------------|:--------------------------|
+| vcf2cytosure  | path to vcf2cytosure file |
 
 [vcf2cytosure](https://github.com/NBISweden/vcf2cytosure) is a tool that converts a VCF with structural variations to the “.CGH” format used by the commercial [CytoSure Interpret Software](https://www.ogt.com/products/product-search/cytosure-interpret-software/) by OGT (Oxford Gene Technology). Once the individual is updated with this track, vcf2cytosure files will be available for download from the individuals table present on Scout's case page.
 
 ## Sample identifiers
 
-| key name      |                         key value                         |
-| ------------- |:---------------------------------------------------------:|
+| key name      | key value                                                 |
+|:--------------|:----------------------------------------------------------|
 | subject_id    | Individual id for matching multiomics data and statistics |
 
 Subject ids are unique identifiers (eg as produced by a hospital LIMS) denoting individuals, who may have multiple samples in Scout.
@@ -102,30 +103,30 @@ If the key contains a dot (only one needed currently), keys for a dict type
 value is assumed: e.g. `"reviewer.alignment"` -> `ind["reviewer"]["alignment"]`.
 
 ### BioNano Access
-| key name | key value |
-| --- |:---------:|
-| bionano_access.sample |    str    |
-| bionano_access.project    |    str    |
+| key name               | key value         |
+|:-----------------------|:------------------|
+| bionano_access.sample  | BioNano Sample ID |
+| bionano_access.project | BioNano Project   |
 
 See [BioNano Access Integration](../admin-guide/bionano_access_integration.md).
 
 ### Chromograph
-| key name                     |   key value    |
-|------------------------------|:--------------:|
-|chromograph_images.autozygous |    Path to     |
-|chromograph_images.coverage"|      Path      |
-|chromograph_images.upd_regions"|      Path      |
-|chromograph_images.upd_sites"|          Path            |
+| key name                       | key value                                           |
+|:-------------------------------|:----------------------------------------------------|
+| chromograph_images.autozygous  | Path wildcard to files - exclude chromosome name    |
+| chromograph_images.coverage    | Path wildcard to files - exclude chromosome name    |
+| chromograph_images.upd_regions | Path wildcard to files - exclude chromosome name    |
+| chromograph_images.upd_sites   | Path wildcard to files - exclude chromosome name    |
 See e.g. [User guide - Cases - Cytogenomics](../user-guide/cases.md#Cytogenomics) for a description of Chromograph.
 
 ### Scout REViewer Service
 
-| key name                 | key value |
-|--------------------------|:---------:|
-| reviewer.alignment       |   Path    |
-| reviewer.alignment_index |  Path    |
-| reviewer.vcf             |  Path    |
-| reviewer.catalog         |  Path    |
+| key name                  | key value |
+|:--------------------------|:----------|
+| reviewer.alignment        | Path      |
+| reviewer.alignment_index  | Path      |
+| reviewer.vcf              | Path      |
+| reviewer.catalog          | Path      |
 
 See [Admin guide - Scout REViewer Service](reviewer_service.md) for details on SRS.
 
