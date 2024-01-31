@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Introduce validation in the ClinVar multistep form to make sure users provide at least one variant-associated condition
 - CLI scout update individual accepts subject_id
+- Handle variant-associated condition ID format in background when creating ClinVar submissions
 ### Fixed
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
