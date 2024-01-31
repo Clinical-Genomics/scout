@@ -65,7 +65,10 @@ class ClinVarVariantForm(FlaskForm):
         "Condition ID type", choices=[(key, value) for key, value in PHENO_DBS.items()]
     )
     conditions = SelectMultipleField("Condition ID value")
-    multiple_condition_explanation = SelectField("Explanation for multiple conditions", choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION])
+    multiple_condition_explanation = SelectField(
+        "Explanation for multiple conditions",
+        choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
+    )
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
