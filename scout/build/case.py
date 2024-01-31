@@ -1,6 +1,7 @@
 import logging
+import os
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional, Union
 
 from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError

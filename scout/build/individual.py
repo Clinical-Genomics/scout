@@ -22,7 +22,7 @@ BUILD_INDIVIDUAL_FILES = [
 ]
 
 
-def set_abspath_individual_file(ind_obj:dict, ind:dict, ind_file:str):
+def set_abspath_individual_file(ind_obj: dict, ind: dict, ind_file: str):
     """Fix absolute path for individual files to be served from application.
     This takes care of incomplete path for demo files. While most endpoints would attempt to make an
     abs path when sending, storing them as absolute if we can access them on cli load ensures that
@@ -38,7 +38,7 @@ def set_abspath_individual_file(ind_obj:dict, ind:dict, ind_file:str):
         ind_obj[ind_file] = None
 
 
-def set_abspath_nested_individual_files(ind_obj:dict, ind:dict, nested_file_key:str):
+def set_abspath_nested_individual_files(ind_obj: dict, ind: dict, nested_file_key: str):
     """Fix absolute path for nested files to be served from application.
     For some of our more complicated nesting, e.g. Chromograph, the file endings are generalised lat (in js),
     and only a template is stored on the individual object. We then still wish to update the dirname, treating the
@@ -49,9 +49,7 @@ def set_abspath_nested_individual_files(ind_obj:dict, ind:dict, nested_file_key:
         for nested_file_item in ind_obj[nested_file_key]:
             if nested_file_item:
                 if os.path.exists(nested_file_item):
-                    ind_obj[nested_file_key][nested_file_item] = os.path.abspath(
-                        nested_file_item
-                    )
+                    ind_obj[nested_file_key][nested_file_item] = os.path.abspath(nested_file_item)
                     continue
 
                 nested_file_item_dirname = os.path.dirname(nested_file_item)
@@ -62,7 +60,7 @@ def set_abspath_nested_individual_files(ind_obj:dict, ind:dict, nested_file_key:
 
 
 def build_individual(ind: dict) -> dict:
-"""Build an Individual object
+    """Build an Individual object
 
     Raises:
         PedigreeError: if sex is unknown,
@@ -151,7 +149,6 @@ def build_individual(ind: dict) -> dict:
 
     ind_obj["chromograph_images"] = ind.get("chromograph_images")
     ind_obj["reviewer"] = ind.get("reviewer")
-
 
     for nested_file_key in "chromograph_images", "reviewer":
         set_abspath_nested_individual_files(ind_obj, ind, nested_file_key)
