@@ -25,6 +25,7 @@ UPDATE_DICT = {
     "rna_alignment_path": "path",
     "rna_coverage_bigwig": "path",  # Coverage islands generated from bam or cram files (RNA-seq analysis)
     "splice_junctions_bed": "path",  # An indexed junctions .bed.gz file obtained from STAR v2 aligner *.SJ.out.tab file.
+    "subject_id": "str",  # Individual subject_id (for matching multiomics data and statistics)
     "tiddit_coverage_wig": "path",
     "upd_regions_bed": "path",
     "upd_sites_bed": "path",

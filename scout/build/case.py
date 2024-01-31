@@ -1,7 +1,8 @@
 import logging
 from datetime import datetime
+from typing import Dict
 
-from scout.constants import CUSTOM_CASE_REPORTS
+from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError
 
 from . import build_individual
@@ -9,18 +10,14 @@ from . import build_individual
 LOG = logging.getLogger(__name__)
 
 
-def build_phenotype(phenotype_id, adapter):
+def build_phenotype(phenotype_id: str, adapter) -> Dict[str, str]:
     """Build a small phenotype object
 
         Build a dictionary with phenotype_id and description
-
     Args:
-        phenotype_id (str): The phenotype id
-        adapter (scout.adapter.MongoAdapter)
+        adapter: MongoAdapter (importing it for typing is a bit tricky here)
 
     Returns:
-        phenotype_obj (dict):
-
         dict(
             phenotype_id = str,
             feature = str, # description of phenotype
@@ -31,7 +28,7 @@ def build_phenotype(phenotype_id, adapter):
     if phenotype:
         phenotype_obj["phenotype_id"] = phenotype["hpo_id"]
         phenotype_obj["feature"] = phenotype["description"]
-    return phenotype
+    return phenotype_obj
 
 
 def _populate_pipeline_info(case_obj, case_data):
@@ -237,7 +234,6 @@ def build_case(case_data, adapter):
             )
 
     # phenotype information
-
     if case_data.get("phenotype_terms"):
         phenotypes = []
         for phenotype in case_data["phenotype_terms"]:
@@ -257,10 +253,25 @@ def build_case(case_data, adapter):
     # phenotype groups
     if case_data.get("phenotype_groups"):
         phenotype_groups = []
+
+        institute_phenotype_groups = set(PHENOTYPE_GROUPS.keys())
+        if institute_obj.get("phenotype_groups"):
+            institute_phenotype_groups.update(institute_obj.get("phenotype_groups").keys())
+
         for phenotype in case_data["phenotype_groups"]:
+            if phenotype not in institute_phenotype_groups:
+                LOG.warning(
+                    f"Could not find phenotype group term '{phenotype}' for institute '{institute_id}'. It is not added to case."
+                )
+                continue
+
             phenotype_obj = build_phenotype(phenotype, adapter)
             if phenotype_obj:
                 phenotype_groups.append(phenotype_obj)
+            else:
+                LOG.warning(
+                    f"Could not find phenotype group term '{phenotype}' in term collection. It is not added to case."
+                )
         if phenotype_groups:
             case_obj["phenotype_groups"] = phenotype_groups
 

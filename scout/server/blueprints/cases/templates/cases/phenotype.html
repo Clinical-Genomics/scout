@@ -132,19 +132,21 @@
       <h6 class="mt-3 ms-3"><span class="fa fa-stethoscope"></span>&nbsp;Phenotype groups</h6>
     </div>
     <div class="card-body">
+      {% if case.phenotype_groups %}
         {% for hpo_term in case.phenotype_groups %}
-        <span class="d-flex align-items-center">
-          {{ hpo_term.feature }}&nbsp;
-          <span class="badge badge-sm bg-info">
-            <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
-              {{ hpo_term.phenotype_id }}
-            </a>
+          <span class="d-flex align-items-center">
+             {{ hpo_term.feature }}&nbsp;
+            <span class="badge badge-sm bg-info">
+             <a href="{{ hpo_term.hpo_link }}" target="_blank" class="text-white">
+                {{ hpo_term.phenotype_id }}
+             </a>
+            </span>
+            {{ remove_form(url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name, phenotype_id=hpo_term.phenotype_id, is_group='yes')) }}
           </span>
-          {{ remove_form(url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name, phenotype_id=hpo_term.phenotype_id, is_group='yes')) }}
-        </span>
-        {% else %}
-          <span class="text-muted">No HPO groups added yet.</span>
         {% endfor %}
+      {% else %}
+          <span class="text-muted">No HPO groups added yet.</span>
+      {% endif %}
     </div>
     <div class="card-footer">
       <form method="POST" action="{{ url_for('cases.phenotypes', institute_id=institute._id, case_name=case.display_name, is_group='yes') }}">
