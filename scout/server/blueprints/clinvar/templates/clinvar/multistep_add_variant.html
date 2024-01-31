@@ -352,7 +352,11 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 // Validates fields for conditions associated to a variant
 function validateConditions(){
-  return $("#condition_tags option:selected").length > 0;
+  var nrSelectedConditions = $("#condition_tags option:selected").length;
+  if (nrSelectedConditions == 0){
+     alert("Please fill in required Condition ID field");
+  }
+  return nrSelectedConditions == 1;
 }
 
 var current_fs, next_fs, previous_fs; //fieldsets
@@ -375,7 +379,6 @@ $(".next").click(function(){
   // check to see if the validator for the specific step we are on passed or not.
   if(validationPassed == false){
     // do not proceed
-    alert("Please fill in required field");
     animating = false;
     return;
   }

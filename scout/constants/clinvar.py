@@ -188,3 +188,5 @@ PHENO_DBS = {
     "Orphanet": "Orphanet",
     "UMLS": "UMLS",
 }
+
+MULTIPLE_CONDITION_EXPLANATION = ["Novel disease", "Uncertain", "Co-occurring"]

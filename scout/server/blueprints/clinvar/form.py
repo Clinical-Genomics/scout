@@ -24,6 +24,7 @@ from scout.constants import (
     CLINVAR_SV_TYPES,
     CLNSIG_TERMS,
     COLLECTION_METHOD,
+    MULTIPLE_CONDITION_EXPLANATION,
     PHENO_DBS,
 )
 
@@ -63,7 +64,8 @@ class ClinVarVariantForm(FlaskForm):
     condition_type = SelectField(
         "Condition ID type", choices=[(key, value) for key, value in PHENO_DBS.items()]
     )
-    conditions = SelectMultipleField("Condition ID values, comma-separated)")
+    conditions = SelectMultipleField("Condition ID value")
+    multiple_condition_explanation = SelectField("Explanation for multiple conditions", choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION])
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
