@@ -6,29 +6,23 @@ from scout.exceptions import PedigreeError
 
 log = logging.getLogger(__name__)
 BUILD_INDIVIDUAL_FILES = [
-        "bam_file",
-        "d4_file",
-        "mt_bam",
-        "rhocall_bed",
-        "rhocall_wig",
-        "rna_alignment_path",
-        "rna_coverage_bigwig",
-        "splice_junctions_bed",
-        "tiddit_coverage_wig",
-        "upd_regions_bed",
-        "upd_sites_bed",
-        "vcf2cytosure",
-    ]
+    "bam_file",
+    "d4_file",
+    "mt_bam",
+    "rhocall_bed",
+    "rhocall_wig",
+    "rna_alignment_path",
+    "rna_coverage_bigwig",
+    "splice_junctions_bed",
+    "tiddit_coverage_wig",
+    "upd_regions_bed",
+    "upd_sites_bed",
+    "vcf2cytosure",
+]
 
 
-def build_individual(ind):
-    """Build a Individual object
-
-    Args:
-        ind (dict): A dictionary with individual information
-
-    Returns:
-        ind_obj (dict): A Individual object
+def build_individual(ind: dict) -> dict:
+    """Build an Individual object
 
     Raises:
         PedigreeError: if sex is unknown,
@@ -72,6 +66,8 @@ def build_individual(ind):
     # Use individual_id if display_name does not exist
     ind_obj["display_name"] = ind.get("display_name", ind_obj["individual_id"])
 
+    ind_obj["subject_id"] = ind.get("subject_id", None)
+
     sex = ind.get("sex", "unknown")
     # Convert sex to .ped
     try:
@@ -96,7 +92,6 @@ def build_individual(ind):
         raise (PedigreeError("Unknown phenotype: %s" % phenotype))
 
     # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
-
     for ind_file in BUILD_INDIVIDUAL_FILES:
         file_path = ind.get(ind_file)
         if file_path and os.path.exists(file_path):

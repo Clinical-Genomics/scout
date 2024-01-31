@@ -654,6 +654,7 @@ def case_obj(request, parsed_case):
     case["custom_images"] = parsed_case["custom_images"]
     case["assignees"] = []
     case["phenotype_terms"] = []  # do not assign any phenotype
+    case["phenotype_groups"] = []  # do not assign any phenotype groups
     case["cohorts"] = []  # do not assign any cohort
 
     return case
