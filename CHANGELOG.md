@@ -11,9 +11,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Introduce validation in ClinVar multistep form to make sure users provide at least one variant-associated condition
 ### Fixed
+- Alignment of contents in the case report have been updated
 - Missing number of phenotypes and genes from case diagnoses
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
 - Visualization of partial causatives' diagnoses on case page: style and links
+- Revert style of pinned variants window on case page
 
 ## [4.76]
 ### Added
