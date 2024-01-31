@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Dict
+from typing import Dict, Optional
 
 from scout.constants import CUSTOM_CASE_REPORTS, PHENOTYPE_GROUPS
 from scout.exceptions import ConfigError, IntegrityError
@@ -40,6 +40,58 @@ def _populate_pipeline_info(case_obj, case_data):
     """
     if case_data.get("exe_ver"):
         case_obj["pipeline_version"] = case_data["exe_ver"]
+
+
+def set_abspath_case_file(case_obj: dict, case_data: dict, case_file: str):
+    """Abs path case file. E.g. demo files appear as relative path files, and storing absolute paths
+    ensures we do not have to load cases from the same working directory as we start the server process.
+    """
+    file_path = case_data.get(case_file)
+    if file_path and os.path.exists(file_path):
+        case_obj[case_file] = os.path.abspath(file_path)
+    else:
+        case_obj[case_file] = None
+
+
+def set_abspath_case_nested_files(case_obj: dict, case_data: dict, nested_file_key: str):
+    """Absolute path nested case files. Similar to the single abs path setter, but some paths reside nested
+    directly under a particular key.
+    """
+    if case_data.get(nested_file_key):
+        case_obj[nested_file_key] = case_data.get(nested_file_key)
+        for nested_file_item in case_obj[nested_file_key]:
+            if nested_file_item and os.path.exists(nested_file_item):
+                case_obj[nested_file_key][nested_file_item] = os.path.abspath(nested_file_item)
+            else:
+                case_obj[nested_file_key][nested_file_item] = None
+
+
+def set_abspath_case_nested_image_files(
+    case_obj: dict,
+    case_data: dict,
+    nested_file_key: Optional[str] = "custom_images",
+    path_key: Optional[str] = "path",
+):
+    """Absolute path for complexly nested custom image paths. Similar to the single abs path setter, but the custom image paths reside nested
+    in arrays, with the sub-key name "path" one or two levels into the dictionary.
+
+    E.g. case["custom_images"]["str_variants_images"][2]["path"] or
+    case["custom_images"]["case_images"]["section_one"][1]["path"].
+    """
+
+    def case_images_abspath(level: Union[Dict, List]):
+        """Recursively set path to abs_path for all path_key items in lists in dicts in level."""
+        for sub_level in level:
+            if isinstance(sub_level, dict):
+                update_case_images(sub_level)
+            elif isinstance(sub_level, list):
+                for image in sub_level:
+                    image_path = image.get(path_key)
+                    if image_path and os.path.exists(image_path):
+                        image[path_key] = os.path.abspath(image_path)
+
+    case_obj[nested_file_key] = case_data[nested_file_key]
+    case_images_abspath(case_obj[nested_file_key])
 
 
 def build_case(case_data, adapter):
@@ -278,14 +330,14 @@ def build_case(case_data, adapter):
     # Files
     case_obj["madeline_info"] = case_data.get("madeline_info")
 
-    case_obj["custom_images"] = case_data.get("custom_images")
+    set_abspath_case_nested_image_files(case_obj, case_data)
 
+    set_abspath_case_file(case_obj, case_data, "delivery_report")
     for report_key in [report.get("key_name") for report in CUSTOM_CASE_REPORTS.values()]:
         if report_key in case_data:
-            case_obj[report_key] = case_data.get(report_key)
+            set_abspath_case_file(case_obj, case_data, report_key)
 
-    case_obj["vcf_files"] = case_data.get("vcf_files", {})
-    case_obj["delivery_report"] = case_data.get("delivery_report")
+    set_abspath_case_nested_files(case_obj, case_data, "vcf_files")
 
     _populate_pipeline_info(case_obj, case_data)
 

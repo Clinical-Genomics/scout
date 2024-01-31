@@ -12,12 +12,14 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - Introduce validation in the ClinVar multistep form to make sure users provide at least one variant-associated condition
 - CLI scout update individual accepts subject_id
+- Explicitly store case file paths from load conf accessible on load as absolute paths for later access
 ### Fixed
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
 - Visualization of partial causatives' diagnoses on case page: style and links
 - Revert style of pinned variants window on the case page
+
 
 ## [4.76]
 ### Added

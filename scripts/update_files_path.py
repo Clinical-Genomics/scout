@@ -5,10 +5,10 @@ import pymongo
 from pymongo import MongoClient
 from tabulate import tabulate
 
+from scout.build.individual import BUILD_INDIVIDUAL_FILES as INDIVIDUAL_FILES
 from scout.constants import FILE_TYPE_MAP
 
 VCF_FILES = FILE_TYPE_MAP.keys()
-INDIVIDUAL_FILES = ["bam_file", "mt_bam", "vcf2cytosure"]
 
 
 @click.command()

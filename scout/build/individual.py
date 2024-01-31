@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)
 BUILD_INDIVIDUAL_FILES = [
     "bam_file",
     "d4_file",
+    "mitodel_file",
     "mt_bam",
     "rhocall_bed",
     "rhocall_wig",
@@ -21,8 +22,47 @@ BUILD_INDIVIDUAL_FILES = [
 ]
 
 
+def set_abspath_individual_file(ind_obj:dict, ind:dict, ind_file:str):
+    """Fix absolute path for individual files to be served from application.
+    This takes care of incomplete path for demo files. While most endpoints would attempt to make an
+    abs path when sending, storing them as absolute if we can access them on cli load ensures that
+    we can still find them from the web app later, even if that happens to be started in another working directory.
+
+    This may close a loophole for some very particular use cases, but in general should be safer.
+    """
+
+    file_path = ind.get(ind_file)
+    if file_path and os.path.exists(file_path):
+        ind_obj[ind_file] = os.path.abspath(file_path)
+    else:
+        ind_obj[ind_file] = None
+
+
+def set_abspath_nested_individual_files(ind_obj:dict, ind:dict, nested_file_key:str):
+    """Fix absolute path for nested files to be served from application.
+    For some of our more complicated nesting, e.g. Chromograph, the file endings are generalised lat (in js),
+    and only a template is stored on the individual object. We then still wish to update the dirname, treating the
+    basename lightly as a template without checking for file existence just yet. The endpoints will handle that later.
+    """
+    if ind.get(nested_file_key):
+        ind_obj[nested_file_key] = ind.get(nested_file_key)
+        for nested_file_item in ind_obj[nested_file_key]:
+            if nested_file_item:
+                if os.path.exists(nested_file_item):
+                    ind_obj[nested_file_key][nested_file_item] = os.path.abspath(
+                        nested_file_item
+                    )
+                    continue
+
+                nested_file_item_dirname = os.path.dirname(nested_file_item)
+                nested_file_item_basename = os.path.basename(nested_file_item)
+                ind_obj[nested_file_key][nested_file_item] = (
+                    os.path.abspath(nested_file_item_dirname) + "/" + nested_file_item_basename
+                )
+
+
 def build_individual(ind: dict) -> dict:
-    """Build an Individual object
+"""Build an Individual object
 
     Raises:
         PedigreeError: if sex is unknown,
@@ -91,8 +131,9 @@ def build_individual(ind: dict) -> dict:
     except KeyError as err:
         raise (PedigreeError("Unknown phenotype: %s" % phenotype))
 
-    # Fix absolute path for individual bam files (takes care of incomplete path for demo files)
     for ind_file in BUILD_INDIVIDUAL_FILES:
+        set_abspath_individual_file(ind_obj, ind, ind_file)
+
         file_path = ind.get(ind_file)
         if file_path and os.path.exists(file_path):
             ind_obj[ind_file] = os.path.abspath(file_path)
@@ -105,10 +146,15 @@ def build_individual(ind: dict) -> dict:
     ind_obj["confirmed_sex"] = ind.get("confirmed_sex")
     ind_obj["confirmed_parent"] = ind.get("confirmed_parent")
     ind_obj["predicted_ancestry"] = ind.get("predicted_ancestry")
+
+    ind_obj["mitodel"] = ind.get("mitodel")
+
     ind_obj["chromograph_images"] = ind.get("chromograph_images")
     ind_obj["reviewer"] = ind.get("reviewer")
-    ind_obj["mitodel"] = ind.get("mitodel")
-    ind_obj["mitodel_file"] = ind.get("mitodel_file")
+
+
+    for nested_file_key in "chromograph_images", "reviewer":
+        set_abspath_nested_individual_files(ind_obj, ind, nested_file_key)
 
     # Check if the analysis type is ok
     analysis_type = ind.get("analysis_type", "unknown")
