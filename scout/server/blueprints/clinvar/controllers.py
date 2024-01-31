@@ -9,7 +9,12 @@ from flask_login import current_user
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants.acmg import ACMG_MAP
-from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, SCOUT_CLINVAR_SV_TYPES_MAP
+from scout.constants.clinvar import (
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    CONDITION_PREFIX,
+    SCOUT_CLINVAR_SV_TYPES_MAP,
+)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
 from scout.server.extensions import clinvar_api, store
@@ -235,8 +240,12 @@ def _set_conditions(clinvar_var, form):
         clinvar_var(dict): scout.models.clinvar.clinvar_variant
         form(werkzeug.datastructures.ImmutableMultiDic)
     """
-    clinvar_var["condition_id_type"] = form.get("condition_type")
-    clinvar_var["condition_id_value"] = ";".join(form.getlist("conditions"))
+    condition_db = form.get("condition_type")
+    clinvar_var["condition_id_type"] = condition_db
+    condition_prefix = CONDITION_PREFIX[condition_db]
+    clinvar_var["condition_id_value"] = ";".join(
+        [f"{condition_prefix}{condition_id}" for condition_id in form.getlist("conditions")]
+    )
 
 
 def parse_variant_form_fields(form):
