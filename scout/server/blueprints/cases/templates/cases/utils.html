@@ -386,13 +386,13 @@
             {% if variant._id %}
               {% do already_displayed_variant_ids.append( variant._id ) %}
               <div class="row">
-                <div class="col">
+                <div class="col-10">
                   {{ pretty_link_variant(variant, case) }}
                   {{ variant_validation_badge(variant) }}
                   {{ clinical_assessments_badge(variant) }}
                   {{ tumor_allele_freq(variant) }}
                 </div>
-                <div class="col-1">
+                <div class="col-2">
                   {{ remove_form(url_for('cases.mark_causative',
                                          institute_id=institute._id,
                                          case_name=case.display_name,
@@ -414,8 +414,8 @@
           <div class="list-group-item list-group-item-action">
             {% if variant._id %}
               {% do already_displayed_variant_ids.append(variant._id) %}
-              <div class="d-flex align-items-center">
-                <div class="col">
+              <div class="row">
+                <div class="col-10">
                   <i class="far fa-check-circle"></i>
                   {% if variant.category == "snv" %}
                     <a href="{{ url_for('variant.variant',
@@ -444,15 +444,21 @@
               </div>
               <div class="row">
                 <div class="col-4">
-                  OMIM diagnoses
+                  Diagnoses
                 </div>
                 <div class="col-8">
-                  {% for omim in variant_phenotypes.omim_terms %}
-                    <span class="badge badge-sm bg-secondary">
-                      <a target="_blank" href="http://omim.org/entry/{{omim|replace('OMIM:','')}}">
-                        {{omim}}
+                  {% for term in variant_phenotypes.omim_terms %}
+                    {% if 'OMIM' in term %}
+                      <a class="btn btn-xs btn-secondary text-white" target="_blank" href="http://omim.org/entry/{{term|replace('OMIM:','')}}">
+                        {{term}}
                       </a>
-                    </span>
+                    {% elif 'ORPHA' in term %}
+                      <a class="btn btn-xs btn-secondary text-white" target="_blank" href="https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&Expert={{term}}">
+                        {{term}}
+                      </a>
+                    {% endif %}
+                  {% else %}
+                    N/A
                   {% endfor %}
                 </div>
               </div>
@@ -465,6 +471,8 @@
                     <a target="_blank" href="http://hpo.jax.org/app/browse/term/{{hpo.phenotype_id}}">
                       <span class="badge badge-sm bg-info">{{hpo.phenotype_id}}</span>
                     </a>
+                  {% else %}
+                    N/A
                   {% endfor %}
                 </div>
               </div>
