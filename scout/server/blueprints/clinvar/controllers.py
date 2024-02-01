@@ -259,7 +259,7 @@ def parse_variant_form_fields(form):
     """
     clinvar_var = {"csv_type": "variant"}
 
-    # Set key/values in ClinVar_var dictionary
+    # Set key/values in clinvar_var dictionary
     for key in clinvar_variant:
         if key in form and form[key] != "":
             clinvar_var[key] = form[key]

@@ -30,7 +30,7 @@ CLINVAR_HEADER = {
     "condition_id_type": "Condition ID type",
     "condition_id_value": "Condition ID value",
     "condition_comment": "Condition comment",
-    "clinsig": "Germline classification”",  # Deprecated, replaced by Germline classification
+    "clinsig": "Germline classification",
     "clinsig_comment": "Comment on clinical significance",
     "last_evaluated": "Date last evaluated",
     "variant_comment": "Comment on variant",

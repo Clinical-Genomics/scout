@@ -22,9 +22,9 @@ from scout.constants import (
     ASSERTION_METHOD_CIT,
     CLINVAR_INHERITANCE_MODELS,
     CLINVAR_SV_TYPES,
-    GERMLINE_CASSIF_TERMS,
     COLLECTION_METHOD,
     CONDITION_PREFIX,
+    GERMLINE_CASSIF_TERMS,
 )
 
 LOG = logging.getLogger(__name__)
