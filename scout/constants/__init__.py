@@ -32,7 +32,7 @@ from .clinvar import (
     CLINVAR_SV_TYPES,
     CLNSIG_TERMS,
     COLLECTION_METHOD,
-    PHENO_DBS,
+    CONDITION_PREFIX,
 )
 from .clnsig import CLINSIG_MAP, REV_CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
 from .disease_parsing import (
