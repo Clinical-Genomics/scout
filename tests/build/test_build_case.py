@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint as pp
 
 import pytest
 
