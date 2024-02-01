@@ -110,24 +110,23 @@ REVSTAT_TERMS = {
 CLINVAR_INHERITANCE_MODELS = [
     "Autosomal dominant inheritance",
     "Autosomal recessive inheritance",
+    "Mitochondrial inheritance",
+    "Genetic anticipation",
+    "Sporadic",
+    "Sex-limited autosomal dominant",
+    "X-linked recessive inheritance",
+    "X-linked dominant inheritance",
+    "Y-linked inheritance",
+    "Other",
+    "X-linked inheritance",
+    "Codominant",
+    "Semidominant inheritance",
+    "Autosomal unknown",
     "Autosomal dominant inheritance with maternal imprinting",
     "Autosomal dominant inheritance with paternal imprinting",
-    "Autosomal unknown",
-    "Codominant",
-    "Genetic anticipation",
-    "Mitochondrial inheritance",
     "Multifactorial inheritance",
-    "Oligogenic inheritance",
-    "Other",
-    "Semidominant inheritance",
-    "Somatic mutation",
-    "Sporadic",
     "Unknown mechanism",
-    "Sex-limited autosomal dominant",
-    "X-linked inheritance",
-    "X-linked dominant inheritance",
-    "X-linked recessive inheritance",
-    "Y-linked inheritance",
+    "Oligogenic inheritance",
 ]
 
 CLINVAR_SV_TYPES = [
@@ -178,13 +177,12 @@ COLLECTION_METHOD = [
     NOT_PROVIDED,
 ]
 
-# Available databases used to describe phenotypes (Key/Description)
-PHENO_DBS = {
-    "HPO": "HPO",
-    "MedGen": "MedGen",
-    "MeSH": "MeSH",
-    "MONDO": "MONDO",
-    "OMIM": "OMIM",
-    "Orphanet": "Orphanet",
-    "UMLS": "UMLS",
+# Database that describe a condition with associated eventual prefix
+CONDITION_PREFIX = {
+    "HPO": "HP:",
+    "MedGen": "",
+    "MeSH": "",
+    "MONDO": "MONDO:",
+    "OMIM": "",
+    "Orphanet": "ORPHA:",
 }

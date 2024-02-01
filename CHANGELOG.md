@@ -6,16 +6,20 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
-- Possibility to submit to ClinVar variants associated with Orphanet conditions
-- Option update path to .d4 files path for individuals of an existing case using the commands line
+- Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
+- Possibility to submit variants associated with Orphanet conditions to ClinVar
+- Option update path to .d4 files path for individuals of an existing case using the command line
 ### Changed
-- Introduce validation in ClinVar multistep form to make sure users provide at least one variant-associated condition
+- Introduce validation in the ClinVar multistep form to make sure users provide at least one variant-associated condition
+- CLI scout update individual accepts subject_id
+- Update ClinVar inheritance models to reflect changes in ClinVar submission API
+- Handle variant-associated condition ID format in background when creating ClinVar submissions
 ### Fixed
-- Alignment of contents in the case report have been updated
+- Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
 - Visualization of partial causatives' diagnoses on case page: style and links
-- Revert style of pinned variants window on case page
+- Revert style of pinned variants window on the case page
 
 ## [4.76]
 ### Added

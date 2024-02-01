@@ -230,6 +230,11 @@ def test_get_cases_no_synopsis(real_adapter, case_obj, institute_obj, user_obj):
 def test_get_cases_no_HPO(adapter, case_obj):
     # GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
+
+    # GIVEN a case obj that has neither phenotype groups or phenotype terms
+    case_obj.pop("phenotype_groups", None)
+    case_obj.pop("phenotype_terms", None)
+
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN providing an empty value for term HP:
