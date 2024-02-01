@@ -91,8 +91,9 @@ def set_abspath_case_nested_image_files(
                     if image_path and os.path.exists(image_path):
                         image[path_key] = os.path.abspath(image_path)
 
-    case_obj[nested_file_key] = case_data.get(nested_file_key)
-    case_images_abspath(case_obj[nested_file_key])
+    if case_data.get(nested_file_key):
+        case_obj[nested_file_key] = case_data.get(nested_file_key)
+        case_images_abspath(case_obj[nested_file_key])
 
 
 def build_case(case_data, adapter):
@@ -343,13 +344,10 @@ def build_case(case_data, adapter):
 
     _populate_pipeline_info(case_obj, case_data)
 
-    case_obj["has_svvariants"] = bool(
-        case_obj["vcf_files"].get("vcf_sv") or case_obj["vcf_files"].get("vcf_sv_research")
-    )
-
-    case_obj["has_strvariants"] = bool(case_obj["vcf_files"].get("vcf_str"))
-
-    case_obj["has_meivariants"] = bool(case_obj["vcf_files"].get("vcf_mei"))
+    vcf_files = case_obj.get("vcf_files", {})
+    case_obj["has_svvariants"] = bool(vcf_files.get("vcf_sv") or vcf_files.get("vcf_sv_research"))
+    case_obj["has_strvariants"] = bool(vcf_files.get("vcf_str"))
+    case_obj["has_meivariants"] = bool(vcf_files.get("vcf_mei"))
 
     case_obj["is_migrated"] = False
 
