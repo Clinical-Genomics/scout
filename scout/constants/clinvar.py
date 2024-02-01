@@ -126,7 +126,7 @@ CLINVAR_INHERITANCE_MODELS = [
     "Autosomal dominant inheritance with paternal imprinting",
     "Multifactorial inheritance",
     "Unknown mechanism",
-    "Oligogenic inheritance"
+    "Oligogenic inheritance",
 ]
 
 CLINVAR_SV_TYPES = [
