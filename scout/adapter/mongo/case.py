@@ -874,7 +874,9 @@ class CaseHandler(object):
         try:
             for vcf_file in files:
                 # Check if file exists
-                if not case_obj["vcf_files"].get(vcf_file["file_name"]):
+                if not case_obj.get("vcf_files") or not case_obj["vcf_files"].get(
+                    vcf_file["file_name"]
+                ):
                     LOG.debug("didn't find {}, skipping".format(vcf_file["file_name"]))
                     continue
 

@@ -344,7 +344,7 @@ def build_case(case_data, adapter):
 
     _populate_pipeline_info(case_obj, case_data)
 
-    vcf_files = case_obj.get("vcf_files", {})
+    vcf_files = case_obj.get("vcf_files") or {}
     case_obj["has_svvariants"] = bool(vcf_files.get("vcf_sv") or vcf_files.get("vcf_sv_research"))
     case_obj["has_strvariants"] = bool(vcf_files.get("vcf_str"))
     case_obj["has_meivariants"] = bool(vcf_files.get("vcf_mei"))
