@@ -75,7 +75,7 @@ CASEDATA_HEADER = {
 # The following items are defined in the ClinVar API specifications:
 # https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
 ####################################################################
-GERMLINE_CASSIF_TERMS = [
+GERMLINE_CLASSIF_TERMS = [
     "Pathogenic",
     "Likely pathogenic",
     "Uncertain significance",
