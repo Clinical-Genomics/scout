@@ -598,15 +598,14 @@ def clinvar_form(request):
             "clinsig": "Likely pathogenic, low penetrance",
             "clinsig_comment": "test clinsig comment",
             "clinsig_cit": "test clinsig cit",
-            "hpo_terms": "HP:0001298",
             "condition_comment": "test condition comment",
             "include_ind": ["NA12882"],
             "individual_id": ["NA12882", "NA12877", "NA12878"],
             "affected_status": ["yes", "no", "no"],
             "allele_of_origin": ["germline"] * 3,
             "collection_method": ["clinical testing"] * 3,
-            "condition_type": "HP",
-            "conditions": ["HP:0001298", "HP:0001250"],
+            "condition_type": "HPO",
+            "conditions": ["0001298", "0001250"],
         }
     )
     return data
