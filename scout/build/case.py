@@ -84,7 +84,7 @@ def set_abspath_case_nested_image_files(
         """Recursively set path to abs_path for all path_key items in lists in dicts in level."""
         for sub_level in level:
             if isinstance(sub_level, dict):
-                update_case_images(sub_level)
+                case_images_abspath(sub_level)
             elif isinstance(sub_level, list):
                 for image in sub_level:
                     image_path = image.get(path_key)
