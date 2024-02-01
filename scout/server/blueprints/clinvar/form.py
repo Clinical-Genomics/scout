@@ -24,7 +24,7 @@ from scout.constants import (
     CLINVAR_SV_TYPES,
     CLNSIG_TERMS,
     COLLECTION_METHOD,
-    PHENO_DBS,
+    CONDITION_PREFIX,
 )
 
 LOG = logging.getLogger(__name__)
@@ -61,9 +61,9 @@ class ClinVarVariantForm(FlaskForm):
     orpha_terms = MultiCheckboxField("Case-associated Orphanet terms", choices=[])
     condition_comment = TextAreaField("Additional comments describing condition")
     condition_type = SelectField(
-        "Condition ID type", choices=[(key, value) for key, value in PHENO_DBS.items()]
+        "Condition ID type", choices=[(key, key) for key, value in CONDITION_PREFIX.items()]
     )
-    conditions = SelectMultipleField("Condition ID values, comma-separated)")
+    conditions = SelectMultipleField("Condition ID value, without prefix")
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
