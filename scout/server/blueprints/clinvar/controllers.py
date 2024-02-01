@@ -9,7 +9,12 @@ from flask_login import current_user
 from werkzeug.datastructures import ImmutableMultiDict
 
 from scout.constants.acmg import ACMG_MAP
-from scout.constants.clinvar import CASEDATA_HEADER, CLINVAR_HEADER, SCOUT_CLINVAR_SV_TYPES_MAP
+from scout.constants.clinvar import (
+    CASEDATA_HEADER,
+    CLINVAR_HEADER,
+    CONDITION_PREFIX,
+    SCOUT_CLINVAR_SV_TYPES_MAP,
+)
 from scout.constants.variant_tags import MANUAL_RANK_OPTIONS
 from scout.models.clinvar import clinvar_variant
 from scout.server.extensions import clinvar_api, store
@@ -68,7 +73,10 @@ def _set_var_form_common_fields(var_form, variant_obj, case_obj):
         var_form.gene_symbol.data = ",".join(variant_obj.get("hgnc_symbols", []))
     var_form.last_evaluated.data = datetime.now()
     var_form.hpo_terms.choices = [
-        (hpo.get("phenotype_id"), " - ".join([hpo.get("phenotype_id"), hpo.get("feature")]))
+        (
+            hpo.get("phenotype_id").replace("HP:", ""),
+            " - ".join([hpo.get("phenotype_id"), hpo.get("feature")]),
+        )
         for hpo in case_obj.get("phenotype_terms", [])
     ]
     var_form.omim_terms.choices = [
@@ -228,15 +236,15 @@ def _parse_tx_hgvs(clinvar_var, form):
     clinvar_var["hgvs"] = tx_hgvs.split(":")[1]
 
 
-def _set_conditions(clinvar_var, form):
-    """Set condition_id_type and condition_id_value for a clinvar variant
+def _set_conditions(clinvar_var: dict, form: ImmutableMultiDict):
+    """Set condition_id_type and condition_id_values for a ClinVar variant."""
 
-    Args:
-        clinvar_var(dict): scout.models.clinvar.clinvar_variant
-        form(werkzeug.datastructures.ImmutableMultiDic)
-    """
-    clinvar_var["condition_id_type"] = form.get("condition_type")
-    clinvar_var["condition_id_value"] = ";".join(form.getlist("conditions"))
+    condition_db: str = form.get("condition_type")
+    clinvar_var["condition_id_type"] = condition_db
+    condition_prefix: str = CONDITION_PREFIX[condition_db]
+    clinvar_var["condition_id_value"] = ";".join(
+        [f"{condition_prefix}{condition_id}" for condition_id in form.getlist("conditions")]
+    )
 
 
 def parse_variant_form_fields(form):
