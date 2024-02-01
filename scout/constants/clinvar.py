@@ -177,13 +177,12 @@ COLLECTION_METHOD = [
     NOT_PROVIDED,
 ]
 
-# Available databases used to describe phenotypes (Key/Description)
-PHENO_DBS = {
-    "HPO": "HPO",
-    "MedGen": "MedGen",
-    "MeSH": "MeSH",
-    "MONDO": "MONDO",
-    "OMIM": "OMIM",
-    "Orphanet": "Orphanet",
-    "UMLS": "UMLS",
+# Database that describe a condition with associated eventual prefix
+CONDITION_PREFIX = {
+    "HPO": "HP:",
+    "MedGen": "",
+    "MeSH": "",
+    "MONDO": "MONDO:",
+    "OMIM": "",
+    "Orphanet": "ORPHA:",
 }
