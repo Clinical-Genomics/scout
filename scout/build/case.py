@@ -91,7 +91,7 @@ def set_abspath_case_nested_image_files(
                     if image_path and os.path.exists(image_path):
                         image[path_key] = os.path.abspath(image_path)
 
-    case_obj[nested_file_key] = case_data[nested_file_key]
+    case_obj[nested_file_key] = case_data.get(nested_file_key)
     case_images_abspath(case_obj[nested_file_key])
 
 

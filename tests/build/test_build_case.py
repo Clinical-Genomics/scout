@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import pytest
 from pprint import pprint as pp
-from scout.exceptions import PedigreeError, ConfigError, IntegrityError
+
+import pytest
 
 from scout.build import build_case
+from scout.exceptions import ConfigError, IntegrityError, PedigreeError
 
 
 def test_build_case(parsed_case, adapter, institute_obj, testpanel_obj):
@@ -54,7 +55,7 @@ def test_build_case(parsed_case, adapter, institute_obj, testpanel_obj):
 
     assert case_obj["madeline_info"] == parsed_case["madeline_info"]
 
-    assert case_obj["delivery_report"] == parsed_case["delivery_report"]
+    assert parsed_case["delivery_report"] in case_obj["delivery_report"]
 
     for vcf in case_obj["vcf_files"]:
         assert vcf in parsed_case["vcf_files"]
