@@ -58,13 +58,13 @@ def set_abspath_case_nested_files(case_obj: dict, case_data: dict, nested_file_k
     """Absolute path nested case files. Similar to the single abs path setter, but some paths reside nested
     directly under a particular key.
     """
-    if case_data.get(nested_file_key):
-        case_obj[nested_file_key] = case_data.get(nested_file_key)
-        for nested_file_item in case_obj[nested_file_key]:
+    case_obj[nested_file_key] = case_data.get(nested_file_key)
+    if case_obj.get(nested_file_key):
+        for file_type, nested_file_item in case_obj[nested_file_key].items():
             if nested_file_item and os.path.exists(nested_file_item):
-                case_obj[nested_file_key][nested_file_item] = os.path.abspath(nested_file_item)
+                case_obj[nested_file_key][file_type] = os.path.abspath(nested_file_item)
             else:
-                case_obj[nested_file_key][nested_file_item] = None
+                case_obj[nested_file_key][file_type] = None
 
 
 def set_abspath_case_nested_image_files(
@@ -334,6 +334,7 @@ def build_case(case_data, adapter):
     set_abspath_case_nested_image_files(case_obj, case_data)
 
     set_abspath_case_file(case_obj, case_data, "delivery_report")
+
     for report_key in [report.get("key_name") for report in CUSTOM_CASE_REPORTS.values()]:
         if report_key in case_data:
             set_abspath_case_file(case_obj, case_data, report_key)
