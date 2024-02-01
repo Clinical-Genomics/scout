@@ -15,6 +15,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update ClinVar inheritance models to reflect changes in ClinVar submission API
 - Handle variant-associated condition ID format in background when creating ClinVar submissions
 ### Fixed
+- Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
