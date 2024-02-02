@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<JDBOR date="2023-12-04 08:19:40" version="1.3.29 / 4.1.7 [2023-08-02] (orientdb version)" copyright="Orphanet (c) 2023" dbserver="jdbc:sybase:Tds:canard.orpha.net:2020">
+  <Availability>
+    <Licence>
+      <FullName lang="en">Creative Commons Attribution 4.0 International</FullName>
+      <ShortIdentifier>CC-BY-4.0</ShortIdentifier>
+      <LegalCode>https://creativecommons.org/licenses/by/4.0/legalcode</LegalCode>
+    </Licence>
+  </Availability>
+  <DisorderList count="6795">
+    <Disorder id="6">
+      <OrphaCode>585</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=585</ExpertLink>
+      <Name lang="en">Multiple sulfatase deficiency</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <AverageAgeOfOnsetList count="5">
+        <AverageAgeOfOnset id="23536">
+          <Name lang="en">Adolescent</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23508">
+          <Name lang="en">Antenatal</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23529">
+          <Name lang="en">Childhood</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23522">
+          <Name lang="en">Infancy</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23515">
+          <Name lang="en">Neonatal</Name>
+        </AverageAgeOfOnset>
+      </AverageAgeOfOnsetList>
+      <TypeOfInheritanceList count="1">
+        <TypeOfInheritance id="23417">
+          <Name lang="en">Autosomal recessive</Name>
+        </TypeOfInheritance>
+      </TypeOfInheritanceList>
+    </Disorder>
+    <Disorder id="7">
+      <OrphaCode>118</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=118</ExpertLink>
+      <Name lang="en">Beta-mannosidosis</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <AverageAgeOfOnsetList count="5">
+        <AverageAgeOfOnset id="23536">
+          <Name lang="en">Adolescent</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23543">
+          <Name lang="en">Adult</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23529">
+          <Name lang="en">Childhood</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23522">
+          <Name lang="en">Infancy</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23515">
+          <Name lang="en">Neonatal</Name>
+        </AverageAgeOfOnset>
+      </AverageAgeOfOnsetList>
+      <TypeOfInheritanceList count="1">
+        <TypeOfInheritance id="23417">
+          <Name lang="en">Autosomal recessive</Name>
+        </TypeOfInheritance>
+      </TypeOfInheritanceList>
+    </Disorder>
+    <Disorder id="3">
+      <OrphaCode>61</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=61</ExpertLink>
+      <Name lang="en">Alpha-mannosidosis</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <AverageAgeOfOnsetList count="3">
+        <AverageAgeOfOnset id="23529">
+          <Name lang="en">Childhood</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23522">
+          <Name lang="en">Infancy</Name>
+        </AverageAgeOfOnset>
+        <AverageAgeOfOnset id="23515">
+          <Name lang="en">Neonatal</Name>
+        </AverageAgeOfOnset>
+      </AverageAgeOfOnsetList>
+      <TypeOfInheritanceList count="1">
+        <TypeOfInheritance id="23417">
+          <Name lang="en">Autosomal recessive</Name>
+        </TypeOfInheritance>
+      </TypeOfInheritanceList>
+    </Disorder>
+    <Disorder id="5">
+      <OrphaCode>93</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=93</ExpertLink>
+      <Name lang="en">Aspartylglucosaminuria</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <AverageAgeOfOnsetList count="1">
+        <AverageAgeOfOnset id="23529">
+          <Name lang="en">Childhood</Name>
+        </AverageAgeOfOnset>
+      </AverageAgeOfOnsetList>
+      <TypeOfInheritanceList count="1">
+        <TypeOfInheritance id="23417">
+          <Name lang="en">Autosomal recessive</Name>
+        </TypeOfInheritance>
+      </TypeOfInheritanceList>
+    </Disorder>
+    <Disorder id="2">
+      <OrphaCode>58</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=58</ExpertLink>
+      <Name lang="en">Alexander disease</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <AverageAgeOfOnsetList count="1">
+        <AverageAgeOfOnset id="23557">
+          <Name lang="en">All ages</Name>
+        </AverageAgeOfOnset>
+      </AverageAgeOfOnsetList>
+      <TypeOfInheritanceList count="1">
+        <TypeOfInheritance id="23410">
+          <Name lang="en">Autosomal dominant</Name>
+        </TypeOfInheritance>
+      </TypeOfInheritanceList>
+    </Disorder>
+    <Disorder id="5">
+      <OrphaCode>93</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=93</ExpertLink>
+      <Name lang="en">Aspartylglucosaminuria</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <AverageAgeOfOnsetList count="1">
+        <AverageAgeOfOnset id="23529">
+          <Name lang="en">Childhood</Name>
+        </AverageAgeOfOnset>
+      </AverageAgeOfOnsetList>
+      <TypeOfInheritanceList count="1">
+        <TypeOfInheritance id="23417">
+          <Name lang="en">Autosomal recessive</Name>
+        </TypeOfInheritance>
+      </TypeOfInheritanceList>
+    </Disorder>
+    <Disorder id="24">
+      <OrphaCode>583</OrphaCode>
+      <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=583</ExpertLink>
+      <Name lang="en">Mucopolysaccharidosis type 6</Name>
+      <DisorderType id="21394">
+        <Name lang="en">Disease</Name>
+      </DisorderType>
+      <DisorderGroup id="36547">
+        <Name lang="en">Disorder</Name>
+      </DisorderGroup>
+      <AverageAgeOfOnsetList count="1">
+        <AverageAgeOfOnset id="23529">
+          <Name lang="en">Childhood</Name>
+        </AverageAgeOfOnset>
+      </AverageAgeOfOnsetList>
+      <TypeOfInheritanceList count="1">
+        <TypeOfInheritance id="23417">
+          <Name lang="en">Autosomal recessive</Name>
+        </TypeOfInheritance>
+      </TypeOfInheritanceList>
+    </Disorder>
+  </DisorderList>
+</JDBOR>
