@@ -81,7 +81,7 @@ def fetch_downloaded_resources(resources, downloads_folder, builds):
             if resource_exists:
                 resources[resname] = get_file_handle(resource_path).readlines()
 
-        # If the resource is manadatory make sure it exists and contains data (OMIM data is NOT mandatory)
+        # If the resource is mandatory, make sure it exists and contains data (OMIM data is NOT mandatory)
         if resname in ["hpo_genes", "hgnc_lines", "exac_lines"] and not resources.get(resname):
             LOG.error(f"Missing resource {resname} in downloads path.")
             raise click.Abort()

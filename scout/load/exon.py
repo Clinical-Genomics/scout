@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime
-from pprint import pprint as pp
 
 from click import progressbar
 
