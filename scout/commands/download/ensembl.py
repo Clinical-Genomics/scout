@@ -13,7 +13,7 @@ LOG = logging.getLogger(__name__)
 def print_ensembl(
     out_dir: pathlib.Path, resource_type: List[str], genome_build: Optional[str] = None
 ):
-    """Fetch and print Ensembl info to file. If no genome build is used both builds will be fetched."""
+    """Fetch and print Ensembl info to file. If no genome build is passed as argument, both builds will be fetched."""
 
     if resource_type not in ["genes", "transcripts", "exons"]:
         LOG.error("Invalid resource type")
