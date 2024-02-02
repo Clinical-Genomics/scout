@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Orpha disease terms now include information on inheritance
 - Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
 - Possibility to submit variants associated with Orphanet conditions to ClinVar
 - Option update path to .d4 files path for individuals of an existing case using the command line
@@ -22,6 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visualization of partial causatives' diagnoses on case page: style and links
 - Revert style of pinned variants window on the case page
 - Rename `Clinical significanc` to `Germline classification` in ClinVar submissions exported files
+
 
 ## [4.76]
 ### Added

@@ -260,7 +260,7 @@
         </DisorderGeneAssociation>
       </DisorderGeneAssociationList>
     </Disorder>
-	      <Disorder id="7">
+    <Disorder id="7">
       <OrphaCode>118</OrphaCode>
       <ExpertLink lang="en">http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=118</ExpertLink>
       <Name lang="en">Beta-mannosidosis</Name>
