@@ -1,29 +1,20 @@
 """Code for handling downloading of ensembl files used by scout from CLI"""
 import logging
 import pathlib
+from typing import List, Optional
 
 import click
 
-from scout.utils.scout_requests import (
-    fetch_ensembl_exons,
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-)
+from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 
 LOG = logging.getLogger(__name__)
 
 
-def print_ensembl(out_dir, resource_type, genome_build=None):
-    """Fetch and print ensembl info to file
+def print_ensembl(
+    out_dir: pathlib.Path, resource_type: List[str], genome_build: Optional[str] = None
+):
+    """Fetch and print Ensembl info to file. If no genome build is passed as argument, both builds will be fetched."""
 
-    If no genome build is used both builds will be fetched
-
-    Args:
-        out_dir(Path): Path to existing directory
-        resource_type(str): in ['genes', 'transcripts', 'exons']
-        genome_build
-
-    """
     if resource_type not in ["genes", "transcripts", "exons"]:
         LOG.error("Invalid resource type")
         raise SyntaxError()
@@ -33,23 +24,20 @@ def print_ensembl(out_dir, resource_type, genome_build=None):
         builds = [genome_build]
 
     LOG.info("Fetching ensembl %s, build: %s", resource_type, ",".join(builds))
-    if resource_type == "genes":
-        file_name = "ensembl_genes_{}.txt"
-        fetch_function = fetch_ensembl_genes
-    elif resource_type == "transcripts":
-        file_name = "ensembl_transcripts_{}.txt"
-        fetch_function = fetch_ensembl_transcripts
-    else:
-        file_name = "ensembl_exons_{}.txt"
-        fetch_function = fetch_ensembl_exons
 
     for build in builds:
-        file_path = out_dir / file_name.format(build)
+        ensembl_client = EnsemblBiomartHandler(build=build)
+
+        file_name: str = f"ensembl_{resource_type}_{build}.txt"
+        file_path = out_dir / file_name
+
         LOG.info("Print ensembl info %s to %s", build, file_path)
+
         with file_path.open("w", encoding="utf-8") as outfile:
-            for line in fetch_function(build=build):
+            for line in ensembl_client.stream_resource(interval_type=resource_type):
                 outfile.write(line + "\n")
-        LOG.info("Ensembl info saved")
+
+        LOG.info(f"{file_name} file saved to disk")
 
 
 @click.command("ensembl", help="Download files with ensembl info")
