@@ -1,32 +1,14 @@
 """Code for parsing OMIM formatted files"""
 import logging
-import re
 from typing import Any, Dict, Iterable
 
-MIMNR_PATTERN = re.compile("[0-9]{6,6}")
-ENTRY_PATTERN = re.compile("\([1,2,3,4]\)")
-
-MIM_INHERITANCE_TERMS = [
-    "Autosomal recessive",
-    "Autosomal dominant",
-    "Digenic recessive",
-    "X-linked dominant",
-    "X-linked recessive",
-    "Y-linked",
-    "Mitochondrial",
-]
-
-TERMS_MAPPER = {
-    "Autosomal recessive": "AR",
-    "Autosomal dominant": "AD",
-    "Digenic recessive": "DR",
-    "X-linked dominant": "XD",
-    "X-linked recessive": "XR",
-    "Y-linked": "Y",
-    "Mitochondrial": "MT",
-}
-
-OMIM_STATUS_MAP = {"[": "nondisease", "{": "susceptibility", "?": "provisional"}
+from scout.constants import (
+    DISEASE_INHERITANCE_TERMS,
+    ENTRY_PATTERN,
+    INHERITANCE_TERMS_MAPPER,
+    MIMNR_PATTERN,
+    OMIM_STATUS_MAP,
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -83,9 +65,9 @@ def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
         # Find the inheritance
         inheritance = set()
         inheritance_text = ",".join(splitted_info[i:])
-        for term in MIM_INHERITANCE_TERMS:
+        for term in DISEASE_INHERITANCE_TERMS:
             if term in inheritance_text:
-                inheritance.add(TERMS_MAPPER[term])
+                inheritance.add(INHERITANCE_TERMS_MAPPER[term])
 
         parsed_phenotypes.append(
             {
