@@ -27,9 +27,9 @@ from scout.parse.panel import parse_gene_panel
 from scout.resources import cytoband_files
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
+    fetch_constraint,
     fetch_ensembl_genes,
     fetch_ensembl_transcripts,
-    fetch_exac_constraint,
     fetch_genes_to_hpo_to_disease,
     fetch_hgnc,
     fetch_mim_files,
@@ -128,7 +128,7 @@ def setup_scout(
     if resource_files.get("exac_path"):
         exac_lines = [line for line in get_file_handle(resource_files.get("exac_path"))]
     else:
-        exac_lines = fetch_exac_constraint()
+        exac_lines = fetch_constraint()
 
     # Load cytobands into cytoband collection
     for genome_build, cytobands_path in cytoband_files.items():

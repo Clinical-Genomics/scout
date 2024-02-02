@@ -42,7 +42,7 @@ from scout.demo import (
 from scout.demo.resources import genes38_reduced_path  # noqa
 from scout.demo.resources import transcripts38_reduced_path  # noqa
 from scout.demo.resources import (
-    exac_reduced_path,
+    constraints_reduced_path,
     exons37_reduced_path,
     exons38_reduced_path,
     genemap2_reduced_path,
@@ -64,7 +64,7 @@ from scout.load.transcript import load_transcripts
 from scout.models.hgnc_map import HgncGene
 from scout.parse.case import parse_case_config
 from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_transcripts, parse_transcripts
-from scout.parse.exac import parse_exac_genes
+from scout.parse.exac import parse_constraint_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.panel import parse_gene_panel
 from scout.parse.variant import parse_variant
@@ -181,7 +181,6 @@ def genes(
     hpo_genes_handle,
 ):
     """Get a dictionary with the linked genes"""
-    print("")
 
     gene_dict = link_genes(
         ensembl_lines=genes37_handle,
@@ -264,7 +263,6 @@ def gene_bulk_all(gene_bulk, gene_bulk_38):
 @pytest.fixture
 def transcript_objs(request, parsed_transcripts):
     """Return a list with transcript objs"""
-    print("")
 
     _transcripts = []
     for tx_id in parsed_transcripts:
@@ -676,7 +674,6 @@ def fusion_case_obj(request, fusion_parsed_case) -> dict:
 #############################################################
 @pytest.fixture(scope="function")
 def parsed_institute(request):
-    print("")
     institute = {
         "institute_id": "cust000",
         "display_name": "test_institute",
@@ -688,7 +685,6 @@ def parsed_institute(request):
 
 @pytest.fixture(scope="function")
 def institute_obj(request, parsed_institute):
-    print("")
     LOG.info("Building a institute")
     institute = build_institute(
         internal_id=parsed_institute["institute_id"],
@@ -1293,7 +1289,7 @@ def cancer_variants(cancer_snv_file):
 @pytest.fixture(scope="function")
 def parsed_variant(request, one_variant, case_obj):
     """Return a parsed variant"""
-    print("")
+
     variant_dict = parse_variant(one_variant, case_obj)
     return variant_dict
 
@@ -1301,7 +1297,7 @@ def parsed_variant(request, one_variant, case_obj):
 @pytest.fixture(scope="function")
 def parsed_str_variant(request, one_str_variant, case_obj):
     """Return a parsed variant"""
-    print("")
+
     variant_dict = parse_variant(one_str_variant, case_obj, category="str")
     return variant_dict
 
@@ -1309,7 +1305,7 @@ def parsed_str_variant(request, one_str_variant, case_obj):
 @pytest.fixture(scope="function")
 def variant_obj(request, parsed_variant):
     """Return a variant object"""
-    print("")
+
     institute_id = "cust000"
     variant = build_variant(parsed_variant, institute_id=institute_id)
     return variant
@@ -1318,7 +1314,7 @@ def variant_obj(request, parsed_variant):
 @pytest.fixture(scope="function")
 def str_variant_obj(request, parsed_str_variant):
     """Return a variant object"""
-    print("")
+
     institute_id = "cust000"
     variant = build_variant(parsed_str_variant, institute_id=institute_id)
     return variant
@@ -1348,7 +1344,7 @@ def cyvcf2_variant():
 @pytest.fixture(scope="function")
 def parsed_sv_variant(request, one_sv_variant, case_obj):
     """Return a parsed variant"""
-    print("")
+
     variant_dict = parse_variant(one_sv_variant, case_obj)
     return variant_dict
 
@@ -1370,7 +1366,7 @@ def parsed_variants(request, variants, case_obj):
 @pytest.fixture(scope="function")
 def parsed_sv_variants(request, sv_variants, case_obj):
     """Get a generator with parsed variants"""
-    print("")
+
     individual_positions = {}
     for i, ind in enumerate(sv_variants.samples):
         individual_positions[ind] = i
@@ -1384,14 +1380,14 @@ def parsed_sv_variants(request, sv_variants, case_obj):
 @pytest.fixture(scope="function")
 def variant_objs(request, parsed_variants, institute_obj):
     """Get a generator with parsed variants"""
-    print("")
+
     return (build_variant(variant, institute_obj) for variant in parsed_variants)
 
 
 @pytest.fixture(scope="function")
 def sv_variant_objs(request, parsed_sv_variants, institute_obj):
     """Get a generator with parsed variants"""
-    print("")
+
     return (build_variant(variant, institute_obj) for variant in parsed_sv_variants)
 
 
@@ -1440,77 +1436,69 @@ def one_fusion_variant(institute_obj, parsed_fusion_variants) -> dict:
 @pytest.fixture
 def config_file(request):
     """Get the path to a config file"""
-    print("")
+
     return load_path
 
 
 @pytest.fixture
 def panel_1_file(request):
     """Get the path to a config file"""
-    print("")
+
     return panel_path
 
 
 @pytest.fixture
 def hgnc_file(request):
     """Get the path to a hgnc file"""
-    print("")
+
     return hgnc_reduced_path
 
 
 @pytest.fixture
 def transcripts_file(request):
     """Get the path to a ensembl transcripts file"""
-    print("")
     return transcripts37_reduced_path
 
 
 @pytest.fixture
 def exons_file(request):
-    """Get the path to a ensembl exons file"""
-    print("")
+    """Get the path to an ensembl exons file"""
     return exons37_reduced_path
 
 
 @pytest.fixture
 def exons_38_file(request):
-    """Get the path to a ensembl exons file build 38"""
-    print("")
+    """Get the path to an ensembl exons file build 38"""
     return exons38_reduced_path
 
 
 @pytest.fixture
 def genes37_file(request):
-    """Get the path to a ensembl genes file"""
-    print("")
+    """Get the path to an ensembl genes file"""
     return genes37_reduced_path
 
 
 @pytest.fixture
 def exac_file(request):
     """Get the path to a exac genes file"""
-    print("")
-    return exac_reduced_path
+    return constraints_reduced_path
 
 
 @pytest.fixture
 def mim2gene_file(request):
     """Get the path to the mim2genes file"""
-    print("")
     return mim2gene_reduced_path
 
 
 @pytest.fixture
 def genemap_file(request):
     """Get the path to the mim2genes file"""
-    print("")
     return genemap2_reduced_path
 
 
 @pytest.fixture(scope="function")
 def variant_clinical_file(request):
     """Get the path to a variant file"""
-    print("")
     return clinical_snv_path
 
 
@@ -1539,49 +1527,49 @@ def vep_94_manta_annotated_SV_variants_file(request):
 @pytest.fixture(scope="function")
 def cancer_snv_file(request):
     """Get the path to a variant file"""
-    print("")
+
     return cancer_snv_path
 
 
 @pytest.fixture(scope="function")
 def sv_clinical_file(request):
     """Get the path to a variant file"""
-    print("")
+
     return clinical_sv_path
 
 
 @pytest.fixture(scope="function")
 def str_clinical_file(request):
     """Get the path to a variant file"""
-    print("")
+
     return clinical_str_path
 
 
 @pytest.fixture(scope="function")
 def empty_sv_clinical_file(request):
     """Get the path to a variant file without variants"""
-    print("")
+
     return empty_sv_clinical_path
 
 
 @pytest.fixture(scope="function")
 def customannotation_snv_file(request):
     """Get the path to a variant file with custom annotations"""
-    print("")
+
     return customannotation_snv_path
 
 
 @pytest.fixture(scope="function")
 def ped_file(request):
     """Get the path to a ped file"""
-    print("")
+
     return ped_path
 
 
 @pytest.fixture(scope="function")
 def scout_config(request, config_file) -> dict:
     """Return a dictionary with scout configs"""
-    print("")
+
     in_handle = get_file_handle(config_file)
     data = yaml.safe_load(in_handle)
     return data
@@ -1623,77 +1611,77 @@ def minimal_config(request, scout_config):
 @pytest.fixture
 def panel_handle(request, panel_1_file):
     """Get a file handle to a gene panel file"""
-    print("")
+
     return get_file_handle(panel_1_file)
 
 
 @pytest.fixture
 def hgnc_handle(request, hgnc_file):
     """Get a file handle to a hgnc file"""
-    print("")
+
     return get_file_handle(hgnc_file)
 
 
 @pytest.fixture
 def hgnc_genes(request, hgnc_handle):
     """Get a dictionary with hgnc genes"""
-    print("")
+
     return parse_hgnc_genes(hgnc_handle)
 
 
 @pytest.fixture
 def genes37_handle(request, genes37_file):
     """Get a file handle to a ensembl gene file"""
-    print("")
+
     return get_file_handle(genes37_file)
 
 
 @pytest.fixture
 def transcripts_handle(request, transcripts_file):
     """Get a file handle to a ensembl transcripts file"""
-    print("")
+
     return get_file_handle(transcripts_file)
 
 
 @pytest.fixture
 def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
-    print("")
+
     return parse_ensembl_transcripts(transcripts_handle)
 
 
 @pytest.fixture
 def exons_handle(request, exons_file):
     """Get a file handle to a ensembl exons file"""
-    print("")
+
     return get_file_handle(exons_file)
 
 
 @pytest.fixture
 def exons_38_handle(request, exons_38_file):
     """Get a file handle to a ensembl exons file"""
-    print("")
+
     return get_file_handle(exons_38_file)
 
 
 @pytest.fixture
 def exons(request, exons_handle):
     """Get the parsed ensembl transcripts"""
-    print("")
+
     return parse_ensembl_exons(exons_handle)
 
 
 @pytest.fixture
 def exons_38(request, exons_38_handle):
     """Get the parsed ensembl transcripts"""
-    print("")
+
     return parse_ensembl_exons(exons_38_handle)
 
 
 @pytest.fixture
 def parsed_transcripts(request, transcripts_handle, ensembl_genes):
     """Get the parsed ensembl transcripts"""
-    print("")
+
     transcripts = parse_transcripts(transcripts_handle)
     for tx_id in transcripts:
         tx_info = transcripts[tx_id]
@@ -1718,7 +1706,7 @@ def exac_handle(request, exac_file):
 def exac_genes(request, exac_handle):
     """Get the parsed exac genes"""
 
-    return parse_exac_genes(exac_handle)
+    return parse_constraint_genes(exac_handle)
 
 
 @pytest.fixture

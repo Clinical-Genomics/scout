@@ -48,7 +48,11 @@ def abort_if_false(ctx, param, value):
     help="Path to directory with resource files",
 )
 @click.option("--hgnc", type=click.Path(exists=True))
-@click.option("--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores")
+@click.option(
+    "--exac",
+    type=click.Path(exists=True),
+    help="Path to file with EXaC / GnomAD pLi constraint scores",
+)
 @click.option(
     "--ensgenes37",
     type=click.Path(exists=True),

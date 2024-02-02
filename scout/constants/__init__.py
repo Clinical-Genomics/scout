@@ -44,6 +44,7 @@ from .filters import (
 )
 from .gene_tags import (
     GENE_PANELS_INHERITANCE_MODELS,
+    GNOMAD_CONSTRAINT_FILENAME,
     INCOMPLETE_PENETRANCE_MAP,
     INHERITANCE_PALETTE,
     MODELS_MAP,

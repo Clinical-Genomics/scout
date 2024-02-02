@@ -9,11 +9,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
 - Possibility to submit variants associated with Orphanet conditions to ClinVar
 - Option update path to .d4 files path for individuals of an existing case using the command line
+- More constraint information is displayed per gene in addition to pLi: missense and LoF OE, CI (inluding LOEUF) and Z-score.
 ### Changed
 - Introduce validation in the ClinVar multistep form to make sure users provide at least one variant-associated condition
 - CLI scout update individual accepts subject_id
 - Update ClinVar inheritance models to reflect changes in ClinVar submission API
 - Handle variant-associated condition ID format in background when creating ClinVar submissions
+- GnomAD v4 constraint information replaces ExAC constraints (pLi).
 ### Fixed
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses

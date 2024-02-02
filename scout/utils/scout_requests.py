@@ -432,35 +432,30 @@ def fetch_hgnc():
     return hgnc_lines
 
 
-def fetch_exac_constraint():
-    """Fetch the file with exac constraint scores
+def fetch_constraint():
+    """Fetch the file with gnomAD constraint scores
 
     Returns:
         exac_lines(iterable(str))
     """
-    file_name = "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt"
-    url = (
-        "ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3/functional_gene_constraint" "/{0}"
-    ).format(file_name)
+    path = "/release/v4.0/constraint/gnomad.v4.0.constraint_metrics.tsv"
+    mirror_urls = [
+        f"https://storage.googleapis.com/gcp-public-data--gnomad{path}",
+        f"https://gnomad-public-us-east-1.s3.amazonaws.com{path}",
+        f"https://datasetgnomad.blob.core.windows.net/dataset{path}",
+    ]
 
     exac_lines = None
 
-    LOG.info("Fetching ExAC genes")
+    LOG.info("Fetching GnomAD constraint scores.")
 
-    try:
-        exac_lines = fetch_resource(url)
-    except HTTPError:
-        LOG.info("Failed to fetch exac constraint scores file from ftp server")
-        LOG.info("Try to fetch from google bucket...")
-        url = (
-            "https://storage.googleapis.com/gnomad-public/legacy/exacv1_downloads/release0.3.1"
-            "/manuscript_data/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz"
-        )
+    for url in mirror_urls:
+        try:
+            exac_lines = fetch_resource(url)
+        except HTTPError:
+            LOG.info("Failed to fetch constraint scores from %s. Trying next mirror.", url)
 
-    if not exac_lines:
-        exac_lines = fetch_resource(url)
-
-    return exac_lines
+        return exac_lines
 
 
 def fetch_refseq_version(refseq_acc):

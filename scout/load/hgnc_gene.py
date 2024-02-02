@@ -5,13 +5,10 @@ from pprint import pprint as pp
 from click import progressbar
 
 from scout.build import build_hgnc_gene
-from scout.load.transcript import load_transcripts
 from scout.utils.link import link_genes
 from scout.utils.scout_requests import (
-    fetch_ensembl_exons,
+    fetch_constraint,
     fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
-    fetch_exac_constraint,
     fetch_hgnc,
     fetch_hpo_files,
     fetch_mim_files,
@@ -58,7 +55,7 @@ def load_hgnc_genes(
         if ensembl_lines is None:
             ensembl_lines = fetch_ensembl_genes(build=build)
         hgnc_lines = hgnc_lines or fetch_hgnc()
-        exac_lines = exac_lines or fetch_exac_constraint()
+        exac_lines = exac_lines or fetch_constraint()
         if not (mim2gene_lines and genemap_lines):
             if not omim_api_key:
                 LOG.warning("No omim api key provided!")

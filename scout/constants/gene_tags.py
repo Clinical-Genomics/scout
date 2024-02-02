@@ -87,3 +87,5 @@ PANELAPP_CONFIDENCE_EXCLUDE = {
     "amber": ["LowEvidence"],
     "red": [],
 }
+
+GNOMAD_CONSTRAINT_FILENAME = "gnomad.v4.0.constraint_metrics.tsv"
