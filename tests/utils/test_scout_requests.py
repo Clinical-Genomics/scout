@@ -1,6 +1,5 @@
 """Tests for scout requests"""
 import tempfile
-import zlib
 from urllib.error import HTTPError
 
 import requests
@@ -117,7 +116,7 @@ def test_get_request_bad_request():
 
 
 @responses.activate
-def test_send_request_timout():
+def test_send_request_timeout():
     """This test will trigge a timout error."""
     # GIVEN a request and a request that timouts
     url = "http://www.badurl.com"
@@ -385,58 +384,6 @@ def test_fetch_mim_files_mim2genes(phenotype_to_genes_file):
 
     # THEN assert that the HPO header is there
     assert isinstance(data, dict)
-
-
-def test_fetch_ensembl_biomart(mocker):
-    """Test fetch resource"""
-
-    # GIVEN a mock
-    mocker.patch.object(scout_requests, "EnsemblBiomartClient")
-    attributes = [
-        "chromosome_name",
-        "start_position",
-    ]
-    # WHEN fetching the resource
-    client = scout_requests.fetch_ensembl_biomart(attributes=attributes, filters=None)
-
-    # THEN assert that a result is returned
-    assert client
-
-
-def test_fetch_ensembl_genes(mocker):
-    """Test fetch resource"""
-
-    # GIVEN a mock
-    mocker.patch.object(scout_requests, "EnsemblBiomartClient")
-    # WHEN fetching the resource
-    client = scout_requests.fetch_ensembl_genes()
-
-    # THEN assert that a result is returned
-    assert client
-
-
-def test_fetch_ensembl_transcripts(mocker):
-    """Test fetch resource"""
-
-    # GIVEN a mock
-    mocker.patch.object(scout_requests, "EnsemblBiomartClient")
-    # WHEN fetching the resource
-    client = scout_requests.fetch_ensembl_transcripts()
-
-    # THEN assert that a result is returned
-    assert client
-
-
-def test_fetch_ensembl_exons(mocker):
-    """Test fetch resource"""
-
-    # GIVEN a mock
-    mocker.patch.object(scout_requests, "EnsemblBiomartClient")
-    # WHEN fetching the resource
-    client = scout_requests.fetch_ensembl_exons()
-
-    # THEN assert that a result is returned
-    assert client
 
 
 @responses.activate
