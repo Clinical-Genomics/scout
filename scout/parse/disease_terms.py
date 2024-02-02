@@ -159,7 +159,7 @@ def get_orpha_disease_terms(
     return orpha_disease_terms
 
 
-def add_inheritance_information(orpha_disease, orpha_inheritance):
+def add_inheritance_information(orpha_disease: Dict, orpha_inheritance: Dict) -> Dict:
     """Adds inheritance information to orpha_disease"""
 
     LOG.info("Adding inheritance to ORPHA disease terms")
