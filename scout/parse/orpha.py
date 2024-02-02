@@ -5,6 +5,8 @@ from xml.etree.ElementTree import Element
 
 from defusedxml.ElementTree import fromstring
 
+from scout.constants import DISEASE_INHERITANCE_TERMS, INHERITANCE_TERMS_MAPPER
+
 LOG = logging.getLogger(__name__)
 
 
@@ -86,4 +88,37 @@ def get_orpha_to_hpo_information(lines: List[str]) -> Dict[str, Any]:
 
         orpha_diseases_found[disease_id] = disease
 
+    return orpha_diseases_found
+
+
+def get_orpha_inheritance_information(lines: List[str]) -> Dict[str, dict]:
+    """Get a dictionary with diseases, ORPHA:nr as keys and inheritance information as values"""
+    LOG.info("Parsing Orphadata en_product9")
+
+    orpha_inheritance: Element = parse_orpha_downloads(lines=lines)
+    orpha_diseases_found = {}
+
+    # Collect disease and inheritance information
+    for disorder in orpha_inheritance.iter("Disorder"):
+        disease = {}
+
+        source = "ORPHA"
+        orpha_code = disorder.find("OrphaCode").text
+        disease_id = f"{source}:{orpha_code}"
+        description = disorder.find("Name").text
+        disease["description"] = description
+        disease["inheritance"] = set()
+
+        inheritance_list = disorder.find("TypeOfInheritanceList")
+        nr = int(inheritance_list.attrib["count"])
+
+        #: Include inheritance
+        if nr > 0:
+            for inheritance in inheritance_list:
+                inheritance_mode = inheritance.find("Name").text
+                for term in DISEASE_INHERITANCE_TERMS:
+                    if term in inheritance_mode:
+                        disease["inheritance"].add(INHERITANCE_TERMS_MAPPER[term])
+
+        orpha_diseases_found[disease_id] = disease
     return orpha_diseases_found
