@@ -38,7 +38,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow ClinVar submissions with custom API key for users registered as ClinVar submitters or when institute doesn't have a preset list of ClinVar submitters
 - Ordered event verbs alphabetically and created ClinVar-related user events
 - Removed the unused "no-variants" option from the load case command line
-- Replace the code that downloads Ensembl genes, transcripts and exons with schug library
+- Replace the code that downloads Ensembl genes, transcripts and exons with the Schug library
 ### Fixed
 - All disease_terms have gene HGNC ids as integers when added to the scout database
 - Disease_term identifiers are now prefixed with the name of the coding system
