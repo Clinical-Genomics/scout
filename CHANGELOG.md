@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CLI scout update individual accepts subject_id
 - Update ClinVar inheritance models to reflect changes in ClinVar submission API
 - Handle variant-associated condition ID format in background when creating ClinVar submissions
+- Replace the code that downloads Ensembl genes, transcripts and exons with the Schug library
 ### Fixed
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
@@ -38,7 +39,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow ClinVar submissions with custom API key for users registered as ClinVar submitters or when institute doesn't have a preset list of ClinVar submitters
 - Ordered event verbs alphabetically and created ClinVar-related user events
 - Removed the unused "no-variants" option from the load case command line
-- Replace the code that downloads Ensembl genes, transcripts and exons with the Schug library
 ### Fixed
 - All disease_terms have gene HGNC ids as integers when added to the scout database
 - Disease_term identifiers are now prefixed with the name of the coding system
