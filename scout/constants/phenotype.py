@@ -6,6 +6,7 @@ HPOTERMS_URL = (
 ORPHA_URLS = {
     "orpha_to_hpo": "https://www.orphadata.com/data/xml/en_product4.xml",
     "orpha_to_genes": "https://www.orphadata.com/data/xml/en_product6.xml",
+    "orpha_inheritance": "https://www.orphadata.com/data/xml/en_product9_ages.xml",
 }
 
 PHENOTYPE_GROUPS = {
@@ -41,5 +42,9 @@ UPDATE_DISEASES_RESOURCES = {
     "orpha_to_hpo_lines": [
         "orphadata_en_product4.xml",
         "orphadata_en_product4_reduced.xml",
+    ],
+    "orpha_inheritance_lines": [
+        "en_product9_ages.xml",
+        "en_product9_ages_reduced.xml",
     ],
 }
