@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace the code that downloads Ensembl genes, transcripts and exons with the Schug library
 - Explicitly store case file paths from load conf accessible on load as absolute paths for later access
 ### Fixed
+- Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
 - Associate OMIM and/or ORPHA diagnoses with partial causatives

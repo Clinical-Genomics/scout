@@ -226,7 +226,7 @@
                 <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a>"</h3>
 
                 <div class="row">
-                  <div class="col-6">
+                  <div class="col-6" id="clinvar_condition_container">
                     {{variant_data.var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
                     <select class="form-control, btn-secondary" name="condition_type" id="condition_type">
                       {% for dbtype, _ in variant_data.var_form.condition_type.choices %}
@@ -256,7 +256,6 @@
                         {% endfor %}
                       {% endif %}
                     </select>
-
                   </div>
                   <div class="col-6">
                     {{ variant_data.var_form.omim_terms.label(class="fw-bold, text-dark" )}}<br>
