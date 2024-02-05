@@ -52,6 +52,14 @@ body {
     color: #2C3E50;
     font-size: 14px;
 }
+#clinvar_condition_container input[type=search] {
+min-width: 100%;
+background-color: transparent;
+border: none !important;
+font-size: inherit;
+padding: 0;
+}
+
 
 #clinVarAdd input:focus, #clinVarAdd textarea:focus {
     -moz-box-shadow: none !important;
