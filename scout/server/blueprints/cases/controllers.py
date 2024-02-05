@@ -107,7 +107,7 @@ async def chanjo2_coverage_report_content(
             interval_type = "exons"  # show exon coverage
 
     report_query: dict = {
-        "build": "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh38",
+        "build": "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37",
         "default_level": institute_obj.get("coverage_cutoff"),
         "interval_type": interval_type,
         "panel_name": panel_name,
