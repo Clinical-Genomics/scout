@@ -192,6 +192,7 @@ def case_has_chanjo2_coverage(case_obj: dict):
         ind_d4: str = ind.get("d4_file")
         if ind_d4 and os.path.exists(ind_d4) and chanjo2_instance:
             case_obj["chanjo2_coverage"] = True
+            return
 
 
 def case_has_alignments(case_obj: dict):
