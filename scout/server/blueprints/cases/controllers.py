@@ -118,7 +118,6 @@ async def chanjo2_coverage_report_content(
 
     report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
     response = requests.post(report_url, json=json.dumps(report_query))
-    # Return report content
     return response.text
 
 

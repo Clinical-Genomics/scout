@@ -180,7 +180,7 @@ def case_has_chanjo_coverage(case_obj: dict):
     """Return True if case has coverage stats in chanjo."""
 
     chanjo_instance: bool = bool(current_app.config.get("SQLALCHEMY_DATABASE_URI"))
-    if case_obj["track"] != "cancer" and chanjo_instance:
+    if case_obj.get("track", "rare") != "cancer" and chanjo_instance:
         case_obj["chanjo_coverage"] = True
 
 
