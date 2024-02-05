@@ -23,7 +23,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
 - Visualization of partial causatives' diagnoses on case page: style and links
 - Revert style of pinned variants window on the case page
-
+- Fix gunicorn boot when deploying dockerinzed app
 
 ## [4.76]
 ### Added
