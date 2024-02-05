@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Handle variant-associated condition ID format in background when creating ClinVar submissions
 - Replace the code that downloads Ensembl genes, transcripts and exons with the Schug library
 ### Fixed
+- Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
