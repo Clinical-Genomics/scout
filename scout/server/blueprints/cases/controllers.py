@@ -44,6 +44,8 @@ from scout.server.extensions import RerunnerError, bionano_access, gens, matchma
 from scout.server.links import disease_link
 from scout.server.utils import (
     case_has_alignments,
+    case_has_chanjo2_coverage,
+    case_has_chanjo_coverage,
     case_has_mt_alignments,
     case_has_rna_tracks,
     institute_and_case,
@@ -80,6 +82,44 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
         return diseases
     except RuntimeError:
         flash("Could not establish a conection to Phenomizer", "danger")
+
+
+async def chanjo2_coverage_report_content(
+    institute_obj: dict, case_obj: dict, panel_name: str
+) -> str:
+    """Retrieve content of Chanjo2 report for a case."""
+    query_samples: List[dict] = []
+
+    analysis_type: str = "genes"  # Show whole gene coverage
+
+    for ind in case_obj.get("individuals", []):
+        query_samples.append(
+            {
+                "name": ind.get("display_name"),
+                "coverage_file_path": ind.get("d4_file"),
+                "case_name": case_obj["display_name"],
+                "analysis_date": case_obj["analysis_date"].isoformat(),
+            }
+        )
+        if analysis_type in ["genes", "exons"] and ind["analysis_type"] == "wts":
+            interval_type = "transcripts"  # show transcript coverage
+        if analysis_type == "genes" and ind["analysis_type"] == "wes":
+            interval_type = "exons"  # show exon coverage
+
+    report_query: dict = {
+        "build": "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh38",
+        "default_level": institute_obj.get("coverage_cutoff"),
+        "interval_type": interval_type,
+        "panel_name": panel_name,
+        "case_display_name": case_obj["display_name"],
+        "hgnc_gene_ids": _get_default_panel_genes(store, case_obj),
+        "samples": query_samples,
+    }
+
+    report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
+    response = requests.post(report_url, json=json.dumps(report_query))
+    # Return report content
+    return response.text
 
 
 def coverage_report_contents(base_url, institute_obj, case_obj):
@@ -297,9 +337,11 @@ def case(store, institute_obj, case_obj):
         store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])
     ]
 
-    # Provide basic info on alignment files availability for this case
+    # Provide basic info on alignment files & coverage data availability for this case
     case_has_alignments(case_obj)
     case_has_mt_alignments(case_obj)
+    case_has_chanjo_coverage(case_obj)
+    case_has_chanjo2_coverage(case_obj)
 
     case_groups = {}
     case_group_label = {}

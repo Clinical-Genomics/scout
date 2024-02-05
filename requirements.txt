@@ -1,6 +1,7 @@
 # Everything needed in production
 werkzeug<2.3
 Flask>=2.0
+flask[async]
 Flask-Bootstrap
 Flask-CORS
 path.py

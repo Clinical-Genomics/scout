@@ -10,7 +10,7 @@ from typing import Dict
 
 import pdfkit
 from bson.objectid import ObjectId
-from flask import abort, flash, render_template, request
+from flask import abort, current_app, flash, render_template, request
 from flask_login import current_user
 
 LOG = logging.getLogger(__name__)
@@ -176,7 +176,25 @@ def user_institutes(store, login_user):
     return institutes
 
 
-def case_has_alignments(case_obj):
+def case_has_chanjo_coverage(case_obj: dict):
+    """Return True if case has coverage stats in chanjo."""
+
+    chanjo_instance: bool = bool(current_app.config.get("SQLALCHEMY_DATABASE_URI"))
+    if case_obj["track"] != "cancer" and chanjo_instance:
+        case_obj["chanjo_coverage"] = True
+
+
+def case_has_chanjo2_coverage(case_obj: dict):
+    """Return True if case has coverage stats in chanjo2."""
+
+    chanjo2_instance: bool = bool(current_app.config.get("CHANJO2_URL"))
+    for ind in case_obj.get("individuals", []):
+        ind_d4: str = ind.get("d4_file")
+        if ind_d4 and os.path.exists(ind_d4) and chanjo2_instance:
+            case_obj["chanjo2_coverage"] = True
+
+
+def case_has_alignments(case_obj: dict):
     """Add info on bam/cram files availability to a case dictionary
 
     Args:
@@ -190,7 +208,7 @@ def case_has_alignments(case_obj):
             return
 
 
-def case_has_mt_alignments(case_obj: Dict):
+def case_has_mt_alignments(case_obj: dict):
     """Add info on MT bam files availability to a case dictionary
 
     Args:
