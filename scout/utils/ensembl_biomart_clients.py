@@ -1,35 +1,32 @@
 import logging
-from typing import Callable, Dict, Iterator
+from typing import Dict, Iterator
 
 import requests
-from schug.load.biomart import EnsemblBiomartClient
-from schug.load.ensembl import fetch_ensembl_exons, fetch_ensembl_genes, fetch_ensembl_transcripts
-from schug.models.common import Build as SchugBuild
 
 LOG = logging.getLogger(__name__)
+SCHUG_BASE = "https://schug-stage.scilifelab.se"
 
 BUILDS: Dict[str, str] = {"37": "GRCh37", "38": "GRCh38"}
 
-ENSEMBL_RESOURCE_CLIENT: Dict[str, Callable] = {
-    "genes": fetch_ensembl_genes,
-    "transcripts": fetch_ensembl_transcripts,
-    "exons": fetch_ensembl_exons,
+SCHUG_RESOURCE_URL: Dict[str, str] = {
+    "genes": "/genes/ensembl_genes/?build=",
+    "transcripts": "/transcripts/ensembl_transcripts/?build=",
+    "exons": "/exons/ensembl_exons/?build=",
 }
 
-
 class EnsemblBiomartHandler:
-    """A class that handles Ensembl genes, transcripts and exons downloads via schug."""
+    """A class that handles Ensembl genes, transcripts and exons downloads via schug-web."""
 
     def __init__(self, build: str = "37"):
         self.build: str = BUILDS[build]
 
-    def biomart_get(self, url: str) -> Iterator:
-        """Sends a request to Ensembl Biomart and returns the resource lines."""
+    def stream_get(self, url: str) -> Iterator:
+        """Sends a request to Schug web and returns the resource lines."""
         response: requests.models.responses = requests.get(url, stream=True)
         return response.iter_lines(decode_unicode=True)
 
     def stream_resource(self, interval_type: str) -> Iterator[str]:
-        """Fetches genes, transcripts or exons from a remote Ensembl biomart in the right genome build and saves them to file."""
+        """Use schug web to fetche genes, transcripts or exons from a remote Ensembl biomart in the right genome build and save them to file."""
 
         def yield_resource_lines(iterable) -> str:
             """Removes the last element from an iterator."""
@@ -39,11 +36,7 @@ class EnsemblBiomartHandler:
                 yield current
                 current = i
 
-        shug_client: EnsemblBiomartClient = ENSEMBL_RESOURCE_CLIENT[interval_type](
-            build=SchugBuild(self.build)
-        )
-
-        url: str = shug_client.build_url(xml=shug_client.xml)
+        shug_url: str = f"{SCHUG_BASE}{SCHUG_RESOURCE_URL[interval_type]}{self.build}"
 
         # return all lines except the last, which contains the "[success]" string
-        return yield_resource_lines(self.biomart_get(url))
+        return yield_resource_lines(self.stream_get(shug_url))
