@@ -14,6 +14,7 @@ SCHUG_RESOURCE_URL: Dict[str, str] = {
     "exons": "/exons/ensembl_exons/?build=",
 }
 
+
 class EnsemblBiomartHandler:
     """A class that handles Ensembl genes, transcripts and exons downloads via schug-web."""
 
