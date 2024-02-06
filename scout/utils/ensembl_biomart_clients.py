@@ -27,7 +27,7 @@ class EnsemblBiomartHandler:
         return response.iter_lines(decode_unicode=True)
 
     def stream_resource(self, interval_type: str) -> Iterator[str]:
-        """Use schug web to fetche genes, transcripts or exons from a remote Ensembl biomart in the right genome build and save them to file."""
+        """Use schug web to fetch genes, transcripts or exons from a remote Ensembl biomart in the right genome build and save them to file."""
 
         def yield_resource_lines(iterable) -> str:
             """Removes the last element from an iterator."""
