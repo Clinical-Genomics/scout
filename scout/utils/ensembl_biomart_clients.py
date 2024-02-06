@@ -4,7 +4,7 @@ from typing import Dict, Iterator
 import requests
 
 LOG = logging.getLogger(__name__)
-SCHUG_BASE = "https://schug-stage.scilifelab.se"
+SCHUG_BASE = "https://schug.scilifelab.se"
 
 BUILDS: Dict[str, str] = {"37": "GRCh37", "38": "GRCh38"}
 
