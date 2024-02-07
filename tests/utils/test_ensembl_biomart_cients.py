@@ -1,32 +1,31 @@
 from typing import Iterator
 
 import pytest
-from schug.demo import (
-    EXONS_37_FILE_PATH,
-    EXONS_38_FILE_PATH,
-    GENES_37_FILE_PATH,
-    GENES_38_FILE_PATH,
-    TRANSCRIPTS_37_FILE_PATH,
-    TRANSCRIPTS_38_FILE_PATH,
-)
-from schug.models.common import Build
 
+from scout.demo.resources import (
+    exons37_reduced_path,
+    exons38_reduced_path,
+    genes37_reduced_path,
+    genes38_reduced_path,
+    transcripts37_reduced_path,
+    transcripts38_reduced_path,
+)
 from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.handle import get_file_handle
 
 SCHUG_BUILD_GENES_PATHS = [
-    (Build.build_37, GENES_37_FILE_PATH),
-    (Build.build_38, GENES_38_FILE_PATH),
+    ("37", genes37_reduced_path),
+    ("38", genes38_reduced_path),
 ]
 
 SCHUG_BUILD_TRANSCRIPTS_PATHS = [
-    (Build.build_37, TRANSCRIPTS_37_FILE_PATH),
-    (Build.build_38, TRANSCRIPTS_38_FILE_PATH),
+    ("37", transcripts37_reduced_path),
+    ("38", transcripts38_reduced_path),
 ]
 
 SCHUG_BUILD_EXONS_PATHS = [
-    (Build.build_37, EXONS_37_FILE_PATH),
-    (Build.build_38, EXONS_38_FILE_PATH),
+    ("37", exons37_reduced_path),
+    ("38", exons38_reduced_path),
 ]
 
 
@@ -39,7 +38,7 @@ def test_stream_resource_genes(build, path, mocker):
 
     # GIVEN a patched response from Ensembl Biomart, via schug
     mocker.patch.object(
-        EnsemblBiomartHandler, "biomart_get", return_value=get_file_handle(str(path))
+        EnsemblBiomartHandler, "stream_get", return_value=get_file_handle(str(path))
     )
 
     # THEN it should stream the gene resource when stream_resource in invoked
@@ -57,7 +56,7 @@ def test_stream_resource_transcripts(build, path, mocker):
 
     # GIVEN a patched response from Ensembl Biomart, via schug
     mocker.patch.object(
-        EnsemblBiomartHandler, "biomart_get", return_value=get_file_handle(str(path))
+        EnsemblBiomartHandler, "stream_get", return_value=get_file_handle(str(path))
     )
 
     # THEN it should stream the gene resource when stream_resource in invoked
@@ -75,7 +74,7 @@ def test_stream_resource_exons(build, path, mocker):
 
     # GIVEN a patched response from Ensembl Biomart, via schug
     mocker.patch.object(
-        EnsemblBiomartHandler, "biomart_get", return_value=get_file_handle(str(path))
+        EnsemblBiomartHandler, "stream_get", return_value=get_file_handle(str(path))
     )
 
     # THEN it should stream the gene resource when stream_resource in invoked
