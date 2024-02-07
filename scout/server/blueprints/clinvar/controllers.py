@@ -249,7 +249,7 @@ def _set_conditions(clinvar_var: dict, form: ImmutableMultiDict):
 
 def parse_variant_form_fields(form):
     """Parses input values provided by the user in the ClinVar add_one form
-       and creates a Variant ClinVar dictionary to be saved in database (clinvar collection)
+       and creates a Variant ClinVar dictionary to be saved in database (ClinVar collection)
 
     Args:
         form(werkzeug.datastructures.ImmutableMultiDic): form submitted by a user
