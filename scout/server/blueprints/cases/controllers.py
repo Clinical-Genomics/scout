@@ -101,7 +101,7 @@ async def chanjo2_coverage_report_contents(
                 "analysis_date": case_obj["analysis_date"].isoformat(),
             }
         )
-        analysis_types.append(analysis_type)
+        analysis_types.append(ind.get("analysis_type"))
 
     interval_type = "genes"
     if "wes" in analysis_types:
