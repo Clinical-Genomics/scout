@@ -298,7 +298,7 @@ async def chanjo2_coverage_report(institute_id, case_name) -> str:
     """Redirect to a Chanjo2 coverage report."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    return await controllers.chanjo2_coverage_report_content(
+    return await controllers.chanjo2_coverage_report_contents(
         institute_obj=institute_obj, case_obj=case_obj, panel_name=request.args.get("panel_name")
     )
 
