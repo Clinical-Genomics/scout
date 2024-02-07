@@ -105,9 +105,9 @@ async def chanjo2_coverage_report_contents(
 
     interval_type = "genes"
     if "wes" in analysis_types:
-        interval_type = "exons"
-    elif "wts" in analysis_types:
         interval_type = "transcripts"
+    elif "wts" in analysis_types:
+        interval_type = "exons"
 
     report_query: dict = {
         "build": "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37",
