@@ -16,7 +16,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CLI scout update individual accepts subject_id
 - Update ClinVar inheritance models to reflect changes in ClinVar submission API
 - Handle variant-associated condition ID format in background when creating ClinVar submissions
-- Replace the code that downloads Ensembl genes, transcripts and exons with the Schug library
+- Replace the code that downloads Ensembl genes, transcripts and exons with the Schug web app
 ### Fixed
 - Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
@@ -24,7 +24,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
 - Visualization of partial causatives' diagnoses on case page: style and links
 - Revert style of pinned variants window on the case page
-
 
 ## [4.76]
 ### Added
