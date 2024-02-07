@@ -90,7 +90,7 @@ async def chanjo2_coverage_report_contents(
     """Retrieve the HTML contents of the Chanjo2 report for a case."""
     query_samples: List[dict] = []
 
-    analysis_type: str = "genes"  # Show whole gene coverage
+    analysis_types: List[str] = []
 
     for ind in case_obj.get("individuals", []):
         query_samples.append(
@@ -101,10 +101,13 @@ async def chanjo2_coverage_report_contents(
                 "analysis_date": case_obj["analysis_date"].isoformat(),
             }
         )
-        if analysis_type in ["genes", "exons"] and ind["analysis_type"] == "wts":
-            interval_type = "transcripts"  # show transcript coverage
-        if analysis_type == "genes" and ind["analysis_type"] == "wes":
-            interval_type = "exons"  # show exon coverage
+        analysis_types.append(analysis_type)
+
+    interval_type = "genes"
+    if "wes" in analysis_types:
+        interval_type = "exons"
+    elif "wts" in analysis_types:
+        interval_type = "transcripts"
 
     report_query: dict = {
         "build": "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37",
