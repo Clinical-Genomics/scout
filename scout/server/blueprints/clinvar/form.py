@@ -22,9 +22,9 @@ from scout.constants import (
     ASSERTION_METHOD_CIT,
     CLINVAR_INHERITANCE_MODELS,
     CLINVAR_SV_TYPES,
-    CLNSIG_TERMS,
     COLLECTION_METHOD,
     CONDITION_PREFIX,
+    GERMLINE_CLASSIF_TERMS,
 )
 
 LOG = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class ClinVarVariantForm(FlaskForm):
         choices=[("", "-")] + [(item, item) for item in CLINVAR_INHERITANCE_MODELS],
     )
     clinsig = SelectField(
-        "Clinical Significance", choices=[(item, item) for item in CLNSIG_TERMS[:5]]
+        "Germline classification", choices=[(item, item) for item in GERMLINE_CLASSIF_TERMS[:5]]
     )
     clinsig_comment = TextAreaField("Comment on clinical significance")
     clinsig_cit = TextAreaField("Clinical significance citations (with identifier)")

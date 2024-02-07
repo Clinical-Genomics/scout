@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
 - Visualization of partial causatives' diagnoses on case page: style and links
 - Revert style of pinned variants window on the case page
+- Rename `Clinical significanc` to `Germline classification` in ClinVar submissions exported files
 
 ## [4.76]
 ### Added
