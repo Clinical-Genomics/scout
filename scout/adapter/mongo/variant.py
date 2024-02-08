@@ -537,15 +537,14 @@ class VariantHandler(VariantLoader):
         Returns:
             iterable(Variant)
         """
-        var_causative_events = self.event_collection.find(
-            {
-                "institute": case_obj["owner"],
-                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
-                "category": "variant",
-            }
-        )
 
-        LOG.warning(var_causative_events)
+        query = {
+            "institute": case_obj["owner"],
+            "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+            "category": "variant",
+        }
+        LOG.warning(query)
+        var_causative_events = self.event_collection.find(query)
 
         positional_variant_ids = set()
         for var_event in var_causative_events:
