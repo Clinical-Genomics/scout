@@ -9,8 +9,8 @@ BASE_PATH = "scout.demo.resources"
 # Gene paths
 reduced_resources_path = str(files(BASE_PATH))
 hgnc_reduced_path = str(files(BASE_PATH).joinpath("hgnc_reduced_set.txt"))
-exac_reduced_path = str(
-    files(BASE_PATH).joinpath("forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt")
+constraints_reduced_path = str(
+    files(BASE_PATH).joinpath("gnomad.v4.0.constraint_metrics_reduced.tsv")
 )
 transcripts37_reduced_path = str(files(BASE_PATH).joinpath("ensembl_transcripts_37_reduced.txt"))
 transcripts38_reduced_path = str(files(BASE_PATH).joinpath("ensembl_transcripts_38_reduced.txt"))
@@ -36,7 +36,7 @@ phenotype_to_genes_reduced_path = str(files(BASE_PATH).joinpath("phenotype_to_ge
 hpo_terms_def_path = str(files(BASE_PATH).joinpath("hpo_terms.csv"))
 
 demo_files = {
-    "exac_path": exac_reduced_path,
+    "constraint_path": constraints_reduced_path,
     "genemap2_path": genemap2_reduced_path,
     "mim2gene_path": mim2gene_reduced_path,
     "genes37_path": genes37_reduced_path,

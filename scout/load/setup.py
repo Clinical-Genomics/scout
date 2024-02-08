@@ -124,8 +124,8 @@ def setup_scout(
     else:
         hgnc_lines = fetch_hgnc()
 
-    if resource_files.get("exac_path"):
-        exac_lines = [line for line in get_file_handle(resource_files.get("exac_path"))]
+    if resource_files.get("constraint_path"):
+        exac_lines = [line for line in get_file_handle(resource_files.get("constraint_path"))]
     else:
         exac_lines = fetch_constraint()
 
