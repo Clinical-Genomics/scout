@@ -96,7 +96,7 @@
                   <li class="list-group-item">
                     LoF o/e (<a href={{ record.gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
                     <span class="float-end">
-                      {{ constraint_lof_oe|round(2) }}({{ constraint_lof_oe_ci_lower|round(2) }} - <mark><span data-bs-toggle="tooltip" title="LOEUF {{ constraint_lof_oe_ci_upper}}">{{ constraint_lof_oe_ci_upper|round(2) }}</span></mark> )
+                      {{ constraint_lof_oe|round(2) }}({{ constraint_lof_oe_ci_lower|round(2) }} - <mark><span data-bs-toggle="tooltip" title="LOEUF {{ constraint_lof_oe_ci_upper}}">{{ constraint_lof_oe_ci_upper|round(2) }}</span></mark>)
                     </span>
                   </li>
                 {% endif %}
@@ -104,7 +104,7 @@
                   <li class="list-group-item">
                     Missense o/e (<a href={{ record.gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
                     <span class="float-end">
-                      {{ constraint_mis_oe|round(2) }}({{ constraint_mis_oe_ci_lower|round(2) }} - {{ constraint_mis_oe_ci_upper|round(2) }}) )
+                      {{ constraint_mis_oe|round(2) }}({{ constraint_mis_oe_ci_lower|round(2) }} - {{ constraint_mis_oe_ci_upper|round(2) }})
                     </span>
                   </li>
                 {% endif %}
