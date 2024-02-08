@@ -1403,7 +1403,6 @@ def _matching_causatives(
     other_causatives_in_default_panels = []
 
     for causative in matching_causatives:
-        LOG.warning(causative)
         hgnc_ids = [gene.get("hgnc_id") for gene in causative.get("genes", [])]
         # Fetch all matching causatives if no causatives_filter defined
         # or only causatives matching the filter:
