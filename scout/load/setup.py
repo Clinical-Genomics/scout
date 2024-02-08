@@ -25,11 +25,10 @@ from scout.load.hpo import load_hpo_terms
 from scout.parse.case import parse_case_data
 from scout.parse.panel import parse_gene_panel
 from scout.resources import cytoband_files
+from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
     fetch_constraint,
-    fetch_ensembl_genes,
-    fetch_ensembl_transcripts,
     fetch_genes_to_hpo_to_disease,
     fetch_hgnc,
     fetch_mim_files,
@@ -134,13 +133,15 @@ def setup_scout(
     for genome_build, cytobands_path in cytoband_files.items():
         load_cytobands(cytobands_path, genome_build, adapter)
 
+    # Load genes
     builds = ["37", "38"]
     for build in builds:
         genes_path = "genes{}_path".format(build)
+        ensembl_client = EnsemblBiomartHandler(build=build)
         if resource_files.get(genes_path):
             ensembl_genes = get_file_handle(resource_files[genes_path])
         else:
-            ensembl_genes = fetch_ensembl_genes(build=build)
+            ensembl_genes = ensembl_client.stream_resource(interval_type="genes")
 
         hgnc_genes = load_hgnc_genes(
             adapter=adapter,
@@ -159,13 +160,14 @@ def setup_scout(
             ensembl_id = gene_obj["ensembl_id"]
             ensembl_genes[ensembl_id] = gene_obj
 
+        # Load transcripts
         tx_path = "transcripts{}_path".format(build)
         if resource_files.get(tx_path):
             ensembl_transcripts = get_file_handle(resource_files[tx_path])
         else:
-            ensembl_transcripts = fetch_ensembl_transcripts(build=build)
+            ensembl_transcripts = ensembl_client.stream_resource(interval_type="transcripts")
         # Load the transcripts for a certain build
-        transcripts = load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
+        load_transcripts(adapter, ensembl_transcripts, build, ensembl_genes)
 
     hpo_terms_handle = None
     if resource_files.get("hpoterms_path"):
@@ -187,6 +189,10 @@ def setup_scout(
     if resource_files.get("orpha_to_genes_path"):
         orpha_to_genes_handle = get_file_handle(resource_files["orpha_to_genes_path"])
 
+    orpha_inheritance_handle = None
+    if resource_files.get("orpha_inheritance_path"):
+        orpha_inheritance_handle = get_file_handle(resource_files["orpha_inheritance_path"])
+
     alias_genes = adapter.genes_by_alias()
     # Load HPO terms
     load_hpo_terms(
@@ -203,6 +209,7 @@ def setup_scout(
         hpo_annotation_lines=hpo_annotation_handle,
         orpha_to_hpo_lines=orpha_to_hpo_handle,
         orpha_to_genes_lines=orpha_to_genes_handle,
+        orpha_inheritance_lines=orpha_inheritance_handle,
     )
 
     # If demo we load a gene panel and some case information

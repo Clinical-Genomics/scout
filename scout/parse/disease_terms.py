@@ -4,7 +4,11 @@ from typing import Dict, List
 
 from scout.parse.hpo_mappings import parse_hpo_annotations
 from scout.parse.omim import get_mim_phenotypes
-from scout.parse.orpha import get_orpha_to_genes_information, get_orpha_to_hpo_information
+from scout.parse.orpha import (
+    get_orpha_inheritance_information,
+    get_orpha_to_genes_information,
+    get_orpha_to_hpo_information,
+)
 from scout.utils.scout_requests import fetch_hpo_disease_annotation, fetch_orpha_files
 
 LOG = logging.getLogger(__name__)
@@ -13,12 +17,15 @@ LOG = logging.getLogger(__name__)
 def get_all_disease_terms(
     orpha_to_hpo_lines: List,
     orpha_to_genes_lines: List,
+    orpha_inheritance_lines: List,
     hpo_annotation_lines: List,
     genemap_lines: List,
 ) -> Dict:
     #: Collect ORPHA terms including gene and disease annotations from Orphadata
     orpha_disease_terms: Dict[str, dict] = get_orpha_disease_terms(
-        orpha_to_hpo_lines=orpha_to_hpo_lines, orpha_to_genes_lines=orpha_to_genes_lines
+        orpha_to_hpo_lines=orpha_to_hpo_lines,
+        orpha_to_genes_lines=orpha_to_genes_lines,
+        orpha_inheritance_lines=orpha_inheritance_lines,
     )
 
     #: Collect OMIM and ORPHA disease terms including gene and hpo annotations
@@ -46,7 +53,7 @@ def parse_disease_terms(
     for disease_id, orpha_disease_content in orpha_disease_terms.items():
         if disease_id not in combined_disease_terms:
             combined_disease_terms[disease_id] = {
-                "inheritance": set(),
+                "inheritance": orpha_disease_content.get("inheritance", set()),
                 "description": orpha_disease_content["description"],
                 "hgnc_ids": orpha_disease_content.get("hgnc_ids", set()),
                 "hpo_terms": orpha_disease_content.get("hpo_terms", set()),
@@ -58,7 +65,9 @@ def parse_disease_terms(
             combined_disease_terms[disease_id]["hgnc_ids"].update(
                 orpha_disease_content.get("hgnc_ids", set())
             )
-
+            combined_disease_terms[disease_id]["inheritance"].update(
+                orpha_disease_content.get("inheritance", set())
+            )
     return combined_disease_terms
 
 
@@ -66,6 +75,7 @@ def consolidate_gene_and_hpo_annotation(
     hpo_annotations: Dict[str, dict], gene_annotations: Dict[str, dict]
 ) -> Dict[str, dict]:
     """Annotate disease terms with both gene and hpo information"""
+
     LOG.info("Consolidating gene and HPO information for disease terms")
     disease_terms: Dict = gene_annotations.copy()
     # If missing, add disease properties to be updated from other files
@@ -115,23 +125,52 @@ def get_omim_disease_terms(genemap_lines: List = None, hpo_annotation_lines: Lis
 
 
 def get_orpha_disease_terms(
-    orpha_to_genes_lines: List = None, orpha_to_hpo_lines: List = None
+    orpha_to_genes_lines: List = None,
+    orpha_to_hpo_lines: List = None,
+    orpha_inheritance_lines: List = None,
 ) -> Dict:
     """Extract disease-gene and disease-hpo information from ORPHA downloads and combine in disease_terms"""
+
     #: Fetch information from Orphadata if missing
-    if not orpha_to_genes_lines or not orpha_to_hpo_lines:
+    if not orpha_to_genes_lines or not orpha_to_hpo_lines or not orpha_inheritance_lines:
         orpha_files: Dict = fetch_orpha_files()
         if not orpha_to_hpo_lines:
             orpha_to_hpo_lines: List = orpha_files["orphadata_en_product4"]
         if not orpha_to_genes_lines:
             orpha_to_genes_lines: List = orpha_files["orphadata_en_product6"]
+        if not orpha_inheritance_lines:
+            orpha_inheritance_lines: List = orpha_files["en_product9_ages"]
 
     #: Extract information of genes and hpo relations of orphacodes
     orpha_disease: Dict = get_orpha_to_genes_information(lines=orpha_to_genes_lines)
+    orpha_inheritance: Dict = get_orpha_inheritance_information(lines=orpha_inheritance_lines)
     orpha_hpo_annotations: Dict = get_orpha_to_hpo_information(lines=orpha_to_hpo_lines)
+
+    #: Add inheritance to disease
+    orpha_disease: Dict = add_inheritance_information(
+        orpha_disease=orpha_disease, orpha_inheritance=orpha_inheritance
+    )
 
     #: Combine information
     orpha_disease_terms: Dict = consolidate_gene_and_hpo_annotation(
         gene_annotations=orpha_disease, hpo_annotations=orpha_hpo_annotations
     )
+
     return orpha_disease_terms
+
+
+def add_inheritance_information(orpha_disease: Dict, orpha_inheritance: Dict) -> Dict:
+    """Adds inheritance information to orpha_disease"""
+
+    LOG.info("Adding inheritance to ORPHA disease terms")
+
+    #: Update diseases already present with inheritance
+    for disease_id, disease_information in orpha_disease.items():
+        disease_information.update(orpha_inheritance.get(disease_id, set()))
+    #: Add disease information for missing diseases
+    for disease_id, disease_information in orpha_inheritance.items():
+        if disease_id not in orpha_disease:
+            orpha_disease[disease_id] = {}
+            orpha_disease[disease_id].update(disease_information)
+
+    return orpha_disease

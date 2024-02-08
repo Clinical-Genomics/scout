@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Orpha disease terms now include information on inheritance
 - Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
 - Possibility to submit variants associated with Orphanet conditions to ClinVar
 - Option update path to .d4 files path for individuals of an existing case using the command line
@@ -15,13 +16,17 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - CLI scout update individual accepts subject_id
 - Update ClinVar inheritance models to reflect changes in ClinVar submission API
 - Handle variant-associated condition ID format in background when creating ClinVar submissions
+- Replace the code that downloads Ensembl genes, transcripts and exons with the Schug web app
 - GnomAD v4 constraint information replaces ExAC constraints (pLi).
 ### Fixed
+- Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
 - Missing number of phenotypes and genes from case diagnoses
 - Associate OMIM and/or ORPHA diagnoses with partial causatives
 - Visualization of partial causatives' diagnoses on case page: style and links
 - Revert style of pinned variants window on the case page
+- Rename `Clinical significanc` to `Germline classification` in ClinVar submissions exported files
+- Rename `Comment on clinical significance` to `Comment on classification` in ClinVar submissions exported files
 
 ## [4.76]
 ### Added

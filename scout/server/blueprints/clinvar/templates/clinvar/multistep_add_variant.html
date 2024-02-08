@@ -226,7 +226,7 @@
                 <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a>"</h3>
 
                 <div class="row">
-                  <div class="col-6">
+                  <div class="col-6" id="clinvar_condition_container">
                     {{variant_data.var_form.condition_type.label(class="fw-bold, text-dark")}}<span class="text-danger" data-bs-toggle='tooltip' title="Required field."><strong>*</strong></span>
                     <select class="form-control, btn-secondary" name="condition_type" id="condition_type">
                       {% for dbtype, _ in variant_data.var_form.condition_type.choices %}
@@ -256,7 +256,6 @@
                         {% endfor %}
                       {% endif %}
                     </select>
-
                   </div>
                   <div class="col-6">
                     {{ variant_data.var_form.omim_terms.label(class="fw-bold, text-dark" )}}<br>
@@ -496,12 +495,12 @@ $(function(){
 $(function(){
   $("#assertion_method_cit").change(function(){
     var assertCit = document.getElementById('assertion_method_cit').value;
-    var choices = {{clinsig_terms|safe}}; // all clinsig terms
+    var choices = {{germline_classif_terms|safe}}; // all germline classification terms
     if (assertCit.includes("PMID:25741868")){ // populate select with ACMG terms only
-      choices = {{clinsig_terms[:5]|safe}};
+      choices = {{germline_classif_terms[:5]|safe}};
     }
     $("#clinsig").empty(); // remove all options from clinsig select
-    //Create and append the conditional options to the clinsig select
+    //Create and append the conditional options to the germline classification select
     for (var i = 0; i < choices.length; i++){
       var newOption = new Option(choices[i], choices[i], true, false);
       $('#clinsig').append(newOption).trigger('change');

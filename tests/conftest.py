@@ -52,6 +52,7 @@ from scout.demo.resources import (
     hpo_phenotype_annotation_reduced_path,
     hpoterms_reduced_path,
     mim2gene_reduced_path,
+    orpha_inheritance_reduced_path,
     orpha_to_genes_reduced_path,
     orpha_to_hpo_reduced_path,
     phenotype_to_genes_reduced_path,
@@ -376,6 +377,7 @@ def disease_database(
         genemap_lines=get_file_handle(genemap_file),
         orpha_to_hpo_lines=get_file_handle(orpha_to_hpo_reduced_path),
         orpha_to_genes_lines=get_file_handle(orpha_to_genes_reduced_path),
+        orpha_inheritance_lines=get_file_handle(orpha_inheritance_reduced_path),
     )
     return adapter
 
@@ -426,11 +428,13 @@ TEST_OMIM_DISEASES = {
 
 TEST_ORPHA_DISEASES = {
     "ORPHA:585": {
+        "inheritance": {"AR"},
         "description": "Multiple sulfatase deficiency",
         "hgnc_ids": {20376},
         "hpo_terms": {"HP:0000238", "HP:0000252", "HP:0000256", "HP:0000280"},
     },
     "ORPHA:118": {
+        "inheritance": {"AR"},
         "description": "Beta-mannosidosis",
         "hgnc_ids": {6831},
         "hpo_terms": {
@@ -495,17 +499,17 @@ def test_orpha_hpo_annotations(request):
 
 
 @pytest.fixture(scope="function")
-def test_orpha_diseases(request):
+def test_orpha_gene_annotations(request):
     """Returns information for a sub set of orpha diseases found in the demo resource-files
     in the format expected after parsing of gene information from orpha-files"""
-    orpha_diseases = {}
+    test_orpha_gene_annotations = {}
     for key, content in TEST_ORPHA_DISEASES.items():
-        orpha_diseases[key] = {
+        test_orpha_gene_annotations[key] = {
             "description": content["description"],
             "hgnc_ids": content["hgnc_ids"],
         }
 
-    return orpha_diseases
+    return test_orpha_gene_annotations
 
 
 @pytest.fixture(scope="function")
@@ -1436,21 +1440,18 @@ def one_fusion_variant(institute_obj, parsed_fusion_variants) -> dict:
 @pytest.fixture
 def config_file(request):
     """Get the path to a config file"""
-
     return load_path
 
 
 @pytest.fixture
 def panel_1_file(request):
     """Get the path to a config file"""
-
     return panel_path
 
 
 @pytest.fixture
 def hgnc_file(request):
     """Get the path to a hgnc file"""
-
     return hgnc_reduced_path
 
 
@@ -1480,7 +1481,7 @@ def genes37_file(request):
 
 @pytest.fixture
 def exac_file(request):
-    """Get the path to a exac genes file"""
+    """Get the path to an GnomAD/ExAC genes file"""
     return constraints_reduced_path
 
 
@@ -1527,49 +1528,42 @@ def vep_94_manta_annotated_SV_variants_file(request):
 @pytest.fixture(scope="function")
 def cancer_snv_file(request):
     """Get the path to a variant file"""
-
     return cancer_snv_path
 
 
 @pytest.fixture(scope="function")
 def sv_clinical_file(request):
     """Get the path to a variant file"""
-
     return clinical_sv_path
 
 
 @pytest.fixture(scope="function")
 def str_clinical_file(request):
     """Get the path to a variant file"""
-
     return clinical_str_path
 
 
 @pytest.fixture(scope="function")
 def empty_sv_clinical_file(request):
     """Get the path to a variant file without variants"""
-
     return empty_sv_clinical_path
 
 
 @pytest.fixture(scope="function")
 def customannotation_snv_file(request):
     """Get the path to a variant file with custom annotations"""
-
     return customannotation_snv_path
 
 
 @pytest.fixture(scope="function")
 def ped_file(request):
     """Get the path to a ped file"""
-
     return ped_path
 
 
 @pytest.fixture(scope="function")
 def scout_config(request, config_file) -> dict:
     """Return a dictionary with scout configs"""
-
     in_handle = get_file_handle(config_file)
     data = yaml.safe_load(in_handle)
     return data
@@ -1611,77 +1605,66 @@ def minimal_config(request, scout_config):
 @pytest.fixture
 def panel_handle(request, panel_1_file):
     """Get a file handle to a gene panel file"""
-
     return get_file_handle(panel_1_file)
 
 
 @pytest.fixture
 def hgnc_handle(request, hgnc_file):
-    """Get a file handle to a hgnc file"""
-
+    """Get a file handle to an hgnc file"""
     return get_file_handle(hgnc_file)
 
 
 @pytest.fixture
 def hgnc_genes(request, hgnc_handle):
     """Get a dictionary with hgnc genes"""
-
     return parse_hgnc_genes(hgnc_handle)
 
 
 @pytest.fixture
 def genes37_handle(request, genes37_file):
-    """Get a file handle to a ensembl gene file"""
-
+    """Get a file handle to an ensembl gene file"""
     return get_file_handle(genes37_file)
 
 
 @pytest.fixture
 def transcripts_handle(request, transcripts_file):
-    """Get a file handle to a ensembl transcripts file"""
-
+    """Get a file handle to an ensembl transcripts file"""
     return get_file_handle(transcripts_file)
 
 
 @pytest.fixture
 def transcripts(request, transcripts_handle):
     """Get the parsed ensembl transcripts"""
-
     return parse_ensembl_transcripts(transcripts_handle)
 
 
 @pytest.fixture
 def exons_handle(request, exons_file):
-    """Get a file handle to a ensembl exons file"""
-
+    """Get a file handle to an ensembl exons file"""
     return get_file_handle(exons_file)
 
 
 @pytest.fixture
 def exons_38_handle(request, exons_38_file):
-    """Get a file handle to a ensembl exons file"""
-
+    """Get a file handle to an ensembl exons file"""
     return get_file_handle(exons_38_file)
 
 
 @pytest.fixture
 def exons(request, exons_handle):
     """Get the parsed ensembl transcripts"""
-
     return parse_ensembl_exons(exons_handle)
 
 
 @pytest.fixture
 def exons_38(request, exons_38_handle):
     """Get the parsed ensembl transcripts"""
-
     return parse_ensembl_exons(exons_38_handle)
 
 
 @pytest.fixture
 def parsed_transcripts(request, transcripts_handle, ensembl_genes):
     """Get the parsed ensembl transcripts"""
-
     transcripts = parse_transcripts(transcripts_handle)
     for tx_id in transcripts:
         tx_info = transcripts[tx_id]
@@ -1723,10 +1706,28 @@ def genemap_handle(request, genemap_file):
     return get_file_handle(genemap_file)
 
 
+"""Fixtures supplying paths to demo-files from orphadata"""
+
+
+@pytest.fixture
+def orphadata_en_product4_file(request) -> str:
+    """Get the path to the orphadata_en_product4 file, which contains orpha_to_hpo_lines."""
+    return orpha_to_hpo_reduced_path
+
+
 @pytest.fixture
 def orphadata_en_product6_file(request) -> str:
     """Get the path to the orphadata_en_product6 file, which contains orpha_to_genes_lines."""
     return orpha_to_genes_reduced_path
+
+
+@pytest.fixture
+def en_product9_ages_file(request) -> str:
+    """Get the path to the en_product9_ages file, which contains orpha_inheritance_lines."""
+    return orpha_inheritance_reduced_path
+
+
+"""Fixtures supplying read lines from orphadata files"""
 
 
 @pytest.fixture
@@ -1737,16 +1738,17 @@ def orpha_to_genes_lines(request, orphadata_en_product6_file: str) -> List:
 
 
 @pytest.fixture
-def orphadata_en_product4_file(request) -> str:
-    """Get the path to the orphadata_en_product4 file, which contains orpha_to_hpo_lines."""
-    return orpha_to_hpo_reduced_path
-
-
-@pytest.fixture
 def orpha_to_hpo_lines(request, orphadata_en_product4_file: str) -> List[str]:
     """Get the lines of the orphadata_en_product4_file, which contain orpha_to_hpo info."""
     orpha_to_hpo_lines = get_file_handle(orphadata_en_product4_file)
     return orpha_to_hpo_lines
+
+
+@pytest.fixture
+def orpha_inheritance_lines(request, en_product9_ages_file: str) -> List[str]:
+    """Get the lines of the en_product9_ages_file, which contain orpha_inheritance."""
+    orpha_inheritance_lines = get_file_handle(en_product9_ages_file)
+    return orpha_inheritance_lines
 
 
 #############################################################

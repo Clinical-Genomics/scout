@@ -9,8 +9,7 @@ import requests
 from defusedxml import ElementTree
 from flask import flash
 
-from scout.constants import CHROMOSOMES, HPO_URL, HPOTERMS_URL, ORPHA_URLS
-from scout.utils.ensembl_rest_clients import EnsemblBiomartClient
+from scout.constants import HPO_URL, HPOTERMS_URL, ORPHA_URLS
 
 LOG = logging.getLogger(__name__)
 TIMEOUT = 20
@@ -28,7 +27,6 @@ def post_request_json(url, data, headers=None, cookies=None):
     Returns:
         json_response(dict)
     """
-    resp = None
     json_response = {}
     try:
         LOG.debug(f"Sending POST request with json data to {url}")
@@ -51,7 +49,6 @@ def get_request_json(url, headers=None, cookies=None):
     Returns:
         json_response(dict), example {"status_code":200, "content":{original json content}}
     """
-    resp = None
     json_response = {}
     try:
         LOG.debug(f"Sending GET request to {url}")
@@ -74,7 +71,6 @@ def delete_request_json(url, headers=None, data=None):
     Returns:
         json_response(dict)
     """
-    resp = None
     json_response = {}
     try:
         LOG.debug(f"Sending DELETE request to {url}")
@@ -135,7 +131,6 @@ def fetch_resource(url, json=False):
     Returns:
         data
     """
-    data = None
     if url.startswith("ftp"):
         # requests do not handle ftp
         response = urllib.request.urlopen(url, timeout=TIMEOUT)
@@ -306,114 +301,9 @@ def fetch_orpha_files() -> Dict:
 
     orpha_files["orphadata_en_product4"] = fetch_resource(ORPHA_URLS["orpha_to_hpo"])
     orpha_files["orphadata_en_product6"] = fetch_resource(ORPHA_URLS["orpha_to_genes"])
+    orpha_files["en_product9_ages"] = fetch_resource(ORPHA_URLS["orpha_inheritance"])
 
     return orpha_files
-
-
-def fetch_ensembl_biomart(attributes, filters, build=None):
-    """Fetch data from ensembl biomart
-
-    Args:
-        attributes(list): List of selected attributes
-        filters(dict): Select what filters to use
-        build(str): '37' or '38'
-
-    Returns:
-        client(EnsemblBiomartClient)
-    """
-    build = build or "37"
-
-    client = EnsemblBiomartClient(build=build, filters=filters, attributes=attributes)
-    LOG.info("Selecting attributes: %s", ", ".join(attributes))
-    LOG.info("Use filter: %s", filters)
-
-    return client
-
-
-def fetch_ensembl_genes(build=None, chromosomes=None):
-    """Fetch the ensembl genes
-
-    Args:
-        build(str): ['37', '38']
-        chromosomes(iterable(str))
-
-    Returns:
-        result(iterable): Ensembl formated gene lines
-    """
-    chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl genes")
-
-    attributes = [
-        "chromosome_name",
-        "start_position",
-        "end_position",
-        "ensembl_gene_id",
-        "hgnc_symbol",
-        "hgnc_id",
-    ]
-
-    filters = {"chromosome_name": chromosomes}
-
-    return fetch_ensembl_biomart(attributes, filters, build)
-
-
-def fetch_ensembl_transcripts(build=None, chromosomes=None):
-    """Fetch the ensembl genes
-
-    Args:
-        build(str): ['37', '38']
-        chromosomes(iterable(str))
-
-    Returns:
-        result(iterable): Ensembl formated transcript lines
-    """
-    chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl transcripts")
-
-    attributes = [
-        "chromosome_name",
-        "ensembl_gene_id",
-        "ensembl_transcript_id",
-        "transcript_start",
-        "transcript_end",
-        "refseq_mrna",
-        "refseq_mrna_predicted",
-        "refseq_ncrna",
-    ]
-
-    filters = {"chromosome_name": chromosomes}
-
-    return fetch_ensembl_biomart(attributes, filters, build)
-
-
-def fetch_ensembl_exons(build=None, chromosomes=None):
-    """Fetch the ensembl genes
-
-    Args:
-        build(str): ['37', '38']
-        chromosomes(iterable(str))
-    """
-    chromosomes = chromosomes or CHROMOSOMES
-    LOG.info("Fetching ensembl exons")
-
-    attributes = [
-        "chromosome_name",
-        "ensembl_gene_id",
-        "ensembl_transcript_id",
-        "ensembl_exon_id",
-        "exon_chrom_start",
-        "exon_chrom_end",
-        "5_utr_start",
-        "5_utr_end",
-        "3_utr_start",
-        "3_utr_end",
-        "strand",
-        "rank",
-    ]
-
-    filters = {"chromosome_name": chromosomes}
-
-    return fetch_ensembl_biomart(attributes, filters, build)
 
 
 def fetch_hgnc():

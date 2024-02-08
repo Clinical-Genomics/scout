@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
-from pprint import pprint as pp
 
 from click import progressbar
 
 from scout.build import build_hgnc_gene
+from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.link import link_genes
 from scout.utils.scout_requests import (
     fetch_constraint,
-    fetch_ensembl_genes,
     fetch_hgnc,
     fetch_hpo_files,
     fetch_mim_files,
@@ -53,7 +52,8 @@ def load_hgnc_genes(
     if not genes:
         # Fetch the resources if not provided
         if ensembl_lines is None:
-            ensembl_lines = fetch_ensembl_genes(build=build)
+            ensembl_client = EnsemblBiomartHandler(build=build)
+            ensembl_lines = ensembl_client.stream_resource(interval_type="genes")
         hgnc_lines = hgnc_lines or fetch_hgnc()
         exac_lines = exac_lines or fetch_constraint()
         if not (mim2gene_lines and genemap_lines):
