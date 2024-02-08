@@ -547,7 +547,6 @@ class VariantHandler(VariantLoader):
 
         positional_variant_ids = set()
         for var_event in var_causative_events:
-
             if var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
                 continue
