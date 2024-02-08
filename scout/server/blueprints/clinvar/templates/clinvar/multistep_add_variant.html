@@ -495,12 +495,12 @@ $(function(){
 $(function(){
   $("#assertion_method_cit").change(function(){
     var assertCit = document.getElementById('assertion_method_cit').value;
-    var choices = {{clinsig_terms|safe}}; // all clinsig terms
+    var choices = {{germline_classif_terms|safe}}; // all germline classification terms
     if (assertCit.includes("PMID:25741868")){ // populate select with ACMG terms only
-      choices = {{clinsig_terms[:5]|safe}};
+      choices = {{germline_classif_terms[:5]|safe}};
     }
     $("#clinsig").empty(); // remove all options from clinsig select
-    //Create and append the conditional options to the clinsig select
+    //Create and append the conditional options to the germline classification select
     for (var i = 0; i < choices.length; i++){
       var newOption = new Option(choices[i], choices[i], true, false);
       $('#clinsig').append(newOption).trigger('change');

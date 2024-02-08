@@ -27,16 +27,15 @@ CLINVAR_HEADER = {
     "inner_stop": "Inner stop",
     "outer_stop": "Outer stop",
     "variations_ids": "Variation identifiers",
-    "condition_id_type": "Condition ID type",  # default = 'HPO'
+    "condition_id_type": "Condition ID type",
     "condition_id_value": "Condition ID value",
     "condition_comment": "Condition comment",
-    "clinsig": "Clinical significance",
-    "clinsig_comment": "Comment on clinical significance",
+    "clinsig": "Germline classification",
+    "clinsig_comment": "Comment on classification",
     "last_evaluated": "Date last evaluated",
     "variant_comment": "Comment on variant",
     "inheritance_mode": "Mode of inheritance",
     "clinsig_cit": "Clinical significance citations",
-    "clinsig_comment": "Comment on clinical significance",
     "drug_response": "Drug response condition",
     "funct_conseq": "Functional consequence",
     "funct_conseq_comment": "Comment on functional consequence",
@@ -75,7 +74,7 @@ CASEDATA_HEADER = {
 # The following items are defined in the ClinVar API specifications:
 # https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
 ####################################################################
-CLNSIG_TERMS = [
+GERMLINE_CLASSIF_TERMS = [
     "Pathogenic",
     "Likely pathogenic",
     "Uncertain significance",
