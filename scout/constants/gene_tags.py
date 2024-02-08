@@ -68,7 +68,7 @@ UPDATE_GENES_RESOURCES = {
     "hgnc_lines": ["hgnc.txt", "hgnc_reduced_set.txt"],
     "exac_lines": [
         "gnomad.v4.0.constraint_metrics.tsv",
-        "forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt",
+        "gnomad.v4.0.constraint_metrics_reduced.tsv",
     ],
     "ensembl_genes_37": ["ensembl_genes_37.txt", "ensembl_genes_37_reduced.txt"],
     "ensembl_genes_38": ["ensembl_genes_38.txt", "ensembl_genes_38_reduced.txt"],
