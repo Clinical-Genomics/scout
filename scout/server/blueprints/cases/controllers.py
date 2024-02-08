@@ -1399,12 +1399,11 @@ def _matching_causatives(
     """
     matching_causatives = store.case_matching_causatives(case_obj=case_obj)
 
-    LOG.warning(matching_causatives)
-
     other_causatives = []
     other_causatives_in_default_panels = []
 
     for causative in matching_causatives:
+        LOG.warning(causative)
         hgnc_ids = [gene.get("hgnc_id") for gene in causative.get("genes", [])]
         # Fetch all matching causatives if no causatives_filter defined
         # or only causatives matching the filter:
