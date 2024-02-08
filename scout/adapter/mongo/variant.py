@@ -22,6 +22,7 @@ CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1}
 
 
 class VariantHandler(VariantLoader):
+
     """Methods to handle variants in the mongo adapter"""
 
     def add_gene_info(self, variant_obj, gene_panels=None, build=None):
@@ -537,24 +538,23 @@ class VariantHandler(VariantLoader):
         Returns:
             iterable(Variant)
         """
-        query = {
-            "institute": {"$in": case_obj["collaborators"]},
-            "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
-            "category": "variant",
-        }
-
-        var_causative_events = self.event_collection.find(query)
+        var_causative_events = self.event_collection.find(
+            {
+                "institute": case_obj["owner"],
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
+                "category": "variant",
+            }
+        )
 
         positional_variant_ids = set()
         for var_event in var_causative_events:
-
             if var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
                 continue
 
             other_case = self.case(var_event["case"], CASE_CAUSATIVES_PROJECTION)
             if other_case is None:
-                # Other variant belongs to a case that doesn't exist anymore
+                # Other variant belongs to a case that   doesn't exist any more
                 continue
             other_link = var_event["link"]
             # link contains other variant ID
