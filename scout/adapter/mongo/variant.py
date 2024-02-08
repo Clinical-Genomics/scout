@@ -549,14 +549,8 @@ class VariantHandler(VariantLoader):
 
         positional_variant_ids = set()
         for var_event in var_causative_events:
-<<<<<<< HEAD
 
             LOG.warning(f"OTHER CAUSATIVE CASE -->{var_event}")
-
-=======
-            LOG.warning(f"OTHER CAUSATIVE CASE -->{var_event['case']}")
-            LOG.warning(f"OTHER CAUSATIVE ID -->{other_causative_id}")
->>>>>>> 3320b9d9a614a91b5abcc047f41fa949848f81a9
 
             if var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
