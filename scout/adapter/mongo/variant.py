@@ -549,7 +549,6 @@ class VariantHandler(VariantLoader):
 
         positional_variant_ids = set()
         for var_event in var_causative_events:
-
             LOG.warning(f"OTHER CAUSATIVE CASE -->{var_event['case']}")
             LOG.warning(f"OTHER CAUSATIVE ID -->{other_causative_id}")
 
@@ -564,7 +563,6 @@ class VariantHandler(VariantLoader):
             other_link = var_event["link"]
             # link contains other variant ID
             other_causative_id = other_link.split("/")[-1]  # md5-key _id of a variant
-
 
             if (
                 other_causative_id not in other_case.get("causatives", [])
