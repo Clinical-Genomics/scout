@@ -8,7 +8,7 @@ def test_parse_constraint_line(exac_handle):
 
     gene_info = parse_constraint_line(header=header, line=first_gene)
 
-    assert gene_info["hgnc_symbol"] == first_gene.split("\t")[1]
+    assert gene_info["hgnc_symbol"] == first_gene.split("\t")[0]
 
 
 def test_parse_constraint_genes(exac_handle):
