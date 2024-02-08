@@ -1397,15 +1397,7 @@ def _matching_causatives(
                 The subset of all secondary findings found in default gene panels
         )
     """
-    matching_causatives_filter = list(
-        set(other_causatives_filter + other_causatives_in_default_panels_filter)
-    )
-
-    LOG.warning(f"matching_causatives_filter----->{matching_causatives_filter}")
-
-    matching_causatives = store.case_matching_causatives(
-        case_obj=case_obj, limit_genes=matching_causatives_filter
-    )
+    matching_causatives = store.case_matching_causatives(ase_obj=case_obj)
 
     LOG.warning(matching_causatives)
 
