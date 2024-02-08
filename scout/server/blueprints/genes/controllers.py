@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import flash, redirect, url_for
 
+from scout.constants import GENE_CONSTRAINT_LABELS
 from scout.server.links import add_gene_links, add_tx_links, disease_link
 from scout.server.utils import document_generated
 
@@ -52,7 +53,10 @@ def gene(store, hgnc_id):
             res["symbol"] = record["hgnc_symbol"]
             res["description"] = record["description"]
             res["entrez_id"] = record.get("entrez_id")
-            res["pli_score"] = record.get("pli_score")
+
+            for constraint in GENE_CONSTRAINT_LABELS.keys():
+                if record.get(constraint):
+                    res[constraint] = record.get(constraint)
 
             add_gene_links(record, build=int(build))
 

@@ -1,7 +1,17 @@
 import logging
-from typing import Iterator, Optional
+from typing import Iterable, Iterator, Optional
+
+from scout.constants import GENE_CONSTRAINT_LABELS
 
 logger = logging.getLogger(__name__)
+
+
+def _check_NA(value: str) -> Optional[float]:
+    """GnomAD gene constraint files will contain NA values for certain genes/transcripts."""
+
+    if not value or value == "NA":
+        return None
+    return float(value)
 
 
 def parse_constraint_line(line: str, header: list) -> Optional[dict]:
@@ -19,16 +29,9 @@ def parse_constraint_line(line: str, header: list) -> Optional[dict]:
         return
 
     exac_gene["hgnc_symbol"] = exac_gene["gene"]
-    exac_gene["pli_score"] = float(exac_gene["lof.pLI"])
-    exac_gene["constraint_lof_oe"] = float(exac_gene["lof.oe"])
-    exac_gene["constraint_lof_oe_ci_lower"] = float(exac_gene["lof.oe_ci.lower"])
-    exac_gene["constraint_lof_oe_ci_upper"] = float(exac_gene["lof.oe_ci.upper"])
-    exac_gene["constraint_lof_z"] = float(exac_gene["lof.z_score"])
 
-    exac_gene["constraint_mis_oe"] = float(exac_gene["mis.oe"])
-    exac_gene["constraint_mis_oe_ci_lower"] = float(exac_gene["mis.oe_ci.lower"])
-    exac_gene["constraint_mis_oe_ci_upper"] = float(exac_gene["mis.oe_ci.upper"])
-    exac_gene["constraint_mis_z"] = float(exac_gene["mis.z_score"])
+    for key, header_key in GENE_CONSTRAINT_LABELS.items():
+        exac_gene[key] = _check_NA(exac_gene[header_key])
 
     exac_gene["raw"] = line
 
