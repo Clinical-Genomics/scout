@@ -328,11 +328,11 @@ def test_fetch_constraint(exac_file, mocker):
         data = scout_requests.fetch_constraint()
 
     # THEN assert that the exac header is there
-    assert "transcript\tgene" in data[0]
+    assert "gene\ttranscript" in data[0]
 
 
 @responses.activate
-def test_fetch_constraint_failed_ftp(variant_clinical_file, mocker):
+def test_fetch_constraint_failed_mirror(variant_clinical_file, mocker):
     """Test fetch GnomAD constraint file when one of the mirrors fails"""
 
     # GIVEN file with hgnc info
