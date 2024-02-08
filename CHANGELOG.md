@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update ClinVar inheritance models to reflect changes in ClinVar submission API
 - Handle variant-associated condition ID format in background when creating ClinVar submissions
 - Replace the code that downloads Ensembl genes, transcripts and exons with the Schug web app
+- Add more info to error log when transcript variant frequency parsing fails.
 ### Fixed
 - Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
@@ -28,6 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Rename `Clinical significanc` to `Germline classification` in ClinVar submissions exported files
 - Rename `Comment on clinical significance` to `Comment on classification` in ClinVar submissions exported files
 - Show matching partial causatives on variant page
+- Matching causatives shown on case page consisting only of variant matching the default panels of the case - bug introduced since scout v4.72 (Oct 18, 2023)
 
 ## [4.76]
 ### Added
