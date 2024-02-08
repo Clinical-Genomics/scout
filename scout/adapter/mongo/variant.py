@@ -22,7 +22,6 @@ CASE_CAUSATIVES_PROJECTION = {"causatives": 1, "partial_causatives": 1}
 
 
 class VariantHandler(VariantLoader):
-
     """Methods to handle variants in the mongo adapter"""
 
     def add_gene_info(self, variant_obj, gene_panels=None, build=None):
@@ -595,7 +594,7 @@ class VariantHandler(VariantLoader):
 
         var_causative_events = self.event_collection.find(
             {
-                "verb": "mark_causative",
+                "verb": {"$in": ["mark_causative", "mark_partial_causative"]},
                 "subject": {"$in": [clinical_variant, research_variant]},
                 "category": "variant",
             }
