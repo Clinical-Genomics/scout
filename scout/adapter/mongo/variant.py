@@ -569,7 +569,7 @@ class VariantHandler(VariantLoader):
                 0:4
             ]  # example: [ "17", "7577559", "G" "A"]
 
-            for variant_type in ["clinical", "reseach"]:
+            for variant_type in ["clinical", "research"]:
                 positional_variant_ids.add(generate_md5_key(other_var_simple + [variant_type]))
 
         return self.match_affected_gt(case_obj, positional_variant_ids, limit_genes)
