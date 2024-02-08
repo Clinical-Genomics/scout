@@ -545,6 +545,8 @@ class VariantHandler(VariantLoader):
             }
         )
 
+        LOG.warning(var_causative_events)
+
         positional_variant_ids = set()
         for var_event in var_causative_events:
 
