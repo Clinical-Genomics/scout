@@ -100,6 +100,14 @@
                     </span>
                   </li>
                 {% endif %}
+                {% if constraint_mis_z %}
+                  <li class="list-group-item">
+                    Missense Z (<a href={{ record.gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
+                    <span class="float-end">
+                      {{ constraint_mis_z|round(2) }}
+                    </span>
+                  </li>
+                {% endif %}
                   {% if constraint_mis_oe %}
                   <li class="list-group-item">
                     Missense o/e (<a href={{ record.gnomad_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank">GnomAD</a>)
