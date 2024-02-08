@@ -3,6 +3,7 @@ PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
 
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
+ASSERTION_METHOD_CIT_ID = "25741868"
 NOT_PROVIDED = "not provided"
 
 # Header used to create the Variant .CSV file for the manual ClinVar submission
@@ -185,3 +186,5 @@ CONDITION_PREFIX = {
     "OMIM": "",
     "Orphanet": "ORPHA:",
 }
+
+CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PubMed"}

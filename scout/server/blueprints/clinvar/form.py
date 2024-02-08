@@ -20,6 +20,8 @@ from scout.constants import (
     ALLELE_OF_ORIGIN,
     ASSERTION_METHOD,
     ASSERTION_METHOD_CIT,
+    ASSERTION_METHOD_CIT_ID,
+    CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
     CLINVAR_SV_TYPES,
     COLLECTION_METHOD,
@@ -67,7 +69,14 @@ class ClinVarVariantForm(FlaskForm):
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)
-    assertion_method_cit = TextAreaField("Assertion method citation", default=ASSERTION_METHOD_CIT)
+    # assertion_method_cit = TextAreaField("Assertion method citation", default=ASSERTION_METHOD_CIT)
+    assertion_method_cit_db = SelectField(
+        "Assertion method citation type",
+        choices=[(item, item) for item in CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS],
+    )
+    assertion_method_cit_id = StringField(
+        "Assertion method citation id", default=ASSERTION_METHOD_CIT_ID
+    )
 
 
 class SNVariantForm(ClinVarVariantForm):
