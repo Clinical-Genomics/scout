@@ -42,7 +42,7 @@ from scout.demo import (
 from scout.demo.resources import genes38_reduced_path  # noqa
 from scout.demo.resources import transcripts38_reduced_path  # noqa
 from scout.demo.resources import (
-    constraints_reduced_path,
+    constraint_reduced_path,
     exons37_reduced_path,
     exons38_reduced_path,
     genemap2_reduced_path,
@@ -1482,7 +1482,7 @@ def genes37_file(request):
 @pytest.fixture
 def exac_file(request):
     """Get the path to an GnomAD/ExAC genes file"""
-    return constraints_reduced_path
+    return constraint_reduced_path
 
 
 @pytest.fixture

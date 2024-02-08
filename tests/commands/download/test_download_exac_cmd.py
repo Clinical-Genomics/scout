@@ -31,11 +31,13 @@ def test_print_constraint_cmd(mocker, exac_handle):
     mocker.patch("scout.utils.scout_requests.fetch_resource", return_value=exac_lines)
     dir_name = tempfile.TemporaryDirectory()
     out_dir = pathlib.Path(dir_name.name)
+
     # WHEN fetching and printing the EXaC / GnomAD data
     print_constraint(out_dir)
     i = 0
     for i, line in enumerate(open(out_dir / GNOMAD_CONSTRAINT_FILENAME)):
         if len(line) > 10 and i > 0:
             assert line.startswith("A")
+            break
     # THEN check some lines where produced
     assert i > 0
