@@ -545,22 +545,26 @@ class VariantHandler(VariantLoader):
             }
         )
 
+        LOG.warning(var_causative_events)
+
         positional_variant_ids = set()
         for var_event in var_causative_events:
+
+            LOG.warning(f"OTHER CAUSATIVE CASE -->{var_event['case']}")
+            LOG.warning(f"OTHER CAUSATIVE ID -->{other_causative_id}")
+
             if var_event["case"] == case_obj["_id"]:
                 # exclude causatives from the same case
                 continue
 
             other_case = self.case(var_event["case"], CASE_CAUSATIVES_PROJECTION)
             if other_case is None:
-                # Other variant belongs to a case that   doesn't exist any more
+                # Other variant belongs to a case that doesn't exist anymore
                 continue
             other_link = var_event["link"]
             # link contains other variant ID
             other_causative_id = other_link.split("/")[-1]  # md5-key _id of a variant
 
-            LOG.warning(f"OTHER CAUSATIVE CASE -->{var_event['case']}")
-            LOG.warning(f"OTHER CAUSATIVE ID -->{other_causative_id}")
 
             if (
                 other_causative_id not in other_case.get("causatives", [])
