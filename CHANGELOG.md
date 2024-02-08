@@ -25,6 +25,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Revert style of pinned variants window on the case page
 - Rename `Clinical significanc` to `Germline classification` in ClinVar submissions exported files
 - Rename `Clinical significance citations` to `Classification citations` in ClinVar submissions exported files
+- Rename `Comment on clinical significance` to `Comment on classification` in ClinVar submissions exported files
 
 ## [4.76]
 ### Added
