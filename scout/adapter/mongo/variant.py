@@ -545,12 +545,10 @@ class VariantHandler(VariantLoader):
             }
         )
 
-        LOG.warning(var_causative_events)
-
         positional_variant_ids = set()
         for var_event in var_causative_events:
 
-            if var_event["case"] == "":
+            if var_event["case"] == "cleanshrimp":
                 LOG.warning(var_event)
 
             if var_event["case"] == case_obj["_id"]:
