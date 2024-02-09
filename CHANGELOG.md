@@ -31,6 +31,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Rename `Comment on clinical significance` to `Comment on classification` in ClinVar submissions exported files
 - Show matching partial causatives on variant page
 - Matching causatives shown on case page consisting only of variant matching the default panels of the case - bug introduced since scout v4.72 (Oct 18, 2023)
+- Missing somatic variant read depth leading to report division by zero
 
 ## [4.76]
 ### Added
