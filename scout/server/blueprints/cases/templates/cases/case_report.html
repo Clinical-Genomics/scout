@@ -1376,7 +1376,17 @@
     {{ (variant.first_rep_gene.hgvs_identifier or variant.display_name)|truncate(20, True) }}
   </td>
   <td>{{ (variant.first_rep_gene.hgvsp_identifier or '') |url_decode|truncate(30, True) }}</td>
-  <td>{% for sample in variant.samples %}{% if sample.is_affected %} {% if sample.read_depth and sample.allele_depths[1] != -1 %}{{ (sample.allele_depths[1]/sample.read_depth*100)|round|int }}{% else %}N/A{% endif %}{% endif %} {% endfor %}</td>
+  <td>
+    {% for sample in variant.samples %}
+      {% if sample.is_affected %}
+        {% if sample.read_depth and sample.allele_depths[1] != -1 %}
+          {{ (sample.allele_depths[1]/sample.read_depth*100)|round|int }}
+        {% else %}
+          N/A
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </td>
   <td>
     {% if variant.acmg_classification %}
       <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
@@ -1407,8 +1417,17 @@
     {{ variant.alternative|truncate(20, True) }}
   {% endif %}
   </td>
-
-  <td>{% for sample in variant.samples %}{% if sample.is_affected %}{% if sample.read_depth and sample.allele_depths[1] != -1 %} {{ (sample.allele_depths[1]/sample.read_depth*100)|round|int }}{% else %}N/A{% endif %}{% endif %} {% endfor %}</td>
+  <td>
+    {% for sample in variant.samples %}
+      {% if sample.is_affected %}
+        {% if sample.read_depth and sample.allele_depths[1] != -1 %}
+          {{ (sample.allele_depths[1]/sample.read_depth*100)|round|int }}
+        {% else %}
+          N/A
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </td>
   <td>
     {% if variant.acmg_classification %}
       <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['short'] }}</span>
