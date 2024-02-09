@@ -218,7 +218,7 @@
                 {{variant_data.var_form.clinsig_comment.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required only if you select 'drug response' or 'other' as clinical significance"><strong>?</strong></span>
                 {{variant_data.var_form.clinsig_comment(class="form-control, bg-white", placeholder="(optional)")}}
                 <br><br>
-                {{variant_data.var_form..label(class="fw-bold, text-dark")}}
+                {{variant_data.var_form.clinsig_cit.label(class="fw-bold, text-dark")}}
                 {{variant_data.var_form.clinsig_cit(class="form-control, bg-white", placeholder="(optional) e.g. PMID:123456,  PMCID:PMC3385229, NBK:56955")}}
 
                 <input type="button" name="previous" class="previous action-button-previous" value="Previous"/>
@@ -454,8 +454,7 @@ $(".previous").click(function(){
 
 //Function definition for keeping the tooltip updated for each Assertion method database option
 function updateTooltip(){
-      selectedDBId = $("#assertion_method_cit_db option:selected").text();
-      console.log(selectedDBId)
+      let selectedDBId = $("#assertion_method_cit_db option:selected").text();
       let tooltipText=undefined
           switch (selectedDBId) {
               case "PubMed":
@@ -475,9 +474,11 @@ function updateTooltip(){
 //Run function after load to set the initial value of the tooltip
 updateTooltip()
 //Add eventhandler for change of the DB id, keeping the tooltip updated
-$(function(){
-   updateTooltip()
-  });
+$(function () {
+    $("#assertion_method_cit_db").change(function () {
+        updateTooltip()
+    })
+});
 
 
 var conditionsPlaceHolders = {"OMIM": "e.g. 100800, ..", "HPO": "e.g. 0002839, ..", "MedGen": "e.g. C0001080, ..", "MeSh": "e.g. D000130, ..", "MONDO": "e.g. 0007947, ..", "Orphanet": "e.g. 155, .."};
