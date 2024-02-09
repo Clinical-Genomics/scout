@@ -4,7 +4,7 @@ import itertools
 import json
 import logging
 import os
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, List, Set
 
 import query_phenomizer
 import requests
@@ -115,7 +115,7 @@ async def chanjo2_coverage_report_contents(
         "interval_type": interval_type,
         "panel_name": panel_name,
         "case_display_name": case_obj["display_name"],
-        "hgnc_gene_ids": _get_default_panel_genes(store, case_obj, id_type="ensembl_id"),
+        "hgnc_gene_ids": _get_default_panel_genes(store, case_obj),
         "samples": query_samples,
     }
 
@@ -502,13 +502,17 @@ def _limit_genes_on_default_panels(default_genes: list, limit_genes: list) -> li
     return list(default_genes_set.intersection(limit_genes_set))
 
 
-def _get_default_panel_genes(
-    store: MongoAdapter, case_obj: dict, id_type: Optional[str] = "hgnc_id"
-) -> List[Union[str, int]]:
+def _get_default_panel_genes(store: MongoAdapter, case_obj: dict) -> list:
     """Get unique genes on case default panels.
 
     Also check if the default panels are up to date, and update case_obj with
     information about any out-dated panels, plus full panel names for coverage.
+
+    Args:
+        store(adapter.MongoAdapter)
+        case_obj(dict)
+    Returns:
+        distinct_genes(list(str)): hgnc id for unique genes.
     """
 
     # Set of all unique genes in the default gene panels
@@ -536,7 +540,7 @@ def _get_default_panel_genes(
                 "warning",
             )
 
-        distinct_genes.update([gene[id_type] for gene in panel_obj.get("genes", [])])
+        distinct_genes.update([gene["hgnc_id"] for gene in panel_obj.get("genes", [])])
 
         # Check if case-specific panel is up-to-date with latest version of the panel
         if panel_obj["version"] < latest_panel["version"]:
