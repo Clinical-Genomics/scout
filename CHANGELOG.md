@@ -27,6 +27,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Visualization of partial causatives' diagnoses on case page: style and links
 - Revert style of pinned variants window on the case page
 - Rename `Clinical significanc` to `Germline classification` in ClinVar submissions exported files
+- Rename `Clinical significance citations` to `Classification citations` in ClinVar submissions exported files
 - Rename `Comment on clinical significance` to `Comment on classification` in ClinVar submissions exported files
 - Show matching partial causatives on variant page
 - Matching causatives shown on case page consisting only of variant matching the default panels of the case - bug introduced since scout v4.72 (Oct 18, 2023)
