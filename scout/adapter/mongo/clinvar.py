@@ -301,7 +301,7 @@ class ClinVarHandler(object):
         """
         amc = variant_data.get("assertion_method_cit", "")
         if ":" in amc:
-            amc_db = amc.split(":")[0].replace("PMID", "PubMed")
+            amc_db = amc.split(":")[0]
             amc_id = amc.split(":")[1]
             criteria = {"assertionCriteriaDB": amc_db, "assertionCriteriaID": amc_id}
             return criteria

@@ -265,6 +265,9 @@ def parse_variant_form_fields(form):
             clinvar_var[key] = form[key]
 
     clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
+    clinvar_var["assertion_method_cit"] = ":".join(
+        [form["assertion_method_cit_db"], form["assertion_method_cit_id"]]
+    )
     _parse_tx_hgvs(clinvar_var, form)
     _set_conditions(clinvar_var, form)
     if form.get("dbsnp_id"):
@@ -381,7 +384,8 @@ def json_api_submission(submission_id):
 
     # Retrieve eventual assertion criteria for the submission
     extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
-
+    LOG.info("previously used clinvar_assertion_criteria")
+    LOG.info(extra_params)
     # Retrieve genome build for the case submitted
     case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
     extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"
