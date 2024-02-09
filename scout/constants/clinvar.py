@@ -35,7 +35,7 @@ CLINVAR_HEADER = {
     "last_evaluated": "Date last evaluated",
     "variant_comment": "Comment on variant",
     "inheritance_mode": "Mode of inheritance",
-    "clinsig_cit": "Clinical significance citations",
+    "clinsig_cit": "Classification citations",
     "drug_response": "Drug response condition",
     "funct_conseq": "Functional consequence",
     "funct_conseq_comment": "Comment on functional consequence",
