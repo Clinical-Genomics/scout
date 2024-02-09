@@ -19,7 +19,8 @@ from scout.constants import (
     AFFECTED_STATUS,
     ALLELE_OF_ORIGIN,
     ASSERTION_METHOD,
-    ASSERTION_METHOD_CIT_ID,
+    ASSERTION_METHOD_CIT_DB_DEFAULT,
+    ASSERTION_METHOD_CIT_ID_DEFAULT,
     CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS,
     CLINVAR_INHERITANCE_MODELS,
     CLINVAR_SV_TYPES,
@@ -72,9 +73,12 @@ class ClinVarVariantForm(FlaskForm):
     assertion_method_cit_db = SelectField(
         "Assertion method citation type",
         choices=[(item, item) for item in CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS],
-        default="PubMed",
+        default=ASSERTION_METHOD_CIT_DB_DEFAULT,
     )
-    assertion_method_cit_id = StringField("Assertion method citation id")
+    assertion_method_cit_id = StringField(
+        "Assertion method citation id",
+        default=ASSERTION_METHOD_CIT_ID_DEFAULT,
+    )
 
 
 class SNVariantForm(ClinVarVariantForm):
