@@ -72,10 +72,9 @@ class ClinVarVariantForm(FlaskForm):
     assertion_method_cit_db = SelectField(
         "Assertion method citation type",
         choices=[(item, item) for item in CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS],
+        default="PubMed",
     )
-    assertion_method_cit_id = StringField(
-        "Assertion method citation id", default=ASSERTION_METHOD_CIT_ID
-    )
+    assertion_method_cit_id = StringField("Assertion method citation id")
 
 
 class SNVariantForm(ClinVarVariantForm):

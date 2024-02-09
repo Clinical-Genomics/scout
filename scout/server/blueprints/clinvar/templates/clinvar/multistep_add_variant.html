@@ -71,11 +71,12 @@
                   {{variant_data.var_form.assertion_method.label(class="fw-bold text-dark")}}
                   {{variant_data.var_form.assertion_method(class="bg-white")}}
                   <br><br>
-                  {{variant_data.var_form.assertion_method_cit_db.label(class="fw-bold text-dark")}}
-                  {{variant_data.var_form.assertion_method_cit_db(class="bg-white")}}
-                  <br><br>
-                <legend>{{variant_data.var_form.assertion_method_cit_id.label(class="fw-bold text-dark")}} <span class="text-danger" id="assertion_method_cit_id_tooltip"  data-bs-toggle='tooltip' title="The Assertion method citation is now supplied as a database identifier and an id number in the corresponding format"><strong>?</strong></span></legend>
-                  {{variant_data.var_form.assertion_method_cit_id(class="bg-white")}}
+                  <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center">
+                  {{variant_data.var_form.assertion_method_cit_db.label(class="fw-bold text-dark my-2 mx-lg-2")}}
+                  {{variant_data.var_form.assertion_method_cit_db(class="bg-white my-2 mx-lg-2")}}
+                  <div class="my-2 mx-lg-2">{{variant_data.var_form.assertion_method_cit_id.label(class="fw-bold text-dark")}} <span class="text-danger" id="assertion_method_cit_id_tooltip"  data-bs-toggle='tooltip' title="The Assertion method citation is now supplied as a database identifier and an id number in the corresponding format"><strong>?</strong></span></div>
+                  <div class="my-2 mx-lg-2" style="width:30%; display: inline">{{variant_data.var_form.assertion_method_cit_id(class="bg-white")}}</div>
+                  </div>
 
                 <input type="button" name="next" class="next action-button" value="Next"/>
               </fieldset>
@@ -456,20 +457,25 @@ $(".previous").click(function(){
 function updateTooltip(){
       let selectedDBId = $("#assertion_method_cit_db option:selected").text();
       let tooltipText=undefined
+      let defaultValue=undefined
           switch (selectedDBId) {
               case "PubMed":
                   tooltipText = "PubMed ID is written as digits only, e.g. 10862036"
+                  defaultValue="10862036"
                   break
               case "DOI":
                   tooltipText = "DOI ID is written including prefix, forward slash, and suffix, e.g. 10.1038/gim.2015.30"
+                  defaultValue="10.1038/gim.2015.30"
                   break
               case "pmc":
                   tooltipText = "PubMedCentral ID (pmc) is written as digits only, e.g. 2746682"
+                  defaultValue="2746682"
                   break
               default:
                 return
           }
          $("#assertion_method_cit_id_tooltip").attr("data-bs-original-title",tooltipText)
+         $("#assertion_method_cit_id").val(defaultValue)
 }
 //Run function after load to set the initial value of the tooltip
 updateTooltip()
