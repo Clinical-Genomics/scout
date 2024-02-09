@@ -384,8 +384,7 @@ def json_api_submission(submission_id):
 
     # Retrieve eventual assertion criteria for the submission
     extra_params = store.clinvar_assertion_criteria(variant_data[0]) or {}
-    LOG.info("previously used clinvar_assertion_criteria")
-    LOG.info(extra_params)
+
     # Retrieve genome build for the case submitted
     case_obj = store.case(case_id=variant_data[0].get("case_id")) or {"genome_build": 37}
     extra_params["assembly"] = "GRCh37" if "37" in str(case_obj.get("genome_build")) else "GRCh38"

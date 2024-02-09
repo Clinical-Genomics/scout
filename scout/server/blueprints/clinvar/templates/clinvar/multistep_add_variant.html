@@ -74,7 +74,11 @@
                   <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center">
                   {{variant_data.var_form.assertion_method_cit_db.label(class="fw-bold text-dark my-2 mx-lg-2")}}
                   {{variant_data.var_form.assertion_method_cit_db(class="bg-white my-2 mx-lg-2")}}
-                  <div class="my-2 mx-lg-2">{{variant_data.var_form.assertion_method_cit_id.label(class="fw-bold text-dark")}} <span class="text-danger" id="assertion_method_cit_id_tooltip"  data-bs-toggle='tooltip' title="The Assertion method citation is now supplied as a database identifier and an id number in the corresponding format"><strong>?</strong></span></div>
+                  <div class="my-2 mx-lg-2">{{variant_data.var_form.assertion_method_cit_id.label(class="fw-bold text-dark")}}
+                    <span class="text-danger" id="assertion_method_cit_id_tooltip"  data-bs-toggle='tooltip' title="The Assertion method citation is now supplied as a database identifier and an id number in the corresponding format">
+                      <strong>?</strong>
+                    </span>
+                  </div>
                   <div class="my-2 mx-lg-2" style="width:30%; display: inline">{{variant_data.var_form.assertion_method_cit_id(class="bg-white")}}</div>
                   </div>
 
@@ -461,7 +465,7 @@ function updateTooltip(){
           switch (selectedDBId) {
               case "PubMed":
                   tooltipText = "PubMed ID is written as digits only, e.g. 10862036"
-                  defaultValue="10862036"
+                  defaultValue="25741868"
                   break
               case "DOI":
                   tooltipText = "DOI ID is written including prefix, forward slash, and suffix, e.g. 10.1038/gim.2015.30"
@@ -533,9 +537,12 @@ $(function(){
 // Modify variant classification options based on selected assertion_method_cit (ACMG-based or not)
 $(function(){
   $("#assertion_method_cit_db").change(function(){
-    var assertCit = document.getElementById('assertion_method_cit_db').value;
+
+  //TODO: Add synonyms to limit clinical classification options ( PMC4544753 eller 10.1038/gim.2015.30, PMID:25741868)
+    let assertCitDB = document.getElementById('assertion_method_cit_db').value;
+    let assertCitID = document.getElementById('assertion_method_cit_id').value;
     var choices = {{germline_classif_terms|safe}}; // all germline classification terms
-    if (assertCit.includes("PMID")){ // populate select with ACMG terms only
+    if (assertCitDB === "PubMed" && assertCitID.includes("25741868") ){ // populate select with ACMG terms only
       choices = {{germline_classif_terms[:5]|safe}};
     }
     $("#clinsig").empty(); // remove all options from clinsig select
