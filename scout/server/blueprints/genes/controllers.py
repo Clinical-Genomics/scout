@@ -32,8 +32,8 @@ def genes(store, query):
     return dict(genes=genes_subset, last_updated=last_updated, nr_genes=(nr_genes_37, nr_genes_38))
 
 
-def gene(store, hgnc_id):
-    """Parse information about a gene."""
+def gene(store, hgnc_id: str):
+    """Populate information about a gene."""
     res = {
         "builds": {"37": None, "38": None},
         "symbol": None,
@@ -44,35 +44,37 @@ def gene(store, hgnc_id):
 
     for build in res["builds"]:
         record = store.hgnc_gene(hgnc_id, build=build)
-        if record:
-            record["position"] = "{this[chromosome]}:{this[start]}-{this[end]}".format(this=record)
-            res["aliases"] = record["aliases"]
-            res["hgnc_id"] = record["hgnc_id"]
-            res["description"] = record["description"]
-            res["builds"][build] = record
-            res["symbol"] = record["hgnc_symbol"]
-            res["description"] = record["description"]
-            res["entrez_id"] = record.get("entrez_id")
+        if not record:
+            continue
 
-            for constraint in GENE_CONSTRAINT_LABELS.keys():
-                if record.get(constraint):
-                    res[constraint] = record.get(constraint)
+        record["position"] = "{this[chromosome]}:{this[start]}-{this[end]}".format(this=record)
+        res["aliases"] = record["aliases"]
+        res["hgnc_id"] = record["hgnc_id"]
+        res["description"] = record["description"]
+        res["builds"][build] = record
+        res["symbol"] = record["hgnc_symbol"]
+        res["description"] = record["description"]
+        res["entrez_id"] = record.get("entrez_id")
 
-            add_gene_links(record, build=int(build))
+        for constraint in GENE_CONSTRAINT_LABELS.keys():
+            if record.get(constraint):
+                res[constraint] = record.get(constraint)
 
-            res["omim_id"] = record.get("omim_id")
-            res["incomplete_penetrance"] = record.get("incomplete_penetrance", False)
-            res["inheritance_models"] = record.get("inheritance_models", [])
-            for transcript in record["transcripts"]:
-                transcript["position"] = "{this[chrom]}:{this[start]}-{this[end]}".format(
-                    this=transcript
-                )
-                add_tx_links(transcript, build, record["hgnc_symbol"])
+        add_gene_links(record, build=int(build))
 
-            record["disease_terms"] = add_disease_information_to_gene(store, hgnc_id=hgnc_id)
+        res["omim_id"] = record.get("omim_id")
+        res["incomplete_penetrance"] = record.get("incomplete_penetrance", False)
+        res["inheritance_models"] = record.get("inheritance_models", [])
+        for transcript in record["transcripts"]:
+            transcript["position"] = "{this[chrom]}:{this[start]}-{this[end]}".format(
+                this=transcript
+            )
+            add_tx_links(transcript, build, record["hgnc_symbol"])
 
-            if not res["record"]:
-                res["record"] = record
+        record["disease_terms"] = add_disease_information_to_gene(store, hgnc_id=hgnc_id)
+
+        if not res["record"]:
+            res["record"] = record
 
     # If none of the genes where found
     if not any(res.values()):
