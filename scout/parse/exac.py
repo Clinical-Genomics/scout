@@ -6,7 +6,7 @@ from scout.constants import GENE_CONSTRAINT_LABELS
 logger = logging.getLogger(__name__)
 
 
-def _checkNA(value: str) -> Optional[float]:
+def _check_na(value: str) -> Optional[float]:
     """GnomAD gene constraint files will contain NA values for certain genes/transcripts."""
 
     if not value or value == "NA":
@@ -30,7 +30,7 @@ def parse_constraint_line(line: str, header: list) -> Optional[dict]:
     gene_constraint["hgnc_symbol"] = gene_constraint["gene"]
 
     for key, header_key in GENE_CONSTRAINT_LABELS.items():
-        gene_constraint[key] = _checkNA(gene_constraint[header_key])
+        gene_constraint[key] = _check_na(gene_constraint[header_key])
 
     gene_constraint["raw"] = line
 
