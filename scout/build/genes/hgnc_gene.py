@@ -1,5 +1,6 @@
 import logging
 
+from scout.constants import GENE_CONSTRAINT_LABELS
 from scout.models.hgnc_map import HgncGene
 
 LOG = logging.getLogger(__name__)
@@ -115,8 +116,9 @@ def build_hgnc_gene(gene_info, build="37"):
     if gene_info.get("omim_id"):
         gene_obj["omim_id"] = int(gene_info["omim_id"])
 
-    if gene_info.get("pli_score"):
-        gene_obj["pli_score"] = float(gene_info["pli_score"])
+    for constraint in GENE_CONSTRAINT_LABELS.keys():
+        if gene_info.get(constraint):
+            gene_obj[constraint] = float(gene_info[constraint])
 
     if gene_info.get("ref_seq"):
         gene_obj["primary_transcripts"] = gene_info["ref_seq"]

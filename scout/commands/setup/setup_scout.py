@@ -48,7 +48,11 @@ def abort_if_false(ctx, param, value):
     help="Path to directory with resource files",
 )
 @click.option("--hgnc", type=click.Path(exists=True))
-@click.option("--exac", type=click.Path(exists=True), help="Path to file with EXAC pLi scores")
+@click.option(
+    "--exac",
+    type=click.Path(exists=True),
+    help="Path to file with EXaC / GnomAD pLi constraint scores",
+)
 @click.option(
     "--ensgenes37",
     type=click.Path(exists=True),
@@ -159,7 +163,7 @@ def database(
         "mim2gene_path": mim2gene,
         "genemap_path": genemap,
         "hgnc_path": hgnc,
-        "exac_path": exac,
+        "constaints_path": exac,
         "genes37_path": ensgenes37,
         "genes38_path": ensgenes38,
         "transcripts37_path": enstx37,
@@ -182,8 +186,8 @@ def database(
                 resource_files["genemap_path"] = str(path.resolve())
             if path.stem == "hgnc":
                 resource_files["hgnc_path"] = str(path.resolve())
-            if path.stem == "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data":
-                resource_files["exac_path"] = str(path.resolve())
+            if path.stem == "gnomad.v4.0.constraint_metrics":
+                resource_files["constraint_path"] = str(path.resolve())
             if path.stem == "ensembl_genes_37":
                 resource_files["genes37_path"] = str(path.resolve())
             if path.stem == "ensembl_genes_38":
