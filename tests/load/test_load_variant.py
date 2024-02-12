@@ -369,7 +369,7 @@ def test_compounds_region(real_populated_database, case_obj):
     assert nr_comps > 0
 
     ## THEN when loading all variants in the region, assert that ALL the compounds are updated
-    print("")
+
     adapter.load_variants(
         case_obj=case_obj,
         variant_type=variant_type,

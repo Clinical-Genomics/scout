@@ -1,9 +1,8 @@
 import logging
-import sys
-from pprint import pprint as pp
+from typing import Iterable
 
-from scout.parse.ensembl import parse_ensembl_exons, parse_ensembl_genes, parse_ensembl_transcripts
-from scout.parse.exac import parse_exac_genes
+from scout.parse.ensembl import parse_ensembl_genes
+from scout.parse.exac import parse_constraint_genes
 from scout.parse.hgnc import parse_hgnc_genes
 from scout.parse.hpo_terms import get_incomplete_penetrance_genes
 from scout.parse.omim import get_mim_genes
@@ -79,27 +78,42 @@ def add_ensembl_info(genes, ensembl_lines):
     LOG.debug(f"Skipped {missing_hgnc_id} genes that were missing HGNC ID")
 
 
-def add_exac_info(genes, alias_genes, exac_lines):
-    """Add information from the exac genes
+def add_constraint_info(genes: dict, alias_genes: dict, gnomad_lines: Iterable):
+    """Add GnomAD / EXaC constraint information
 
-    Currently we only add the pLi score on gene level
+    Add GnomAD pLi score and some other selected constraint info on the gene level.
+    While the statistical measures are defined per transcript, in practice the user will always seek
+    a "gene truth". For this we parse only MANE select transcripts, and if there is more than one, the
+    entry will simply be overwritten.
 
-    The exac resource only use HGNC symbol to identify genes so we need
+    The ExAC / GnomAD resource only use HGNC symbol to identify genes - hence we need
     our alias mapping.
-
-    Args:
-        genes(dict): Dictionary with all genes
-        alias_genes(dict): Genes mapped to all aliases
-        ensembl_lines(iteable): Iteable with raw ensembl info
-
     """
-    LOG.info("Add exac pli scores")
-    for exac_gene in parse_exac_genes(exac_lines):
-        hgnc_symbol = exac_gene["hgnc_symbol"].upper()
-        pli_score = exac_gene["pli_score"]
+    LOG.info("Add GnomAD constraint scores")
+    for gene_constraint in parse_constraint_genes(gnomad_lines):
+        hgnc_symbol = gene_constraint["hgnc_symbol"].upper()
+        pli_score = gene_constraint["pli_score"]
+
+        constraint_lof_oe = gene_constraint["constraint_lof_oe"]
+        constraint_lof_oe_ci_lower = gene_constraint["constraint_lof_oe_ci_lower"]
+        constraint_lof_oe_ci_upper = gene_constraint["constraint_lof_oe_ci_upper"]  # LOEUF
+        constraint_lof_z = gene_constraint["constraint_lof_z"]
+
+        constraint_mis_oe = gene_constraint["constraint_mis_oe"]
+        constraint_mis_oe_ci_lower = gene_constraint["constraint_mis_oe_ci_lower"]
+        constraint_mis_oe_ci_upper = gene_constraint["constraint_mis_oe_ci_upper"]
+        constraint_mis_z = gene_constraint["constraint_mis_z"]
 
         for hgnc_id in get_correct_ids(hgnc_symbol, alias_genes):
             genes[hgnc_id]["pli_score"] = pli_score
+            genes[hgnc_id]["constraint_lof_oe"] = constraint_lof_oe
+            genes[hgnc_id]["constraint_lof_oe_ci_lower"] = constraint_lof_oe_ci_lower
+            genes[hgnc_id]["constraint_lof_oe_ci_upper"] = constraint_lof_oe_ci_upper
+            genes[hgnc_id]["constraint_lof_z"] = constraint_lof_z
+            genes[hgnc_id]["constraint_mis_oe"] = constraint_mis_oe
+            genes[hgnc_id]["constraint_mis_oe_ci_lower"] = constraint_mis_oe_ci_lower
+            genes[hgnc_id]["constraint_mis_oe_ci_upper"] = constraint_mis_oe_ci_upper
+            genes[hgnc_id]["constraint_mis_z"] = constraint_mis_z
 
 
 def add_omim_info(genes, alias_genes, genemap_lines, mim2gene_lines):
@@ -211,7 +225,7 @@ def link_genes(
 
     symbol_to_id = genes_by_alias(genes)
 
-    add_exac_info(genes, symbol_to_id, exac_lines)
+    add_constraint_info(genes, symbol_to_id, exac_lines)
 
     add_incomplete_penetrance(genes, symbol_to_id, hpo_lines)
 
