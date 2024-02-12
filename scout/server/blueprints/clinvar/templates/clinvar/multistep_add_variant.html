@@ -543,7 +543,7 @@ $(function(){
     let assertCitID = document.getElementById('assertion_method_cit_id').value;
     var choices = {{germline_classif_terms|safe}}; // all germline classification terms
 
-    if (synonymsACMG.includes(assertCitDB + ":" + assertCitID)){ // populate select with ACMG terms only
+    if (synonymsACMG.includes(`${assertCitDB}:${assertCitID})){ // populate select with ACMG terms only
       choices = {{germline_classif_terms[:5]|safe}};
     }
     $("#clinsig").empty(); // remove all options from clinsig select
