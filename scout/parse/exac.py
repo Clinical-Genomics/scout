@@ -21,21 +21,20 @@ def parse_constraint_line(line: str, header: list) -> Optional[dict]:
     We keep only the MANE select ones as representative for the gene, and will in practice only retain one (there will commonly be
     at least one ENSEMBL and one RefSeq) as these are later aggregated per gene.
     """
-    exac_gene = {}
-    splitted_line = line.rstrip().split("\t")
-    exac_gene = dict(zip(header, splitted_line))
+    split_line = line.rstrip().split("\t")
+    gene_constraint = dict(zip(header, split_line))
 
-    if exac_gene["mane_select"] == "false":
+    if gene_constraint["mane_select"] == "false":
         return
 
-    exac_gene["hgnc_symbol"] = exac_gene["gene"]
+    gene_constraint["hgnc_symbol"] = gene_constraint["gene"]
 
     for key, header_key in GENE_CONSTRAINT_LABELS.items():
-        exac_gene[key] = _check_NA(exac_gene[header_key])
+        gene_constraint[key] = _check_NA(gene_constraint[header_key])
 
-    exac_gene["raw"] = line
+    gene_constraint["raw"] = line
 
-    return exac_gene
+    return gene_constraint
 
 
 def parse_constraint_genes(lines: Iterable[str]) -> Iterator[dict]:
@@ -45,16 +44,16 @@ def parse_constraint_genes(lines: Iterable[str]) -> Iterator[dict]:
     This is downloaded from:
 
     Args:
-        lines(iterable(str)): An iterable with ExAC formated genes
+        lines(iterable(str)): An iterable with GnomAD constraint tsv formatted lines
     Yields:
-        exac_gene(dict): A dictionary with the relevant information
+        gene_constraint(dict): A dictionary with the relevant constraint information
     """
     header = []
-    logger.info("Parsing GnomAD constraint...")
+    logger.info("Parsing GnomAD gene constraint...")
     for index, line in enumerate(lines):
         if index == 0:
             header = line.rstrip().split("\t")
         elif len(line) > 10:
-            exac_gene = parse_constraint_line(line, header)
-            if exac_gene:
-                yield exac_gene
+            gene_constraint = parse_constraint_line(line, header)
+            if gene_constraint:
+                yield gene_constraint
