@@ -28,7 +28,7 @@ from scout.resources import cytoband_files
 from scout.utils.ensembl_biomart_clients import EnsemblBiomartHandler
 from scout.utils.handle import get_file_handle
 from scout.utils.scout_requests import (
-    fetch_exac_constraint,
+    fetch_constraint,
     fetch_genes_to_hpo_to_disease,
     fetch_hgnc,
     fetch_mim_files,
@@ -124,10 +124,10 @@ def setup_scout(
     else:
         hgnc_lines = fetch_hgnc()
 
-    if resource_files.get("exac_path"):
-        exac_lines = [line for line in get_file_handle(resource_files.get("exac_path"))]
+    if resource_files.get("constraint_path"):
+        exac_lines = [line for line in get_file_handle(resource_files.get("constraint_path"))]
     else:
-        exac_lines = fetch_exac_constraint()
+        exac_lines = fetch_constraint()
 
     # Load cytobands into cytoband collection
     for genome_build, cytobands_path in cytoband_files.items():
