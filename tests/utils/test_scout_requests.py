@@ -313,8 +313,8 @@ def test_fetch_hgnc(hgnc_file, mocker):
     assert "hgnc_id\tsymbol" in data[0]
 
 
-def test_fetch_exac_constraint(exac_file, mocker):
-    """Test fetch exac constraint file"""
+def test_fetch_constraint(exac_file, mocker):
+    """Test fetch ExAC / GnomAD constraint file"""
 
     # GIVEN file with hgnc info
     mocker.patch.object(scout_requests.urllib.request, "urlopen")
@@ -325,22 +325,22 @@ def test_fetch_exac_constraint(exac_file, mocker):
         temp.seek(0)
         scout_requests.urllib.request.urlopen.return_value = temp
         # WHEN fetching the resource
-        data = scout_requests.fetch_exac_constraint()
+        data = scout_requests.fetch_constraint()
 
     # THEN assert that the exac header is there
-    assert "transcript\tgene" in data[0]
+    assert "gene\ttranscript" in data[0]
 
 
 @responses.activate
-def test_fetch_exac_constraint_failed_ftp(variant_clinical_file, mocker):
-    """Test fetch exac constraint file when ftp request fails"""
+def test_fetch_constraint_failed_mirror(variant_clinical_file, mocker):
+    """Test fetch GnomAD constraint file when one of the mirrors fails"""
 
     # GIVEN file with hgnc info
     # GIVEN a mocked call that raises a HTTPError when fetching from ftp
     mocker.patch.object(scout_requests.urllib.request, "urlopen")
     url = (
-        "https://storage.googleapis.com/gnomad-public/legacy/exacv1_downloads/release0.3.1"
-        "/manuscript_data/forweb_cleaned_exac_r03_march16_z_data_pLI.txt.gz"
+        "https://storage.googleapis.com/gcp-public-data--gnomad"
+        "/release/v4.0/constraint/gnomad.v4.0.constraint_metrics.tsv"
     )
     scout_requests.urllib.request.urlopen.return_value = HTTPError(
         url, 500, "Internal Error", {}, None
@@ -357,7 +357,7 @@ def test_fetch_exac_constraint_failed_ftp(variant_clinical_file, mocker):
     )
 
     # WHEN fetching the resource
-    data = scout_requests.fetch_exac_constraint()
+    data = scout_requests.fetch_constraint()
 
     # THEN some content is returned
     assert len(data) > 10

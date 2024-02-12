@@ -1,48 +1,59 @@
 import logging
-from pprint import pprint as pp
+from typing import Iterable, Iterator, Optional
+
+from scout.constants import GENE_CONSTRAINT_LABELS
 
 logger = logging.getLogger(__name__)
 
 
-def parse_exac_line(line, header):
-    """Parse an exac formated line
+def _check_na(value: str) -> Optional[float]:
+    """GnomAD gene constraint files will contain NA values for certain genes/transcripts."""
 
-    Args:
-        line(list): A list with exac gene info
-        header(list): A list with the header info
+    if not value or value == "NA":
+        return None
+    return float(value)
 
-    Returns:
-        exac_info(dict): A dictionary with the relevant info
+
+def parse_constraint_line(line: str, header: list) -> Optional[dict]:
+    """Parse a GnomAD constraint formatted line
+
+    In contrast to old ExAC constraint files, these have one line per transcript.
+    We keep only the MANE select ones as representative for the gene, and will in practice only retain one (there will commonly be
+    at least one ENSEMBL and one RefSeq) as these are later aggregated per gene.
     """
-    exac_gene = {}
-    splitted_line = line.rstrip().split("\t")
-    exac_gene = dict(zip(header, splitted_line))
-    exac_gene["hgnc_symbol"] = exac_gene["gene"]
-    exac_gene["pli_score"] = float(exac_gene["pLI"])
-    exac_gene["raw"] = line
+    split_line = line.rstrip().split("\t")
+    gene_constraint = dict(zip(header, split_line))
 
-    return exac_gene
+    if gene_constraint["mane_select"] == "false":
+        return
+
+    gene_constraint["hgnc_symbol"] = gene_constraint["gene"]
+
+    for key, header_key in GENE_CONSTRAINT_LABELS.items():
+        gene_constraint[key] = _check_na(gene_constraint[header_key])
+
+    gene_constraint["raw"] = line
+
+    return gene_constraint
 
 
-def parse_exac_genes(lines):
-    """Parse lines with exac formated genes
+def parse_constraint_genes(lines: Iterable[str]) -> Iterator[dict]:
+    """Parse lines with GnomAD constraint
 
-    This is designed to take a dump with genes from exac.
+    This is designed to dump a file with constraint values from GnomAD
     This is downloaded from:
-        ftp.broadinstitute.org/pub/ExAC_release//release0.3/functional_gene_constraint/
-        fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt
 
     Args:
-        lines(iterable(str)): An iterable with ExAC formated genes
+        lines(iterable(str)): An iterable with GnomAD constraint tsv formatted lines
     Yields:
-        exac_gene(dict): A dictionary with the relevant information
+        gene_constraint(dict): A dictionary with the relevant constraint information
     """
     header = []
-    logger.info("Parsing exac genes...")
+    logger.info("Parsing GnomAD gene constraint...")
     for index, line in enumerate(lines):
         if index == 0:
             header = line.rstrip().split("\t")
         elif len(line) > 10:
-            exac_gene = parse_exac_line(line, header)
-
-            yield exac_gene
+            gene_constraint = parse_constraint_line(line, header)
+            if gene_constraint:
+                yield gene_constraint

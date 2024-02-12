@@ -67,8 +67,8 @@ UPDATE_GENES_RESOURCES = {
     "hpo_genes": ["genes_to_phenotype.txt", "genes_to_phenotype_reduced.txt"],
     "hgnc_lines": ["hgnc.txt", "hgnc_reduced_set.txt"],
     "exac_lines": [
-        "fordist_cleaned_exac_r03_march16_z_pli_rec_null_data.txt",
-        "forweb_cleaned_exac_r03_march16_z_data_pLI_reduced.txt",
+        "gnomad.v4.0.constraint_metrics.tsv",
+        "gnomad.v4.0.constraint_metrics_reduced.tsv",
     ],
     "ensembl_genes_37": ["ensembl_genes_37.txt", "ensembl_genes_37_reduced.txt"],
     "ensembl_genes_38": ["ensembl_genes_38.txt", "ensembl_genes_38_reduced.txt"],
@@ -86,4 +86,18 @@ PANELAPP_CONFIDENCE_EXCLUDE = {
     "green": ["ModerateEvidence", "LowEvidence"],
     "amber": ["LowEvidence"],
     "red": [],
+}
+
+GNOMAD_CONSTRAINT_FILENAME = "gnomad.v4.0.constraint_metrics.tsv"
+
+GENE_CONSTRAINT_LABELS = {
+    "pli_score": "lof.pLI",
+    "constraint_lof_oe": "lof.oe",
+    "constraint_lof_oe_ci_lower": "lof.oe_ci.lower",
+    "constraint_lof_oe_ci_upper": "lof.oe_ci.upper",
+    "constraint_lof_z": "lof.z_score",
+    "constraint_mis_oe": "mis.oe",
+    "constraint_mis_oe_ci_lower": "mis.oe_ci.lower",
+    "constraint_mis_oe_ci_upper": "mis.oe_ci.upper",
+    "constraint_mis_z": "mis.z_score",
 }
