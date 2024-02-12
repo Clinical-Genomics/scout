@@ -464,7 +464,7 @@ function updateTooltip(){
       let defaultValue=undefined
           switch (selectedDBId) {
               case "PubMed":
-                  tooltipText = "PubMed ID is written as digits only, e.g. 10862036"
+                  tooltipText = "PubMed ID is written as digits only, e.g. 25741868"
                   defaultValue="25741868"
                   break
               case "DOI":
@@ -472,8 +472,8 @@ function updateTooltip(){
                   defaultValue="10.1038/gim.2015.30"
                   break
               case "pmc":
-                  tooltipText = "PubMedCentral ID (pmc) is written as digits only, e.g. 2746682"
-                  defaultValue="2746682"
+                  tooltipText = "PubMedCentral ID (pmc) is written as digits only, e.g. 4544753"
+                  defaultValue="4544753"
                   break
               default:
                 return
@@ -536,13 +536,14 @@ $(function(){
 
 // Modify variant classification options based on selected assertion_method_cit (ACMG-based or not)
 $(function(){
-  $("#assertion_method_cit_db").change(function(){
+  $("#assertion_method_cit_db, #assertion_method_cit_id").change(function(){
+    let synonymsACMG=["pmc:4544753", "PubMed:25741868", "DOI:10.1038/gim.2015.30"]
 
-  //TODO: Add synonyms to limit clinical classification options ( PMC4544753 eller 10.1038/gim.2015.30, PMID:25741868)
     let assertCitDB = document.getElementById('assertion_method_cit_db').value;
     let assertCitID = document.getElementById('assertion_method_cit_id').value;
     var choices = {{germline_classif_terms|safe}}; // all germline classification terms
-    if (assertCitDB === "PubMed" && assertCitID.includes("25741868") ){ // populate select with ACMG terms only
+
+    if (synonymsACMG.includes(assertCitDB + ":" + assertCitID)){ // populate select with ACMG terms only
       choices = {{germline_classif_terms[:5]|safe}};
     }
     $("#clinsig").empty(); // remove all options from clinsig select
@@ -551,7 +552,6 @@ $(function(){
       var newOption = new Option(choices[i], choices[i], true, false);
       $('#clinsig').append(newOption).trigger('change');
     }
-
   });
 });
 </script>
