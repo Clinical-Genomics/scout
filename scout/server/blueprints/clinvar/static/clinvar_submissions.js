@@ -12,7 +12,7 @@ async function getJson(url) {
         download(fileName, jsonRes)
     } catch (error) {
         if (error.toString().includes('Failed to fetch')) {
-            console.log(error)
+            alert("JSON file could not be created")
         }
     }
 }
