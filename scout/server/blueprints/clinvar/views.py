@@ -123,5 +123,7 @@ def clinvar_download_json(submission, clinvar_id):
     """Download a json for a clinVar submission"""
 
     code, conversion_res = controllers.json_api_submission(submission_id=submission)
-
-    return conversion_res
+    if code in [200, 201]:
+        return conversion_res
+    else:
+        flash(str(conversion_res.json()), "warning")

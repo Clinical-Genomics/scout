@@ -8,7 +8,6 @@ async function getJson(url) {
         }
         const jsonRes = await response.json()
 				let fileName=url.split("/").pop()
-
 				//Create and download file
         download(fileName, jsonRes)
     } catch (error) {
@@ -34,7 +33,3 @@ function download(filename, object){
 document.querySelector("#download_clinvar_json").addEventListener("click",(e)=>{
 getJson(e.target.value)
 })
-
-
-
-
