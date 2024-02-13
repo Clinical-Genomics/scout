@@ -352,3 +352,35 @@ def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
         # AND the submission object in database should be marked as submitted
         updated_submission = store.clinvar_submission_collection.find_one()
         assert updated_submission["status"] == "submitted"
+
+
+def test_clinvar_download_json(app, institute_obj, case_obj, clinvar_form):
+    """Test downloading a json from the ClinVar submissions page"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+        subm_obj = store.clinvar_submission_collection.find_one()
+
+        # It should be possible to download the json file
+        resp = client.get(
+            url_for(
+                "clinvar.clinvar_download_json",
+                submission=subm_obj["_id"],
+                clinvar_id="SUB000",
+            )
+        )
+        assert resp.status_code == 200
+        assert resp.mimetype == "application/json"
+        assert "clinvarSubmission" in resp.text
