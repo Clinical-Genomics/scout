@@ -65,7 +65,7 @@
                 <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                   Download casedata csv file
                 </a>
-                <button type="button" id="download_clinvar_json" value="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}"   class="btn btn-primary btn-xs text-white">
+                <button type="button" id="download_clinvar_json" value="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white">
                   Download submission json file
                 </button>
               </li>
