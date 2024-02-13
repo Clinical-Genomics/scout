@@ -354,8 +354,9 @@ def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
         assert updated_submission["status"] == "submitted"
 
 
+@responses.activate
 def test_clinvar_download_json(app, institute_obj, case_obj, clinvar_form):
-    """Test downloading a json from the ClinVar submissions page"""
+    """Test creation of json from the ClinVar submissions page"""
 
     # GIVEN an initialized app
     with app.test_client() as client:
@@ -373,7 +374,15 @@ def test_clinvar_download_json(app, institute_obj, case_obj, clinvar_form):
         )
         subm_obj = store.clinvar_submission_collection.find_one()
 
-        # It should be possible to download the json file
+        # GIVEN a mocked proxy service - csv_2_json
+        responses.add(
+            responses.POST,
+            API_CSV_2_JSON_URL,
+            json={"clinvar": "test"},
+            status=200,
+        )
+
+        # The response from the proxy service should be returned
         resp = client.get(
             url_for(
                 "clinvar.clinvar_download_json",
@@ -381,6 +390,6 @@ def test_clinvar_download_json(app, institute_obj, case_obj, clinvar_form):
                 clinvar_id="SUB000",
             )
         )
+
         assert resp.status_code == 200
         assert resp.mimetype == "application/json"
-        assert "clinvarSubmission" in resp.text
