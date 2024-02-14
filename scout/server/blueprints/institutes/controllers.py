@@ -269,9 +269,7 @@ def populate_institute_form(form, institute_obj):
     form.institutes.choices = institutes_tuples
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
-    form.show_all_cases_status.data = institute_obj.get("show_all_cases_status") or [
-        "prioritized"
-    ]
+    form.show_all_cases_status.data = institute_obj.get("show_all_cases_status") or ["prioritized"]
 
     # collect all available default HPO terms and populate the pheno_groups form select with these values
     default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
