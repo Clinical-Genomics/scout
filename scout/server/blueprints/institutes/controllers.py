@@ -269,7 +269,7 @@ def populate_institute_form(form, institute_obj):
     form.institutes.choices = institutes_tuples
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
-    form.show_all_cases_categories.data = institute_obj.get("show_all_cases_categories") or [
+    form.show_all_cases_status.data = institute_obj.get("show_all_cases_status") or [
         "prioritized"
     ]
 
