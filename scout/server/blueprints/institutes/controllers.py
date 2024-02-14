@@ -503,9 +503,7 @@ def cases(store, request, institute_id):
         0  # Nr of cases for the case statuses where all cases should be shown
     )
     # In institute settings, retrieve all case status categories for which all cases should be displayed
-    status_show_all_cases: List[str] = institute_obj.get(
-        "show_all_cases_categories", ["prioritized"]
-    )
+    status_show_all_cases: List[str] = institute_obj.get("show_all_cases_status", ["prioritized"])
     for status in status_show_all_cases:
         cases_in_status = store.cases_by_status(
             institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION

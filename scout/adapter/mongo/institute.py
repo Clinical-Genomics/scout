@@ -40,7 +40,7 @@ class InstituteHandler(object):
         sanger_recipients: Optional[List[str]] = None,
         coverage_cutoff: Optional[int] = None,
         frequency_cutoff: Optional[float] = None,
-        show_all_cases_categories: Optional[List[str]] = None,
+        show_all_cases_status: Optional[List[str]] = None,
         display_name: Optional[str] = None,
         remove_sanger: Optional[str] = None,
         phenotype_groups: Optional[List[str]] = None,
@@ -99,7 +99,7 @@ class InstituteHandler(object):
             "loqusdb_id": loqusdb_ids,
             "sanger_recipients": sanger_recipients,
             "clinvar_submitters": clinvar_submitters,
-            "show_all_cases_categories": show_all_cases_categories,
+            "show_all_cases_status": show_all_cases_status,
         }
         for key, value in GENERAL_SETTINGS.items():
             if value not in [None, ""]:
