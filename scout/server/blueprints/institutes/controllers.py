@@ -145,9 +145,7 @@ def causatives(institute_obj, request):
 
     causatives = []
 
-    for variant_obj in store.institute_causatives(
-        institute_obj=institute_obj, limit_genes=hgnc_id
-    ):
+    for variant_obj in store.institute_causatives(institute_obj=institute_obj, limit_genes=hgnc_id):
         decorated_variant = decorate_institute_variant(variant_obj)
         if decorated_variant:
             causatives.append(variant_obj)
@@ -197,10 +195,7 @@ def institutes():
                 "frequency_cutoff": ins_obj.get("frequency_cutoff", "None"),
                 "phenotype_groups": ins_obj.get("phenotype_groups", PHENOTYPE_GROUPS),
                 "case_count": sum(
-                    1
-                    for i in store.cases(
-                        collaborator=ins_obj["_id"], projection=ID_PROJECTION
-                    )
+                    1 for i in store.cases(collaborator=ins_obj["_id"], projection=ID_PROJECTION)
                 ),
             }
         )
@@ -277,14 +272,10 @@ def populate_institute_form(form, institute_obj):
     form.institutes.choices = institutes_tuples
     form.coverage_cutoff.default = institute_obj.get("coverage_cutoff")
     form.frequency_cutoff.default = institute_obj.get("frequency_cutoff")
-    form.show_all_cases_status.data = institute_obj.get("show_all_cases_status") or [
-        "prioritized"
-    ]
+    form.show_all_cases_status.data = institute_obj.get("show_all_cases_status") or ["prioritized"]
 
     # collect all available default HPO terms and populate the pheno_groups form select with these values
-    default_phenotypes = [
-        choice[0].split(" ")[0] for choice in form.pheno_groups.choices
-    ]
+    default_phenotypes = [choice[0].split(" ")[0] for choice in form.pheno_groups.choices]
     if institute_obj.get("phenotype_groups"):
         for key, value in institute_obj["phenotype_groups"].items():
             if not key in default_phenotypes:
@@ -305,8 +296,7 @@ def populate_institute_form(form, institute_obj):
     form.gene_panels_matching.choices = sorted(panel_set, key=lambda tup: tup[1])
 
     institute_users: List[Tuple] = [
-        (user["name"], user["email"])
-        for user in store.users(institute=institute_obj["_id"])
+        (user["name"], user["email"]) for user in store.users(institute=institute_obj["_id"])
     ]
     form.clinvar_emails.choices = institute_users
 
@@ -358,9 +348,7 @@ def get_gene_panels(store: MongoAdapter, form: MultiDict, tag: str) -> Dict:
     return store.gene_panels_dict(panel_names=form.getlist(tag))
 
 
-def update_institute_settings(
-    store: MongoAdapter, institute_obj: Dict, form: MultiDict
-) -> Dict:
+def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: MultiDict) -> Dict:
     """Update institute settings with data collected from institute form."""
 
     sharing_institutes = []
@@ -372,9 +360,7 @@ def update_institute_settings(
 
     for pheno_group in form.getlist("pheno_groups"):
         phenotype_groups.append(pheno_group.split(" ,")[0])
-        group_abbreviations.append(
-            pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")]
-        )
+        group_abbreviations.append(pheno_group[pheno_group.find("( ") + 2 : pheno_group.find(" )")])
 
     if form.get("hpo_term") and form.get("pheno_abbrev"):
         phenotype_groups.append(form["hpo_term"].split(" |")[0])
@@ -464,11 +450,7 @@ def cases(store, request, institute_id):
             ]
         )
     data["name_query"] = name_query
-    limit = (
-        int(request.args.get("search_limit"))
-        if request.args.get("search_limit")
-        else 100
-    )
+    limit = int(request.args.get("search_limit")) if request.args.get("search_limit") else 100
     data["form"] = populate_case_filter_form(request.args)
 
     ALL_CASES_PROJECTION = {
@@ -490,16 +472,12 @@ def cases(store, request, institute_id):
 
     data["status_ncases"] = store.nr_cases_by_status(institute_id=institute_id)
     data["nr_cases"] = sum(data["status_ncases"].values())
-    data["sanger_unevaluated"] = get_sanger_unevaluated(
-        store, institute_id, current_user.email
-    )
+    data["sanger_unevaluated"] = get_sanger_unevaluated(store, institute_id, current_user.email)
 
     # local function to add info to case obj
     def populate_case_obj(case_obj):
         analysis_types = set(ind["analysis_type"] for ind in case_obj["individuals"])
-        LOG.debug(
-            "Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types)
-        )
+        LOG.debug("Analysis types found in %s: %s", case_obj["_id"], ",".join(analysis_types))
         if len(analysis_types) > 1:
             LOG.debug("Set analysis types to {'mixed'}")
             analysis_types = set(["mixed"])
@@ -528,9 +506,7 @@ def cases(store, request, institute_id):
         0  # Nr of cases for the case statuses where all cases should be shown
     )
     # In institute settings, retrieve all case status categories for which all cases should be displayed
-    status_show_all_cases: List[str] = institute_obj.get("show_all_cases_status") or [
-        "prioritized"
-    ]
+    status_show_all_cases: List[str] = institute_obj.get("show_all_cases_status") or ["prioritized"]
     for status in status_show_all_cases:
         cases_in_status = store.cases_by_status(
             institute_id=institute_id, status=status, projection=ALL_CASES_PROJECTION
@@ -609,9 +585,7 @@ def get_sanger_unevaluated(store, institute_id, user_id):
         case_id = item["_id"]
         # Get the case to collect display name
         CASE_SANGER_UNEVALUATED_PROJECTION = {"display_name": 1}
-        case_obj = store.case(
-            case_id=case_id, projection=CASE_SANGER_UNEVALUATED_PROJECTION
-        )
+        case_obj = store.case(case_id=case_id, projection=CASE_SANGER_UNEVALUATED_PROJECTION)
 
         if not case_obj:  # the case might have been removed
             continue
@@ -687,8 +661,7 @@ def export_gene_variants(
         variant_line.append(variant.get("display_name"))  # Position
         variant_line.append(str(variant.get("rank_score", "")))  # Score
         variant_genes = [
-            gene.get("hgnc_symbol", gene.get("hgnc_id"))
-            for gene in variant.get("genes", [])
+            gene.get("hgnc_symbol", gene.get("hgnc_id")) for gene in variant.get("genes", [])
         ]
         variant_line.append(" | ".join(variant_genes))  # Genes
 
@@ -702,26 +675,16 @@ def export_gene_variants(
                 f"gnomAD(MT) het:{str(round(variant.get('gnomad_mt_heteroplasmic_frequency'),4))}"
             )
         if "gnomad_frequency" in variant:
-            gnomad_freq.append(
-                f"gnomAD:{str(round(variant.get('gnomad_frequency'),4))}"
-            )
+            gnomad_freq.append(f"gnomAD:{str(round(variant.get('gnomad_frequency'),4))}")
         if "max_gnomad_frequency" in variant:
-            gnomad_freq.append(
-                f"gnomAD (max):{str(round(variant.get('max_gnomad_frequency'),4))}"
-            )
-        variant_line.append(
-            " | ".join(gnomad_freq) if gnomad_freq else "-"
-        )  # GnomAD Frequency
+            gnomad_freq.append(f"gnomAD (max):{str(round(variant.get('max_gnomad_frequency'),4))}")
+        variant_line.append(" | ".join(gnomad_freq) if gnomad_freq else "-")  # GnomAD Frequency
 
         variant_line.append(
-            str(round(variant.get("cadd_score"), 1))
-            if variant.get("cadd_score")
-            else "-"
+            str(round(variant.get("cadd_score"), 1)) if variant.get("cadd_score") else "-"
         )  # CADD score
         variant_line.append(" | ".join(variant.get("region_annotations", [])))  # Region
-        variant_line.append(
-            " | ".join(variant.get("functional_annotations", []))
-        )  # Function
+        variant_line.append(" | ".join(variant.get("functional_annotations", [])))  # Function
         variant_line.append(variant.get("hgvs", "-"))  # HGVS
 
         export_lines.append(",".join(variant_line))
@@ -814,12 +777,8 @@ def update_variant_genes(store, variant_obj, genome_build):
         hgvs_p.append(hgvs_protein)
 
     variant_obj["hgvs"] = hgvs_str(gene_symbols, canonical_transcripts, hgvs_p, hgvs_c)
-    variant_obj["region_annotations"] = get_annotations(
-        gene_symbols, region_annotations
-    )
-    variant_obj["functional_annotations"] = get_annotations(
-        gene_symbols, functional_annotations
-    )
+    variant_obj["region_annotations"] = get_annotations(gene_symbols, region_annotations)
+    variant_obj["functional_annotations"] = get_annotations(gene_symbols, functional_annotations)
 
 
 def get_genome_build(variant_case_obj):

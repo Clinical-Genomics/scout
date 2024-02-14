@@ -22,9 +22,7 @@ class InstituteHandler(object):
 
         # Check if institute already exists
         if self.institute(institute_id=internal_id):
-            raise IntegrityError(
-                "Institute {0} already exists in database".format(display_name)
-            )
+            raise IntegrityError("Institute {0} already exists in database".format(display_name))
 
         LOG.info(
             "Adding institute with internal_id: {0} and "
@@ -64,9 +62,7 @@ class InstituteHandler(object):
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
-            raise IntegrityError(
-                "Institute {} does not exist in database".format(internal_id)
-            )
+            raise IntegrityError("Institute {} does not exist in database".format(internal_id))
 
         updates = {"$set": {}}
         updated_institute = institute_obj
@@ -74,9 +70,7 @@ class InstituteHandler(object):
         if sanger_recipient:
             user_obj = self.user(sanger_recipient)
             if not user_obj:
-                raise IntegrityError(
-                    "user {} does not exist in database".format(sanger_recipient)
-                )
+                raise IntegrityError("user {} does not exist in database".format(sanger_recipient))
 
             LOG.info(
                 "Updating sanger recipients for institute: {0} with {1}".format(
@@ -115,9 +109,7 @@ class InstituteHandler(object):
                 group_abbreviations = list(group_abbreviations)
             existing_groups = {}
             if add_groups:
-                existing_groups = institute_obj.get(
-                    "phenotype_groups", PHENOTYPE_GROUPS
-                )
+                existing_groups = institute_obj.get("phenotype_groups", PHENOTYPE_GROUPS)
             for i, hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
                 if not hpo_obj:
@@ -181,9 +173,7 @@ class InstituteHandler(object):
         if not institute_obj:
             return safe_genes  # return an empty list
         for panel_name in institute_obj.get("gene_panels_matching", {}).keys():
-            safe_genes += self.panel_to_genes(
-                panel_name=panel_name, gene_format="hgnc_id"
-            )
+            safe_genes += self.panel_to_genes(panel_name=panel_name, gene_format="hgnc_id")
         return safe_genes
 
     def institutes(self, institute_ids=None):
