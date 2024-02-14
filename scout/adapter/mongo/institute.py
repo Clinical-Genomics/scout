@@ -22,7 +22,9 @@ class InstituteHandler(object):
 
         # Check if institute already exists
         if self.institute(institute_id=internal_id):
-            raise IntegrityError("Institute {0} already exists in database".format(display_name))
+            raise IntegrityError(
+                "Institute {0} already exists in database".format(display_name)
+            )
 
         LOG.info(
             "Adding institute with internal_id: {0} and "
@@ -62,7 +64,9 @@ class InstituteHandler(object):
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
         if not institute_obj:
-            raise IntegrityError("Institute {} does not exist in database".format(internal_id))
+            raise IntegrityError(
+                "Institute {} does not exist in database".format(internal_id)
+            )
 
         updates = {"$set": {}}
         updated_institute = institute_obj
@@ -70,7 +74,9 @@ class InstituteHandler(object):
         if sanger_recipient:
             user_obj = self.user(sanger_recipient)
             if not user_obj:
-                raise IntegrityError("user {} does not exist in database".format(sanger_recipient))
+                raise IntegrityError(
+                    "user {} does not exist in database".format(sanger_recipient)
+                )
 
             LOG.info(
                 "Updating sanger recipients for institute: {0} with {1}".format(
@@ -99,7 +105,6 @@ class InstituteHandler(object):
             "loqusdb_id": loqusdb_ids,
             "sanger_recipients": sanger_recipients,
             "clinvar_submitters": clinvar_submitters,
-            "show_all_cases_status": show_all_cases_status,
         }
         for key, value in GENERAL_SETTINGS.items():
             if value not in [None, ""]:
@@ -110,7 +115,9 @@ class InstituteHandler(object):
                 group_abbreviations = list(group_abbreviations)
             existing_groups = {}
             if add_groups:
-                existing_groups = institute_obj.get("phenotype_groups", PHENOTYPE_GROUPS)
+                existing_groups = institute_obj.get(
+                    "phenotype_groups", PHENOTYPE_GROUPS
+                )
             for i, hpo_term in enumerate(phenotype_groups):
                 hpo_obj = self.hpo_term(hpo_term)
                 if not hpo_obj:
@@ -123,14 +130,15 @@ class InstituteHandler(object):
                 existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
             updates["$set"]["phenotype_groups"] = existing_groups
 
-        for key, value in {
+        ADMIN_SETTINGS = {
             "alamut_key": alamut_key,
             "alamut_institution": alamut_institution,
             "clinvar_key": clinvar_key,
-        }.items():
-            if value is None:
-                continue
-            updates["$set"][key] = value if value else None
+            "show_all_cases_status": show_all_cases_status,
+        }
+        for key, value in ADMIN_SETTINGS.items():
+            if value not in [None, "", []]:
+                updates["$set"][key] = value
 
         updates["$set"]["check_show_all_vars"] = check_show_all_vars is not None
 
@@ -173,7 +181,9 @@ class InstituteHandler(object):
         if not institute_obj:
             return safe_genes  # return an empty list
         for panel_name in institute_obj.get("gene_panels_matching", {}).keys():
-            safe_genes += self.panel_to_genes(panel_name=panel_name, gene_format="hgnc_id")
+            safe_genes += self.panel_to_genes(
+                panel_name=panel_name, gene_format="hgnc_id"
+            )
         return safe_genes
 
     def institutes(self, institute_ids=None):
