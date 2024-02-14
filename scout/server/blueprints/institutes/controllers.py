@@ -17,10 +17,7 @@ from scout.constants import (
     ID_PROJECTION,
     PHENOTYPE_GROUPS,
 )
-from scout.server.blueprints.variant.utils import (
-    predictions,
-    update_representative_gene,
-)
+from scout.server.blueprints.variant.utils import predictions, update_representative_gene
 from scout.server.extensions import beacon, store
 from scout.server.utils import institute_and_case, user_institutes
 
