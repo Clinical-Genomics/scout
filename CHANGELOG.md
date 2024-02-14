@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace the code that downloads Ensembl genes, transcripts and exons with the Schug web app
 - Add more info to error log when transcript variant frequency parsing fails.
 - GnomAD v4 constraint information replaces ExAC constraints (pLi).
+- Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 ### Fixed
 - Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
@@ -50,7 +51,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow ClinVar submissions with custom API key for users registered as ClinVar submitters or when institute doesn't have a preset list of ClinVar submitters
 - Ordered event verbs alphabetically and created ClinVar-related user events
 - Removed the unused "no-variants" option from the load case command line
-- Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 ### Fixed
 - All disease_terms have gene HGNC ids as integers when added to the scout database
 - Disease_term identifiers are now prefixed with the name of the coding system
