@@ -86,9 +86,13 @@
               <fieldset>
                 <legend>Cases display settings</legend>
                 <div class="row">
-                  <div class="col-4">
+                  <div class="col-5">
                     {{ form.show_all_cases_status.label(class="control-label") }}
-                    {{ form.show_all_cases_status }}
+                    <select multiple="multiple" name="show_all_cases_status" class="selectpicker" data-style="btn-secondary">
+                      {% for choice in form.show_all_cases_status.choices or [] %}
+                         <option value="{{choice[0]}}" {% if institute.show_all_cases_status and choice[0] in institute.show_all_cases_status  %} selected {% endif %} >{{choice[1]}}</option>
+                      {% endfor %}
+                    </select>
                   </div>
                 </div>
               </fieldset>
