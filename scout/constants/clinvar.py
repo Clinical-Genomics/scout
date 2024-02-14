@@ -1,5 +1,5 @@
 CLINVAR_API_URL = "https://submit.ncbi.nlm.nih.gov/api/v1/submissions/"
-PRECLINVAR_URL = "http://0.0.0.0:7000"
+PRECLINVAR_URL = "https://preclinvar.scilifelab.se"
 
 ASSERTION_METHOD = "ACMG Guidelines, 2015"
 ASSERTION_METHOD_CIT = "PMID:25741868"
