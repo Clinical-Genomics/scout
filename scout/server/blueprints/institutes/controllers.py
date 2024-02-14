@@ -374,7 +374,7 @@ def update_institute_settings(store: MongoAdapter, institute_obj: Dict, form: Mu
         sanger_recipients=get_sanger_recipients(form),
         coverage_cutoff=int(form.get("coverage_cutoff")),
         frequency_cutoff=float(form.get("frequency_cutoff")),
-        show_all_cases_categories=form.getlist("show_all_cases_categories"),
+        show_all_cases_status=form.getlist("show_all_cases_status"),
         display_name=form.get("display_name"),
         phenotype_groups=phenotype_groups,
         gene_panels=get_gene_panels(store, form, "gene_panels"),
