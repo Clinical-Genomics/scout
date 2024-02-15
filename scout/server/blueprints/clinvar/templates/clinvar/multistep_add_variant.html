@@ -463,8 +463,8 @@ function updateTooltip(){
       let tooltipText=undefined
       let defaultValue=undefined
           switch (selectedDBId) {
-              case "PubMed":
-                  tooltipText = "PubMed ID is written as digits only, e.g. 25741868"
+              case "PMID":
+                  tooltipText = "PubMed ID (PMID) is written as digits only, e.g. 25741868"
                   defaultValue="25741868"
                   break
               case "DOI":
@@ -537,7 +537,7 @@ $(function(){
 // Modify variant classification options based on selected assertion_method_cit (ACMG-based or not)
 $(function(){
   $("#assertion_method_cit_db, #assertion_method_cit_id").change(function(){
-    let synonymsACMG=["pmc:4544753", "PubMed:25741868", "DOI:10.1038/gim.2015.30"]
+    let synonymsACMG=["pmc:4544753", "PMID:25741868", "DOI:10.1038/gim.2015.30"]
 
     let assertCitDB = document.getElementById('assertion_method_cit_db').value;
     let assertCitID = document.getElementById('assertion_method_cit_id').value;
