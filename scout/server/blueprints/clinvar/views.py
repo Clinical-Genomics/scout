@@ -1,6 +1,6 @@
 import csv
-from json import dumps
 import logging
+from json import dumps
 from tempfile import NamedTemporaryFile
 from typing import List
 
