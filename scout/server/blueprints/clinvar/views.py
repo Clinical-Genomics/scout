@@ -1,4 +1,5 @@
 import csv
+from json import dumps
 import logging
 from tempfile import NamedTemporaryFile
 from typing import List
@@ -123,5 +124,20 @@ def clinvar_download_json(submission, clinvar_id):
     """Download a json for a clinVar submission"""
 
     code, conversion_res = controllers.json_api_submission(submission_id=submission)
+
     if code in [200, 201]:
-        return conversion_res
+        # Write temp CSV file and serve it in response
+        tmp_json = NamedTemporaryFile(mode="a+", prefix=clinvar_id, suffix=".json")
+        tmp_json.write(dumps(conversion_res, indent=4))
+
+        tmp_json.flush()
+        tmp_json.seek(0)
+        return send_file(
+            tmp_json.name,
+            download_name=clinvar_id,
+            mimetype="application/json",
+            as_attachment=True,
+        )
+    else:
+        flash(f"JSON file could not be crated for ClinVar submission: {clinvar_id} ", "warning")
+        return redirect(request.referrer)

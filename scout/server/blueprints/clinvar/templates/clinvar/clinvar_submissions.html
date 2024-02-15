@@ -65,9 +65,9 @@
                 <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                   Download casedata csv file
                 </a>
-                <button type="button" id="download_clinvar_json" value="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white">
+                <a id="download_clinvar_json" href="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
                   Download submission json file
-                </button>
+                </a>
               </li>
               {% if subm_obj.status=='open'%}
                 <li class="breadcrumb-item"><button type="submit" name="update_submission" value="closed" class="btn btn-warning btn-xs">Close submission</button></li>
@@ -274,7 +274,6 @@
 
 {% block scripts %}
   {{ super() }}
-<script src="{{ url_for('clinvar.static', filename='clinvar_submissions.js') }}"></script>
   <script type="text/javascript">
 
   $(function () {
