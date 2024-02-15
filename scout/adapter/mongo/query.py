@@ -352,8 +352,6 @@ class QueryHandler(object):
                 mongo_query["$and"] = coordinate_query + mongo_query["$and"]
             else:
                 mongo_query["$and"] = coordinate_query
-
-        LOG.info("mongo query: %s", mongo_query)
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
