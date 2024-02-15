@@ -801,7 +801,13 @@ class CaseHandler(object):
             # collect all variants with user actions for this case
             return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
 
-    def load_case(self, config_data, update=False, keep_actions=True):
+    def update_case_data_sharing(self, old_case: dict, new_case: dict):
+        """Update data sharing info for a case that is re-runned/re-uploaded."""
+        for key in ["beacon", "mme_subission"]:
+            if key in old_case:
+                new_case[key] = old_case[key]
+
+    def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
         """Load a case into the database
 
         Check if the owner and the institute exists.
@@ -811,8 +817,6 @@ class CaseHandler(object):
             config_data(dict): A dictionary with all the necessary information
             update(bool): If existing case should be updated
             keep_actions(bool): Attempt transfer of existing case user actions to new vars
-        Returns:
-            case_obj(dict)
         """
         # Check that the owner exists in the database
         institute_obj = self.institute(config_data["owner"])
@@ -852,6 +856,7 @@ class CaseHandler(object):
             old_evaluated_variants = list(
                 self.evaluated_variants(case_obj["_id"], case_obj["owner"])
             )
+            self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
 
         files = [
             {"file_name": "vcf_snv", "variant_type": "clinical", "category": "snv"},
@@ -910,6 +915,7 @@ class CaseHandler(object):
             case_obj["variants_stats"] = self.case_variants_count(
                 case_id=case_obj["_id"], institute_id=institute_obj["_id"], force_update_case=True
             )
+
             self.update_case(case_obj)
             # update Sanger status for the new inserted variants
             self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
