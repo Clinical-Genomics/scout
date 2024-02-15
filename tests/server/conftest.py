@@ -593,7 +593,7 @@ def clinvar_form(request):
             "last_evaluated": "2022-09-19",
             "inheritance_mode": "Autosomal dominant inheritance",
             "assertion_method": "ACMG Guidelines, 2015",
-            "assertion_method_cit_db": "PubMed",
+            "assertion_method_cit_db": "PMID",
             "assertion_method_cit_id": "25741868",
             "variations_ids": "rs116916706",
             "clinsig": "Likely pathogenic, low penetrance",
