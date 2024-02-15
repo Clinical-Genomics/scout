@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- Removed log info showing hgnc IDs used in variantS search
+
+## [4.77]
 ### Added
 - Orpha disease terms now include information on inheritance
 - Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
@@ -32,7 +36,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Show matching partial causatives on variant page
 - Matching causatives shown on case page consisting only of variant matching the default panels of the case - bug introduced since scout v4.72 (Oct 18, 2023)
 - Missing somatic variant read depth leading to report division by zero
-- Removed log info showing hgnc IDs used in variantS search
 
 ## [4.76]
 ### Added
