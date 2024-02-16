@@ -265,6 +265,9 @@ def parse_variant_form_fields(form):
             clinvar_var[key] = form[key]
 
     clinvar_var["_id"] = "_".join([form["case_id"], form["local_id"]])
+    clinvar_var["assertion_method_cit"] = ":".join(
+        [form["assertion_method_cit_db"], form["assertion_method_cit_id"]]
+    )
     _parse_tx_hgvs(clinvar_var, form)
     _set_conditions(clinvar_var, form)
     if form.get("dbsnp_id"):
