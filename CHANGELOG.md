@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
-- Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded with the --keep-actions tag
+- Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
 
 ## [4.77]
 ### Added
