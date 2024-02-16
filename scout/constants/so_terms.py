@@ -1,4 +1,4 @@
-# These are the valid SO terms with corresponfing severity rank
+# These are the valid SO terms with corresponding severity rank
 SO_TERMS = {
     "transcript_ablation": {"rank": 1, "region": "exonic"},
     "splice_donor_variant": {"rank": 2, "region": "splicing"},
