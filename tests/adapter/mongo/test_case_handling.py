@@ -126,7 +126,7 @@ def test_get_cases(adapter, case_obj):
     assert sum(1 for _ in result) == 1
 
 
-def test_get_prioritized_cases(adapter, case_obj, institute_obj):
+def test_cases_by_status(adapter, case_obj, institute_obj):
     ## GIVEN an empty database (no cases)
     assert adapter.case_collection.find_one() is None
     # WHEN inserting a prioritized case
@@ -134,7 +134,7 @@ def test_get_prioritized_cases(adapter, case_obj, institute_obj):
     adapter.case_collection.insert_one(case_obj)
 
     # WHEN retrieving prioritized casese for the institute
-    result = adapter.prioritized_cases(institute_id=institute_obj["_id"])
+    result = adapter.cases_by_status(institute_id=institute_obj["_id"], status="prioritized")
 
     # THEN one prioritized case is returned
     assert sum(1 for _ in result) == 1
