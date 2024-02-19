@@ -252,6 +252,9 @@ class CaseHandler(object):
         if query_field == "status":
             query["status"] = query_term
 
+        if query_field == "tags":
+            query["tags"] = query_term.lower()
+
         if query_field == "track":
             query["track"] = query_term
 
@@ -339,6 +342,7 @@ class CaseHandler(object):
             is_research(bool)
             has_rna_data(bool): if case has RNA-seq data associated
             status(str or dict expression)
+            tags(list(str)): search case tags
             group(ObjectId): fetch all cases in a named case group
             cohort(bool): Fetch all cases with cohort tags
             phenotype_terms(bool): Fetch all cases with phenotype
@@ -603,20 +607,18 @@ class CaseHandler(object):
 
         return sanger_missing_cases
 
-    def prioritized_cases(self, institute_id=None):
-        """Fetches any prioritized cases from the backend.
-
-        Args:
-            institute_id(str): id of an institute
-        """
+    def cases_by_status(
+        self, status: str, institute_id: Optional[str] = None, projection: Optional[Dict] = None
+    ):
+        """retrieves all cases for an institute given their status."""
         query = {}
 
         if institute_id:
             query["collaborators"] = institute_id
 
-        query["status"] = "prioritized"
+        query["status"] = status
 
-        return self.case_collection.find(query).sort("updated_at", -1)
+        return self.case_collection.find(query, projection=projection).sort("updated_at", -1)
 
     def case_ids_from_group_id(self, group_id):
         """Fetches any cases with given group_id from backend.
