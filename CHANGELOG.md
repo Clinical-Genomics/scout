@@ -15,6 +15,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
 
+### Added
+- New SO terms: `sequence_variant` and `coding_transcript_variant`
+
 ## [4.77]
 ### Added
 - Orpha disease terms now include information on inheritance
