@@ -1,4 +1,4 @@
-{% macro modal_causative(case, institute, variant) %}
+{% macro modal_causative(case, institute, variant, case_tag_options) %}
 <div class="modal fade" id="causativeModal" tabindex="-1" role="dialog" aria-labelledby="causativeLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
@@ -12,6 +12,18 @@
         <form action="{{ url_for('cases.mark_causative', institute_id=institute._id, case_name=case.display_name,
            variant_id=variant._id, partial_causative=False) }}" method="POST">
           <div class="modal-body">
+            <div class="row">
+              <div class="col">
+                <label for="status_tags" class="form-label select-label">Tag causative status:</label>
+                <select name="tags" id="status_tags" multiple class="selectpicker" data-style="btn-secondary">
+                {% for tag, data in case_tag_options.items() %}
+                <option {% if 'tags' in case and tag~"" in case.tags %} selected {% endif %} value="{{ tag }}" title="{{ data.description }}">
+                   {{ data.label }}
+                 </option>
+               {% endfor %}
+               </select>
+              </div>
+            </div>
             <div class="row">
               <div class="col d-flex">
                   <div class="d-flex justify-content-between align-items-center">
