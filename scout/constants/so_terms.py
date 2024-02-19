@@ -1,4 +1,4 @@
-# These are the valid SO terms with corresponfing severity rank
+# These are the valid SO terms with corresponding severity rank
 SO_TERMS = {
     "transcript_ablation": {"rank": 1, "region": "exonic"},
     "splice_donor_variant": {"rank": 2, "region": "splicing"},
@@ -32,16 +32,18 @@ SO_TERMS = {
     "nc_transcript_variant": {"rank": 30, "region": "ncRNA_exonic"},
     "intron_variant": {"rank": 31, "region": "intronic"},
     "NMD_transcript_variant": {"rank": 32, "region": "ncRNA"},
-    "upstream_gene_variant": {"rank": 33, "region": "upstream"},
-    "downstream_gene_variant": {"rank": 34, "region": "downstream"},
-    "TFBS_ablation": {"rank": 35, "region": "TFBS"},
-    "TFBS_amplification": {"rank": 36, "region": "TFBS"},
-    "TF_binding_site_variant": {"rank": 37, "region": "TFBS"},
-    "regulatory_region_amplification": {"rank": 38, "region": "regulatory_region"},
-    "regulatory_region_variant": {"rank": 39, "region": "regulatory_region"},
-    "feature_elongation": {"rank": 40, "region": "genomic_feature"},
-    "feature_truncation": {"rank": 41, "region": "genomic_feature"},
-    "intergenic_variant": {"rank": 42, "region": "intergenic_variant"},
+    "coding_transcript_variant": {"rank": 33, "region": "exonic"},
+    "upstream_gene_variant": {"rank": 34, "region": "upstream"},
+    "downstream_gene_variant": {"rank": 35, "region": "downstream"},
+    "TFBS_ablation": {"rank": 36, "region": "TFBS"},
+    "TFBS_amplification": {"rank": 37, "region": "TFBS"},
+    "TF_binding_site_variant": {"rank": 38, "region": "TFBS"},
+    "regulatory_region_amplification": {"rank": 39, "region": "regulatory_region"},
+    "regulatory_region_variant": {"rank": 40, "region": "regulatory_region"},
+    "feature_elongation": {"rank": 41, "region": "genomic_feature"},
+    "feature_truncation": {"rank": 42, "region": "genomic_feature"},
+    "intergenic_variant": {"rank": 43, "region": "intergenic_variant"},
+    "sequence_variant": {"rank": 44, "region": "genomic_feature"},
 }
 
 SO_TERM_KEYS = list(SO_TERMS.keys())
