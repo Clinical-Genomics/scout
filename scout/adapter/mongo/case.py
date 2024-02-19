@@ -253,7 +253,7 @@ class CaseHandler(object):
             query["status"] = query_term
 
         if query_field == "tags":
-            query["tags"] = query_term
+            query["tags"] = query_term.lower()
 
         if query_field == "track":
             query["track"] = query_term
