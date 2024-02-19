@@ -5,8 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-###
+### Added
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
+- More MEI specific annotation is shown on the variant page
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
