@@ -4,6 +4,8 @@ import logging
 import pymongo
 import pytest
 
+from scout.constants import CASE_TAGS
+
 logger = logging.getLogger(__name__)
 
 
@@ -459,6 +461,33 @@ def test_remove_cohort(adapter, institute_obj, case_obj, user_obj):
     assert updated_case["cohorts"] == []
     # THEN an event should have been created
     assert sum(1 for i in adapter.event_collection.find()) == 2
+
+
+def test_tag_case(adapter, institute_obj, case_obj, user_obj):
+    ## GIVEN a populated database
+    adapter.case_collection.insert_one(case_obj)
+    adapter.institute_collection.insert_one(institute_obj)
+    adapter.user_collection.insert_one(user_obj)
+    assert sum(1 for i in adapter.event_collection.find()) == 0
+
+    case_tag = list(CASE_TAGS.keys())[0]
+
+    link = "taglink"
+    ## WHEN adding a cohort to a case
+    updated_case = adapter.tag_case(
+        institute=institute_obj,
+        case=case_obj,
+        user=user_obj,
+        tags=[case_tag],
+        link=link,
+    )
+    # THEN the case should have the tag saved
+    assert updated_case["tags"] == [case_tag]
+    # THEN an event should have been created
+    assert sum(1 for i in adapter.event_collection.find()) == 1
+
+    event_obj = adapter.event_collection.find_one()
+    assert event_obj["link"] == link
 
 
 def test_update_clinical_filter_hpo(adapter, institute_obj, case_obj, user_obj):

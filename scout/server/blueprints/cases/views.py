@@ -565,6 +565,10 @@ def status(institute_id, case_name):
     else:
         store.update_status(institute_obj, case_obj, user_obj, status, link)
 
+    tags = request.form.getlist("tags")
+    if tags or case_obj.get("tags") and tags != case_obj.get("tags"):
+        store.tag_case(institute_obj, case_obj, user_obj, tags, link)
+
     return redirect(request.referrer)
 
 
@@ -706,6 +710,9 @@ def mark_causative(institute_id, case_name, variant_id, partial_causative=False)
             )
         else:
             store.mark_causative(institute_obj, case_obj, user_obj, link, variant_obj)
+        if "tags" in request.form:
+            tags = request.form.getlist("tags")
+            store.tag_case(institute_obj, case_obj, user_obj, tags, link)
     elif request.form["action"] == "DELETE":
         if partial_causative == "True":
             store.unmark_partial_causative(institute_obj, case_obj, user_obj, link, variant_obj)
