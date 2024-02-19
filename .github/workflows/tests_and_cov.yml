@@ -94,3 +94,5 @@ jobs:
           coverage report
           coverage xml
       - uses: codecov/codecov-action@v4
+        env:
+            CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
