@@ -743,7 +743,7 @@ def test_get_similar_cases_by_name_query(hpo_database, test_hpo_terms, case_obj)
     assert len(cases) == 1
 
 
-def test_get_cases_cohort(real_adapter, case_obj, user_obj):
+def test_get_cases_cohort(real_adapter, case_obj):
     adapter = real_adapter
     # GIVEN an empty database (no cases)
     assert sum(1 for _ in adapter.cases()) == 0
@@ -755,6 +755,24 @@ def test_get_cases_cohort(real_adapter, case_obj, user_obj):
 
     # WHEN retreiving cases by a cohort name query
     result = adapter.cases(name_query="cohort:{}".format(cohort_name))
+    # THEN we should get the case returned
+    assert sum(1 for _ in result) == 1
+
+
+def test_get_cases_tags(real_adapter, case_obj):
+    adapter = real_adapter
+    # GIVEN an empty database (no cases)
+    assert sum(1 for _ in adapter.cases()) == 0
+
+    # WHEN inserting a case with tags
+    tags = ["diagnostic", "upd"]
+
+    case_obj["tags"] = tags
+    adapter.case_collection.insert_one(case_obj)
+
+    # WHEN retreiving cases by a tags name query
+    result = adapter.cases(name_query="tags:diagnostic")
+
     # THEN we should get the case returned
     assert sum(1 for _ in result) == 1
 

@@ -4,6 +4,7 @@ import click
 from flask import current_app, url_for
 from flask.cli import with_appcontext
 
+from scout.constants import CASE_STATUSES
 from scout.server.extensions import store
 
 LOG = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ DELETE_VARIANTS_HEADER = [
     "Total variants",
     "Removed variants",
 ]
-CASE_STATUS = ["solved", "archived", "active", "inactive", "ignored", "prioritized"]
+
 VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 
 
@@ -31,7 +32,7 @@ VARIANT_CATEGORIES = ["mei", "snv", "sv", "cancer", "cancer_sv", "str"]
 @click.option("-c", "--case-id", help="Case id")
 @click.option(
     "--status",
-    type=click.Choice(CASE_STATUS),
+    type=click.Choice(CASE_STATUSES),
     multiple=True,
     default=[],
     help="Restrict to cases with specified status",
