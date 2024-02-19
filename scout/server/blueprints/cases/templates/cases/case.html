@@ -53,7 +53,7 @@
               <h4 class="h4 d-inline-block">
                 Status: {{case.status}}
               </h4>
-              {% for status_tag in case.tags %}<span class="badge bg-info align-top" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ case_tag_options[status_tag].description }}">{{ case_tag_options[status_tag].label }}</span>{% endfor %}
+              {% for status_tag in case.tags %}<span class="badge bg-info align-text-bottom ms-1" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ case_tag_options[status_tag].description }}">{{ case_tag_options[status_tag].label }}</span>{% endfor %}
             </div>
             <div class="col-sm-6">
               {{ variants_buttons() }}
