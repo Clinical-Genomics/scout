@@ -27,11 +27,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case(dict)
         """
-        LOG.info(
-            "Creating event for assigning {0} to {1}".format(
-                user["name"].encode("utf-8"), case["display_name"]
-            )
-        )
 
         self.create_event(
             institute=institute,
@@ -42,7 +37,6 @@ class CaseEventHandler(object):
             verb="assign",
             subject=case["display_name"],
         )
-        LOG.info("Updating {0} to be assigned with {1}".format(case["display_name"], user["name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -68,9 +62,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case (dict): The updated case
         """
-        LOG.info(
-            "Creating event for unassigning {0} from {1}".format(user["name"], case["display_name"])
-        )
 
         self.create_event(
             institute=institute,
@@ -80,10 +71,6 @@ class CaseEventHandler(object):
             category="case",
             verb="unassign",
             subject=case["display_name"],
-        )
-
-        LOG.info(
-            "Updating {0} to be unassigned with {1}".format(case["display_name"], user["name"])
         )
 
         # if case is not prioritized and user wishes to inactivate it:
@@ -121,13 +108,8 @@ class CaseEventHandler(object):
             LOG.warning("Status {0} is invalid".format(status))
             return None
 
-        LOG.info(
-            "Creating event for updating status of {0} to {1}".format(case["display_name"], status)
-        )
-
         # assign case to user if user unarchives it
         if case.get("status") == "archived" and status == "active":
-            LOG.info("assign case to user {}".format(user["email"]))
             self.assign(institute, case, user, link)
 
         self.create_event(
@@ -140,7 +122,6 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Updating {0} to status {1}".format(case["display_name"], status))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"status": status}},
@@ -165,10 +146,6 @@ class CaseEventHandler(object):
                 LOG.warning("Tag {0} is invalid".format(tag))
                 return None
 
-        LOG.info(
-            "Creating event for updating tags of {0} to {1}".format(case["display_name"], tags)
-        )
-
         self.create_event(
             institute=institute,
             case=case,
@@ -179,7 +156,6 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Tagging {0} with {1}".format(case["display_name"], tags))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"tags": tags}},
@@ -204,9 +180,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case
         """
-        LOG.info(
-            "Creating event for updating the synopsis for case" " {0}".format(case["display_name"])
-        )
 
         self.create_event(
             institute=institute,
@@ -219,7 +192,6 @@ class CaseEventHandler(object):
             content=content,
         )
 
-        LOG.info("Updating the synopsis for case {0}".format(case["display_name"]))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"synopsis": content}},
@@ -239,7 +211,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case (dict)
         """
-        LOG.info("Creating event for archiving case {0}".format(case["display_name"]))
 
         self.create_event(
             institute=institute,
@@ -250,8 +221,6 @@ class CaseEventHandler(object):
             verb="archive",
             subject=case["display_name"],
         )
-
-        LOG.info("Change status for case {0} to 'archived'".format(case["display_name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -294,7 +263,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case(dict)
         """
-        LOG.info("Creating event for opening research for case" " {0}".format(case["display_name"]))
 
         self.create_event(
             institute=institute,
@@ -305,8 +273,6 @@ class CaseEventHandler(object):
             verb="open_research",
             subject=case["display_name"],
         )
-
-        LOG.info("Set research_requested for case {0} to True".format(case["display_name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -327,9 +293,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case(dict)
         """
-
-        LOG.info("Creating event for closing research for case" " {0}".format(case["display_name"]))
-
         self.create_event(
             institute=institute,
             case=case,
@@ -339,8 +302,6 @@ class CaseEventHandler(object):
             verb="reset_research",
             subject=case["display_name"],
         )
-
-        LOG.info("Set research_requested for case {0} to False".format(case["display_name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -658,8 +619,6 @@ class CaseEventHandler(object):
             subject=link,
         )
 
-        LOG.info("Adding cohort tag {0} to {1}".format(tag, case["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$addToSet": {"cohorts": tag}},
@@ -689,8 +648,6 @@ class CaseEventHandler(object):
             verb="remove_cohort",
             subject=case["display_name"],
         )
-
-        LOG.info("Removing cohort tag {0} to {1}".format(tag, case["display_name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -723,8 +680,6 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        LOG.info("Update HPO clinical filter status for {}".format(case_obj["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"hpo_clinical_filter": hpo_clinical_filter}},
@@ -752,7 +707,6 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        LOG.info("Update case group ids for {}".format(case_obj["display_name"]))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"group": group_ids}},
@@ -784,8 +738,6 @@ class CaseEventHandler(object):
             verb="update_default_panels",
             subject=case_obj["display_name"],
         )
-
-        LOG.info("Update default panels for {}".format(case_obj["display_name"]))
 
         panel_ids = [panel["_id"] for panel in panel_objs]
 
