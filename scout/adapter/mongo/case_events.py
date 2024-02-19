@@ -1,10 +1,10 @@
 import logging
 from collections import Counter
-from typing import Optional
+from typing import Dict, List, Optional
 
 import pymongo
 
-from scout.constants import CASE_STATUSES
+from scout.constants import CASE_STATUSES, CASE_TAGS
 
 LOG = logging.getLogger(__name__)
 
@@ -27,11 +27,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case(dict)
         """
-        LOG.info(
-            "Creating event for assigning {0} to {1}".format(
-                user["name"].encode("utf-8"), case["display_name"]
-            )
-        )
 
         self.create_event(
             institute=institute,
@@ -42,7 +37,6 @@ class CaseEventHandler(object):
             verb="assign",
             subject=case["display_name"],
         )
-        LOG.info("Updating {0} to be assigned with {1}".format(case["display_name"], user["name"]))
 
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
@@ -68,9 +62,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case (dict): The updated case
         """
-        LOG.info(
-            "Creating event for unassigning {0} from {1}".format(user["name"], case["display_name"])
-        )
 
         self.create_event(
             institute=institute,
@@ -80,10 +71,6 @@ class CaseEventHandler(object):
             category="case",
             verb="unassign",
             subject=case["display_name"],
-        )
-
-        LOG.info(
-            "Updating {0} to be unassigned with {1}".format(case["display_name"], user["name"])
         )
 
         # if case is not prioritized and user wishes to inactivate it:
@@ -96,7 +83,6 @@ class CaseEventHandler(object):
             {"$pull": {"assignees": user["_id"]}, "$set": {"status": case["status"]}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def update_status(self, institute, case, user, status, link):
@@ -122,13 +108,8 @@ class CaseEventHandler(object):
             LOG.warning("Status {0} is invalid".format(status))
             return None
 
-        LOG.info(
-            "Creating event for updating status of {0} to {1}".format(case["display_name"], status)
-        )
-
         # assign case to user if user unarchives it
         if case.get("status") == "archived" and status == "active":
-            LOG.info("assign case to user {}".format(user["email"]))
             self.assign(institute, case, user, link)
 
         self.create_event(
@@ -141,13 +122,45 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Updating {0} to status {1}".format(case["display_name"], status))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"status": status}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
+
+        return updated_case
+
+    def tag_case(
+        self, institute: Dict, case: Dict, user: Dict, tags: List[str], link: str
+    ) -> Optional[dict]:
+        """Update the status tags of a case.
+
+        This function will create an Event to log that a user have updated the
+        status of a case. Also the status of the case will be updated.
+        Status tags could be any valid keys of the CASE_TAGS constant, eg
+            ("provisional", "diagnostic", "carrier", "upd", "medical attention")
+        """
+
+        for tag in tags:
+            if tag not in CASE_TAGS.keys():
+                LOG.warning("Tag {0} is invalid".format(tag))
+                return None
+
+        self.create_event(
+            institute=institute,
+            case=case,
+            user=user,
+            link=link,
+            category="case",
+            verb="tag",
+            subject=case["display_name"],
+        )
+
+        updated_case = self.case_collection.find_one_and_update(
+            {"_id": case["_id"]},
+            {"$set": {"tags": tags}},
+            return_document=pymongo.ReturnDocument.AFTER,
+        )
 
         return updated_case
 
@@ -167,9 +180,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case
         """
-        LOG.info(
-            "Creating event for updating the synopsis for case" " {0}".format(case["display_name"])
-        )
 
         self.create_event(
             institute=institute,
@@ -182,13 +192,11 @@ class CaseEventHandler(object):
             content=content,
         )
 
-        LOG.info("Updating the synopsis for case {0}".format(case["display_name"]))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"synopsis": content}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def archive_case(self, institute, case, user, link):
@@ -203,7 +211,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case (dict)
         """
-        LOG.info("Creating event for archiving case {0}".format(case["display_name"]))
 
         self.create_event(
             institute=institute,
@@ -215,14 +222,11 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Change status for case {0} to 'archived'".format(case["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"status": "archived"}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def remove_variants_event(
@@ -259,7 +263,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case(dict)
         """
-        LOG.info("Creating event for opening research for case" " {0}".format(case["display_name"]))
 
         self.create_event(
             institute=institute,
@@ -271,14 +274,11 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Set research_requested for case {0} to True".format(case["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"research_requested": True}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def reset_research(self, institute, case, user, link):
@@ -293,9 +293,6 @@ class CaseEventHandler(object):
         Returns:
             updated_case(dict)
         """
-
-        LOG.info("Creating event for closing research for case" " {0}".format(case["display_name"]))
-
         self.create_event(
             institute=institute,
             case=case,
@@ -306,14 +303,11 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Set research_requested for case {0} to False".format(case["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$set": {"research_requested": False}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def case_dismissed_variants(self, institute, case):
@@ -442,7 +436,6 @@ class CaseEventHandler(object):
             {"$set": {"rerun_monitoring": True}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def unmonitor(self, institute, case, user, link):
@@ -473,7 +466,6 @@ class CaseEventHandler(object):
             {"$set": {"rerun_monitoring": False}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def share(self, institute, case, collaborator_id, user, link):
@@ -507,7 +499,6 @@ class CaseEventHandler(object):
             {"$push": {"collaborators": collaborator_id}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def unshare(self, institute, case, collaborator_id, user, link):
@@ -542,7 +533,6 @@ class CaseEventHandler(object):
             {"$pull": {"collaborators": collaborator_id}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def diagnose(
@@ -629,14 +619,11 @@ class CaseEventHandler(object):
             subject=link,
         )
 
-        LOG.info("Adding cohort tag {0} to {1}".format(tag, case["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$addToSet": {"cohorts": tag}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def remove_cohort(self, institute, case, user, link, tag):
@@ -662,14 +649,11 @@ class CaseEventHandler(object):
             subject=case["display_name"],
         )
 
-        LOG.info("Removing cohort tag {0} to {1}".format(tag, case["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case["_id"]},
             {"$pull": {"cohorts": tag}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def update_clinical_filter_hpo(
@@ -696,14 +680,11 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        LOG.info("Update HPO clinical filter status for {}".format(case_obj["display_name"]))
-
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"hpo_clinical_filter": hpo_clinical_filter}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
         return updated_case
 
     def update_case_group_ids(self, institute_obj, case_obj, user_obj, link, group_ids):
@@ -726,7 +707,6 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        LOG.info("Update case group ids for {}".format(case_obj["display_name"]))
         updated_case = self.case_collection.find_one_and_update(
             {"_id": case_obj["_id"]},
             {"$set": {"group": group_ids}},
@@ -759,8 +739,6 @@ class CaseEventHandler(object):
             subject=case_obj["display_name"],
         )
 
-        LOG.info("Update default panels for {}".format(case_obj["display_name"]))
-
         panel_ids = [panel["_id"] for panel in panel_objs]
 
         for existing_panel in case_obj["panels"]:
@@ -774,6 +752,5 @@ class CaseEventHandler(object):
             {"$set": {"panels": case_obj["panels"]}},
             return_document=pymongo.ReturnDocument.AFTER,
         )
-        LOG.debug("Case updated")
 
         return updated_case
