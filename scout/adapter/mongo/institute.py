@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import List, Optional, Union
 
 import pymongo
 
@@ -34,54 +35,29 @@ class InstituteHandler(object):
 
     def update_institute(
         self,
-        internal_id,
-        sanger_recipient=None,
-        sanger_recipients=None,
-        coverage_cutoff=None,
-        frequency_cutoff=None,
-        display_name=None,
-        remove_sanger=None,
-        phenotype_groups=None,
-        gene_panels=None,
-        gene_panels_matching=None,
-        group_abbreviations=None,
-        add_groups=None,
-        sharing_institutes=None,
-        cohorts=None,
-        loqusdb_ids=[],
-        alamut_key=None,
-        alamut_institution=None,
-        check_show_all_vars=None,
-        clinvar_key=None,
-        clinvar_submitters=None,
-    ):
-        """Update the information for an institute
-
-        Args:
-            internal_id(str): The internal institute id
-            sanger_recipient(str): Email address to add for sanger order
-            sanger_recipients(list): A list of sanger recipients email addresses
-            coverage_cutoff(int): Update coverage cutoff
-            frequency_cutoff(float): New frequency cutoff
-            display_name(str): New display name
-            remove_sanger(str): Email address for sanger user to be removed
-            phenotype_groups(iterable(str)): New phenotype groups
-            gene_panels(dict): a dictionary of panels with key=panel_name and value=display_name
-            gene_panels_matching(dict): panels to limit search of matching variants (managed, causatives) to. Dict with key=panel_name and value=display_name
-            group_abbreviations(iterable(str))
-            add_groups(bool): If groups should be added. If False replace groups
-            sharing_institutes(list(str)): Other institutes to share cases with
-            cohorts(list(str)): patient cohorts
-            loqusdb_ids(list(str)): list of ids of loqusdb instances Scout is connected to
-            alamut_key(str): optional, Alamut Plus API key -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
-            alamut_institution: optional, Alamut Plus API Institute ID -> https://extranet.interactive-biosoftware.com/alamut-visual-plus_API.html
-            clinvar_key: optional, ClinVar API key -> https://www.ncbi.nlm.nih.gov/clinvar/docs/api_http/
-            clinvar_submitters(list): users allowed to submit variants to ClinVar
-
-        Returns:
-            updated_institute(dict)
-
-        """
+        internal_id: str,
+        sanger_recipient: Optional[str] = None,
+        sanger_recipients: Optional[List[str]] = None,
+        coverage_cutoff: Optional[int] = None,
+        frequency_cutoff: Optional[float] = None,
+        show_all_cases_status: Optional[List[str]] = None,
+        display_name: Optional[str] = None,
+        remove_sanger: Optional[str] = None,
+        phenotype_groups: Optional[List[str]] = None,
+        gene_panels: Optional[dict] = None,
+        gene_panels_matching: Optional[dict] = None,
+        group_abbreviations: Optional[List[str]] = None,
+        add_groups: Optional[bool] = None,
+        sharing_institutes: Optional[List[str]] = None,
+        cohorts: Optional[List[str]] = None,
+        loqusdb_ids: Optional[List[str]] = [],
+        alamut_key: Optional[str] = None,
+        alamut_institution: Optional[str] = None,
+        check_show_all_vars: Optional[str] = None,
+        clinvar_key: Optional[str] = None,
+        clinvar_submitters: Optional[List[str]] = None,
+    ) -> Union[dict, str]:
+        """Update the information for an institute."""
 
         add_groups = add_groups or False
         institute_obj = self.institute(internal_id)
@@ -146,14 +122,15 @@ class InstituteHandler(object):
                 existing_groups[hpo_term] = {"name": description, "abbr": abbreviation}
             updates["$set"]["phenotype_groups"] = existing_groups
 
-        for key, value in {
+        ADMIN_SETTINGS = {
             "alamut_key": alamut_key,
             "alamut_institution": alamut_institution,
             "clinvar_key": clinvar_key,
-        }.items():
-            if value is None:
-                continue
-            updates["$set"][key] = value if value else None
+            "show_all_cases_status": show_all_cases_status,
+        }
+        for key, value in ADMIN_SETTINGS.items():
+            if value not in [None, "", []]:
+                updates["$set"][key] = value
 
         updates["$set"]["check_show_all_vars"] = check_show_all_vars is not None
 
