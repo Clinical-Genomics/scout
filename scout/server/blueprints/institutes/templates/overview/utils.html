@@ -80,8 +80,28 @@
             </div>
             <!-- End of general settings -->
 
-            <!-- Phenotype groups settings -->
+            <!-- Show cases settings -->
+            {% if "admin" in current_user.roles %}
             <div class="row mt-3 d-flex align-items-center">
+              <fieldset>
+                <legend>Cases display settings</legend>
+                <div class="row">
+                  <div class="col-5">
+                    {{ form.show_all_cases_status.label(class="control-label") }}
+                    <select multiple="multiple" name="show_all_cases_status" class="selectpicker" data-style="btn-secondary">
+                      {% for choice in form.show_all_cases_status.choices or [] %}
+                         <option value="{{choice[0]}}" {% if institute.show_all_cases_status and choice[0] in institute.show_all_cases_status  %} selected {% endif %} >{{choice[1]}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            {% endif %}
+            <!-- End of show cases settings -->
+
+            <!-- Phenotype groups settings -->
+            <div class="row mt-5 d-flex align-items-center">
               <fieldset>
                 <legend>Phenotype groups</legend>
                 <div class="row">
