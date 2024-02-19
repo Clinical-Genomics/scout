@@ -100,7 +100,7 @@ def get_app(ctx=None):
 )
 @click.option(
     "--loglevel",
-    default="DEBUG",
+    default="WARNING",
     type=click.Choice(LOG_LEVELS),
     help="Set the level of log output.",
     show_default=True,
