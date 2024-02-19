@@ -69,7 +69,11 @@ class CaseHandler(object):
         return sorted(scores.items(), key=operator.itemgetter(1), reverse=True)
 
     def _set_similar_phenotype_query(
-        self, query: Dict[str, Any], query_field: str, query_term: str, institute_id: str
+        self,
+        query: Dict[str, Any],
+        query_field: str,
+        query_term: str,
+        institute_id: str,
     ):
         """Adds query parameters when search is performed by case or phenotype similarity
 
@@ -377,13 +381,19 @@ class CaseHandler(object):
             collaborator = None
 
         _conditional_set_query_value(
-            query=query, condition=collaborator, set_key="collaborators", set_value=collaborator
+            query=query,
+            condition=collaborator,
+            set_key="collaborators",
+            set_value=collaborator,
         )
 
         _conditional_set_query_value(query=query, condition=owner, set_key="owner", set_value=owner)
 
         _conditional_set_query_value(
-            query=query, condition=skip_assigned, set_key="assignees", set_value={"$exists": False}
+            query=query,
+            condition=skip_assigned,
+            set_key="assignees",
+            set_value={"$exists": False},
         )
 
         _conditional_set_query_value(
@@ -398,7 +408,10 @@ class CaseHandler(object):
         )
 
         _conditional_set_query_value(
-            query=query, condition=rerun_monitor, set_key="rerun_monitoring", set_value=True
+            query=query,
+            condition=rerun_monitor,
+            set_key="rerun_monitoring",
+            set_value=True,
         )
 
         _conditional_set_query_value(
@@ -413,7 +426,10 @@ class CaseHandler(object):
         )
 
         _conditional_set_query_value(
-            query=query, condition=research_requested, set_key="research_requested", set_value=True
+            query=query,
+            condition=research_requested,
+            set_key="research_requested",
+            set_value=True,
         )
 
         _conditional_set_query_value(
@@ -449,7 +465,10 @@ class CaseHandler(object):
         )
 
         _conditional_set_query_value(
-            query=query, condition=assignee, set_key="assignees", set_value={"$in": [assignee]}
+            query=query,
+            condition=assignee,
+            set_key="assignees",
+            set_value={"$in": [assignee]},
         )
 
         if name_query:
@@ -459,7 +478,12 @@ class CaseHandler(object):
         if within_days:
             query["_id"] = {
                 "$in": self.last_modified_cases(
-                    within_days, has_causatives, finished, reruns, research_requested, status
+                    within_days,
+                    has_causatives,
+                    finished,
+                    reruns,
+                    research_requested,
+                    status,
                 )
             }
 
@@ -579,20 +603,18 @@ class CaseHandler(object):
 
         return sanger_missing_cases
 
-    def prioritized_cases(self, institute_id=None):
-        """Fetches any prioritized cases from the backend.
-
-        Args:
-            institute_id(str): id of an institute
-        """
+    def cases_by_status(
+        self, status: str, institute_id: Optional[str] = None, projection: Optional[Dict] = None
+    ):
+        """retrieves all cases for an institute given their status."""
         query = {}
 
         if institute_id:
             query["collaborators"] = institute_id
 
-        query["status"] = "prioritized"
+        query["status"] = status
 
-        return self.case_collection.find(query).sort("updated_at", -1)
+        return self.case_collection.find(query, projection=projection).sort("updated_at", -1)
 
     def case_ids_from_group_id(self, group_id):
         """Fetches any cases with given group_id from backend.
@@ -803,9 +825,9 @@ class CaseHandler(object):
 
     def load_case(
         self,
-        config_data,
-        update=False,
-        keep_actions=True,
+        config_data: dict,
+        update: bool = False,
+        keep_actions: bool = True,
         threads=LOADER_THREADS,
         cyvcf2threads=CYVCF2_THREADS,
     ):
@@ -818,8 +840,6 @@ class CaseHandler(object):
             config_data(dict): A dictionary with all the necessary information
             update(bool): If existing case should be updated
             keep_actions(bool): Attempt transfer of existing case user actions to new vars
-        Returns:
-            case_obj(dict)
         """
         # Check that the owner exists in the database
         institute_obj = self.institute(config_data["owner"])
@@ -875,7 +895,11 @@ class CaseHandler(object):
             },
             {"file_name": "vcf_str", "variant_type": "clinical", "category": "str"},
             {"file_name": "vcf_mei", "variant_type": "clinical", "category": "mei"},
-            {"file_name": "vcf_fusion", "variant_type": "clinical", "category": "fusion"},
+            {
+                "file_name": "vcf_fusion",
+                "variant_type": "clinical",
+                "category": "fusion",
+            },
         ]
 
         try:
@@ -912,13 +936,17 @@ class CaseHandler(object):
             LOG.warning(error)
 
         if existing_case:
+            self.update_case_data_sharing(old_case=existing_case, new_case=case_obj)
             case_obj["rerun_requested"] = False
             if case_obj["status"] in ["active", "archived"]:
                 case_obj["status"] = "inactive"
 
             case_obj["variants_stats"] = self.case_variants_count(
-                case_id=case_obj["_id"], institute_id=institute_obj["_id"], force_update_case=True
+                case_id=case_obj["_id"],
+                institute_id=institute_obj["_id"],
+                force_update_case=True,
             )
+
             self.update_case(case_obj)
             # update Sanger status for the new inserted variants
             self.update_case_sanger_variants(institute_obj, case_obj, old_sanger_variants)
@@ -1029,6 +1057,7 @@ class CaseHandler(object):
             "$addToSet": {"collaborators": {"$each": case_obj["collaborators"]}},
             "$set": {
                 "analysis_date": analysis_date,
+                "beacon": case_obj.get("beacon"),
                 "custom_images": case_obj.get("custom_images"),
                 "cnv_report": case_obj.get("cnv_report"),
                 "coverage_qc_report": case_obj.get("coverage_qc_report"),
@@ -1082,6 +1111,7 @@ class CaseHandler(object):
         # Remove non-mandatory key/values if they contain a null value
         unset_keys = {}
         for key in [
+            "beacon",
             "collaborators",
             "custom_images",
             "cnv_report",

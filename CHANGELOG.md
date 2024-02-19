@@ -5,8 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- In the ClinVar form, database and id of assertion criteria citation are now separate inputs
+- Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
+- Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
 
 ## [4.77]
 ### Added

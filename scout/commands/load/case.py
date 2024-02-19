@@ -97,7 +97,7 @@ def case(
         LOG.warning("Please provide either scout config or ped file")
         raise click.Abort()
 
-    # Scout needs a config object with the neccessary information
+    # Scout needs a config object with the necessary information
     # If no config is used create a dictionary
     config_raw = yaml.load(config, Loader=yaml.SafeLoader) if config else {}
 

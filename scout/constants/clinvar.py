@@ -185,3 +185,5 @@ CONDITION_PREFIX = {
     "OMIM": "",
     "Orphanet": "ORPHA:",
 }
+
+CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
