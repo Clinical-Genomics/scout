@@ -169,6 +169,8 @@ def update_variant_case_panels(case_obj: dict, variant_obj: dict):
 
 def get_extra_info(gene_panels: List) -> Dict:
     """Parse out extra information from gene panels."""
+    extra_info = {}
+
     for panel_obj in gene_panels:
         for gene_info in panel_obj["genes"]:
             hgnc_id = gene_info["hgnc_id"]
@@ -208,6 +210,8 @@ def add_gene_info(
     gene_panels = gene_panels or []
     genome_build = genome_build or "37"
 
+    institute = store.institute(variant_obj["institute"])
+
     extra_info = get_extra_info(gene_panels)
 
     seed_genes_with_only_hgnc_id(variant_obj)
@@ -218,8 +222,6 @@ def add_gene_info(
     variant_obj["has_refseq"] = False
     variant_obj["disease_associated_transcripts"] = []
     all_models = set()
-
-    institute = store.institute(variant_obj["institute"])
 
     if variant_obj.get("genes"):
         for variant_gene in variant_obj["genes"]:
