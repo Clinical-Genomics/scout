@@ -219,6 +219,8 @@ def add_gene_info(
     variant_obj["disease_associated_transcripts"] = []
     all_models = set()
 
+    institute = store.institute(variant_obj["institute"])
+
     if variant_obj.get("genes"):
         for variant_gene in variant_obj["genes"]:
             hgnc_id = variant_gene["hgnc_id"]
@@ -240,8 +242,6 @@ def add_gene_info(
             update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build)
 
             variant_gene["common"] = hgnc_gene
-
-            institute = store.institute(variant_obj["institute"])
             add_gene_links(variant_gene, genome_build, institute=institute)
 
             # Add disease associated transcripts from panel to variant
