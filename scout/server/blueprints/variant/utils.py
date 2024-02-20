@@ -553,7 +553,7 @@ def end_position(variant_obj):
     return variant_obj["position"] + (num_bases - 1)
 
 
-def default_panels(store: MongoAdapter, case_obj: dict) -> List[Dict]:
+def default_panels(store: MongoAdapter, case_obj: dict) -> List[dict]:
     """Return the panels that are decided to be default for a case.
 
     Check what panels that are default, fetch those and return them in a list.
