@@ -14,8 +14,8 @@ def test_base_cmd():
     # test the CLI base, no arguments provided
     result = runner.invoke(cli)
     assert result.exit_code == 0
-    # debug message should be printed
-    assert "Debug logging enabled." in result.output
+    # Info level should be LOG:ed by default
+    assert "Running scout version" in result.output
 
     # test the cli with a different loglevel that DEBUG
     result = runner.invoke(cli, ["--loglevel", "WARNING"])
