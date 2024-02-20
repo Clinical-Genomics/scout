@@ -1,5 +1,5 @@
 from bson import json_util
-from flask import Blueprint, Response, abort
+from flask import Blueprint, Response, abort, url_for
 from flask_login import current_user
 
 from scout.server.extensions import store
