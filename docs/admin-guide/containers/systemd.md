@@ -115,13 +115,13 @@ jobs:
   run_fcct:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - run: |
           mkdir output
       - uses: docker://quay.io/coreos/fcct:release
         with:
           args: --pretty --strict -d ./systemd -o output/scout.ign systemd/scout.fcc
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4
         with:
           name: scout.ign
           path: output/scout.ign
