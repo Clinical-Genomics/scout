@@ -255,6 +255,8 @@
             <a target="_blank" href={{ transcript.ensembl_link }} referrerpolicy="no-referrer" rel="noopener" target="_blank"> {{ transcript.ensembl_transcript_id }}</a>
             /  {{ transcript.refseq_identifiers|join(', ') or '-' }}
             {% if transcript.is_primary %}<small>(primary)</small>{% endif %}
+            {% if transcript.mane_select %} <span class="badge badge-sm bg-dark">MANE Select</span> {% endif %}
+            {% if transcript.mane_plus_clinical %} <span class="badge badge-sm bg-dark">MANE Plus Clinical </span> {% endif %}
 		  <span class="float-end">{{ transcript['position'] }}</span>
         </li>
       {% endfor %}
