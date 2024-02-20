@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More MEI specific annotation is shown on the variant page
 - Parse and save MANE transcripts info when updating genes in build 38
 - ClinVar submission can now be downloaded as a json file
+- `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
@@ -41,7 +42,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace the code that downloads Ensembl genes, transcripts and exons with the Schug web app
 - Add more info to error log when transcript variant frequency parsing fails.
 - GnomAD v4 constraint information replaces ExAC constraints (pLi).
-- Optimised indexes to address slow queries
 ### Fixed
 - Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
