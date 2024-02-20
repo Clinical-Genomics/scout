@@ -50,7 +50,7 @@
               {% if gene.common and gene.disease_terms %}
                 {% for disease_term in gene.disease_terms %}
                   {% if disease_term.source == 'ORPHA' %}
-                    <tr data-bs-toggle="tooltip" title="Some ORPHA disorders are phenotypic umbrella terms for multiple genetic entities. The inheritance models are in this case a set of all possible, not necessarily the inheritance mode known for this gene.">
+                    <tr data-bs-toggle="tooltip" title="Some ORPHA disorders are phenotypic umbrella terms for multiple genetic entities. The inheritance models are in this case a set derived from all those entities, not necessarily the inheritance mode known for this gene.">
                       <td>
                           <a href="http://omim.org/entry/{{ gene.common.omim_id }}" rel="noopener" target="_blank">
                             {{ gene.common.hgnc_symbol }}
