@@ -232,7 +232,7 @@ def variant(
     # Update some case panels info from db and populate it on variant to avoid showing removed panels
     update_case_panels(store, case_obj)
     # The hierarchical call order is relevant: cases are used to populate variants
-    update_variant_case_panels(store, case_obj, variant_obj)
+    update_variant_case_panels(case_obj, variant_obj)
 
     associate_variant_genes_with_case_panels(store, variant_obj)
 
@@ -310,8 +310,8 @@ def variant(
 
     if variant_obj.get("genetic_models"):
         variant_models = set(model.split("_", 1)[0] for model in variant_obj["genetic_models"])
-        all_models = variant_obj.get("all_models", set())
-        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, all_models)
+        omim_models = variant_obj.get("omim_models", set())
+        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, omim_models)
 
     # Prepare classification information for visualisation
     classification = variant_obj.get("acmg_classification")
