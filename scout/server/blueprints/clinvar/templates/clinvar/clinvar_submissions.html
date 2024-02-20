@@ -60,10 +60,13 @@
               <li class="breadcrumb-item">
                 <!-- Download the Variant data CSV file -->
                 <a href="{{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='variant_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
-                  Download variants file
+                  Download variants csv file
                 </a>
                 <a href=" {{ url_for('clinvar.clinvar_download_csv', submission=subm_obj._id, csv_type='case_data', clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
-                  Download casedata file
+                  Download casedata csv file
+                </a>
+                <a id="download_clinvar_json" href="{{ url_for('clinvar.clinvar_download_json', submission=subm_obj._id, clinvar_id=subm_obj.clinvar_subm_id or 'None') }}" class="btn btn-primary btn-xs text-white" target="_blank" rel="noopener">
+                  Download submission json file
                 </a>
               </li>
               {% if subm_obj.status=='open'%}
@@ -271,7 +274,6 @@
 
 {% block scripts %}
   {{ super() }}
-
   <script type="text/javascript">
 
   $(function () {
@@ -301,4 +303,5 @@
       });
   });
 </script>
+
 {% endblock %}

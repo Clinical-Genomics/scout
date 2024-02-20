@@ -352,3 +352,44 @@ def test_clinvar_api_submit(app, institute_obj, case_obj, clinvar_form):
         # AND the submission object in database should be marked as submitted
         updated_submission = store.clinvar_submission_collection.find_one()
         assert updated_submission["status"] == "submitted"
+
+
+@responses.activate
+def test_clinvar_download_json(app, institute_obj, case_obj, clinvar_form):
+    """Test creation of json from the ClinVar submissions page"""
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # WITH a logged user
+        client.get(url_for("auto_login"))
+
+        # GIVEN that institute has one ClinVar submission
+        client.post(
+            url_for(
+                SAVE_ENDPOINT,
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=clinvar_form,
+        )
+        subm_obj = store.clinvar_submission_collection.find_one()
+
+        # GIVEN a mocked proxy service - csv_2_json
+        responses.add(
+            responses.POST,
+            API_CSV_2_JSON_URL,
+            json={"clinvar": "test"},
+            status=200,
+        )
+
+        # The response from the proxy service should be returned
+        resp = client.get(
+            url_for(
+                "clinvar.clinvar_download_json",
+                submission=subm_obj["_id"],
+                clinvar_id="SUB000",
+            )
+        )
+
+        assert resp.status_code == 200
+        assert resp.mimetype == "application/json"
