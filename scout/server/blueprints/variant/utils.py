@@ -247,16 +247,27 @@ def add_gene_info(
 
             all_models = all_models.union(set(variant_gene["manual_inheritance"]))
 
-            inheritance_models = set()
-            for disease_term in disease_terms:
-                inheritance_models.update(disease_term.get("inheritance", []))
-
-                if disease_term.get("source") == "OMIM":
-                    variant_gene["omim_inheritance"] = list(inheritance_models)
-
-            all_models = all_models.union(inheritance_models)
+            update_inheritance_model(variant_gene, all_models, disease_terms)
 
     variant_obj["all_models"] = all_models
+
+
+def update_inheritance_model(variant_gene: dict, all_models: set, disease_terms: list):
+    """Update OMIM inheritance model for variant gene - and update the all models
+    variable to contain all inheritance models suggested for the gene/disorder.
+
+    ORPHA disorders can be more of the umbrella kind, where many genes and inheritance
+    models are implied. Those models are still added to all_models for the variant, but not to the list
+    of OMIM inheritance models for the particular gene.
+    """
+    inheritance_models = set()
+    for disease_term in disease_terms:
+        inheritance_models.update(disease_term.get("inheritance", []))
+
+        if disease_term.get("source") == "OMIM":
+            variant_gene["omim_inheritance"] = list(inheritance_models)
+
+    all_models = all_models.union(inheritance_models)
 
 
 def predictions(genes):
