@@ -149,6 +149,8 @@ def unparsed_transcript(request):
         refseq_mrna_pred="",
         refseq_ncrna="",
         start=1167629,
+        mane_select="NM_022114.4",
+        mane_plus_clinical="NM_001160331.2",
     )
     return unparsed_transcript
 
