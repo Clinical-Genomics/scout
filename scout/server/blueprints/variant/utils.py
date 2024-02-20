@@ -8,7 +8,7 @@ from scout.server.links import add_gene_links, add_tx_links
 LOG = logging.getLogger(__name__)
 
 
-def add_panel_specific_gene_info(panel_info):
+def add_panel_specific_gene_info(panel_info: List[Dict]) -> Dict:
     """Adds manually curated information from a gene panel to a gene
 
     The panel info is a list of dictionaries since there can be multiple infos about a panel.
@@ -61,13 +61,9 @@ def add_panel_specific_gene_info(panel_info):
     return panel_specific
 
 
-def update_representative_gene(variant_obj, variant_genes):
+def update_representative_gene(variant_obj: Dict, variant_genes: List[Dict]):
     """Set the gene with most severe consequence as being representative
     Used for display purposes
-
-    Args:
-        variant_obj(Variant): a variant object
-        variant_genes(list(Genes): a list of genes
     """
 
     if variant_genes:
@@ -93,7 +89,9 @@ def update_representative_gene(variant_obj, variant_genes):
         variant_obj["first_rep_gene"] = None
 
 
-def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_build=None):
+def update_transcripts_information(
+    variant_gene: dict, hgnc_gene: dict, variant_obj: dict, genome_build: Optional[str] = None
+):
     """Collect tx info from the hgnc gene and panels and update variant transcripts
 
     Since the hgnc information are continuously being updated we need to run this each time a
@@ -102,14 +100,7 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
     This function will:
         - Add a dictionary with tx_id -> tx_info to the hgnc variant
         - Add information from the panel
-        - Adds a list of refseq transcripts
-
-    Args:
-        variant_gene(dict): the gene information from the variant
-        hgnc_gene(dict): the hgnc gene information
-        varaiant_obj(scout.models.Variant)
-        genome_build(str): genome build
-
+        - Adds a list of RefSeq transcripts
     """
     genome_build = genome_build or "37"
     disease_associated_no_version = variant_gene.get("disease_associated_no_version", set())
@@ -152,23 +143,18 @@ def update_transcripts_information(variant_gene, hgnc_gene, variant_obj, genome_
         if refseq_id in disease_associated_no_version:
             transcript["is_disease_associated"] = True
 
-        # Since a ensemble transcript can have multiple refseq identifiers we add all of
+        # Since an Ensembl transcript can have multiple RefSeq identifiers we add all of
         # those
         transcript["refseq_identifiers"] = hgnc_transcript.get("refseq_identifiers", [])
         transcript["change_str"] = transcript_str(transcript, hgnc_symbol)
 
 
-def update_variant_case_panels(store, case_obj, variant_obj):
+def update_variant_case_panels(store: MongoAdapter, case_obj: dict, variant_obj: dict):
     """Populate variant with case gene panels with info on e.g. if a panel was removed on variant_obj.
     Variant objects panels are only a list of matching panel names.
 
-    The case_obj should be up to date first. Call update_case_panels() as needed in context:
+    The case_obj should be up-to-date first. Call update_case_panels() as needed in context:
     to save some resources we do not call it here for each variant.
-
-    Args:
-        store(adapter.MongoAdapter)
-        case_obj(dict):     case_obj with updated panels - update_case_panels() first
-        variant_obj(dict)
     """
 
     variant_panel_names = variant_obj.get("panels") or []
@@ -181,26 +167,22 @@ def update_variant_case_panels(store, case_obj, variant_obj):
     variant_obj["case_panels"] = case_panel_objs
 
 
-def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
+def add_gene_info(
+    store: MongoAdapter,
+    variant_obj: dict,
+    gene_panels: Optional[List[Dict]] = None,
+    genome_build: Optional[str] = None,
+):
     """Adds information to variant genes from hgnc genes and selected gene panels.
 
     Variants are annotated with gene and transcript information from VEP. In Scout the database
-    keeps updated and extended information about genes and transcript. This function will compliment
-     the VEP information with the updated database information.
-    Also there is sometimes additional information that are manually curated in the gene panels.
-    Only the selected panels passed to this function (typically default) are used.
+    keeps updated and extended information about genes and transcript. This function will complement
+    the VEP information with the updated database information.
+    Also there is sometimes additional information that is manually curated in the gene panels.
+    Only the selected panels passed to this function (typically the case default panels) are used.
     This information needs to be added to the variant before sending it to the template.
 
     This function will loop over all genes and add that extra information.
-
-    Args:
-        store(scout.adapter.MongoAdapter)
-        variant_obj(dict): A variant from the database
-        gene_panels(list(dict)): List of panels from database
-        genome_build(str)
-
-    Returns:
-        variant_obj
     """
     gene_panels = gene_panels or []
     genome_build = genome_build or "37"
@@ -544,18 +526,12 @@ def end_position(variant_obj):
     return variant_obj["position"] + (num_bases - 1)
 
 
-def default_panels(store, case_obj):
+def default_panels(store: MongoAdapter, case_obj: dict) -> List[Dict]:
     """Return the panels that are decided to be default for a case.
 
-    Check what panels that are default, fetch those and add them to a list.
+    Check what panels that are default, fetch those and return them in a list.
 
-    Args:
-        store(scout.adapter.MongoAdapter)
-        case_obj(scout.models.Case)
-
-    Returns:
-        default_panels(list(dict))
-
+    case_obj is a dict after scout.models.Case.
     """
     default_panels = []
     # Add default panel information to variant
