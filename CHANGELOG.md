@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
+- New SO terms: `sequence_variant` and `coding_transcript_variant`
 - More MEI specific annotation is shown on the variant page
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
@@ -14,14 +15,13 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Renamed `Clinical Significance` to `Germline Classification` on multistep ClinVar form
 - Changed the "x" in cases.utils.remove_form button text to red for better visibility in dark mode
 - Update GitHub actions
+- Default loglevel up to INFO, making logs with default start easier to read
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
 - Inheritance mode from ORPHA should not be confounded with the OMIM inheritance model
 - Decipher link URL changes
 
-### Added
-- New SO terms: `sequence_variant` and `coding_transcript_variant`
 
 ## [4.77]
 ### Added
