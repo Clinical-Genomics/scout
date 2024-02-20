@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
+- Inheritance mode from ORPHA should not be confounded with the OMIM inheritance model
 
 
 ## [4.77]
