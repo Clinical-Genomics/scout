@@ -254,7 +254,7 @@ def add_gene_info(
             # Add the associated disease terms
             disease_terms = store.disease_terms_by_gene(hgnc_id, filter_project={"inheritance": 1})
 
-            all_models = all_models.union(set(variant_gene["manual_inheritance"]))
+            all_models.update(set(variant_gene["manual_inheritance"]))
 
             update_inheritance_model(variant_gene, all_models, disease_terms)
 
@@ -270,13 +270,17 @@ def update_inheritance_model(variant_gene: dict, all_models: set, disease_terms:
     of OMIM inheritance models for the particular gene.
     """
     inheritance_models = set()
+    omim_inheritance_models = set()
+
     for disease_term in disease_terms:
         inheritance_models.update(disease_term.get("inheritance", []))
 
         if disease_term.get("source") == "OMIM":
-            variant_gene["omim_inheritance"] = list(inheritance_models)
+            omim_inheritance_models.update(inheritance_models)
 
-    all_models = all_models.union(inheritance_models)
+    variant_gene["omim_inheritance"] = list(omim_inheritance_models)
+
+    all_models.update(inheritance_models)
 
 
 def predictions(genes):
