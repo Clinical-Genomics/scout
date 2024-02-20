@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New SO terms: `sequence_variant` and `coding_transcript_variant`
 - More MEI specific annotation is shown on the variant page
 - Parse and save MANE transcripts info when updating genes in build 38
+- ClinVar submission can now be downloaded as a json file
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
@@ -17,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed the "x" in cases.utils.remove_form button text to red for better visibility in dark mode
 - Update GitHub actions
 - Default loglevel up to INFO, making logs with default start easier to read
+- Parallelize variant loading for each chromosome
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
@@ -69,7 +71,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Allow ClinVar submissions with custom API key for users registered as ClinVar submitters or when institute doesn't have a preset list of ClinVar submitters
 - Ordered event verbs alphabetically and created ClinVar-related user events
 - Removed the unused "no-variants" option from the load case command line
-- Parallelize variant loading for each chromosome
 ### Fixed
 - All disease_terms have gene HGNC ids as integers when added to the scout database
 - Disease_term identifiers are now prefixed with the name of the coding system
