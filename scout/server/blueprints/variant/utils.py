@@ -187,7 +187,7 @@ def add_gene_info(
     gene_panels = gene_panels or []
     genome_build = genome_build or "37"
 
-    def extra_info(gene_panels: List):
+    def get_extra_info(gene_panels: List) -> Dict:
         """Parse out extra information from gene panels."""
         for panel_obj in gene_panels:
             for gene_info in panel_obj["genes"]:
@@ -196,8 +196,9 @@ def add_gene_info(
                     extra_info[hgnc_id] = []
 
                 extra_info[hgnc_id].append(gene_info)
+        return extra_info
 
-    extra_info = extra_info(gene_panels)
+    extra_info = get_extra_info(gene_panels)
 
     def seed_genes_with_only_hgnc_id(variant_obj: dict):
         """Seed genes structure for (STR) variants that have only hgnc_ids."""
