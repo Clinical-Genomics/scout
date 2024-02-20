@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More MEI specific annotation is shown on the variant page
 - Parse and save MANE transcripts info when updating genes in build 38
 - ClinVar submission can now be downloaded as a json file
+- `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
