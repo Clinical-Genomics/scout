@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
 - Inheritance mode from ORPHA should not be confounded with the OMIM inheritance model
+- Decipher link URL changes
 
 ### Added
 - New SO terms: `sequence_variant` and `coding_transcript_variant`
