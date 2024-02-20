@@ -13,9 +13,11 @@ def test_parse_ensembl_line(unparsed_transcript):
         "RefSeq mRNA ID",
         "RefSeq mRNA predicted ID",
         "RefSeq ncRNA ID",
+        "RefSeq match transcript (MANE Select)",
+        "RefSeq match transcript(MANE Plus Clinical)",
     ]
 
-    transcript_line = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}".format(
+    transcript_line = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}".format(
         unparsed_transcript["chrom"],
         unparsed_transcript["ens_gene_id"],
         unparsed_transcript["ens_transcript_id"],
@@ -24,6 +26,8 @@ def test_parse_ensembl_line(unparsed_transcript):
         unparsed_transcript["refseq_mrna"],
         unparsed_transcript["refseq_mrna_pred"],
         unparsed_transcript["refseq_ncrna"],
+        unparsed_transcript["mane_select"],
+        unparsed_transcript["mane_plus_clinical"],
     )
 
     ## WHEN parsing the transcript line
@@ -36,6 +40,8 @@ def test_parse_ensembl_line(unparsed_transcript):
     assert parsed_transcript["transcript_start"] == unparsed_transcript["start"]
     assert parsed_transcript["transcript_end"] == unparsed_transcript["end"]
     assert parsed_transcript["refseq_mrna"] == unparsed_transcript["refseq_mrna"]
+    assert parsed_transcript["mane_select"] == unparsed_transcript["mane_select"]
+    assert parsed_transcript["mane_plus_clinical"] == unparsed_transcript["mane_plus_clinical"]
     assert "refseq_mrna_predicted" not in parsed_transcript
     assert "refseq_ncrna" not in parsed_transcript
 

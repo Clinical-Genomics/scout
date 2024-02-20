@@ -1,3 +1,5 @@
+from typing import Optional
+
 from scout.models.hgnc_map import HgncTranscript
 
 
@@ -30,6 +32,9 @@ def build_transcript(transcript_info, build="37"):
 
     refseq_id = transcript_info.get("refseq_id")
     refseq_identifiers = transcript_info.get("refseq_identifiers")
+
+    mane_select: Optional[str] = transcript_info.get("mane_select")
+    mane_plus_clinical: Optional[str] = transcript_info.get("mane_plus_clinical")
 
     try:
         chrom = transcript_info["chrom"]
@@ -67,6 +72,8 @@ def build_transcript(transcript_info, build="37"):
         refseq_id=refseq_id,
         refseq_identifiers=refseq_identifiers,
         build=build,
+        mane_select=mane_select,
+        mane_plus_clinical=mane_plus_clinical,
     )
     # Remove unnessesary keys
     for key in list(transcript_obj):

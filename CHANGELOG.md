@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
 - New SO terms: `sequence_variant` and `coding_transcript_variant`
 - More MEI specific annotation is shown on the variant page
+- Parse and save MANE transcripts info when updating genes in build 38
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
