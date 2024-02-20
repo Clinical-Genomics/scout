@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New SO terms: `sequence_variant` and `coding_transcript_variant`
 - More MEI specific annotation is shown on the variant page
 - Parse and save MANE transcripts info when updating genes in build 38
+- `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
 - ClinVar submission can now be downloaded as a json file
 - Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
 ### Changed
