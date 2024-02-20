@@ -554,9 +554,9 @@ def decipher_link(variant_obj, build=37):
         my_end = variant_obj["position"]
 
     if build == 37:
-        url_template = "https://decipher.sanger.ac.uk/search/patients/browser?q=grch37:{this[chromosome]}:{this[position]}-{my_end}"
+        url_template = "https://www.deciphergenomics.org/search/patients/browser?q=grch37:{this[chromosome]}:{this[position]}-{my_end}"
     else:
-        url_template = "https://decipher.sanger.ac.uk/browser#q/{this[chromosome]}:{this[position]}-{this[end]}/location/{this[chromosome]}:{this[position]}-{my_end}"
+        url_template = "https://www.deciphergenomics.org/browser#q/{this[chromosome]}:{this[position]}-{this[end]}/location/{this[chromosome]}:{this[position]}-{my_end}"
     return url_template.format(this=variant_obj, my_end=my_end)
 
 
