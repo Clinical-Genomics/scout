@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
 - Renamed `Clinical Significance` to `Germline Classification` on multistep ClinVar form
 - Changed the "x" in cases.utils.remove_form button text to red for better visibility in dark mode
+- Update GitHub actions
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
