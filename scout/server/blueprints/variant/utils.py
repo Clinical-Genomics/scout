@@ -8,7 +8,7 @@ from scout.server.links import add_gene_links, add_tx_links
 LOG = logging.getLogger(__name__)
 
 
-def add_panel_specific_gene_info(panel_info: List[Dict]) -> Dict:
+def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
     """Adds manually curated information from a gene panel to a gene
 
     The panel info is a list of dictionaries since there can be multiple infos about a panel.
