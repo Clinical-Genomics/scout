@@ -1,7 +1,6 @@
 import decimal
 import logging
 import re
-from datetime import date
 from typing import Any, Dict
 
 import bson
