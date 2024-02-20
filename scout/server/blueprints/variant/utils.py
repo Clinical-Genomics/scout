@@ -193,7 +193,7 @@ def seed_genes_with_only_hgnc_id(variant_obj: dict):
 def add_gene_info(
     store: MongoAdapter,
     variant_obj: dict,
-    gene_panels: Optional[List[Dict]] = None,
+    gene_panels: Optional[List[dict]] = None,
     genome_build: Optional[str] = None,
 ):
     """Adds information to variant genes from hgnc genes and selected gene panels.
