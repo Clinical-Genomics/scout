@@ -167,7 +167,7 @@ def update_variant_case_panels(case_obj: dict, variant_obj: dict):
     variant_obj["case_panels"] = case_panel_objs
 
 
-def get_extra_info(gene_panels: List) -> Dict:
+def get_extra_info(gene_panels: list) -> Dict[int, dict]:
     """Parse out extra information from gene panels."""
     extra_info = {}
 
