@@ -61,7 +61,7 @@ def add_panel_specific_gene_info(panel_info: List[dict]) -> dict:
     return panel_specific
 
 
-def update_representative_gene(variant_obj: Dict, variant_genes: List[Dict]):
+def update_representative_gene(variant_obj: dict, variant_genes: List[dict]):
     """Set the gene with most severe consequence as being representative
     Used for display purposes
     """
