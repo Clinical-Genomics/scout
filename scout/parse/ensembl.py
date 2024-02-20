@@ -93,7 +93,7 @@ def parse_transcripts(transcript_lines: List[str]) -> Dict[str, dict]:
         if tx.get("refseq_ncrna"):
             tx_info["nc_rna"].add(tx["refseq_ncrna"])
 
-        # Add Mane-related info
+        # Add MANE-related info
         for mane in ["mane_select", "mane_plus_clinical"]:
             if tx.get(mane):
                 tx_info[mane] = tx[mane]
@@ -291,7 +291,7 @@ def update_refseq_info(ensembl_info: Dict[str, Any], word: str, value: str) -> D
 
 
 def update_mane_info(ensembl_info: Dict[str, Any], word: str, value: str) -> Dict[str, Any]:
-    """Extract Mane Plus Clinical and Mane Select info from an Ensembl formatted line."""
+    """Extract MANE Plus Clinical and MANE Select info from an Ensembl formatted line."""
     if "mane select" in word:
         ensembl_info["mane_select"] = value
     if "mane plus clinical" in word:
