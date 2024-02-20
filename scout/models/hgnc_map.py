@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from bson.objectid import ObjectId
+from typing import List, Optional
 
 
 class Exon(dict):
@@ -32,31 +32,21 @@ class Exon(dict):
 
 
 class HgncTranscript(dict):
-    """Transcript dictionary
-
-    "transcript_id": str, # ensembl id
-    "hgnc_id": int,
-    "chrom": str,
-    "start": int,
-    "end": int,
-    "is_primary": bool,
-    "refseq_id": str,
-    "refseq_identifiers": list,
-    "build": str, # Genome build
-    "length": int
-    """
+    """Model for a transcript dictionary"""
 
     def __init__(
         self,
-        transcript_id,
-        hgnc_id,
-        chrom,
-        start,
-        end,
-        is_primary=False,
-        refseq_id=None,
-        refseq_identifiers=None,
-        build="37",
+        transcript_id: str,
+        hgnc_id: int,
+        chrom: str,
+        start: int,
+        end: int,
+        is_primary: bool = False,
+        refseq_id: Optional[str] = None,
+        refseq_identifiers: List[str] = None,
+        build: str = "37",
+        mane_select: Optional[str] = None,
+        mane_plus_clinical: Optional[str] = None,
     ):
         super(HgncTranscript, self).__init__()
         self["ensembl_transcript_id"] = transcript_id
@@ -69,6 +59,11 @@ class HgncTranscript(dict):
         self["refseq_identifiers"] = refseq_identifiers
         self["build"] = build
         self["length"] = self["end"] - self["start"]
+        if build == "38":
+            if mane_select:
+                self["mane_select"] = mane_select
+            if mane_plus_clinical:
+                self["mane_plus_clinical"] = mane_plus_clinical
 
 
 class HgncGene(dict):
