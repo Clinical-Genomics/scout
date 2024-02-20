@@ -134,7 +134,7 @@ def clinvar_download_json(submission, clinvar_id):
         tmp_json.seek(0)
         return send_file(
             tmp_json.name,
-            download_name=clinvar_id,
+            download_name=f"{clinvar_id}.json",
             mimetype="application/json",
             as_attachment=True,
         )
