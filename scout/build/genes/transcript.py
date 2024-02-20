@@ -1,3 +1,5 @@
+from typing import Optional
+
 from scout.models.hgnc_map import HgncTranscript
 
 
