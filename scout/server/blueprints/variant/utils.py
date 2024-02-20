@@ -167,6 +167,27 @@ def update_variant_case_panels(case_obj: dict, variant_obj: dict):
     variant_obj["case_panels"] = case_panel_objs
 
 
+def get_extra_info(gene_panels: List) -> Dict:
+    """Parse out extra information from gene panels."""
+    for panel_obj in gene_panels:
+        for gene_info in panel_obj["genes"]:
+            hgnc_id = gene_info["hgnc_id"]
+            if hgnc_id not in extra_info:
+                extra_info[hgnc_id] = []
+
+            extra_info[hgnc_id].append(gene_info)
+    return extra_info
+
+
+def seed_genes_with_only_hgnc_id(variant_obj: dict):
+    """Seed genes structure for (STR) variants that have only hgnc_ids."""
+    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
+        variant_obj["genes"] = []
+        for hgnc_id in variant_obj.get("hgnc_ids"):
+            variant_gene = {"hgnc_id": hgnc_id}
+            variant_obj["genes"].append(variant_gene)
+
+
 def add_gene_info(
     store: MongoAdapter,
     variant_obj: dict,
@@ -187,26 +208,7 @@ def add_gene_info(
     gene_panels = gene_panels or []
     genome_build = genome_build or "37"
 
-    def get_extra_info(gene_panels: List) -> Dict:
-        """Parse out extra information from gene panels."""
-        for panel_obj in gene_panels:
-            for gene_info in panel_obj["genes"]:
-                hgnc_id = gene_info["hgnc_id"]
-                if hgnc_id not in extra_info:
-                    extra_info[hgnc_id] = []
-
-                extra_info[hgnc_id].append(gene_info)
-        return extra_info
-
     extra_info = get_extra_info(gene_panels)
-
-    def seed_genes_with_only_hgnc_id(variant_obj: dict):
-        """Seed genes structure for (STR) variants that have only hgnc_ids."""
-        if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
-            variant_obj["genes"] = []
-            for hgnc_id in variant_obj.get("hgnc_ids"):
-                variant_gene = {"hgnc_id": hgnc_id}
-                variant_obj["genes"].append(variant_gene)
 
     seed_genes_with_only_hgnc_id(variant_obj)
 
