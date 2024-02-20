@@ -149,7 +149,7 @@ def update_transcripts_information(
         transcript["change_str"] = transcript_str(transcript, hgnc_symbol)
 
 
-def update_variant_case_panels(store: MongoAdapter, case_obj: dict, variant_obj: dict):
+def update_variant_case_panels(case_obj: dict, variant_obj: dict):
     """Populate variant with case gene panels with info on e.g. if a panel was removed on variant_obj.
     Variant objects panels are only a list of matching panel names.
 
@@ -187,30 +187,34 @@ def add_gene_info(
     gene_panels = gene_panels or []
     genome_build = genome_build or "37"
 
-    # Add a variable that checks if there are any refseq transcripts
+    def extra_info(gene_panels: List):
+        """Parse out extra information from gene panels."""
+        for panel_obj in gene_panels:
+            for gene_info in panel_obj["genes"]:
+                hgnc_id = gene_info["hgnc_id"]
+                if hgnc_id not in extra_info:
+                    extra_info[hgnc_id] = []
 
-    # extra_info will hold information from gene panels
-    extra_info = {}
-    for panel_obj in gene_panels:
-        for gene_info in panel_obj["genes"]:
-            hgnc_id = gene_info["hgnc_id"]
-            if hgnc_id not in extra_info:
-                extra_info[hgnc_id] = []
+                extra_info[hgnc_id].append(gene_info)
 
-            extra_info[hgnc_id].append(gene_info)
+    extra_info = extra_info(gene_panels)
+
+    def seed_genes_with_only_hgnc_id(variant_obj: dict):
+        """Seed genes structure for (STR) variants that have only hgnc_ids."""
+        if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
+            variant_obj["genes"] = []
+            for hgnc_id in variant_obj.get("hgnc_ids"):
+                variant_gene = {"hgnc_id": hgnc_id}
+                variant_obj["genes"].append(variant_gene)
+
+    seed_genes_with_only_hgnc_id(variant_obj)
 
     # Loop over the genes in the variant object to add information
     # from hgnc_genes and panel genes to the variant object
+    # Add a variable that checks if there are any refseq transcripts
     variant_obj["has_refseq"] = False
     variant_obj["disease_associated_transcripts"] = []
     all_models = set()
-
-    # seed genes structure for (STR) variants that have only hgnc_ids
-    if not variant_obj.get("genes") and variant_obj.get("hgnc_ids"):
-        variant_obj["genes"] = []
-        for hgnc_id in variant_obj.get("hgnc_ids"):
-            variant_gene = {"hgnc_id": hgnc_id}
-            variant_obj["genes"].append(variant_gene)
 
     if variant_obj.get("genes"):
         for variant_gene in variant_obj["genes"]:

@@ -149,7 +149,7 @@ def variants(
         if case_obj.get("group"):
             variant_obj["group_assessments"] = _get_group_assessments(store, case_obj, variant_obj)
 
-        update_variant_case_panels(store, case_obj, variant_obj)
+        update_variant_case_panels(case_obj, variant_obj)
 
         variants.append(
             parse_variant(
