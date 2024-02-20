@@ -310,8 +310,8 @@ def variant(
 
     if variant_obj.get("genetic_models"):
         variant_models = set(model.split("_", 1)[0] for model in variant_obj["genetic_models"])
-        all_models = variant_obj.get("all_models", set())
-        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, all_models)
+        omim_models = variant_obj.get("all_models", set())
+        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, omim_models)
 
     # Prepare classification information for visualisation
     classification = variant_obj.get("acmg_classification")

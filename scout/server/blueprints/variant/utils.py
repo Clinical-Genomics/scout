@@ -264,12 +264,14 @@ def add_gene_info(store, variant_obj, gene_panels=None, genome_build=None):
             disease_terms = store.disease_terms_by_gene(hgnc_id, filter_project={"inheritance": 1})
 
             all_models = all_models.union(set(variant_gene["manual_inheritance"]))
-            omim_models = set()
+            inheritance_models = set()
             for disease_term in disease_terms:
-                omim_models.update(disease_term.get("inheritance", []))
-            variant_gene["omim_inheritance"] = list(omim_models)
+                inheritance_models.update(disease_term.get("inheritance", []))
 
-            all_models = all_models.union(omim_models)
+            if disease_term.get("source") == "OMIM":
+                variant_gene["omim_inheritance"] = list(inheritance_models)
+
+            all_models = all_models.union(inheritance_models)
 
     variant_obj["all_models"] = all_models
 
