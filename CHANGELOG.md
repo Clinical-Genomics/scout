@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New SO terms: `sequence_variant` and `coding_transcript_variant`
 - More MEI specific annotation is shown on the variant page
 - Parse and save MANE transcripts info when updating genes in build 38
+- ClinVar submission can now be downloaded as a json file
+- Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
@@ -17,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed the "x" in cases.utils.remove_form button text to red for better visibility in dark mode
 - Update GitHub actions
 - Default loglevel up to INFO, making logs with default start easier to read
+- Explicitly store case file paths from load conf accessible on load as absolute paths for later access
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
@@ -31,8 +34,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to submit variants associated with Orphanet conditions to ClinVar
 - Option update path to .d4 files path for individuals of an existing case using the command line
 - More constraint information is displayed per gene in addition to pLi: missense and LoF OE, CI (inluding LOEUF) and Z-score.
-- ClinVar submission can now be downloaded as a json file
-- Case loading via .yaml config file accepts subject_id and phenotype_groups (if previously defined as constant default or added per institute)
 ### Changed
 - Introduce validation in the ClinVar multistep form to make sure users provide at least one variant-associated condition
 - CLI scout update individual accepts subject_id
@@ -41,7 +42,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Replace the code that downloads Ensembl genes, transcripts and exons with the Schug web app
 - Add more info to error log when transcript variant frequency parsing fails.
 - GnomAD v4 constraint information replaces ExAC constraints (pLi).
-- Explicitly store case file paths from load conf accessible on load as absolute paths for later access
 ### Fixed
 - Text input of associated condition in ClinVar form now aligns to the left
 - Alignment of contents in the case report has been updated
