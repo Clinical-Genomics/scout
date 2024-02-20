@@ -1,5 +1,7 @@
 """Code for parsing ensembl information"""
+
 import logging
+from typing import Any, Dict, List
 
 LOG = logging.getLogger(__name__)
 
@@ -44,23 +46,19 @@ def parse_ensembl_line(line, header):
         update_exon_info(ensembl_info, word, value)
         update_utr_info(ensembl_info, word, value)
         update_refseq_info(ensembl_info, word, value)
+        update_mane_info(ensembl_info, word, value)
     return ensembl_info
 
 
-def parse_transcripts(transcript_lines):
+def parse_transcripts(transcript_lines: List[str]) -> Dict[str, dict]:
     """Parse and massage the transcript information
 
     There could be multiple lines with information about the same transcript.
     This is why it is necessary to parse the transcripts first and then return a dictionary
     where all information has been merged.
-
-    Args:
-        transcript_lines(): Iterable with strings
-
-    Returns:
-        parsed_transcripts(dict): Map from enstid -> transcript info
     """
     LOG.info("Parsing transcripts")
+
     transcripts = parse_ensembl_transcripts(transcript_lines)
 
     # Since there can be multiple lines with information about the same transcript
@@ -95,11 +93,16 @@ def parse_transcripts(transcript_lines):
         if tx.get("refseq_ncrna"):
             tx_info["nc_rna"].add(tx["refseq_ncrna"])
 
+        # Add MANE-related info
+        for mane in ["mane_select", "mane_plus_clinical"]:
+            if tx.get(mane):
+                tx_info[mane] = tx[mane]
+
     return parsed_transcripts
 
 
 def parse_ensembl_genes(lines):
-    """Parse lines with ensembl formated genes
+    """Parse lines with ensembl formatted genes
 
     This is designed to take a biomart dump with genes from ensembl.
     Mandatory columns are:
@@ -219,7 +222,7 @@ def parse_ensembl_exons(lines):
         yield exon
 
 
-def update_gene_info(ensembl_info, word, value):
+def update_gene_info(ensembl_info: Dict[str, Any], word: str, value: str) -> Dict[str, Any]:
     """Extract gene info from Ensembl formatted line"""
     if "gene" in word:
         if "id" in word:
@@ -231,7 +234,7 @@ def update_gene_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def update_transcript_info(ensembl_info, word, value):
+def update_transcript_info(ensembl_info: Dict[str, Any], word: str, value: str) -> Dict[str, Any]:
     """Extract transcript info from Ensembl formatted line"""
     if "transcript" in word:
         if "id" in word:
@@ -243,7 +246,7 @@ def update_transcript_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def update_exon_info(ensembl_info, word, value):
+def update_exon_info(ensembl_info: Dict[str, Any], word: str, value: str) -> Dict[str, Any]:
     """Extract exon info from Ensembl formatted line"""
     if "exon" in word:
         if "start" in word:
@@ -257,7 +260,7 @@ def update_exon_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def update_utr_info(ensembl_info, word, value):
+def update_utr_info(ensembl_info: Dict[str, Any], word: str, value: str) -> Dict[str, Any]:
     """Extract UTR info from Ensembl formatted line"""
     if "utr" in word:
         if "start" in word:
@@ -273,7 +276,7 @@ def update_utr_info(ensembl_info, word, value):
     return ensembl_info
 
 
-def update_refseq_info(ensembl_info, word, value):
+def update_refseq_info(ensembl_info: Dict[str, Any], word: str, value: str) -> Dict[str, Any]:
     """Extract RefSeq info from Ensembl formatted line"""
     if "refseq" in word:
         if "mrna" in word:
@@ -284,4 +287,13 @@ def update_refseq_info(ensembl_info, word, value):
 
         if "ncrna" in word:
             ensembl_info["refseq_ncrna"] = value
+    return ensembl_info
+
+
+def update_mane_info(ensembl_info: Dict[str, Any], word: str, value: str) -> Dict[str, Any]:
+    """Extract MANE Plus Clinical and MANE Select info from an Ensembl formatted line."""
+    if "mane select" in word:
+        ensembl_info["mane_select"] = value
+    if "mane plus clinical" in word:
+        ensembl_info["mane_plus_clinical"] = value
     return ensembl_info
