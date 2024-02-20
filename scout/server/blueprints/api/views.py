@@ -1,5 +1,6 @@
 from bson import json_util
 from flask import Blueprint, Response, abort
+from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
