@@ -149,15 +149,35 @@ CHROMOSOME_INTEGERS = {chrom: i + 1 for i, chrom in enumerate(CHROMOSOMES)}
 PAR_COORDINATES = {
     "37": {
         "X": IntervalTree(
-            [Interval(60001, 2699521, "par1"), Interval(154931044, 155260561, "par2")]
+            [
+                Interval(60001, 2699521, "par1"),
+                Interval(154931044, 155260561, "par2"),
+                Interval(88456972, 92375509, "xtr"),
+            ],
         ),
-        "Y": IntervalTree([Interval(10001, 2649521, "par1"), Interval(59034050, 59363567, "par2")]),
+        "Y": IntervalTree(
+            [
+                Interval(10001, 2649521, "par1"),
+                Interval(59034050, 59363567, "par2"),
+                Interval(2917959, 6102616, "xtr"),
+            ]
+        ),
     },
     "38": {
         "X": IntervalTree(
-            [Interval(10001, 2781480, "par1"), Interval(155701383, 156030896, "par2")]
+            [
+                Interval(10001, 2781480, "par1"),
+                Interval(155701383, 156030896, "par2"),
+                Interval(89201883, 93120510, "xtr"),
+            ]
         ),
-        "Y": IntervalTree([Interval(10001, 2781480, "par1"), Interval(56887903, 57217416, "par2")]),
+        "Y": IntervalTree(
+            [
+                Interval(10001, 2781480, "par1"),
+                Interval(56887903, 57217416, "par2"),
+                Interval(3049918, 6234575, "xtr"),
+            ]
+        ),
     },
 }
 
