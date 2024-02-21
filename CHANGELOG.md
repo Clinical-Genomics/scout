@@ -21,6 +21,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Changed the "x" in cases.utils.remove_form button text to red for better visibility in dark mode
 - Update GitHub actions
 - Default loglevel up to INFO, making logs with default start easier to read
+- Add XTR region to PAR region definition
 - Optimised indexes to address slow queries
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
