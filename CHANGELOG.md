@@ -11,6 +11,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - More MEI specific annotation is shown on the variant page
 - Parse and save MANE transcripts info when updating genes in build 38
 - `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
+- ClinVar submission can now be downloaded as a json file
+- API endpoint to pin variant
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
@@ -33,7 +35,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Possibility to submit variants associated with Orphanet conditions to ClinVar
 - Option update path to .d4 files path for individuals of an existing case using the command line
 - More constraint information is displayed per gene in addition to pLi: missense and LoF OE, CI (inluding LOEUF) and Z-score.
-- ClinVar submission can now be downloaded as a json file
 ### Changed
 - Introduce validation in the ClinVar multistep form to make sure users provide at least one variant-associated condition
 - CLI scout update individual accepts subject_id
