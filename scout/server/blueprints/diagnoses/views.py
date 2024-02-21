@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from scout.server.extensions import store
 from scout.server.utils import public_endpoint, templated
@@ -36,6 +36,7 @@ def count_diagnoses():
 @public_endpoint
 def api_diagnoses():
     """Return JSON data about OMIM diseases in the database."""
-
-    data = controllers.disease_terms(store)
+    query = request.args.get("query") or None
+    source = request.args.get("source") or None
+    data = controllers.disease_terms(store, query=query, source=source)
     return jsonify(data)

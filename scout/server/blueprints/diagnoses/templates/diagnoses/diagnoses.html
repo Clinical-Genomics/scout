@@ -55,7 +55,16 @@
       <div class="card">
         <div class="card-header"> Diagnoses in database</div>
         <div id="diagnoses-card" class="card-body">
-          <div id="load-container"><button id="load-button" class="btn btn-primary my-2" onClick="loadDiseases()">Load all diseases from database</button></div>
+          <div class="d-flex align-items-center">
+            <div >
+              <input name=search-disease-term" id="search-disease-term" class="form-control typeahead_diseases" data-provide="typeahead_diseases" autocomplete="off" required placeholder="Search...">
+            </div>
+            <div class="mx-4">
+              <button id="load-button" class="btn btn-primary my-2" onClick="loadDiseases()">Search diseases</button>
+            </div>
+          </div>
+          <div id="load-container" class="d-flex align-items-center">
+          </div>
           <table id="diagnoses_table" class="table table-sm" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;" aria-label="Table containing all diagnoses in the scout database">
               <thead class="table-light thead">
                 <th>Diagnosis code</th>
@@ -66,30 +75,32 @@
                 <th>Associated HPO terms</th>
               </thead>
               <tbody>
-                <tr id="diagnosis-row">
-                  <td><a id="external-link" href="http://omim.org/entry/" target="_blank" rel=noopener ></a>
-                  <td><a id="internal-link" href="{{ url_for('diagnoses.diagnosis',disease_id='')}}"><span class="fa fa-link"></span></a></td>
-                  <td><span id="description" class="text-body"></span></td>
-                  <td id="inheritance-container"><!-- inheritance-->
-                      <span id="inheritance" class="badge bg-info m-1"></span>
-                  </td><!--end of inheritance-->
-                  <td id="gene-container">
-                    <span class="text-body">
-                      <a id="gene-link" class="badge link-primary m-1 fw-normal" href="{{ url_for('genes.gene', hgnc_id='0') }}" target="_blank" rel="noopener" ></a>
-                    </span>
-                  </td>
-                  <td id="hpo-container">
-                    <span class="text-body">
-                      <a id="hpo-link" class="badge bg-secondary text-white m-1" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" ></a>
-                    </span>
-                  </td>
-                </tr>
               </tbody>
             </table>
         </div><!--end of card body-->
       </div><!--end of card-->
     </div>
   </div>
+  <table id="super_secret_table_template" style="position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;">
+  <tr id="diagnosis-row">
+    <td><a id="external-link" href="http://omim.org/entry/" target="_blank" rel=noopener ></a>
+    <td><a id="internal-link" href="{{ url_for('diagnoses.diagnosis',disease_id='')}}"><span class="fa fa-link"></span></a></td>
+    <td><span id="description" class="text-body"></span></td>
+    <td id="inheritance-container"><!-- inheritance-->
+      <span id="inheritance" class="badge bg-info m-1"></span>
+    </td><!--end of inheritance-->
+    <td id="gene-container">
+      <span class="text-body">
+        <a id="gene-link" class="badge link-primary m-1 fw-normal" href="{{ url_for('genes.gene', hgnc_id='0') }}" target="_blank" rel="noopener" ></a>
+      </span>
+    </td>
+    <td id="hpo-container">
+      <span class="text-body">
+        <a id="hpo-link" class="badge bg-secondary text-white m-1" href="https://hpo.jax.org/app/browse/term/{{term}}" target="_blank" rel="noopener" ></a>
+      </span>
+    </td>
+  </tr>
+  </table>
 </div>
 {% endblock %}
 
