@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Parse and save MANE transcripts info when updating genes in build 38
 - `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
 - ClinVar submission can now be downloaded as a json file
+- API endpoint to pin variant
 - Support for .d4 files coverage using chanjo2
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
