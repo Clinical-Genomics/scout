@@ -25,10 +25,11 @@ def variant(institute_id, case_name, variant_id):
 
 
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>/pin")
-def pin_variant(institute_id, case_name, variant_id):
+@api_bp.route("/<variant_id>/pin")
+def pin_variant(variant_id, institute_id=None, case_name=None):
     """Pin an existing variant"""
-
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    if institute_id and case_name:
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
 
     user_obj = store.user(current_user.email)

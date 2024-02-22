@@ -149,17 +149,17 @@ def get_igv_tracks(build="37"):
 
 
 def variant(
-    store,
-    institute_id,
-    case_name,
-    variant_id=None,
-    variant_obj=None,
-    add_other=True,
-    get_overlapping=True,
-    variant_type=None,
-    case_obj=None,
-    institute_obj=None,
-):
+    store: MongoAdapter,
+    variant_id: str,
+    institute_id: str = None,
+    case_name: str = None,
+    variant_obj: dict = None,
+    add_other: bool = True,
+    get_overlapping: bool = True,
+    variant_type: str = None,
+    case_obj: dict = None,
+    institute_obj: dict = None,
+) -> dict:
     """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
