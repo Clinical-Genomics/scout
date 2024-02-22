@@ -196,6 +196,7 @@ def variant(
     """
     if not (institute_obj and case_obj):
         institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
     # If the variant is already collected we skip this part
     if not variant_obj:
         # NOTE this will query with variant_id == document_id, not the variant_id.
