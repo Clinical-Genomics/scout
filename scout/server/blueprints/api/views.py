@@ -27,10 +27,22 @@ def variant(institute_id, case_name, variant_id):
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>/pin")
 @api_bp.route("/<variant_id>/pin")
 def pin_variant(variant_id, institute_id=None, case_name=None):
-    """Pin an existing variant"""
+    """Pin an existing variant
+
+    We always want to check institute_and_case with the case name and institute given on the variant object,
+    not only the one give on the URL, to ensure user permissions are ok.
+    """
+    variant_obj = store.variant(variant_id)
+
+    variant_case_obj = store.case(case_id=variant_obj["case_id"])
+    variant_case_name = variant_case_obj["display_name"]
+
+    variant_institute_id = variant_obj["institute"]
+
+    institute_obj, case_obj = institute_and_case(store, variant_institute_id, variant_case_name)
+
     if institute_id and case_name:
         institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
 
     user_obj = store.user(current_user.email)
     link = url_for(
