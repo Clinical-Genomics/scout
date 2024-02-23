@@ -303,6 +303,10 @@ def set_variant_frequencies(transcript, entry):
     * 'gnomAD_AF' - gnomAD exomes, all populations combined
     * 'gnomAD_xxx_AF' - gnomAD exomes, individual populations
     * 'MAX_AF' - Max of all populations (1000G, gnomAD exomes, ESP)
+    In VEP 107/111 keys are
+    * 'gnomADg_AF' - genomes
+    * 'gnomAD_exomes_AF' - exomes
+    * 1000GP3_AF - 1000G Phase 3
 
     Reference: https://www.ensembl.org/info/docs/tools/vep/vep_formats.html
     """
@@ -320,11 +324,11 @@ def set_variant_frequencies(transcript, entry):
                 continue
 
             # This is the 1000G max af information
-            if key == "AF" or key == "1000GAF":
+            if key == "AF" or key == "1000GAF" or key == "1000GP3_AF":
                 transcript["thousand_g_maf"] = float(value)
                 continue
 
-            if key == "GNOMAD_AF":
+            if key == "GNOMAD_AF" or "GNOMADG_AF" or "GNOMAD_EXOMES_AF":
                 transcript["gnomad_maf"] = float(value)
                 continue
 
