@@ -122,6 +122,20 @@ def test_parse_vep_freq_gnomad(vep_csq_header, vep_csq):
         assert transcript["gnomad_max"]
 
 
+def test_parse_vep_freq_gnomad_vep107(vep_107_csq_header, vep_107_csq):
+    header = [word.upper() for word in vep_107_csq_header.split("|")]
+    raw_transcripts = [dict(zip(header, entry.split("|"))) for entry in vep_107_csq.split(",")]
+
+    gnomad_maf = float(raw_transcripts[0]["GNOMADG_AF"])
+    ## WHEN parsing the transcripts
+    transcripts = parse_transcripts(raw_transcripts)
+
+    ## THEN assert that the gnomADg_AF annotation is parsed correctly
+    for transcript in transcripts:
+        assert transcript["gnomad_maf"] == gnomad_maf
+        assert transcript["gnomad_max"]
+
+
 def test_parse_vep_freq_mtgnomad(vep_csq_header, vep_csq):
     """Test extracting the mitochondrial gnomAD AF (gnomAD_mt_AF_hom/het) from the CSQ field"""
     ## GIVEN a transcript with the gnomAD_AF key/value
