@@ -324,11 +324,12 @@ def set_variant_frequencies(transcript, entry):
                 continue
 
             # This is the 1000G max af information
-            if key == "AF" or key == "1000GAF" or key == "1000GP3_AF":
+            if key == "1000GAF" or key == "1000GP3_AF":
                 transcript["thousand_g_maf"] = float(value)
                 continue
 
-            if key == "GNOMAD_AF" or "GNOMADG_AF" or "GNOMAD_EXOMES_AF":
+            # gnomAD. Recent VEP allow the toggling of AF to gnomadAF from 1000g.
+            if key in ["GNOMAD_AF", "GNOMADG_AF", "GNOMAD_EXOMES_AF", "AF"]:
                 transcript["gnomad_maf"] = float(value)
                 continue
 
