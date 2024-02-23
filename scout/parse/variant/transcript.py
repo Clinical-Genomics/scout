@@ -348,7 +348,6 @@ def set_variant_frequencies(transcript, entry):
 
             if "GNOMAD" in key:
                 gnomad_freqs.append(float(value))
-
             else:
                 thousandg_freqs.append(float(value))
 
