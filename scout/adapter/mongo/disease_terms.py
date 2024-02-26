@@ -15,7 +15,13 @@ DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 
-    def query_disease(self, query: str = None, source: str = None, limit: int = None) -> Iterable:
+    def query_disease(
+        self,
+        query: str = None,
+        source: str = None,
+        limit: int = None,
+        filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
+    ) -> Iterable:
         """Return all disease_terms
 
         If a query is sent it will try to match with regex on term or
@@ -44,7 +50,7 @@ class DiagnosisHandler(object):
         limit = limit or int(10e10)
 
         res = (
-            self.disease_term_collection.find(query_dict, DISEASE_FILTER_PROJECT)
+            self.disease_term_collection.find(query_dict, filter_project)
             .limit(limit)
             .sort("disease_nr", ASCENDING)
         )
@@ -104,35 +110,18 @@ class DiagnosisHandler(object):
 
     def disease_terms(
         self,
-        query: str = None,
         source: Optional[str] = None,
         filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
     ) -> list:
         """Return all disease terms optionally from only one source and filtered the returned key/values
         using filter_project. By default do not return disease-associated genes and HPO terms."""
-        query_dict = {}
-        if query:
-            query_dict = {
-                "$or": [
-                    {"disease_nr": {"$regex": query, "$options": "i"}},
-                    {"description": {"$regex": query, "$options": "i"}},
-                ]
-            }
-            # If source is specified, add this restriction to the query
-            if source:
-                query_dict = {
-                    "$and": [
-                        query_dict,
-                        {"source": source},
-                    ]
-                }
-        elif source:
-            LOG.debug(f"Fetching all {source} diseases")
-            query_dict = {"source": source}
+        query = {}
+        if source:
+            query = {"source": source}
         else:
             LOG.info("Fetching all disease terms")
 
-        return list(self.disease_term_collection.find(query_dict, filter_project))
+        return list(self.disease_term_collection.find(query, filter_project))
 
     def disease_terms_by_gene(
         self,
