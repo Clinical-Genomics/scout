@@ -117,6 +117,7 @@ class DiagnosisHandler(object):
         using filter_project. By default do not return disease-associated genes and HPO terms."""
         query = {}
         if source:
+            LOG.debug(f"Fetching all {source} diseases")
             query = {"source": source}
         else:
             LOG.info("Fetching all disease terms")

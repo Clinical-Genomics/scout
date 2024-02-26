@@ -25,7 +25,7 @@ def disease_entry(store, disease_id) -> dict:
 
 
 def disease_terms(store: MongoAdapter, query: str, source: str) -> dict:
-    """Retrieve disease terms, optionally queried by source or a text-match for the disease description."""
+    """Retrieve disease terms, queried by source or a text-match for the disease description."""
 
     data = {"terms": list(store.query_disease(query=query, source=source, filter_project=None))}
     return data
