@@ -56,7 +56,7 @@
         <div id="diagnoses-card" class="card-body">
           <div class="d-flex align-items-center">
             <div >
-              <input name=search-disease-term" id="search-disease-term" class="form-control typeahead_diseases" data-provide="typeahead_diseases" autocomplete="off" required placeholder="Search...">
+              <input name=search-disease-term" id="search-disease-term" class="form-control" onkeydown="if (event.key == 'Enter'){loadDiseases()}" placeholder="Search...">
             </div>
             <div class="mx-4">
               <button id="load-button" class="btn btn-primary my-2" onClick="loadDiseases()">Search diseases</button>
