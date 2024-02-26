@@ -898,7 +898,7 @@ def test_caselist(app, case_obj):
         assert case_obj["display_name"] in str(resp.data)
 
 
-def test_omimterms(app, test_omim_database_term):
+def test_diseaseterms(app, test_omim_database_term):
     """Test The API which returns all OMIM terms when queried from case page"""
 
     # GIVEN a database containing at least one OMIM term
@@ -912,7 +912,7 @@ def test_omimterms(app, test_omim_database_term):
         assert resp.status_code == 200
 
         # WHEN the API is invoked with a query string containing part of the OMIM term description
-        resp = client.get(url_for("cases.omimterms", query="5-oxo"))
+        resp = client.get(url_for("cases.diseaseterms", query="5-oxo"))
         # THEN it should return a valid response
         assert resp.status_code == 200
 
