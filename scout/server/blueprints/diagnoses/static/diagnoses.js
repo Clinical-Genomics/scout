@@ -146,5 +146,5 @@ function initialiseTable(data) {
 }
 
 function removePreviousTableIfPresent() {
-    if ($.fn.dataTable.isDataTable('#diagnoses_table')) {$('#diagnoses_table').DataTable().destroy()}
+    if ($.fn.dataTable.isDataTable('#diagnoses_table')) {$('#diagnoses_table').DataTable().clear().destroy()}
 }
