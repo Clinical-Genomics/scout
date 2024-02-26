@@ -191,7 +191,7 @@
       {{ modal_cancel_sanger(institute, case, variant, current_user) }}
     {% endif %}
 </div>
-{{ modal_causative(case, institute, variant) }}
+{{ modal_causative(case, institute, variant, case_tag_options) }}
 {% endblock %}
 
 
@@ -231,7 +231,7 @@
              <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.chromosome }}:{{ variant.position }}" title="Copy to clipboard">
               </button>
             </td>
-            <td colspan=3>
+            <td {% if not mei %}colspan="3"{% endif %}>
               Change:
               {% if variant.reference|length > 8 %}
                 <strong>{{ variant.reference[:1] }}..{{variant.reference[-1:]}}</strong>
@@ -246,8 +246,11 @@
               {% endif %}
               <button type="button" class="fa fa-copy btn-xs js-tooltip js-copy" style="background-color: Transparent;outline:none; border: none;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-copy="{{ variant.reference }}>{{ variant.alternative }}" title="Copy to clipboard">
               </button>
-
-	    </td>
+	          </td>
+            {% if mei %}
+              <td>{{ variant.sub_category|upper }}</td>
+              <td>{{ variant.mei_name|upper }}</td>
+            {% endif %}
           </tr>
           <tr>
             <td>
@@ -279,6 +282,7 @@
               </strong></span>
             </td>
           </tr>
+
         </tbody>
       </table>
       <table class="table table-bordered table-fixed table-sm">

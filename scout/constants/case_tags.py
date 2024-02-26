@@ -60,6 +60,39 @@ CANCER_PHENOTYPE_MAP = {1: "normal", 2: "tumor", 0: "unknown", -9: "unknown"}
 REV_PHENOTYPE_MAP = {value: key for key, value in PHENOTYPE_MAP.items()}
 
 CASE_STATUSES = ("prioritized", "inactive", "active", "solved", "archived", "ignored")
+CASE_TAGS = {
+    "provisional": {
+        "label": "Provisional",
+        "description": "Variant flagged causative has provisional diagnostic status",
+    },
+    "diagnostic": {
+        "label": "Diagnostic",
+        "description": "Variant flagged causative has definitive diagnostic status",
+    },
+    "carrier": {
+        "label": "Carrier",
+        "description": "Assay performed to identify carrier status found variant present",
+    },
+    "medical": {
+        "label": "Medical attention",
+        "description": "Case needs medical specialist attention - eg findings with unclear connection to phenotype",
+    },
+    "technical": {
+        "label": "Technical attention",
+        "description": "Case needs technical specialist attention - eg findings with unclear technical status",
+    },
+    "upd": {
+        "label": "UPD",
+        "description": "UniParental Disomy determined causative eg by Chromograph or Gens",
+    },
+    "smn": {"label": "SMN", "description": "SMN assay found causative eg by SMNCopyNumberCaller"},
+    "fshd": {"label": "FSHD", "description": "FSHD assay (OGM) found causative"},
+    "rna": {"label": "RNA", "description": "RNA assay with no markable variant found causative"},
+    "structural": {
+        "label": "Other structural",
+        "description": "Structural variation with no call or complex combination of called variants found causative, as evident via e.g. Chromograph or Gens",
+    },
+}
 
 VERBS_MAP = {
     "acmg": "updated ACMG classification for",
@@ -101,6 +134,7 @@ VERBS_MAP = {
     "sanger": "ordered sanger sequencing for",
     "share": "shared case with",
     "status": "updated the status for",
+    "tag": "tagged the case for",
     "synopsis": "updated synopsis for",
     "unmark_causative": "unmarked causative for",
     "unmark_partial_causative": "unmarked partial causative for",
@@ -221,6 +255,7 @@ CASE_SEARCH_TERMS = {
     },
     "panel": {"label": "Gene Panel", "prefix": "panel:", "placeholder": "example:NMD"},
     "status": {"label": "Case Status", "prefix": "status:", "placeholder": "example:active"},
+    "tags": {"label": "Tags", "prefix": "tags:", "placeholder": "example:medical"},
     "track": {"label": "Analysis Track", "prefix": "track:", "placeholder": "rare or cancer"},
     "pheno_group": {
         "label": "Phenotype Group",

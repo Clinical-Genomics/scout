@@ -5,11 +5,28 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
+- New SO terms: `sequence_variant` and `coding_transcript_variant`
+- More MEI specific annotation is shown on the variant page
+- Parse and save MANE transcripts info when updating genes in build 38
+- `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
+- ClinVar submission can now be downloaded as a json file
+- API endpoint to pin variant
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
+- Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
+- Renamed `Clinical Significance` to `Germline Classification` on multistep ClinVar form
+- Changed the "x" in cases.utils.remove_form button text to red for better visibility in dark mode
+- Update GitHub actions
+- Default loglevel up to INFO, making logs with default start easier to read
+- Add XTR region to PAR region definition
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
+- Inheritance mode from ORPHA should not be confounded with the OMIM inheritance model
+- Decipher link URL changes
+
 
 ## [4.77]
 ### Added
@@ -46,7 +63,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pydantic validation of image paths provided in case load config file
 - Info on the user which created a ClinVar submission, when available
 - Associate .d4 files to case individuals when loading a case via config file
-- Option update path to .d4 files path for individuals of an existing case using the commands line
 ### Changed
 - In diagnoses page the load of diseases are initiated by clicking a button
 - Revel score, Revel rank score and SpliceAI values are also displayed in Causatives and Validated variants tables
