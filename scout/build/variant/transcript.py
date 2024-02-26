@@ -71,14 +71,6 @@ def build_transcript(transcript, build="37"):
     if transcript.get("superdups_fracmatch"):
         transcript_obj["superdups_fracmatch"] = transcript["superdups_fracmatch"]
 
-    if transcript.get("mane_select_transcript"):
-        transcript_obj["mane_select_transcript"] = transcript["mane_select_transcript"]
-
-    if transcript.get("mane_plus_clinical_transcript"):
-        transcript_obj["mane_plus_clinical_transcript"] = transcript[
-            "mane_plus_clinical_transcript"
-        ]
-
     transcript_obj["is_canonical"] = transcript.get("is_canonical", False)
 
     return transcript_obj

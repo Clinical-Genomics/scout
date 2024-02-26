@@ -119,10 +119,18 @@ def update_transcripts_information(
     # First loop over the variants transcripts
     for transcript in variant_gene.get("transcripts", []):
         tx_id = transcript["transcript_id"]
+
         hgnc_transcript = transcripts_dict.get(tx_id)
         # If the tx does not exist in ensembl anymore we skip it
         if not hgnc_transcript:
             continue
+
+        # Update MANE info for this variant transcript according to GENE transcripts' MANE info
+        for key in ["mane_select", "mane_plus_clinical"]:
+            if hgnc_transcript.get(key):
+                transcript[f"{key}_transcript"] = hgnc_transcript[key]
+            else:
+                transcript.pop(f"{key}_transcript")
 
         # Check in the common information if it is a primary transcript
         if hgnc_transcript.get("is_primary"):
