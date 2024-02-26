@@ -35,7 +35,7 @@ def count_diagnoses():
 @omim_bp.route("/api/v1/diagnoses")
 @public_endpoint
 def api_diagnoses():
-    """Return JSON data about OMIM diseases in the database."""
+    """Return JSON data about diseases in the database."""
     query = request.args.get("query") or None
     source = request.args.get("source") or None
     data = controllers.disease_terms(store, query=query, source=source)

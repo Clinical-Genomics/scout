@@ -24,11 +24,8 @@ def disease_entry(store, disease_id) -> dict:
     return disease_obj
 
 
-def disease_terms(store: MongoAdapter, query: str, source: str):
-    """Retrieve disease terms, optionally queried by source or a text-match for the disease description.
-    Returns:
-        data(dict): dict with key "terms" set to an array of all disease terms
-    """
+def disease_terms(store: MongoAdapter, query: str, source: str) -> dict:
+    """Retrieve disease terms, optionally queried by source or a text-match for the disease description."""
 
     data = {"terms": store.disease_terms(query=query, source=source, filter_project=None)}
     return data

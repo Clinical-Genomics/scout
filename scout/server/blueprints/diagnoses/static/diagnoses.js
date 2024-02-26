@@ -8,7 +8,7 @@ async function loadDiseases() {
            Loading matching diagnoses, this might take some time...
         </div>`);
 
-    //Get input value
+    //Get input value to use in query
     const query = document.querySelector("#search-disease-term").value
 
     const baseUrl = window.location.origin
@@ -144,7 +144,6 @@ function initialiseTable(data) {
     });
     document.querySelector("#diagnoses_table_wrapper > .dt-buttons").classList.add("mb-2")
 }
-
 
 function removePreviousTableIfPresent() {
     if ($.fn.dataTable.isDataTable('#diagnoses_table')) {$('#diagnoses_table').DataTable().destroy()}
