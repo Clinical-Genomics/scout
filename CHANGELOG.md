@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
 - ClinVar submission can now be downloaded as a json file
 - API endpoint to pin variant
+- Display common/uncommon/rare on summary of mei variant page
 - Sanger recipient may send an alert to the user which ordered the verification when a variant is flagged as true positive
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs

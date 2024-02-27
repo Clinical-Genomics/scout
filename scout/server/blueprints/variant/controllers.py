@@ -265,7 +265,9 @@ def variant(
         )
 
     variant_obj["matching_ranked"] = store.get_matching_manual_ranked_variants(
-        variant_obj, user_institutes(store, current_user), exclude_cases=[case_obj["_id"]]
+        variant_obj,
+        user_institutes(store, current_user),
+        exclude_cases=[case_obj["_id"]],
     )
 
     # Gather display information for the genes
@@ -293,7 +295,7 @@ def variant(
     # Add general variant links
     variant_obj.update(get_variant_links(institute_obj, variant_obj, int(genome_build)))
     variant_obj["frequencies"] = frequencies(variant_obj)
-    if variant_category in ["snv", "cancer"]:
+    if variant_category in ["snv", "cancer", "mei"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
@@ -486,7 +488,10 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
         loqus_settings = loqusdb.loqusdb_settings.get(loqus_id)
 
         if loqus_settings is None:  # An instance might have been renamed or removed
-            flash(f"Could not connect to the preselected loqusdb '{loqus_id}' instance", "warning")
+            flash(
+                f"Could not connect to the preselected loqusdb '{loqus_id}' instance",
+                "warning",
+            )
             obs_data[loqus_id]["total"] = "N/A"
             continue
         obs_data[loqus_id] = loqusdb.get_variant(
