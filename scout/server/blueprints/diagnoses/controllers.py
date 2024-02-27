@@ -25,7 +25,22 @@ def disease_entry(store, disease_id) -> dict:
 
 
 def disease_terms(store: MongoAdapter, query: str, source: str) -> dict:
-    """Retrieve disease terms, queried by source or a text-match for the disease description."""
+    """Retrieve disease terms, queried by source or a text-match for the disease description.
+    disease_term[genes] are populated with both hgnc_id and symbol"""
 
-    data = {"terms": list(store.query_disease(query=query, source=source, filter_project=None))}
+    disease_data = list(store.query_disease(query=query, source=source, filter_project=None))
+
+    for disease in disease_data:
+        gene_ids = disease.get("genes", [])
+        gene_symbols = []
+
+        for gene in gene_ids:
+            gene_symbol = store.hgnc_gene_caption(hgnc_identifier=gene)
+            gene_symbols.append(
+                {"hgnc_id": gene_symbol["hgnc_id"], "hgnc_symbol": gene_symbol["hgnc_symbol"]}
+            )
+        disease.update({"genes": gene_symbols})
+
+    data = {"terms": list(disease_data)}
+
     return data
