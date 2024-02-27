@@ -1,23 +1,23 @@
 async function loadDiseases() {
-		//Remove load button
-    let button=document.getElementById("load-button")
-
-    button.remove()
-
     //Add spinner to show loading is in progress
     $('#load-container').html(
         `<div id="spinner-container" class="d-flex align-items-center">
             <div class="spinner-border text-primary m-3" role="status">
                 <span class="visually-hidden"></span>
             </div>
-           Loading all diagnoses, this might take some time...
+           Loading matching diagnoses, this might take some time...
         </div>`);
+
+    //Get input value to use in query
+    const query = document.querySelector("#search-disease-term").value
 
     const baseUrl = window.location.origin
 
+    //If it's not the first search, remove the previously generated table
+    removePreviousTableIfPresent()
     try {
         //Fetch data and generate table with results
-        const response = await fetch(`${baseUrl}/api/v1/diagnoses`)
+        const response = await fetch(`${baseUrl}/api/v1/diagnoses?query=${query}`)
         if (!response.ok) {
             throw new Error('Failed to fetch')
         }
@@ -29,8 +29,6 @@ async function loadDiseases() {
     } catch (error) {
 
         if (error.toString().includes('Failed to fetch')) {
-        		//Replace load button
-        		document.querySelector("#diagnoses-card").append(button)
             //Replace loading spinner with error message if loading fails
             displayErrorMsg("Diagnoses could not be loaded, please try again", "spinner-container")
         }
@@ -39,8 +37,8 @@ async function loadDiseases() {
 
 function generateDiseaseTable(data, id) {
     const table = document.getElementById(id)
-    const row = table.querySelector("#diagnosis-row")
-    const tbody = table.querySelector("tbody")
+    const row = document.querySelector("#diagnosis-row")
+    const tbody = table.querySelector(`#${id} tbody`)
 
     //Create a table row for each diagnosis and append to the table
     data.forEach(item => {
@@ -48,8 +46,7 @@ function generateDiseaseTable(data, id) {
         tbody.append(newRow)
     })
 
-    //Replace invisible content so diagnosis-table is displayed
-    row.remove()
+    //Remove spinner and show the table if hidden
     document.querySelector("#spinner-container").remove()
     table.removeAttribute("style")
 }
@@ -84,8 +81,7 @@ function generateDiseaseTableRow(disease, rowTemplate) {
             inheritanceContainerElement.append(newInheritance)
         });
     } else {
-
-        inheritanceContainerElement .textContent = "-"
+        inheritanceContainerElement.textContent = "-"
     }
 
     //Add Genes
@@ -96,14 +92,15 @@ function generateDiseaseTableRow(disease, rowTemplate) {
 
     return newNode
 }
+
 function displayErrorMsg(msg, id) {
     //Replace spinner with error message
     const spinnerContainer = document.querySelector(`#${id}`)
     spinnerContainer.textContent = msg
 }
 
-function addHpoOrGeneLinks(parentNode, target, data){
-let linkElement = parentNode.querySelector(`#${target}-link`)
+function addHpoOrGeneLinks(parentNode, target, data) {
+    let linkElement = parentNode.querySelector(`#${target}-link`)
     let containerElement = parentNode.querySelector(`#${target}-container`)
 
     if (data.length > 0) {
@@ -131,23 +128,23 @@ function getExternalLink(source, disease_nr) {
     return link
 }
 
-
 function initialiseTable(data) {
     //Diagnosis table is turned into a DataTable with copy-buttons, pagination and search bar
     $('#diagnoses_table').DataTable({
         data: data,
         paging: true,
-        dom: 'fBrtip',
+        dom: 'Brtip',
         buttons: [
             {
                 extend: 'excelHtml5',
-                title: 'omim_terms'
+                title: 'disease_term_search_result'
             },
             'copyHtml5'
         ]
     });
-    document.querySelector("#diagnoses_table_filter").classList.add("text-start")
-		document.querySelector("#diagnoses_table_wrapper > .dt-buttons").classList.add("m-2")
+    document.querySelector("#diagnoses_table_wrapper > .dt-buttons").classList.add("mb-2")
 }
 
-
+function removePreviousTableIfPresent() {
+    if ($.fn.dataTable.isDataTable('#diagnoses_table')) {$('#diagnoses_table').DataTable().clear().destroy()}
+}
