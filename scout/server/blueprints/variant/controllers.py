@@ -69,7 +69,10 @@ def tx_overview(variant_obj):
         for tx in gene.get("transcripts", []):
             ovw_tx = {}
 
-            if "refseq_identifiers" not in tx and tx.get("is_canonical", False) is False:
+            if (
+                "refseq_identifiers" not in tx
+                and tx.get("is_canonical", False) is False
+            ):
                 continue  # collect only RefSeq or canonical transcripts
 
             # ---- create content for the gene column -----#
@@ -104,7 +107,8 @@ def tx_overview(variant_obj):
             ovw_tx["transcript_id"] = tx.get("transcript_id")
             ovw_tx["is_primary"] = (
                 True
-                if tx.get("refseq_id") in gene.get("common", {}).get("primary_transcripts", [])
+                if tx.get("refseq_id")
+                in gene.get("common", {}).get("primary_transcripts", [])
                 else False
             )
             ovw_tx["is_canonical"] = tx.get("is_canonical")
@@ -265,7 +269,9 @@ def variant(
         )
 
     variant_obj["matching_ranked"] = store.get_matching_manual_ranked_variants(
-        variant_obj, user_institutes(store, current_user), exclude_cases=[case_obj["_id"]]
+        variant_obj,
+        user_institutes(store, current_user),
+        exclude_cases=[case_obj["_id"]],
     )
 
     # Gather display information for the genes
@@ -293,11 +299,13 @@ def variant(
     # Add general variant links
     variant_obj.update(get_variant_links(institute_obj, variant_obj, int(genome_build)))
     variant_obj["frequencies"] = frequencies(variant_obj)
-    if variant_category in ["snv", "cancer"]:
+    if variant_category in ["snv", "cancer", "mei"]:
         # This is to convert a summary of frequencies to a string
         variant_obj["frequency"] = frequency(variant_obj)
     # Format clinvar information
-    variant_obj["clinsig_human"] = clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    variant_obj["clinsig_human"] = (
+        clinsig_human(variant_obj) if variant_obj.get("clnsig") else None
+    )
 
     variant_genes = variant_obj.get("genes", [])
     update_representative_gene(variant_obj, variant_genes)
@@ -309,9 +317,13 @@ def variant(
     is_affected(variant_obj, case_obj)
 
     if variant_obj.get("genetic_models"):
-        variant_models = set(model.split("_", 1)[0] for model in variant_obj["genetic_models"])
+        variant_models = set(
+            model.split("_", 1)[0] for model in variant_obj["genetic_models"]
+        )
         omim_models = variant_obj.get("omim_models", set())
-        variant_obj["is_matching_inheritance"] = set.intersection(variant_models, omim_models)
+        variant_obj["is_matching_inheritance"] = set.intersection(
+            variant_models, omim_models
+        )
 
     # Prepare classification information for visualisation
     classification = variant_obj.get("acmg_classification")
@@ -411,7 +423,9 @@ def variant_rank_scores(store, case_obj, variant_obj):
         # Loop over each rank score category and collect model explanation to display on variant page
         if rank_model:
             for score in rank_score_results:
-                category = score.get("category")  # examples: Splicing, Consequence, Deleteriousness
+                category = score.get(
+                    "category"
+                )  # examples: Splicing, Consequence, Deleteriousness
                 score["model_ranges"] = store.get_ranges_info(rank_model, category)
                 (score["min"], score["max"]) = store.range_span(score["model_ranges"])
 
@@ -427,7 +441,9 @@ def get_loqusdb_obs_cases(
     information about what institutes the user has access to.
     """
     obs_cases = []
-    user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
+    user_institutes_ids = set(
+        [inst["_id"] for inst in user_institutes(store, current_user)]
+    )
     for i, case_id in enumerate(obs_families):
         if len(obs_cases) == 10:
             break
@@ -459,7 +475,9 @@ def get_loqusdb_obs_cases(
     return obs_cases
 
 
-def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Dict[str, dict]:
+def observations(
+    store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict
+) -> Dict[str, dict]:
     """Check if variant_obj have been observed before in the loqusdb instances available in the institute settings.
     If not return empty dictionary.
     """
@@ -486,7 +504,10 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
         loqus_settings = loqusdb.loqusdb_settings.get(loqus_id)
 
         if loqus_settings is None:  # An instance might have been renamed or removed
-            flash(f"Could not connect to the preselected loqusdb '{loqus_id}' instance", "warning")
+            flash(
+                f"Could not connect to the preselected loqusdb '{loqus_id}' instance",
+                "warning",
+            )
             obs_data[loqus_id]["total"] = "N/A"
             continue
         obs_data[loqus_id] = loqusdb.get_variant(
@@ -561,7 +582,9 @@ def str_variant_reviewer(
             resp = requests.post(url, json=srs_query_data)
             display_individual["svg"] = Markup(resp.text)
         except Exception as err:
-            flash(f"An error occurred while connecting to Scout-REViewer-Service: {err}")
+            flash(
+                f"An error occurred while connecting to Scout-REViewer-Service: {err}"
+            )
             display_individual["svg"] = Markup("<SVG></SVG>")
 
         display_individuals.append(display_individual)
@@ -608,7 +631,14 @@ def check_reset_variant_classification(store, evaluation_obj, link):
 
     """
 
-    if len(list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))) == 0:
+    if (
+        len(
+            list(
+                store.get_evaluations_case_specific(evaluation_obj["variant_specific"])
+            )
+        )
+        == 0
+    ):
         variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
         acmg_classification = variant_obj.get("acmg_classification")
         if isinstance(acmg_classification, int):
