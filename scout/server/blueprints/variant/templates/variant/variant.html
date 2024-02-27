@@ -336,6 +336,9 @@
             <th>Gene</th>
             <th>Region</th>
             <th>Function</th>
+            {% if gene.mane_select_functional_annotation or gene.mane_plus_clinical_functional_annotation %}
+              <th>Function (MANE transcript)</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -348,6 +351,11 @@
               </th>
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
+              {% if gene.mane_select_functional_annotation or gene.mane_plus_clinical_functional_annotation %}
+                {% for key in ["mane_select_functional_annotation", "mane_plus_clinical_functional_annotation"] %}
+                  {{ gene.key if gene.key }}
+                {% endfor %}
+              {% endif %}
             </tr>
           {% endfor %}
         </tbody>
