@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from scout.adapter import MongoAdapter
 from scout.server.links import disease_link
 
 
@@ -23,13 +24,8 @@ def disease_entry(store, disease_id) -> dict:
     return disease_obj
 
 
-def disease_terms(store):
-    """Retrieve all disease terms.
-    Args:
-        store(adapter.MongoAdapter):  an adapter to the scout database
-    Returns:
-        data(dict): dict with key "terms" set to an array of all disease terms
-    """
+def disease_terms(store: MongoAdapter, query: str, source: str) -> dict:
+    """Retrieve disease terms, queried by source or a text-match for the disease description."""
 
-    data = {"terms": store.disease_terms(filter_project=None)}
+    data = {"terms": list(store.query_disease(query=query, source=source, filter_project=None))}
     return data
