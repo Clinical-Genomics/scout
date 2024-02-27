@@ -15,7 +15,13 @@ DISEASE_FILTER_PROJECT = {"hpo_terms": 0, "genes": 0}
 class DiagnosisHandler(object):
     """Class for handling OMIM and disease-related database objects"""
 
-    def query_disease(self, query: str = None, source: str = None, limit: int = None) -> Iterable:
+    def query_disease(
+        self,
+        query: str = None,
+        source: str = None,
+        limit: int = None,
+        filter_project: Optional[dict] = DISEASE_FILTER_PROJECT,
+    ) -> Iterable:
         """Return all disease_terms
 
         If a query is sent it will try to match with regex on term or
@@ -44,7 +50,7 @@ class DiagnosisHandler(object):
         limit = limit or int(10e10)
 
         res = (
-            self.disease_term_collection.find(query_dict, DISEASE_FILTER_PROJECT)
+            self.disease_term_collection.find(query_dict, filter_project)
             .limit(limit)
             .sort("disease_nr", ASCENDING)
         )
