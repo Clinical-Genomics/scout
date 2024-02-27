@@ -22,6 +22,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update GitHub actions
 - Default loglevel up to INFO, making logs with default start easier to read
 - Add XTR region to PAR region definition
+- Diagnoses can be searched on diagnoses page without waiting for load first
 - Optimised indexes to address slow queries
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
