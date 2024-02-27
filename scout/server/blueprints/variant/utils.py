@@ -475,6 +475,7 @@ def frequency(variant_obj):
         variant_obj.get("exac_frequency") or 0,
         variant_obj.get("gnomad_frequency") or 0,
         variant_obj.get("gnomad_mt_homoplasmic_frequency") or 0,
+        variant_obj.get("swegen_mei_max") or 0,
     )
 
     if most_common_frequency > 0.05:
