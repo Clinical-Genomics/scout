@@ -453,7 +453,6 @@ def frequency(variant_obj):
         variant_obj.get("exac_frequency") or 0,
         variant_obj.get("gnomad_frequency") or 0,
         variant_obj.get("gnomad_mt_homoplasmic_frequency") or 0,
-        variant_obj.get("swegen_alu") or 0,
         variant_obj.get("swegen_mei_max") or 0,
     )
 
