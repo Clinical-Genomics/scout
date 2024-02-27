@@ -42,4 +42,8 @@ transcript = dict(
     protein_sequence_name=str,
     # If the transcript is relevant
     is_canonical=bool,
+    # The MANE select transcript
+    mane_select_transcript=str,
+    # The MANE plus clinical transcript
+    mane_plus_clinical_transcript=str,
 )
