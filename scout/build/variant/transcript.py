@@ -3,17 +3,11 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-def build_transcript(transcript, build="37"):
+def build_transcript(transcript: dict) -> dict:
     """Build a transcript object
 
-    These represents the transcripts that are parsed from the VCF, not
-    the transcript definitions that are collected from ensembl.
-
-        Args:
-            transcript(dict): Parsed transcript information
-
-        Returns:
-            transcript_obj(dict)
+    These key/values represent the transcripts that are parsed from the VCF, not
+    the transcript definitions that are collected from Ensembl.
     """
 
     # Transcripts has to have an id
