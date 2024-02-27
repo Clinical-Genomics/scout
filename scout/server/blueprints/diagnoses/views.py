@@ -1,3 +1,5 @@
+from typing import Union
+
 from flask import Blueprint, jsonify, request
 
 from scout.server.extensions import store
@@ -36,7 +38,7 @@ def count_diagnoses():
 @public_endpoint
 def api_diagnoses():
     """Return JSON data about diseases in the database."""
-    query = request.args.get("query") or None
-    source = request.args.get("source") or None
-    data = controllers.disease_terms(store, query=query, source=source)
+    query: Union[str, None] = request.args.get("query") or None
+    source: Union[str, None] = request.args.get("source") or None
+    data: dict = controllers.disease_terms(store, query=query, source=source)
     return jsonify(data)
