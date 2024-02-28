@@ -330,19 +330,19 @@ def case_diagnosis(institute_id, case_name):
     user_obj = store.user(current_user.email)
     link = url_for(".case", institute_id=institute_id, case_name=case_name)
 
-    omim_id = request.form["omim_term"].split("|")[0]
-    omim_inds = request.form.getlist("omim_inds")  # Individual-level phenotypes
+    disease_id = request.form["disease_term"].split("|")[0]
+    affected_inds = request.form.getlist("affected_inds")  # Individual-level phenotypes
 
     store.diagnose(
         institute=institute_obj,
         case=case_obj,
         user=user_obj,
         link=link,
-        disease_id=omim_id.strip(),
-        omim_inds=omim_inds,
+        disease_id=disease_id.strip(),
+        affected_inds=affected_inds,
         remove=True if request.args.get("remove") == "yes" else False,
     )
-    return redirect("#".join([link, "omim_assign"]))
+    return redirect("#".join([link, "disease_assign"]))
 
 
 @cases_bp.route("/<institute_id>/<case_name>/phenotypes", methods=["POST"])
@@ -630,8 +630,8 @@ def hpoterms():
     return jsonify(json_terms)
 
 
-@cases_bp.route("/api/v1/omim-terms")
-def omimterms():
+@cases_bp.route("/api/v1/disease-terms")
+def diseaseterms():
     query = request.args.get("query")
     source = request.args.get("source") or None
     if query is None:
