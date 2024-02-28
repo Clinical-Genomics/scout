@@ -28,6 +28,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
 - Inheritance mode from ORPHA should not be confounded with the OMIM inheritance model
 - Decipher link URL changes
+- Refactored code in cases blueprints to use "disease" instead of "omim" to encompass also ORPHA terms
 
 
 ## [4.77]
