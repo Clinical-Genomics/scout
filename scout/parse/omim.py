@@ -19,16 +19,16 @@ def parse_omim_line(line, header):
     return omim_info
 
 
-def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
+def parse_genemap2_diseases(phenotype_entry, mim_number=None):
     """Parse the Phenotype entry of a genemap2 line
 
-    Returns a list with the relevant phenotypes.
     The phenotype entries are separated by ';'
+    Returns a list with the relevant diseases.
 
     If a special symbol is used in the description it indicates the disease status.
 
     """
-    parsed_phenotypes = []
+    parsed_diseases = []
 
     for phenotype_info in phenotype_entry.split(";"):
         if not phenotype_info:
@@ -41,7 +41,8 @@ def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
         if phenotype_status == "nondisease":
             continue
 
-        phenotype_description = ""
+        disease_status = phenotype_status
+        disease_description = ""
 
         # We will try to save the description
         i = 0
@@ -51,16 +52,16 @@ def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
             # We check if we are in the part where the mim number exists
             match = ENTRY_PATTERN.search(text)
             if not match:
-                phenotype_description += text
+                disease_description += text
             else:
                 # If we find the end of the entry
                 mimnr_match = MIMNR_PATTERN.search(phenotype_info)
                 # Then if the entry have a mim number we choose that
                 if mimnr_match:
-                    phenotype_mim = int(mimnr_match.group())
+                    disease_mim = int(mimnr_match.group())
                 else:
-                    phenotype_mim = mim_number
-                    phenotype_description += text[:-4]
+                    disease_mim = mim_number
+                    disease_description += text[:-4]
                 break
         # Find the inheritance
         inheritance = set()
@@ -69,15 +70,15 @@ def parse_genemap2_phenotypes(phenotype_entry, mim_number=None):
             if term in inheritance_text:
                 inheritance.add(INHERITANCE_TERMS_MAPPER[term])
 
-        parsed_phenotypes.append(
+        parsed_diseases.append(
             {
-                "mim_number": phenotype_mim,
+                "mim_number": disease_mim,
                 "inheritance": inheritance,
-                "description": phenotype_description.strip("?\{\}"),
-                "status": phenotype_status,
+                "description": disease_description.strip("?\{\}"),
+                "status": disease_status,
             }
         )
-    return parsed_phenotypes
+    return parsed_diseases
 
 
 def parse_genemap2(lines):
@@ -151,12 +152,12 @@ def parse_genemap2(lines):
         # Gene inheritance is a construct. It is the union of all inheritance
         # patterns found in the associated phenotypes
         gene_inheritance = set()
-        parsed_entry["phenotypes"] = parse_genemap2_phenotypes(
+        parsed_entry["phenotypes"] = parse_genemap2_diseases(
             parsed_entry.get("Phenotypes", ""), mim_number
         )
 
-        for phenotype in parsed_entry["phenotypes"]:
-            gene_inheritance.update(phenotype["inheritance"])
+        for disease in parsed_entry["phenotypes"]:
+            gene_inheritance.update(disease["inheritance"])
 
         parsed_entry["inheritance"] = gene_inheritance
 
@@ -331,7 +332,7 @@ def get_mim_genes(genemap_lines, mim2gene_lines):
     return hgnc_genes
 
 
-def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[str, Any]:
+def get_mim_disease(genemap_lines: Iterable[str]) -> Dict[str, Any]:
     """Get a dictionary with phenotypes
 
     Use the mim numbers for phenotypes as keys and phenotype information as
@@ -348,32 +349,31 @@ def get_mim_phenotypes(genemap_lines: Iterable[str]) -> Dict[str, Any]:
              'description': str, # Description of the phenotype
              'hgnc_symbols': set(), # Associated hgnc symbols
              'inheritance': set(),  # Associated phenotypes
-             'mim_number': int, # mim number of phenotype
         }
     """
-    phenotypes_found = {}
+    diseases_found = {}
 
     # Genemap is a file with one entry per gene.
     # Each line hold a lot of information and in specific it
     # has information about the phenotypes that a gene is associated with
     # From this source we collect inheritane patterns and what hgnc symbols
-    # a phenotype is associated with
+    # a disease is associated with
     for entry in parse_genemap2(genemap_lines):
         hgnc_symbol = entry["hgnc_symbol"]
-        for phenotype in entry["phenotypes"]:
-            #: For each phenotype extract mim
-            disease_nr = phenotype["mim_number"]
-            phenotype_id = f"OMIM:{disease_nr}"
-            if phenotype_id in phenotypes_found:
-                #: if mim is in found phenotypes, set this as the entry and union inheritance
-                phenotype_entry = phenotypes_found[phenotype_id]
-                phenotype_entry["inheritance"] = phenotype_entry["inheritance"].union(
-                    phenotype["inheritance"]
+        for disease in entry["phenotypes"]:
+            #: For each phenotype extract omim number
+            disease_nr = disease["mim_number"]
+            disease_id = f"OMIM:{disease_nr}"
+            if disease_id in diseases_found:
+                #: if the disorder is in found diseases, set this as the entry and union inheritance
+                disease_entry = diseases_found[disease_id]
+                disease_entry["inheritance"] = disease_entry["inheritance"].union(
+                    disease["inheritance"]
                 )
-                phenotype_entry["hgnc_symbols"].add(hgnc_symbol)
+                disease_entry["hgnc_symbols"].add(hgnc_symbol)
             else:
                 #: If not already present set hgnc value and add it to the phenotypes found
-                phenotype["hgnc_symbols"] = set([hgnc_symbol])
-                phenotypes_found[phenotype_id] = phenotype
+                disease["hgnc_symbols"] = set([hgnc_symbol])
+                diseases_found[disease_id] = disease
 
-    return phenotypes_found
+    return diseases_found
