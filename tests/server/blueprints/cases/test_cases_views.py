@@ -761,9 +761,9 @@ def test_case_diagnosis(
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
 
-        req_data = {"omim_term": disease_id}
+        req_data = {"disease_term": disease_id}
 
-        # WHEN updating an OMIM diagnosis for a case
+        # WHEN updating a diagnosis for a case
         resp = client.post(
             url_for(
                 "cases.case_diagnosis",
@@ -781,7 +781,7 @@ def test_case_diagnosis(
         assert store.event_collection.find_one()
 
         # WHEN using the same endpoint to remove the diagnosis
-        req_data = {"omim_term": disease_id}
+        req_data = {"disease_term": disease_id}
         resp = client.post(
             url_for(
                 "cases.case_diagnosis",
@@ -898,8 +898,8 @@ def test_caselist(app, case_obj):
         assert case_obj["display_name"] in str(resp.data)
 
 
-def test_omimterms(app, test_omim_database_term):
-    """Test The API which returns all OMIM terms when queried from case page"""
+def test_diseaseterms(app, test_omim_database_term):
+    """Test The API which returns all disease terms when queried from case page"""
 
     # GIVEN a database containing at least one OMIM term
     store.disease_term_collection.insert_one(test_omim_database_term)
@@ -911,12 +911,12 @@ def test_omimterms(app, test_omim_database_term):
         resp = client.get(url_for("auto_login"))
         assert resp.status_code == 200
 
-        # WHEN the API is invoked with a query string containing part of the OMIM term description
-        resp = client.get(url_for("cases.omimterms", query="5-oxo"))
+        # WHEN the API is invoked with a query string containing part of the disease term description
+        resp = client.get(url_for("cases.diseaseterms", query="5-oxo"))
         # THEN it should return a valid response
         assert resp.status_code == 200
 
-        # containing the OMIM term
+        # containing the disease term
         assert test_omim_database_term["_id"] in str(resp.data)
         assert resp.mimetype == "application/json"
 
