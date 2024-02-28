@@ -655,8 +655,8 @@
           process(data)
         });
       }
-      function getOmimTerms(query, process) {
-        $.get("{{ url_for('cases.omimterms') }}", {query: query}, function(data) {
+      function getDiseaseTerms(query, process) {
+        $.get("{{ url_for('cases.diseaseterms') }}", {query: query}, function(data) {
           process(data)
         });
       }
@@ -684,9 +684,9 @@
         minLength: 3,
       });
 
-      $(".typeahead_omim").typeahead({
-        name: 'omim_term',
-        source: getOmimTerms,
+      $(".typeahead_disease").typeahead({
+        name: 'disease_term',
+        source: getDiseaseTerms,
         minLength: 3,
       });
 
