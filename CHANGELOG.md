@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Display functional annotation relative to variant gene's MANE transcripts on variant summary, when available
+
 ## [4.78]
 ### Added
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
@@ -14,7 +18,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submission can now be downloaded as a json file
 - API endpoint to pin variant
 - Display common/uncommon/rare on summary of mei variant page
-- Display functional annotation relative to variant gene's MANE transcripts on variant summary, when available
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
@@ -30,7 +33,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Inheritance mode from ORPHA should not be confounded with the OMIM inheritance model
 - Decipher link URL changes
 - Refactored code in cases blueprints to use "disease" instead of "omim" to encompass also ORPHA terms
-
 
 ## [4.77]
 ### Added
