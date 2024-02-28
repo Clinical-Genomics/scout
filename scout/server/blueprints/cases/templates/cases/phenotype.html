@@ -81,7 +81,7 @@
         <div class="col-1">
           {{ remove_form(url_for('cases.case_diagnosis', institute_id=institute._id,
                                 case_name=case.display_name, remove='yes'),
-                       hidden_input=('omim_term', diagnosis.disease_id)) }}
+                       hidden_input=('disease_term', diagnosis.disease_id)) }}
         </div>
       </div>
     {% endfor %}
@@ -91,7 +91,7 @@
   </div>
 {% endmacro %}
 
-<!-- This macro is used to display case individuals associated with an HPO phenotype or an OMIM disease -->
+<!-- This macro is used to display case individuals associated with an HPO phenotype or a disease -->
 {% macro feature_individuals(case, feature) %}
   {% for feature_ind in feature.individuals %}
     {% for case_ind in case.individuals %}
@@ -105,13 +105,13 @@
 
 {% macro diagnosis_form(case, institute) %}
   <form action="{{ url_for('cases.case_diagnosis', institute_id=institute._id, case_name=case.display_name) }}" method="POST">
-    <div class="d-flex justify-content-around" id="omim_assign">
+    <div class="d-flex justify-content-between" id="disease_assign">
       <div>
-        <input name="omim_term" id="assign-omim-term" class="form-control typeahead_omim" data-provide="typeahead" autocomplete="off"
-            required placeholder="Search..." oninput="toggleClickableButtons('assign-omim-button', 'assign-omim-term');">
+        <input name="disease_term" id="assign-disease-term" class="form-control typeahead_disease align-self" data-provide="typeahead" autocomplete="off"
+            required placeholder="Search..." oninput="toggleClickableButtons('assign-disease-button', 'assign-disease-term');">
       </div>
       <div>
-        <select name="omim_inds" multiple class="selectpicker" data-style="btn-secondary">
+        <select name="affected_inds" multiple class="selectpicker" data-style="btn-secondary">
           {% for ind in case.individuals %}
             <option value="{{ind.individual_id}}|{{ind.display_name}}" {{"selected" if ind.phenotype==2 }}>
               {{ind.display_name}}
@@ -119,8 +119,8 @@
           {% endfor %}
         </select>
       </div>
-      <div>
-        <button class="ms-3 btn no-hover btn-secondary form-control" type="submit" id="assign-omim-button">Assign Diagnosis</button>
+      <div style="margin-right:1rem;">
+        <button class="btn no-hover btn-secondary form-control" type="submit" id="assign-disease-button">Assign Diagnosis</button>
       </div>
     </div>
   </form>

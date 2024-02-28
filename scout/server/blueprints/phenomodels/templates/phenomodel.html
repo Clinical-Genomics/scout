@@ -345,7 +345,7 @@
   }
 
   function getOmimTerms(query, process) {
-    $.get("{{ url_for('cases.omimterms') }}", {query: query, source:"OMIM"}, function(data) {
+    $.get("{{ url_for('cases.diseaseterms') }}", {query: query, source:"OMIM"}, function(data) {
       process(data)
     });
   }
