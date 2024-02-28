@@ -542,7 +542,7 @@ class CaseEventHandler(object):
         user: dict,
         link: str,
         disease_id: str,
-        omim_inds: list = [],
+        affected_inds: list = [],
         remove: bool = False,
     ) -> Optional[dict]:
         """Add or remove a diagnose to a case and eventually case individuals."""
@@ -556,22 +556,22 @@ class CaseEventHandler(object):
                     continue
                 updated_diagnoses.append(case_dia)
         else:  # Add new diagnosis term to case diseases list
-            omim_obj = self.disease_term(disease_identifier=disease_id)
-            if omim_obj is None:
+            disease_obj = self.disease_term(disease_identifier=disease_id)
+            if disease_obj is None:
                 return
             updated_diagnoses = case_diagnoses
             new_dia = {
-                "disease_nr": omim_obj["disease_nr"],
+                "disease_nr": disease_obj["disease_nr"],
                 "disease_id": disease_id,
-                "description": omim_obj["description"],
+                "description": disease_obj["description"],
             }
-            if omim_inds:
+            if affected_inds:
                 new_dia["individuals"] = [
                     {
                         "individual_id": ind.split("|")[0],
                         "individual_name": ind.split("|")[1],
                     }
-                    for ind in omim_inds
+                    for ind in affected_inds
                 ]
             updated_diagnoses.append(new_dia)
 
@@ -591,7 +591,7 @@ class CaseEventHandler(object):
                 verb="update_diagnosis",
                 subject=case["display_name"],
                 content=disease_id,
-                individuals=[ind.split("|")[1] for ind in omim_inds],
+                individuals=[ind.split("|")[1] for ind in affected_inds],
             )
 
         return updated_case
