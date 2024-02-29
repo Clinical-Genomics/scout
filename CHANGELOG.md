@@ -6,7 +6,11 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Added
+- Added tags for Sniffles and CNVpytor, two LRS SV callers
 - Display functional annotation relative to variant gene's MANE transcripts on variant summary, when available
+### Changed
+### Fixed
+
 
 ## [4.78]
 ### Added
