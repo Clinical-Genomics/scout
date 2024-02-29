@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Refactored code in parsing of omim files and parsing of disease to use "disease" instead of "phenotype" to differentiate from HPO terms
+
 ## [4.78]
 ### Added
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
