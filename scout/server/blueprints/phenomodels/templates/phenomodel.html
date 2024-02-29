@@ -98,6 +98,12 @@
         OMIM checkbox
       </label>
     </div>
+    <div class="form-check form-check-inline mb-3">
+      <input class="form-check-input" type="radio" name="checkType" id="checkTypeOrpha" value="orpha" onchange="showDiv('omimForm','hpoForm')">
+      <label class="form-check-label" for="orpha">
+        Orpha checkbox
+      </label>
+    </div>
     <!-- HPO checkbox add -->
     <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="hpoForm">
       {{ term_title("hpo") }}
@@ -122,7 +128,7 @@
       <input type="text" class="form-control" name="omim_custom_name" placeholder="Custom checkbox name (optional)">
     </div>
     <div class="col-3">
-      <button type="submit" name="add_omim" class="btn btn-secondary btn-sm">Add OMIM term</button>
+      <button type="submit" id="add_disease" name="add_omim" class="btn btn-secondary btn-sm">Add OMIM term</button>
     </div>
   </div>
 {% endmacro %}
@@ -306,70 +312,102 @@
 {{ super() }}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js" integrity="sha512-HWlJyU4ut5HkEj0QsK/IxBCY55n5ZpskyjVlAoV9Z7XQwwkqXoYdCIC93/htL3Gu5H3R4an/S0h2NXfbZk3g7w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
+function getCheckedSource() {
+    //Get checked source from document
+    return document.querySelector('#add_terms input:checked').value.toUpperCase()
+}
 
-  function showDiv(showElem, hideElem) {
+function replaceDiseaseSource() {
+    source = getCheckedSource()
+
+    if (source != "OMIM" && source != "ORPHA") { return }
+
+    //Update disease_form input placeholder to match source
+    let diseaseInput = document.querySelector('#omim_term')
+    let initialPlaceholder = diseaseInput.getAttribute("placeholder")
+    let newPlaceholder = initialPlaceholder.replace("OMIM", source).replace("ORPHA", source)
+    diseaseInput.setAttribute("placeholder", newPlaceholder)
+
+    //Update the submit buttontext to match source
+    let diseaseAddButton = document.querySelector('#add_disease')
+    let initialText = diseaseAddButton.innerText || diseaseAddButton.textContent
+    let newText = initialText.replace("OMIM", source).replace("ORPHA", source)
+    diseaseAddButton.innerText = newText
+}
+
+
+function showDiv(showElem, hideElem) {
+    console.log("ShowDiv ran with: " + showElem + " " + hideElem)
     // show div of interest
     var divElem = document.getElementById(showElem);
     divElem.style.display = "block";
     // hide the other div
     divElem = document.getElementById(hideElem);
     divElem.style.display = "none";
-  }
 
-  $(document).ready(function(){
+    //Only update the disease_form if visible
+    if (showElem = "omimForm") { replaceDiseaseSource() }
+}
+
+$(document).ready(function () {
     $('#omimForm').toggle();
-  });
+});
 
-  $('#hpoHasTitle').change(function() {
-    if($(this).prop("checked")){
-      $("#hpoTermTitle").removeAttr('disabled');
+$('#hpoHasTitle').change(function () {
+    console.log("hpoHasTitle changed")
+    if ($(this).prop("checked")) {
+        $("#hpoTermTitle").removeAttr('disabled');
     }
-    else{
-      $("#hpoTermTitle").prop("disabled", true);
+    else {
+        $("#hpoTermTitle").prop("disabled", true);
     }
-  });
+});
 
-  $('#omimHasTitle').change(function() {
-    if($(this).prop("checked")){
-      $("#omimTermTitle").removeAttr('disabled');
+$('#omimHasTitle').change(function () {
+    console.log("omimHasTitle changed")
+    if ($(this).prop("checked")) {
+        $("#omimTermTitle").removeAttr('disabled');
     }
-    else{
-      $("#omimTermTitle").prop("disabled", true);
+    else {
+        $("#omimTermTitle").prop("disabled", true);
     }
-  });
+});
 
-  function getHpoTerms(query, process) {
-    $.get("{{ url_for('cases.hpoterms') }}", {query: query}, function(data) {
-      process(data)
+function getHpoTerms(query, process) {
+    console.log("Running hpo query")
+    $.get("{{ url_for('cases.hpoterms') }}", { query: query }, function (data) {
+        process(data)
     });
-  }
+}
 
-  function getOmimTerms(query, process) {
-    $.get("{{ url_for('cases.diseaseterms') }}", {query: query, source:"OMIM"}, function(data) {
-      process(data)
+function getOmimTerms(query, process) {
+    //Filter the query by the checkbox value
+    const source = getCheckedSource()
+    $.get("{{ url_for('cases.diseaseterms') }}", { query: query, source: source }, function (data) {
+        process(data)
     });
-  }
+}
 
-  function toggleDiv(divName){
+function toggleDiv(divName) {
     var div = document.getElementById(divName);
     if (div.style.display === "none") {
-      div.style.display = "block";
+        div.style.display = "block";
     } else {
-      div.style.display = "none";
+        div.style.display = "none";
     }
-  }
+}
 
-  $(".typeahead_hpo").typeahead({
+$(".typeahead_hpo").typeahead({
     name: 'hpo_term',
     source: getHpoTerms,
     minLength: 3,
-  });
+});
 
-  $(".typeahead_omim").typeahead({
+$(".typeahead_omim").typeahead({
     name: 'omim_term',
     source: getOmimTerms,
     minLength: 3,
-  });
+});
 
 </script>
 {% endblock %}
