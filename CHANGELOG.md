@@ -5,8 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Added tags for Sniffles and CNVpytor, two LRS SV callers
 ### Changed
 - Stop parsing MANE and MANE Plus Clinical transcripts info from VEP annotations and instead collect it from Transcripts database collection
+### Fixed
+
 
 ## [4.78]
 ### Added
