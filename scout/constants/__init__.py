@@ -207,7 +207,9 @@ CALLERS = {
     "sv": [
         {"id": "gatk", "name": "GATK"},
         {"id": "cnvnator", "name": "CNVnator"},
+        {"id": "cnvpytor", "name": "CNVpytor"},
         {"id": "delly", "name": "Delly"},
+        {"id": "sniffles", "name": "Sniffles"},
         {"id": "tiddit", "name": "TIDDIT"},
         {"id": "manta", "name": "Manta"},
     ],
