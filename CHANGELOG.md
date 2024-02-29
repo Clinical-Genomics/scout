@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Added
+- Added tags for Sniffles and CNVpytor, two LRS SV callers
+### Changed
+### Fixed
+
 ## [4.78]
 ### Added
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
@@ -29,7 +35,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Inheritance mode from ORPHA should not be confounded with the OMIM inheritance model
 - Decipher link URL changes
 - Refactored code in cases blueprints to use "disease" instead of "omim" to encompass also ORPHA terms
-
 
 ## [4.77]
 ### Added
