@@ -66,9 +66,7 @@ def variant(institute_id: str, case_name: str, variant_id: str) -> Optional[Resp
 def pin_variant(variant_id: str, institute_id: Optional[str], case_name: Optional[str]):
     """Pin an existing variant"""
 
-    (institute_obj, case_obj, variant_obj) = _lookup_variant(
-        variant_institute_id, variant_case_name, variant_id
-    )
+    (institute_obj, case_obj, variant_obj) = _lookup_variant(institute_id, case_name, variant_id)
 
     user_obj = store.user(current_user.email)
     link = url_for(
