@@ -8,9 +8,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
 ### Changed
+- In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 - Stop parsing MANE and MANE Plus Clinical transcripts info from VEP annotations and instead collect it from Transcripts database collection
 ### Fixed
-
 
 ## [4.78]
 ### Added
