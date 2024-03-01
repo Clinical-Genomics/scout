@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
+- Support for .d4 files coverage using chanjo2
 ### Changed
 ### Fixed
 
@@ -20,7 +21,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - ClinVar submission can now be downloaded as a json file
 - API endpoint to pin variant
 - Display common/uncommon/rare on summary of mei variant page
-- Support for .d4 files coverage using chanjo2
 ### Changed
 - In the ClinVar form, database and id of assertion criteria citation are now separate inputs
 - Customise institute settings to be able to display all cases with a certain status on cases page (admin users)
