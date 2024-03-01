@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
+- Phenomodels checkboxes can now include orpha terms
 ### Changed
 ### Fixed
 
