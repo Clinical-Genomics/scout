@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
 ### Changed
+- In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 ### Fixed
 - Refactored code in cases blueprints and variant_events adapter to use "disease" instead of "omim" to encompass also ORPHA terms
 
