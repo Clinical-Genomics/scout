@@ -95,7 +95,7 @@ def update_transcript_mane(hgnc_transcript: dict, transcript: dict):
         if hgnc_transcript.get(key):
             transcript[f"{key}_transcript"] = hgnc_transcript[key]
         else:
-            transcript.pop(f"{key}_transcript")
+            transcript.pop(f"{key}_transcript", None)
 
 
 def update_transcripts_information(
