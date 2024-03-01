@@ -105,11 +105,13 @@ function addHpoOrGeneLinks(parentNode, target, data) {
 
     if (data.length > 0) {
         data.forEach(item => {
+        		let id= item.hgnc_id || item
+        		let symbol = item.hgnc_symbol || item
             let newLinkElement = linkElement.cloneNode()
             newLinkElement.removeAttribute("id")
             let baseurl = newLinkElement.getAttribute("href")
-            newLinkElement.setAttribute("href", baseurl + item)
-            newLinkElement.textContent = item
+            newLinkElement.setAttribute("href", baseurl + id)
+            newLinkElement.textContent = symbol
             containerElement.append(newLinkElement)
         });
     } else {
