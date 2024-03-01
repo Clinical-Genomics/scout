@@ -87,7 +87,7 @@
     {% if case.chanjo2_coverage %}
       <div href="#" class="bg-dark list-group-item text-white">
         <div class="d-flex flex-row flex-fill bd-highlight">
-          <span class="menu-collapsed">Coverage</span>
+          <span class="menu-collapsed">Coverage (chanjo2)</span>
           <a href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=case.panel_names|join(', ')) }}" target="_blank" rel="noopener">
             <span class="fa fa-link"></span>
           </a>

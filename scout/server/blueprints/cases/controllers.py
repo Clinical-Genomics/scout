@@ -120,8 +120,12 @@ async def chanjo2_coverage_report_contents(
         "samples": query_samples,
     }
 
+    LOG.warning(f"Sending the following query: {report_query}")
+
     report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
     response = requests.post(report_url, json=report_query)
+
+    LOG.warning(f"Response from chanjo2: {response}")
     return response.text
 
 
