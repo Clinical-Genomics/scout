@@ -32,14 +32,14 @@ def disease_terms(store: MongoAdapter, query: str, source: str) -> dict:
 
     for disease in disease_data:
         gene_ids = disease.get("genes", [])
-        gene_symbols = []
+        gene_ids_symbols = []
 
         for gene in gene_ids:
-            gene_symbol = store.hgnc_gene_caption(hgnc_identifier=gene)
-            gene_symbols.append(
-                {"hgnc_id": gene_symbol["hgnc_id"], "hgnc_symbol": gene_symbol["hgnc_symbol"]}
+            gene_caption = store.hgnc_gene_caption(hgnc_identifier=gene)
+            gene_ids_symbols.append(
+                {"hgnc_id": gene_caption["hgnc_id"], "hgnc_symbol": gene_caption["hgnc_symbol"]}
             )
-        disease.update({"genes": gene_symbols})
+        disease.update({"genes": gene_ids_symbols})
 
     data = {"terms": list(disease_data)}
 
