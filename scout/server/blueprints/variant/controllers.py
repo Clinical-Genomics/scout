@@ -159,7 +159,7 @@ def variant(
     variant_type: str = None,
     case_obj: dict = None,
     institute_obj: dict = None,
-) -> dict:
+) -> Optional[dict]:
     """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
