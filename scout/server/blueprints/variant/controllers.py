@@ -194,13 +194,23 @@ def variant(
         }
 
     """
-    if not (institute_obj and case_obj):
-        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     # If the variant is already collected we skip this part
     if not variant_obj:
         # NOTE this will query with variant_id == document_id, not the variant_id.
         variant_obj = store.variant(variant_id)
+
+    if not (institute_obj and case_obj):
+        if not case_name:
+            variant_case_obj = store.case(
+                case_id=variant_obj["case_id"], projection={"display_name": 1}
+            )
+            case_name = variant_case_obj["display_name"]
+
+        if not institute_id:
+            institute_id = variant_obj["institute"]
+
+        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
 
     if variant_obj is None or variant_obj.get("case_id") != case_obj["_id"]:
         return None
