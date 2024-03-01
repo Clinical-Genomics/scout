@@ -1,3 +1,5 @@
+from typing import Optional, Tuple
+
 from bson import json_util
 from flask import Blueprint, Response, abort, url_for
 from flask_login import current_user
@@ -17,32 +19,56 @@ def case(institute_id, case_name):
     return Response(json_util.dumps(case_obj), mimetype="application/json")
 
 
-@api_bp.route("/<institute_id>/<case_name>/<variant_id>")
-def variant(institute_id, case_name, variant_id):
-    """Display a specific SNV variant."""
+def _lookup_variant(
+    institute_id: str, case_name: str, variant_id: str
+) -> Optional[Tuple[dict, dict, dict]]:
+    """Lookup variant using variant document id. Return institute, case, and variant obj dicts.
+
+    The institute and case lookup adds a bit of security, checking if user is admin or
+    has access to institute and case, but since the variant is looked up using document_id,
+    we also run an additional security check that the given case_id matches the variant case_id."""
+
     variant_obj = store.variant(variant_id)
+    if not variant_obj:
+        return abort(404)
+
+    if not case_name:
+        variant_case_obj = store.case(
+            case_id=variant_obj["case_id"], projection={"display_name": 1}
+        )
+        case_name = variant_case_obj["display_name"]
+
+    if not institute_id:
+        institute_id = variant_obj["institute"]
+
+    (institute_obj, case_obj) = institute_and_case(store, institute_id, case_name)
+
+    if case_obj is None:
+        return abort(404)
+
+    if variant_obj.case_id != case_obj._id:
+        return abort(403)
+
+    return (institute_obj, case_obj, variant_obj)
+
+
+@api_bp.route("/<institute_id>/<case_name>/<variant_id>")
+def variant(institute_id: str, case_name: str, variant_id: str) -> Optional[Response]:
+    """Display a specific SNV variant."""
+
+    (_, _, variant_obj) = _lookup_variant(institute_id, case_name, variant_id)
+
     return Response(json_util.dumps(variant_obj), mimetype="application/json")
 
 
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>/pin")
 @api_bp.route("/<variant_id>/pin")
-def pin_variant(variant_id, institute_id=None, case_name=None):
-    """Pin an existing variant
+def pin_variant(variant_id: str, institute_id: Optional[str], case_name: Optional[str]):
+    """Pin an existing variant"""
 
-    We always want to check institute_and_case with the case name and institute given on the variant object,
-    not only the one give on the URL, to ensure user permissions are ok.
-    """
-    variant_obj = store.variant(variant_id)
-
-    variant_case_obj = store.case(case_id=variant_obj["case_id"])
-    variant_case_name = variant_case_obj["display_name"]
-
-    variant_institute_id = variant_obj["institute"]
-
-    institute_obj, case_obj = institute_and_case(store, variant_institute_id, variant_case_name)
-
-    if institute_id and case_name:
-        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+    (institute_obj, case_obj, variant_obj) = _lookup_variant(
+        variant_institute_id, variant_case_name, variant_id
+    )
 
     user_obj = store.user(current_user.email)
     link = url_for(
@@ -59,8 +85,8 @@ def pin_variant(variant_id, institute_id=None, case_name=None):
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>/unpin")
 def unpin_variant(institute_id, case_name, variant_id):
     """Un-pin an existing, pinned variant"""
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    variant_obj = store.variant(variant_id)
+
+    (institute_obj, case_obj, variant_obj) = _lookup_variant(institute_id, case_name, variant_id)
 
     user_obj = store.user(current_user.email)
     link = url_for(
