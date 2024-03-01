@@ -87,19 +87,19 @@
   <!--div containing form elements to add HPO terms or custom checkbox fields-->
   <div class="mt-3 ms-3" id="add_terms" style="display:none;">
     <div class="form-check form-check-inline mb-3">
-      <input class="form-check-input" type="radio" name="checkType" id="checkTypeHpo" value="hpo" checked onchange="showDiv('hpoForm','omimForm')">
+      <input class="form-check-input" type="radio" name="checkType" id="checkTypeHpo" value="hpo" checked onchange="showDiv('hpoForm','diseaseForm')">
       <label class="form-check-label" for="hpo">
         HPO checkbox
       </label>
     </div>
     <div class="form-check form-check-inline mb-3">
-      <input class="form-check-input" type="radio" name="checkType" id="checkTypeOmim" value="omim" onchange="showDiv('omimForm','hpoForm')">
+      <input class="form-check-input" type="radio" name="checkType" id="checkTypeOmim" value="omim" onchange="showDiv('diseaseForm','hpoForm')">
       <label class="form-check-label" for="omim">
         OMIM checkbox
       </label>
     </div>
     <div class="form-check form-check-inline mb-3">
-      <input class="form-check-input" type="radio" name="checkType" id="checkTypeOrpha" value="orpha" onchange="showDiv('omimForm','hpoForm')">
+      <input class="form-check-input" type="radio" name="checkType" id="checkTypeOrpha" value="orpha" onchange="showDiv('diseaseForm','hpoForm')">
       <label class="form-check-label" for="orpha">
         Orpha checkbox
       </label>
@@ -109,26 +109,26 @@
       {{ term_title("hpo") }}
       {{ hpo_checkbox_macro() }}
     </form>
-    <!-- OMIM checkbox add-->
-    <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="omimForm">
-      {{ term_title("omim") }}
-      {{ omim_checkbox_macro() }}
+    <!-- Disease checkbox add-->
+    <form action="{{ url_for('phenomodels.checkbox_edit', institute_id=institute._id, model_id=phenomodel._id)}}" method="POST" id="diseaseForm" style="display:none">
+      {{ term_title("disease") }}
+      {{ disease_checkbox_macro() }}
     </form>
   </div>
 </div>
 <!--End of code for adding a subpanel-->
 {% endmacro %}
 
-{% macro omim_checkbox_macro() %}
+{% macro disease_checkbox_macro() %}
   <div class="row d-flex align-items-center">
     <div class="col-4">
-      <input type="text" class="typeahead_omim form-control" name="omim_term" id="omim_term" data-provide="typeahead" autocomplete="off" placeholder="Search OMIM term..">
+      <input type="text" class="typeahead_disease form-control" name="disease_term" id="disease_term" data-provide="typeahead" autocomplete="off" placeholder="Search OMIM term..">
     </div>
     <div class="col-5">
-      <input type="text" class="form-control" name="omim_custom_name" placeholder="Custom checkbox name (optional)">
+      <input type="text" class="form-control" name="disease_custom_name" placeholder="Custom checkbox name (optional)">
     </div>
     <div class="col-3">
-      <button type="submit" id="add_disease" name="add_omim" class="btn btn-secondary btn-sm">Add OMIM term</button>
+      <button type="submit" id="add_disease" name="add_disease" class="btn btn-secondary btn-sm">Add OMIM term</button>
     </div>
   </div>
 {% endmacro %}
@@ -323,12 +323,12 @@ function replaceDiseaseSource() {
     if (source != "OMIM" && source != "ORPHA") { return }
 
     //Update disease_form input placeholder to match source
-    let diseaseInput = document.querySelector('#omim_term')
+    let diseaseInput = document.querySelector('#disease_term')
     let initialPlaceholder = diseaseInput.getAttribute("placeholder")
     let newPlaceholder = initialPlaceholder.replace("OMIM", source).replace("ORPHA", source)
     diseaseInput.setAttribute("placeholder", newPlaceholder)
 
-    //Update the submit buttontext to match source
+    //Update the submit button text to match source
     let diseaseAddButton = document.querySelector('#add_disease')
     let initialText = diseaseAddButton.innerText || diseaseAddButton.textContent
     let newText = initialText.replace("OMIM", source).replace("ORPHA", source)
@@ -345,13 +345,8 @@ function showDiv(showElem, hideElem) {
     divElem = document.getElementById(hideElem);
     divElem.style.display = "none";
 
-    //Only update the disease_form if visible
-    if (showElem = "omimForm") { replaceDiseaseSource() }
+    replaceDiseaseSource()
 }
-
-$(document).ready(function () {
-    $('#omimForm').toggle();
-});
 
 $('#hpoHasTitle').change(function () {
     console.log("hpoHasTitle changed")
@@ -363,13 +358,12 @@ $('#hpoHasTitle').change(function () {
     }
 });
 
-$('#omimHasTitle').change(function () {
-    console.log("omimHasTitle changed")
+$('#diseaseHasTitle').change(function () {
     if ($(this).prop("checked")) {
-        $("#omimTermTitle").removeAttr('disabled');
+        $("#diseaseTermTitle").removeAttr('disabled');
     }
     else {
-        $("#omimTermTitle").prop("disabled", true);
+        $("#diseaseTermTitle").prop("disabled", true);
     }
 });
 
@@ -380,7 +374,7 @@ function getHpoTerms(query, process) {
     });
 }
 
-function getOmimTerms(query, process) {
+function getDiseaseTerms(query, process) {
     //Filter the query by the checkbox value
     const source = getCheckedSource()
     $.get("{{ url_for('cases.diseaseterms') }}", { query: query, source: source }, function (data) {
@@ -403,9 +397,9 @@ $(".typeahead_hpo").typeahead({
     minLength: 3,
 });
 
-$(".typeahead_omim").typeahead({
-    name: 'omim_term',
-    source: getOmimTerms,
+$(".typeahead_disease").typeahead({
+    name: 'disease_term',
+    source: getDiseaseTerms,
     minLength: 3,
 });
 

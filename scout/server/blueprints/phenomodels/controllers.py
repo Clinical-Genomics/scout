@@ -1,5 +1,6 @@
 import datetime
 import logging
+from typing import Optional
 
 from anytree import Node, RenderTree
 from anytree.exporter import DictExporter
@@ -11,34 +12,30 @@ from scout.utils.md5 import generate_md5_key
 LOG = logging.getLogger(__name__)
 
 
-def _subpanel_omim_checkbox_add(model_dict, user_form):
-    """Add an OMIM checkbox to a phenotype subpanel
-    Args:
-        model_dict(dict): a dictionary coresponding to a phenotype model
-        user_form(request.form): a POST request form object
+def _subpanel_disease_checkbox_add(model_dict: dict, user_form: dict) -> Optional[dict]:
+    """Add a disease checkbox to a phenotype subpanel"""
 
-    Returns:
-        model_dict(dict): an updated phenotype model dictionary to be saved to database
-    """
-    subpanel_id = user_form.get("omim_subpanel_id")
-    omim_id = user_form.get("omim_term").split(" | ")[0]
-    omim_obj = store.disease_term(omim_id)
-    if omim_obj is None:
-        flash("Please specify a valid OMIM term", "warning")
+    subpanel_id: str = user_form.get("disease_subpanel_id")
+    disease_id: str = user_form.get("disease_term").split(" | ")[0]
+    disease_obj: dict = store.disease_term(disease_id)
+    if disease_obj is None:
+        flash("Please specify a valid disease term", "warning")
         return
-    checkboxes = model_dict["subpanels"][subpanel_id].get("checkboxes", {})
-    if omim_id in checkboxes:
-        flash(f"Omim term '{omim_id}' already exists in this panel", "warning")
+    checkboxes: dict = model_dict["subpanels"][subpanel_id].get("checkboxes", {})
+    if disease_id in checkboxes:
+        flash(f"Disease term '{disease_id}' already exists in this panel", "warning")
         return
-
-    checkbox_obj = dict(name=omim_id, description=omim_obj.get("description"), checkbox_type="omim")
-    if user_form.get("omimTermTitle"):
-        checkbox_obj["term_title"] = user_form.get("omimTermTitle")
-    if user_form.get("omim_custom_name"):
-        checkbox_obj["custom_name"] = user_form.get("omim_custom_name")
-    checkboxes[omim_id] = checkbox_obj
+    source: str = disease_id.split(":")[0].lower()
+    checkbox_obj: dict = dict(
+        name=disease_id, description=disease_obj.get("description"), checkbox_type=source
+    )
+    if user_form.get("diseaseTermTitle"):
+        checkbox_obj["term_title"]: str = user_form.get("diseaseTermTitle")
+    if user_form.get("disease_custom_name"):
+        checkbox_obj["custom_name"]: str = user_form.get("disease_custom_name")
+    checkboxes[disease_id]: dict = checkbox_obj
     model_dict["subpanels"][subpanel_id]["checkboxes"] = checkboxes
-    model_dict["subpanels"][subpanel_id]["updated"] = datetime.datetime.now()
+    model_dict["subpanels"][subpanel_id]["updated"]: datetime.datetime = datetime.datetime.now()
     return model_dict
 
 
@@ -122,7 +119,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
         all_terms = {}
         # loop over the terms to keep into the checboxes dict
         for child in children_list:
-            if child.startswith("OMIM"):
+            if child.startswith("OMIM" or "ORPHA"):
                 new_checkboxes[child] = checkboxes[child]
                 continue
 
@@ -229,8 +226,8 @@ def edit_subpanel_checkbox(model_id, user_form):
         return
     if "add_hpo" in user_form:  # add an HPO checkbox to subpanel
         update_model = _subpanel_hpo_checkgroup_add(model_dict, user_form)
-    if "add_omim" in user_form:  # add an OMIM checkbox to subpanel
-        update_model = _subpanel_omim_checkbox_add(model_dict, user_form)
+    if "add_disease" in user_form:  # add a disease checkbox to subpanel
+        update_model = _subpanel_disease_checkbox_add(model_dict, user_form)
     if user_form.get("checkgroup_remove"):  # remove a checkbox of any type from subpanel
         update_model = _subpanel_checkgroup_remove_one(model_dict, user_form)
 
