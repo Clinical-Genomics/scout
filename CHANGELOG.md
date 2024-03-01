@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 ### Fixed
+- Be more careful about checking access to variant on api access
 
 ## [4.78]
 ### Added
