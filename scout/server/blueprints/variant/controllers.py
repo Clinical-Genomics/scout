@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 from flask import Markup, current_app, flash, url_for
@@ -150,7 +150,7 @@ def get_igv_tracks(build="37"):
 
 def variant(
     store: MongoAdapter,
-    variant_id: str,
+    variant_id: Optional[str],
     institute_id: str = None,
     case_name: str = None,
     variant_obj: dict = None,
