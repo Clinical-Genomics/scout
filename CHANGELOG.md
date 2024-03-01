@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
 ### Changed
+- Refactor view route to allow navigation directly to unique variant document id, improve permissions check
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 ### Fixed
 
@@ -30,7 +31,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Default loglevel up to INFO, making logs with default start easier to read
 - Add XTR region to PAR region definition
 - Diagnoses can be searched on diagnoses page without waiting for load first
-- Refactor view route to allow navigation directly to unique variant document id, improve permissions check
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded

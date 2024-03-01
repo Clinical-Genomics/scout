@@ -483,7 +483,7 @@ def test_variant_controller(app, institute_obj, case_obj, variant_obj):
 
         institute_id = institute_obj["_id"]
         case_name = case_obj["display_name"]
-car
+
         var_id = variant_obj["_id"]
 
         ## WHEN fetching the variant from the controller
