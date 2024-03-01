@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
 - Display functional annotation relative to variant gene's MANE transcripts on variant summary, when available
 ### Changed
+- In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 ### Fixed
 
 
