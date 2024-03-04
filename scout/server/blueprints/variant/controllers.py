@@ -589,6 +589,9 @@ def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant
     """
     variant_obj = store.variant(variant_id)
 
+    if not variant_obj:
+        return abort(404)
+
     institute_obj, case_obj = variant_institute_and_case(
         store, variant_obj, institute_id, case_name
     )
