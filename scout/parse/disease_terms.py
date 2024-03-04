@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List
 
 from scout.parse.hpo_mappings import parse_hpo_annotations
-from scout.parse.omim import get_mim_phenotypes
+from scout.parse.omim import get_mim_disease
 from scout.parse.orpha import (
     get_orpha_inheritance_information,
     get_orpha_to_genes_information,
@@ -110,7 +110,7 @@ def consolidate_gene_and_hpo_annotation(
 
 
 def get_omim_disease_terms(genemap_lines: List = None, hpo_annotation_lines: List = None) -> Dict:
-    genemap_disease: Dict = get_mim_phenotypes(genemap_lines=genemap_lines)
+    genemap_disease: Dict = get_mim_disease(genemap_lines=genemap_lines)
     #: Fetch hpo information if missing
     if not hpo_annotation_lines:
         hpo_annotation_lines: List = fetch_hpo_disease_annotation()
