@@ -41,14 +41,18 @@ def update_tracks_settings():
     return redirect(request.referrer)
 
 
+@variant_bp.route("/document_id/<variant_id>")
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>")
 @templated("variant/variant.html")
-def variant(institute_id, case_name, variant_id):
+def variant(variant_id, institute_id=None, case_name=None):
     """Display a specific SNV variant."""
     LOG.debug("Variants view requesting data for variant %s", variant_id)
 
     data = variant_controller(
-        store=store, institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        store=store,
+        variant_id=variant_id,
+        institute_id=institute_id,
+        case_name=case_name,
     )
     if data is None:
         flash("An error occurred while retrieving variant object", "danger")
@@ -70,7 +74,7 @@ def cancer_variant(institute_id, case_name, variant_id):
     LOG.debug("Variants view requesting data for variant %s", variant_id)
 
     data = variant_controller(
-        store=store, institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        store=store, variant_id=variant_id, institute_id=institute_id, case_name=case_name
     )
     if data is None:
         flash("An error occurred while retrieving variant object", "danger")
@@ -94,7 +98,10 @@ def cancer_variant(institute_id, case_name, variant_id):
 def sv_variant(institute_id, case_name, variant_id):
     """Display a specific structural variant."""
     data = variant_controller(
-        store=store, institute_id=institute_id, case_name=case_name, variant_id=variant_id
+        store=store,
+        variant_id=variant_id,
+        institute_id=institute_id,
+        case_name=case_name,
     )
 
     if data is None:

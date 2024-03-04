@@ -1,9 +1,9 @@
 import logging
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
-from flask import Markup, current_app, flash, url_for
+from flask import Markup, abort, current_app, flash, url_for
 from flask_login import current_user
 
 from scout.adapter import MongoAdapter
@@ -33,8 +33,8 @@ from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
     case_has_rna_tracks,
-    institute_and_case,
     user_institutes,
+    variant_institute_and_case,
 )
 
 from .utils import (
@@ -54,7 +54,7 @@ from .utils import (
 LOG = logging.getLogger(__name__)
 
 
-def tx_overview(variant_obj):
+def tx_overview(variant_obj: dict):
     """Prepares the content of the transcript overview to be shown on variant and general report pages.
        Basically show transcripts that contain RefSeq or are canonical.
 
@@ -128,7 +128,7 @@ def tx_overview(variant_obj):
     )
 
 
-def get_igv_tracks(build="37"):
+def get_igv_tracks(build: str = "37") -> set:
     """Return all available IGV tracks for the given genome build, as a set
 
     Args:
@@ -149,17 +149,17 @@ def get_igv_tracks(build="37"):
 
 
 def variant(
-    store,
-    institute_id,
-    case_name,
-    variant_id=None,
-    variant_obj=None,
-    add_other=True,
-    get_overlapping=True,
-    variant_type=None,
-    case_obj=None,
-    institute_obj=None,
-):
+    store: MongoAdapter,
+    variant_id: Optional[str],
+    institute_id: str = None,
+    case_name: str = None,
+    variant_obj: dict = None,
+    add_other: bool = True,
+    get_overlapping: bool = True,
+    variant_type: str = None,
+    case_obj: dict = None,
+    institute_obj: dict = None,
+) -> Optional[dict]:
     """Pre-process a single variant for the detailed variant view.
 
     Adds information from case and institute that is not present on the variant
@@ -194,15 +194,19 @@ def variant(
         }
 
     """
-    if not (institute_obj and case_obj):
-        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
+
     # If the variant is already collected we skip this part
     if not variant_obj:
         # NOTE this will query with variant_id == document_id, not the variant_id.
         variant_obj = store.variant(variant_id)
 
-    if variant_obj is None or variant_obj.get("case_id") != case_obj["_id"]:
-        return None
+    if not variant_obj:
+        return abort(404)
+
+    if not (institute_obj and case_obj):
+        (institute_obj, case_obj) = variant_institute_and_case(
+            store, variant_obj, institute_id, case_name
+        )
 
     variant_type = variant_type or variant_obj.get("variant_type", "clinical")
 
@@ -375,7 +379,7 @@ def variant(
     }
 
 
-def variant_rank_scores(store, case_obj, variant_obj):
+def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
     """Retrive rank score values and ranges for the variant
 
     Args:
@@ -392,9 +396,6 @@ def variant_rank_scores(store, case_obj, variant_obj):
         "rank_score_results"
     ):  # Retrieve rank score results saved in variant document
         rank_score_results = variant_obj.get("rank_score_results")
-
-    rm_link_prefix = None
-    rm_file_extension = None
 
     if variant_obj.get("category") == "sv":
         rank_model_version = case_obj.get("sv_rank_model_version")
@@ -514,14 +515,11 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
 
 
 def str_variant_reviewer(
-    store,
-    case_obj,
-    variant_id,
-):
+    store: MongoAdapter,
+    case_obj: dict,
+    variant_id: str,
+) -> dict:
     """Controller populating data and calling REViewer Service to fetch svg.
-    Args:
-        case_obj(dict)
-        variant_obj(dict)
     Returns:
         data(dict): {"individuals": list(dict())}}
             individual dicts being dict with keys:
@@ -577,7 +575,7 @@ def str_variant_reviewer(
     }
 
 
-def variant_acmg(store, institute_id, case_name, variant_id):
+def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant_id: str):
     """Collect data relevant for rendering ACMG classification form.
 
     Args:
@@ -589,8 +587,15 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     Returns:
         data(dict): Things for the template
     """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
+
+    if not variant_obj:
+        return abort(404)
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store, variant_obj, institute_id, case_name
+    )
+
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -600,7 +605,9 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     )
 
 
-def check_reset_variant_classification(store, evaluation_obj, link):
+def check_reset_variant_classification(
+    store: MongoAdapter, evaluation_obj: dict, link: str
+) -> bool:
     """Check if this was the last ACMG evaluation left on the variant.
     If there is still a classification we want to remove the classification.
 
@@ -613,32 +620,47 @@ def check_reset_variant_classification(store, evaluation_obj, link):
 
     """
 
-    if len(list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))) == 0:
-        variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
-        acmg_classification = variant_obj.get("acmg_classification")
-        if isinstance(acmg_classification, int):
-            institute_obj, case_obj = institute_and_case(
-                store,
-                evaluation_obj["institute"]["_id"],
-                evaluation_obj["case"]["display_name"],
-            )
-            user_obj = store.user(current_user.email)
+    if list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"])):
+        return False
 
-            new_acmg = None
-            store.submit_evaluation(
-                variant_obj=variant_obj,
-                user_obj=user_obj,
-                institute_obj=institute_obj,
-                case_obj=case_obj,
-                link=link,
-                classification=new_acmg,
-            )
-            return True
+    variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
 
-    return False
+    if not variant_obj:
+        return abort(404)
+
+    acmg_classification = variant_obj.get("acmg_classification")
+
+    if not isinstance(acmg_classification, int):
+        return False
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store,
+        variant_obj,
+        evaluation_obj["institute"]["_id"],
+        evaluation_obj["case"]["display_name"],
+    )
+    user_obj = store.user(current_user.email)
+
+    new_acmg = None
+    store.submit_evaluation(
+        variant_obj=variant_obj,
+        user_obj=user_obj,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        link=link,
+        classification=new_acmg,
+    )
+    return True
 
 
-def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
+def variant_acmg_post(
+    store: MongoAdapter,
+    institute_id: str,
+    case_name: str,
+    variant_id: str,
+    user_email: str,
+    criteria: list,
+) -> dict:
     """Calculate an ACMG classification based on a list of criteria.
 
     Args:
@@ -653,8 +675,15 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
         data(dict): Things for the template
 
     """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
+
+    if not variant_obj:
+        return abort(404)
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store, variant_obj, institute_id, case_name
+    )
+
     user_obj = store.user(user_email)
     variant_link = url_for(
         "variant.variant",

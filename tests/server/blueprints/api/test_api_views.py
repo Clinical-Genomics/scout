@@ -37,9 +37,9 @@ def test_variant(app, case_obj, variant_obj):
         resp = client.get(
             url_for(
                 "api.variant",
+                variant_id=variant_id,
                 institute_id=case_obj["owner"],
                 case_name=case_name,
-                variant_id=variant_id,
             )
         )
         # THEN it should return a valid response
@@ -57,13 +57,14 @@ def test_pin(app, case_obj, variant_obj):
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         client.get(url_for("auto_login"))
+
         # WHEN the API is invoked with the right params
         resp = client.get(
             url_for(
                 "api.pin_variant",
+                variant_id=variant_id,
                 institute_id=case_obj["owner"],
                 case_name=case_name,
-                variant_id=variant_id,
                 link="pinned it",
             )
         )
@@ -99,9 +100,9 @@ def test_unpin(app, institute_obj, case_obj, variant_obj):
         resp = client.get(
             url_for(
                 "api.unpin_variant",
+                variant_id=variant_id,
                 institute_id=case_obj["owner"],
                 case_name=case_name,
-                variant_id=variant_id,
                 link="unpinned it",
             )
         )
