@@ -6,7 +6,7 @@ import pathlib
 import zipfile
 from functools import wraps
 from io import BytesIO
-from typing import Dict
+from typing import Dict, Optional
 
 import pdfkit
 from bson.objectid import ObjectId
@@ -101,8 +101,14 @@ def public_endpoint(function):
     return function
 
 
-def variant_institute_and_case(store, variant_obj, institute_id, case_name):
-    """Fetch insitiute and case objects."""
+def variant_institute_and_case(
+    store, variant_obj: dict, institute_id: Optional[str], case_name: Optional[str]
+) -> Tuple[dict, dict]:
+    """Fetch insitiute and case objects.
+
+    Ensure that case_id on the variant matches that of any case given.
+    Ensure user has access to variant institute, or to the case through institute case sharing.
+    """
 
     if not case_name:
         variant_case_obj = store.case(

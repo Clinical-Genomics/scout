@@ -54,7 +54,7 @@ from .utils import (
 LOG = logging.getLogger(__name__)
 
 
-def tx_overview(variant_obj):
+def tx_overview(variant_obj: dict):
     """Prepares the content of the transcript overview to be shown on variant and general report pages.
        Basically show transcripts that contain RefSeq or are canonical.
 
@@ -128,7 +128,7 @@ def tx_overview(variant_obj):
     )
 
 
-def get_igv_tracks(build="37"):
+def get_igv_tracks(build: str = "37") -> set:
     """Return all available IGV tracks for the given genome build, as a set
 
     Args:
@@ -379,7 +379,7 @@ def variant(
     }
 
 
-def variant_rank_scores(store, case_obj, variant_obj):
+def variant_rank_scores(store: MongoAdapter, case_obj: dict, variant_obj: dict) -> list:
     """Retrive rank score values and ranges for the variant
 
     Args:
@@ -396,9 +396,6 @@ def variant_rank_scores(store, case_obj, variant_obj):
         "rank_score_results"
     ):  # Retrieve rank score results saved in variant document
         rank_score_results = variant_obj.get("rank_score_results")
-
-    rm_link_prefix = None
-    rm_file_extension = None
 
     if variant_obj.get("category") == "sv":
         rank_model_version = case_obj.get("sv_rank_model_version")
@@ -518,14 +515,11 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
 
 
 def str_variant_reviewer(
-    store,
-    case_obj,
-    variant_id,
-):
+    store: MongoAdapter,
+    case_obj: dict,
+    variant_id: str,
+) -> dict:
     """Controller populating data and calling REViewer Service to fetch svg.
-    Args:
-        case_obj(dict)
-        variant_obj(dict)
     Returns:
         data(dict): {"individuals": list(dict())}}
             individual dicts being dict with keys:
@@ -581,7 +575,7 @@ def str_variant_reviewer(
     }
 
 
-def variant_acmg(store, institute_id, case_name, variant_id):
+def variant_acmg(store: MongoAdapter, institute_id: str, case_name: str, variant_id: str):
     """Collect data relevant for rendering ACMG classification form.
 
     Args:
@@ -595,7 +589,9 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     """
     variant_obj = store.variant(variant_id)
 
-    institute_obj, case_obj = variant_institute_and_case(store, institute_id, case_name)
+    institute_obj, case_obj = variant_institute_and_case(
+        store, variant_obj, institute_id, case_name
+    )
 
     return dict(
         institute=institute_obj,
@@ -606,7 +602,9 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     )
 
 
-def check_reset_variant_classification(store, evaluation_obj, link):
+def check_reset_variant_classification(
+    store: MongoAdapter, evaluation_obj: dict, link: str
+) -> bool:
     """Check if this was the last ACMG evaluation left on the variant.
     If there is still a classification we want to remove the classification.
 
@@ -652,7 +650,14 @@ def check_reset_variant_classification(store, evaluation_obj, link):
     return True
 
 
-def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
+def variant_acmg_post(
+    store: MongoAdapter,
+    institute_id: str,
+    case_name: str,
+    variant_id: str,
+    user_email: str,
+    criteria: list,
+) -> dict:
     """Calculate an ACMG classification based on a list of criteria.
 
     Args:
