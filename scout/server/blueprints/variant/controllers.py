@@ -33,8 +33,8 @@ from scout.server.utils import (
     case_has_alignments,
     case_has_mt_alignments,
     case_has_rna_tracks,
-    institute_and_case,
     user_institutes,
+    variant_institute_and_case,
 )
 
 from .utils import (
@@ -200,20 +200,13 @@ def variant(
         # NOTE this will query with variant_id == document_id, not the variant_id.
         variant_obj = store.variant(variant_id)
 
+    if not variant_obj:
+        return abort(404)
+
     if not (institute_obj and case_obj):
-        if not case_name:
-            variant_case_obj = store.case(
-                case_id=variant_obj["case_id"], projection={"display_name": 1}
-            )
-            case_name = variant_case_obj["display_name"]
-
-        if not institute_id:
-            institute_id = variant_obj["institute"]
-
-        institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-
-    if variant_obj is None or variant_obj.get("case_id") != case_obj["_id"]:
-        return None
+        (institute_obj, case_obj) = variant_institute_and_case(
+            store, variant_obj, institute_id, case_name
+        )
 
     variant_type = variant_type or variant_obj.get("variant_type", "clinical")
 
@@ -600,8 +593,10 @@ def variant_acmg(store, institute_id, case_name, variant_id):
     Returns:
         data(dict): Things for the template
     """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
+
+    institute_obj, case_obj = variant_institute_and_case(store, institute_id, case_name)
+
     return dict(
         institute=institute_obj,
         case=case_obj,
@@ -624,29 +619,37 @@ def check_reset_variant_classification(store, evaluation_obj, link):
 
     """
 
-    if len(list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"]))) == 0:
-        variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
-        acmg_classification = variant_obj.get("acmg_classification")
-        if isinstance(acmg_classification, int):
-            institute_obj, case_obj = institute_and_case(
-                store,
-                evaluation_obj["institute"]["_id"],
-                evaluation_obj["case"]["display_name"],
-            )
-            user_obj = store.user(current_user.email)
+    if list(store.get_evaluations_case_specific(evaluation_obj["variant_specific"])):
+        return False
 
-            new_acmg = None
-            store.submit_evaluation(
-                variant_obj=variant_obj,
-                user_obj=user_obj,
-                institute_obj=institute_obj,
-                case_obj=case_obj,
-                link=link,
-                classification=new_acmg,
-            )
-            return True
+    variant_obj = store.variant(document_id=evaluation_obj["variant_specific"])
 
-    return False
+    if not variant_obj:
+        return abort(404)
+
+    acmg_classification = variant_obj.get("acmg_classification")
+
+    if not isinstance(acmg_classification, int):
+        return False
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store,
+        variant_obj,
+        evaluation_obj["institute"]["_id"],
+        evaluation_obj["case"]["display_name"],
+    )
+    user_obj = store.user(current_user.email)
+
+    new_acmg = None
+    store.submit_evaluation(
+        variant_obj=variant_obj,
+        user_obj=user_obj,
+        institute_obj=institute_obj,
+        case_obj=case_obj,
+        link=link,
+        classification=new_acmg,
+    )
+    return True
 
 
 def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, criteria):
@@ -664,8 +667,15 @@ def variant_acmg_post(store, institute_id, case_name, variant_id, user_email, cr
         data(dict): Things for the template
 
     """
-    institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     variant_obj = store.variant(variant_id)
+
+    if not variant_obj:
+        return abort(404)
+
+    institute_obj, case_obj = variant_institute_and_case(
+        store, variant_obj, institute_id, case_name
+    )
+
     user_obj = store.user(user_email)
     variant_link = url_for(
         "variant.variant",

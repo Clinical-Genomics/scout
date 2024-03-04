@@ -101,6 +101,29 @@ def public_endpoint(function):
     return function
 
 
+def variant_institute_and_case(store, variant_obj, institute_id, case_name):
+    """Fetch insitiute and case objects."""
+
+    if not case_name:
+        variant_case_obj = store.case(
+            case_id=variant_obj["case_id"], projection={"display_name": 1}
+        )
+        case_name = variant_case_obj["display_name"]
+
+    if not institute_id:
+        institute_id = variant_obj["institute"]
+
+    (institute_obj, case_obj) = institute_and_case(store, institute_id, case_name)
+
+    if case_obj is None:
+        return abort(404)
+
+    if variant_obj.get("case_id") != case_obj.get("_id"):
+        return abort(403)
+
+    return (institute_obj, case_obj)
+
+
 def institute_and_case(store, institute_id, case_name=None):
     """Fetch insitiute and case objects."""
 
