@@ -49,7 +49,7 @@ def _lookup_variant(
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>")
 @api_bp.route("/variant/<variant_id>")
 def variant(
-    variant_id: str, institute_id: Optional[str], case_name: Optional[str]
+    variant_id: str, institute_id: Optional[str] = None, case_name: Optional[str] = None
 ) -> Optional[Response]:
     """Display a specific SNV variant."""
 
@@ -60,10 +60,12 @@ def variant(
 
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>/pin")
 @api_bp.route("/<variant_id>/pin")
-def pin_variant(variant_id: str, institute_id: Optional[str], case_name: Optional[str]):
+def pin_variant(
+    variant_id: str, institute_id: Optional[str] = None, case_name: Optional[str] = None
+):
     """Pin an existing variant"""
 
-    (institute_obj, case_obj, variant_obj) = _lookup_variant(institute_id, case_name, variant_id)
+    (institute_obj, case_obj, variant_obj) = _lookup_variant(variant_id, institute_id, case_name)
 
     user_obj = store.user(current_user.email)
     link = url_for(
