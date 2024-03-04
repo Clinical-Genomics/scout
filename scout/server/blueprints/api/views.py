@@ -81,7 +81,9 @@ def pin_variant(
 
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>/unpin")
 @api_bp.route("/<variant_id>/unpin")
-def unpin_variant(variant_id, institute_id: Optional[str], case_name: Optional[str]):
+def unpin_variant(
+    variant_id: str, institute_id: Optional[str] = None, case_name: Optional[str] = None
+):
     """Un-pin an existing, pinned variant"""
 
     (institute_obj, case_obj, variant_obj) = _lookup_variant(variant_id, institute_id, case_name)
