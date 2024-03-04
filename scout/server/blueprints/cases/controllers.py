@@ -119,13 +119,8 @@ async def chanjo2_coverage_report_contents(
         "hgnc_gene_ids": _get_default_panel_genes(store, case_obj),
         "samples": query_samples,
     }
-
-    LOG.warning(f"Sending the following query: {report_query}")
-
     report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
     response = requests.post(report_url, json=report_query)
-
-    LOG.warning(f"Response from chanjo2: {response}")
     return response.text
 
 
