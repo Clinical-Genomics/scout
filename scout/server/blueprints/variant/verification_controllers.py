@@ -51,9 +51,9 @@ def variant_verification(
 
     data = variant_controller(
         store=store,
+        variant_id=variant_id,
         institute_id=institute_id,
         case_name=case_name,
-        variant_id=variant_id,
         add_other=False,
         get_overlapping=False,
     )

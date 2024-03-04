@@ -609,9 +609,9 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
     def _get_decorated_var(var_obj: dict) -> dict:
         return variant_decorator(
             store=store,
+            variant_id=None,
             institute_id=institute_obj["_id"],
             case_name=case_obj["display_name"],
-            variant_id=None,
             variant_obj=var_obj,
             add_other=False,
             get_overlapping=False,
