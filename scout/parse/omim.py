@@ -20,7 +20,7 @@ def parse_omim_line(line, header):
 
 
 def parse_genemap2_diseases(phenotype_entry, mim_number=None):
-    """Parse the Phenotype entry of a genemap2 line
+    """Parse the Phenotype entry (diseases) of a genemap2 line
 
     The phenotype entries are separated by ';'
     Returns a list with the relevant diseases.
