@@ -46,7 +46,7 @@ def _lookup_variant(
     if case_obj is None:
         return abort(404)
 
-    if variant_obj.case_id != case_obj._id:
+    if variant_obj.get("case_id") != case_obj.get("_id"):
         return abort(403)
 
     return (institute_obj, case_obj, variant_obj)
