@@ -155,7 +155,7 @@ def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, vari
     assert sum(1 for i in adapter.event_collection.find()) == 0
 
     # And at least a phenotype (OMIM diagnosis or HPO terms)
-    omim_terms = ["145590", "615349"]
+    omim_terms = ["OMIM:145590", "OMIM:615349"]
     hpo_terms = ["Febrile seizures_HP:0002373"]
 
     # When marking the variant as partial causative
@@ -166,7 +166,7 @@ def test_mark_partial_causative(adapter, institute_obj, case_obj, user_obj, vari
         user=user_obj,
         link="link_to_partial_causative_variant",
         variant=variant_obj,
-        omim_terms=omim_terms,
+        disease_terms=omim_terms,
         hpo_terms=hpo_terms,
     )
 
@@ -191,7 +191,7 @@ def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, va
     assert sum(1 for i in adapter.event_collection.find()) == 0
 
     # And at least a phenotype (OMIM diagnosis or HPO terms)
-    omim_terms = ["145590", "615349"]
+    omim_terms = ["OMIM:145590", "OMIM:615349"]
     hpo_terms = ["Febrile seizures_HP:0002373"]
 
     # When marking the variant as partial causative
@@ -202,7 +202,7 @@ def test_unmark_partial_causative(adapter, institute_obj, case_obj, user_obj, va
         user=user_obj,
         link="link_to_partial_causative_variant",
         variant=variant_obj,
-        omim_terms=omim_terms,
+        disease_terms=omim_terms,
         hpo_terms=hpo_terms,
     )
 

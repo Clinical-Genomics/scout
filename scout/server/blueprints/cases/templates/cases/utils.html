@@ -447,7 +447,7 @@
                   Diagnoses
                 </div>
                 <div class="col-8">
-                  {% for term in variant_phenotypes.omim_terms %}
+                  {% for term in variant_phenotypes.disease_terms %}
                     {% if 'OMIM' in term %}
                       <a class="btn btn-xs btn-secondary text-white" target="_blank" href="http://omim.org/entry/{{term|replace('OMIM:','')}}">
                         {{term}}
