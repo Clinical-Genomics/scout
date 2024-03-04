@@ -47,7 +47,7 @@ def _lookup_variant(
 
 
 @api_bp.route("/<institute_id>/<case_name>/<variant_id>")
-@api_bp.route("/<variant_id>/variant")
+@api_bp.route("/variant/<variant_id>")
 def variant(
     variant_id: str, institute_id: Optional[str], case_name: Optional[str]
 ) -> Optional[Response]:

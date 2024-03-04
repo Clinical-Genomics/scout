@@ -3,7 +3,7 @@ import os
 from typing import Dict, List, Optional
 
 import requests
-from flask import Markup, current_app, flash, url_for
+from flask import Markup, abort, current_app, flash, url_for
 from flask_login import current_user
 
 from scout.adapter import MongoAdapter
