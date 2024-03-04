@@ -1,6 +1,6 @@
 import logging
 from collections import Counter
-from typing import Any, Dict, List
+from typing import Dict, List
 
 import pymongo
 
@@ -366,10 +366,12 @@ class VariantEventHandler(object):
         )
         return updated_variant
 
-    def mark_partial_causative(self, institute, case, user, link, variant, omim_terms, hpo_terms):
+    def mark_partial_causative(
+        self, institute, case, user, link, variant, disease_terms, hpo_terms
+    ):
         """Create an event for marking a variant as partial causative.
            When a variant is marked as partial causative the case will not be marked as solved.
-           Partial causatives have associated phenotypes (OMIM and HPO terms)
+           Partial causatives have associated diseases phenotypes (OMIM/ORPHA and HPO terms)
 
         Arguments:
           institute (dict): An Institute object
@@ -377,7 +379,7 @@ class VariantEventHandler(object):
           user (dict): A User object
           link (str): The url to be used in the event
           variant (variant): A variant object
-          omim_terms(list): A list of OMIM diagnoses. Example: ['145590', '615349']
+          disease_terms(list): A list of diagnoses. Example: ['OMIM:145590', 'OMIM:615349']
           hpo_terms(list): A list of HPO terms. example: ['Febrile seizures_HP:0002373', 'Abnormality of the clavicle_HP:0000889']
 
         Returns:
@@ -403,7 +405,7 @@ class VariantEventHandler(object):
         # update partial causative object
         case_partial_causatives = case.get("partial_causatives") or {}
         case_partial_causatives[variant["_id"]] = {
-            "diagnosis_phenotypes": omim_terms,
+            "diagnosis_phenotypes": disease_terms,
             "phenotype_terms": hpo_objs_list,
         }
 
