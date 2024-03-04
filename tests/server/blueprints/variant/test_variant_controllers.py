@@ -424,8 +424,8 @@ def test_variant_controller_with_compounds(app, institute_obj, case_obj):
         ## WHEN fetching the variant from the controller
         data = variant(
             store,
-            institute_id,
-            case_name,
+            institute_id=institute_id,
+            case_name=case_name,
             variant_id=var_id,
             add_other=True,
             get_overlapping=True,
@@ -461,9 +461,9 @@ def test_variant_controller_with_clnsig(app, institute_obj, case_obj):
         ## WHEN fetching the variant from the controller
         data = variant(
             store,
-            institute_id,
-            case_name,
             variant_id=var_id,
+            institute_id=institute_id,
+            case_name=case_name,
             add_other=True,
             get_overlapping=True,
             variant_type=category,
@@ -489,9 +489,9 @@ def test_variant_controller(app, institute_obj, case_obj, variant_obj):
         ## WHEN fetching the variant from the controller
         data = variant(
             store,
-            institute_id,
-            case_name,
             variant_id=var_id,
+            institute_id=institute_id,
+            case_name=case_name,
             add_other=True,
             get_overlapping=True,
             variant_type=category,
