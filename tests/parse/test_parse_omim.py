@@ -1,7 +1,7 @@
 from scout.parse.omim import (
-    get_mim_phenotypes,
+    get_mim_disease,
     parse_genemap2,
-    parse_genemap2_phenotypes,
+    parse_genemap2_diseases,
     parse_mim2gene,
     parse_omim_line,
 )
@@ -24,7 +24,7 @@ def test_parse_genemap2_phenotype_entry_single():
     # GIVEN a phenotype description with one entry
     entry = "Ehlers-Danlos syndrome, progeroid type," " 2, 615349 (3), Autosomal recessive"
     # WHEN parsing the entry
-    parsed_entries = parse_genemap2_phenotypes(entry)
+    parsed_entries = parse_genemap2_diseases(entry)
     parsed_entry = parsed_entries[0]
     # THEN assert that the information was parsed correct
 
@@ -76,14 +76,14 @@ def test_parse_mim2gene_file(mim2gene_handle):
     assert i > 0
 
 
-def test_get_mim_phenotypes(genemap_lines):
+def test_get_mim_diseases(genemap_lines):
     ## GIVEN a small testdata set
 
     # This will return a dictionary with mim number as keys and
     # phenotypes as values
 
     ## WHEN parsing the phenotypes
-    phenotypes = get_mim_phenotypes(genemap_lines=genemap_lines)
+    phenotypes = get_mim_disease(genemap_lines=genemap_lines)
 
     ## THEN assert they where parsed in a correct way
 
@@ -99,7 +99,7 @@ def test_get_mim_phenotypes(genemap_lines):
 
 
 def test_get_mim_phenotypes_file(genemap_handle):
-    phenotypes = get_mim_phenotypes(genemap_lines=genemap_handle)
+    phenotypes = get_mim_disease(genemap_lines=genemap_handle)
     i = 0
     for i, mim_nr in enumerate(phenotypes):
         assert phenotypes[mim_nr]["mim_number"]
