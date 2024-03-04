@@ -12,7 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Stop parsing MANE and MANE Plus Clinical transcripts info from VEP annotations and instead collect it from Transcripts database collection
 ### Fixed
 - Refactored code in cases blueprints and variant_events adapter (set diseases for partial causative variants) to use "disease" instead of "omim" to encompass also ORPHA terms
-
+- Refactored code in `scout/parse/omim.py` and `scout/parse/disease_terms.py` to use "disease" instead of "phenotype" to differentiate from HPO terms
 
 ## [4.78]
 ### Added
