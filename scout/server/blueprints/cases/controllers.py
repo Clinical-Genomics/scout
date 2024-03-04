@@ -208,7 +208,7 @@ def _get_partial_causatives(store: MongoAdapter, case_obj: Dict) -> List[Dict]:
         for var_id, values in case_obj["partial_causatives"].items():
             causative_obj = {
                 "variant": store.variant(var_id) or var_id,
-                "omim_terms": values.get("diagnosis_phenotypes"),
+                "disease_terms": values.get("diagnosis_phenotypes"),
                 "hpo_terms": values.get("phenotype_terms"),
             }
             partial_causatives.append(causative_obj)
