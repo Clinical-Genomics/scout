@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
+- Button for displaying STR variants occurring in the dynamic HPO panel on case page
 ### Changed
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 ### Fixed
