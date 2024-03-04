@@ -12,7 +12,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 ### Fixed
 
-
 ## [4.78]
 ### Added
 - Case status labels can be added, giving more finegrained details on a solved status (provisional, diagnostic, carrier, UPD, SMN, ...)
