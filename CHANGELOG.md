@@ -11,7 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactor view route to allow navigation directly to unique variant document id, improve permissions check
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 ### Fixed
-- Be more careful about checking access to variant on api access
+- Be more careful about checking access to variant on API access
 
 ## [4.78]
 ### Added
