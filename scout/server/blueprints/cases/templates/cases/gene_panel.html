@@ -155,43 +155,55 @@
         <div class="row mt-3">
           <div class="btn-group btn-group-sm">
           {% if case.track == 'cancer' %}
-            <a class="btn btn-secondary btn-sm text-white"
-              href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
-                               case_name=case.display_name, variant_type='clinical',
-                               gene_panels=['hpo']) }}">
-               Clinical HPO SNVs
-             </a>
-            <a class="btn btn-secondary btn-sm text-white"
-              href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id,
-                               case_name=case.display_name, variant_type='clinical',
-                               gene_panels=['hpo']) }}">
-               Clinical HPO SVs
-             </a>
+            {% if case.vcf_files.vcf_cancer %}
+              <a class="btn btn-secondary btn-sm text-white"
+                href="{{ url_for('variants.cancer_variants', institute_id=institute._id,
+                                 case_name=case.display_name, variant_type='clinical',
+                                 gene_panels=['hpo']) }}">
+                 Clinical HPO SNVs
+               </a>
+            {% endif %}
+            {% if case.vcf_files.vcf_cancer_sv %}
+              <a class="btn btn-secondary btn-sm text-white"
+                href="{{ url_for('variants.cancer_sv_variants', institute_id=institute._id,
+                                 case_name=case.display_name, variant_type='clinical',
+                                 gene_panels=['hpo']) }}">
+                 Clinical HPO SVs
+               </a>
+            {% endif %}
           {% else %}
-            <a class="btn btn-secondary btn-sm text-white"
-              href="{{ url_for('variants.variants', institute_id=institute._id,
-                               case_name=case.display_name, variant_type='clinical',
-                               gene_panels=['hpo']) }}">
-               Clinical HPO SNVs
-             </a>
-            <a class="btn btn-secondary btn-sm text-white"
-              href="{{ url_for('variants.sv_variants', institute_id=institute._id,
-                               case_name=case.display_name, variant_type='clinical',
-                               gene_panels=['hpo']) }}">
-               Clinical HPO SVs
-             </a>
+            {% if case.vcf_files.vcf_snv %}
+              <a class="btn btn-secondary btn-sm text-white"
+                href="{{ url_for('variants.variants', institute_id=institute._id,
+                                 case_name=case.display_name, variant_type='clinical',
+                                 gene_panels=['hpo']) }}">
+                 Clinical HPO SNVs
+              </a>
+            {% endif %}
+            {% if case.vcf_files.vcf_sv %}
+              <a class="btn btn-secondary btn-sm text-white"
+                href="{{ url_for('variants.sv_variants', institute_id=institute._id,
+                                 case_name=case.display_name, variant_type='clinical',
+                                 gene_panels=['hpo']) }}">
+                 Clinical HPO SVs
+               </a>
+            {% endif %}
+            {% if case.vcf_files.vcf_str %}
              <a class="btn btn-secondary btn-sm text-white"
               href="{{ url_for('variants.str_variants', institute_id=institute._id,
                                case_name=case.display_name, variant_type='clinical',
                                gene_panels=['hpo']) }}">
                Clinical HPO STRs
              </a>
+            {% endif %}
+            {% if case.vcf_files.vcf_mei %}
              <a class="btn btn-secondary btn-sm text-white"
               href="{{ url_for('variants.mei_variants', institute_id=institute._id,
                                case_name=case.display_name, variant_type='clinical',
                                gene_panels=['hpo']) }}">
                Clinical HPO MEIs
              </a>
+            {% endif %}
            {% endif %}
           </div>
         </div>
