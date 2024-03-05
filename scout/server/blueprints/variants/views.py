@@ -140,7 +140,13 @@ def variants(institute_id, case_name):
         return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.variants(
-        store, institute_obj, case_obj, variants_query, result_size, page, query_form=form.data
+        store,
+        institute_obj,
+        case_obj,
+        variants_query,
+        result_size,
+        page,
+        query_form=form.data,
     )
 
     return dict(
@@ -195,6 +201,7 @@ def str_variants(institute_id, case_name):
         form.chrom.data = request.args.get("chrom", "")
 
     controllers.populate_force_show_unaffected_vars(institute_obj, form)
+    controllers.update_form_hgnc_symbols(store, case_obj, form)
 
     # populate filters dropdown
     available_filters = list(store.filters(institute_id, category))
@@ -459,7 +466,10 @@ def cancer_variants(institute_id, case_name):
             # Flash a message with errors
             for field, err_list in form.errors.items():
                 for err in err_list:
-                    flash(f"Content of field '{field}' does not have a valid format", "warning")
+                    flash(
+                        f"Content of field '{field}' does not have a valid format",
+                        "warning",
+                    )
             # And do not submit the form
             return redirect(
                 url_for(".cancer_variants", institute_id=institute_id, case_name=case_name)
