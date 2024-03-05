@@ -366,11 +366,12 @@ def test_case_custom_images(app, institute_obj, case_obj):
 
 
 def test_case_by_id(app, case_obj):
-    """Test that custom images are being displayed"""
+    """Test that cases can be retrieved using case_id only"""
     # GIVEN an initialized app
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
 
         # WHEN case page is loaded
         resp = client.get(
@@ -404,6 +405,7 @@ def test_case_outdated_panel(app, institute_obj, case_obj):
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
 
         # WHEN case page is loaded
         resp = client.get(
