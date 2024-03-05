@@ -8,11 +8,12 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
 - Button on case page for displaying STR variants occurring in the dynamic HPO panel
+- Display functional annotation relative to variant gene's MANE transcripts on variant summary, when available
 - Phenomodels checkboxes can now include orpha terms
 ### Changed
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 - Refactor view route to allow navigation directly to unique variant document id, improve permissions check
-- Do not show MANE and MANE Plus Clinical transcripts annotated from VEP (saved in variants)but collect this info from the transcripts database collection
+- Do not show MANE and MANE Plus Clinical transcripts annotated from VEP (saved in variants) but collect this info from the transcripts database collection
 - Refactor view route to allow navigation directly to unique case id (in particular for gens)
 ### Fixed
 - Refactored code in cases blueprints and variant_events adapter (set diseases for partial causative variants) to use "disease" instead of "omim" to encompass also ORPHA terms
