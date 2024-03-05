@@ -89,8 +89,20 @@ def update_representative_gene(variant_obj: dict, variant_genes: List[dict]):
         variant_obj["first_rep_gene"] = None
 
 
+def update_transcript_mane(hgnc_transcript: dict, transcript: dict):
+    """Updates MANE key/values for a transcript in genome build 38."""
+    for key in ["mane_select", "mane_plus_clinical"]:
+        if hgnc_transcript.get(key):
+            transcript[f"{key}_transcript"] = hgnc_transcript[key]
+        else:
+            transcript.pop(f"{key}_transcript", None)
+
+
 def update_transcripts_information(
-    variant_gene: dict, hgnc_gene: dict, variant_obj: dict, genome_build: Optional[str] = None
+    variant_gene: dict,
+    hgnc_gene: dict,
+    variant_obj: dict,
+    genome_build: Optional[str] = None,
 ):
     """Collect tx info from the hgnc gene and panels and update variant transcripts
 
@@ -119,10 +131,14 @@ def update_transcripts_information(
     # First loop over the variants transcripts
     for transcript in variant_gene.get("transcripts", []):
         tx_id = transcript["transcript_id"]
+
         hgnc_transcript = transcripts_dict.get(tx_id)
         # If the tx does not exist in ensembl anymore we skip it
         if not hgnc_transcript:
             continue
+
+        if genome_build == "38":
+            update_transcript_mane(hgnc_transcript=hgnc_transcript, transcript=transcript)
 
         # Check in the common information if it is a primary transcript
         if hgnc_transcript.get("is_primary"):
@@ -403,7 +419,10 @@ def frequencies(variant_obj):
                 "display_name": "ExAC(max)",
                 "link": variant_obj.get("exac_link"),
             },
-            "swegen": {"display_name": "SweGen", "link": variant_obj.get("swegen_link")},
+            "swegen": {
+                "display_name": "SweGen",
+                "link": variant_obj.get("swegen_link"),
+            },
             "gnomad_mt_homoplasmic_frequency": {
                 "display_name": "GnomAD MT, homoplasmic",
                 "link": variant_obj.get("gnomad_link"),
