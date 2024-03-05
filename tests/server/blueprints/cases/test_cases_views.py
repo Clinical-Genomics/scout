@@ -350,6 +350,7 @@ def test_case_custom_images(app, institute_obj, case_obj):
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
 
         # WHEN case page is loaded
         resp = client.get(
