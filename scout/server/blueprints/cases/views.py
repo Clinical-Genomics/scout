@@ -87,12 +87,9 @@ def case(
     and reuse its user access verification.
     """
 
-    if not institute_id:
-        if not case_id:
-            flash("Case could not be found: please provide a case ID.")
-            return redirect(request.referrer)
-
+    if case_id:
         case_obj = store.case(case_id=case_id, projection={"display_name": 1, "owner": 1})
+
         if not case_obj:
             flash("Case {} does not exist in database!".format(case_id))
             return abort(404)
