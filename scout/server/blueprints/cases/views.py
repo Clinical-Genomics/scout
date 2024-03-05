@@ -74,7 +74,7 @@ def index():
 
 
 @cases_bp.route("/<institute_id>/<case_name>")
-@cases_bp.route("/case/<case_id>")
+@cases_bp.route("/case/case_id/<case_id>")
 @templated("cases/case.html")
 def case(
     case_name: Optional[str] = None,
@@ -92,10 +92,10 @@ def case(
             flash("Case could not be found: please provide a case ID.")
             return redirect(request.referrer)
 
-        case_obj = store.case(case_id=case_id, projection={"display_name": 1})
+        case_obj = store.case(case_id=case_id, projection={"display_name": 1, "owner": 1})
         if not case_obj:
             flash("Case {} does not exist in database!".format(case_id))
-            return redirect(request.referrer)
+            return abort(404)
 
         case_name = case_obj.get("display_name")
         institute_id = case_obj.get("owner")
