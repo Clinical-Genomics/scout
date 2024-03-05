@@ -88,7 +88,7 @@ def update_representative_gene(variant_obj: dict, variant_genes: List[dict]):
     else:
         variant_obj["first_rep_gene"] = None
 
-        
+
 def update_transcript_mane(hgnc_transcript: dict, transcript: dict, variant_gene: dict):
     """Updates MANE key/values for a transcript in genome build 38. Updates variant gene with functional annotation derived from MANE transcripts."""
     for key in ["mane_select", "mane_plus_clinical"]:
