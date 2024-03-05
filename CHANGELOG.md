@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Changed
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 - Refactor view route to allow navigation directly to unique variant document id, improve permissions check
+- Do not show MANE and MANE Plus Clinical transcripts annotated from VEP (saved in variants)but collect this info from the transcripts database collection
 ### Fixed
 - Refactored code in cases blueprints and variant_events adapter (set diseases for partial causative variants) to use "disease" instead of "omim" to encompass also ORPHA terms
 - Refactored code in `scout/parse/omim.py` and `scout/parse/disease_terms.py` to use "disease" instead of "phenotype" to differentiate from HPO terms
