@@ -350,6 +350,7 @@ def test_case_custom_images(app, institute_obj, case_obj):
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
 
         # WHEN case page is loaded
         resp = client.get(
@@ -363,6 +364,26 @@ def test_case_custom_images(app, institute_obj, case_obj):
         dta = resp.get_data()
         for section_name in case_obj["custom_images"]["case_images"]:
             assert bytes(f"{section_name}-accordion", "utf-8") in dta
+
+
+def test_case_by_id(app, case_obj):
+    """Test that cases can be retrieved using case_id only"""
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
+
+        # WHEN case page is loaded
+        resp = client.get(
+            url_for(
+                "cases.case",
+                case_id=case_obj["_id"],
+            )
+        )
+
+        # THEN it should return a valid page
+        assert resp.status_code == 200
 
 
 def test_case_outdated_panel(app, institute_obj, case_obj):
@@ -385,6 +406,7 @@ def test_case_outdated_panel(app, institute_obj, case_obj):
     with app.test_client() as client:
         # GIVEN that the user could be logged in
         resp = client.get(url_for("auto_login"))
+        assert resp.status_code == 200
 
         # WHEN case page is loaded
         resp = client.get(
@@ -423,7 +445,7 @@ def test_case_sma(app, case_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_case_fusion(app, adapter, fusion_case_obj, institute_obj):
+def test_case_fusion(app, fusion_case_obj, institute_obj):
     """Test the RNA fusion case page."""
 
     # GIVEN an initialized app
