@@ -94,7 +94,7 @@ def update_transcript_mane(hgnc_transcript: dict, transcript: dict, variant_gene
     for key in ["mane_select", "mane_plus_clinical"]:
         if hgnc_transcript.get(key):
             transcript[f"{key}_transcript"] = hgnc_transcript[key]
-            variant_gene[f"{key}_functional_annotation"] = transcript.get("functional_annotation")
+            variant_gene[f"{key}_functional_annotation"] = transcript.get("functional_annotations")
         else:
             transcript.pop(f"{key}_transcript", None)
 

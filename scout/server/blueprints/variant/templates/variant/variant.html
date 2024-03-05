@@ -336,7 +336,9 @@
             <th>Gene</th>
             <th>Region</th>
             <th>Function</th>
-            <th id="MANE functional annotation">Function (MANE transcripts)</th>
+            {% if case.genome_build == "38" %}
+              <th id="MANE functional annotations">Function (MANE transcripts)</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -349,10 +351,16 @@
               </th>
               <td>{{ gene.region_annotation }}</td>
               <td>{{ gene.functional_annotation|truncate(20, True) }}</td>
-              {% if gene.mane_select_functional_annotation or gene.mane_plus_clinical_functional_annotation %}
-                {% for key in ["mane_select_functional_annotation", "mane_plus_clinical_functional_annotation"] %}
-                  {{ gene.key if gene.key }}
-                {% endfor %}
+              {% if case.genome_build == "38" %} <!-- Display eventual functional annotations associated to MANE transcripts -->
+                <td>
+                  {% for mane_key, name_type in [('mane_select_functional_annotation', 'MANE Select'),('mane_plus_clinical_functional_annotation', 'MANE Plus Clinical') ]%}
+                    {% if gene.get(mane_key) %}
+                      {% for anno in gene[mane_key] %}
+                        <span data-bs-toggle="tooltip" title="{{name_type}}">{{anno|truncate(20, True)}}</span>
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                </td>
               {% endif %}
             </tr>
           {% endfor %}
