@@ -445,7 +445,7 @@ def test_case_sma(app, case_obj, institute_obj):
         assert resp.status_code == 200
 
 
-def test_case_fusion(app, adapter, fusion_case_obj, institute_obj):
+def test_case_fusion(app, fusion_case_obj, institute_obj):
     """Test the RNA fusion case page."""
 
     # GIVEN an initialized app
