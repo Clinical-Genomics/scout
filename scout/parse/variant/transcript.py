@@ -82,6 +82,14 @@ def parse_transcripts(raw_transcripts):
         # Check if the transcript is marked cannonical by vep
         transcript["is_canonical"] = entry.get("CANONICAL") == "YES"
 
+        # Get MANE transcripts (from VEP v103/MANE v0.92)
+        if "MANE_SELECT" in entry:
+            transcript["mane_select_transcript"] = entry.get("MANE_SELECT")
+            transcript["mane_plus_clinical_transcript"] = entry.get("MANE_PLUS_CLINICAL")
+        # Backwards compatibility with older versions of VEP/MANE
+        elif "MANE" in entry:
+            transcript["mane_select_transcript"] = entry.get("MANE")
+
         # Check if the CADD score is available on transcript level
         cadd_phred = entry.get("CADD_PHRED")
         if cadd_phred:

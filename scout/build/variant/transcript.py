@@ -19,6 +19,8 @@ BUILD_TRANSCRIPT_OPTIONAL_KEYS = [
     "coding_sequence_name",
     "protein_sequence_name",
     "superdups_fracmatch",
+    "mane_select_transcript",
+    "mane_plus_clinical_transcript",
 ]
 
 
