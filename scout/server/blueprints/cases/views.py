@@ -74,9 +74,29 @@ def index():
 
 
 @cases_bp.route("/<institute_id>/<case_name>")
+@cases_bp.route("/case/case_id/<case_id>")
 @templated("cases/case.html")
-def case(institute_id, case_name):
-    """Display one case."""
+def case(
+    case_name: Optional[str] = None,
+    institute_id: Optional[str] = None,
+    case_id: Optional[str] = None,
+):
+    """Display one case.
+    Institute and display_name pairs uniquely specify a case.
+    So do case_id, but we still call institute_and_case again to fetch institute
+    and reuse its user access verification.
+    """
+
+    if case_id:
+        case_obj = store.case(case_id=case_id, projection={"display_name": 1, "owner": 1})
+
+        if not case_obj:
+            flash("Case {} does not exist in database!".format(case_id))
+            return abort(404)
+
+        case_name = case_obj.get("display_name")
+        institute_id = case_obj.get("owner")
+
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     if not case_obj:
         flash("Case {} does not exist in database!".format(case_name))
