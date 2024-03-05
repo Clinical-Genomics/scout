@@ -80,7 +80,7 @@ def case(
     case_name: Optional[str] = None,
     institute_id: Optional[str] = None,
     case_id: Optional[str] = None,
-) -> dict:
+):
     """Display one case.
     Institute and display_name pairs uniquely specify a case.
     So do case_id, but we still call institute_and_case again to fetch institute
