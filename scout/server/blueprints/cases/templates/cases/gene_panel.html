@@ -180,7 +180,7 @@
                  Clinical HPO SNVs
               </a>
             {% endif %}
-            {% if case.vcf_files.vcf_sv %}
+            {% if case.has_svvariants %}
               <a class="btn btn-secondary btn-sm text-white"
                 href="{{ url_for('variants.sv_variants', institute_id=institute._id,
                                  case_name=case.display_name, variant_type='clinical',
@@ -188,7 +188,7 @@
                  Clinical HPO SVs
                </a>
             {% endif %}
-            {% if case.vcf_files.vcf_str %}
+            {% if case.has_strvariants %}
              <a class="btn btn-secondary btn-sm text-white"
               href="{{ url_for('variants.str_variants', institute_id=institute._id,
                                case_name=case.display_name, variant_type='clinical',
@@ -196,7 +196,7 @@
                Clinical HPO STRs
              </a>
             {% endif %}
-            {% if case.vcf_files.vcf_mei %}
+            {% if case.has_meivariants %}
              <a class="btn btn-secondary btn-sm text-white"
               href="{{ url_for('variants.mei_variants', institute_id=institute._id,
                                case_name=case.display_name, variant_type='clinical',
