@@ -432,16 +432,25 @@ def get_loqusdb_obs_cases(
     obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
     for i, case_id in enumerate(obs_families):
+        LOG.warning(f"Running round {i} of enumerate obs_families")
         # TODO: Remove log
-        LOG.warning(f"The case_id: {case_id} and the variant_obj['case_id'] will be compared")
+        LOG.warning(
+            f"The case_id: {case_id} and the variant_obj['case_id']: {variant_obj['case_id']} will be compared"
+        )
         if len(obs_cases) == 10:
+            LOG.warning("Obs_cases was longer than 10 and et_loqusdb_obs_cases ended in break")
             break
+        LOG.warning(
+            f"The case_id: {case_id} and the variant_obj[case_id]: {variant_obj['case_id']} was compared"
+        )
         if case_id == variant_obj["case_id"]:
+            LOG.warning("They matched, continuing")
             continue
         # other case might belong to same institute, collaborators or other institutes
         other_case = store.case(case_id)
         if not other_case:
             # Case could have been removed
+            LOG.warning("The case was not found in the scout database")
             LOG.debug("Case %s could not be found in database", case_id)
             continue
         other_institutes = set([other_case.get("owner")])
@@ -449,6 +458,7 @@ def get_loqusdb_obs_cases(
 
         if user_institutes_ids.isdisjoint(other_institutes):
             # If the user does not have access to the information we skip it. Admins allowed by user_institutes.
+            LOG.warning("The case was found but NOT appended to cases due to access ")
             continue
 
         other_variant = store.variant(
@@ -458,7 +468,7 @@ def get_loqusdb_obs_cases(
         # IF variant is SV variant, look for variants with different sub_category occurring at the same coordinates
         if other_variant is None and category == "sv":
             other_variant = store.overlapping_sv_variant(other_case["_id"], variant_obj)
-
+        LOG.warning("The case was appended to obs_cases")
         obs_cases.append(dict(case=other_case, variant=other_variant))
 
     return obs_cases
@@ -503,7 +513,7 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
 
         if not obs_data[loqus_id]:  # data is an empty dictionary
             # Collect count of variants in variant's case
-            obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
+            # obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
             if obs_data[loqus_id].get("total"):
                 obs_data[loqus_id]["observations"] = 0
             continue
