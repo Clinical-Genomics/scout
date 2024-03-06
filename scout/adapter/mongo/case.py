@@ -745,7 +745,8 @@ class CaseHandler(object):
                 )
             query["owner"] = institute_id
             query["display_name"] = display_name
-
+        # TODO: Remove log
+        LOG.warning(f"In adapter.case the query became: {query}")
         return self.case_collection.find_one(filter=query, projection=projection)
 
     def delete_case(self, case_id=None, institute_id=None, display_name=None):

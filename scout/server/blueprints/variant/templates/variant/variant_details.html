@@ -165,7 +165,7 @@
                <td>{{ obs.homozygote|default('N/A') }}</td>
                <td>{{ obs.total|default('N/A') }}</td>
              </tr>
-           {% if obs.cases %}
+           {% if obs.cases or obs.observations == 1 %}
              <tr>
                <td colspan="4">
                      {% for data in obs.cases %}
@@ -181,7 +181,17 @@
                        + more
                      {% endif %}
                      {% if obs.observations == 1 %}
-                       Observed only in this case
+                        {% if obs.case_match==True %}
+                          Observed only in this family
+                          <span id="case_match_tooltip"  data-bs-toggle='tooltip' title="Subsequent analysis of the same individual or multiple occurrences within the same family will usually not result in an increased observation count, even if performed by different institutes.">
+                            <i class="mx-1 fas fa-info-circle"></i>
+                          </span>
+                        {% elif obs.case_match ==False %}
+                          Observed in one other family
+                          <span class="text-danger" id="case_match_tooltip"  data-bs-toggle='tooltip' title="Low sequencing quality for the variant or previous upload of data from individuals in the case may result in the current family not being registered in loqusdb">
+                           <i class="mx-1 fas fa-info-circle"></i>
+                          </span>
+                        {% endif %}
                      {% endif %}
                </td>
              </tr>

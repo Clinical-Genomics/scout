@@ -431,6 +431,8 @@ def get_loqusdb_obs_cases(
     obs_cases = []
     user_institutes_ids = set([inst["_id"] for inst in user_institutes(store, current_user)])
     for i, case_id in enumerate(obs_families):
+        # TODO: Remove log
+        LOG.warning(f"The case_id: {case_id} and the variant_obj['case_id'] will be compared")
         if len(obs_cases) == 10:
             break
         if case_id == variant_obj["case_id"]:
@@ -500,14 +502,22 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
 
         if not obs_data[loqus_id]:  # data is an empty dictionary
             # Collect count of variants in variant's case
-            obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
-            if obs_data[loqus_id].get("total"):
-                obs_data[loqus_id]["observations"] = 0
+            # obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
+            # if obs_data[loqus_id].get("total"):
+            #     obs_data[loqus_id]["observations"] = 0
             continue
-
+        LOG.warning(
+            f"The variant_obj case_id: {variant_obj['case_id'] } and the families in loqous response: {obs_data[loqus_id]['families']}"
+        )
+        obs_data[loqus_id]["case_match"] = variant_obj["case_id"] in obs_data[loqus_id].get(
+            "families", []
+        )
         # collect cases where observations occurred
         obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
             store, variant_obj, category, obs_data[loqus_id].get("families", [])
+        )
+        LOG.warning(
+            f"The number of cases in the obs_data[loqus_id][cases] was : {len(obs_data[loqus_id]['cases'] )}"
         )
 
     return obs_data
