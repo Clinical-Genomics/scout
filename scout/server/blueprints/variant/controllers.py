@@ -507,7 +507,7 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
             #     obs_data[loqus_id]["observations"] = 0
             continue
         LOG.warning(
-            f"The variant_obj case_id: {variant_obj['case_id'] } and the families in loqous response: {obs_data[loqus_id]['families']}"
+            f"The variant_obj case_id: {variant_obj['case_id'] } and the families in loqous response: {obs_data[loqus_id].get('families', [])}"
         )
         obs_data[loqus_id]["case_match"] = variant_obj["case_id"] in obs_data[loqus_id].get(
             "families", []
