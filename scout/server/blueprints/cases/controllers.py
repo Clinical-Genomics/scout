@@ -94,6 +94,8 @@ async def chanjo2_coverage_report_contents(
     analysis_types: List[str] = []
 
     for ind in case_obj.get("individuals", []):
+        if not ind.get("d4_file"):
+            continue
         query_samples.append(
             {
                 "name": ind.get("display_name"),
