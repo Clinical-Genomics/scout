@@ -513,7 +513,7 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
 
         if not obs_data[loqus_id]:  # data is an empty dictionary
             # Collect count of variants in variant's case
-            # obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
+            obs_data[loqus_id] = loqusdb.get_variant(loqus_query, loqusdb_id=loqus_id)
             if obs_data[loqus_id].get("total"):
                 LOG.warning("obs_data[loqus_id] contained 'total', 'observations was set to 0")
                 obs_data[loqus_id]["observations"] = 0
