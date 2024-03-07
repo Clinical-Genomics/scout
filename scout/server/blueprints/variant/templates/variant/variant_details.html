@@ -145,7 +145,7 @@
   <div class="card panel-default">
     <div class="panel-heading d-flex justify-content-between">
       <a href="https://github.com/moonso/loqusdb" target="_blank">Local observations</a>
-      <span data-bs-toggle="tooltip" title="Nr of observations is the total number of occurrences in the loqusdb instance. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
+      <span data-bs-toggle="tooltip" title="Nr of observations is the total number of cases where the variant occurs the loqusdb instance. Missing links on greyed out case names for shared local case variants might be caused by variants not loaded after a rerun or inexact SV matching. Only names of collaborator cases are shown.">?</span>
     </div>
     <div class="card-body">
       <table class="table">
@@ -182,13 +182,13 @@
                      {% endif %}
                      {% if obs.observations == 1 %}
                         {% if obs.case_match==True %}
-                          Observed only in this family
+                          Observed only in this case
                           <span id="case_match_tooltip"  data-bs-toggle='tooltip' title="Subsequent analysis of the same individual or multiple occurrences within the same family will usually not result in an increased observation count, even if performed by different institutes.">
                             <i class="mx-1 fas fa-info-circle"></i>
                           </span>
                         {% elif obs.case_match ==False %}
-                          Observed in one other family
-                          <span class="text-danger" id="case_match_tooltip"  data-bs-toggle='tooltip' title="Low sequencing quality for the variant or previous upload of data from individuals in the case may result in the current family not being registered in loqusdb">
+                          Observed in one other case
+                          <span id="case_mismatch_tooltip"  data-bs-toggle='tooltip' title="Low sequencing quality for the variant or previous loqusdb upload of data from the same individuals may prevent the current case to be represented in loqusdb">
                            <i class="mx-1 fas fa-info-circle"></i>
                           </span>
                         {% endif %}
