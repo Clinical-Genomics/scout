@@ -594,7 +594,7 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
     ):
         for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
-            if variant_key in var_obj:
+            if variant_key in var_obj and var_obj["variant_key"] is not None:
                 evaluated_variants_by_type[eval_category].append(
                     _get_decorated_var(var_obj=var_obj)
                 )
