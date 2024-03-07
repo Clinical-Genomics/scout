@@ -573,7 +573,9 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                 continue
             if case_key == "partial_causatives":
                 var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
-            evaluated_variants_by_type[eval_category].append(_get_decorated_var(var_obj=var_obj))
+            evaluated_variants_by_type[eval_category].append(
+                _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
+            )
 
     for var_obj in store.evaluated_variants(
         case_id=case_obj["_id"], institute_id=institute_obj["_id"]
