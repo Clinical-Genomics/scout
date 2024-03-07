@@ -611,7 +611,7 @@ def _append_evaluated_variant_by_type(
     Ensure variant actually has the corresponding key set, and that it is not just None.
     """
     for eval_category, variant_key in CASE_REPORT_VARIANT_TYPES.items():
-        if variant_key in var_obj and var_obj["variant_key"] is not None:
+        if variant_key in var_obj and var_obj[variant_key] is not None:
             evaluated_variants_by_type[eval_category].append(
                 _get_decorated_var(var_obj=var_obj, institute_obj=institute_obj, case_obj=case_obj)
             )
