@@ -168,6 +168,19 @@
            {% if obs.cases or obs.observations == 1 %}
              <tr>
                <td colspan="4">
+                 {% if obs.observations == 1 %}
+                 {% if obs.case_match==True %}
+                 Observed only in this case
+                 <span id="case_match_tooltip"  data-bs-toggle='tooltip' title="Subsequent analysis of the same individual or multiple occurrences within the same family will usually not result in an increased observation count, even if performed by different institutes.">
+                   <i class="mx-1 fas fa-info-circle"></i>
+                 </span>
+                 {% elif obs.case_match ==False %}
+                 Observed in one other case
+                 <span id="case_mismatch_tooltip"  data-bs-toggle='tooltip' title="Low sequencing quality for the variant or previous loqusdb upload of data from the same individuals may prevent the current case from be occurring in loqusdb">
+                   <i class="mx-1 fas fa-info-circle"></i>
+                 </span>
+                 {% endif %}
+                 {% endif %}
                  {% for data in obs.cases %}
                  {% if data.variant and data.variant.category == "snv"%}
                  <a class="badge rounded-pill bg-light text-dark" target="_blank" href="{{ url_for('variant.variant', institute_id=data.case.owner, case_name=data.case.display_name, variant_id=data.variant._id) }}">{{ data.case.display_name }}</a>
@@ -181,19 +194,6 @@
                  {% endfor %}
                  {% if obs.cases|length > 10 %}
                  + more
-                 {% endif %}
-                 {% if obs.observations == 1 %}
-                 {% if obs.case_match==True %}
-                 Observed only in this case
-                 <span id="case_match_tooltip"  data-bs-toggle='tooltip' title="Subsequent analysis of the same individual or multiple occurrences within the same family will usually not result in an increased observation count, even if performed by different institutes.">
-                   <i class="mx-1 fas fa-info-circle"></i>
-                 </span>
-                 {% elif obs.case_match ==False %}
-                 Observed in one other case
-                 <span id="case_mismatch_tooltip"  data-bs-toggle='tooltip' title="Low sequencing quality for the variant or previous loqusdb upload of data from the same individuals may prevent the current case to be represented in loqusdb">
-                   <i class="mx-1 fas fa-info-circle"></i>
-                 </span>
-                 {% endif %}
                  {% endif %}
                </td>
              </tr>
