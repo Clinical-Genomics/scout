@@ -263,7 +263,7 @@ def populate_institute_form(form, institute_obj):
     institutes_tuples = []
     for inst in store.institutes():
         if not inst["_id"] == institute_obj["_id"]:
-            institutes_tuples.append(((inst["_id"], inst["display_name"])))
+            institutes_tuples.append((inst["_id"], f'{inst["display_name"]} - {inst["_id"]}'))
 
     form.display_name.default = institute_obj.get("display_name")
     form.institutes.choices = institutes_tuples
