@@ -589,7 +589,7 @@ def case_report_variants(store: MongoAdapter, case_obj: dict, institute_obj: dic
                 var_obj["phenotypes"] = case_obj["partial_causatives"][var_id]
             evaluated_variants_by_type[eval_category].append(_get_decorated_var(var_obj=var_obj))
 
-    def _partition_var_by_type():
+    def _partition_var_by_type(evaluated_variants_by_type: dict, var_obj: dict):
         """We collect all evaluated variants except causative, partial causative and suspected variants,
         then partition them according to event type.
         Ensure variant actually has the corresponding key set, and that it is not just None.
