@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
 - Button on case page for displaying STR variants occurring in the dynamic HPO panel
 - Display functional annotation relative to variant gene's MANE transcripts on variant summary, when available
+- Links to ACMG structural variant pathogenicity classification guidelines
 ### Changed
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 - Refactor view route to allow navigation directly to unique variant document id, improve permissions check
