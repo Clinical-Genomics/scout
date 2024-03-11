@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.79]
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
 - Button on case page for displaying STR variants occurring in the dynamic HPO panel
