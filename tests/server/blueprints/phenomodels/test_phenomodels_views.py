@@ -289,6 +289,57 @@ def test_phenomodel_post_add_hpo_checkbox_to_subpanel(app, institute_obj, hpo_ch
         assert checkbox["children"] == [nested_hpo_term]
 
 
+def test_phenomodel_post_add_disease_checkbox_to_subpanel(
+    app, institute_obj, test_omim_database_term
+):
+    """Test adding a disease checkbox to a subpanel of a phenotype model via POST request"""
+
+    # GIVEN an institute with a phenotype model
+    store.create_phenomodel(institute_obj["internal_id"], TEST_MODEL_NAME, TEST_MODEL_DESC)
+    model_obj = store.phenomodel_collection.find_one()
+    # containing a subpanel
+    model_obj["subpanels"] = {"subpanel_x": TEST_SUBPANEL}
+    store.update_phenomodel(model_obj["_id"], model_obj)
+
+    # GIVEN a database with the required disease term
+    store.disease_term_collection.insert_one(test_omim_database_term)
+
+    # GIVEN an initialized app
+    # GIVEN a valid user and institute
+    with app.test_client() as client:
+        client.get(url_for("auto_login"))
+
+        # WHEN the user creates a disease checkbox using the endpoint
+        form_data = dict(
+            disease_subpanel_id="subpanel_x",
+            diseaseHasTitle="on",
+            diseaseTermTitle="Title for term",
+            disease_term=" | ".join(
+                [test_omim_database_term["_id"], test_omim_database_term["description"]]
+            ),
+            disease_custom_name="Alternative disease name",
+            add_disease="",
+        )
+        client.post(
+            url_for(
+                PHENOMODELS_CHECKBOX_EDIT_URL,
+                institute_id=institute_obj["internal_id"],
+                model_id=model_obj["_id"],
+            ),
+            data=form_data,
+        )
+        # THEN the disease term should have been added to the subpanel checkboxes and include correct data
+        updated_model = store.phenomodel_collection.find_one()
+        checkbox = updated_model["subpanels"]["subpanel_x"]["checkboxes"][
+            test_omim_database_term["_id"]
+        ]
+        assert checkbox["name"] == test_omim_database_term["_id"]
+        assert checkbox["checkbox_type"] == test_omim_database_term["source"].lower()
+        assert checkbox["description"] == test_omim_database_term["description"]
+        assert checkbox["term_title"] == form_data["diseaseTermTitle"]
+        assert checkbox["custom_name"] == form_data["disease_custom_name"]
+
+
 def test_phenomodel_post_remove_subpanel_checkbox(app, institute_obj):
     """Test removing a single checkbox from a phenotype model subpanel"""
 
