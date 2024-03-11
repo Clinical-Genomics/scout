@@ -77,7 +77,7 @@
                 {{ single_comment(institute, case, current_user, comment, item_index) }}
                 {% endfor %}
                 <div class="accordion-item">
-                  <div id="expandable-comments-content" class="accordion-collapse " aria-labelledby="expandable-comments-heading">
+                  <div id="expandable-comments-content" class="accordion-collapse collapse" aria-labelledby="expandable-comments-heading">
                     <div class="" >
                       {% for comment in expandable_comments %}
                       {% set item_index = loop.index %}
@@ -86,10 +86,10 @@
                     </div>
                   </div>
 
-                  <button class="accordion-button collapsed justify-content-end" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
+                  <button id="expandable-comments-control" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
                           onclick="{let thisElement=event.target; let children= thisElement.querySelectorAll('span'); Array.from(children).forEach(child=> child.classList.toggle('d-none'))}">
-                   <span > Expand comments</span>
-                    <span class="d-none" >Minimise comments</span>
+                   <span>Expand comments</span>
+                    <span class="d-none">Minimise comments</span>
 
                   </button>
                 </div>
