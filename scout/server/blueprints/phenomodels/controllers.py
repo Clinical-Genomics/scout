@@ -119,7 +119,7 @@ def _update_subpanel(subpanel_obj, supb_changes):
         all_terms = {}
         # loop over the terms to keep into the checboxes dict
         for child in children_list:
-            if child.startswith("OMIM" or "ORPHA"):
+            if child.startswith("OMIM") or child.startswith("ORPHA"):
                 new_checkboxes[child] = checkboxes[child]
                 continue
 
