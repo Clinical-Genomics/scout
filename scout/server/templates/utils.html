@@ -66,18 +66,18 @@
       <div class="card">
         {% set comments = comments|list %}
         <h6 class="comments-title ms-3 mt-2"><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
-        <div class="list-group accordion">
+        <div class=" card-body">
           {% set visible_comments= comments[:3]|list %}
           {% set expandable_comments= comments [3:]|list %}
           <div class="accordion-item">
             <div id="visible-comments-content" class="accordion-collapse collapse show" aria-labelledby="expandable-comments-heading">
-              <div class="accordion-body pb-0" >
+              <div class="accordion-body p-0" >
                 {% for comment in visible_comments %}
                 {% set item_index = loop.index %}
                 {{ single_comment(institute, case, current_user, comment, item_index) }}
                 {% endfor %}
                 <div class="accordion-item">
-                  <div id="expandable-comments-content" class="accordion-collapse collapse" aria-labelledby="expandable-comments-heading">
+                  <div id="expandable-comments-content" class="accordion-collapse " aria-labelledby="expandable-comments-heading">
                     <div class="" >
                       {% for comment in expandable_comments %}
                       {% set item_index = loop.index %}
@@ -85,8 +85,12 @@
                       {% endfor %}
                     </div>
                   </div>
-                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content">
-                    Expand comments
+
+                  <button class="accordion-button collapsed justify-content-end" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
+                          onclick="{let thisElement=event.target; let children= thisElement.querySelectorAll('span'); Array.from(children).forEach(child=> child.classList.toggle('d-none'))}">
+                   <span > Expand comments</span>
+                    <span class="d-none" >Minimise comments</span>
+
                   </button>
                 </div>
               </div>
@@ -122,7 +126,7 @@
 {% endmacro %}
 
 {% macro single_comment(institute, case, current_user, comment, index) %}
-      <div class="row mx-0 alert mb-0 {% if index % 2 %}even{% else %}odd{% endif %}">
+      <div class="row mx-0 p-3 mb-0 {% if index % 2 %}even{% else %}odd{% endif %}">
           <div class="col-7 text-break">{{ comment.content }}</div>
           <div class="col-5 text-end">
             <form method="POST" action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, event_id=comment._id,_anchor='comments') }}">
