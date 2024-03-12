@@ -1077,7 +1077,7 @@ def variant_export_lines(store, case_obj, variants_query):
         variant_line = []
         position = variant["position"]
         change = variant["reference"] + ">" + variant["alternative"]
-        variant_line.append(variant["rank_score"])
+        variant_line.append(variant.get("rank_score", "N/A"))
         variant_line.append(variant["chromosome"])
         variant_line.append(position)
         variant_line.append(change)
