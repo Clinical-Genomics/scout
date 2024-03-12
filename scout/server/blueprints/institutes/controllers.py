@@ -588,7 +588,6 @@ def get_sanger_unevaluated(
     evaluated_by_others = []
 
     for case_id, varid_list in sanger_ordered_by_user_by_case.items():
-
         # Get the case to collect display name
         CASE_SANGER_UNEVALUATED_PROJECTION = {"display_name": 1}
         case_obj = store.case(case_id=case_id, projection=CASE_SANGER_UNEVALUATED_PROJECTION)
@@ -616,7 +615,6 @@ def get_sanger_unevaluated(
 
             # Check that the variant is not evaluated
             if validation in ["True positive", "False positive"]:
-
                 if (
                     var_id in sanger_validated_by_user_by_case[case_id]
                 ):  # User had validated this variant
