@@ -85,12 +85,10 @@
                       {% endfor %}
                     </div>
                   </div>
-
-                  <button id="expandable-comments-control" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
+                  <button id="expandable-comments-control" class="accordion-button collapsed" style="color:#0c63e4; background-color:#e7f1ff;" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
                           onclick="{let thisElement=event.target; let children= thisElement.querySelectorAll('span'); Array.from(children).forEach(child=> child.classList.toggle('d-none'))}">
-                   <span>Expand comments</span>
+                   <span>See more comments...</span>
                     <span class="d-none">Minimise comments</span>
-
                   </button>
                 </div>
               </div>
