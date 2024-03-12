@@ -564,6 +564,18 @@ def populate_case_filter_form(params):
     return form
 
 
+def _variant_has_sanger_ordered(variant_obj: dict) -> bool:
+    """Returns True if the sanger_ordered status of a variant is True, else False."""
+
+    if (
+        variant_obj is None
+        or variant_obj.get("sanger_ordered") is None
+        or variant_obj.get("sanger_ordered") is False
+    ):
+        return False
+    return True
+
+
 def get_sanger_unevaluated(
     store: MongoAdapter, institute_id: str, user_id: str
 ) -> Tuple[List[Dict[str, list]]]:
@@ -604,11 +616,7 @@ def get_sanger_unevaluated(
             variant_obj = store.variant(document_id=var_id, case_id=case_id)
 
             # Double check that Sanger was ordered (and not canceled) for the variant
-            if (
-                variant_obj is None
-                or variant_obj.get("sanger_ordered") is None
-                or variant_obj.get("sanger_ordered") is False
-            ):
+            if _variant_has_sanger_ordered(variant_obj) is False:
                 continue
 
             validation = variant_obj.get("validation", "not_evaluated")
