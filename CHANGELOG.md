@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Fixed
+- Exporting variants without rank score causing page to crash
+
 ## [4.79]
 ### Added
 - Added tags for Sniffles and CNVpytor, two LRS SV callers
