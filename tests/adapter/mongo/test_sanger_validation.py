@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from pprint import pprint as pp
-
-import pymongo
-import pytest
 
 from scout.server.blueprints.institutes.controllers import get_sanger_unevaluated
 
