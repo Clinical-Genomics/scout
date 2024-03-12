@@ -69,6 +69,10 @@ CASE_TAGS = {
         "label": "Diagnostic",
         "description": "Variant flagged causative has definitive diagnostic status",
     },
+    "incidental": {
+        "label": "Incidental",
+        "description": "A variant flagged causative is an incidental/secondary finding",
+    },
     "carrier": {
         "label": "Carrier",
         "description": "Assay performed to identify carrier status found variant present",
