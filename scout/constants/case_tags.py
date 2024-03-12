@@ -73,6 +73,10 @@ CASE_TAGS = {
         "label": "Carrier",
         "description": "Assay performed to identify carrier status found variant present",
     },
+    "incidental": {
+        "label": "Incidental",
+        "description": "A variant flagged causative is an incidental/secondary finding",
+    },
     "medical": {
         "label": "Medical attention",
         "description": "Case needs medical specialist attention - eg findings with unclear connection to phenotype",
