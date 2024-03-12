@@ -17,6 +17,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Do not show MANE and MANE Plus Clinical transcripts annotated from VEP (saved in variants) but collect this info from the transcripts database collection
 - Refactor view route to allow navigation directly to unique case id (in particular for gens)
 - `Institutes to share cases with` on institute's settings page now displays institutes names and IDs
+- View route with document id selects view template based on variant category
 ### Fixed
 - Refactored code in cases blueprints and variant_events adapter (set diseases for partial causative variants) to use "disease" instead of "omim" to encompass also ORPHA terms
 - Refactored code in `scout/parse/omim.py` and `scout/parse/disease_terms.py` to use "disease" instead of "phenotype" to differentiate from HPO terms
