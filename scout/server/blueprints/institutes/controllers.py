@@ -567,7 +567,7 @@ def populate_case_filter_form(params):
 def get_sanger_unevaluated(
     store: MongoAdapter, institute_id: str, user_id: str
 ) -> Tuple[List[Dict[str, list]]]:
-    """Get all variants where a user has ordered Sanger validation but still not validated by the user.
+    """Return all variant with Sanger sequencing ordered by a user with validation missing or validated by another user.
 
     Returns:
         unevaluated: a list that looks like this: [ {'case1': [varID_1, varID_2, .., varID_n]}, .. ],
