@@ -66,35 +66,39 @@
       <div class="card">
         {% set comments = comments|list %}
         <h6 class="comments-title ms-3 mt-2"><i class="far fa-comments"></i> Comments ({{ comments|length }})</h6>
-        <div class=" card-body">
-          {% set visible_comments= comments[:3]|list %}
-          {% set expandable_comments= comments [3:]|list %}
-          <div class="accordion-item">
-            <div id="visible-comments-content" class="accordion-collapse collapse show" aria-labelledby="expandable-comments-heading">
-              <div class="accordion-body p-0" >
-                {% for comment in visible_comments %}
-                {% set item_index = loop.index %}
-                {{ single_comment(institute, case, current_user, comment, item_index) }}
-                {% endfor %}
-                <div class="accordion-item">
-                  <div id="expandable-comments-content" class="accordion-collapse collapse" aria-labelledby="expandable-comments-heading">
-                    <div class="" >
-                      {% for comment in expandable_comments %}
-                      {% set item_index = loop.index %}
-                      {{ single_comment(institute, case, current_user, comment, item_index+3) }}
-                      {% endfor %}
+         {% if comments|length >0 %}
+            <div class=" card-body">
+              {% set visible_comments= comments[:3]|list %}
+              {% set expandable_comments= comments [3:]|list %}
+              <div class="accordion-item">
+                <div id="visible-comments-content" class="accordion-collapse collapse show" aria-labelledby="expandable-comments-heading">
+                  <div class="accordion-body p-0" >
+                    {% for comment in visible_comments %}
+                    {% set item_index = loop.index %}
+                    {{ single_comment(institute, case, current_user, comment, item_index) }}
+                    {% endfor %}
+                    {% if expandable_comments|length >0 %}
+                    <div class="accordion-item">
+                      <div id="expandable-comments-content" class="accordion-collapse collapse" aria-labelledby="expandable-comments-heading">
+                        <div class="" >
+                          {% for comment in expandable_comments %}
+                          {% set item_index = loop.index %}
+                          {{ single_comment(institute, case, current_user, comment, item_index+3) }}
+                          {% endfor %}
+                        </div>
+                      </div>
+                      <button id="expandable-comments-control" class="accordion-button collapsed" style="color:#0c63e4; background-color:#e7f1ff;" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
+                              onclick="{let thisElement=event.target; let children= thisElement.querySelectorAll('span'); Array.from(children).forEach(child=> child.classList.toggle('d-none'))}">
+                        <span>See more comments...</span>
+                        <span class="d-none">Minimise comments</span>
+                      </button>
                     </div>
+                    {% endif %}
                   </div>
-                  <button id="expandable-comments-control" class="accordion-button collapsed" style="color:#0c63e4; background-color:#e7f1ff;" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
-                          onclick="{let thisElement=event.target; let children= thisElement.querySelectorAll('span'); Array.from(children).forEach(child=> child.classList.toggle('d-none'))}">
-                   <span>See more comments...</span>
-                    <span class="d-none">Minimise comments</span>
-                  </button>
                 </div>
               </div>
-            </div>
-            </div>
-          </div> <!-- end of <div class="list-group" -->
+            </div> <!-- end of <div class="list-group" -->
+          {% endif %}
         <div class="card-footer">
           <form action="{{ url_for('cases.events', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id, _anchor='comments') }}" method="POST">
             <input type="hidden" name="link" value="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant_id) if variant_id else url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}">
