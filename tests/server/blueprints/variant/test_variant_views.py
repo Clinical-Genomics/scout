@@ -110,7 +110,7 @@ def test_variant_by_document_id(app, variant_obj):
         # WHEN sending a request (GET) to the variant page with only a variant ID
         resp = client.get(
             url_for(
-                "variant.variant",
+                "variant.variant_by_id",
                 variant_id=variant_obj["_id"],
             )
         )
