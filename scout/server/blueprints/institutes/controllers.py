@@ -615,8 +615,8 @@ def get_sanger_unevaluated(
 
             # Check that the variant is not evaluated
             if validation in ["True positive", "False positive"]:
-                if (
-                    var_id in sanger_validated_by_user_by_case[case_id]
+                if var_id in sanger_validated_by_user_by_case.get(
+                    case_id, []
                 ):  # User had validated this variant
                     continue
 
