@@ -418,3 +418,25 @@
   </button>
   {% endif %}
 {% endmacro %}
+
+
+{% macro custom_annotation(variant) %}
+<table class="table table-bordered table-sm">
+  <thead class="thead table-light">
+    <th>Custom annotation</th>
+    <th>Value</th>
+  </thead>
+  <tbody>
+    {% for pair in variant.custom %}
+    <tr>
+      <td>
+        {{ pair[0] }}
+      </td>
+      <td>
+        {{ pair[1] }}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
