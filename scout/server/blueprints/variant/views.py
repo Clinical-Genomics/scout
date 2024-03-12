@@ -1,6 +1,15 @@
 import logging
 
-from flask import Blueprint, current_app, flash, jsonify, redirect, request, url_for
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask_login import current_user
 from markupsafe import Markup
 
@@ -42,6 +51,30 @@ def update_tracks_settings():
 
 
 @variant_bp.route("/document_id/<variant_id>")
+def variant_by_id(variant_id):
+    """Display variant given by its document id. This includes its unique case name.
+    The view template is selected based on the variant category."""
+    data = variant_controller(
+        store=store,
+        variant_id=variant_id,
+    )
+    if data is None:
+        flash("An error occurred while retrieving variant object", "danger")
+        return redirect(url_for("public.index"))
+
+    if current_app.config.get("LOQUSDB_SETTINGS"):
+        LOG.debug("Fetching loqusdb information for %s", variant_id)
+        data["observations"] = observations(store, loqusdb, data["variant"])
+
+    if data["variant"].get("category") == "sv":
+        return render_template("variant/sv-variant.html", **data)
+
+    if data["variant"].get("category") == "cancer":
+        return render_template("variant/cancer-variant.html", **data)
+
+    return render_template("variant/variant.html", **data)
+
+
 @variant_bp.route("/<institute_id>/<case_name>/<variant_id>")
 @templated("variant/variant.html")
 def variant(variant_id, institute_id=None, case_name=None):
