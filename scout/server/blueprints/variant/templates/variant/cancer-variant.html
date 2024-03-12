@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% from "utils.html" import comments_panel, activity_panel %}
-{% from "variant/utils.html" import overlapping_panel, genes_panel, transcripts_panel, proteins_panel, pin_button, causative_button, modal_causative, custom_annotation %}
+{% from "variant/utils.html" import overlapping_panel, genes_panel, transcripts_panel, proteins_panel, pin_button, causative_button, modal_causative, custom_annotations %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, observations_panel, old_observations, mappability_list, severity_list %}
 {% from "variant/buttons.html" import database_buttons, variant_tag_button, variant_tier_button, dismiss_variant_button, mosaic_variant_button, splice_junctions_button %}
@@ -283,7 +283,7 @@
 
     <!-- Display eventual custom annotations-->
     {% if variant.custom %}
-      {{ custom_annotation(variant) }}
+      {{ custom_annotations(variant) }}
     {% endif %}
 
 {% endmacro %}

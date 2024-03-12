@@ -421,22 +421,13 @@
 
 
 {% macro custom_annotation(variant) %}
-<table class="table table-bordered table-sm">
-  <thead class="thead table-light">
-    <th>Custom annotation</th>
-    <th>Value</th>
-  </thead>
-  <tbody>
-    {% for pair in variant.custom %}
-    <tr>
-      <td>
-        {{ pair[0] }}
-      </td>
-      <td>
-        {{ pair[1] }}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<ul class="list-group">
+{% for pair in variant.custom %}
+  <li class="list-group-item">
+    <div class="row d-flex justify-content-between">
+      <div>{{pair[0]}}</div><div class="float-end">{{pair[1]}}</div>
+    </div>
+  </li>
+{% endfor %}
+</ul>
 {% endmacro %}

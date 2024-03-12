@@ -2,7 +2,7 @@
 {% from "variant/buttons.html" import database_buttons %}
 {% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
-{% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel, custom_annotation %}
+{% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel, custom_annotations %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
@@ -401,7 +401,7 @@
 
       <!-- Display eventual custom annotations-->
       {% if variant.custom %}
-        {{ custom_annotation(variant) }}
+        {{ custom_annotations(variant) }}
       {% endif %}
 
     </div> <!-- end of card body -->
