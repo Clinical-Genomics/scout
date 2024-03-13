@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Exporting variants without rank score causing page to crash
+- All links in disease table on diagnosis page now opens in a new tab
 
 ## [4.79]
 ### Added
