@@ -485,7 +485,7 @@ def add_gene_and_transcript_info_for_fusions(
             }
         )
         # If fusions have transcript information about both fusion partners
-        if parsed_variant[f"transcript_id_{suffix}"]:
+        if parsed_variant.get(f"transcript_id_{suffix}"):
             parsed_transcripts.append(
                 {
                     "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
@@ -497,13 +497,13 @@ def add_gene_and_transcript_info_for_fusions(
 
     # Add transcript info to genes if available
     for pair in [0, 1]:
-        if parsed_transcripts[pair]:
+        if len(parsed_transcripts) > pair:
             genes[pair]["transcripts"] = [parsed_transcripts[pair]]
 
     # Add hgnc_id to variant if available
     hgnc_ids = []
     for suffix in ["a", "b"]:
-        if parsed_variant["hgnc_id_{suffix}"]:
+        if parsed_variant.get("hgnc_id_{suffix}"):
             hgnc_ids = [gene["hgnc_id"] for gene in genes]
             parsed_variant["genes"] = genes
 
