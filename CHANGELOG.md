@@ -5,9 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Changed
+- All links in disease table on diagnosis page now open in a new tab
+
+## [4.79.1]
 ### Fixed
 - Exporting variants without rank score causing page to crash
-- All links in disease table on diagnosis page now opens in a new tab
+- Display custom annotations also on cancer variant page
 
 ## [4.79]
 ### Added
