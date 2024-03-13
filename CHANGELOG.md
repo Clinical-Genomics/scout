@@ -5,7 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
-### Added
+### Fixed
+- Exporting variants without rank score causing page to crash
 - Display custom annotations also on cancer variant page
 
 ## [4.79]
