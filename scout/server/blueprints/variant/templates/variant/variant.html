@@ -2,7 +2,7 @@
 {% from "variant/buttons.html" import database_buttons %}
 {% from "utils.html" import activity_panel, comments_panel, pedigree_panel %}
 {% from "variants/utils.html" import compounds_table %}
-{% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel %}
+{% from "variant/utils.html" import causative_button, genes_panel, modal_causative, overlapping_panel, pin_button, proteins_panel, transcripts_panel, custom_annotations %}
 {% from "variant/tx_overview.html" import disease_associated, transcripts_overview %}
 {% from "variant/gene_disease_relations.html" import autozygosity_panel, genemodels_panel, inheritance_panel, orpha_omim_phenotypes %}
 {% from "variant/variant_details.html" import frequencies, gtcall_panel, old_observations, observations_panel, severity_list, conservations, mappability %}
@@ -398,25 +398,14 @@
         {{ database_buttons(variant) }}
       {% endif %}
       {{ alignments(institute, case, variant, current_user, config, igv_tracks, has_rna_tracks) }}
+
+     <!-- Display eventual custom annotations-->
       {% if variant.custom %}
-      <table class="table table-bordered table-sm">
-	<thead class="thead table-light">
-	  <th>Custom annotation</th>
-	  <th>Value</th>
-	</thead>
-	<tbody>
-	  {% for pair in variant.custom %}
-	  <tr>
-	    <td>
-	      {{ pair[0] }}
-	    </td>
-	    <td>
-	      {{ pair[1] }}
-	    </td>
-	  </tr>
-	  {% endfor %}
-	</tbody>
-      </table>
+      <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
+        <li class="list-group-item">
+          {{ custom_annotations(variant) }}
+        </li>
+      </ul>
       {% endif %}
 
     </div> <!-- end of card body -->
