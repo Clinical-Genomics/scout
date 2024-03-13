@@ -283,7 +283,11 @@
 
     <!-- Display eventual custom annotations-->
     {% if variant.custom %}
-      {{ custom_annotations(variant) }}
+      <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
+        <li class="list-group-item">
+          {{ custom_annotations(variant) }}
+        </li>
+      </ul>
     {% endif %}
 
 {% endmacro %}

@@ -399,9 +399,13 @@
       {% endif %}
       {{ alignments(institute, case, variant, current_user, config, igv_tracks, has_rna_tracks) }}
 
-      <!-- Display eventual custom annotations-->
+     <!-- Display eventual custom annotations-->
       {% if variant.custom %}
-        {{ custom_annotations(variant) }}
+      <ul class="list-group list-group-flush" style="margin-bottom: 1rem">
+        <li class="list-group-item">
+          {{ custom_annotations(variant) }}
+        </li>
+      </ul>
       {% endif %}
 
     </div> <!-- end of card body -->
