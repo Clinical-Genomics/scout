@@ -503,11 +503,11 @@ def add_gene_and_transcript_info_for_fusions(
     # Add hgnc_id to variant if available
     hgnc_ids = []
     for suffix in ["a", "b"]:
-        if parsed_variant.get("hgnc_id_{suffix}"):
+        if parsed_variant.get(f"hgnc_id_{suffix}") or parsed_variant.get(f"gene_{suffix}"):
             hgnc_ids = [gene["hgnc_id"] for gene in genes]
             parsed_variant["genes"] = genes
 
-    parsed_variant["hgnc_ids"] = hgnc_ids
+    parsed_variant["hgnc_ids"].append(hgnc_ids)
 
     return parsed_transcripts
 
