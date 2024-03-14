@@ -1,14 +1,9 @@
-/* Select 2 Dark Theme */
+/* Dark Theme compatibility for select2 multiselects*/
 @media (prefers-color-scheme: dark) {
 
+    .select2-dropdown,
     .select2-selection {
-        color: #b1b1b1;
-        background-color: #222 !important;
-        border: 1px solid #515151 !important;
-    }
-
-    .select2-dropdown {
-        color: #b1b1b1;
+        color: #b1b1b1 !important;
         background-color: #222 !important;
         border: 1px solid #515151 !important;
     }
@@ -16,17 +11,21 @@
     .select2-results__option {
         display: flex;
         gap: 0.5rem;
+        color: #b1b1b1 !important;
+        background-color: #222 !important;
     }
 
-    .select2-results__option:hover {
-        color: #dfe0e1;
-        background-color: #343a40;
+    .select2-results__option:hover,
+    .select2-results__option[aria-selected=true]:hover {
+        color: #dfe0e1 !important;
+        background-color: #343a40 !important;
     }
 
     .select2-selection__choice:has(> span:hover) {
         opacity: 0.5;
     }
 
+    /* Filters adjusts color of svg used as remove-button for selected options */
     .select2-selection__choice__remove:first-child {
         background-color: transparent !important;
         filter: brightness(70) saturate(0%);
@@ -45,7 +44,7 @@
         border-color: #626262 !important;
     }
 
-    /* This is a check mark displayed for selected options */
+    /* This is a check mark displayed for the selected options */
     .select2-results__option[aria-selected=true]::after {
         content: '';
         display: block;
