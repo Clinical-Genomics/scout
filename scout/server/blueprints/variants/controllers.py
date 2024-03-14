@@ -356,7 +356,8 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
     If a fusion variant has two hgnc_genes, this is not needed.
     Also, if we do not have any kind of symbols for the fusion genes, there is not much we can do.
     If the fusion gene apparent symbol is not already among the variant hgnc symbols, attempt to find the gene using
-    first its exact symbol, then aliases.
+    first its exact symbol, then the special case of HGNC locus group symbols, ending in `@` and not kept as aliases,
+    then lastly aliases.
 
     Update variant_obj with the new info.
     """
@@ -383,6 +384,13 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
             result_genes.append(symbol_match_gene)
             continue
 
+        if fusion_gene_symbol.endswith("@"):
+            fusion_gene_symbol_general = fusion_gene_symbol.rstrip("@")
+            symbol_match_gene = store.hgnc_gene(fusion_gene_symbol_general, build=genome_build)
+            if symbol_match_gene:
+                result_genes.append(symbol_match_gene)
+                continue
+
         alias_genes = [gene for gene in store.hgnc_genes(fusion_gene_symbol, build=genome_build)]
         if len(alias_genes) == 1:
             result_genes.extend(alias_genes)
@@ -392,6 +400,7 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
                 "Multiple genes found for alias matching with fusion symbol %s. No genes added.",
                 fusion_gene_symbol,
             )
+
         remaining_fusion_gene_symbols.append(fusion_gene_symbol)
 
     if result_genes:
