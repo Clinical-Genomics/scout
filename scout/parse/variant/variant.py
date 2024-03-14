@@ -474,40 +474,44 @@ def add_gene_and_transcript_info_for_fusions(
         Return:
             parsed_transcripts(list)
     """
+
     parsed_transcripts = []
     genes = []
-    for suffix in ["a", "b"]:
-        genes.append(
-            {
-                "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
-                "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
-                "transcripts": [],
-            }
-        )
-        # If fusions have transcript information about both fusion partners
-        if parsed_variant.get(f"transcript_id_{suffix}"):
-            parsed_transcripts.append(
-                {
-                    "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
-                    "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
-                    "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
-                    "exon": parsed_variant[f"exon_number_{suffix}"],
-                }
-            )
-
-    # Add transcript info to genes if available
-    for pair in [0, 1]:
-        if len(parsed_transcripts) > pair:
-            genes[pair]["transcripts"] = [parsed_transcripts[pair]]
-
-    # Add hgnc_id to variant if available
     hgnc_ids = []
-    for suffix in ["a", "b"]:
-        if parsed_variant.get(f"hgnc_id_{suffix}") or parsed_variant.get(f"gene_{suffix}"):
-            hgnc_ids = [gene["hgnc_id"] for gene in genes]
-            parsed_variant["genes"] = genes
+    hgnc_symbols = []
 
-    parsed_variant["hgnc_ids"].append(hgnc_ids)
+    for suffix in ["a", "b"]:
+        # If fusions have transcript information about a fusion partner
+        parsed_transcript = {}
+        if parsed_variant.get(f"transcript_id_{suffix}"):
+            # Add transcript info to genes if available
+            parsed_transcript = {
+                "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
+                "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+                "exon": parsed_variant[f"exon_number_{suffix}"],
+            }
+            if parsed_transcript:
+                parsed_transcripts.append(parsed_transcript)
+                genes.append(
+                    {
+                        "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+                        "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                        "transcripts": [parsed_transcript],
+                    }
+                )
+
+        if parsed_variant.get(f"hgnc_id_{suffix}"):
+            # Add hgnc_id to variant if available
+            hgnc_ids.append(parsed_variant.get(f"hgnc_id_{suffix}"))
+
+        if parsed_variant.get(f"gene_{suffix}"):
+            # Add hgnc_symbol to variant if available
+            hgnc_symbols.append(parsed_variant.get(f"gene_{suffix}"))
+
+    parsed_variant["genes"] = genes
+    parsed_variant["hgnc_ids"] = hgnc_ids
+    parsed_variant["hgnc_symbols"] = hgnc_symbols
 
     return parsed_transcripts
 

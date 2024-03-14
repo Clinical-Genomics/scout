@@ -331,18 +331,70 @@ def fusion_variants(
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
-        variants.append(
-            parse_variant(
-                store,
-                institute_obj,
-                case_obj,
-                variant_obj,
-                genome_build=genome_build,
-                case_dismissed_vars=case_dismissed_vars,
-            )
+        parsed_variant = parse_variant(
+            store,
+            institute_obj,
+            case_obj,
+            variant_obj,
+            genome_build=genome_build,
+            case_dismissed_vars=case_dismissed_vars,
         )
 
+        set_missing_fusion_genes(store, genome_build, parsed_variant)
+
+        variants.append(parsed_variant)
+
     return {"variants": variants, "more_variants": more_variants}
+
+
+def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj: dict):
+    """Check fusion variant for missing genes, and attempt to look up HGNC genes for fusion symbols.
+
+    During initial parsing, if the variant genes are missing hgnc_id we will not pick them up, only
+    log their apparent symbols in the fusion_genes array.
+
+    If a fusion variant has two hgnc_genes, this is not needed.
+    Also, if we do not have any kind of symbols for the fusion genes, there is not much we can do.
+    If the fusion gene apparent symbol is not already among the variant hgnc symbols, attempt to find the gene using
+    first its exact symbol, then aliases.
+
+    Update variant_obj with the new info.
+    """
+
+    variant_genes = variant_obj.get("genes") or []
+    if len(variant_genes) >= 2:
+        return
+
+    variant_hgnc_ids = variant_obj.get("hgnc_ids") or []
+    variant_hgnc_symbols = variant_obj.get("hgnc_symbols") or []
+
+    fusion_genes = variant_obj.get("fusion_genes") or []
+    if not fusion_genes:
+        return
+
+    result_genes = []
+    for fusion_gene_symbol in fusion_genes:
+        if fusion_gene_symbol in variant_hgnc_symbols:
+            continue
+
+        symbol_match_genes = store.hgnc_gene(fusion_gene_symbol, build=genome_build)
+        if len(symbol_match_genes_genes) == 1:
+            result_genes.append(symbol_match_genes)
+            continue
+
+        alias_genes = store.hgnc_genes(fusion_gene_symbol, build=genome_build)
+        if len(alias_genes) == 1:
+            result_genes.append(alias_genes)
+            continue
+
+    if result_genes:
+        variant_obj["genes"] = variant_genes.append(result_genes)
+        variant_obj["hgnc_symbols"] = variant_hgnc_symbols.append(
+            [gene["hgnc_symbol"] for gene in result_genes]
+        )
+        variant_obj["hgnc_ids"] = variant_hgnc_ids.append(
+            [gene["hgnc_id"] for gene in result_genes]
+        )
 
 
 def get_manual_assessments(variant_obj):
