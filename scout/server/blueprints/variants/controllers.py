@@ -387,7 +387,11 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
         if len(alias_genes) == 1:
             result_genes.extend(alias_genes)
             continue
-
+        if len(alias_genes) > 1:
+            LOG.warning(
+                "Multiple genes found for alias matching with fusion symbol %s. No genes added.",
+                fusion_gene_symbol,
+            )
         remaining_fusion_gene_symbols.append(fusion_gene_symbol)
 
     if result_genes:

@@ -34,7 +34,7 @@
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
         </a> <br>
     {% endfor %}
-    {% if variant.genes|length < 2 %}
+    {% if ("genes" not in variant) or (variant.genes|length < 2) %}
       {% for symbol in variant.fusion_genes %}
           {{ symbol }} <br>
       {% endfor %}
