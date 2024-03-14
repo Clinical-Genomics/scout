@@ -375,31 +375,30 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
     result_genes = []
     remaining_fusion_gene_symbols = []
     for fusion_gene_symbol in fusion_genes:
-        LOG.info("Fusion gene symbol %s", fusion_gene_symbol)
         if fusion_gene_symbol in variant_hgnc_symbols:
             continue
 
         symbol_match_gene = store.hgnc_gene(fusion_gene_symbol, build=genome_build)
-
         if symbol_match_gene:
             result_genes.append(symbol_match_gene)
             continue
 
         alias_genes = [store.hgnc_genes(fusion_gene_symbol, build=genome_build)]
         if len(alias_genes) == 1:
-            result_genes.append(alias_genes)
+            result_genes.extend(alias_genes)
             continue
 
         remaining_fusion_gene_symbols.append(fusion_gene_symbol)
 
     if result_genes:
-        variant_obj["genes"] = variant_genes.append(result_genes)
-        variant_obj["hgnc_symbols"] = variant_hgnc_symbols.append(
-            [gene["hgnc_symbol"] for gene in result_genes]
-        )
-        variant_obj["hgnc_ids"] = variant_hgnc_ids.append(
-            [gene["hgnc_id"] for gene in result_genes]
-        )
+        variant_genes.extend(result_genes)
+        variant_obj["genes"] = variant_genes
+
+        variant_hgnc_symbols.extend([gene["hgnc_symbol"] for gene in result_genes])
+        variant_obj["hgnc_symbols"] = variant_hgnc_symbols
+
+        variant_hgnc_ids.extend([gene["hgnc_id"] for gene in result_genes])
+        variant_obj["hgnc_ids"] = variant_hgnc_ids
 
     if remaining_fusion_gene_symbols:
         variant_obj["fusion_genes"] = remaining_fusion_gene_symbols

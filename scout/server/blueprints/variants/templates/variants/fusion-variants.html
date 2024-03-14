@@ -127,7 +127,7 @@ onsubmit="return validateForm()">
       {% if variant.genes %}
         {% for gene in variant.genes %}
           {% for transcript in gene.transcripts %}
-            <div>{{ transcript.exon|int }} </div>
+            <div>{% if exon in transcript %}{{ transcript.exon|int }}{% endif %} </div>
           {% endfor %}
         {% endfor %}
       {% endif %}
