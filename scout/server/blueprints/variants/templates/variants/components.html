@@ -26,7 +26,6 @@
 {% macro fusion_variant_gene_symbols_cell(variant) %}
 <div class="align-items-center">
   {% if variant.genes %}
-    {% set symbols = %}
     {% for gene in variant.genes %}
        <a data-bs-toggle="tooltip" data-bs-html="true" title="
          <div>
