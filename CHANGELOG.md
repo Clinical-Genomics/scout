@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+
+### Fixed
+- Fusion genes with partners lacking gene hgnc id will still be fully loaded
+- Attempt to find fusion genes lacking hgnc id using gene symbol and alias lookup
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
 
