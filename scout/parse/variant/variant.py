@@ -502,12 +502,21 @@ def add_gene_and_transcript_info_for_fusions(
                 )
 
         if parsed_variant.get(f"hgnc_id_{suffix}"):
+            if parsed_variant.get(f"gene_{suffix}"):
+                # Add hgnc_symbol to variant if available
+                hgnc_symbols.append(parsed_variant.get(f"gene_{suffix}"))
+
             # Add hgnc_id to variant if available
             hgnc_ids.append(parsed_variant.get(f"hgnc_id_{suffix}"))
-
-        if parsed_variant.get(f"gene_{suffix}"):
-            # Add hgnc_symbol to variant if available
-            hgnc_symbols.append(parsed_variant.get(f"gene_{suffix}"))
+            if not genes:
+                # Add as a gene if we have not already
+                genes.append(
+                    {
+                        "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                        "hgnc_symbol": parsed_variant.get(f"gene_{suffix}"),
+                        "transcripts": [],
+                    }
+                )
 
     parsed_variant["genes"] = genes
     parsed_variant["hgnc_ids"] = hgnc_ids

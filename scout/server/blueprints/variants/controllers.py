@@ -373,6 +373,7 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
         return
 
     result_genes = []
+    remaining_fusion_gene_symbols = []
     for fusion_gene_symbol in fusion_genes:
         if fusion_gene_symbol in variant_hgnc_symbols:
             continue
@@ -388,6 +389,8 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
             result_genes.append(alias_genes)
             continue
 
+        remaining_fusion_gene_symbols.append(fusion_gene_symbol)
+
     if result_genes:
         variant_obj["genes"] = variant_genes.append(result_genes)
         variant_obj["hgnc_symbols"] = variant_hgnc_symbols.append(
@@ -396,6 +399,9 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
         variant_obj["hgnc_ids"] = variant_hgnc_ids.append(
             [gene["hgnc_id"] for gene in result_genes]
         )
+
+    if remaining_fusion_gene_symbols:
+        variant_obj["fusion_genes"] = remaining_fusion_gene_symbols
 
 
 def get_manual_assessments(variant_obj):

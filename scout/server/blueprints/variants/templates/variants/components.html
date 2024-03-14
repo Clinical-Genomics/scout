@@ -36,10 +36,8 @@
     {% endfor %}
     {% if variant.genes|length < 2 %}
       {% for symbol in variant.fusion_genes %}
-          {% if symbol %}
-            {{ symbol }} <br>
-          {% endif %}
-        {% endfor %}
+          {{ symbol }} <br>
+      {% endfor %}
     {% endif %}
   {% endif %}
 </div>
