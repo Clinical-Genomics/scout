@@ -378,7 +378,7 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
             continue
 
         symbol_match_genes = store.hgnc_gene(fusion_gene_symbol, build=genome_build)
-        if len(symbol_match_genes_genes) == 1:
+        if len(symbol_match_genes) == 1:
             result_genes.append(symbol_match_genes)
             continue
 
