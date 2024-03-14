@@ -375,6 +375,7 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
     result_genes = []
     remaining_fusion_gene_symbols = []
     for fusion_gene_symbol in fusion_genes:
+        LOG.info("Fusion gene symbol %s", fusion_gene_symbol)
         if fusion_gene_symbol in variant_hgnc_symbols:
             continue
 
