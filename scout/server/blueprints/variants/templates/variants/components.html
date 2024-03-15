@@ -36,9 +36,9 @@
     {% endfor %}
   {% endif %}
   {% for symbol in variant.fusion_genes %}
-    {%  if symbol not in variant.hgnc_symbols %}
+    {% if symbol not in variant.hgnc_symbols %}
       {{ symbol }} <br>
-    {%  endif %}
+    {% endif %}
   {% endfor %}
 </div>
 {% endmacro %}

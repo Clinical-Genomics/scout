@@ -14,6 +14,16 @@ EXPORT_HEADER = [
 ]
 
 CANCER_EXPORT_HEADER = EXPORT_HEADER + ["VAF TUMOR", "VAF NORMAL", "COSMIC ID"]
+FUSION_EXPORT_HEADER = EXPORT_HEADER + [
+    "Fusion genes",
+    "Orientation",
+    "Frame status",
+    "Observed",
+    "Exon",
+    "Junction reads",
+    "Split reads",
+    "FFPM",
+]
 
 MT_EXPORT_HEADER = [
     "Position",

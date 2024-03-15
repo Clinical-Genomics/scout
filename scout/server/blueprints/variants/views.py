@@ -118,7 +118,7 @@ def variants(institute_id, case_name):
         try:
             stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
         except UnicodeDecodeError as error:
-            flash("Only text files are supported!", "warning")
+            flash("Only text files are supported!", "warning")ex
             return redirect(request.referrer)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
@@ -670,7 +670,7 @@ def fusion_variants(institute_id, case_name):
 
     # if variants should be exported
     if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query)
+        return controllers.download_variants(store, case_obj, variants_query, category=category)
 
     data = controllers.fusion_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
