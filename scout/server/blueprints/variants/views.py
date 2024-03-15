@@ -118,7 +118,7 @@ def variants(institute_id, case_name):
         try:
             stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
         except UnicodeDecodeError as error:
-            flash("Only text files are supported!", "warning")ex
+            flash("Only text files are supported!", "warning")
             return redirect(request.referrer)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
