@@ -1183,7 +1183,7 @@ def variant_export_lines(
             variant_line.append("N/A")
 
         if category == "fusion":
-            for field in ["fusion_genes", "orientation", "frame_status", "found_db", "tools_hit"]:
+            for field in ["fusion_genes", "orientation", "frame_status", "found_db"]:
                 value = variant.get(field, "N/A")
                 if "," in value:
                     value = value.split(",")
@@ -1193,11 +1193,13 @@ def variant_export_lines(
                     value = "N/A"
                 variant_line.append(value)
 
-            exon = "N/A"
+            exon = ""
             for gene in gene_list:
                 for transcript in gene.get("transcripts", []):
                     if "exon" in transcript:
-                        exon = int(transcript["exon"])
+                        if exon:
+                            exon = exon + " | "
+                        exon = exon + transcript["exon"]
             variant_line.append(exon)
 
             variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
