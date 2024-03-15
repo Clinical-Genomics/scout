@@ -1,4 +1,5 @@
 """Views for the variants"""
+
 import io
 import logging
 
@@ -122,7 +123,6 @@ def variants(institute_id, case_name):
             return redirect(request.referrer)
 
         hgnc_symbols_set = set(form.hgnc_symbols.data)
-        LOG.debug("Symbols prior to upload: {0}".format(hgnc_symbols_set))
         new_hgnc_symbols = controllers.upload_panel(store, institute_id, case_name, stream)
         hgnc_symbols_set.update(new_hgnc_symbols)
         form.hgnc_symbols.data = hgnc_symbols_set
@@ -131,9 +131,12 @@ def variants(institute_id, case_name):
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
-    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    cytobands = store.cytoband_by_chrom(genome_build)
 
-    variants_query = store.variants(case_obj["_id"], query=form.data, category=category)
+    variants_query = store.variants(
+        case_obj["_id"], query=form.data, category=category, build=genome_build
+    )
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
     if request.form.get("export"):
@@ -217,12 +220,15 @@ def str_variants(institute_id, case_name):
 
     controllers.activate_case(store, institute_obj, case_obj, current_user)
 
-    cytobands = store.cytoband_by_chrom(case_obj.get("genome_build"))
+    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
+    cytobands = store.cytoband_by_chrom(genome_build)
 
     query = form.data
     query["variant_type"] = variant_type
 
-    variants_query = store.variants(case_obj["_id"], category=category, query=query).sort(
+    variants_query = store.variants(
+        case_obj["_id"], category=category, query=query, build=genome_build
+    ).sort(
         [
             ("str_repid", pymongo.ASCENDING),
             ("chromosome", pymongo.ASCENDING),
@@ -297,12 +303,14 @@ def sv_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
-    variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
+    variants_query = store.variants(
+        case_obj["_id"], category=category, query=form.data, build=genome_build
+    )
 
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
@@ -389,12 +397,14 @@ def mei_variants(institute_id, case_name):
     # populate available panel choices
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
-    variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
+    variants_query = store.variants(
+        case_obj["_id"], category=category, query=form.data, build=genome_build
+    )
 
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
@@ -496,7 +506,8 @@ def cancer_variants(institute_id, case_name):
     controllers.populate_chrom_choices(form, case_obj)
 
     form.gene_panels.choices = controllers.gene_panel_choices(store, institute_obj, case_obj)
-    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+
+    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
@@ -576,12 +587,14 @@ def cancer_sv_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    genome_build = "38" if "38" in str(case_obj.get("genome_build")) else "37"
+    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
-    variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
+    variants_query = store.variants(
+        case_obj["_id"], category=category, query=form.data, build=genome_build
+    )
 
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
@@ -659,12 +672,14 @@ def fusion_variants(institute_id, case_name):
     # Populate chromosome select choices
     controllers.populate_chrom_choices(form, case_obj)
 
-    genome_build = "38"
+    genome_build = "38" if "38" in str(case_obj.get("genome_build", "37")) else "37"
     cytobands = store.cytoband_by_chrom(genome_build)
 
     controllers.update_form_hgnc_symbols(store, case_obj, form)
 
-    variants_query = store.variants(case_obj["_id"], category=category, query=form.data)
+    variants_query = store.variants(
+        case_obj["_id"], category=category, query=form.data, build=genome_build
+    )
 
     result_size = store.count_variants(case_obj["_id"], form.data, None, category)
 
