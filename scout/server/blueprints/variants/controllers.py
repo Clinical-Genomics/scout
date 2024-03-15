@@ -386,10 +386,13 @@ def set_missing_fusion_genes(store: MongoAdapter, genome_build: str, variant_obj
 
         if fusion_gene_symbol.endswith("@"):
             fusion_gene_symbol_general = fusion_gene_symbol.rstrip("@")
-            symbol_match_gene = store.hgnc_gene(fusion_gene_symbol_general, build=genome_build)
-            if symbol_match_gene:
-                result_genes.append(symbol_match_gene)
-                continue
+            fusion_symbol_match_gene = store.hgnc_gene(
+                fusion_gene_symbol_general, build=genome_build
+            )
+
+        if fusion_symbol_match_gene:
+            result_genes.append(fusion_symbol_match_gene)
+            continue
 
         alias_genes = [gene for gene in store.hgnc_genes(fusion_gene_symbol, build=genome_build)]
         if len(alias_genes) == 1:
