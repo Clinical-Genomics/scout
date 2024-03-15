@@ -1189,7 +1189,7 @@ def variant_export_lines(
                     value = value.split(",")
                 if isinstance(value, list):
                     value = " | ".join(value)
-                if value is None or value is []:
+                if value is None or value == []:
                     value = "N/A"
                 variant_line.append(value)
 
