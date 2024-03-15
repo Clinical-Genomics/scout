@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
-- Dark mode settings applied to multidelects in institute settings
+- Dark mode settings applied to multiselects on institute settings
 
 ## [4.79.1]
 ### Fixed
