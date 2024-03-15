@@ -1335,12 +1335,13 @@ def variants_export_header(case_obj: dict, category: str = "snv") -> list:
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
 
+    header = []
     if category == "fusion":
-        header = FUSION_EXPORT_HEADER
+        header = header + FUSION_EXPORT_HEADER
     elif case_obj.get("track") == "cancer":
-        header = CANCER_EXPORT_HEADER
+        header = header + CANCER_EXPORT_HEADER
     else:
-        header = EXPORT_HEADER
+        header = header + EXPORT_HEADER
         # Add fields specific for case samples
         for individual in case_obj["individuals"]:
             display_name = str(individual["display_name"])
