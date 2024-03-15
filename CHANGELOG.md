@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Attempt to find fusion genes lacking hgnc id using gene symbol and alias lookup
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
+- Dark mode settings applied to multiselects on institute settings
 
 ## [4.79.1]
 ### Fixed
