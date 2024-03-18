@@ -64,7 +64,7 @@
                             {% endif %}
                         },
                       {% endfor %}
-                      {% for custTrack in cloud_public_tracks %}
+                      {% for custTrack in config_custom_tracks %}
                         {
                           name: "{{ custTrack.name }}",
                           type: "{{ custTrack.type }}",

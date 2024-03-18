@@ -7,7 +7,7 @@ from flask import flash, session
 from flask_login import current_user
 
 from scout.constants import CASE_SPECIFIC_TRACKS, HUMAN_REFERENCE, IGV_TRACKS
-from scout.server.extensions import cloud_tracks, store
+from scout.server.extensions import config_igv_tracks, store
 from scout.server.utils import case_append_alignments, find_index
 from scout.utils.ensembl_rest_clients import EnsemblRestApiClient
 
@@ -107,7 +107,7 @@ def make_igv_tracks(case_obj, variant_id, chrom=None, start=None, stop=None):
         set_case_specific_tracks(display_obj, case_obj)
 
     # Set up custom cloud public tracks, if available
-    set_cloud_public_tracks(display_obj, build)
+    set_config_custom_tracks(display_obj, build)
 
     display_obj["display_center_guide"] = True
 
@@ -295,23 +295,22 @@ def set_case_specific_tracks(display_obj, case_obj):
         display_obj[track] = track_info
 
 
-def set_cloud_public_tracks(display_obj, build):
-    """Set up custom public tracks stored in a cloud bucket, according to the user preferences
-
-    Args:
-        display_obj(dict) dictionary containing all tracks info
-        build(string) "37" or "38"
-    """
+def set_config_custom_tracks(display_obj: dict, build: str):
+    """Set up custom public or private tracks stored in a cloud bucket or locally. These tracks were those specified in the Scout config file.
+    Respect user's preferences."""
     user_obj = store.user(email=current_user.email)
     custom_tracks_names = user_obj.get("igv_tracks")
 
-    cloud_public_tracks = []
-    if hasattr(cloud_tracks, "public_tracks"):
-        build_tracks = cloud_tracks.public_tracks.get(build, [])
+    config_custom_tracks = []
+
+    LOG.error(str(config_igv_tracks.__dict__))
+
+    if hasattr(config_igv_tracks, "tracks"):
+        build_tracks = config_igv_tracks.tracks.get(build, [])
         for track in build_tracks:
             # Do not display track if user doesn't want to see it
             if custom_tracks_names and track["name"] not in custom_tracks_names:
                 continue
-            cloud_public_tracks.append(track)
-    if cloud_public_tracks:
-        display_obj["cloud_public_tracks"] = cloud_public_tracks
+            config_custom_tracks.append(track)
+    if config_custom_tracks:
+        display_obj["config_custom_tracks"] = config_custom_tracks

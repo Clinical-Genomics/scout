@@ -101,11 +101,11 @@ CUSTOM_IGV_TRACKS = [
         "access": "private",
         "tracks": [
             {
-                "name": "Cosmic Cancer Gene Census v99 (Sample)",
+                "name": "Cosmic Cancer sample track",
                 "type": "annotation",
-                "format": "tsv",
-                "build": "37",
-                "path": "scout/resources/custom_igv_tracks/Cosmic_CancerGeneCensus_v99_GRCh37.tsv",
+                "format": "bigbed",
+                "build": "38",
+                "url": "scout/resources/custom_igv_tracks/Cosmic_sample_track_GRCh38.bb",
             },
         ],
     },

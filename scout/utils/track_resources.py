@@ -1,7 +1,7 @@
 # coding=UTF-8
 import logging
 import re
-from os.path import abspath, exists
+from os.path import abspath, exists, isabs
 
 LOG = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class AlignTrackHandler:
     """Class collecting external IGV tracks stored in the cloud"""
 
     def init_app(self, app):
-        self.public_tracks = self.set_custom_tracks(
+        self.tracks = self.set_custom_tracks(
             app.config.get("CUSTOM_IGV_TRACKS") or app.config.get("CLOUD_IGV_TRACKS")
         )
 
@@ -33,10 +33,12 @@ class AlignTrackHandler:
 
     def set_local_track_path(self, path: str) -> str:
         """Returns the complete path to a local igv track file"""
-        if exists(path):
+        if exists(path) and isabs(path):
+            return abspath(path)
+        elif exists(path):
             return abspath(path)
         else:
-            LOG.error(f"Path to IGV track not found:{path}")
+            raise FileNotFoundError(f"Could not verify path to IGV track:{path}")
 
     def set_custom_tracks(self, track_dictionaries: List[dict]) -> dict:
         """Return a list of IGV tracks collected from the config settings
