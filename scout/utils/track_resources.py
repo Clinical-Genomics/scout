@@ -47,7 +47,6 @@ class AlignTrackHandler:
         custom_tracks = {}
         # Loop over the bucket list and collect all public tracks
         for track_category in track_dictionaries:
-
             for track in track_category.get("tracks", []):
                 build = track.get("build")
                 if build not in ["37", "38"]:
