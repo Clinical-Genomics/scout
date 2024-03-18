@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Support for .d4 files coverage using chanjo2 (Case page sidebar link)
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
 - Dark mode settings applied to multiselects on institute settings
@@ -24,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Links to ACMG structural variant pathogenicity classification guidelines
 - Phenomodels checkboxes can now include orpha terms
 - Add incidental finding to case tags
-- Support for .d4 files coverage using chanjo2
 ### Changed
 - In the diagnoses page genes associated with a disease are displayed using hgnc symbol instead of hgnc id
 - Refactor view route to allow navigation directly to unique variant document id, improve permissions check
