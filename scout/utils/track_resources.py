@@ -1,5 +1,7 @@
 # coding=UTF-8
 import logging
+import re
+from os.path import abspath, exists
 
 LOG = logging.getLogger(__name__)
 
@@ -17,7 +19,7 @@ class AlignTrackHandler:
             app.config.get("CUSTOM_IGV_TRACKS") or app.config.get("CLOUD_IGV_TRACKS")
         )
 
-    def track_template(self, track_info):
+    def track_template(self, track_info: dict) -> dict:
         """Provides the template for a VCF track object"""
         track = {}
 
@@ -29,6 +31,13 @@ class AlignTrackHandler:
         if all(track.get(key) for key in REQUIRED_FIELDS):
             return track
 
+    def set_local_track_path(self, path: str) -> str:
+        """Returns the complete path to a local igv track file"""
+        if exists(path):
+            return abspath(path)
+        else:
+            LOG.error(f"Path to IGV track not found:{path}")
+
     def set_custom_tracks(self, track_dictionaries: List[dict]) -> dict:
         """Return a list of IGV tracks collected from the config settings
 
@@ -38,6 +47,7 @@ class AlignTrackHandler:
         custom_tracks = {}
         # Loop over the bucket list and collect all public tracks
         for track_category in track_dictionaries:
+
             for track in track_category.get("tracks", []):
                 build = track.get("build")
                 if build not in ["37", "38"]:
@@ -51,6 +61,10 @@ class AlignTrackHandler:
                         f"One or more IGV cloud public tracks could not be used, Please provide all required keys:{REQUIRED_FIELDS}"
                     )
                     continue
+
+                if bool(re.match("https?://", track_obj["url"])) is False:  # Is a local file
+                    track_obj["url"] = self.set_local_track_path(track_obj["url"])
+
                 if build in custom_tracks:
                     custom_tracks[build].append(track_obj)
                 else:
