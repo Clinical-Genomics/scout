@@ -30,6 +30,10 @@ class AlignTrackHandler:
         # Save track only of it contains the minimal required keys
         if all(track.get(key) for key in REQUIRED_FIELDS):
             return track
+        else:
+            raise FileNotFoundError(
+                f"One or more custom tracks specified in the config file could not be used, Please provide all required keys:{REQUIRED_FIELDS}"
+            )
 
     def set_local_track_path(self, path: str) -> str:
         """Returns the complete path to a local igv track file"""
@@ -46,7 +50,7 @@ class AlignTrackHandler:
         Args:
             track_dictionaries: a list of cloud bucket dictionaries containing IGV tracks, can be public or private
         """
-        custom_tracks = {}
+        custom_tracks = {"37": [], "38": []}
         # Loop over the bucket list and collect all public tracks
         for track_category in track_dictionaries:
             for track in track_category.get("tracks", []):
@@ -57,19 +61,9 @@ class AlignTrackHandler:
                     )
                     continue
                 track_obj = self.track_template(track)
-                if track_obj is None:
-                    LOG.warning(
-                        f"One or more IGV cloud public tracks could not be used, Please provide all required keys:{REQUIRED_FIELDS}"
-                    )
-                    continue
 
                 if bool(re.match("https?://", track_obj["url"])) is False:  # Is a local file
                     track_obj["url"] = self.set_local_track_path(track_obj["url"])
 
-                if build in custom_tracks:
-                    custom_tracks[build].append(track_obj)
-                else:
-                    custom_tracks[build] = [track_obj]
-
-        if custom_tracks != {}:
-            return custom_tracks
+                custom_tracks[build].append(track_obj)
+        return custom_tracks
