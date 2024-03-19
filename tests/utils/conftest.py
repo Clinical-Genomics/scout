@@ -17,8 +17,8 @@ def igv_public_track():
                 "type": "variant",
                 "format": "vcf",
                 "build": "37",
-                "url": "http://track",
-                "indexURL": "http://track.index",
+                "url": "https://track",
+                "indexURL": "https://track.index",
             }
         ],
     }
