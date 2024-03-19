@@ -74,7 +74,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 
 # Custom IGV tracks can be configured here to allow users to enable them on their IGV views.
 # A number of publicly-available tracks can be found here: https://trackhubregistry.org/ or downloaded from
-#CUSTOM_IGV_TRACKS = [
+# CUSTOM_IGV_TRACKS = [
 #    {
 #        "name": "public_tracks",
 #        "access": "public",
@@ -108,7 +108,7 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 #            },
 #        ],
 #    },
-#]
+# ]
 
 # Chanjo-Report
 REPORT_LANGUAGE = "en"
