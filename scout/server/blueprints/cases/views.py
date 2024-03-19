@@ -314,7 +314,7 @@ def pdf_case_report(institute_id, case_name):
 
 
 @cases_bp.route("/<institute_id>/<case_name>/chanjo2_coverage_report", methods=["GET"])
-async def chanjo2_coverage_report(institute_id, case_name) -> str:
+async def chanjo2_coverage_report(institute_id, case_name):
     """Return the HTML coverage report created by chanjo2."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)

@@ -4,7 +4,7 @@ import itertools
 import json
 import logging
 import os
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set
 
 import query_phenomizer
 import requests
@@ -87,7 +87,7 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
 
 async def chanjo2_coverage_report_contents(
     institute_obj: dict, case_obj: dict, panel_name: str
-) -> str:
+) -> Optional[str]:
     """Retrieve the HTML contents of the Chanjo2 report for a case."""
 
     hgnc_gene_ids: List[int] = _get_default_panel_genes(store, case_obj)
