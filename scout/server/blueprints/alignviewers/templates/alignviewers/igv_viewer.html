@@ -69,8 +69,11 @@
                           name: "{{ custTrack.name }}",
                           type: "{{ custTrack.type }}",
                           format: "{{ custTrack.format }}",
-                          url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url) }}",
-                          indexURL: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.indexURL) }}"
+                          {% if "http://" in custTrack.url or "https://" in custTrack.url%}
+                            url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url) }}",
+                          {% else %}
+                            url: "{{ url_for('alignviewers.remote_static', remote_url=custTrack.url) }}",
+                          {% endif %}
                         },
                       {% endfor %}
                       {% for wtrack in rhocall_wig %}
