@@ -5,9 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Added
+- Support for .d4 files coverage using chanjo2 (Case page sidebar link)
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
 - Dark mode settings applied to multiselects on institute settings
+- Comments on case and variant pages can be viewed by expanding an accordion
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
 - Pin/unpin with API was not able to make event links
