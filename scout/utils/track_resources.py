@@ -57,7 +57,7 @@ class AlignTrackHandler:
                 build = track.get("build")
                 if build not in ["37", "38"]:
                     LOG.warning(
-                        f"One or more IGV public tracks could not be used, Please provide a genome build ('37', '38') for it."
+                        "One or more IGV public tracks could not be used, Please provide a genome build ('37', '38') for it."
                     )
                     continue
                 track_obj = self.track_template(track)
