@@ -1,4 +1,5 @@
 """Common utilities for the server code"""
+
 import datetime
 import logging
 import os
@@ -206,7 +207,7 @@ def user_institutes(store, login_user):
 
 
 def case_has_chanjo_coverage(case_obj: dict):
-    """Return True if case has coverage stats in chanjo."""
+    """Set case_obj["chanjo_coverage"] to True if there is an instance of chanjo available and case has coverage stats in chanjo."""
 
     chanjo_instance: bool = bool(current_app.config.get("SQLALCHEMY_DATABASE_URI"))
     if case_obj.get("track", "rare") != "cancer" and chanjo_instance:
@@ -214,12 +215,14 @@ def case_has_chanjo_coverage(case_obj: dict):
 
 
 def case_has_chanjo2_coverage(case_obj: dict):
-    """Return True if case has coverage stats in chanjo2."""
+    """Set case_obj["chanjo_coverage"] to True if if there is an instance of chanjo available and case has coverage stats in chanjo2."""
 
     chanjo2_instance: bool = bool(current_app.config.get("CHANJO2_URL"))
+    if chanjo2_instance is False:
+        return
     for ind in case_obj.get("individuals", []):
         ind_d4: str = ind.get("d4_file")
-        if ind_d4 and os.path.exists(ind_d4) and chanjo2_instance:
+        if ind_d4 and os.path.exists(ind_d4):
             case_obj["chanjo2_coverage"] = True
             return
 
