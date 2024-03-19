@@ -72,44 +72,43 @@ ACCREDITATION_BADGE = "swedac-1926-iso17025.png"
 # Connection details for Scout REViewer service
 # SCOUT_REVIEWER_URL = "http://127.0.0.1:8000/reviewer"
 
-#
 # Custom IGV tracks can be configured here to allow users to enable them on their IGV views.
-# A number of publicly-available tracks can be found here: https://trackhubregistry.org/
-CUSTOM_IGV_TRACKS = [
-    {
-        "name": "public_tracks",
-        "access": "public",
-        "tracks": [
-            {
-                "name": "dbVar common SVs (global)",
-                "type": "annotation",
-                "format": "bigbed",
-                "build": "37",
-                "url": "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhubtest/hg19/common_global.bb",
-            },
-            {
-                "name": "dbVar common SVs (global)",
-                "type": "annotation",
-                "format": "bigbed",
-                "build": "38",
-                "url": "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhubtest/hg38/common_global.bb",
-            },
-        ],
-    },
-    {
-        "name": "private_tracks",
-        "access": "private",
-        "tracks": [
-            {
-                "name": "NCBI RefSeq & Ensembl transcripts from MANE",
-                "type": "annotation",
-                "format": "bigbed",
-                "build": "38",
-                "url": "scout/resources/custom_igv_tracks/mane.bb",
-            },
-        ],
-    },
-]
+# A number of publicly-available tracks can be found here: https://trackhubregistry.org/ or downloaded from
+#CUSTOM_IGV_TRACKS = [
+#    {
+#        "name": "public_tracks",
+#        "access": "public",
+#        "tracks": [
+#            {
+#                "name": "dbVar common SVs (global)",
+#                "type": "annotation",
+#                "format": "bigbed",
+#                "build": "37",
+#                "url": "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhubtest/hg19/common_global.bb",
+#            },
+#            {
+#                "name": "dbVar common SVs (global)",
+#                "type": "annotation",
+#                "format": "bigbed",
+#                "build": "38",
+#                "url": "https://ftp.ncbi.nlm.nih.gov/pub/dbVar/sandbox/dbvarhubtest/hg38/common_global.bb",
+#            },
+#        ],
+#    },
+#    {
+#        "name": "local_tracks",
+#        "access": "public",
+#        "tracks": [
+#            {
+#                "name": "NCBI RefSeq & Ensembl transcripts from MANE",
+#                "type": "annotation",
+#                "format": "bigbed",
+#                "build": "38",
+#                "url": "scout/resources/custom_igv_tracks/mane.bb",
+#            },
+#        ],
+#    },
+#]
 
 # Chanjo-Report
 REPORT_LANGUAGE = "en"
