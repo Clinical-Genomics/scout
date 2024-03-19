@@ -4,7 +4,7 @@ import itertools
 import json
 import logging
 import os
-from typing import Dict, List, Set
+from typing import Dict, List, Optional, Set
 
 import query_phenomizer
 import requests
@@ -45,6 +45,8 @@ from scout.server.extensions import RerunnerError, bionano_access, gens, matchma
 from scout.server.links import disease_link
 from scout.server.utils import (
     case_has_alignments,
+    case_has_chanjo2_coverage,
+    case_has_chanjo_coverage,
     case_has_mt_alignments,
     case_has_rna_tracks,
     institute_and_case,
@@ -81,6 +83,52 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
         return diseases
     except RuntimeError:
         flash("Could not establish a conection to Phenomizer", "danger")
+
+
+def chanjo2_coverage_report_contents(
+    institute_obj: dict, case_obj: dict, panel_name: str
+) -> Optional[str]:
+    """Retrieve the HTML contents of the Chanjo2 report for a case."""
+
+    hgnc_gene_ids: List[int] = _get_default_panel_genes(store, case_obj)
+    if not hgnc_gene_ids:
+        flash("Case should have at least one default gene panel containing genes", "warning")
+        return
+
+    query_samples: List[dict] = []
+    analysis_types: List[str] = []
+
+    for ind in case_obj.get("individuals", []):
+        if not ind.get("d4_file"):
+            continue
+        query_samples.append(
+            {
+                "name": ind.get("display_name"),
+                "coverage_file_path": ind.get("d4_file"),
+                "case_name": case_obj["display_name"],
+                "analysis_date": case_obj["analysis_date"].isoformat(),
+            }
+        )
+        analysis_types.append(ind.get("analysis_type"))
+
+    interval_type = "genes"
+    if "wes" in analysis_types:
+        interval_type = "transcripts"
+    elif "wts" in analysis_types:
+        interval_type = "exons"
+
+    report_query: dict = {
+        "build": "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37",
+        "default_level": institute_obj.get("coverage_cutoff"),
+        "interval_type": interval_type,
+        "panel_name": panel_name,
+        "case_display_name": case_obj["display_name"],
+        "hgnc_gene_ids": hgnc_gene_ids,
+        "samples": query_samples,
+    }
+    report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
+    response = requests.post(report_url, json=report_query)
+    return response.text
 
 
 def coverage_report_contents(base_url, institute_obj, case_obj):
@@ -298,9 +346,11 @@ def case(store, institute_obj, case_obj):
         store.user(user_id=user_id) for user_id in case_obj.get("assignees", [])
     ]
 
-    # Provide basic info on alignment files availability for this case
+    # Provide basic info on alignment files & coverage data availability for this case
     case_has_alignments(case_obj)
     case_has_mt_alignments(case_obj)
+    case_has_chanjo_coverage(case_obj)
+    case_has_chanjo2_coverage(case_obj)
 
     case_groups = {}
     case_group_label = {}
