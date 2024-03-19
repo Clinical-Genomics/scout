@@ -85,7 +85,7 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
         flash("Could not establish a conection to Phenomizer", "danger")
 
 
-async def chanjo2_coverage_report_contents(
+def chanjo2_coverage_report_contents(
     institute_obj: dict, case_obj: dict, panel_name: str
 ) -> Optional[str]:
     """Retrieve the HTML contents of the Chanjo2 report for a case."""

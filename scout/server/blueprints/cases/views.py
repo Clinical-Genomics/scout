@@ -318,7 +318,7 @@ async def chanjo2_coverage_report(institute_id, case_name):
     """Return the HTML coverage report created by chanjo2."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    report_html_content: str = await controllers.chanjo2_coverage_report_contents(
+    report_html_content: str = controllers.chanjo2_coverage_report_contents(
         institute_obj=institute_obj, case_obj=case_obj, panel_name=request.args.get("panel_name")
     )
     if report_html_content is None:
