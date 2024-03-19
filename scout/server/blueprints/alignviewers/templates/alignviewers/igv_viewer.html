@@ -69,10 +69,16 @@
                           name: "{{ custTrack.name }}",
                           type: "{{ custTrack.type }}",
                           format: "{{ custTrack.format }}",
-                          {% if "http://" in custTrack.url or "https://" in custTrack.url%}
+                          {% if "http" in custTrack.url %}
                             url: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.url) }}",
+                            {% if custTrack.indexURL %}
+                              indexURL: "{{ url_for('alignviewers.remote_cors', remote_url=custTrack.indexURL) }}",
+                            {% endif %}
                           {% else %}
-                            url: "{{ url_for('alignviewers.remote_static', remote_url=custTrack.url) }}",
+                             url: "{{ url_for('alignviewers.remote_static', file=custTrack.url) }}",
+                             {% if custTrack.indexURL %}
+                              indexURL: "{{ url_for('alignviewers.remote_static', file=custTrack.indexURL) }}",
+                             {% endif %}
                           {% endif %}
                         },
                       {% endfor %}

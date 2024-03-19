@@ -29,20 +29,22 @@ def check_session_tracks(resource):
         LOG.warning("Unauthenticated user requesting resource via remote_static")
         return False
     if resource not in session.get("igv_tracks", []):
+        LOG.warning(f"res:{resource} IS NOT IN {session.get('igv_tracks')}")
         LOG.warning(f"Requested resource to be displayed in IGV not in session's IGV tracks")
         return False
     return True
 
 
-def set_session_tracks(display_obj):
+def set_session_tracks(display_obj: dict):
     """Save igv tracks as a session object. This way it's easy to verify that a user is requesting one of these files from remote_static view endpoint
 
     Args:
         display_obj(dict): A display object containing case name, list of genes, locus and tracks
     """
+
     session_tracks = list(display_obj.get("reference_track", {}).values())
     for key, track_items in display_obj.items():
-        if key not in ["tracks", "custom_tracks", "sample_tracks", "cloud_public_tracks"]:
+        if key not in ["tracks", "custom_tracks", "sample_tracks", "config_custom_tracks"]:
             continue
         for track_item in track_items:
             session_tracks += list(track_item.values())
@@ -302,8 +304,6 @@ def set_config_custom_tracks(display_obj: dict, build: str):
     custom_tracks_names = user_obj.get("igv_tracks")
 
     config_custom_tracks = []
-
-    LOG.error(str(config_igv_tracks.__dict__))
 
     if hasattr(config_igv_tracks, "tracks"):
         build_tracks = config_igv_tracks.tracks.get(build, [])

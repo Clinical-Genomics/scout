@@ -101,11 +101,11 @@ CUSTOM_IGV_TRACKS = [
         "access": "private",
         "tracks": [
             {
-                "name": "Cosmic Cancer sample track",
+                "name": "NCBI RefSeq & Ensembl transcripts from MANE",
                 "type": "annotation",
                 "format": "bigbed",
                 "build": "38",
-                "url": "scout/resources/custom_igv_tracks/Cosmic_sample_track_GRCh38.bb",
+                "url": "scout/resources/custom_igv_tracks/mane.bb",
             },
         ],
     },
