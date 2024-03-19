@@ -89,8 +89,13 @@ async def chanjo2_coverage_report_contents(
     institute_obj: dict, case_obj: dict, panel_name: str
 ) -> str:
     """Retrieve the HTML contents of the Chanjo2 report for a case."""
-    query_samples: List[dict] = []
 
+    hgnc_gene_ids: List[int] = _get_default_panel_genes(store, case_obj)
+    if not hgnc_gene_ids:
+        flash("Case should have at least one default gene panel containing genes", "warning")
+        return
+
+    query_samples: List[dict] = []
     analysis_types: List[str] = []
 
     for ind in case_obj.get("individuals", []):
@@ -118,7 +123,7 @@ async def chanjo2_coverage_report_contents(
         "interval_type": interval_type,
         "panel_name": panel_name,
         "case_display_name": case_obj["display_name"],
-        "hgnc_gene_ids": _get_default_panel_genes(store, case_obj),
+        "hgnc_gene_ids": hgnc_gene_ids,
         "samples": query_samples,
     }
     report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
