@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+import responses
 from bson.objectid import ObjectId
 from flask import json, url_for
 
@@ -864,6 +865,39 @@ def test_mt_report(app, institute_obj, case_obj):
         assert resp.status_code == 200
         # and it should contain a zipped file, not HTML code
         assert resp.mimetype == "application/zip"
+
+
+@responses.activate
+def test_chanjo2_coverage_report(app, institute_obj, case_obj):
+    """Test the endpoint that returns a chanjo2 report for a case."""
+
+    # GIVEN a mocked chanjo2 instance
+    CHANJO2_URL = "https://chanjo2.se"
+    responses.add(
+        responses.POST,
+        f"{CHANJO2_URL}/report",
+        body="<html>Chanjo2 report</HTML>",
+        status=200,
+    )
+
+    # GIVEN an initialized app
+    with app.test_client() as client:
+        # GIVEN that the user could be logged in
+        client.get(url_for("auto_login"))
+
+        # GIVEN that chanjo2 URL is present in the app settings
+        app.config["CHANJO2_URL"] = CHANJO2_URL
+
+        # WHEN calling the chanjo2_coverage_report
+        resp = client.get(
+            url_for(
+                "cases.chanjo2_coverage_report",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            )
+        )
+        # THEN it should return a successful response
+        assert resp.status_code == 200
 
 
 def test_status(app, institute_obj, case_obj, user_obj, mocker, mock_redirect):

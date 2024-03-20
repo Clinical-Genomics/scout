@@ -67,6 +67,12 @@ def pin_variant(
 
     (institute_obj, case_obj, variant_obj) = _lookup_variant(variant_id, institute_id, case_name)
 
+    if not institute_id:
+        institute_id = variant_obj["institute"]
+
+    if not case_name:
+        case_name = case_obj.get("display_name")
+
     user_obj = store.user(current_user.email)
     link = url_for(
         "variant.variant",
@@ -87,6 +93,12 @@ def unpin_variant(
     """Un-pin an existing, pinned variant"""
 
     (institute_obj, case_obj, variant_obj) = _lookup_variant(variant_id, institute_id, case_name)
+
+    if not institute_id:
+        institute_id = variant_obj["institute"]
+
+    if not case_name:
+        case_name = case_obj.get("display_name")
 
     user_obj = store.user(current_user.email)
     link = url_for(
