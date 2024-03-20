@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - All links in disease table on diagnosis page now open in a new tab
 - Dark mode settings applied to multiselects on institute settings
 - Comments on case and variant pages can be viewed by expanding an accordion
+- Demo case file paths are now stored as absolute paths
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
 
