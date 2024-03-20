@@ -81,7 +81,7 @@
           <label for="mainainer">Maintainers</label>
           <span class="float-end" id="maintainer"> {{ panel.maintainer_names|join(", ") }}</span>
       </li>
-      {% if config.SQLALCHEMY_DATABASE_URI and case %}
+      {% if case.chanjo_coverage %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report</label>
           <a class="float-end" id="coverage_report" href="#" onclick="document.getElementById('report-form').submit();">
@@ -101,6 +101,14 @@
               <input type="hidden" name="gene_ids" value="{{ panel.genes|map(attribute='hgnc_id')|join(',') }}">
             </form>
           </span>
+        </li>
+      {% endif %}
+      {% if case.chanjo2_coverage %}
+        <li class="list-group-item">
+          <label for="coverage_report">Coverage report (chanjo2)</label>
+          <a class="float-end"  href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=panel.name_and_version, panel_id=panel._id) }}" target="_blank" rel="noopener">
+            {{ case.display_name }}
+          </a>
         </li>
       {% endif %}
       <li class="list-group-item">
