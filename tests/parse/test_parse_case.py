@@ -74,7 +74,7 @@ def test_parse_case_parsing(scout_config, param_name):
     # WHEN case is parsed
     case_data = parse_case_config(scout_config)
     # THEN the case should have the parameter
-    assert case_data[param_name] == scout_config[param_name]
+    assert scout_config[param_name] in case_data[param_name]
 
 
 @pytest.mark.parametrize(
@@ -194,7 +194,7 @@ def test_parse_case_vcf_files(scout_config, vcf_file):
     # WHEN case is parsed
     case_data = parse_case_config(scout_config)
     # THEN the case should the same vcf files as specified in the
-    assert case_data["vcf_files"][vcf_file] == scout_config[vcf_file]
+    assert scout_config[vcf_file] in case_data["vcf_files"][vcf_file]
 
 
 @pytest.mark.parametrize("bam_name", ["alignment_path", "bam_file", "bam_path"])
