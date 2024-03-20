@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Comments on case and variant pages can be viewed by expanding an accordion
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
+- Pin/unpin with API was not able to make event links
 - Fusion genes with partners lacking gene hgnc id will still be fully loaded
 - Attempt to find fusion genes lacking hgnc id using gene symbol and alias lookup
 - Fusion variantS export now contains fusion variant specific columns
