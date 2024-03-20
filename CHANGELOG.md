@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Demo case file paths are now stored as absolute paths
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
+- Pin/unpin with API was not able to make event links
 
 ## [4.79.1]
 ### Fixed
