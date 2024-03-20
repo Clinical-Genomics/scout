@@ -38,7 +38,7 @@ class AlignTrackHandler:
     def set_local_track_path(self, path: str) -> str:
         """Returns the complete path to a local igv track file"""
         if exists(path) and isabs(path):
-            return abspath(path)
+            return path
         elif exists(path):
             return abspath(path)
         else:
