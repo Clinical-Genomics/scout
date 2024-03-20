@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 from os import path
-
 import pytest
 from pydantic import ValidationError
 
@@ -196,7 +195,7 @@ def test_parse_case_vcf_files(scout_config, vcf_file):
     case_data = parse_case_config(scout_config)
 
     # THEN the case should contain the absolute path to the resources specified in the case config
-    assert case_data[vcf_file]
+    assert case_data["vcf_files"][vcf_file]
 
 
 @pytest.mark.parametrize("bam_name", ["alignment_path", "bam_file", "bam_path"])
