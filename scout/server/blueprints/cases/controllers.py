@@ -131,8 +131,6 @@ def chanjo2_coverage_report_contents(
         "samples": query_samples,
     }
 
-    LOG.warning(report_query)
-
     report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
     response = requests.post(report_url, json=report_query)
     return response.text
