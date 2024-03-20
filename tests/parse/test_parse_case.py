@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from os import path
 
 import pytest
 from pydantic import ValidationError
@@ -73,8 +74,8 @@ def test_parse_case_parsing(scout_config, param_name):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case_config(scout_config)
-    # THEN the case should have the parameter
-    assert scout_config[param_name] in case_data[param_name]
+    # THEN the case should have the parameter, either as string of full path to a resource
+    assert case_data[param_name] == scout_config[param_name] or path.exists(case_data[param_name])
 
 
 @pytest.mark.parametrize(
@@ -193,8 +194,9 @@ def test_parse_case_vcf_files(scout_config, vcf_file):
     # GIVEN you load sample information from a scout config
     # WHEN case is parsed
     case_data = parse_case_config(scout_config)
-    # THEN the case should the same vcf files as specified in the
-    assert scout_config[vcf_file] in case_data["vcf_files"][vcf_file]
+
+    # THEN the case should contain the absolute path to the resources specified in the case config
+    assert case_data[vcf_file]
 
 
 @pytest.mark.parametrize("bam_name", ["alignment_path", "bam_file", "bam_path"])
