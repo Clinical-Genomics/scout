@@ -196,12 +196,14 @@
         <div class="row mt-1">
           <div class="btn-group btn-group-sm">
             {% if case.chanjo_coverage %}
-              <a class="btn btn-secondary btn-sm text-white" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage report</a>
+              <button onClick="document.getElementById('hpo-report-form').submit();">Coverage report</button>
+              <a href="#section" onClick="document.getElementById('hpo-report-form').submit();" />
               <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
                 <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
               </form>
 
-               <a class="btn btn-secondary btn-sm text-white" href="#" onclick="document.getElementById('hpo-overview-form').submit();">Coverage overview</a>
+              <button onClick="document.getElementById('hpo-overview-form').submit();">Coverage overview</button>
+              <a href="#section" onClick="document.getElementById('hpo-overview-form').submit();" />
               <form id="hpo-overview-form" action="{{ url_for('report.genes', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
                 <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
               </form>
