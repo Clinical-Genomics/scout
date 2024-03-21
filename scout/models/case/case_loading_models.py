@@ -284,6 +284,7 @@ class Image(BaseModel):
             )
         if REPID not in path and exists(path) is False:
             raise ValueError(f"Image path '{path}' is not valid.")
+
         return path
 
 
@@ -316,13 +317,14 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
                     "description": image.description.replace(REPID, match["repid"]),
                     "height": image.height,
                     "format": None,
-                    "path": str(match["path"]),
+                    "path": _resource_abs_path(str(match["path"])),
                     "str_repid": match["repid"],
                     "title": image.title.replace(REPID, match["repid"]),
                     "width": image.width,
                 }
                 real_folder_images.append(Image(**new_image))
         else:
+            image.path = _resource_abs_path(image.path)
             real_folder_images.append(image)  # append other non-repid images
 
     return real_folder_images
