@@ -91,21 +91,6 @@
         {% endif %}
         )
         {% if case.dynamic_gene_list_edited %} <span class="text-danger ml-3"> (edited) </span> {% endif %}
-        {% if case.track != 'cancer' and config.SQLALCHEMY_DATABASE_URI and case.dynamic_gene_list|length > 0 %}
-          <span class="pull-right">
-            <a href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage report</a>
-            <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
-              <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
-            </form>
-          </span>
-          <span class="pull-right">&nbsp;&nbsp;&nbsp;</span>
-          <span class="pull-right">
-            <a href="#" onclick="document.getElementById('hpo-overview-form').submit();">Coverage overview</a>
-            <form id="hpo-overview-form" action="{{ url_for('report.genes', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
-              <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
-            </form>
-          </span>
-        {% endif %}
       </h6>
     </div>
 
@@ -205,6 +190,28 @@
              </a>
             {% endif %}
            {% endif %}
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="btn-group btn-group-sm">
+            {% if case.chanjo_coverage %}
+              <a class="btn btn-secondary btn-sm text-white" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage report</a>
+              <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+                <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
+              </form>
+
+               <a class="btn btn-secondary btn-sm text-white" href="#" onclick="document.getElementById('hpo-overview-form').submit();">Coverage overview</a>
+              <form id="hpo-overview-form" action="{{ url_for('report.genes', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+                <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
+              </form>
+            {% endif %}
+            {% if case.chanjo_coverage %}
+              <a class="btn btn-secondary btn-sm text-white"
+                href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id,
+                                 case_name=case.display_name, panel_name='HPO', panel_id='HPO'}}" target="_blank" rel="noopener">
+                  Coverage report (Chanjo2)
+               </a>
+            {% endif %}
           </div>
         </div>
       </div> <!-- End of Show variants in dynamic gene list -->
