@@ -380,7 +380,7 @@
         {% endif %}
       </div>
     </div>
-    <div class="mb-1" style="max-height:300px; overflow-y: scroll;">
+    <div class="mb-3" style="max-height:300px; overflow-y: scroll;">
       <ul class="list-group">
         {% for variant in causatives %}
           <li class="list-group-item list-group-item-action">
@@ -539,14 +539,13 @@
   <div class="card mt-3">
     <div class="d-flex align-items-center" data-bs-toggle='tooltip' title="Displays all variants that has been pinned or submitted to ClinVar for this case">
       <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants pinned ({{suspects|length}}) or included in ClinVar ({{ case.clinvar_variants.items()|length }}) <a data-bs-target="#howto" href="#" data-bs-toggle="modal">?</a></h6>
+    </div>
+    <ul class="list-group">
       {% if not suspects|length %}
         <span class="text-muted ms-3 mt-2">
           <h6>No pinned variants</h6>
         </span>
       {% endif %}
-    </div>
-    <div style="max-height:300px; overflow-y: scroll;" data-bs-toggle='tooltip' title="Displays all variants that has been pinned for this case">
-    <ul class="list-group">
       {% for variant in suspects %}
         <li class="list-group-item">
           {% if variant._id %}
@@ -592,7 +591,6 @@
         </li>
       {% endfor %}
     </ul>
-    </div>
     {{ clinvar_vars_summary(suspects, case, institute) }}
   </div>
 {% endmacro %}
@@ -610,27 +608,36 @@
 {% endmacro %}
 
 {% macro clinvar_vars_summary(suspects, case, institute) %}
-    <div class="d-flex align-content-center flex-wrap">
-        <div class=" col-auto d-flex align-items-center wrap">
-            <h6 class="m-2">&nbsp;Variants submitted to ClinVar, not present in the table above:</h6>
-        </div>
-        {% set presentvars = [] %}
+      {% if not case.clinvar_variants %}
+        <span class="text-muted ms-3 mt-2">
+          <h6>No variants submitted </h6>
+        </span>
+      {% else%}
+        {% set suspects_ids, unpinned_var_submitted = [], false  %}
         {% for entry in suspects %}
-            {% do presentvars.append(entry.get("_id")) %}
+          {% do suspects_ids.append(entry.get("_id")) %}
         {% endfor %}
-        {% for entry in case.clinvar_submitted_variants %}
-            {% if entry.get("_id") not in presentvars %}
-                <div class="m-2">{{ pretty_link_variant(entry, case) }}</div>
-            {% endif %}
+        {% for entry in case.clinvar_submitted_variants if entry.get("_id") not in suspects_ids %}
+            {% set unpinned_var_submitted=true %}
         {% endfor %}
-    </div>
+        {% if unpinned_var_submitted  %}
+          <div class="d-flex align-content-center flex-wrap">
+              <div class="col-auto d-flex align-items-center wrap">
+                  <h6 class="m-2">&nbsp;Variants submitted to ClinVar, not present in the table above:</h6>
+              </div>
+              {% for entry in case.clinvar_submitted_variants if entry.get("_id") not in suspects_ids  %}
+                      <div class="m-2">{{ pretty_link_variant(entry, case) }}</div>
+              {% endfor %}
+          </div>
+      {% endif %}
     <div class="card-footer d-flex justify-content-center" style="border-bottom-left-radius:inherit;border-bottom-right-radius:inherit;">
-                {% if case.clinvar_variants %}
+
                 <a href="{{url_for('clinvar.clinvar_submissions', institute_id=institute._id)}}"
                     class="btn btn-secondary btn-sm text-white mx-3" target="_blank" rel="noopener noreferrer">View ClinVar
                     submissions <i class="fas fa-arrow-circle-right"></i></a>
-                {% endif %}
+
     </div>
+      {% endif %}
 {% endmacro %}
 
 {% macro matching_causatives(other_causatives, institute, case, default=False) %}
