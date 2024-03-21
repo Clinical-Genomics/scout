@@ -155,7 +155,7 @@ class ChromographImages(BaseModel):
             item_path: str = values.get(item)
             if (
                 item_path
-            ):  # it is an incomplete path -> replace the path to the directory with the path to absolute path to directory
+            ):  # it is an incomplete path -> replace the path to the directory with the abs path to the directory
                 item_path_dirname: str = dirname(
                     item_path
                 )  # path to the directory containing multiple files
@@ -178,6 +178,15 @@ class REViewer(BaseModel):
     catalog: Optional[str] = None
     reference: Optional[str] = None
     reference_index: Optional[str] = None
+
+    @model_validator(mode="before")
+    def validate_file_path(cls, values: Dict) -> "SampleLoader":
+        """Make sure that REViewer paths associated to samples exist on disk and are absolute paths."""
+        for item in REVIEWER_PATH_CHECKS:
+            item_path: str = values.get(item)
+            if item_path:
+                values[item] = _resource_abs_path(item_path)
+        return values
 
 
 class SampleLoader(BaseModel):
