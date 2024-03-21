@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from fractions import Fraction
 from glob import glob
-from os.path import abspath, exists, isabs
+from os.path import abspath, dirname, exists, isabs
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -58,6 +58,10 @@ CASE_FILE_PATH_CHECKS = [
     "RNAfusion_report_research",
 ]
 
+CHROMOGRAPH_PATH_SUFFIX_CHECKS = ["autozygous", "coverage", "upd_regions", "upd_sites"]
+
+REVIEWER_PATH_CHECKS = ["alignment", "alignment_index", "catalog", "vcf"]
+
 VCF_FILE_PATH_CHECKS = [
     "vcf_cancer",
     "vcf_cancer_research",
@@ -97,7 +101,7 @@ def _resource_abs_path(string_path: str) -> str:
     elif exists(string_path):
         return abspath(string_path)
     else:
-        raise FileExistsError(f"File {string_path} could not be found on disk.")
+        raise FileExistsError(f"Path {string_path} could not be found on disk.")
 
 
 #### VCF files class ####
@@ -143,6 +147,22 @@ class ChromographImages(BaseModel):
     coverage: Optional[str] = None
     upd_regions: Optional[str] = None
     upd_sites: Optional[str] = None
+
+    @model_validator(mode="before")
+    def validate_file_path(cls, values: Dict) -> "SampleLoader":
+        """Make sure that chromograph paths associated to samples exist on disk and are absolute paths."""
+        for item in CHROMOGRAPH_PATH_SUFFIX_CHECKS:
+            item_path: str = values.get(item)
+            if (
+                item_path
+            ):  # it is an incomplete path -> replace the path to the directory with the path to absolute path to directory
+                item_path_dirname: str = dirname(
+                    item_path
+                )  # path to the directory containing multiple files
+                values[item] = item_path.replace(
+                    item_path_dirname, _resource_abs_path(item_path_dirname)
+                )
+        return values
 
 
 class Mitodel(BaseModel):
@@ -247,7 +267,6 @@ class SampleLoader(BaseModel):
             item_path: str = values.get(item)
             if item_path:
                 values[item] = _resource_abs_path(item_path)
-
         return values
 
     @field_validator("capture_kits", mode="before")
