@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
+- Link for chanjo2 coverage report on gene panel page
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
 - Dark mode settings applied to multiselects on institute settings

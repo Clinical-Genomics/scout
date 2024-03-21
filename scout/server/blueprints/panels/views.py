@@ -21,6 +21,8 @@ from scout.export.panel import export_gene_panels
 from scout.server.blueprints.cases.controllers import check_outdated_gene_panel
 from scout.server.extensions import store
 from scout.server.utils import (
+    case_has_chanjo2_coverage,
+    case_has_chanjo_coverage,
     html_to_pdf_file,
     institute_and_case,
     jsonconverter,
@@ -140,7 +142,6 @@ def panel(panel_id):
         raw_hgnc_id = request.form["hgnc_id"]
         if "|" in raw_hgnc_id:
             raw_hgnc_id = raw_hgnc_id.split(" | ", 1)[0]
-        hgnc_id = 0
         try:
             hgnc_id = int(raw_hgnc_id)
         except ValueError:
@@ -167,6 +168,9 @@ def panel(panel_id):
     data = controllers.panel(store, panel_obj)
     if request.args.get("case_id"):
         case_obj = store.case(request.args["case_id"])
+
+        case_has_chanjo_coverage(case_obj)
+        case_has_chanjo2_coverage(case_obj)
 
         case_obj["outdated_panels"] = {}
         panel_name = panel_obj["panel_name"]
