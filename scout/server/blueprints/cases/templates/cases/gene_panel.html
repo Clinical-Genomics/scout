@@ -192,7 +192,8 @@
            {% endif %}
           </div>
         </div>
-        <div class="row mt-3">
+        {% if case.chanjo_coverage or case.chanjo2_coverage %}
+        <div class="row mt-1">
           <div class="btn-group btn-group-sm">
             {% if case.chanjo_coverage %}
               <a class="btn btn-secondary btn-sm text-white" href="#" onclick="document.getElementById('hpo-report-form').submit();">Coverage report</a>
@@ -206,20 +207,21 @@
               </form>
             {% endif %}
 
-            {% if case.chanjo_coverage %}
+            {% if case.chanjo2_coverage %}
               <a class="btn btn-secondary btn-sm text-white"
                 href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id,
-                                 case_name=case.display_name, panel_name='HPO Panel'}}" target="_blank" rel="noopener">
+                                 case_name=case.display_name, panel_name='HPO Panel') }}" target="_blank" rel="noopener">
                   Coverage report (Chanjo2)
                </a>
             {% endif %}
           </div>
         </div>
+        {% endif %} <!-- End of if case.chanjo_coverage or case.chanjo2_coverage -->
       </div> <!-- End of Show variants in dynamic gene list -->
 
-      <div class="btn-group d-flex justify-content-center mt-2"> <!-- Download genes in HPO gene panel -->
-        <a class="btn btn-sm btn-primary mt-1 text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Clinical HPO gene panel</a>
-        <a class="btn btn-sm btn-primary mt-1 text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Research HPO gene panel</a>
+      <div class="btn-group d-flex justify-content-center mt-1"> <!-- Download genes in HPO gene panel -->
+        <a class="btn btn-sm btn-primary text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Clinical HPO gene panel</a>
+        <a class="btn btn-sm btn-primary text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Research HPO gene panel</a>
       </div>
 
     {% endif %}
