@@ -192,7 +192,7 @@
            {% endif %}
           </div>
         </div>
-        {% if case.chanjo_coverage or case.chanjo2_coverage %}
+        {% if case.chanjo_coverage or case.chanjo2_coverage and case.dynamic_gene_list|length > 0 %}
         <div class="row mt-1">
           <div class="btn-group btn-group-sm">
             {% if case.chanjo_coverage %}
