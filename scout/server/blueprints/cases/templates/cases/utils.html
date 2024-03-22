@@ -621,7 +621,7 @@
         {% if submitted_ids | length >0 %}
             <div class="d-flex align-content-center flex-wrap">
                 <div class="col-auto d-flex align-items-center wrap">
-                    <h6 class="m-2">&nbsp;Variants submitted to ClinVar, not present in the table above:</h6>
+                    <h6 class="m-2">&nbsp;Variants present in a ClinVar submission, no longer pinned:</h6>
                 </div>
                 {% for entry in case.clinvar_submitted_variants if entry.get("_id") not in suspects_ids %}
                     <div class="m-2">{{ pretty_link_variant(entry, case) }}</div>
