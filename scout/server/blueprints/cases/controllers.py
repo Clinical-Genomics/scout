@@ -389,7 +389,7 @@ def case(store, institute_obj, case_obj):
     clinvar_submitted_variants = [
         store.variant(variant_id) or variant_id for variant_id in case_obj["clinvar_variants"]
     ]
-    _populate_assessments(clinvar_submitted_variants)
+
     case_obj["clinvar_submitted_variants"] = clinvar_submitted_variants
 
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
