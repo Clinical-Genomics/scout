@@ -379,12 +379,12 @@ function validateConditions(){
 
   if ($("#condition_tags option:selected").length > 1 && $("#multiple_condition_explanation option:selected").text() === "-") {
     alert("When multiple condition IDs are provided then an option for "Explanation for multiple conditions" must be provided");
-    return false; //
+    return false;
   }
 
   if ($("#condition_tags option:selected").length == 1 && $("#multiple_condition_explanation option:selected").text() !== "-") {
     alert("Please deselect the selected option in "Explanation for multiple conditions" since only one condition ID was provided.");
-    return false; //
+    return false;
   }
 
   return true
