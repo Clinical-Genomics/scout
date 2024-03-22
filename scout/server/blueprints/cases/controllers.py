@@ -92,6 +92,10 @@ def chanjo2_coverage_report_contents(
 
     if panel_id:
         hgnc_gene_ids: List[int] = store.panel_to_genes(panel_id=panel_id, gene_format="hgnc_id")
+    elif panel_name == "HPO Panel":
+        hgnc_gene_ids: List[int] = [
+            gene["hgnc_id"] for gene in case_obj.get("dynamic_gene_list", [])
+        ]
     else:
         hgnc_gene_ids: List[int] = _get_default_panel_genes(store, case_obj)
 

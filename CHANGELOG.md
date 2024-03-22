@@ -8,6 +8,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
 - Link for chanjo2 coverage report on gene panel page
+- Link for chanjo2 coverage report on Case pagem HPO dynamic gene list
 - Support for loading and displaying local custom IGV tracks
 - MANE IGV track to be used as a local track for igv.js (see scout demo config file)
 ### Changed
