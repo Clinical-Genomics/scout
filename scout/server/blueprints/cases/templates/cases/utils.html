@@ -537,8 +537,8 @@
 {% macro suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) %}
    {{ clinvar_howto_modal() }}
   <div class="card mt-3">
-    <div class="d-flex align-items-center" data-bs-toggle='tooltip' title="Displays all variants that has been pinned or submitted to ClinVar for this case">
-      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants pinned ({{suspects|length}}) or included in ClinVar ({{ case.clinvar_variants.items()|length }}) <a data-bs-target="#howto" href="#" data-bs-toggle="modal">?</a></h6>
+    <div class="d-flex align-items-center" data-bs-toggle='tooltip' title="Displays all variants that have been pinned or included in a ClinVar submission for this case">
+      <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants pinned ({{suspects|length}}) or included in a ClinVar submission({{ case.clinvar_variants.items()|length }}) <a data-bs-target="#howto" href="#" data-bs-toggle="modal">?</a></h6>
     </div>
     <div class="mb-3" style="max-height:300px; overflow-y: scroll;">
     <ul class="list-group">
