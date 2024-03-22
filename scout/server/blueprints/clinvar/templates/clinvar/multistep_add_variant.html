@@ -269,7 +269,7 @@
                     <div class="mt-3">
                       {{variant_data.var_form.multiple_condition_explanation.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required if you provide more than one condition ID."><strong>?</strong></span>
                       <select name="multiple_condition_explanation" id="multiple_condition_explanation" class="form-control, btn-secondary">
-                        <option selected>-</option>
+                        <option selected value>-</option>
                         {% for choice, _ in variant_data.var_form.multiple_condition_explanation.choices %}
                           <option value="{{choice}}">{{choice}}</option>
                         {% endfor %}
