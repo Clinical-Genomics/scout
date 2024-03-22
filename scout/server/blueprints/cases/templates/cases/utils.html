@@ -540,6 +540,7 @@
     <div class="d-flex align-items-center" data-bs-toggle='tooltip' title="Displays all variants that has been pinned or submitted to ClinVar for this case">
       <h6><span class="fa fa-map-pin ms-3 mt-2"></span>&nbsp;Variants pinned ({{suspects|length}}) or included in ClinVar ({{ case.clinvar_variants.items()|length }}) <a data-bs-target="#howto" href="#" data-bs-toggle="modal">?</a></h6>
     </div>
+    <div class="mb-3" style="max-height:300px; overflow-y: scroll;">
     <ul class="list-group">
       {% if not suspects|length %}
         <span class="text-muted ms-3 mt-2">
@@ -592,6 +593,7 @@
       {% endfor %}
     </ul>
     {{ clinvar_vars_summary(suspects, case, institute) }}
+      </div>
   </div>
 {% endmacro %}
 
@@ -608,11 +610,7 @@
 {% endmacro %}
 
 {% macro clinvar_vars_summary(suspects, case, institute) %}
-    {% if not case.clinvar_variants %}
-        <span class="text-muted ms-3 mt-2">
-            <h6>No variants submitted </h6>
-        </span>
-    {% else%}
+    {% if case.clinvar_variants %}
         {% set suspects_ids, submitted_ids = [], [] %}
         {% for entry in suspects %}
             {% do suspects_ids.append(entry.get("_id")) %}
@@ -630,8 +628,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-            <div class="card-footer d-flex justify-content-center"
-                style="border-bottom-left-radius:inherit;border-bottom-right-radius:inherit;">
+            <div class="card-footer d-flex justify-content-center">
                 <a href="{{url_for('clinvar.clinvar_submissions', institute_id=institute._id)}}"
                     class="btn btn-secondary btn-sm text-white mx-3" target="_blank" rel="noopener noreferrer">View ClinVar
                     submissions <i class="fas fa-arrow-circle-right"></i></a>
