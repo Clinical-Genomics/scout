@@ -385,12 +385,14 @@ def case(store, institute_obj, case_obj):
 
     case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
 
-    # check for variants submitted to clinVar for the case
-    clinvar_submitted_variants = [
-        store.variant(variant_id) or variant_id for variant_id in case_obj["clinvar_variants"]
+    # check for variants submitted to clinVar but not present in suspects for the case
+    clinvar_variants_not_in_suspects = [
+        store.variant(variant_id) or variant_id
+        for variant_id in case_obj["clinvar_variants"]
+        if variant_id not in [entry.get("_id") for entry in suspects]
     ]
 
-    case_obj["clinvar_submitted_variants"] = clinvar_submitted_variants
+    case_obj["clinvar_variants_not_in_suspects"] = clinvar_variants_not_in_suspects
 
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
