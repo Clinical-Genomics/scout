@@ -31,6 +31,7 @@ clinvar_variant = {
     "condition_id_type": str,  # enum: "HPO", "OMIM"
     "condition_id_value": str,  # example: HP:0001298;HP:0001250
     "condition_comment": str,
+    "explanation_for_multiple_conditions": str,
     "start": int,
     "stop": int,
     "ref": str,

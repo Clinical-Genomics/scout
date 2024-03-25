@@ -607,6 +607,7 @@ def clinvar_form(request):
             "collection_method": ["clinical testing"] * 3,
             "condition_type": "HPO",
             "conditions": ["0001298", "0001250"],
+            "multiple_condition_explanation": "Novel disease",
         }
     )
     return data
