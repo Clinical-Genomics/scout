@@ -5,7 +5,6 @@
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
-{% from "cases/clinvar.html" import clinvar_vars %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -148,9 +147,6 @@
       <div class="row">
         <div class="col">{{ causatives_list(causatives, partial_causatives, evaluated_variants, institute, case, manual_rank_options, cancer_tier_options) }}</div>
         <div class="col">{{ suspects_list(suspects, institute, case, manual_rank_options, cancer_tier_options) }}</div>
-        {% if case.clinvar_variants or case.suspects %}
-          <div class="col">{{ clinvar_vars(institute, case, suspects) }}</div>
-        {% endif %}
         <!-- end of data sharing panels -->
       </div>
 
@@ -512,24 +508,6 @@
         </div>
         </div>
       </div>
-    </div>
-  </form>
-{% endmacro %}
-
-{% macro remove_form(url, hidden_input=None, button_name=None, button_value=None) %}
-  <form action="{{ url }}" method="POST">
-    {% if hidden_input %}
-      <input type="hidden"
-             name="{{ hidden_input[0] }}"
-             value="{{ hidden_input[1] }}">
-    {% endif %}
-    <div class="float-end">
-      <button class="btn btn-link btn-sm"
-              name="{{ button_name if button_name }}"
-              value="{{ button_value if button_value }}"
-              type="submit">
-        <em class="fa fa-remove"></em>
-      </button>
     </div>
   </form>
 {% endmacro %}
