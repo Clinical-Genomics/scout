@@ -383,6 +383,17 @@ def case(store, institute_obj, case_obj):
     partial_causatives = _get_partial_causatives(store, case_obj)
     _populate_assessments(partial_causatives)
 
+    case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
+
+    # check for variants submitted to clinVar but not present in suspects for the case
+    clinvar_variants_not_in_suspects = [
+        store.variant(variant_id) or variant_id
+        for variant_id in case_obj["clinvar_variants"]
+        if variant_id not in [entry.get("_id") for entry in suspects]
+    ]
+
+    case_obj["clinvar_variants_not_in_suspects"] = clinvar_variants_not_in_suspects
+
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
     # Sort panels alphabetically on display name
@@ -414,7 +425,6 @@ def case(store, institute_obj, case_obj):
             if institute_obj.get("collaborators")
             and collab["_id"] in institute_obj.get("collaborators")
         ]
-    case_obj["clinvar_variants"] = store.case_to_clinVars(case_obj["_id"])
 
     # if updated_at is a list, set it to the last update datetime
     if case_obj.get("updated_at") and isinstance(case_obj["updated_at"], list):
