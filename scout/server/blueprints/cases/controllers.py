@@ -398,7 +398,7 @@ def case(store, institute_obj, case_obj):
 
     # Sort panels alphabetically on display name
     case_obj["panels"] = sorted(
-        case_obj.get("panels", []), key=lambda d: (d["display_name"], -d.get("is_default", False))
+        case_obj.get("panels", []), key=lambda d: (-d.get("is_default", False), d["display_name"])
     )
     LOG.info(case_obj["panels"])
 
