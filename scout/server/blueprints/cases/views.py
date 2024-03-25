@@ -313,9 +313,9 @@ def pdf_case_report(institute_id, case_name):
     )
 
 
-@cases_bp.route("/<institute_id>/<case_name>/chanjo2_coverage_report", methods=["GET"])
-def chanjo2_coverage_report(institute_id: str, case_name: str):
-    """Return the HTML coverage report created by chanjo2."""
+@cases_bp.route("/<institute_id>/<case_name>/chanjo2_report/<report_type>", methods=["GET"])
+def chanjo2_coverage_report(institute_id: str, case_name: str, report_type: str):
+    """Return the HTML coverage report or coverage overview created by chanjo2."""
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
     report_html_content: str = controllers.chanjo2_coverage_report_contents(
@@ -323,6 +323,7 @@ def chanjo2_coverage_report(institute_id: str, case_name: str):
         case_obj=case_obj,
         panel_name=request.args.get("panel_name"),
         panel_id=request.args.get("panel_id"),
+        report_type=report_type,
     )
     if report_html_content is None:
         return redirect(request.referrer)
