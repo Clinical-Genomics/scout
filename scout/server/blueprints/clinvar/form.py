@@ -26,6 +26,7 @@ from scout.constants import (
     COLLECTION_METHOD,
     CONDITION_PREFIX,
     GERMLINE_CLASSIF_TERMS,
+    MULTIPLE_CONDITION_EXPLANATION,
 )
 
 LOG = logging.getLogger(__name__)
@@ -65,6 +66,10 @@ class ClinVarVariantForm(FlaskForm):
         "Condition ID type", choices=[(key, key) for key, value in CONDITION_PREFIX.items()]
     )
     conditions = SelectMultipleField("Condition ID value, without prefix")
+    multiple_condition_explanation = SelectField(
+        "Explanation for multiple conditions",
+        choices=[(item, item) for item in MULTIPLE_CONDITION_EXPLANATION],
+    )
 
     # Extra fields:
     assertion_method = StringField("Assertion method", default=ASSERTION_METHOD)

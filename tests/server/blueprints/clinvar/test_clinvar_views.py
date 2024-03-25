@@ -54,7 +54,7 @@ def test_clinvar_submissions(app, institute_obj, case_obj, clinvar_form):
             data=clinvar_form,
         )
 
-        # THEN clinvar_submissions endpoint should return a valid page
+        # THEN clinVar_submissions endpoint should return a valid page
         resp = client.get(
             url_for(
                 "clinvar.clinvar_submissions",
