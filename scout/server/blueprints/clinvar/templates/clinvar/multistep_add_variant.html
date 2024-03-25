@@ -232,7 +232,7 @@
 
               <fieldset data-step="6">
                 <legend>Associated Conditions</legend>
-                <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a>"</h3>
+                <h3 class="fs-subtitle">The condition for which the variant is interpreted. Examples available at <a href="https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#condition" target="_blank" rel="noopener">ClinVar</a></h3>
 
                 <div class="row">
                   <div class="col-6" id="clinvar_condition_container">
@@ -249,7 +249,7 @@
                       {% endfor %}
                     </select>
                     <br><br>
-                    {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from ONE DATABASE TYPE ONLY (i.e. only OMIM terms, only HPO terms etc)"><strong>*?</strong></span>
+                    {{variant_data.var_form.conditions.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required field. Include data from ONE DATABASE TYPE ONLY (i.e. only OMIM terms, only HPO terms etc). If multiple conditions are submitted for a variant, this indicates that the variant was interpreted for the combination of conditions in the same individual(s).  i.e. this variant causes both condition A and condition B in the same individual. This scenario is most common for a new disease or syndrome that does not yet have a name and is described by several clinical features. If you want to indicate that the variant has been interpreted for more than one condition, please submit these as separate records."><strong>*?</strong></span>
                     <select class="select2" id="condition_tags" name="conditions" multiple="true" style="width:100%;">
                       {% if variant_data.var_form.omim_terms.choices %}
                         {% for term, _ in variant_data.var_form.omim_terms.choices %}
@@ -265,6 +265,18 @@
                         {% endfor %}
                       {% endif %}
                     </select>
+
+                    <div class="mt-3">
+                      {{variant_data.var_form.multiple_condition_explanation.label(class="fw-bold, text-dark")}} <span class="text-danger" data-bs-toggle='tooltip' title="Required if you provide more than one condition ID."><strong>?</strong></span>
+                      <select name="multiple_condition_explanation" id="multiple_condition_explanation" class="form-control, btn-secondary">
+                        <option selected value>-</option>
+                        {% for choice, _ in variant_data.var_form.multiple_condition_explanation.choices %}
+                          <option value="{{choice}}">{{choice}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+
                   </div>
                   <div class="col-6">
                     {{ variant_data.var_form.omim_terms.label(class="fw-bold, text-dark" )}}<br>
@@ -360,7 +372,22 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 
 // Validates fields for conditions associated to a variant
 function validateConditions(){
-  return $("#condition_tags option:selected").length > 0;
+  if ($("#condition_tags option:selected").length == 0) {
+    alert("Please provide at least one condition ID");
+    return false;
+  }
+
+  if ($("#condition_tags option:selected").length > 1 && $("#multiple_condition_explanation option:selected").text() === "-") {
+    alert("When multiple condition IDs are provided then an option for 'Explanation for multiple conditions' must be provided");
+    return false;
+  }
+
+  if ($("#condition_tags option:selected").length == 1 && $("#multiple_condition_explanation option:selected").text() !== "-") {
+    alert("Please deselect the selected option in 'Explanation for multiple conditions' since only one condition ID was provided.");
+    return false;
+  }
+
+  return true
 }
 
 var current_fs, next_fs, previous_fs; //fieldsets
@@ -383,11 +410,9 @@ $(".next").click(function(){
   // check to see if the validator for the specific step we are on passed or not.
   if(validationPassed == false){
     // do not proceed
-    alert("Please fill in required field");
     animating = false;
     return;
   }
-
 
 	next_fs = $(this).parent().next();
 
