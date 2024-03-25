@@ -397,7 +397,10 @@ def case(store, institute_obj, case_obj):
     case_obj["default_genes"] = _get_default_panel_genes(store, case_obj)
 
     # Sort panels alphabetically on display name
-    case_obj["panels"] = sorted(case_obj.get("panels", []), key=lambda d: d["display_name"])
+    case_obj["panels"] = sorted(
+        case_obj.get("panels", []), key=lambda d: (d["display_name"], -d["is_default"])
+    )
+    LOG.info(case_obj["panels"])
 
     for hpo_term in itertools.chain(
         case_obj.get("phenotype_groups") or [], case_obj.get("phenotype_terms") or []
