@@ -88,7 +88,7 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
 def chanjo2_coverage_report_contents(
     institute_obj: dict, case_obj: dict, panel_name: str, panel_id: Optional[str], report_type: str
 ) -> Optional[str]:
-    """Retrieve the HTML contents of the Chanjo2 report for a case."""
+    """Retrieve the HTML contents of the Chanjo2 coverage report/overview for a case."""
 
     if panel_id:
         hgnc_gene_ids: List[int] = store.panel_to_genes(panel_id=panel_id, gene_format="hgnc_id")
