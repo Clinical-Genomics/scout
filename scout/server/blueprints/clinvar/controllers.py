@@ -245,6 +245,8 @@ def _set_conditions(clinvar_var: dict, form: ImmutableMultiDict):
     clinvar_var["condition_id_value"] = ";".join(
         [f"{condition_prefix}{condition_id}" for condition_id in form.getlist("conditions")]
     )
+    if bool(form.get("multiple_condition_explanation")):
+        clinvar_var["explanation_for_multiple_conditions"] = form["multiple_condition_explanation"]
 
 
 def parse_variant_form_fields(form):
