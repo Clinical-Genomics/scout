@@ -30,6 +30,7 @@ CLINVAR_HEADER = {
     "condition_id_type": "Condition ID type",
     "condition_id_value": "Condition ID value",
     "condition_comment": "Condition comment",
+    "explanation_for_multiple_conditions": "Explanation for multiple conditions",
     "clinsig": "Germline classification",
     "clinsig_comment": "Comment on classification",
     "last_evaluated": "Date last evaluated",
@@ -187,3 +188,5 @@ CONDITION_PREFIX = {
 }
 
 CLINVAR_ASSERTION_METHOD_CIT_DB_OPTIONS = {"DOI", "pmc", "PMID"}
+
+MULTIPLE_CONDITION_EXPLANATION = ["Novel disease", "Uncertain", "Co-occurring"]
