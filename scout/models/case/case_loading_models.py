@@ -4,6 +4,7 @@ from datetime import datetime
 from enum import Enum
 from fractions import Fraction
 from glob import glob
+from os.path import abspath, dirname, exists, isabs
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -12,7 +13,6 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-import path
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from scout.constants import ANALYSIS_TYPES
@@ -49,7 +49,11 @@ CASE_FILE_PATH_CHECKS = [
     "peddy_ped",
     "peddy_ped_check",
     "peddy_sex_check",
+    "exe_ver",
+    "smn_tsv",
+    "reference_info",
     "RNAfusion_inspector",
+    "RNAfusion_inspector_research",
     "RNAfusion_report",
     "RNAfusion_report_research",
 ]
@@ -86,18 +90,13 @@ class Sex(str, Enum):
     unknown = "unknown"
 
 
-def _get_demo_file_absolute_path(partial_path: str) -> str:
-    """returns the absolute path to a given demo file."""
-    APP_ROOT: str = path.abspath(path.join(path.dirname(__file__), ".."))
-    return path.join(APP_ROOT, partial_path)
-
-
-def _is_string_path(string_path: str) -> bool:
-    try:
-        path = Path(string_path) or Path(_get_demo_file_absolute_path(partial_path=string_path))
-        return path.is_file()
-    except AttributeError:
-        return False
+def _resource_abs_path(string_path: str) -> str:
+    """Return the absolute path to a resource file."""
+    if not exists(string_path):
+        raise FileExistsError(f"Path {string_path} could not be found on disk.")
+    if isabs(string_path):
+        return string_path
+    return abspath(string_path)
 
 
 #### VCF files class ####
@@ -125,9 +124,8 @@ class VcfFiles(BaseModel):
         """Make sure that VCF file exists on disk."""
         for item in VCF_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
-            if item_path and _is_string_path(values[item]) is False:
-                raise ValueError(f"{item} path '{values[item]}' is not valid.")
-
+            if item_path:
+                values[item] = _resource_abs_path(item_path)
         return values
 
 
@@ -145,6 +143,19 @@ class ChromographImages(BaseModel):
     upd_regions: Optional[str] = None
     upd_sites: Optional[str] = None
 
+    @model_validator(mode="before")
+    def validate_file_path(cls, config_values: Dict) -> "SampleLoader":
+        """Make sure that chromograph paths associated to samples exist on disk and are absolute paths. Chromograph paths are incomplete paths, containing the path to the directory containing a number of files plus the prefix of the files."""
+
+        for key in cls.model_fields:
+            item_path: str = config_values.get(key)
+            if item_path:
+                item_path_dirname: str = dirname(item_path)
+                config_values[key] = item_path.replace(
+                    item_path_dirname, _resource_abs_path(item_path_dirname)
+                )
+        return config_values
+
 
 class Mitodel(BaseModel):
     discordant: Optional[int] = None
@@ -159,6 +170,15 @@ class REViewer(BaseModel):
     catalog: Optional[str] = None
     reference: Optional[str] = None
     reference_index: Optional[str] = None
+
+    @model_validator(mode="before")
+    def validate_file_path(cls, config_values: Dict) -> "SampleLoader":
+        """Make sure that REViewer paths associated to samples exist on disk and are absolute paths."""
+        for key in cls.model_fields:
+            item_path: str = config_values.get(key)
+            if item_path:
+                config_values[key] = _resource_abs_path(item_path)
+        return config_values
 
 
 class SampleLoader(BaseModel):
@@ -246,9 +266,8 @@ class SampleLoader(BaseModel):
         """Make sure that files associated to samples (mostly alignment files) exist on disk."""
         for item in SAMPLES_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
-            if item_path and _is_string_path(values[item]) is False:
-                raise ValueError(f"{item} path '{values[item]}' is not valid.")
-
+            if item_path:
+                values[item] = _resource_abs_path(item_path)
         return values
 
     @field_validator("capture_kits", mode="before")
@@ -283,8 +302,9 @@ class Image(BaseModel):
             raise TypeError(
                 f"Custom images should be of type: {', '.join(SUPPORTED_IMAGE_FORMATS)}"
             )
-        if REPID not in path and _is_string_path(path) is False:
+        if REPID not in path and exists(path) is False:
             raise ValueError(f"Image path '{path}' is not valid.")
+
         return path
 
 
@@ -317,13 +337,14 @@ def set_custom_images(images: Optional[List[Image]]) -> Optional[List[Image]]:
                     "description": image.description.replace(REPID, match["repid"]),
                     "height": image.height,
                     "format": None,
-                    "path": str(match["path"]),
+                    "path": _resource_abs_path(str(match["path"])),
                     "str_repid": match["repid"],
                     "title": image.title.replace(REPID, match["repid"]),
                     "width": image.width,
                 }
                 real_folder_images.append(Image(**new_image))
         else:
+            image.path = _resource_abs_path(image.path)
             real_folder_images.append(image)  # append other non-repid images
 
     return real_folder_images
@@ -387,6 +408,7 @@ class CaseLoader(BaseModel):
     peddy_sex_check: Optional[str] = Field(None, alias="peddy_sex")  # Soon to be deprecated
     phenotype_groups: Optional[List[str]] = None
     phenotype_terms: Optional[List[str]] = None
+    exe_ver: Optional[str] = None
     rank_model_version: Optional[str] = None
     rank_score_threshold: Optional[int] = 0
     reference_info: Optional[str] = None
@@ -502,8 +524,8 @@ class CaseLoader(BaseModel):
         """Make sure the files associated to the case (mostly reports) exist on disk."""
         for item in CASE_FILE_PATH_CHECKS:
             item_path: str = values.get(item)
-            if item_path and _is_string_path(values[item]) is False:
-                raise ValueError(f"{item} path '{values[item]}' is not valid.")
+            if item_path:
+                values[item] = _resource_abs_path(item_path)
 
         return values
 
