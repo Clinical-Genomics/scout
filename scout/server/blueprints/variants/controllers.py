@@ -1118,7 +1118,7 @@ def get_fusion_exons(variant: dict) -> str:
     exon = ""
     for gene in variant.get("genes", []):
         for transcript in gene.get("transcripts", []):
-            if "exon" in transcript:
+           if bool(transcript.get("exon")):
                 if exon:
                     exon = exon + " | "
                 exon = exon + transcript["exon"]
