@@ -14,6 +14,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dark mode settings applied to multiselects on institute settings
 - Comments on case and variant pages can be viewed by expanding an accordion
 - On case page information on pinned variants and variants submitted to ClinVar are displayed in the same table
+- Demo case file paths are now stored as absolute paths
+- On case page default panels are now found at the top of the table, and it can be sorted by this trait
 - Demo case file paths are now stored as absolute
 - Optimised indexes to address slow queries
 - Parallelize variant loading for each chromosome
@@ -186,7 +188,10 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Test and fixtures for RNA fusion case page
 - Load and display fusion variants from VCF files as the other variant types
 - Option to update case document with path to mei variants (clinical and research)
+### Changed
 - Details on variant type and category for audit filters on case general report
+- Enable Gens CN profile button also in somatic case view
+- Fix case of analysis type check for Gens analysis button - only show for WGS
 ### Fixed
 - loqusdb table no longer has empty row below each loqusid
 - MatchMaker submission details page crashing because of change in date format returned by PatientMatcher
@@ -346,6 +351,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Improved layout of Institute settings page
 - ClinVar API key and allowed submitters are set in the Institute settings page
 
+
 ## [4.68]
 ### Added
 - Rare Disease Mobile Element Insertion variants view
@@ -501,6 +507,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Inner and outer start and stop SV coordinates not exported in ClinVar files
 - ClinVar submissions page crashing when SV files don't contain breakpoint exact coordinates
 - Align OMIM diagnoses with delete diagnosis button on case page
+- In ClinVar form, reset condition list and customize help when condition ID changes
 
 ## [4.61]
 ### Added
