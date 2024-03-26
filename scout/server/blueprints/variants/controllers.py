@@ -1,7 +1,7 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import bson
 from flask import Response, flash, session, url_for
@@ -16,20 +16,22 @@ from scout.adapter import MongoAdapter
 from scout.constants import (
     ACMG_COMPLETE_MAP,
     ACMG_MAP,
+    CANCER_EXPORT_HEADER,
     CANCER_SPECIFIC_VARIANT_DISMISS_OPTIONS,
     CANCER_TIER_OPTIONS,
     CHROMOSOMES,
     CHROMOSOMES_38,
     CLINSIG_MAP,
     DISMISS_VARIANT_OPTIONS,
+    EXPORT_HEADER,
     EXPORTED_VARIANTS_LIMIT,
+    FUSION_EXPORT_HEADER,
     MANUAL_RANK_OPTIONS,
     MOSAICISM_OPTIONS,
     SPIDEX_HUMAN,
     VARIANT_FILTERS,
     VARIANTS_TARGET_FROM_CATEGORY,
 )
-from scout.constants.variants_export import CANCER_EXPORT_HEADER, EXPORT_HEADER
 from scout.server.blueprints.variant.utils import (
     callers,
     clinsig_human,
@@ -958,7 +960,7 @@ def parse_variant(
 
 
 def download_str_variants(case_obj, variant_objs):
-    """Download filtered STR variants for a case to an excel file
+    """Download filtered STR variants for a case to a CSV file
 
     Args:
         case_obj(dict)
@@ -1024,21 +1026,17 @@ def download_str_variants(case_obj, variant_objs):
     )
 
 
-def download_variants(store, case_obj, variant_objs):
-    """Download filtered variants for a case to an excel file
-
-      Args:
-        store(adapter.MongoAdapter)
-        case_obj(dict)
-        variant_objs(PyMongo cursor)
+def download_variants(
+    store: MongoAdapter, case_obj: dict, variant_objs: CursorType, category: Optional[str] = None
+) -> Response:
+    """Download filtered variants for a case to a CSV file
 
     Returns:
         an HTTP response containing a csv file
     """
-    document_header = variants_export_header(case_obj)
-    export_lines = []
+    document_header = variants_export_header(case_obj, category)
     export_lines = variant_export_lines(
-        store, case_obj, variant_objs.limit(EXPORTED_VARIANTS_LIMIT)
+        store, case_obj, variant_objs.limit(EXPORTED_VARIANTS_LIMIT), category
     )
 
     def generate(header, lines):
@@ -1060,84 +1058,168 @@ def download_variants(store, case_obj, variant_objs):
     )
 
 
-def variant_export_lines(store, case_obj, variants_query):
+def variant_export_lines_common(store: MongoAdapter, variant: dict, case_obj: dict) -> list:
+    """
+    Get common variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+    position = variant["position"]
+    change = variant["reference"] + ">" + variant["alternative"]
+    variant_line.append(variant.get("rank_score", "N/A"))
+    variant_line.append(variant["chromosome"])
+    variant_line.append(position)
+    variant_line.append(change)
+    variant_line.append("_".join([str(position), change]))
+
+    gene_list: List[dict] = variant.get("genes", [])
+
+    if gene_list:
+        gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
+        variant_line += gene_info
+    else:
+        empty_col = 0
+        while empty_col < 5:
+            variant_line.append(
+                "-"
+            )  # empty HGNC id, empty gene name, two empty transcripts columns, and consequence
+            empty_col += 1
+
+    if variant.get("cadd_score"):
+        variant_line.append(round(variant["cadd_score"], 2))
+    else:
+        variant_line.append("N/A")
+
+    if variant.get("gnomad_frequency"):
+        variant_line.append(round(variant["gnomad_frequency"], 5))
+    else:
+        variant_line.append("N/A")
+
+    return variant_line
+
+
+def get_fusion_variant_field(variant: dict, field: str) -> str:
+    """Get fusion variant fields that could be from multiple fusion partners.
+    Split if comma separated, and join with 'or' sign, so as not to interfere with csv file generation.
+    Avoid empty values and use "N/A" instead.
+    """
+    value = variant.get(field, "N/A")
+    if "," in value:
+        value = value.split(",")
+    if isinstance(value, list):
+        value = " | ".join(value)
+    if value is None or value == []:
+        value = "N/A"
+    return value
+
+
+def get_fusion_exons(variant: dict) -> str:
+    """Get RNAfusion specific variant exons for all genes/transcripts listed. Join with pipe 'or' character."""
+    exon = ""
+    for gene in variant.get("genes", []):
+        for transcript in gene.get("transcripts", []):
+            if bool(transcript.get("exon")):
+                if exon:
+                    exon = exon + " | "
+                exon = exon + transcript["exon"]
+
+    return exon
+
+
+def variant_export_lines_fusion(variant: dict, case_obj: dict) -> list:
+    """Get RNAfusion specific variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+
+    for field in ["fusion_genes", "orientation", "frame_status", "found_db"]:
+        variant_line.append(get_fusion_variant_field(variant, field))
+
+    variant_line.append(get_fusion_exons(variant))
+
+    variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
+    for individual in case_obj["individuals"]:
+        for variant_gt in variant_gts:
+            if individual["individual_id"] != variant_gt["sample_id"]:
+                continue
+            variant_line.append(variant_gt.get("read_depth", "N/A"))
+            variant_line.append(variant_gt.get("split_read", "N/A"))
+            variant_line.append(variant_gt.get("ffpm", "N/A"))
+
+    return variant_line
+
+
+def variant_export_lines_cancer(variant: dict) -> list:
+    """
+    Get cancer specific variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+
+    # Add cancer and normal VAFs
+    for sample in ["tumor", "normal"]:
+        allele = variant.get(sample)
+        if not allele:
+            variant_line.append("-")
+            continue
+        alt_freq = round(allele.get("alt_freq", 0), 4)
+        alt_depth = allele.get("alt_depth")
+        ref_depth = allele.get("ref_depth")
+
+        vaf_sample = f"{alt_freq} ({alt_depth}|{ref_depth})"
+        variant_line.append(vaf_sample)
+
+    # ADD eventual COSMIC ID
+    cosmic_ids = variant.get("cosmic_ids") or ["-"]
+    variant_line.append(" | ".join(cosmic_ids))
+
+    return variant_line
+
+
+def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
+    """
+    Get generic rare disease variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+
+    variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
+    for individual in case_obj["individuals"]:
+        for variant_gt in variant_gts:
+            if individual["individual_id"] != variant_gt["sample_id"]:
+                continue
+
+            variant_line.append(variant_gt["genotype_call"])
+            # gather coverage info
+            variant_line.append(variant_gt["allele_depths"][0])  # AD reference
+            variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
+            # gather genotype quality info
+            variant_line.append(variant_gt["genotype_quality"])
+
+    return variant_line
+
+
+def variant_export_lines(
+    store: MongoAdapter, case_obj: dict, variants_query: CursorType, category: Optional[str] = None
+) -> List[str]:
     """Get variants info to be exported to file, one list (line) per variant.
-    Args:
-        store(scout.adapter.MongoAdapter)
-        case_obj(scout.models.Case)
-        variants_query: a list of variant objects, each one is a dictionary
+
     Returns:
         export_variants: a list of strings. Each string  of the list corresponding to the fields
-                         of a variant to be exported to file, separated by comma
+                         of a variant to be exported to file, separated by comma.
     """
 
     export_variants = []
 
     for variant in variants_query:
-        variant_line = []
-        position = variant["position"]
-        change = variant["reference"] + ">" + variant["alternative"]
-        variant_line.append(variant.get("rank_score", "N/A"))
-        variant_line.append(variant["chromosome"])
-        variant_line.append(position)
-        variant_line.append(change)
-        variant_line.append("_".join([str(position), change]))
+        variant_line = variant_export_lines_common(store, variant, case_obj)
 
-        # gather gene info:
-        gene_list = variant.get("genes", [])  # this is a list of gene objects
-
-        # if variant is in genes
-        if gene_list:
-            gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
-            variant_line += gene_info
+        if category == "fusion":
+            variant_line.extend(variant_export_lines_fusion(variant, case_obj))
+        elif case_obj.get("track") == "cancer":
+            variant_line.extend(variant_export_lines_cancer(variant))
         else:
-            empty_col = 0
-            while empty_col < 4:
-                variant_line.append(
-                    "-"
-                )  # empty HGNC id, empty gene name and empty transcripts columns
-                empty_col += 1
-
-        if variant.get("cadd_score"):
-            variant_line.append(round(variant["cadd_score"], 2))
-        else:
-            variant_line.append("N/A")
-
-        if variant.get("gnomad_frequency"):
-            variant_line.append(round(variant["gnomad_frequency"], 5))
-        else:
-            variant_line.append("N/A")
-
-        if case_obj.get("track") == "cancer":
-            # Add cancer and normal VAFs
-            for sample in ["tumor", "normal"]:
-                allele = variant.get(sample)
-                if not allele:
-                    variant_line.append("-")
-                    continue
-                alt_freq = round(allele.get("alt_freq", 0), 4)
-                alt_depth = allele.get("alt_depth")
-                ref_depth = allele.get("ref_depth")
-
-                vaf_sample = f"{alt_freq} ({alt_depth}|{ref_depth})"
-                variant_line.append(vaf_sample)
-
-            # ADD eventual COSMIC ID
-            cosmic_ids = variant.get("cosmic_ids") or ["-"]
-            variant_line.append(" | ".join(cosmic_ids))
-        else:
-            variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
-            for individual in case_obj["individuals"]:
-                for variant_gt in variant_gts:
-                    if individual["individual_id"] != variant_gt["sample_id"]:
-                        continue
-
-                    variant_line.append(variant_gt["genotype_call"])
-                    # gather coverage info
-                    variant_line.append(variant_gt["allele_depths"][0])  # AD reference
-                    variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
-                    # gather genotype quality info
-                    variant_line.append(variant_gt["genotype_quality"])
+            variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
         variant_line = [str(i) for i in variant_line]
         export_variants.append(",".join(variant_line))
@@ -1223,7 +1305,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     return gene_info
 
 
-def variants_export_header(case_obj):
+def variants_export_header(case_obj: dict, category: str = "snv") -> List[str]:
     """Returns a header for the CSV file with the filtered variants to be exported.
     Args:
         case_obj(scout.models.Case)
@@ -1234,7 +1316,9 @@ def variants_export_header(case_obj):
     """
 
     header = []
-    if case_obj.get("track") == "cancer":
+    if category == "fusion":
+        header = header + FUSION_EXPORT_HEADER
+    elif case_obj.get("track") == "cancer":
         header = header + CANCER_EXPORT_HEADER
     else:
         header = header + EXPORT_HEADER
