@@ -1098,22 +1098,30 @@ def variant_export_lines_common(store: MongoAdapter, variant: dict, case_obj: di
     return variant_line
 
 
-def variant_export_lines_fusion(variant: dict, case_obj: dict) -> list:
+def get_fusion_variant_field(variant: dict, field: str) -> str:
+    """Get fusion variant fields that could be from multiple fusion partners.
+    Split if comma separated, and join with "or" sign, so as not to interfere with csv file generation.
+    Avoid empty values and use "N/A" instead.
     """
-    Get RNAfusion specific variant info to be exported. Returns a list to be merged into a string
+
+    value = variant.get(field, "N/A")
+    if "," in value:
+        value = value.split(",")
+    if isinstance(value, list):
+        value = " | ".join(value)
+    if value is None or value == []:
+        value = "N/A"
+    return value
+
+
+def variant_export_lines_fusion(variant: dict, case_obj: dict) -> list:
+    """Get RNAfusion specific variant info to be exported. Returns a list to be merged into a string
     in suitable export format.
     """
     variant_line = []
 
     for field in ["fusion_genes", "orientation", "frame_status", "found_db"]:
-        value = variant.get(field, "N/A")
-        if "," in value:
-            value = value.split(",")
-        if isinstance(value, list):
-            value = " | ".join(value)
-        if value is None or value == []:
-            value = "N/A"
-        variant_line.append(value)
+        variant_line.append(get_fusion_variant_field(variant, field))
 
     exon = ""
     for gene in variant.get("genes", []):
