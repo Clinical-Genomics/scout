@@ -333,16 +333,16 @@ def fusion_variants(
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
-        variants.append(
-            parse_variant(
-                store,
-                institute_obj,
-                case_obj,
-                variant_obj,
-                genome_build=genome_build,
-                case_dismissed_vars=case_dismissed_vars,
-            )
+        parsed_variant = parse_variant(
+            store,
+            institute_obj,
+            case_obj,
+            variant_obj,
+            genome_build=genome_build,
+            case_dismissed_vars=case_dismissed_vars,
         )
+
+        variants.append(parsed_variant)
 
     return {"variants": variants, "more_variants": more_variants}
 
@@ -1299,10 +1299,12 @@ def variants_export_header(case_obj: dict, category: str = "snv") -> list:
     """Returns a header for the CSV file with the filtered variants to be exported.
     Args:
         case_obj(scout.models.Case)
+        category: Variant category to prepare export for e.g. "fusion"
     Returns:
         header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
+
     header = []
     if category == "fusion":
         header = header + FUSION_EXPORT_HEADER
@@ -1317,6 +1319,7 @@ def variants_export_header(case_obj: dict, category: str = "snv") -> list:
             header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
             header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
             header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+
     return header
 
 
