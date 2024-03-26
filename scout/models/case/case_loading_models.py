@@ -148,14 +148,14 @@ class ChromographImages(BaseModel):
     def validate_file_path(cls, config_values: Dict) -> "SampleLoader":
         """Make sure that chromograph paths associated to samples exist on disk and are absolute paths. Chromograph paths are incomplete paths, containing the path to the directory containing a number of files plus the prefix of the files."""
 
-        for item in cls.model_fields:
-            item_path: str = values.get(item)
+        for key in cls.model_fields:
+            item_path: str = config_values.get(key)
             if item_path:
                 item_path_dirname: str = dirname(item_path)
-                values[item] = item_path.replace(
+                config_values[item] = item_path.replace(
                     item_path_dirname, _resource_abs_path(item_path_dirname)
                 )
-        return values
+        return config_values
 
 
 class Mitodel(BaseModel):
