@@ -58,8 +58,6 @@ CASE_FILE_PATH_CHECKS = [
     "RNAfusion_report_research",
 ]
 
-CHROMOGRAPH_PATH_SUFFIX_CHECKS = ["autozygous", "coverage", "upd_regions", "upd_sites"]
-
 REVIEWER_PATH_CHECKS = ["alignment", "alignment_index", "catalog", "vcf"]
 
 VCF_FILE_PATH_CHECKS = [
@@ -150,15 +148,12 @@ class ChromographImages(BaseModel):
 
     @model_validator(mode="before")
     def validate_file_path(cls, values: Dict) -> "SampleLoader":
-        """Make sure that chromograph paths associated to samples exist on disk and are absolute paths."""
-        for item in CHROMOGRAPH_PATH_SUFFIX_CHECKS:
+        """Make sure that chromograph paths associated to samples exist on disk and are absolute paths. Chromograph paths are incomplete paths, containing the path to the directory containing a number of files plus the prefix of the files."""
+
+        for item in cls.model_fields:
             item_path: str = values.get(item)
-            if (
-                item_path
-            ):  # it is an incomplete path -> replace the path to the directory with the abs path to the directory
-                item_path_dirname: str = dirname(
-                    item_path
-                )  # path to the directory containing multiple files
+            if item_path:
+                item_path_dirname: str = dirname(item_path)
                 values[item] = item_path.replace(
                     item_path_dirname, _resource_abs_path(item_path_dirname)
                 )
