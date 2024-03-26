@@ -1,7 +1,7 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import bson
 from flask import Response, flash, session, url_for
