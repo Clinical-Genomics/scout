@@ -1201,12 +1201,9 @@ def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
 
 def variant_export_lines(
     store: MongoAdapter, case_obj: dict, variants_query: CursorType, category: Optional[str] = None
-):
+) -> List[str]:
     """Get variants info to be exported to file, one list (line) per variant.
-    Args:
-        store(scout.adapter.MongoAdapter)
-        case_obj(scout.models.Case)
-        variants_query: a list of variant objects, each one is a dictionary
+
     Returns:
         export_variants: a list of strings. Each string  of the list corresponding to the fields
                          of a variant to be exported to file, separated by comma.
@@ -1308,7 +1305,7 @@ def variant_export_genes_info(store, gene_list, genome_build="37"):
     return gene_info
 
 
-def variants_export_header(case_obj: dict, category: str = "snv") -> list:
+def variants_export_header(case_obj: dict, category: str = "snv") -> List[str]:
     """Returns a header for the CSV file with the filtered variants to be exported.
     Args:
         case_obj(scout.models.Case)
