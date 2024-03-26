@@ -685,7 +685,7 @@ def fusion_variants(institute_id, case_name):
 
     # if variants should be exported
     if request.form.get("export"):
-        return controllers.download_variants(store, case_obj, variants_query, category=category)
+        return controllers.download_variants(store, case_obj, variants_query)
 
     data = controllers.fusion_variants(
         store, institute_obj, case_obj, variants_query, result_size, page
