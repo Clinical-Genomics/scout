@@ -14,6 +14,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Dark mode settings applied to multiselects on institute settings
 - Comments on case and variant pages can be viewed by expanding an accordion
 - On case page information on pinned variants and variants submitted to ClinVar are displayed in the same table
+- Demo case file paths are now stored as absolute paths
 - On case page default panels are now found at the top of the table, and it can be sorted by this trait
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
