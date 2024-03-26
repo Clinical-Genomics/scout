@@ -1058,6 +1058,134 @@ def download_variants(
     )
 
 
+def variant_export_lines_common(store: MongoAdapter, variant: dict, case_obj: dict) -> list:
+    """
+    Get common variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+    position = variant["position"]
+    change = variant["reference"] + ">" + variant["alternative"]
+    variant_line.append(variant.get("rank_score", "N/A"))
+    variant_line.append(variant["chromosome"])
+    variant_line.append(position)
+    variant_line.append(change)
+    variant_line.append("_".join([str(position), change]))
+
+    gene_list: List[dict] = variant.get("genes", [])
+
+    if gene_list:
+        gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
+        variant_line += gene_info
+    else:
+        empty_col = 0
+        while empty_col < 5:
+            variant_line.append(
+                "-"
+            )  # empty HGNC id, empty gene name, two empty transcripts columns, and consequence
+            empty_col += 1
+
+    if variant.get("cadd_score"):
+        variant_line.append(round(variant["cadd_score"], 2))
+    else:
+        variant_line.append("N/A")
+
+    if variant.get("gnomad_frequency"):
+        variant_line.append(round(variant["gnomad_frequency"], 5))
+    else:
+        variant_line.append("N/A")
+
+    return variant_line
+
+
+def variant_export_lines_fusion(variant: dict, case_obj: dict) -> list:
+    """
+    Get RNAfusion specific variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+
+    for field in ["fusion_genes", "orientation", "frame_status", "found_db"]:
+        value = variant.get(field, "N/A")
+        if "," in value:
+            value = value.split(",")
+        if isinstance(value, list):
+            value = " | ".join(value)
+        if value is None or value == []:
+            value = "N/A"
+        variant_line.append(value)
+
+    exon = ""
+    for gene in variant.get("genes", []):
+        for transcript in gene.get("transcripts", []):
+            if "exon" in transcript:
+                if exon:
+                    exon = exon + " | "
+                exon = exon + transcript["exon"]
+    variant_line.append(exon)
+
+    variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
+    for individual in case_obj["individuals"]:
+        for variant_gt in variant_gts:
+            if individual["individual_id"] != variant_gt["sample_id"]:
+                continue
+            variant_line.append(variant_gt.get("read_depth", "N/A"))
+            variant_line.append(variant_gt.get("split_read", "N/A"))
+            variant_line.append(variant_gt.get("ffpm", "N/A"))
+
+    return variant_line
+
+
+def variant_export_lines_cancer(variant: dict) -> list:
+    """
+    Get cancer specific variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+
+    # Add cancer and normal VAFs
+    for sample in ["tumor", "normal"]:
+        allele = variant.get(sample)
+        if not allele:
+            variant_line.append("-")
+            continue
+        alt_freq = round(allele.get("alt_freq", 0), 4)
+        alt_depth = allele.get("alt_depth")
+        ref_depth = allele.get("ref_depth")
+
+        vaf_sample = f"{alt_freq} ({alt_depth}|{ref_depth})"
+        variant_line.append(vaf_sample)
+
+    # ADD eventual COSMIC ID
+    cosmic_ids = variant.get("cosmic_ids") or ["-"]
+    variant_line.append(" | ".join(cosmic_ids))
+
+    return variant_line
+
+
+def variant_export_lines_rare(variant: dict, case_obj: dict) -> list:
+    """
+    Get generic rare disease variant info to be exported. Returns a list to be merged into a string
+    in suitable export format.
+    """
+    variant_line = []
+
+    variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
+    for individual in case_obj["individuals"]:
+        for variant_gt in variant_gts:
+            if individual["individual_id"] != variant_gt["sample_id"]:
+                continue
+
+            variant_line.append(variant_gt["genotype_call"])
+            # gather coverage info
+            variant_line.append(variant_gt["allele_depths"][0])  # AD reference
+            variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
+            # gather genotype quality info
+            variant_line.append(variant_gt["genotype_quality"])
+
+    return variant_line
+
+
 def variant_export_lines(
     store: MongoAdapter, case_obj: dict, variants_query: CursorType, category: Optional[str] = None
 ):
@@ -1068,105 +1196,20 @@ def variant_export_lines(
         variants_query: a list of variant objects, each one is a dictionary
     Returns:
         export_variants: a list of strings. Each string  of the list corresponding to the fields
-                         of a variant to be exported to file, separated by comma
+                         of a variant to be exported to file, separated by comma.
     """
 
     export_variants = []
 
     for variant in variants_query:
-        variant_line = []
-        position = variant["position"]
-        change = variant["reference"] + ">" + variant["alternative"]
-        variant_line.append(variant.get("rank_score", "N/A"))
-        variant_line.append(variant["chromosome"])
-        variant_line.append(position)
-        variant_line.append(change)
-        variant_line.append("_".join([str(position), change]))
-
-        # gather gene info:
-        gene_list = variant.get("genes", [])  # this is a list of gene objects
-
-        # if variant is in genes
-        if gene_list:
-            gene_info = variant_export_genes_info(store, gene_list, case_obj.get("genome_build"))
-            variant_line += gene_info
-        else:
-            empty_col = 0
-            while empty_col < 5:
-                variant_line.append(
-                    "-"
-                )  # empty HGNC id, empty gene name, two empty transcripts columns, and consequence
-                empty_col += 1
-
-        if variant.get("cadd_score"):
-            variant_line.append(round(variant["cadd_score"], 2))
-        else:
-            variant_line.append("N/A")
-
-        if variant.get("gnomad_frequency"):
-            variant_line.append(round(variant["gnomad_frequency"], 5))
-        else:
-            variant_line.append("N/A")
+        variant_line = variant_export_lines_common(store, variant, case_obj)
 
         if category == "fusion":
-            for field in ["fusion_genes", "orientation", "frame_status", "found_db"]:
-                value = variant.get(field, "N/A")
-                if "," in value:
-                    value = value.split(",")
-                if isinstance(value, list):
-                    value = " | ".join(value)
-                if value is None or value == []:
-                    value = "N/A"
-                variant_line.append(value)
-
-            exon = ""
-            for gene in gene_list:
-                for transcript in gene.get("transcripts", []):
-                    if "exon" in transcript:
-                        if exon:
-                            exon = exon + " | "
-                        exon = exon + transcript["exon"]
-            variant_line.append(exon)
-
-            variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
-            for individual in case_obj["individuals"]:
-                for variant_gt in variant_gts:
-                    if individual["individual_id"] != variant_gt["sample_id"]:
-                        continue
-                    variant_line.append(variant_gt.get("read_depth", "N/A"))
-                    variant_line.append(variant_gt.get("split_read", "N/A"))
-                    variant_line.append(variant_gt.get("ffpm", "N/A"))
+            variant_line.extend(variant_export_lines_fusion(variant, case_obj))
         elif case_obj.get("track") == "cancer":
-            # Add cancer and normal VAFs
-            for sample in ["tumor", "normal"]:
-                allele = variant.get(sample)
-                if not allele:
-                    variant_line.append("-")
-                    continue
-                alt_freq = round(allele.get("alt_freq", 0), 4)
-                alt_depth = allele.get("alt_depth")
-                ref_depth = allele.get("ref_depth")
-
-                vaf_sample = f"{alt_freq} ({alt_depth}|{ref_depth})"
-                variant_line.append(vaf_sample)
-
-            # ADD eventual COSMIC ID
-            cosmic_ids = variant.get("cosmic_ids") or ["-"]
-            variant_line.append(" | ".join(cosmic_ids))
-
+            variant_line.extend(variant_export_lines_cancer(variant))
         else:
-            variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
-            for individual in case_obj["individuals"]:
-                for variant_gt in variant_gts:
-                    if individual["individual_id"] != variant_gt["sample_id"]:
-                        continue
-
-                    variant_line.append(variant_gt["genotype_call"])
-                    # gather coverage info
-                    variant_line.append(variant_gt["allele_depths"][0])  # AD reference
-                    variant_line.append(variant_gt["allele_depths"][1])  # AD alternate
-                    # gather genotype quality info
-                    variant_line.append(variant_gt["genotype_quality"])
+            variant_line.extend(variant_export_lines_rare(variant, case_obj))
 
         variant_line = [str(i) for i in variant_line]
         export_variants.append(",".join(variant_line))
