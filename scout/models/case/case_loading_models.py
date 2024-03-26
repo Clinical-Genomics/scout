@@ -145,7 +145,7 @@ class ChromographImages(BaseModel):
     upd_sites: Optional[str] = None
 
     @model_validator(mode="before")
-    def validate_file_path(cls, values: Dict) -> "SampleLoader":
+    def validate_file_path(cls, config_values: Dict) -> "SampleLoader":
         """Make sure that chromograph paths associated to samples exist on disk and are absolute paths. Chromograph paths are incomplete paths, containing the path to the directory containing a number of files plus the prefix of the files."""
 
         for item in cls.model_fields:
