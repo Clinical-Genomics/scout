@@ -1100,7 +1100,7 @@ def variant_export_lines_common(store: MongoAdapter, variant: dict, case_obj: di
 
 def get_fusion_variant_field(variant: dict, field: str) -> str:
     """Get fusion variant fields that could be from multiple fusion partners.
-    Split if comma separated, and join with "or" sign, so as not to interfere with csv file generation.
+    Split if comma separated, and join with 'or' sign, so as not to interfere with csv file generation.
     Avoid empty values and use "N/A" instead.
     """
 
@@ -1114,6 +1114,19 @@ def get_fusion_variant_field(variant: dict, field: str) -> str:
     return value
 
 
+def get_fusion_exons(variant: dict) -> str:
+    """Get RNAfusion specific variant exons for all genes/transcripts listed. Join with pipe 'or' character."""
+    exon = ""
+    for gene in variant.get("genes", []):
+        for transcript in gene.get("transcripts", []):
+            if "exon" in transcript:
+                if exon:
+                    exon = exon + " | "
+                exon = exon + transcript["exon"]
+
+    return exon
+
+
 def variant_export_lines_fusion(variant: dict, case_obj: dict) -> list:
     """Get RNAfusion specific variant info to be exported. Returns a list to be merged into a string
     in suitable export format.
@@ -1123,14 +1136,7 @@ def variant_export_lines_fusion(variant: dict, case_obj: dict) -> list:
     for field in ["fusion_genes", "orientation", "frame_status", "found_db"]:
         variant_line.append(get_fusion_variant_field(variant, field))
 
-    exon = ""
-    for gene in variant.get("genes", []):
-        for transcript in gene.get("transcripts", []):
-            if "exon" in transcript:
-                if exon:
-                    exon = exon + " | "
-                exon = exon + transcript["exon"]
-    variant_line.append(exon)
+    variant_line.append(get_fusion_exons(variant))
 
     variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
     for individual in case_obj["individuals"]:
