@@ -18,6 +18,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variants page, search for variants in genes present only in build 38 returning no results
 - Pin/unpin with API was not able to make event links
 - A new field `Explanation for multiple conditions` is available in ClinVar for submitting variants with more than one associated condition
+- Fusion variantS export now contains fusion variant specific columns
 
 ## [4.79.1]
 ### Fixed
