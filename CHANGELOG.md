@@ -19,6 +19,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - On variants page, search for variants in genes present only in build 38 returning no results
 - Pin/unpin with API was not able to make event links
 - A new field `Explanation for multiple conditions` is available in ClinVar for submitting variants with more than one associated condition
+- Fusion genes with partners lacking gene hgnc id will still be fully loaded
 
 ## [4.79.1]
 ### Fixed
@@ -53,6 +54,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - New SO terms: `sequence_variant` and `coding_transcript_variant`
 - More MEI specific annotation is shown on the variant page
 - Parse and save MANE transcripts info when updating genes in build 38
+- ClinVar submission can now be downloaded as a json file
 - `Mane Select` and `Mane Plus Clinical` badges on Gene page, when available
 - ClinVar submission can now be downloaded as a json file
 - API endpoint to pin variant
@@ -66,6 +68,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Default loglevel up to INFO, making logs with default start easier to read
 - Add XTR region to PAR region definition
 - Diagnoses can be searched on diagnoses page without waiting for load first
+- Optimised indexes to address slow queries
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded

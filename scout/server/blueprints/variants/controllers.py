@@ -1,7 +1,7 @@
 import decimal
 import logging
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import bson
 from flask import Response, flash, session, url_for
@@ -331,16 +331,16 @@ def fusion_variants(
         if clinical_var_obj is not None:
             variant_obj["clinical_assessments"] = get_manual_assessments(clinical_var_obj)
 
-        variants.append(
-            parse_variant(
-                store,
-                institute_obj,
-                case_obj,
-                variant_obj,
-                genome_build=genome_build,
-                case_dismissed_vars=case_dismissed_vars,
-            )
+        parsed_variant = parse_variant(
+            store,
+            institute_obj,
+            case_obj,
+            variant_obj,
+            genome_build=genome_build,
+            case_dismissed_vars=case_dismissed_vars,
         )
+
+        variants.append(parsed_variant)
 
     return {"variants": variants, "more_variants": more_variants}
 
@@ -1027,7 +1027,7 @@ def download_str_variants(case_obj, variant_objs):
 def download_variants(store, case_obj, variant_objs):
     """Download filtered variants for a case to an excel file
 
-    Args:
+      Args:
         store(adapter.MongoAdapter)
         case_obj(dict)
         variant_objs(PyMongo cursor)
@@ -1084,7 +1084,7 @@ def variant_export_lines(store, case_obj, variants_query):
         variant_line.append("_".join([str(position), change]))
 
         # gather gene info:
-        gene_list = variant.get("genes")  # this is a list of gene objects
+        gene_list = variant.get("genes", [])  # this is a list of gene objects
 
         # if variant is in genes
         if gene_list:
@@ -1125,7 +1125,6 @@ def variant_export_lines(store, case_obj, variants_query):
             # ADD eventual COSMIC ID
             cosmic_ids = variant.get("cosmic_ids") or ["-"]
             variant_line.append(" | ".join(cosmic_ids))
-
         else:
             variant_gts = variant["samples"]  # list of coverage and gt calls for case samples
             for individual in case_obj["individuals"]:
@@ -1228,10 +1227,12 @@ def variants_export_header(case_obj):
     """Returns a header for the CSV file with the filtered variants to be exported.
     Args:
         case_obj(scout.models.Case)
+        category: Variant category to prepare export for e.g. "fusion"
     Returns:
         header: includes the fields defined in scout.constants.variants_export EXPORT_HEADER
                 + AD_reference, AD_alternate, GT_quality for each sample analysed for a case
     """
+
     header = []
     if case_obj.get("track") == "cancer":
         header = header + CANCER_EXPORT_HEADER
@@ -1244,6 +1245,7 @@ def variants_export_header(case_obj):
             header.append("AD_reference_" + display_name)  # Add AD reference field for a sample
             header.append("AD_alternate_" + display_name)  # Add AD alternate field for a sample
             header.append("GT_quality_" + display_name)  # Add Genotype quality field for a sample
+
     return header
 
 
