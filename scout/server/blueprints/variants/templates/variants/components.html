@@ -34,11 +34,12 @@
         href="{{ url_for('genes.gene', hgnc_id=gene.hgnc_id) }}">{{ gene.hgnc_symbol or gene.hgnc_id }}
         </a> <br>
     {% endfor %}
-  {% else %}
-    {% for symbol in variant.fusion_genes %}
-      {{ symbol }} <br>
-    {% endfor %}
   {% endif %}
+  {% for symbol in variant.fusion_genes %}
+    {% if symbol not in variant.hgnc_symbols %}
+      {{ symbol }} <br>
+    {% endif %}
+  {% endfor %}
 </div>
 {% endmacro %}
 
