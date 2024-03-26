@@ -271,7 +271,6 @@ def get_genmod_key(case):
     """
     case_id = case["_id"]
     if "-" in case_id:
-        LOG.debug("iCase ID contains '-'. Using display_name as case _id.")
         return case["display_name"]
     return case["_id"]
 
@@ -474,39 +473,44 @@ def add_gene_and_transcript_info_for_fusions(
         Return:
             parsed_transcripts(list)
     """
+
     parsed_transcripts = []
     genes = []
+    hgnc_ids = []
+    hgnc_symbols = []
+
     for suffix in ["a", "b"]:
-        genes.append(
-            {
-                "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+        # If fusions have transcript information about a fusion partner
+        parsed_transcript = {}
+        if parsed_variant.get(f"transcript_id_{suffix}"):
+            # Add transcript info to genes if available
+            parsed_transcript = {
+                "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
                 "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
-                "transcripts": [],
+                "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
+                "exon": parsed_variant[f"exon_number_{suffix}"],
             }
-        )
-        # If fusions have transcript information about both fusion partners
-        if parsed_variant["transcript_id_a"] and parsed_variant["transcript_id_b"]:
-            parsed_transcripts.append(
+            parsed_transcripts.append(parsed_transcript)
+
+        if parsed_variant.get(f"hgnc_id_{suffix}"):
+            if parsed_variant.get(f"gene_{suffix}"):
+                # Add hgnc_symbol to variant if available
+                hgnc_symbols.append(parsed_variant.get(f"gene_{suffix}"))
+
+            # Add hgnc_id to variant if available
+            hgnc_ids.append(parsed_variant.get(f"hgnc_id_{suffix}"))
+
+            genes.append(
                 {
-                    "transcript_id": parsed_variant[f"transcript_id_{suffix}"],
-                    "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
                     "hgnc_symbol": parsed_variant[f"gene_{suffix}"],
-                    "exon": parsed_variant[f"exon_number_{suffix}"],
+                    "hgnc_id": parsed_variant[f"hgnc_id_{suffix}"],
+                    "transcripts": [parsed_transcript] if parsed_transcript else [],
                 }
             )
 
-    # Add transcript info to genes if available
-    if parsed_transcripts:
-        genes[0]["transcripts"] = [parsed_transcripts[0]]
-        genes[1]["transcripts"] = [parsed_transcripts[1]]
-
-    # Add hgnc_id to variant if available
-    hgnc_ids = []
-    if parsed_variant["hgnc_id_a"] and parsed_variant["hgnc_id_b"]:
-        hgnc_ids = [gene["hgnc_id"] for gene in genes]
-        parsed_variant["genes"] = genes
-
+    parsed_variant["genes"] = genes
     parsed_variant["hgnc_ids"] = hgnc_ids
+    parsed_variant["hgnc_symbols"] = hgnc_symbols
 
     return parsed_transcripts
 
