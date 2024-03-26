@@ -92,12 +92,11 @@ class Sex(str, Enum):
 
 def _resource_abs_path(string_path: str) -> str:
     """Return the absolute path to a resource file."""
-    if exists(string_path) and isabs(string_path):
-        return string_path
-    elif exists(string_path):
-        return abspath(string_path)
-    else:
+    if not exists(string_path):
         raise FileExistsError(f"Path {string_path} could not be found on disk.")
+    if isabs(string_path):
+        return string_path
+    return abspath(string_path)
 
 
 #### VCF files class ####
@@ -152,7 +151,7 @@ class ChromographImages(BaseModel):
             item_path: str = config_values.get(key)
             if item_path:
                 item_path_dirname: str = dirname(item_path)
-                config_values[item] = item_path.replace(
+                config_values[key] = item_path.replace(
                     item_path_dirname, _resource_abs_path(item_path_dirname)
                 )
         return config_values
