@@ -58,8 +58,6 @@ CASE_FILE_PATH_CHECKS = [
     "RNAfusion_report_research",
 ]
 
-REVIEWER_PATH_CHECKS = ["alignment", "alignment_index", "catalog", "vcf"]
-
 VCF_FILE_PATH_CHECKS = [
     "vcf_cancer",
     "vcf_cancer_research",
@@ -175,13 +173,13 @@ class REViewer(BaseModel):
     reference_index: Optional[str] = None
 
     @model_validator(mode="before")
-    def validate_file_path(cls, values: Dict) -> "SampleLoader":
+    def validate_file_path(cls, config_values: Dict) -> "SampleLoader":
         """Make sure that REViewer paths associated to samples exist on disk and are absolute paths."""
-        for item in REVIEWER_PATH_CHECKS:
-            item_path: str = values.get(item)
+        for key in cls.model_fields:
+            item_path: str = config_values.get(key)
             if item_path:
-                values[item] = _resource_abs_path(item_path)
-        return values
+                config_values[key] = _resource_abs_path(item_path)
+        return config_values
 
 
 class SampleLoader(BaseModel):
