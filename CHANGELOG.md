@@ -19,8 +19,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Pin/unpin with API was not able to make event links
 - A new field `Explanation for multiple conditions` is available in ClinVar for submitting variants with more than one associated condition
 - Fusion genes with partners lacking gene hgnc id will still be fully loaded
-- Attempt to find fusion genes lacking hgnc id using gene symbol and alias lookup
-- Fusion variantS export now contains fusion variant specific columns
 
 ## [4.79.1]
 ### Fixed
