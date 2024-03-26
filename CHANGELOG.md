@@ -4,17 +4,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.80]
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
 - Link for chanjo2 coverage report on gene panel page
-- Link for chanjo2 coverage report on Case pagem HPO dynamic gene list
+- Link for chanjo2 coverage report on Case page HPO dynamic gene list
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
-- Dark mode settings applied to multiselects on institute settings
+- Dark mode settings applied to multi-selects on institute settings page
 - Comments on case and variant pages can be viewed by expanding an accordion
 - On case page information on pinned variants and variants submitted to ClinVar are displayed in the same table
 - Demo case file paths are now stored as absolute paths
+- Optimised indices to address slow queries
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
 - Pin/unpin with API was not able to make event links
@@ -66,7 +67,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Default loglevel up to INFO, making logs with default start easier to read
 - Add XTR region to PAR region definition
 - Diagnoses can be searched on diagnoses page without waiting for load first
-- Optimised indexes to address slow queries
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded
