@@ -960,7 +960,7 @@ def parse_variant(
 
 
 def download_str_variants(case_obj, variant_objs):
-    """Download filtered STR variants for a case to an excel file
+    """Download filtered STR variants for a case to a CSV file
 
     Args:
         case_obj(dict)
@@ -1029,7 +1029,7 @@ def download_str_variants(case_obj, variant_objs):
 def download_variants(
     store: MongoAdapter, case_obj: dict, variant_objs: CursorType, category: Optional[str] = None
 ) -> Response:
-    """Download filtered variants for a case to an excel file
+    """Download filtered variants for a case to a CSV file
 
     Returns:
         an HTTP response containing a csv file
@@ -1103,7 +1103,6 @@ def get_fusion_variant_field(variant: dict, field: str) -> str:
     Split if comma separated, and join with 'or' sign, so as not to interfere with csv file generation.
     Avoid empty values and use "N/A" instead.
     """
-
     value = variant.get(field, "N/A")
     if "," in value:
         value = value.split(",")
