@@ -7,7 +7,7 @@
         <thead class="table-light thead">
           <tr style="cursor: pointer; white-space: nowrap">
             <th>Panel <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by gene panel name"></i></th>
-            <th><i class="fas fa-bars float-end mx-4" data-bs-toggle="tooltip" title="Sort by default panel"></i></th>
+            <th >Default <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by default panel"></i></th>
             <th>Version <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by panel version"></i></th>
             <th>Genes <i class="fas fa-sort" data-bs-toggle="tooltip" title="Sort by number of genes"></i></th>
           </tr>
@@ -25,7 +25,7 @@
               </td>
               <td >
                 {% if panel.is_default %}
-                  <span class="badge bg-dark float-end">Default</span>
+                  <span class="badge bg-dark">Default</span>
                 {% endif %}
               </td>
               <td>{{ panel.version }} <small class="text">({{ panel.updated_at.date() }})</small></td>
