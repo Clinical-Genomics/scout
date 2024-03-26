@@ -34,19 +34,11 @@ INDEXES = {
             [
                 ("case_id", ASCENDING),
                 ("category", ASCENDING),
-                ("variant_rank", ASCENDING),
-            ],
-            name="caseid_variantrank",
-            background=True,
-        ),
-        IndexModel(
-            [
-                ("case_id", ASCENDING),
-                ("category", ASCENDING),
                 ("variant_type", ASCENDING),
-                ("rank_score", DESCENDING),
+                ("variant_rank", ASCENDING),
+                ("hgnc_ids", ASCENDING),
             ],
-            name="caseid_category_varianttype_rankscore",
+            name="caseid_category_varianttype_variantrank_hgncids",
             background=True,
         ),
         IndexModel(
@@ -62,11 +54,11 @@ INDEXES = {
         ),
         IndexModel(
             [
+                ("variant_id", ASCENDING),
                 ("case_id", ASCENDING),
                 ("category", ASCENDING),
-                ("variant_id", ASCENDING),
             ],
-            name="caseid_variantid",
+            name="variantid_caseid_category",
             background=True,
         ),
         IndexModel(
