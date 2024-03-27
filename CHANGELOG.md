@@ -18,6 +18,9 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Demo case file paths are now stored as absolute paths
 - Optimised indices to address slow queries
 - On case page default panels are now found at the top of the table, and it can be sorted by this trait
+- Demo case file paths are now stored as absolute
+- Optimised indexes to address slow queries
+- Parallelize variant loading for each chromosome
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
 - Pin/unpin with API was not able to make event links
@@ -180,6 +183,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Update more FontAwesome icons to avoid Pro icons
 - Test if files still exist before attempting to load research variants
 - Parsing of genotypes error, resulting in -1 values when alt or ref read depths are 0
+
 
 ## [4.74]
 ### Added

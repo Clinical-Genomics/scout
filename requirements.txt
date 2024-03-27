@@ -10,6 +10,7 @@ Flask-WTF
 Flask-Mail
 coloredlogs
 query_phenomizer
+joblib
 Flask-Babel>=3
 livereload
 tornado<6.3

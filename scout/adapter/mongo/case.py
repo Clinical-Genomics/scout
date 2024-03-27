@@ -10,7 +10,7 @@ import pymongo
 from bson import ObjectId
 
 from scout.build.case import build_case
-from scout.constants import ACMG_MAP, ID_PROJECTION
+from scout.constants import ACMG_MAP, CYVCF2_THREADS, ID_PROJECTION, LOADER_THREADS
 from scout.exceptions import ConfigError, IntegrityError
 from scout.parse.variant.ids import parse_document_id
 from scout.utils.algorithms import ui_score
@@ -827,13 +827,14 @@ class CaseHandler(object):
             # collect all variants with user actions for this case
             return list(self.evaluated_variants(case_obj["_id"], institute_obj["_id"]))
 
-    def update_case_data_sharing(self, old_case: dict, new_case: dict):
-        """Update data sharing info for a case that is re-runned/re-uploaded."""
-        for key in ["beacon", "mme_submission"]:
-            if key in old_case:
-                new_case[key] = old_case[key]
-
-    def load_case(self, config_data: dict, update: bool = False, keep_actions: bool = True) -> dict:
+    def load_case(
+        self,
+        config_data: dict,
+        update: bool = False,
+        keep_actions: bool = True,
+        threads=LOADER_THREADS,
+        cyvcf2threads=CYVCF2_THREADS,
+    ):
         """Load a case into the database
 
         Check if the owner and the institute exists.
@@ -931,6 +932,8 @@ class CaseHandler(object):
                     custom_images=self._get_variants_custom_images(
                         variant_category=category, case=case_obj
                     ),
+                    threads=threads,
+                    cyvcf2threads=cyvcf2threads,
                 )
 
         except (IntegrityError, ValueError, ConfigError, KeyError) as error:

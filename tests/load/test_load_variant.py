@@ -1,5 +1,3 @@
-from pprint import pprint as pp
-
 import pytest
 from cyvcf2 import VCF
 
@@ -7,7 +5,6 @@ from scout.build.managed_variant import build_managed_variant
 from scout.constants import REV_CLINSIG_MAP
 from scout.exceptions.database import IntegrityError
 from scout.parse.variant import parse_variant
-from scout.server.blueprints.variants.controllers import variants
 
 
 def test_load_variant(real_populated_database, variant_obj):
@@ -179,7 +176,7 @@ def test_load_variants(real_populated_database, case_obj, variant_clinical_file)
         assert variant["variant_rank"]
 
 
-def test_load_variants_includes_managed(real_populated_database, case_obj, variant_clinical_file):
+def test_load_variants_includes_managed(real_populated_database, case_obj):
     """Test that loading variants will include variants on the managed variants list"""
     adapter = real_populated_database
     # GIVEN a database without any variants
@@ -211,7 +208,7 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
     )
 
     # THEN assert any variant is loaded
-    assert sum(1 for i in adapter.variant_collection.find()) > 0
+    assert sum(1 for _ in adapter.variant_collection.find()) > 0
 
     ## THEN assert that the variant has been loaded
     query = adapter.build_query(
@@ -225,10 +222,10 @@ def test_load_variants_includes_managed(real_populated_database, case_obj, varia
         category="snv",
     )
     print("Query: {}".format(query))
-    assert sum(1 for i in adapter.variant_collection.find(query)) == 1
+    assert sum(1 for _ in adapter.variant_collection.find(query)) == 1
 
 
-def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
+def test_load_sv_variants(real_populated_database, case_obj):
     """Test to load a variant into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants
@@ -252,7 +249,7 @@ def test_load_sv_variants(real_populated_database, case_obj, sv_clinical_file):
         assert variant["variant_rank"]
 
 
-def test_load_region(real_populated_database, case_obj, variant_clinical_file):
+def test_load_region(real_populated_database, case_obj):
     """Test to load variants from a region into a mongo database"""
     adapter = real_populated_database
     # GIVEN a database without any variants

@@ -9,10 +9,17 @@ import cyvcf2
 import pymongo
 from cyvcf2 import VCF, Variant
 from intervaltree import IntervalTree
+from joblib import Parallel, delayed
 from pymongo.errors import BulkWriteError, DuplicateKeyError
 
 from scout.build import build_variant
-from scout.constants import CHROMOSOMES, FILE_TYPE_MAP
+from scout.constants import (
+    CHROMOSOMES,
+    CHROMOSOMES_38,
+    CYVCF2_THREADS,
+    FILE_TYPE_MAP,
+    LOADER_THREADS,
+)
 from scout.exceptions import IntegrityError
 from scout.parse.variant import parse_variant
 from scout.parse.variant.clnsig import is_pathogenic
@@ -348,6 +355,65 @@ class VariantLoader(object):
 
         return
 
+    def _load_variants_parallel(
+        self,
+        variant_type,
+        case_obj,
+        individual_positions,
+        rank_threshold,
+        institute_id,
+        build=None,
+        category="snv",
+        **kwargs,
+    ):
+        kwargs.setdefault("rank_results_header", None)
+        rank_results_header = kwargs.get("rank_results_header")
+        kwargs.setdefault("vep_header", None)
+        rank_results_header = kwargs.get("vep_header")
+        kwargs.setdefault("custom_images", None)
+        rank_results_header = kwargs.get("custom_images")
+        kwargs.setdefault("local_archive_info", None)
+
+        rank_results_header = kwargs.get("local_archive_info")
+        chromosomes = CHROMOSOMES if "37" in str(case_obj.get("genome_build")) else CHROMOSOMES_38
+
+        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
+        gene_to_panels = self.gene_to_panels(case_obj)
+        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
+        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+
+        variants = None
+        if variant_file:
+            local_vcf_obj = VCF(variant_file, threads=cyvcf2threads)
+            variants = local_vcf_obj(chromosome)
+
+        nr_inserted_chr = Parallel(n_jobs=threads, prefer="threads")(
+            delayed(self._load_variants)(
+                variants=variants,
+                variant_type=variant_type,
+                case_obj=case_obj,
+                individual_positions=individual_positions,
+                rank_threshold=rank_threshold,
+                institute_id=institute_id,
+                build=build,
+                rank_results_header=rank_results_header,
+                vep_header=vep_header,
+                category=category,
+                sample_info=sample_info,
+                custom_images=custom_images,
+                local_archive_info=local_archive_info,
+                variant_file=variant_file,
+                chromosome=chromosome,
+                genes=genes,
+                gene_to_panels=gene_to_panels,
+                hgncid_to_gene=hgncid_to_gene,
+                genomic_intervals=genomic_intervals,
+            )
+            for chromosome in chromosomes
+        )
+        nr_inserted = sum(nr_inserted_chr)
+        return nr_inserted
+
     def _load_variants(
         self,
         variants,
@@ -357,12 +423,9 @@ class VariantLoader(object):
         rank_threshold,
         institute_id,
         build=None,
-        rank_results_header=None,
-        vep_header=None,
         category="snv",
         sample_info=None,
-        custom_images=None,
-        local_archive_info=None,
+        **kwargs,
     ):
         """Perform the loading of variants
 
@@ -388,11 +451,32 @@ class VariantLoader(object):
         Returns:
             nr_inserted(int)
         """
+
         build = build or "37"
-        genes = [gene_obj for gene_obj in self.all_genes(build=build)]
-        gene_to_panels = self.gene_to_panels(case_obj)
-        hgncid_to_gene = self.hgncid_to_gene(genes=genes, build=build)
-        genomic_intervals = self.get_coding_intervals(genes=genes, build=build)
+
+        kwargs.setdefault("rank_results_header", None)
+        rank_results_header = kwargs.get("rank_results_header")
+
+        kwargs.setdefault("vep_header", None)
+        vep_header = kwargs.get("vep_header")
+
+        kwargs.setdefault("custom_images", None)
+        custom_images = kwargs.get("custom_images")
+
+        kwargs.setdefault("local_archive_info", None)
+        local_archive_info = kwargs.get("local_archive_info")
+
+        kwargs.setdefault("genes", [gene_obj for gene_obj in self.all_genes(build=build)])
+        genes = kwargs.get("genes")
+
+        kwargs.setdefault("gene_to_panels", self.gene_to_panels(case_obj))
+        gene_to_panels = kwargs.get("gene_to_panels")
+
+        kwargs.setdefault("hgncid_to_gene", self.hgncid_to_gene(genes=genes, build=build))
+        hgncid_to_gene = kwargs.get("hgncid_to_gene")
+
+        kwargs.setdefault("genomic_intervals", self.get_coding_intervals(genes=genes, build=build))
+        genomic_intervals = kwargs.get("genomic_intervals")
 
         LOG.info("Start inserting {0} {1} variants into database".format(variant_type, category))
         start_insertion = datetime.now()
@@ -623,6 +707,8 @@ class VariantLoader(object):
         gene_obj=None,
         custom_images=None,
         build="37",
+        threads=LOADER_THREADS,
+        cyvcf2threads=CYVCF2_THREADS,
     ):
         """Load variants for a case into scout.
 
@@ -697,7 +783,7 @@ class VariantLoader(object):
                 else:
                     sample_info[ind["individual_id"]] = "control"
 
-        # Check if a region scould be uploaded
+        # Check if a region should be uploaded
         region = ""
         if gene_obj:
             chrom = gene_obj["chromosome"]
@@ -713,24 +799,46 @@ class VariantLoader(object):
         else:
             rank_threshold = rank_threshold or 0
 
-        variants = vcf_obj(region)
-
         try:
-            nr_inserted = self._load_variants(
-                variants=variants,
-                variant_type=variant_type,
-                case_obj=case_obj,
-                individual_positions=individual_positions,
-                rank_threshold=rank_threshold,
-                institute_id=institute_id,
-                build=build,
-                rank_results_header=rank_results_header,
-                vep_header=vep_header,
-                category=category,
-                sample_info=sample_info,
-                custom_images=custom_images,
-                local_archive_info=local_archive_info,
-            )
+            if threads > 1 and region == "":
+                nr_inserted = _load_variants_parallel(
+                    variant_type=variant_type,
+                    case_obj=case_obj,
+                    individual_positions=individual_positions,
+                    rank_threshold=rank_threshold,
+                    institute_id=institute_id,
+                    build=build,
+                    category=category,
+                    rank_results_header=rank_results_header,
+                    vep_header=vep_header,
+                    sample_info=sample_info,
+                    custom_images=custom_images,
+                    local_archive_info=local_archive_info,
+                    variant_file=variant_file,
+                )
+
+            else:
+                if cyvcf2threads > 1 and region == "":
+                    vcf_obj = VCF(variant_file, threads=cyvcf2threads)
+                    variants = vcf_obj()
+                elif region != "":
+                    variants = vcf_obj(region)
+
+                nr_inserted = self._load_variants(
+                    variants=variants,
+                    variant_type=variant_type,
+                    case_obj=case_obj,
+                    individual_positions=individual_positions,
+                    rank_threshold=rank_threshold,
+                    institute_id=institute_id,
+                    build=build,
+                    rank_results_header=rank_results_header,
+                    vep_header=vep_header,
+                    category=category,
+                    sample_info=sample_info,
+                    custom_images=custom_images,
+                    local_archive_info=local_archive_info,
+                )
         except Exception as error:
             LOG.exception("unexpected error")
             LOG.warning("Deleting inserted variants")

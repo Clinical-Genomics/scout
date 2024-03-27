@@ -7,32 +7,23 @@ from flask import url_for
 from scout.server.extensions import store
 
 
-def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_redirect):
+def test_variants_clinical_filter(
+    app, real_variant_database, institute_obj, case_obj, mocker, mock_redirect
+):
     mocker.patch("scout.server.blueprints.variants.views.redirect", return_value=mock_redirect)
 
-    # GIVEN a variant without clinVar annotations
+    # GIVEN a variant without clinVar annotations. Also needs to be present in affected individual, have gene id in panel,
+    # be sufficiently early in the ranking to appear once it is given a clnsig, but not appear before - actually just pick
+    # a known one that goes from no clnsig to having clnsig.
     test_var = store.variant_collection.find_one(
         {
+            "document_id": "fd645bd4394f98a50bb7e58f98134fc5",
             "clnsig": {"$exists": False},
             "variant_type": "clinical",
             "category": "snv",
-            "panels": {"$in": ["panel1"]},
-        }
+        },
     )
     assert test_var
-
-    # IF the variant receives a fake clinsig annotation compatible with the clinical filter
-    clinsig_criteria = {
-        "value": 5,
-        "accession": 345986,
-        "revstat": "criteria_provided,multiple_submitters,no_conflicts",
-    }
-
-    updated_var = store.variant_collection.find_one_and_update(
-        {"_id": test_var["_id"]},
-        {"$set": {"clnsig": [clinsig_criteria], "panels": ["panel1"]}},
-        return_document=pymongo.ReturnDocument.AFTER,
-    )
 
     # GIVEN an initialized app
     # GIVEN a valid user and institute
@@ -47,6 +38,39 @@ def test_variants_clinical_filter(app, institute_obj, case_obj, mocker, mock_red
             "variant_type": "clinical",
             "gene_panels": "panel1",
         }
+
+        resp = client.post(
+            url_for(
+                "variants.variants",
+                institute_id=institute_obj["internal_id"],
+                case_name=case_obj["display_name"],
+            ),
+            data=data,
+        )
+
+        # THEN it should return a page
+        assert resp.status_code == 200
+
+        # THEN the variant should not be found on display
+        assert test_var["_id"] not in str(resp.data)
+
+        # IF the variant receives a fake clinsig annotation compatible with the clinical filter
+        clinsig_criteria = {
+            "value": 5,
+            "accession": 345986,
+            "revstat": "criteria_provided,multiple_submitters,no_conflicts",
+        }
+
+        updated_var = store.variant_collection.find_one_and_update(
+            {"_id": test_var["_id"]},
+            {
+                "$set": {
+                    "clnsig": [clinsig_criteria],
+                    "panels": ["panel1"],
+                }
+            },
+            return_document=pymongo.collection.ReturnDocument.AFTER,
+        )
 
         resp = client.post(
             url_for(

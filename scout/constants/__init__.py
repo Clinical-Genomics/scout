@@ -108,6 +108,10 @@ from .variants_export import (
     VERIFIED_VARIANTS_HEADER,
 )
 
+# Default number of threads for variant loading
+LOADER_THREADS = 8
+CYVCF2_THREADS = 2
+
 DATE_DAY_FORMATTER = "%Y-%m-%d"
 
 cytobands_37_handle = get_file_handle(cytoband_files.get("37"))
