@@ -505,8 +505,11 @@ def observations(store: MongoAdapter, loqusdb: LoqusDB, variant_obj: dict) -> Di
             if obs_data[loqus_id].get("total"):
                 obs_data[loqus_id]["observations"] = 0
             continue
-
-        # collect cases where observations occurred
+        # Check if the current case is represented in the loqusdb instance
+        obs_data[loqus_id]["case_match"] = variant_obj["case_id"] in obs_data[loqus_id].get(
+            "families", []
+        )
+        # collect other cases where observations occurred
         obs_data[loqus_id]["cases"] = get_loqusdb_obs_cases(
             store, variant_obj, category, obs_data[loqus_id].get("families", [])
         )
