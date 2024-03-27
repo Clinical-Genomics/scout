@@ -130,8 +130,8 @@
         </div>
       </div>
 
-      <div class="row mt-2"> <!-- Show variants in dynamic gene list -->
-        <div class="row">
+      <div>
+        <div class="row"> <!-- Show variants in dynamic gene list -->
           <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
             <div class="form-check form-switch">
               <input type="checkbox" class="form-check-input" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
@@ -223,7 +223,7 @@
                   Coverage overview (Chanjo2)
               </a>
             {% endif %}
-
+            
           </div>
         </div>
         {% endif %} <!-- End of if case.chanjo_coverage or case.chanjo2_coverage -->
@@ -235,7 +235,7 @@
           </div>
         </div>
 
-      </div> <!-- End of Show variants in dynamic gene list -->
+      </div>
 
     {% endif %}
   </div>
