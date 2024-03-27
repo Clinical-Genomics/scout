@@ -12,44 +12,46 @@
 
 {% block body %}
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
-  <!-- Brand and toggle get grouped for better mobile display -->
-  <a class="nav-link" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">Case {{case.display_name}}</a>
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <a class="nav-link link-primary mx-2 " style="text-decoration: none !important;" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">Case {{case.display_name}}</a>
 
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-  </button>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <div class="collapse navbar-collapse" id="navbarText">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="#phenotype">Phenotype overview<span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#gene_panels">Gene panels</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#causative_variants">Causative Variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#pinned_variants">Pinned variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#acmg_variants">ACMG-classified variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#manual_ranked_variants">Manual ranked</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#commented_variants">Commented variants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#dismissed_variants">Dismissed variants</a>
-      </li>
-    </ul>
-    <span class="navbar-text">
-      <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-secondary" type="button">Download PDF</button></a>
-    </span>
+    <div class="collapse navbar-collapse" id="navbarText">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#phenotype">Phenotype overview<span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#gene_panels">Gene panels</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#causative_variants">Causative Variants</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#pinned_variants">Pinned variants</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#acmg_variants">ACMG-classified variants</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#manual_ranked_variants">Manual ranked</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#commented_variants">Commented variants</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link link-secondary" style="text-decoration: none !important;" href="#dismissed_variants">Dismissed variants</a>
+        </li>
+      </ul>
+      <span class="navbar-text">
+        <a href="{{ url_for('cases.pdf_case_report', institute_id=institute._id, case_name=case.display_name) }}"><button class="btn btn-sm btn-secondary" type="button">Download PDF</button></a>
+      </span>
+    </div>
   </div>
 </nav>
 
@@ -74,7 +76,7 @@
 {% macro phenotype_panel() %}
 	<div class="card mb-3" style="border-width: 5px; display: block;">
 	  <div class="card-header">
-	    <a id="phenotype" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
+	    <a id="phenotype" class="link-primary" style="text-decoration: none !important;" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
 	  </div>
 	  <div class="card-body">
 	    <table class="table table-sm" style="table-layout:fixed;">
