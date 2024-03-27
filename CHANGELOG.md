@@ -8,7 +8,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Sizing of buttons in the HPO genes panel on case page
 
-
 ## [4.80]
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
