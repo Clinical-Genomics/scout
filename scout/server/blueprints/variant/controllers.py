@@ -27,7 +27,7 @@ from scout.server.blueprints.variant.utils import (
     update_variant_case_panels,
 )
 from scout.server.blueprints.variants.utils import update_case_panels
-from scout.server.extensions import LoqusDB, cloud_tracks, gens
+from scout.server.extensions import LoqusDB, config_igv_tracks, gens
 from scout.server.links import disease_link, get_variant_links
 from scout.server.utils import (
     case_has_alignments,
@@ -142,8 +142,8 @@ def get_igv_tracks(build: str = "37") -> set:
     for track in IGV_TRACKS.get(build, []):
         igv_tracks.add(track.get("name"))
     # Collect instance-specif cloud public tracks, if available
-    if hasattr(cloud_tracks, "public_tracks"):
-        for track in cloud_tracks.public_tracks.get(build, []):
+    if hasattr(config_igv_tracks, "tracks"):
+        for track in config_igv_tracks.tracks.get(build, []):
             igv_tracks.add(track.get("name"))
     return igv_tracks
 

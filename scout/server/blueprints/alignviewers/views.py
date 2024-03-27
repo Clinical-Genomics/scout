@@ -11,7 +11,6 @@ from flask import (
     request,
     session,
 )
-from flask_login import current_user
 
 from scout.server.extensions import store
 from scout.server.utils import institute_and_case
@@ -76,10 +75,6 @@ def remote_static():
     # Check that user is logged in or that file extension is valid
     if controllers.check_session_tracks(file_path) is False:
         return abort(403)
-
-    range_header = request.headers.get("Range", None)
-    if not range_header and (file_path.endswith(".bam") or file_path.endswith(".cram")):
-        return abort(500)
 
     new_resp = send_file_partial(file_path)
     return new_resp

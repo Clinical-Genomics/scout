@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Link to chanjo2 coverage report and coverage gene overview on gene panel page
 - Link to chanjo2 coverage report on Case page, HPO dynamic gene list
 - Link to genes coverage overview report on Case page, HPO dynamic gene list
+- Support for loading and displaying local custom IGV tracks
+- MANE IGV track to be used as a local track for igv.js (see scout demo config file)
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
 - Dark mode settings applied to multi-selects on institute settings page

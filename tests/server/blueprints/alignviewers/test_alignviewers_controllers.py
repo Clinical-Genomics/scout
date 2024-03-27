@@ -4,7 +4,7 @@ from flask import url_for
 from flask_login import current_user
 
 from scout.server.blueprints.alignviewers import controllers
-from scout.server.extensions import cloud_tracks, store
+from scout.server.extensions import config_igv_tracks, store
 
 
 def test_make_sashimi_tracks_variant_38(app, case_obj):
@@ -68,12 +68,12 @@ def test_make_sashimi_tracks_variant_37(app, case_obj, ensembl_liftover_response
         assert display_obj["custom_tracks"]  # Custom tracks include gene track in the right build
 
 
-def test_set_cloud_public_tracks(app):
-    """Test function that adds cloud public tracks to track display object"""
+def test_set_config_custom_tracks(app):
+    """Test function that adds custom tracks taken from the scout config file to the IGV display object."""
 
     # GIVEN an app with public cloud tracks initialized
     patched_track = {"37": [{"name": "test track"}]}
-    cloud_tracks.public_tracks = patched_track
+    config_igv_tracks.tracks = patched_track
 
     display_obj = {}
     build = "37"
@@ -88,8 +88,8 @@ def test_set_cloud_public_tracks(app):
         )
 
         # Then the set_cloud_public_tracks controller should add the test track to the display object
-        controllers.set_cloud_public_tracks(display_obj, build)
-        assert display_obj["cloud_public_tracks"] == patched_track["37"]
+        controllers.set_config_custom_tracks(display_obj, build)
+        assert display_obj["config_custom_tracks"] == patched_track["37"]
 
 
 def test_make_igv_tracks(app, case_obj, variant_obj):

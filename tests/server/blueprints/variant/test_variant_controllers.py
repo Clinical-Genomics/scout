@@ -17,7 +17,7 @@ from scout.server.blueprints.variant.controllers import (
     variant_rank_scores,
 )
 from scout.server.blueprints.variant.utils import evaluation
-from scout.server.extensions import cloud_tracks, loqusdb, store
+from scout.server.extensions import config_igv_tracks, loqusdb, store
 from scout.server.utils import case_has_rna_tracks
 
 LOG = logging.getLogger(__name__)
@@ -160,7 +160,7 @@ def test_get_igv_tracks():
 
     # GIVEN an app with public cloud tracks initialized
     patched_track = {"37": [{"name": "test track"}]}
-    cloud_tracks.public_tracks = patched_track
+    config_igv_tracks.tracks = patched_track
 
     # THEN the get_igv_tracks controller should return the default tracks
     igv_tracks = get_igv_tracks()
