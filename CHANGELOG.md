@@ -6,7 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Fixed
-- Sizing of buttons in the HPO genes panel on case page
+- Buttons layout in HPO genes panel on case page
 
 ## [4.80]
 ### Added
