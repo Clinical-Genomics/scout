@@ -894,6 +894,7 @@ def test_chanjo2_coverage_report(app, institute_obj, case_obj):
                 "cases.chanjo2_coverage_report",
                 institute_id=institute_obj["internal_id"],
                 case_name=case_obj["display_name"],
+                report_type="report",
             )
         )
         # THEN it should return a successful response
