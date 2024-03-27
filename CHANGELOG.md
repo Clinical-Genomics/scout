@@ -7,8 +7,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [4.80]
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
-- Link for chanjo2 coverage report on gene panel page
-- Link for chanjo2 coverage report on Case page HPO dynamic gene list
+- Link to chanjo2 coverage report and coverage gene overview on gene panel page
+- Link to chanjo2 coverage report on Case page, HPO dynamic gene list
 - Link to genes coverage overview report on Case page, HPO dynamic gene list
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
