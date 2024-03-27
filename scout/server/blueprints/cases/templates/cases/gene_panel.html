@@ -215,10 +215,17 @@
             {% if case.chanjo2_coverage %}
               <a class="btn btn-secondary btn-sm text-white"
                 href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id,
-                                 case_name=case.display_name, panel_name='HPO Panel') }}" target="_blank" rel="noopener">
+                                 case_name=case.display_name, panel_name='HPO Panel', report_type='report') }}" target="_blank" rel="noopener">
                   Coverage report (Chanjo2)
-               </a>
+              </a>
+
+              <a class="btn btn-secondary btn-sm text-white"
+                href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id,
+                                 case_name=case.display_name, panel_name='HPO Panel', report_type='overview') }}" target="_blank" rel="noopener">
+                  Coverage overview (Chanjo2)
+              </a>
             {% endif %}
+
           </div>
         </div>
         {% endif %} <!-- End of if case.chanjo_coverage or case.chanjo2_coverage -->
