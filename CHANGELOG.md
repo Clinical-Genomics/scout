@@ -51,6 +51,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored code in `scout/parse/omim.py` and `scout/parse/disease_terms.py` to use "disease" instead of "phenotype" to differentiate from HPO terms
 - Be more careful about checking access to variant on API access
 - Show also ACMG VUS on general report (could be missing if not e.g. pinned)
+- When Loqusdb observations count is one the table includes information on if observation was for the current or another case
 
 ## [4.78]
 ### Added
