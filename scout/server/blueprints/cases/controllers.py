@@ -86,9 +86,9 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
 
 
 def chanjo2_coverage_report_contents(
-    institute_obj: dict, case_obj: dict, panel_name: str, panel_id: Optional[str]
+    institute_obj: dict, case_obj: dict, panel_name: str, panel_id: Optional[str], report_type: str
 ) -> Optional[str]:
-    """Retrieve the HTML contents of the Chanjo2 report for a case."""
+    """Retrieve the HTML contents of the Chanjo2 coverage report/overview for a case."""
 
     if panel_id:
         hgnc_gene_ids: List[int] = store.panel_to_genes(panel_id=panel_id, gene_format="hgnc_id")
@@ -135,7 +135,7 @@ def chanjo2_coverage_report_contents(
         "samples": query_samples,
     }
 
-    report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), "report"])
+    report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), report_type])
     response = requests.post(report_url, json=report_query)
     return response.text
 

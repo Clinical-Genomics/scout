@@ -9,6 +9,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
 - Link for chanjo2 coverage report on gene panel page
 - Link for chanjo2 coverage report on Case pagem HPO dynamic gene list
+- Link to genes coverage overview report on Case page, HPO dynamic gene list
 - Support for loading and displaying local custom IGV tracks
 - MANE IGV track to be used as a local track for igv.js (see scout demo config file)
 ### Changed
@@ -25,7 +26,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Fusion genes with partners lacking gene HGNC id will still be fully loaded
 - Fusion variantS export now contains fusion variant specific columns
 - When Loqusdb observations count is one the table includes information on if observation was for the current or another case
-
 
 ## [4.79.1]
 ### Fixed
