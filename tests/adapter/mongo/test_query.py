@@ -885,8 +885,6 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, s
         return_document=ReturnDocument.AFTER,
     )
 
-    print("snv: {0} sv: {1}".format(updated_snv_variant, updated_sv_variant))
-
     # THEN the function that finds overlapping variants to the snv_variant
     results = adapter.overlapping(updated_snv_variant, limit=10000)
     for res in results:
