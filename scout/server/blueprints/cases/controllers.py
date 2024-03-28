@@ -136,7 +136,7 @@ def chanjo2_coverage_report(
     }
 
     report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), report_type])
-    requests.redirect(report_url, json=report_query, code=307)
+    redirect(report_url, json=report_query, code=307)
 
 
 def coverage_report_contents(base_url, institute_obj, case_obj):
