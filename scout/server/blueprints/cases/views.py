@@ -323,16 +323,13 @@ def chanjo2_coverage_report(institute_id: str, case_name: str, report_type: str)
         return redirect(request.referrer)
 
     institute_obj, case_obj = institute_and_case(store, institute_id, case_name)
-    report_html_content: str = controllers.chanjo2_coverage_report_contents(
+    controllers.chanjo2_coverage_report(
         institute_obj=institute_obj,
         case_obj=case_obj,
         panel_name=request.args.get("panel_name"),
         panel_id=request.args.get("panel_id"),
         report_type=report_type,
     )
-    if report_html_content is None:
-        return redirect(request.referrer)
-    return report_html_content
 
 
 @cases_bp.route("/<institute_id>/<case_name>/mt_report", methods=["GET"])

@@ -85,7 +85,7 @@ def phenomizer_diseases(hpo_ids, case_obj, p_value_treshold=1):
         flash("Could not establish a conection to Phenomizer", "danger")
 
 
-def chanjo2_coverage_report_contents(
+def chanjo2_coverage_report(
     institute_obj: dict, case_obj: dict, panel_name: str, panel_id: Optional[str], report_type: str
 ) -> Optional[str]:
     """Retrieve the HTML contents of the Chanjo2 coverage report/overview for a case."""
@@ -136,8 +136,7 @@ def chanjo2_coverage_report_contents(
     }
 
     report_url: str = "/".join([current_app.config.get("CHANJO2_URL"), report_type])
-    response = requests.post(report_url, json=report_query)
-    return response.text
+    requests.redirect(report_url, json=report_query, code=307)
 
 
 def coverage_report_contents(base_url, institute_obj, case_obj):
