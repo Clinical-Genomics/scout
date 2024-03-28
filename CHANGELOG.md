@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.80.1]
 ### Fixed
 - Buttons layout in HPO genes panel on case page
 
