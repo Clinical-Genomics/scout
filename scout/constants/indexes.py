@@ -63,6 +63,16 @@ INDEXES = {
         ),
         IndexModel(
             [
+                ("category", ASCENDING),
+                ("case_id", ASCENDING),
+                ("variant_type", ASCENDING),
+                ("variant_rank_score", ASCENDING),
+            ],
+            name="category_caseid_varianttype_rankscore",
+            background=True,
+        ),
+        IndexModel(
+            [
                 ("case_id", ASCENDING),
                 ("category", ASCENDING),
                 ("variant_type", ASCENDING),
