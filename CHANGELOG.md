@@ -7,6 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ### Fixed
 - Buttons layout in HPO genes panel on case page
+- Added back old variant rankscore index with different key order to help loading on demo instance
 
 ## [4.80]
 ### Added
