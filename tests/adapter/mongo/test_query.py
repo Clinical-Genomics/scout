@@ -1,11 +1,8 @@
-import logging
 import re
 
 from pymongo import ReturnDocument
 
 from scout.constants import CLINSIG_MAP, TRUSTED_REVSTAT_LEVEL
-
-LOG = logging.getLogger(__name__)
 
 
 def test_build_gene_variant_query(adapter, case_obj, test_hpo_terms, institute_obj):
@@ -888,7 +885,7 @@ def test_get_overlapping_variant(real_variant_database, case_obj, variant_obj, s
     # THEN the function that finds overlapping variants to the snv_variant
     results = adapter.overlapping(updated_snv_variant, limit=10000)
     for res in results:
-        # SHOULD return SV variant
+        # SHOULD return the SV variant
         assert res["category"] == "sv"
         assert res["_id"] == sv_variant_id
 
