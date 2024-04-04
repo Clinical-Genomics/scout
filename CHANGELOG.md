@@ -4,7 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+
 ## [4.80.1]
+### Added
+- Tag for somatic SV IGH-DUX4 detection samtools script
 ### Fixed
 - Buttons layout in HPO genes panel on case page
 - Added back old variant rankscore index with different key order to help loading on demo instance

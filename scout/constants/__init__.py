@@ -204,6 +204,7 @@ CALLERS = {
         {"id": "ascat", "name": "ASCAT"},
         {"id": "dellycnv", "name": "DellyCNV"},
         {"id": "tiddit", "name": "TIDDIT"},
+        {"id": "igh_dux4", "name": "IGH-DUX4 detection"},
     ],
     "mei": [{"id": "retroseq", "name": "RetroSeq"}],
     "sv": [
