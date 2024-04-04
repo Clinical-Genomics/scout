@@ -130,8 +130,8 @@
         </div>
       </div>
 
-      <div class="row mt-2"> <!-- Show variants in dynamic gene list -->
-        <div class="row">
+      <div>
+        <div class="row"> <!-- Show variants in dynamic gene list -->
           <form action="{{ url_for('cases.update_clinical_filter_hpo', institute_id=institute._id, case_name=case.display_name)+'#hpo_clinical_filter' }}" method="POST">
             <div class="form-check form-switch">
               <input type="checkbox" class="form-check-input" id="hpo_clinical_filter" onChange="this.form.submit()" name="hpo_clinical_filter"{% if case.hpo_clinical_filter %}checked{% endif %}>
@@ -199,15 +199,13 @@
         <div class="row mt-1">
           <div class="btn-group btn-group-sm">
             {% if case.chanjo_coverage %}
-              <button class="btn btn-secondary btn-sm text-white" onClick="document.getElementById('hpo-report-form').submit();">Coverage report</button>
-              <a href="#section" onClick="document.getElementById('hpo-report-form').submit();" />
-              <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+              <a class="btn btn-secondary btn-sm text-white" href="#section" onClick="document.getElementById('hpo-report-form').submit();" >Coverage report</a>
+              <form id="hpo-report-form" action="{{ url_for('report.report', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name='HPO panel', level=institute.coverage_cutoff) }}" method="POST" target="_blank">
                 <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
               </form>
 
-              <button class="btn btn-secondary btn-sm text-white" onClick="document.getElementById('hpo-overview-form').submit();">Coverage overview</button>
-              <a href="#section" onClick="document.getElementById('hpo-overview-form').submit();" />
-              <form id="hpo-overview-form" action="{{ url_for('report.genes', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name="HPO panel", level=institute.coverage_cutoff) }}" method="POST" target="_blank">
+              <a class="btn btn-secondary btn-sm text-white" href="#section" onClick="document.getElementById('hpo-overview-form').submit();" >Coverage overview</a>
+              <form id="hpo-overview-form" action="{{ url_for('report.genes', sample_id=case.individuals|map(attribute='individual_id')|list, panel_name='HPO panel', level=institute.coverage_cutoff) }}" method="POST" target="_blank">
                 <input type="hidden" name="gene_ids" value="{{ case.dynamic_gene_list|map(attribute='hgnc_id')|join(',') }}">
               </form>
             {% endif %}
@@ -229,11 +227,14 @@
           </div>
         </div>
         {% endif %} <!-- End of if case.chanjo_coverage or case.chanjo2_coverage -->
-      </div> <!-- End of Show variants in dynamic gene list -->
 
-      <div class="btn-group d-flex justify-content-center mt-1"> <!-- Download genes in HPO gene panel -->
-        <a class="btn btn-sm btn-primary text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Clinical HPO gene panel</a>
-        <a class="btn btn-sm btn-primary text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Research HPO gene panel</a>
+        <div class="row mt-1">
+          <div class="btn-group btn-group-sm"> <!-- Download genes in HPO gene panel -->
+            <a class="btn btn-sm btn-primary text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="clinical") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Clinical HPO gene panel</a>
+            <a class="btn btn-sm btn-primary text-white" href="{{ url_for('cases.download_hpo_genes', institute_id=institute._id, case_name=case.display_name, category="research") }}" download><span class="fa fa-download text-white" aria-hidden="true"></span>&nbsp;&nbsp;Research HPO gene panel</a>
+          </div>
+        </div>
+
       </div>
 
     {% endif %}
