@@ -5,16 +5,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
+### Fixed
+- Buttons layout in HPO genes panel on case page
+- Added back old variant rankscore index with different key order to help loading on demo instance
+
+## [4.80]
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
-- Link for chanjo2 coverage report on gene panel page
-- Link for chanjo2 coverage report on Case pagem HPO dynamic gene list
+- Link to chanjo2 coverage report and coverage gene overview on gene panel page
+- Link to chanjo2 coverage report on Case page, HPO dynamic gene list
+- Link to genes coverage overview report on Case page, HPO dynamic gene list
 ### Changed
 - All links in disease table on diagnosis page now open in a new tab
-- Dark mode settings applied to multiselects on institute settings
+- Dark mode settings applied to multi-selects on institute settings page
 - Comments on case and variant pages can be viewed by expanding an accordion
 - On case page information on pinned variants and variants submitted to ClinVar are displayed in the same table
 - Demo case file paths are now stored as absolute paths
+- Optimised indices to address slow queries
 - On case page default panels are now found at the top of the table, and it can be sorted by this trait
 ### Fixed
 - On variants page, search for variants in genes present only in build 38 returning no results
@@ -22,7 +29,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - A new field `Explanation for multiple conditions` is available in ClinVar for submitting variants with more than one associated condition
 - Fusion genes with partners lacking gene HGNC id will still be fully loaded
 - Fusion variantS export now contains fusion variant specific columns
-
+- When Loqusdb observations count is one the table includes information on if observation was for the current or another case
 
 ## [4.79.1]
 ### Fixed
@@ -49,7 +56,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Refactored code in `scout/parse/omim.py` and `scout/parse/disease_terms.py` to use "disease" instead of "phenotype" to differentiate from HPO terms
 - Be more careful about checking access to variant on API access
 - Show also ACMG VUS on general report (could be missing if not e.g. pinned)
-- When Loqusdb observations count is one the table includes information on if observation was for the current or another case
 
 ## [4.78]
 ### Added
@@ -71,7 +77,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Default loglevel up to INFO, making logs with default start easier to read
 - Add XTR region to PAR region definition
 - Diagnoses can be searched on diagnoses page without waiting for load first
-- Optimised indexes to address slow queries
 ### Fixed
 - Removed log info showing hgnc IDs used in variantS search
 - Maintain Matchmaker Exchange and Beacon submission status when a case is re-uploaded

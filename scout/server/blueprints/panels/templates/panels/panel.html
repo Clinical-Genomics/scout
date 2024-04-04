@@ -106,7 +106,13 @@
       {% if case and case.chanjo2_coverage %}
         <li class="list-group-item">
           <label for="coverage_report">Coverage report (chanjo2)</label>
-          <a class="float-end"  href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=panel.name_and_version, panel_id=panel._id) }}" target="_blank" rel="noopener">
+          <a class="float-end"  href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=panel.name_and_version, panel_id=panel._id, report_type='report') }}" target="_blank" rel="noopener">
+            {{ case.display_name }}
+          </a>
+        </li>
+        <li class="list-group-item">
+          <label for="coverage_report">Coverage overview (chanjo2)</label>
+          <a class="float-end"  href="{{ url_for('cases.chanjo2_coverage_report', institute_id=institute._id, case_name=case.display_name, panel_name=panel.name_and_version, panel_id=panel._id, report_type='overview') }}" target="_blank" rel="noopener">
             {{ case.display_name }}
           </a>
         </li>

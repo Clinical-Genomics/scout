@@ -671,7 +671,7 @@ class VariantHandler(VariantLoader):
         result = self.variant_collection.delete_many(query)
         LOG.info("{0} variants deleted".format(result.deleted_count))
 
-    def overlapping(self, variant_obj):
+    def overlapping(self, variant_obj, limit=30):
         """Return overlapping variants.
 
         Look at the genes that a variant overlaps to.
@@ -701,7 +701,7 @@ class VariantHandler(VariantLoader):
         }
         sort_key = [("rank_score", pymongo.DESCENDING)]
         # We collect the 30 most severe overlapping variants
-        variants = self.variant_collection.find(query).sort(sort_key).limit(30)
+        variants = self.variant_collection.find(query).sort(sort_key).limit(limit)
 
         return variants
 
