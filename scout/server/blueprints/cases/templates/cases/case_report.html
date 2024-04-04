@@ -14,7 +14,7 @@
 <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
-    <a class="nav-link link-primary mx-2 " style="text-decoration: none !important;" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank">Case {{case.display_name}}</a>
+    <a class="nav-link link-primary mx-2 " style="text-decoration: none !important;" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" rel="noopener" target="_blank">Case {{case.display_name}}</a>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +69,7 @@
    {% if coverage_report %}
     <div style="display: inline-block;">{{ coverage_report|safe }}</div><br>
    {% endif %}
-   <a style="text-decoration:none;" href="https://clinical-genomics.github.io/scout" target="_blank">clinical-genomics.github.io/scout</a>
+   <a style="text-decoration:none;" href="https://clinical-genomics.github.io/scout" rel="noopener"  target="_blank">clinical-genomics.github.io/scout</a>
 </div>
 {% endblock %} <!-- end of block body -->
 
@@ -79,7 +79,7 @@
 	    <a id="phenotype" class="link-primary" style="text-decoration: none !important;" href="{{ url_for('cases.case', institute_id=institute._id, case_name=case.display_name) }}" target="_blank" rel="noopener"><strong>Case {{ case.display_name }}</a> - Phenotype Overview</strong>
 	  </div>
 	  <div class="card-body">
-	    <table class="table table-sm" >
+	    <table class="table table-sm" aria-label="Pedigree and sample information">
 	      <tr>
           {% if case.madeline_info and case.individuals|length > 1 %}
 	        <td style='width: 33%;'>
@@ -165,7 +165,7 @@
 	        </td>
 	      </tr>
       </table>
-      <table class="table table-sm" >
+      <table class="table table-sm" aria-label="Case synopsis and phenotype information">
 	      <tr>
 	        <td style="width:50%;vertical-align:top;">
 	          {% if case.synopsis %}
@@ -199,7 +199,7 @@
                 <ul>
                   {% for dia in case.diagnosis_phenotypes %}
                     <li>
-                      {{dia.description}} (<a style="text-decoration:none;" href="{{dia.disease_link}}" target="_blank">{{dia.disease_id}})</a>
+                      {{dia.description}} (<a style="text-decoration:none;" href="{{dia.disease_link}}" rel="noopener" target="_blank">{{dia.disease_id}})</a>
                       {% for feature_ind in dia.individuals %} <!-- display eventual individual-level disease terms -->
                         {% for case_ind in case.individuals %}
                           {% if feature_ind.individual_name == case_ind.display_name %}
@@ -299,7 +299,7 @@
           {% if panel.is_default %}
             <tr>
               <td>
-                <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}" target="_blank">
+                <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel.panel_id, case_id=case._id, institute_id=institute._id) }}" rel="noopener" target="_blank">
                   {{ panel.display_name|truncate(75, True) }}
                 </a>
               </td>
@@ -485,7 +485,7 @@
   <div class="card" style="border-width: 5px; display: block;">
     <div class="card-header" >
       <div class="d-flex align-items-center ">
-        # <a style="text-decoration:none;" href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>&nbsp;
+        # <a style="text-decoration:none;" href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" rel="noopener" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>&nbsp;
           <span class="badge rounded-pill bg-success py-1">{{variant.category | upper}}</span>&nbsp;
           {% if variant.sanger_ordered and variant.validation %}
             <span class="badge rounded-pill bg-info py-1" title="verif-status">Verification:{{variant.validation}}</span>
@@ -537,7 +537,7 @@
               {% if variant.panels%}
                 {% if variant.panels|length <= 3 %}
                   {% for panel_id in variant.panels %}
-                   <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge bg-secondary">{{ panel_id }}</a><br>
+                   <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" rel="noopener" target="_blank" class="badge bg-secondary">{{ panel_id }}</a><br>
                   {% endfor %}
                 {% else %}
                   {{ variant.panels|length }} panels
@@ -574,7 +574,7 @@
                 <tr>
                   <td>
                     {% if variant.dbsnp_id %}
-                      <a style="text-decoration:none;" href="{{ variant.thousandg_link }}" target="_blank">1000G</a>
+                      <a style="text-decoration:none;" href="{{ variant.thousandg_link }}" rel="noopener" target="_blank">1000G</a>
                     {% else %}
                       1000G
                     {% endif %}
@@ -590,7 +590,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td><a style="text-decoration:none;" title="Exome Aggregation Consortium" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
+                  <td><a style="text-decoration:none;" title="Exome Aggregation Consortium" rel="noopener" target="_blank" href="{{ variant.exac_link }}">ExAC</a></td>
                   <td>
                     {% if variant.max_exac_frequency %}
                       {{ variant.max_exac_frequency|human_decimal }} <small>(max)</small> |
@@ -602,7 +602,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td><a style="text-decoration:none;" title="genome Aggregation Database" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a></td>
+                  <td><a style="text-decoration:none;" title="genome Aggregation Database" rel="noopener" target="_blank" href="{{ variant.gnomad_link }}">gnomAD</a></td>
                   <td>
                     {% if 'gnomad_frequency' in variant%}
                       {% if variant.max_gnomad_frequency %}
@@ -921,7 +921,7 @@
 <div class="card" style="border-width: 5px; display: block;">
   <div class="card-header">
     <div class="d-flex align-items-center">
-    # <a style="text-decoration:none;" href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
+    # <a style="text-decoration:none;" href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" rel="noopener" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
     &nbsp;<span class="badge rounded-pill bg-warning py-1 text-dark">{{variant.sub_category|upper}}</span>
     </div>
     {{ variant_phenotypes(variant) }}
@@ -958,7 +958,7 @@
             {% if variant.panels %}
               {% if variant.panels|length <= 3 %}
                 {% for panel_id in variant.panels %}
-                  <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" target="_blank" class="badge bg-secondary">{{ panel_id }}</a><br>
+                  <a style="text-decoration:none;" href="{{ url_for('panels.panel', panel_id=panel_id) }}" rel="noopener" target="_blank" class="badge bg-secondary">{{ panel_id }}</a><br>
                 {% endfor %}
               {% else %}
                 {{ variant.panels|length }} panels
@@ -1116,7 +1116,7 @@
 <div class="card" style="border-width: 5px; display: block;">
   <div class="card-header">
     <div class="d-flex align-items-center">
-    # <a style="text-decoration:none;" href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.str_repid}}:{{ variant.alternative|replace("<", "")|replace(">", "") }} - {{variant.str_display_ru or variant.str_ru}} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
+    # <a style="text-decoration:none;" href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" rel="noopener" target="_blank"><strong>{{variant.str_repid}}:{{ variant.alternative|replace("<", "")|replace(">", "") }} - {{variant.str_display_ru or variant.str_ru}} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
     &nbsp;<span class="badge rounded-pill bg-info py-1">{{variant.category | upper}}</span>
     </div>
     {{ variant_phenotypes(variant) }}
