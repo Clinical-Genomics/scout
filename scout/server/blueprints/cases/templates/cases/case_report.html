@@ -243,10 +243,10 @@
 	        </tr>
 	      {% else %}
 	        <tr>
-	          <td colspan=2>
+	          <td colspan=2 style="border-bottom:none;">
 	            <table id="comment-table" class="table table-sm" style="background-color: transparent">
 	              <tr>
-	                <td>No comments left for this case.</td>
+	                <td style="border-bottom:none;">No comments left for this case.</td>
 	              </tr>
 	            </table>
 	          </td>
@@ -309,7 +309,7 @@
           {% endif %}
         {% else %}
           <tr>
-            <td colspan="5">No panels linked to case</td>
+            <td colspan="5" style="border-bottom:none;">No panels linked to case</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -484,7 +484,7 @@
 {% macro sn_variant_content(variant, index) %} <!--The entire description of a single nucleotide variant, dynamic content -->
   <div class="card" style="border-width: 5px; display: block;">
     <div class="card-header" >
-      <div class="d-flex align-items-center ">
+      <div>
         # <a style="text-decoration:none;" href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" rel="noopener" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>&nbsp;
           <span class="badge rounded-pill bg-success py-1">{{variant.category | upper}}</span>&nbsp;
           {% if variant.sanger_ordered and variant.validation %}
@@ -920,7 +920,7 @@
 {% macro sv_variant_content(variant,index) %} <!--The entire description of a structural variant, dynamic contentc -->
 <div class="card" style="border-width: 5px; display: block;">
   <div class="card-header">
-    <div class="d-flex align-items-center">
+    <div>
     # <a style="text-decoration:none;" href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" rel="noopener" target="_blank"><strong>chr{{variant.chromosome}}:{{variant.position}}_{{variant.sub_category|upper}}</strong></a>
     &nbsp;<span class="badge rounded-pill bg-warning py-1 text-dark">{{variant.sub_category|upper}}</span>
     </div>
@@ -1115,7 +1115,7 @@
 {% macro str_variant_content(variant,index) %}
 <div class="card" style="border-width: 5px; display: block;">
   <div class="card-header">
-    <div class="d-flex align-items-center">
+    <div>
     # <a style="text-decoration:none;" href="{{ url_for('variant.sv_variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" rel="noopener" target="_blank"><strong>{{variant.str_repid}}:{{ variant.alternative|replace("<", "")|replace(">", "") }} - {{variant.str_display_ru or variant.str_ru}} - {{ variant.str_status| upper |replace("_", " ") }}</strong></a>
     &nbsp;<span class="badge rounded-pill bg-info py-1">{{variant.category | upper}}</span>
     </div>
@@ -1335,7 +1335,7 @@
   <div class="card" style="border-width: 5px; display: block;">
     <div class="card-header">Summary table</div>
     <div class="card-body">
-      <div class="row d-flex align-items-center">
+      <div class="row">
        <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent; margin-left:-.3rem;">
         <thead>
           <tr class="table-secondary">
