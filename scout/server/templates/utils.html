@@ -78,7 +78,7 @@
                     {{ single_comment(institute, case, current_user, comment, item_index) }}
                     {% endfor %}
                     {% if expandable_comments|length >0 %}
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0">
                       <div id="expandable-comments-content" class="accordion-collapse collapse" aria-labelledby="expandable-comments-heading">
                         <div class="" >
                           {% for comment in expandable_comments %}
