@@ -1031,17 +1031,19 @@
             -
           {% endif %}
           </td>
-          <td>
-            <span class="float-left">
-              {% if variant.genetic_models %}
-                {% for model in variant.genetic_models|sort %}
-                  <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
-                {% endfor %}
-              {% else %}
-                <span class="badge badge-warning">No models followed</span>
-              {% endif %}
-            </span>
-          </td>
+          {% if not cancer %}
+            <td>
+              <span class="float-left">
+                {% if variant.genetic_models %}
+                  {% for model in variant.genetic_models|sort %}
+                    <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                  {% endfor %}
+                {% else %}
+                  <span class="badge badge-warning">No models followed</span>
+                {% endif %}
+              </span>
+            </td>
+          {% endif %}
           <td>
             {% if variant.acmg_classification %}
               <span class="badge badge-pill badge-{{variant.acmg_classification['color'] if variant.acmg_classification['color'] else 'secondary'}}" title="{{variant.acmg_classification['code']}}">{{variant.acmg_classification['code'] }}</span>
