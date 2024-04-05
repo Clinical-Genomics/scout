@@ -10,6 +10,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ### Fixed
 - Buttons layout in HPO genes panel on case page
 - Added back old variant rankscore index with different key order to help loading on demo instance
+- Case report pinned variants card now displays info text if all pinned variants are present in causatives
 
 ## [4.80]
 ### Added
