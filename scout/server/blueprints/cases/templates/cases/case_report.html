@@ -342,6 +342,7 @@
   </div>
   <div class="card-body">
     {% set duplicated_variants = [] %}
+    {% set pinned_not_causative_variants = [] %}
     {% if variants.suspects_detailed %}
       {% if cancer %}
         {{ somatic_variant_table(variants.suspects_detailed) }}
@@ -349,6 +350,7 @@
       {% for pinned in variants.suspects_detailed|sort(attribute='variant_rank') %}
         {% if pinned['_id'] not in printed_vars %}
           {% do printed_vars.append(pinned['_id']) %}
+          {% do pinned_not_causative_variants.append(pinned['_id']) %}
           {{ variant_content(pinned, loop.index) }}
         {% else %}
           {% do duplicated_variants.append(pinned['_id']) %}
@@ -358,7 +360,7 @@
     {% else %}
       No pinned variants available for this case
     {% endif %}
-    {% if variants.suspects_detailed and duplicated_variants|length == variants.suspects_detailed.suspects_detailed|length %}
+    {% if pinned_not_causative_variants|length == 0 %}
       All pinned variants are described among the causative variants
     {% endif %}
   </div>
