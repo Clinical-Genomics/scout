@@ -11,6 +11,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Buttons layout in HPO genes panel on case page
 - Added back old variant rankscore index with different key order to help loading on demo instance
 - Cancer case_report panel-table no longer contains inheritance information
+- Case report pinned variants card now displays info text if all pinned variants are present in causatives
 
 ### Changed
 - Upgraded Bootstrap version in reports from 4.3.1 to 5.1.3
