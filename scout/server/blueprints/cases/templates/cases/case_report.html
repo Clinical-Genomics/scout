@@ -1029,7 +1029,7 @@
             <span class="badge rounded-pill bg-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
           {% endif %}
           {% if variant.cancer_tier %}
-            <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_rank_options[variant.cancer_tier]['label'] }}</span>
+            <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
           {% endif %}
           {% if not (variant.manual_rank or variant.cancer_tier) %}
             -
@@ -1228,7 +1228,7 @@
             <span class="badge rounded-pill bg-secondary" title="Manual rank">{{ manual_rank_options[variant.manual_rank]['label'] }}</span>
           {% endif %}
           {% if variant.cancer_tier %}
-            <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_rank_options[variant.cancer_tier]['label'] }}</span>
+            <span class="badge rounded-pill bg-secondary" title="Tier">{{ cancer_tier_options[variant.cancer_tier]['label'] }}</span>
           {% endif %}
           {% if not (variant.manual_rank or variant.cancer_tier) %}
             <span class="text-center">-</span>
