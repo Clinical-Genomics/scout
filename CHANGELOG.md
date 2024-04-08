@@ -12,6 +12,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Added back old variant rankscore index with different key order to help loading on demo instance
 - Cancer case_report panel-table no longer contains inheritance information
 - Case report pinned variants card now displays info text if all pinned variants are present in causatives
+- Darkmode setting now applies to the comment-box accordion
 
 ## [4.80]
 ### Added
