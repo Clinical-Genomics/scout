@@ -5,6 +5,7 @@
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
+{% from "cases/chanjo2_form.html" import chanjo2_report_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -570,6 +571,7 @@
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js" integrity="sha512-fu0WiDG5xqtX2iWk7cp17Q9so54SC+5lk/z/glzwlKFdEOwGG6piUseP2Sik9hlvlmyOJ0lKXRSuv1ltdVk9Jg==" referrerpolicy="no-referrer" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap5.min.js" integrity="sha512-nfoMMJ2SPcUdaoGdaRVA1XZpBVyDGhKQ/DCedW2k93MTRphPVXgaDoYV1M/AJQLCiw/cl2Nbf9pbISGqIEQRmQ==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.8/purify.min.js" integrity="sha512-M72KfQy4kPuLYC6CeTrN0eA17U1lXEMrr5qEJC/40CLdZGC3HpwPS0esQLqBHnxty2FIcuNdP9EqwSOCLEVJXQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.serializeJSON/3.2.1/jquery.serializejson.min.js" integrity="sha512-SdWDXwOhhVS/wWMRlwz3wZu3O5e4lm2/vKK3oD0E5slvGFg/swCYyZmts7+6si8WeJYIUsTrT3KZWWCknSopjg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
   {% if case.custom_images %}
@@ -749,5 +751,22 @@ $('#collapse-icon').addClass('fa-angle-double-left');
 $('[data-bs-toggle=sidebar-collapse]').click(function() {
   SidebarCollapse();
 });
+
+{% if config.CHANJO2_URL %}
+  function submitChanjo2Form(formName, url){
+    var obj = $(formName).serializeJSON();
+    $.ajax({
+        type: 'POST',
+        url: url,
+        dataType: 'json',
+        data: JSON.stringify(obj),
+        contentType : 'application/json',
+        success: function(data) {
+            alert(data)
+        }
+    });
+  }
+{% endif %}
+
 </script>
 {% endblock %}
