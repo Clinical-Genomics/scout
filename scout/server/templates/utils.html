@@ -78,7 +78,7 @@
                     {{ single_comment(institute, case, current_user, comment, item_index) }}
                     {% endfor %}
                     {% if expandable_comments|length >0 %}
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0">
                       <div id="expandable-comments-content" class="accordion-collapse collapse" aria-labelledby="expandable-comments-heading">
                         <div class="" >
                           {% for comment in expandable_comments %}
@@ -87,7 +87,7 @@
                           {% endfor %}
                         </div>
                       </div>
-                      <button id="expandable-comments-control" class="accordion-button collapsed" style="color:#0c63e4; background-color:#e7f1ff;" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
+                      <button id="expandable-comments-control" class="accordion-button collapsed" style="background-color:var(--bs-body-bg);color:var(--bs-body-color)" type="button" data-bs-toggle="collapse" data-bs-target="#expandable-comments-content" aria-expanded="false" aria-controls="expandable-comments-content"
                               onclick="{let thisElement=event.currentTarget; let children= thisElement.querySelectorAll('span'); Array.from(children).forEach(child=> child.classList.toggle('d-none'));}">
                         <span>See more comments...</span>
                         <span class="d-none">Minimise comments</span>
