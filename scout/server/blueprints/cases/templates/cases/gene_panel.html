@@ -213,8 +213,8 @@
             {% endif %}
 
             {% if case.chanjo2_coverage %}
-              {{ chanjo2_report_form(institute, case, "HPO Panel", case.dynamic_gene_list|map(attribute='hgnc_id')|join(','), none, 'report') }} <!--chanjo2 report-->
-              {{ chanjo2_report_form(institute, case, none, case.dynamic_gene_list|map(attribute='hgnc_id')|join(','), none, 'overview') }} <!--chanjo2 genes overview -->
+              {{ chanjo2_report_form(institute, case, "HPO Panel", 'report') }} <!--chanjo2 report-->
+              {{ chanjo2_report_form(institute, case, none, 'overview') }} <!--chanjo2 genes overview -->
             {% endif %}
 
           </div>
