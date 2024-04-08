@@ -13,6 +13,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Cancer case_report panel-table no longer contains inheritance information
 - Case report pinned variants card now displays info text if all pinned variants are present in causatives
 - Darkmode setting now applies to the comment-box accordion
+- Typo in case report causing `cancer_rank_options is undefined` error
 
 ### Changed
 - Upgraded Bootstrap version in reports from 4.3.1 to 5.1.3
