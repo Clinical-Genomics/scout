@@ -371,7 +371,7 @@
 
 {% macro classified_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-warning text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+  <div class="card-header bg-warning text-dark" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="acmg_variants"><strong>Other ACMG-classified Variants</strong></a>
   </div>
   <div class="card-body">
@@ -398,7 +398,7 @@
 
 {% macro tagged_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-warning text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+  <div class="card-header bg-warning text-dark" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="manual_ranked_variants"><strong>Other Manual Ranked (Tagged) Variants</strong></a>
   </div>
   <div class="card-body">
@@ -449,7 +449,7 @@
 
 {% macro commented_panel() %}
 <div class="card border-warning mb-3" style="border-width: 5px; display: block;">
-  <div class="card-header bg-warning text-black" style="border-top-left-radius: 0; border-top-right-radius: 0;">
+  <div class="card-header bg-warning text-dark" style="border-top-left-radius: 0; border-top-right-radius: 0;">
     <a id="commented_variants"><strong>Other Commented Variants</strong></a>
   </div>
   <div class="card-body">
@@ -736,11 +736,11 @@
       {{ variant.hgnc_symbols|length }}&nbsp;genes
     {% else %}
       {% for gene in variant.genes %}
-       <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}&nbsp;<span class="badge badge-secondary">{{gene.region_annotation}}</span></a><br>
+       <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?match={{ gene.hgnc_symbol }}" target="_blank">{{ gene.hgnc_symbol }}&nbsp;<span class="badge bg-secondary">{{gene.region_annotation}}</span></a><br>
       {% endfor %}
     {% endif %}
   {% else %} <!-- 0 genes. strs for instance -->
-    <span class="badge badge-secondary">-</span>
+    <span class="badge bg-secondary">-</span>
   {% endif %}
 {% endmacro %}
 
@@ -855,7 +855,7 @@
 
                         ({% if variant.genetic_models %}
                           {% for model in variant.genetic_models|sort %}
-                            <span class="badge badge-info" title="{{genetic_models[model]}}">{{model}}</span>
+                            <span class="badge bg-info" title="{{genetic_models[model]}}">{{model}}</span>
                           {% endfor %}
                         {% else %}
                           No models followed
@@ -1040,10 +1040,10 @@
               <span class="float-left">
                 {% if variant.genetic_models %}
                   {% for model in variant.genetic_models|sort %}
-                    <span class="badge badge-info" title="{{genetic_models[model]}}">{{ model }}</span>
+                    <span class="badge bg-info" title="{{genetic_models[model]}}">{{ model }}</span>
                   {% endfor %}
                 {% else %}
-                  <span class="badge badge-warning">No models followed</span>
+                  <span class="badge bg-warning text-dark">No models followed</span>
                 {% endif %}
               </span>
             </td>
