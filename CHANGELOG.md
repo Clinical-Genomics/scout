@@ -15,6 +15,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Darkmode setting now applies to the comment-box accordion
 - Direct links to chanjo2 external app
 
+### Changed
+- Upgraded Bootstrap version in reports from 4.3.1 to 5.1.3
 ## [4.80]
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
