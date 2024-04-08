@@ -5,7 +5,6 @@
 {% from "cases/individuals_table.html" import cancer_individuals_table, individuals_table %}
 {% from "cases/phenotype.html" import hpo_item, cohort_panel, diagnosis_phenotypes, phenotype_groups_panel, add_phenotype_terms_panel, hpo_panel %}
 {% from "cases/gene_panel.html" import genepanels_table, hpo_genelist_panel %}
-{% from "cases/chanjo2_form.html" import chanjo2_report_form %}
 
 {% block title %}
   {{ super() }} - {{ institute.display_name }} - {{ case.display_name }}
@@ -753,17 +752,18 @@ $('[data-bs-toggle=sidebar-collapse]').click(function() {
 });
 
 {% if config.CHANJO2_URL %}
-  function submitChanjo2Form(formName, url){
-    var obj = $(formName).serializeJSON();
+  function submitChanjo2Form(form, url){
+    var formData = $(form).serializeJSON();
     $.ajax({
         type: 'POST',
         url: url,
-        dataType: 'json',
-        data: JSON.stringify(obj),
+        dataType: 'jsonp',
+        data: JSON.stringify(formData),
         contentType : 'application/json',
         success: function(data) {
-            alert(data)
-        }
+          var w = window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(data));
+          w.focus();
+        },
     });
   }
 {% endif %}
