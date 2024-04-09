@@ -754,12 +754,13 @@ $('[data-bs-toggle=sidebar-collapse]').click(function() {
 {% if config.CHANJO2_URL %}
   function submitChanjo2Form(form, chanjo2Url){
 
-    var formData = ($(form).serialize());
+    const data = new FormData(form);
+    const formValue = Object.fromEntries(data.entries());
 
     $.ajax({
       type: "POST",
       url: chanjo2Url,
-      data: formData,
+      data: formValue,
       crossDomain: true,
       contentType : "application/json",
       success: function(data){
