@@ -752,19 +752,26 @@ $('[data-bs-toggle=sidebar-collapse]').click(function() {
 });
 
 {% if config.CHANJO2_URL %}
-  function submitChanjo2Form(form, url){
-    var formData = $(form).serializeJSON();
+  function submitChanjo2Form(form, chanjo2Url){
+
+    var formData = ($(form).serialize());
+
     $.ajax({
-        type: 'POST',
-        url: url,
-        dataType: 'jsonp',
-        data: JSON.stringify(formData),
-        contentType : 'application/json',
-        success: function(data) {
-          var w = window.open('data:text/csv;charset=utf-8,' + encodeURIComponent(data));
-          w.focus();
-        },
+      type: "POST",
+      url: chanjo2Url,
+      data: formData,
+      crossDomain: true,
+      contentType : "application/json",
+      success: function(data){
+        var win = window.open();
+        win.document.write(data);
+        win.focus()
+      },
+      error: function(){
+        alert("Error while retrieving Chanjo2 report.");
+      }
     });
+    return false;
   }
 {% endif %}
 
