@@ -4,9 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-## [unreleased]
+## [4.81]
 ### Added
 - Tag for somatic SV IGH-DUX4 detection samtools script
+### Changed
+- Upgraded Bootstrap version in reports from 4.3.1 to 5.1.3
 ### Fixed
 - Buttons layout in HPO genes panel on case page
 - Added back old variant rankscore index with different key order to help loading on demo instance
@@ -15,8 +17,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Darkmode setting now applies to the comment-box accordion
 - Typo in case report causing `cancer_rank_options is undefined` error
 
-### Changed
-- Upgraded Bootstrap version in reports from 4.3.1 to 5.1.3
 ## [4.80]
 ### Added
 - Support for .d4 files coverage using chanjo2 (Case page sidebar link) with test
