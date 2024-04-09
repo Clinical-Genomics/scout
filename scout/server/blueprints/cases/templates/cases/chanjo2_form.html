@@ -1,11 +1,10 @@
-{% macro chanjo2_report_form(institute_obj, case_obj, panel_name, report_type) %}
+{% macro chanjo2_report_form(institute_obj, case_obj, panel_name, report_type, hgnc_ids) %}
 
   {% set form_name = "chanjo2_"+panel_name+"_"+report_type %}
   {% set form_action = config.CHANJO2_URL+"/"+report_type %}
   {% set build = "GRCh38" if "38" in case_obj.get("genome_build", "37") else "GRCh37" %}
   {% set default_level = institute_obj.coverage_cutoff %}
   {% set interval_type = "genes" %}
-  {% set hgnc_gene_ids = case_obj.dynamic_gene_list|map(attribute='hgnc_id')|list %}
   {% set samples = [] %}
   {% set analysis_types = [] %}
 
@@ -36,7 +35,7 @@
     <input type="hidden" id="interval_type" name="interval_type" value="{{interval_type}}">
     <input type="hidden" id="panel_name" name="panel_name" value="{{panel_name}}">
     <input type="hidden" id="case_display_name" name="case_display_name" value="{{case_obj.display_name}}">
-    <input type="hidden" id="hgnc_gene_ids" name="hgnc_gene_ids" value={{hgnc_gene_ids}}>
+    <input type="hidden" id="hgnc_gene_ids" name="hgnc_gene_ids" value={{hgnc_ids}}>
     <input type="hidden" id="samples" name="samples" value="{{samples|safe}}">
     <button type="submit" class="btn btn-secondary btn-sm text-white"> Coverage {{report_type}} (Chanjo2) </button>
   </form>
