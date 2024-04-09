@@ -30,7 +30,7 @@
     {% set interval_type = "exons" %}
   {% endif %}
 
-  <form name="{{form_name}}" method="post" action="{{form_action}}" target="_blank" rel="noopener" onsubmit="return submitChanjo2Form(this, '{{form_action}}');">
+  <form name="{{form_name}}" method="post" action="{{form_action}}" target="_blank" rel="noopener">
     <input type="hidden" id="build" name="build" value="{{build}}">
     <input type="hidden" id="default_level" name="default_level" value="{{default_level}}">
     <input type="hidden" id="interval_type" name="interval_type" value="{{interval_type}}">
