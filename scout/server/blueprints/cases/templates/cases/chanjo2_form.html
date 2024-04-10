@@ -1,4 +1,4 @@
-{% macro chanjo2_report_form(institute_obj, case_obj, panel_name, report_type, hgnc_ids) %}
+{% macro chanjo2_report_form(institute_obj, case_obj, panel_name, report_type, hgnc_ids, link_text) %}
 
   {% set form_name = "chanjo2_"+panel_name+"_"+report_type %}
   {% set form_action = config.CHANJO2_URL+"/"+report_type %}
@@ -40,7 +40,7 @@
     {% if panel_name == "HPO Panel" %}
       <button type="submit" class="btn btn-secondary btn-sm text-white"> Coverage {{report_type}} (Chanjo2) </button>
     {% else %}
-      <a onclick="this.closest('form').submit();return false;"><span class="fa fa-link"></span></a>
+      <a class="link-primary" onclick="this.closest('form').submit();return false;">{{link_text}}</a>
     {% endif %}
   </form>
 
