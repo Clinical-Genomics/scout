@@ -174,27 +174,30 @@
 	          {% endif %}
 	        </td>
 	        <td class="ms-3 d-flex align-items-start flex-column" style="border-bottom:none;">
-            <strong>Associated phenotypes:</strong><br>
-  	          {% if case.phenotype_terms %}
-  	            <ul>
-  	              {% for pheno in case.phenotype_terms %}
-  	                <li>
-  	                {{pheno.feature}} - (<a style="text-decoration:none;" href="https://hpo.jax.org/app/browse/term/{{pheno.phenotype_id}}" target="_blank">{{pheno.phenotype_id}})</a>
-                    {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
-                      {% for case_ind in case.individuals %}
-                        {% if feature_ind.individual_name == case_ind.display_name %}
-                          <span class="ms-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
-                        {% endif %}
+              <strong>Associated phenotypes:</strong>
+  	            {% if case.phenotype_terms %}
+  	              <ul>
+  	                {% for pheno in case.phenotype_terms %}
+  	                  <li>
+  	                  {{pheno.feature}} - (<a style="text-decoration:none;" href="https://hpo.jax.org/app/browse/term/{{pheno.phenotype_id}}" target="_blank">{{pheno.phenotype_id}})</a>
+                      {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
+                        {% for case_ind in case.individuals %}
+                          {% if feature_ind.individual_name == case_ind.display_name %}
+                            <span class="ms-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
+                          {% endif %}
+                        {% endfor %}
                       {% endfor %}
-                    {% endfor %}
-  	                </li>
-  	              {% endfor %}
-  	            </ul>
-  	          {% else %}
-  	            No associated HPO terms.
-  	          {% endif %}
-              <br>
-              <strong>Associated diagnoses:</strong><br>
+  	                  </li>
+  	                {% endfor %}
+  	              </ul>
+  	            {% else %}
+                  <ul style="list-style-type: none; padding-left:0;">
+                    <li>
+  	                  No associated HPO terms.
+                    </li>
+                  </ul>
+  	            {% endif %}
+              <strong>Associated diagnoses:</strong>
               {% if case.diagnosis_phenotypes %}
                 <ul>
                   {% for dia in case.diagnosis_phenotypes %}
@@ -211,7 +214,11 @@
                   {% endfor %}
                 </ul>
               {% else %}
-                No associated diagnoses.
+                <ul style="list-style-type: none;padding-left:0;">
+                  <li>
+                    No associated diagnoses.
+                  </li>
+                </ul>
               {% endif %}
 	        </td>
 	      </tr>
