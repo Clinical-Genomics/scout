@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+### Changed
+- Submit requests to Chanjo2 using HTML forms instead of JSON data
+
 ## [4.81]
 ### Added
 - Tag for somatic SV IGH-DUX4 detection samtools script
@@ -16,7 +20,6 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Case report pinned variants card now displays info text if all pinned variants are present in causatives
 - Darkmode setting now applies to the comment-box accordion
 - Typo in case report causing `cancer_rank_options is undefined` error
-- Direct links to chanjo2 external app
 
 ## [4.80]
 ### Added
