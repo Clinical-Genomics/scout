@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
-### [Unreleased]
+## [Unreleased]
 ### Added
 ### Changed
 - Updated IGV.js to 2.15.11
