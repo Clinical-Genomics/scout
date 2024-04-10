@@ -361,10 +361,10 @@
           {% do printed_vars.append(pinned['_id']) %}
           {% do pinned_not_causative_variants.append(pinned['_id']) %}
           {{ variant_content(pinned, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(pinned['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% else %}
       No pinned variants available for this case
@@ -388,10 +388,10 @@
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% else %}
       No ACMG-classified variants available for this case
@@ -415,10 +415,10 @@
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% endif %}
     {% if variants.tier_detailed %}
@@ -426,10 +426,10 @@
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% endif %}
     {% if not (variants.tagged_detailed or variants.tier_detailed) %}
@@ -474,10 +474,10 @@
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
           {% endif %}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% else %}
       No commented variants for this case
