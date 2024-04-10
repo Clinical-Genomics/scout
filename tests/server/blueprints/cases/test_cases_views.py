@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-import responses
 from bson.objectid import ObjectId
 from flask import json, url_for
 
