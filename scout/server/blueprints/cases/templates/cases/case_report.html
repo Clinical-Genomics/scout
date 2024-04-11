@@ -174,27 +174,30 @@
 	          {% endif %}
 	        </td>
 	        <td class="ms-3 d-flex align-items-start flex-column" style="border-bottom:none;">
-            <strong>Associated phenotypes:</strong><br>
-  	          {% if case.phenotype_terms %}
-  	            <ul>
-  	              {% for pheno in case.phenotype_terms %}
-  	                <li>
-  	                {{pheno.feature}} - (<a style="text-decoration:none;" href="https://hpo.jax.org/app/browse/term/{{pheno.phenotype_id}}" target="_blank">{{pheno.phenotype_id}})</a>
-                    {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
-                      {% for case_ind in case.individuals %}
-                        {% if feature_ind.individual_name == case_ind.display_name %}
-                          <span class="ms-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
-                        {% endif %}
+              <strong>Associated phenotypes:</strong>
+  	            {% if case.phenotype_terms %}
+  	              <ul>
+  	                {% for pheno in case.phenotype_terms %}
+  	                  <li>
+  	                  {{pheno.feature}} - (<a style="text-decoration:none;" href="https://hpo.jax.org/app/browse/term/{{pheno.phenotype_id}}" target="_blank">{{pheno.phenotype_id}})</a>
+                      {% for feature_ind in pheno.individuals %} <!-- display eventual individual-level HPO terms -->
+                        {% for case_ind in case.individuals %}
+                          {% if feature_ind.individual_name == case_ind.display_name %}
+                            <span class="ms-1 {% if case_ind.phenotype == 2 %} text-danger {% endif %}">{{case_ind.display_name}}</span>
+                          {% endif %}
+                        {% endfor %}
                       {% endfor %}
-                    {% endfor %}
-  	                </li>
-  	              {% endfor %}
-  	            </ul>
-  	          {% else %}
-  	            No associated HPO terms.
-  	          {% endif %}
-              <br>
-              <strong>Associated diagnoses:</strong><br>
+  	                  </li>
+  	                {% endfor %}
+  	              </ul>
+  	            {% else %}
+                  <ul style="list-style-type: none; padding-left:0;">
+                    <li>
+  	                  No associated HPO terms.
+                    </li>
+                  </ul>
+  	            {% endif %}
+              <strong>Associated diagnoses:</strong>
               {% if case.diagnosis_phenotypes %}
                 <ul>
                   {% for dia in case.diagnosis_phenotypes %}
@@ -211,7 +214,11 @@
                   {% endfor %}
                 </ul>
               {% else %}
-                No associated diagnoses.
+                <ul style="list-style-type: none;padding-left:0;">
+                  <li>
+                    No associated diagnoses.
+                  </li>
+                </ul>
               {% endif %}
 	        </td>
 	      </tr>
@@ -354,10 +361,10 @@
           {% do printed_vars.append(pinned['_id']) %}
           {% do pinned_not_causative_variants.append(pinned['_id']) %}
           {{ variant_content(pinned, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(pinned['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% else %}
       No pinned variants available for this case
@@ -381,10 +388,10 @@
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% else %}
       No ACMG-classified variants available for this case
@@ -408,10 +415,10 @@
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% endif %}
     {% if variants.tier_detailed %}
@@ -419,10 +426,10 @@
         {% if variant['_id'] not in printed_vars %}
           {% do printed_vars.append(variant['_id']) %}
           {{ variant_content(variant, loop.index) }}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% endif %}
     {% if not (variants.tagged_detailed or variants.tier_detailed) %}
@@ -467,10 +474,10 @@
           {% else %}
             {{ sv_variant_content(variant, loop.index) }}
           {% endif %}
+          <br>
         {% else %}
           {% do duplicated_variants.append(variant['_id']) %}
         {% endif %}
-        <br>
       {% endfor %}
     {% else %}
       No commented variants for this case
@@ -551,7 +558,7 @@
       </table>
       <table class="table table-sm">
         <tr>
-          <td style="width=45%">
+          <td style="width:60%;">
             {{ genotype_table(variant) }}
           </td>
           <td style="width:3%"></td>
@@ -763,8 +770,8 @@
           </thead>
           {% for variant in variants.dismissed_detailed|sort(attribute='variant_rank') %}
             <tr{% if loop.index0 % 2 %} class="light-grey" {% endif %}>
-              <td width="5%">#{{loop.index}}</td>
-              <td width="25%">
+              <td style="width:5%,">#{{loop.index}}</td>
+              <td style="width:25%;">
                 {% if variant.category == 'snv' %}
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>{{variant.display_name[:30]}}</strong></a>
                 {% elif variant.category == 'cancer' %}
@@ -775,8 +782,8 @@
                   <a href="{{ url_for('variant.variant', institute_id=institute._id, case_name=case.display_name, variant_id=variant._id) }}" target="_blank"><strong>rep. {{variant.str_repid}}</strong></a>
                 {% endif %}
               </td>
-              <td width="5%">{{variant.category|upper}}</td>
-              <td width="15%">
+              <td style="width:5%;">{{variant.category|upper}}</td>
+              <td style="width:15%;"
                 {{ dismissed_gene_list(variant) }}
               </td>
 
@@ -981,7 +988,7 @@
     </table>
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
       <tr>
-        <td>
+        <td style="width:60%;">
           {{genotype_table(variant)}}
         </td>
         <td style="width:3%"></td>
