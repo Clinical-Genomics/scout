@@ -164,7 +164,7 @@
     {% if ns.show_compounds %}
       <a href="#" class="badge bg-primary text-white" data-bs-toggle="popover" data-bs-placement="left"
         data-bs-html="true" data-bs-trigger="hover click"
-        data-bs-content="{{ compounds_table(institute, case, variant.compounds[:20]) }}">Compounds</a>
+        data-bs-content="{{ compounds_table(institute, case, variant.compounds[:20], is_popover=true) }}">Compounds</a>
     {% endif %}
   {% endif %}
 
