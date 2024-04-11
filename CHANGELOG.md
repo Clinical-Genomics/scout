@@ -6,6 +6,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
 ## [unreleased]
 ### Changed
+- In the case_report #panel-tables has a fixed width
 - Submit requests to Chanjo2 using HTML forms instead of JSON data
 
 ## [4.81]
