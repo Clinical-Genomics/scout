@@ -4,6 +4,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 About changelog [here](https://keepachangelog.com/en/1.0.0/)
 
+## [unreleased]
+## Added
+- Tooltip for combined score in tables for compounds and overlapping vars
+### Changed
+- In the case_report #panel-tables has a fixed width
+
 ## [4.81]
 ### Added
 - Tag for somatic SV IGH-DUX4 detection samtools script
