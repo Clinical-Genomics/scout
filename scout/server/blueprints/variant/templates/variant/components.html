@@ -241,7 +241,7 @@
   <div class="card panel-default">
     <div class="panel-heading">Compounds (top 20)</div>
     <div class="card-body">
-      {{ compounds_table(institute, case, variant.compounds[:20]) }}
+      {{ compounds_table(institute, case, variant.compounds[:20], is_popover=false) }}
     </div>
   </div>
 {% endmacro %}
