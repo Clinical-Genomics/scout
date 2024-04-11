@@ -110,12 +110,17 @@
 {% endmacro %}
 
 
-{% macro compounds_table(institute, case, compounds) %}
+{% macro compounds_table(institute, case, compounds, is_popover) %}
+  {% set is_popover = is_popover|default(false) %}
   <table class='table table-condensed table-bordered table-sm'>
     <thead class='thead table-light'>
       <tr>
         <th>Variant</th>
-        <th>Combined score</th>
+        <th>Combined score
+          {% if not is_popover %}
+            <span data-bs-toggle='tooltip' data-bs-title='Combined score is the sum of variants´s score and compound variant´s score'>?</span>
+        </th>
+          {% endif %}
         <th>Rank score</th>
         <th>Gene annotation</th>
         <th>Func. annotation</th>
@@ -131,6 +136,8 @@
           <td>
               {% if compound.not_loaded %}
                 {{ compound.display_name }} <small>(not loaded)</small>
+              {% elif is_popover %}
+                {{ compound.display_name }}
               {% else %}
                 <a href='{{ url_for("variant.variant",
                 institute_id=institute._id,
