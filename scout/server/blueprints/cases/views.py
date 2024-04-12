@@ -806,7 +806,7 @@ def custom_report(institute_id, case_name, report_type):
                 if filename.endswith(".yaml") or filename.endswith(".yml"):
                     source_code = "<html><code><pre>" + source_code + "</pre></code></html>"
 
-                bytes_file = html_to_pdf_file(source_code, "landscape", 300)
+                bytes_file = html_to_pdf_file(source_code, "portrait", 300)
                 file_name = "_".join(
                     [
                         case_obj["display_name"],
