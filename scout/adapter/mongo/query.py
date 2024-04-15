@@ -11,6 +11,8 @@ from scout.constants import (
     TRUSTED_REVSTAT_LEVEL,
 )
 
+EXCLUDE_CRITERION = {False: "$in", True: "$nin"}
+
 LOG = logging.getLogger(__name__)
 
 
@@ -256,7 +258,9 @@ class QueryHandler(object):
             if criterion in ["hgnc_symbols", "gene_panels"]:
                 gene_query = self.gene_filter(query, build=build)
                 if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
-                    mongo_query["hgnc_ids"] = {"$in": gene_query}
+                    mongo_query["hgnc_ids"] = {
+                        EXCLUDE_CRITERION[query.get("gene_panels_exclude")]: gene_query
+                    }
                 continue
 
             if criterion == "chrom" and query.get("chrom"):  # filter by coordinates
@@ -352,6 +356,7 @@ class QueryHandler(object):
                 mongo_query["$and"] = coordinate_query + mongo_query["$and"]
             else:
                 mongo_query["$and"] = coordinate_query
+
         return mongo_query
 
     def affected_inds_query(self, mongo_query, case_id, gt_query):
