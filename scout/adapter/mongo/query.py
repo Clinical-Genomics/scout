@@ -259,7 +259,7 @@ class QueryHandler(object):
                 gene_query = self.gene_filter(query, build=build)
                 if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
                     mongo_query["hgnc_ids"] = {
-                        EXCLUDE_CRITERION[query.get("gene_panels_exclude")]: gene_query
+                        EXCLUDE_CRITERION[bool(query.get("gene_panels_exclude"))]: gene_query
                     }
                 continue
 
