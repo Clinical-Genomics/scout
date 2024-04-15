@@ -95,6 +95,7 @@ class VariantFiltersForm(FlaskForm):
     variant_type = HiddenField(default="clinical")
 
     gene_panels = NonValidatingSelectMultipleField(choices=[])
+    gene_panels_exclude = BooleanField("exclude panels")
     hgnc_symbols = TagListField("HGNC Symbols/Ids (case sensitive)")
 
     region_annotations = SelectMultipleField(choices=REGION_ANNOTATIONS)
