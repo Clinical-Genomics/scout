@@ -10,6 +10,8 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 - Option to filter variants by excluding selected gene panels
 ### Changed
 - In the case_report #panel-tables has a fixed width
+- Updated IGV.js to 2.15.11
+### Fixed
 
 ## [4.81]
 ### Added
