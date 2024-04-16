@@ -7,7 +7,7 @@ About changelog [here](https://keepachangelog.com/en/1.0.0/)
 ## [unreleased]
 ## Added
 - Tooltip for combined score in tables for compounds and overlapping vars
-- Option to filter variants by excluding selected gene panels
+- Option to filter variants by excluding genes listed in selected gene panels, files or provided as list
 ### Changed
 - In the case_report #panel-tables has a fixed width
 - Updated IGV.js to 2.15.11
