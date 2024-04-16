@@ -11,7 +11,7 @@ from scout.constants import (
     TRUSTED_REVSTAT_LEVEL,
 )
 
-EXCLUDE_FROM_SEARCH_OPERATOR = {False: "$in", True: "$nin"}
+CRITERION_EXCLUDE_OPERATOR = {False: "$in", True: "$nin"}
 
 LOG = logging.getLogger(__name__)
 
@@ -259,7 +259,7 @@ class QueryHandler(object):
                 gene_query = self.gene_filter(query, build=build)
                 if len(gene_query) > 0 or "hpo" in query.get("gene_panels", []):
                     mongo_query["hgnc_ids"] = {
-                        EXCLUDE_FROM_SEARCH_OPERATOR[
+                        CRITERION_EXCLUDE_OPERATOR[
                             bool(query.get("gene_panels_exclude"))
                         ]: gene_query
                     }
