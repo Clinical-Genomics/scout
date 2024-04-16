@@ -393,6 +393,15 @@ def set_str_info(variant: Variant, parsed_variant: Dict[str, Any]):
     # repeat id generally corresponds to gene symbol
     parsed_variant["str_repid"] = call_safe(str, variant.INFO.get("REPID"))
 
+    # repeat id from trgt - generally corresponds to gene symbol and/or disease
+    parsed_variant["str_trid"] = call_safe(str, variant.INFO.get("TRID"))
+
+    # repeat unit - used e g in PanelApp naming of STRs
+    parsed_variant["str_struc"] = call_safe(str, variant.INFO.get("STRUC"))
+
+    # repeat unit - used e g in PanelApp naming of STRs
+    parsed_variant["str_pathologic_struc"] = call_safe(str, variant.INFO.get("PathologicStruc"))
+
     # repeat unit - used e g in PanelApp naming of STRs
     parsed_variant["str_ru"] = call_safe(str, variant.INFO.get("RU"))
 

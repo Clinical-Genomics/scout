@@ -103,6 +103,12 @@ def parse_genotype(variant, ind, pos):
     (flanking_ref, flanking_alt) = _parse_format_entry(variant, pos, "ADFL")
     (inrepeat_ref, inrepeat_alt) = _parse_format_entry(variant, pos, "ADIR")
 
+    # TRGT long read STR specific
+    (mc_ref, mc_alt) = _parse_format_entry_trgt_mc(variant, pos)
+    (sd_ref, sd_alt) = _parse_format_entry(variant, pos, "SD", float)
+    (ap_ref, ap_alt) = _parse_format_entry(variant, pos, "AP", float)
+    (am_ref, am_alt) = _parse_format_entry(variant, pos, "AM", float)
+
     # MEI specific
     (spanning_mei_ref, clip5_alt, clip3_alt) = get_mei_reads(
         variant, pos
@@ -395,7 +401,7 @@ def get_str_so(variant, pos):
     return str_so
 
 
-def _parse_format_entry(variant, pos, format_entry_name):
+def _parse_format_entry(variant, pos, format_entry_name, number_format=int):
     """Parse genotype format entry for named integer values.
     Expects that ref/alt values could be separated by /.
 
@@ -403,6 +409,7 @@ def _parse_format_entry(variant, pos, format_entry_name):
         variant(cyvcf2.Variant)
         pos(int): individual position in VCF
         format_entry_name: name of format entry
+        number_format: type of numbers expected (int or float)
     Returns:
         (ref(int), alt(int)) tuple
     """
@@ -412,16 +419,19 @@ def _parse_format_entry(variant, pos, format_entry_name):
     if format_entry_name in variant.FORMAT:
         try:
             value = variant.format(format_entry_name)[pos]
-            values = list(value.split("/"))
+            if "/" in value:
+                values = list(value.split("/"))
+            else:
+                values = list(value.split(","))
 
             ref_value = None
             alt_value = None
 
             if len(values) > 1:
-                ref_value = int(values[0])
-                alt_value = int(values[1])
+                ref_value = (number_format)(values[0])
+                alt_value = (number_format)(values[1])
             if len(values) == 1:
-                alt_value = int(values[0])
+                alt_value = (number_format)(values[0])
             if ref_value >= 0:
                 ref = ref_value
             if alt_value >= 0:
@@ -429,3 +439,53 @@ def _parse_format_entry(variant, pos, format_entry_name):
         except (ValueError, TypeError) as _ignore_error:
             pass
     return (ref, alt)
+
+
+def _parse_format_entry_trgt_mc(variant, pos):
+    """Parse genotype entry for TRGT FORMAT MC
+
+    Args:
+        variant:
+        pos:
+
+    Returns:
+        mc_ref, mc_alt
+    """
+
+    mc_ref = None
+    mc_alt = None
+    pathologic_struc = variant.INFO.get("PathologicStruc", None)
+
+    repeat_res = []
+
+    pathologic_counts = 0
+    if "MC" not in variant.FORMAT:
+        return (mc_ref, mc_alt)
+
+    mc = variant.format("MC")[pos]
+    gt = variant.format("GT")[pos]
+    if gt:
+        for idx, allele in enumerate(gt.split("/")):
+            if allele == "0":
+                ref_idx = idx
+
+    if mc:
+        for idx, allele in enumerate(mc.split(",")):
+            mcs = allele.split("_")
+
+            if len(mcs) > 1:
+                pathologic_mcs = pathologic_struc or range(len(mcs))
+
+                for index, count in enumerate(mcs):
+                    if index in pathologic_mcs:
+                        pathologic_counts += int(count)
+            else:
+                pathologic_counts = int(allele)
+
+            if idx == ref_idx:
+                mc_ref = pathologic_counts
+                continue
+
+            mc_alt = pathologic_counts
+
+    return (mc_ref, mc_alt)
