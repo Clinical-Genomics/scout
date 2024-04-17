@@ -418,12 +418,15 @@ def _parse_format_entry(variant, pos, format_entry_name, number_format=int):
     alt = None
     if format_entry_name in variant.FORMAT:
         try:
-            value = variant.format(format_entry_name)[pos]
-            if "/" in value:
-                values = list(value.split("/"))
-            else:
-                values = list(value.split(","))
+            values = variant.format(format_entry_name)[pos]
 
+            for value in values:
+                if "/" in value:
+                    new_values = list(value.split("/"))
+                if "," in value:
+                    new_values = list(value.split(","))
+
+            values = new_values
             ref_value = None
             alt_value = None
 
@@ -463,9 +466,11 @@ def _parse_format_entry_trgt_mc(variant, pos):
         return (mc_ref, mc_alt)
 
     mc = variant.format("MC")[pos]
+    ref_idx = 0
     gt = variant.format("GT")[pos]
+
     if gt:
-        for idx, allele in enumerate(gt.split("/")):
+        for idx, allele in enumerate(gt):
             if allele == "0":
                 ref_idx = idx
 
