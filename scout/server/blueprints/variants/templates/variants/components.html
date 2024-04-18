@@ -48,13 +48,13 @@
   <td>
     {{ fusion_variant_gene_symbols_cell(variant) }}
   </td>
-  <td><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
+  <td class="text-center"><span data-bs-toggle="tooltip" data-bs-html="true" title="{% for name, caller in variant.callers %}{{ name }}: {{ caller }}<br>{% endfor %}">
     {{ variant.tool_hits|int }}</span></td>
   <td>{{variant.found_db|join(", ") if variant.found_db else "-"}}</td>
-  <td class="text-end">{{ variant.fusion_score|float|round(3) }}</td>
-  <td>{{ variant.samples[0].read_depth }}</td>
-  <td>{{ variant.samples[0].split_read }}</td>
-  <td>{{ variant.samples[0].ffpm }}</td>
+  <td class="text-center">{{ variant.fusion_score|float|round(3) }}</td>
+  <td class="text-center">{{ variant.samples[0].read_depth }}</td>
+  <td class="text-center">{{ variant.samples[0].split_read }}</td>
+  <td class="text-center">{{ variant.samples[0].ffpm }}</td>
   <td>{{ variant.frame_status }}</td>
   <td>
     {% if variant.genes %}
@@ -75,7 +75,7 @@
     {% endif %}
   </td>
   <td> {{ variant.chromosome }}:{{ variant.position }}  <br> {{ variant.end_chrom }}:{{ variant.end }} </td>
-  <td>{{ variant.orientation }}</td>
+  <td class="text-center">{{ variant.orientation }}</td>
 {% endmacro %}
 
 {% macro fusion_variant_gene_symbols_cell(variant) %}
