@@ -51,6 +51,8 @@ from scout.server.utils import (
 from .forms import FILTERSFORMCLASS, CancerSvFiltersForm, FusionFiltersForm, SvFiltersForm
 from .utils import update_case_panels
 
+NUM = re.compile(r'\d+')
+
 LOG = logging.getLogger(__name__)
 
 
@@ -938,6 +940,9 @@ def parse_variant(
     if not "end_chrom" in variant_obj:
         variant_obj["end_chrom"] = variant_obj["chromosome"]
 
+    # common motif count for STR variants
+    variant_obj["str_mc"] = get_str_mc(variant_obj)
+
     # variant level links shown on variants page
     variant_obj["cosmic_links"] = cosmic_links(variant_obj)
     variant_obj["str_source_link"] = str_source_link(variant_obj)
@@ -957,6 +962,22 @@ def parse_variant(
     ]
 
     return variant_obj
+
+def get_str_mc(variant_obj: dict):
+    """
+
+    Args:
+        variant_obj:
+
+    Returns:
+
+    """
+
+
+    alt_mc = variant_obj.get("alt_mc", None)
+
+    if not alt_mc:
+        alt_mc =
 
 
 def download_str_variants(case_obj, variant_objs):
