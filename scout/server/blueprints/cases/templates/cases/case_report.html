@@ -1,5 +1,6 @@
 {% from "cases/utils.html" import variant_transcripts %}
 {% from "utils.html" import comments_table, variant_related_comments_table %}
+{% from "variants/components.html" import fusion_variants_header, default_fusion_variant_cells %}
 
 {% extends "report_base.html" %}
 
@@ -634,8 +635,8 @@
       <table id="panel-table" class="table table-sm" style="background-color: transparent">
         <thead>
           <tr>
-            <th>Scout Rank</th>
-            <th>Scout score</th>
+            <th>Rank</th>
+            <th>Score</th>
             <th>Manual rank</th>
             <th>CADD score</th>
             {% if not cancer %}
@@ -1015,11 +1016,22 @@
         </td>
       </tr>
     </table>
+    {% if variant.category == "fusion" %}
+    <table id="panel-table" class="table table-sm" style="background-color: transparent">
+      {{ fusion_variants_header() }}
+      <tbody>
+        <tr>
+          <td colspan="2">{{variant.variant_rank}}</td>
+          {{ default_fusion_variant_cells(institute, case, variant) }}
+        </tr>
+      </tbody>
+    </table>
+    {% else %}
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
       <thead>
         <tr>
-          <th>Scout Rank</th>
-          <th>Scout score</th>
+          <th>Rank</th>
+          <th>Score</th>
           <th>Manual rank</th>
           {% if not cancer %}
             <th>Inheritance models</th>
@@ -1065,6 +1077,7 @@
         </tr>
       </tbody>
     </table>
+    {% endif %}
     <table id="panel-table" class="table table-sm" style="background-color: transparent">
       {% if variant.genes and variant.genes|length <= 3 %}
         <thead>
@@ -1221,8 +1234,8 @@
     <table id="panel-table" class="table table-sm table-bordered" style="background-color: transparent; margin-left:-.3rem;">
       <thead>
         <tr class="table-secondary">
-          <th>Scout Rank</th>
-          <th>Scout score</th>
+          <th>Rank</th>
+          <th>Score</th>
           <th>Manual rank</th>
         </tr>
       </thead>
